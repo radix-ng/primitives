@@ -31,9 +31,8 @@ export class RdxDialogBackdrop {
     readonly forceRender = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     constructor() {
-        // The backdrop is a second portal root (a body sibling of the popup). Register it as an owned
-        // floating element so the focus manager's `markOthers` keeps it — otherwise it would be wrongly
-        // aria-hidden / marked as outside content (ADR 0017 §3).
+        // The backdrop is a second portal root (a body sibling of the popup). It is registered as owned DOM
+        // footprint for primitive-specific checks, but it is not a marker/aria keep-set member.
         const floatingContext = inject(RDX_FLOATING_ROOT_CONTEXT, { optional: true });
         if (floatingContext) {
             const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;

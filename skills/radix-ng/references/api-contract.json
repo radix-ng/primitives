@@ -3444,7 +3444,7 @@
           "hostDirectives": [
             "RdxPopperContent",
             "RdxFloatingNodeRegistration",
-            "RdxFocusScope"
+            "RdxFloatingFocusManager"
           ],
           "inputs": [],
           "outputs": [

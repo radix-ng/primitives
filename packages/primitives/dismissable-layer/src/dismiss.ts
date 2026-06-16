@@ -1,6 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { DestroyRef, inject, PLATFORM_ID } from '@angular/core';
 import { RdxFloatingNode, RdxFloatingRootContext } from '@radix-ng/primitives/core';
+import { RDX_FLOATING_MARKER } from '@radix-ng/primitives/floating-focus-manager';
 
 /** Why a dismissal was requested — mirrors Base UI's open-change `reason` strings (`useDismiss.ts`). */
 export type RdxDismissReason = 'escape-key' | 'outside-press' | 'focus-outside';
@@ -102,6 +103,11 @@ function isWebKit(window: { navigator: Navigator }): boolean {
 /** Only a primary (left / default) press dismisses — a non-primary mouse button is ignored. */
 function isPrimaryButton(event: Event): boolean {
     return !('button' in event) || (event as MouseEvent).button === 0;
+}
+
+/** Base UI third-party guard: a target inside a marker subtree is treated as inert/injected. */
+function isInsideMarkedSubtree(target: EventTarget | null): boolean {
+    return isHTMLElement(target) && target.closest(`[${RDX_FLOATING_MARKER}]`) !== null;
 }
 
 /**
@@ -304,6 +310,9 @@ export class RdxDismiss {
 
         const tryOutsidePress = (event: Event): void => {
             if (!this.active() || !isPrimaryButton(event) || this.isInside(event.target) || !outsidePress(event)) {
+                return;
+            }
+            if (isInsideMarkedSubtree(event.target)) {
                 return;
             }
             if (isScrollbarPress(event)) {

@@ -7,7 +7,11 @@ import {
     useAnchoredScrollLock
 } from '@radix-ng/primitives/core';
 import { RdxDismiss } from '@radix-ng/primitives/dismissable-layer';
-import { provideRdxFocusScopeConfig, RdxFocusScope } from '@radix-ng/primitives/focus-scope';
+import {
+    provideFloatingFocusManagerConfig,
+    RdxFloatingFocusManager
+} from '@radix-ng/primitives/floating-focus-manager';
+import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
 import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
 
@@ -33,14 +37,16 @@ function getFocusableItems(popup: HTMLElement): HTMLElement[] {
 @Directive({
     selector: '[rdxMenuPopup]',
     exportAs: 'rdxMenuPopup',
-    hostDirectives: [RdxPopperContent, RdxFloatingNodeRegistration, RdxFocusScope],
+    hostDirectives: [RdxPopperContent, RdxFloatingNodeRegistration, RdxFloatingFocusManager],
     providers: [
-        // Only a (modal) **context menu** traps focus — Base UI's `FloatingFocusManager modal` is true
-        // for `context-menu` alone (a standalone dropdown / menubar menu / submenu does not trap; they
-        // close on focus-out instead, wired on the capability below).
-        provideRdxFocusScopeConfig(() => {
+        provideFloatingFocusManagerConfig(() => {
             const rootContext = injectRdxMenuRootContext();
-            return { trapped: computed(() => rootContext.parentType() === 'context-menu') };
+            return {
+                // Only a (modal) **context menu** traps focus — Base UI's `FloatingFocusManager modal` is
+                // true for `context-menu` alone. Other menus stay non-modal and close on focus-out.
+                modal: () => rootContext.parentType() === 'context-menu',
+                enabled: () => !rootContext.disabled()
+            };
         })
     ],
     host: {
@@ -62,6 +68,7 @@ export class RdxMenuPopup {
     protected readonly rootContext = injectRdxMenuRootContext();
     private readonly floatingContext = inject(RDX_FLOATING_ROOT_CONTEXT);
     private readonly registration = inject(RDX_FLOATING_REGISTRATION, { optional: true });
+    private readonly focusManager = inject(RdxFloatingFocusManager);
     private readonly focusScope = inject(RdxFocusScope);
     private readonly wrapper = inject(RdxPopperContentWrapper, { optional: true });
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -148,28 +155,29 @@ export class RdxMenuPopup {
             escapeKey: () => true,
             escapeKeyBubbles: () => this.rootContext.closeParentOnEsc(),
             outsidePress: () => true,
-            // A context menu traps focus (above), so it must NOT also close on focus-out; every other kind
-            // (standalone / menubar / submenu) is non-trapping and closes when focus leaves to an unrelated
-            // node. Mirrors Base UI: focus-out close runs only where `FloatingFocusManager modal` is false.
-            focusOutside: () => this.rootContext.parentType() !== 'context-menu',
+            focusOutside: () => false,
             onEscapeKeyDown: (event) => this.escapeKeyDown.emit(event),
             onPointerDownOutside: (event) => {
                 this.pointerDownOutside.emit(event);
                 this.interactOutside.emit(event);
             },
-            onFocusOutside: (event) => {
-                this.focusOutside.emit(event);
-                this.interactOutside.emit(event);
-            },
             onDismiss: (reason, event) => {
                 // Forward the dismissal reason + native event into the menu's open-change channel.
-                const menuReason: RdxMenuOpenChangeReason =
-                    reason === 'escape-key' ? 'escape-key' : reason === 'focus-outside' ? 'focus-out' : 'outside-press';
+                const menuReason: RdxMenuOpenChangeReason = reason === 'escape-key' ? 'escape-key' : 'outside-press';
                 this.rootContext.close(menuReason, event);
                 // Escape restores focus to the trigger (Base UI returns focus on keyboard dismissal).
                 if (reason === 'escape-key') {
                     this.rootContext.trigger()?.focus({ preventScroll: true });
                 }
+            }
+        });
+
+        // Focus-out close is owned by the floating focus manager, matching Base UI's MenuPopup.
+        this.focusManager.focusOut.subscribe((event) => {
+            this.focusOutside.emit(event);
+            this.interactOutside.emit(event);
+            if (!event.defaultPrevented) {
+                this.rootContext.close('focus-out', event);
             }
         });
 

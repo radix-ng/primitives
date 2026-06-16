@@ -209,7 +209,7 @@ export class RdxFloatingFocusManager {
         // Marker pass (ADR 0017 §3) — applied to outside elements whenever the manager is **active**,
         // independent of `modal`. Read by ADR 0015's outside-press guard.
         effect((onCleanup) => {
-            if (!this.effectiveEnabled()) {
+            if (!this.effectiveEnabled() || !this.isFloatingOpen()) {
                 return;
             }
             onCleanup(markOthers(this.avoidElements(), { ariaHidden: false, mark: true }));
@@ -222,7 +222,7 @@ export class RdxFloatingFocusManager {
         // AT isolation the separate `aria-hidden` pass used to. Non-modal popups (Select / Menu root) get
         // none.
         effect((onCleanup) => {
-            if (!this.effectiveEnabled() || !this.effectiveModal()) {
+            if (!this.effectiveEnabled() || !this.isFloatingOpen() || !this.effectiveModal()) {
                 return;
             }
             onCleanup(markOthers(this.avoidElements(), { inert: true, mark: false }));
@@ -351,13 +351,15 @@ export class RdxFloatingFocusManager {
     }
 
     /**
-     * The `markOthers` keep-set: this manager's own host **plus** any extra root elements the layer owns
-     * (e.g. a Dialog backdrop relocated as a separate body sibling, registered on the root context). Using
-     * only `[host]` would wrongly mark those sibling roots as outside content.
+     * The marker keep-set is intentionally narrow: the popup/focus host only. Own sibling roots such as a
+     * user backdrop are DOM-footprint bookkeeping, not marker keep-set members.
      */
     private avoidElements(): Element[] {
-        const extra = this.rootContext ? [...this.rootContext.floatingElements] : [];
-        return [this.host, ...extra.filter((element) => element !== this.host)];
+        return [this.host];
+    }
+
+    private isFloatingOpen(): boolean {
+        return this.rootContext?.open() ?? true;
     }
 
     /** Whether `relatedTarget` is inside the popup, its trigger(s), or an ancestor / descendant popup. */

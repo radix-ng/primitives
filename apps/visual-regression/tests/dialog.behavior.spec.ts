@@ -261,15 +261,14 @@ test.describe('Dialog — new floating engine migration', () => {
         await expect(page.locator(popup)).toBeVisible();
     });
 
-    test('does not aria-hide / mark the dialog backdrop (it is an owned root)', async ({ page }) => {
+    test('marks the dialog backdrop as an outside sibling root', async ({ page }) => {
         await gotoStory(page, 'primitives-dialog--default');
         await page.locator(trigger).first().click();
         await expect(page.locator(popup)).toBeVisible();
 
-        // The backdrop is a second portal root (sibling of the popup); it registers as an owned floating
-        // element, so the manager's markOthers keep-set covers it (Fix #1).
-        await expect(page.locator(backdrop)).not.toHaveAttribute('aria-hidden', 'true');
-        await expect(page.locator(backdrop)).not.toHaveAttribute('data-rdx-floating-inert', '');
+        // The backdrop is a second portal root (sibling of the popup), but ADR 0017 keeps the marker
+        // keep-set narrow: [popup, ...descendantPortalRoots], not own sibling roots.
+        await expect(page.locator(backdrop)).toHaveAttribute('data-rdx-floating-inert', '');
     });
 
     test('a modal dialog inerts outside content, not the global body pointer-events (finding #4)', async ({ page }) => {
@@ -290,9 +289,7 @@ test.describe('Dialog — new floating engine migration', () => {
         expect(await page.locator('#storybook-root').evaluate((el) => el.hasAttribute('inert'))).toBe(false);
     });
 
-    test('keeps outside content inert through the exit animation, lifting only at unmount (mounted-scoped)', async ({
-        page
-    }) => {
+    test('releases marker and inert at close-start, before the exit animation finishes', async ({ page }) => {
         await gotoStory(page, 'primitives-dialog--default');
 
         // Slow the exit keyframes so the mid-exit state is observable without a race.
@@ -300,24 +297,26 @@ test.describe('Dialog — new floating engine migration', () => {
             content: `[rdxDialogBackdrop][data-closed], [rdxDialogPopup][data-closed] { animation-duration: 2000ms !important; }`
         });
 
-        const rootInert = () => page.locator('#storybook-root').evaluate((el) => el.hasAttribute('inert'));
+        const rootState = () =>
+            page.locator('#storybook-root').evaluate((el) => ({
+                inert: el.hasAttribute('inert'),
+                marked: el.hasAttribute('data-rdx-floating-inert')
+            }));
 
         await page.locator(trigger).first().click();
         await expect(page.locator(popup)).toBeVisible();
-        expect(await rootInert()).toBe(true);
+        expect(await rootState()).toEqual({ inert: true, marked: true });
 
         await page.locator('[rdxDialogClose][aria-label="Close"]').click();
 
-        // Mid-exit: the popup is closing (`data-closed`) but still mounted — unlike the scroll lock
-        // (released at close-start), the focus manager's `inert` isolation HOLDS until unmount, matching
-        // Base UI's `disabled={!mounted}`. Focus can't escape and the background stays unreachable while
-        // the close animation plays.
+        // Mid-exit: the popup is closing (`data-closed`) but still mounted. Base UI keeps the focus trap
+        // mounted, but marker / isolation follow `open` and release at close-start.
         await expect(page.locator(popup)).toHaveAttribute('data-closed', '');
-        expect(await rootInert()).toBe(true);
+        expect(await rootState()).toEqual({ inert: false, marked: false });
 
-        // Only once both roots unmount does the isolation lift.
+        // Still released after unmount.
         await expect(page.locator(popup)).toHaveCount(0);
-        expect(await rootInert()).toBe(false);
+        expect(await rootState()).toEqual({ inert: false, marked: false });
     });
 
     test('the backdrop is decorative — role="presentation" (Base UI parity)', async ({ page }) => {

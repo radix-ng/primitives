@@ -13,6 +13,7 @@ import {
     RdxFloatingRootContext,
     RdxFloatingTree
 } from '@radix-ng/primitives/core';
+import { RDX_FLOATING_MARKER } from '@radix-ng/primitives/floating-focus-manager';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { RdxDismiss, RdxDismissProps, RdxDismissReason } from '../src/dismiss';
 
@@ -329,6 +330,24 @@ describe('RdxDismiss', () => {
         await flush();
 
         branch.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+
+        expect(onDismiss).not.toHaveBeenCalled();
+    });
+
+    it('ignores an outside press inside a marked inert subtree (third-party injected guard)', async () => {
+        const onDismiss = vi.fn();
+        const marked = el();
+        const injected = document.createElement('button');
+        marked.setAttribute(RDX_FLOATING_MARKER, '');
+        marked.appendChild(injected);
+        build(
+            context(() => true, el()),
+            () => null,
+            onDismiss
+        );
+        await flush();
+
+        injected.dispatchEvent(new Event('pointerdown', { bubbles: true }));
 
         expect(onDismiss).not.toHaveBeenCalled();
     });

@@ -189,7 +189,7 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
         expect(sibling.hasAttribute(RDX_FLOATING_MARKER)).toBe(true); // marker still applied (active)
     });
 
-    it('keeps additional owned root elements from the context (e.g. a Dialog backdrop)', async () => {
+    it('does not keep additional owned sibling roots from the marker pass', async () => {
         const backdrop = document.createElement('div');
         document.body.appendChild(backdrop);
         appended.push(backdrop);
@@ -215,9 +215,42 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
         fixture.autoDetectChanges();
         await flush();
 
-        // The backdrop is an owned root → NOT marked; an unrelated sibling IS.
-        expect(backdrop.hasAttribute(RDX_FLOATING_MARKER)).toBe(false);
+        // Backdrop/extra roots are DOM-footprint bookkeeping only, not marker keep-set members.
+        expect(backdrop.hasAttribute(RDX_FLOATING_MARKER)).toBe(true);
         expect(unrelated.hasAttribute(RDX_FLOATING_MARKER)).toBe(true);
+    });
+
+    it('tears down marker and inert when the floating context closes, even if enabled stays true', async () => {
+        const sibling = document.createElement('div');
+        document.body.appendChild(sibling);
+        appended.push(sibling);
+
+        const open = signal(true);
+        const context = createFloatingRootContext({ ownerDocument: document, open: () => open() });
+
+        @Component({
+            imports: [RdxFloatingFocusManager],
+            providers: [provideFloatingRootContext(() => context)],
+            template: `
+                <div #scope [modal]="true" [enabled]="true" rdxFloatingFocusManager></div>
+            `
+        })
+        class OpenHost {
+            readonly scope = viewChild.required('scope', { read: ElementRef });
+        }
+
+        const fixture = TestBed.createComponent(OpenHost);
+        fixture.autoDetectChanges();
+        await flush();
+
+        expect(sibling.hasAttribute(RDX_FLOATING_MARKER)).toBe(true);
+        expect(sibling.hasAttribute('inert')).toBe(true);
+
+        open.set(false);
+        await flush();
+
+        expect(sibling.hasAttribute(RDX_FLOATING_MARKER)).toBe(false);
+        expect(sibling.hasAttribute('inert')).toBe(false);
     });
 
     it('clears the marks when the manager is disabled', async () => {

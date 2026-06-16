@@ -86,8 +86,8 @@ required the lock counter to be document-scoped.)
 > lock (the inset and overlay strategies set different overflow properties). Verified: unit
 > (`use-scroll-lock.spec.ts` — marker, overflow applied, exact restore round-trip, ref-count, per-document
 > isolation, SSR no-op, respect-author-overflow) + browser (the marker-based lock/release tests across
-> Dialog / Popover / Menu, 92 behavior tests green). **Not done:** `referenceElement` / non-DI owner-element
-> support (we resolve the owner document from `inject(DOCUMENT)`); the **scroll-position-preservation**
+> Dialog / Popover / Menu, 92 behavior tests green). **Not done:** non-DI owner-element / `referenceElement`
+> support (the current helper resolves the owner document from Angular DI); the **scroll-position-preservation**
 > behavior is the verbatim Base UI port (which has its own tests) but is **not** browser-asserted here — the
 > Storybook iframe positions `#storybook-root` out of body flow, so it is not a usable scroll harness.
 
@@ -229,8 +229,8 @@ the Base UI source during Phase 1.)
 
 This ADR can move to Accepted when:
 
-1. `core/useScrollLock` ports the **full** Base UI behavioral set (§1 — html/body, scroll-position,
-   gutter, resize, pinch-zoom, owner element; nothing deferred) across `<html>`- and `<body>`-scroller
+1. `core/useScrollLock` ports the confirmed Base UI behavioral set (§1 — html/body, scroll-position,
+   gutter, resize, pinch-zoom; owner-element/`referenceElement` support is explicitly deferred) across `<html>`- and `<body>`-scroller
    pages, with scroll position preserved. **All** mutable algorithm state (style/scroll snapshots, gutter
    values, timers/frames, restore callback) is owned by the per-`Document` `ScrollLocker` — nothing at
    module scope — verified with a two-document/iframe test that one document's lock does not corrupt the
@@ -244,8 +244,9 @@ This ADR can move to Accepted when:
    (`disableOutsidePointerEvents` removal is **not** a gate here — it depends on ADR 0017 only, see
    Context.)
 
-> **Acceptance status (2026-06-16): all four criteria met → Accepted.** (1) `core/use-scroll-lock.ts` is
-> the full Base UI port with per-`Document` `ScrollLocker` state (see §1 status). (2) All six call sites use
+> **Acceptance status (2026-06-16): accepted with the documented owner-element gap.** (1)
+> `core/use-scroll-lock.ts` ports the confirmed behavior with per-`Document` `ScrollLocker` state (see §1
+> status). (2) All six call sites use
 > the `open`-gated activation policy; the touch near-fullscreen opt-out is `useAnchoredScrollLock` (§2/§3
 > statuses). (3) Select `alignItemWithTrigger` resolved — item-aligned mode kept as a structural directive
 > but made Base-UI-faithful (`alignItemWithTriggerActive = open && !openedByTouch`, touch falls back to a
