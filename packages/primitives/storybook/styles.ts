@@ -498,13 +498,13 @@ export const demoMenu = {
     ),
     item: cn(
         'relative flex w-full cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none',
-        'data-[highlighted]:bg-muted',
+        'data-[highlighted]:bg-muted data-[highlighted]:outline data-[highlighted]:outline-1 data-[highlighted]:outline-border',
         'data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
     ),
     /** Checkbox / radio items need left padding for the indicator. */
     selectableItem: cn(
         'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none',
-        'data-[highlighted]:bg-muted',
+        'data-[highlighted]:bg-muted data-[highlighted]:outline data-[highlighted]:outline-1 data-[highlighted]:outline-border',
         'data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
     ),
     /** Absolute-positioned span wrapping the check/dot icon. */

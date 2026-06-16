@@ -1,5 +1,6 @@
-import { booleanAttribute, DestroyRef, Directive, inject, input, numberAttribute } from '@angular/core';
+import { booleanAttribute, DestroyRef, Directive, ElementRef, inject, input, numberAttribute } from '@angular/core';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
+import { RdxMenuRoot } from '@radix-ng/primitives/menu';
 import { injectRdxContextMenuRootContext } from './context-menu-root';
 
 /**
@@ -24,6 +25,8 @@ import { injectRdxContextMenuRootContext } from './context-menu-root';
 })
 export class RdxContextMenuTrigger {
     protected readonly rootContext = injectRdxContextMenuRootContext();
+    private readonly menuRoot = inject(RdxMenuRoot);
+    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
     /** Whether the trigger is disabled. */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
@@ -32,11 +35,33 @@ export class RdxContextMenuTrigger {
     readonly longPressDelay = input<number, NumberInput>(500, { transform: numberAttribute });
 
     private longPressTimer: ReturnType<typeof setTimeout> | undefined;
+    private allowMouseUpTimer: ReturnType<typeof setTimeout> | undefined;
     private longPressOrigin: { x: number; y: number } | undefined;
     private lastPointerDownTime = 0;
+    private allowMouseUp = false;
+    private readonly handleDocumentMouseUp = (event: MouseEvent): void => {
+        this.clearContextMenuMouseUpGuard();
+
+        if (!this.allowMouseUp) {
+            return;
+        }
+
+        this.allowMouseUp = false;
+        const target = event.target as Node | null;
+        const popup = this.menuRoot.popupElement();
+
+        if (target && popup?.contains(target)) {
+            return;
+        }
+
+        this.rootContext.close('cancel-open', event);
+    };
 
     constructor() {
-        inject(DestroyRef).onDestroy(() => this.cancelLongPress());
+        inject(DestroyRef).onDestroy(() => {
+            this.cancelLongPress();
+            this.clearContextMenuMouseUpGuard();
+        });
     }
 
     protected onContextMenu(event: MouseEvent): void {
@@ -54,6 +79,7 @@ export class RdxContextMenuTrigger {
         const fromKeyboard = event.timeStamp - this.lastPointerDownTime > 300;
         // A right-click `contextmenu` event has no `pointerType`, so this records a non-touch open.
         this.rootContext.openAt(event.clientX, event.clientY, fromKeyboard ? 'first' : 'popup', event);
+        this.armContextMenuMouseUpGuard(event.currentTarget as HTMLElement);
     }
 
     protected onPointerDown(event: PointerEvent): void {
@@ -90,5 +116,22 @@ export class RdxContextMenuTrigger {
         clearTimeout(this.longPressTimer);
         this.longPressTimer = undefined;
         this.longPressOrigin = undefined;
+    }
+
+    private armContextMenuMouseUpGuard(trigger: HTMLElement): void {
+        this.clearContextMenuMouseUpGuard();
+        this.allowMouseUp = false;
+        this.allowMouseUpTimer = setTimeout(() => {
+            this.allowMouseUpTimer = undefined;
+            this.allowMouseUp = true;
+        }, 500);
+
+        trigger.ownerDocument.addEventListener('mouseup', this.handleDocumentMouseUp, { once: true });
+    }
+
+    private clearContextMenuMouseUpGuard(): void {
+        clearTimeout(this.allowMouseUpTimer);
+        this.allowMouseUpTimer = undefined;
+        this.elementRef?.nativeElement?.ownerDocument?.removeEventListener('mouseup', this.handleDocumentMouseUp);
     }
 }

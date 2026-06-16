@@ -1,7 +1,7 @@
 import { Directive, inject, Signal } from '@angular/core';
 import type { VirtualElement } from '@floating-ui/dom';
 import { createContext } from '@radix-ng/primitives/core';
-import { RdxMenuAutoFocusInput, RdxMenuRoot } from '@radix-ng/primitives/menu';
+import { RdxMenuAutoFocusInput, RdxMenuOpenChangeReason, RdxMenuRoot } from '@radix-ng/primitives/menu';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 
 export interface RdxContextMenuRootContext {
@@ -12,7 +12,7 @@ export interface RdxContextMenuRootContext {
     /** Open the menu anchored at the given viewport coordinates. */
     openAt: (clientX: number, clientY: number, autoFocus?: RdxMenuAutoFocusInput, event?: Event) => void;
     /** Close the menu. */
-    close: () => void;
+    close: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
 }
 
 export const [injectRdxContextMenuRootContext, provideRdxContextMenuRootContext] =
@@ -24,7 +24,7 @@ const contextFactory = (): RdxContextMenuRootContext => {
         isOpen: root.menuRoot.open,
         disabled: root.menuRoot.disabled,
         openAt: (clientX, clientY, autoFocus, event) => root.openAt(clientX, clientY, autoFocus, event),
-        close: () => root.menuRoot.close()
+        close: (reason, event) => root.menuRoot.close(reason, event)
     };
 };
 

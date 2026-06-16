@@ -58,8 +58,16 @@ export type RdxMenuOpenChangeReason =
     | 'sibling-open'
     | 'escape-key'
     | 'outside-press'
+    | 'cancel-open'
     | 'focus-out'
     | 'none';
+
+export interface RdxMenuOpenChange {
+    open: boolean;
+    trigger: HTMLElement | undefined;
+    reason: RdxMenuOpenChangeReason;
+    event: Event;
+}
 
 export interface RdxMenuRootContext {
     isOpen: Signal<boolean>;
@@ -76,6 +84,8 @@ export interface RdxMenuRootContext {
     parentType: Signal<RdxMenuParentType>;
     /** The reason for the most recent open-change (Base UI open-change `reason`). */
     lastOpenChangeReason: Signal<RdxMenuOpenChangeReason>;
+    /** Whether a trigger-originated press may activate an item on the following mouseup. */
+    allowMouseUpTrigger: Signal<boolean>;
     /** Whether the current open was initiated by touch (ADR 0016 §3 — gates the anchored scroll lock). */
     openedByTouch: Signal<boolean>;
     hasTriggerInteractionHandler: Signal<boolean>;
@@ -98,6 +108,7 @@ export interface RdxMenuRootContext {
     markAsSubmenu: () => void;
     /** Marks this menu as the root of a Context Menu (called by `RdxContextMenuRoot`). */
     markAsContextMenu: () => void;
+    setAllowMouseUpTrigger: (value: boolean) => void;
     closeParent: () => void;
     handlePopupArrowNavigation: (offset: 1 | -1) => boolean;
     handleTriggerInteraction: (interaction: RdxMenuTriggerInteraction) => boolean;
@@ -105,6 +116,8 @@ export interface RdxMenuRootContext {
 
 export type RdxMenuTriggerInteraction =
     | { type: 'click' }
+    | { type: 'enter'; event: Event }
+    | { type: 'space'; event: Event }
     | { type: 'pointerenter'; event: PointerEvent }
     | { type: 'arrowdown'; event: Event }
     | { type: 'arrowup'; event: Event }
@@ -134,6 +147,7 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         isSubmenu: instance.isSubmenu.asReadonly(),
         parentType: instance.parentType,
         lastOpenChangeReason: instance.lastOpenChangeReason.asReadonly(),
+        allowMouseUpTrigger: instance.allowMouseUpTrigger,
         openedByTouch: instance.openedByTouch.asReadonly(),
         hasTriggerInteractionHandler: instance.hasTriggerInteractionHandler.asReadonly(),
         trigger: instance.trigger.asReadonly(),
@@ -151,6 +165,7 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         registerTriggerInteractionHandler: (handler) => instance.registerTriggerInteractionHandler(handler),
         markAsSubmenu: () => instance.markAsSubmenu(),
         markAsContextMenu: () => instance.markAsContextMenu(),
+        setAllowMouseUpTrigger: (value) => instance.setAllowMouseUpTrigger(value),
         closeParent: () => instance.closeParent(),
         handlePopupArrowNavigation: (offset) => instance.handlePopupArrowNavigation(offset),
         handleTriggerInteraction: (interaction) => instance.handleTriggerInteraction(interaction)
@@ -224,7 +239,7 @@ export class RdxMenuRoot {
     readonly closeParentOnEsc = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /** Emits when the open state changes. */
-    readonly onOpenChange = output<boolean>();
+    readonly onOpenChange = output<RdxMenuOpenChange>();
 
     /** Emits when the open/close CSS transition or animation finishes. */
     readonly onOpenChangeComplete = output<boolean>();
@@ -259,6 +274,10 @@ export class RdxMenuRoot {
 
     /** The reason for the most recent open-change (Base UI open-change `reason`), for the per-kind policy. */
     readonly lastOpenChangeReason = signal<RdxMenuOpenChangeReason>('none');
+    private readonly localAllowMouseUpTrigger = signal(false);
+    readonly allowMouseUpTrigger: Signal<boolean> = computed(
+        () => this.parentRoot?.allowMouseUpTrigger() ?? this.localAllowMouseUpTrigger()
+    );
 
     /** Whether the current open was initiated by **touch** (ADR 0016 §3 — gates the anchored scroll lock). */
     readonly openedByTouch = signal(false);
@@ -307,7 +326,7 @@ export class RdxMenuRoot {
             // to false (no `'touch'` pointer type), so only a genuine touch open gates the anchored lock.
             this.openedByTouch.set((event as PointerEvent | undefined)?.pointerType === 'touch');
             this.open.set(true);
-            this.onOpenChange.emit(true);
+            this.emitOpenChange(true, reason, event);
             // Publish reason + native event on the per-popup floating channel (Base UI open-change) so the
             // dismissal / future focus policy can read why the menu opened (e.g. hover vs press).
             this.floatingContext.events.emit('openchange', { open: true, reason, event });
@@ -316,9 +335,10 @@ export class RdxMenuRoot {
 
     close(reason: RdxMenuOpenChangeReason = 'none', event?: Event) {
         if (this.open()) {
+            this.setAllowMouseUpTrigger(false);
             this.lastOpenChangeReason.set(reason);
             this.open.set(false);
-            this.onOpenChange.emit(false);
+            this.emitOpenChange(false, reason, event);
             this.floatingContext.events.emit('openchange', { open: false, reason, event });
         }
     }
@@ -337,6 +357,15 @@ export class RdxMenuRoot {
 
     markAsContextMenu(): void {
         this.isContextMenu.set(true);
+    }
+
+    setAllowMouseUpTrigger(value: boolean): void {
+        if (this.parentRoot) {
+            this.parentRoot.setAllowMouseUpTrigger(value);
+            return;
+        }
+
+        this.localAllowMouseUpTrigger.set(value);
     }
 
     /**
@@ -410,5 +439,14 @@ export class RdxMenuRoot {
 
     closeParent(): void {
         this.trigger()?.dispatchEvent(new CustomEvent('rdx-menu-close-parent', { bubbles: true }));
+    }
+
+    private emitOpenChange(open: boolean, reason: RdxMenuOpenChangeReason, event?: Event): void {
+        this.onOpenChange.emit({
+            open,
+            trigger: this.trigger(),
+            reason,
+            event: event ?? new Event('menu.open-change')
+        });
     }
 }

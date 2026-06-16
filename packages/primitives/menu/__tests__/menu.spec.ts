@@ -22,6 +22,7 @@ import {
     RdxMenuTrigger,
     RdxMenuViewport
 } from '@radix-ng/primitives/menu';
+import { afterEach, vi } from 'vitest';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -33,6 +34,10 @@ function keydown(target: Element, key: string) {
 async function nextFrame() {
     await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 }
+
+afterEach(() => {
+    vi.useRealTimers();
+});
 
 // ─── Test host components ─────────────────────────────────────────────────────
 
@@ -341,6 +346,33 @@ describe('Menu', () => {
             expect(trigger.getAttribute('aria-expanded')).toBe('true');
         });
 
+        it('focuses the first item after opening with Enter, and ArrowDown continues inside the popup', async () => {
+            trigger.focus();
+            keydown(trigger, 'Enter');
+            trigger.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, detail: 0 }));
+            fixture.detectChanges();
+            await nextFrame();
+            fixture.detectChanges();
+
+            const popup: HTMLElement = fixture.nativeElement.querySelector('[rdxMenuPopup]');
+            const items: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('[rdxMenuItem]'));
+
+            expect(document.activeElement).toBe(items[0]);
+
+            keydown(popup, 'ArrowDown');
+            fixture.detectChanges();
+
+            expect(document.activeElement).toBe(items[1]);
+        });
+
+        it('opens on mousedown before click for standard triggers', () => {
+            trigger.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }));
+            fixture.detectChanges();
+
+            expect(fixture.componentInstance.open).toBe(true);
+            expect(trigger.getAttribute('aria-expanded')).toBe('true');
+        });
+
         it('closes on second click', () => {
             trigger.click();
             fixture.detectChanges();
@@ -456,6 +488,14 @@ describe('Menu', () => {
             expect(popup.getAttribute('aria-orientation')).toBe('vertical');
         });
 
+        it('moves focus to the first item after a standard trigger open', async () => {
+            await nextFrame();
+            fixture.detectChanges();
+
+            const items: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('[rdxMenuItem]'));
+            expect(document.activeElement).toBe(items[0]);
+        });
+
         it('locks page scrolling by default and restores it when closed', () => {
             expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(true);
 
@@ -529,6 +569,29 @@ describe('Menu', () => {
                 expect(item.getAttribute('role')).toBe('menuitem');
                 expect(item.getAttribute('tabindex')).toBe('-1');
             });
+        });
+
+        it('activates an item on mouseup after a trigger mousedown grace window', () => {
+            vi.useFakeTimers();
+            fixture.destroy();
+            TestBed.resetTestingModule();
+            TestBed.configureTestingModule({ imports: [BasicMenuComponent] });
+            const freshFixture = TestBed.createComponent(BasicMenuComponent);
+            freshFixture.detectChanges();
+            const freshTrigger: HTMLButtonElement = freshFixture.nativeElement.querySelector('[rdxMenuTrigger]');
+
+            freshTrigger.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }));
+            freshFixture.detectChanges();
+
+            vi.advanceTimersByTime(200);
+            freshFixture.detectChanges();
+
+            const firstItem: HTMLButtonElement = freshFixture.nativeElement.querySelector('[rdxMenuItem]');
+            firstItem.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }));
+            freshFixture.detectChanges();
+
+            expect(freshFixture.componentInstance.selected).toEqual(['a']);
+            expect(freshFixture.componentInstance.open).toBe(false);
         });
     });
 
@@ -1961,6 +2024,49 @@ describe('Menu', () => {
             f.detectChanges();
 
             expect((f.componentInstance as Host).events).toEqual([true]);
+        });
+
+        it('emits onOpenChange details instead of a bare boolean', () => {
+            @Component({
+                imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
+                template: `
+                    <div #root="rdxMenuRoot" (onOpenChange)="events.push($event)" rdxMenuRoot>
+                        <button rdxMenuTrigger>Open</button>
+                        @if (root.open()) {
+                            <div rdxMenuPositioner>
+                                <div rdxMenuPopup>
+                                    <button rdxMenuItem>Item</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                `
+            })
+            class Host {
+                events: Array<{ open: boolean; reason: string; trigger: HTMLElement | undefined; event: Event }> = [];
+            }
+
+            TestBed.configureTestingModule({ imports: [Host] });
+            const f = TestBed.createComponent(Host);
+            f.detectChanges();
+
+            const openTrigger: HTMLButtonElement = f.nativeElement.querySelector('[rdxMenuTrigger]');
+            openTrigger.click();
+            f.detectChanges();
+            openTrigger.click();
+            f.detectChanges();
+
+            expect((f.componentInstance as Host).events).toHaveLength(2);
+            expect((f.componentInstance as Host).events[0]).toMatchObject({
+                open: true,
+                reason: 'trigger-press',
+                trigger: openTrigger
+            });
+            expect((f.componentInstance as Host).events[1]).toMatchObject({
+                open: false,
+                reason: 'trigger-press',
+                trigger: openTrigger
+            });
         });
     });
 

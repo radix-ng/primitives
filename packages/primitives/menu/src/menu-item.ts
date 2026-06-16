@@ -19,6 +19,7 @@ import { injectRdxMenuRootContext } from './menu-root';
         '(blur)': 'onBlur()',
         '(pointermove)': 'onPointerMove($event)',
         '(pointerleave)': 'onPointerLeave($event)',
+        '(mouseup)': 'onMouseUp($event)',
         '(click)': 'onItemClick()',
         '(keydown.enter)': 'onActivate($event)',
         '(keydown.space)': 'onActivate($event)'
@@ -81,6 +82,15 @@ export class RdxMenuItem {
         if (this.effectiveDisabled()) return;
         this.onSelect.emit();
         if (this.closeOnClick()) this.rootContext?.closeEntireMenu();
+    }
+
+    onMouseUp(event: MouseEvent): void {
+        if (this.effectiveDisabled() || event.button !== 0 || !this.rootContext?.allowMouseUpTrigger()) {
+            return;
+        }
+
+        this.rootContext.setAllowMouseUpTrigger(false);
+        this.elementRef.nativeElement.click();
     }
 
     protected onActivate(event: Event): void {

@@ -9,8 +9,8 @@ import { defineConfig, devices } from '@playwright/test';
  * baselines can coexist — regenerate the Linux set in the official Playwright Docker image when
  * wiring CI.
  */
-const PORT = 4400;
-const BASE_URL = `http://localhost:${PORT}`;
+const PORT = Number(process.env['PLAYWRIGHT_PORT'] ?? 4400);
+const BASE_URL = process.env['PLAYWRIGHT_BASE_URL'] ?? `http://localhost:${PORT}`;
 
 export default defineConfig({
     testDir: './tests',
@@ -38,10 +38,12 @@ export default defineConfig({
             use: { ...devices['Desktop Chrome'] }
         }
     ],
-    webServer: {
-        command: `pnpm exec http-server ../../dist/radix-storybook -p ${PORT} -s -c-1`,
-        url: `${BASE_URL}/index.json`,
-        reuseExistingServer: !process.env.CI,
-        timeout: 120_000
-    }
+    webServer: process.env['PLAYWRIGHT_NO_WEBSERVER']
+        ? undefined
+        : {
+              command: `pnpm exec http-server ../../dist/radix-storybook -p ${PORT} -s -c-1`,
+              url: `${BASE_URL}/index.json`,
+              reuseExistingServer: !process.env.CI,
+              timeout: 120_000
+          }
 });

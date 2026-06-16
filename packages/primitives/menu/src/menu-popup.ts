@@ -13,23 +13,8 @@ import {
 } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
+import { getFocusableMenuItems } from './menu-focus';
 import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
-
-/** Selector for focusable menu items within the popup. */
-const ITEM_SELECTOR = [
-    '[rdxMenuItem]:not([data-disabled])',
-    '[rdxMenuCheckboxItem]:not([data-disabled])',
-    '[rdxMenuRadioItem]:not([data-disabled])',
-    '[rdxMenuLinkItem]:not([data-disabled])',
-    '[rdxMenuSubTrigger]:not([data-disabled])'
-].join(',');
-
-function getFocusableItems(popup: HTMLElement): HTMLElement[] {
-    // Exclude items that belong to a nested child popup (submenu).
-    return Array.from(popup.querySelectorAll<HTMLElement>(ITEM_SELECTOR)).filter(
-        (item) => item.closest('[rdxMenuPopup]') === popup
-    );
-}
 
 /**
  * A container for the menu contents.
@@ -41,6 +26,8 @@ function getFocusableItems(popup: HTMLElement): HTMLElement[] {
     providers: [
         provideFloatingFocusManagerConfig(() => {
             const rootContext = injectRdxMenuRootContext();
+            const popup = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+
             return {
                 // Only a (modal) **context menu** traps focus — Base UI's `FloatingFocusManager modal` is
                 // true for `context-menu` alone. Other menus stay non-modal and close on focus-out.
@@ -49,9 +36,44 @@ function getFocusableItems(popup: HTMLElement): HTMLElement[] {
                 // disabled separately below; focus/marker policy should not disappear if a menu becomes
                 // disabled while open.
                 enabled: () => rootContext.isOpen() || rootContext.transitionStatus() === 'ending',
-                // Menu owns its Angular-specific autofocus policy below. Suppress the focus-scope's
-                // first-tabbable fallback so delayed scope work cannot steal focus from submenu triggers.
-                initialFocus: () => false
+                // Base UI's submenu policy: a submenu mount does not steal focus from its trigger.
+                // Root menus still choose first / last item vs popup container from the menu's own
+                // open policy (`autoFocus`), but the decision now lives in the focus manager instead
+                // of a separate popup effect.
+                initialFocus: () => {
+                    if (!rootContext.isOpen() || rootContext.parentType() === 'menu') {
+                        return false;
+                    }
+
+                    const autoFocus = rootContext.autoFocus();
+
+                    if (autoFocus === false) {
+                        return false;
+                    }
+
+                    if (autoFocus === 'popup') {
+                        return popup;
+                    }
+
+                    return () => {
+                        const items = getFocusableMenuItems(popup);
+
+                        return autoFocus === 'last' ? (items.at(-1) ?? popup) : (items[0] ?? popup);
+                    };
+                },
+                returnFocus: () => {
+                    const parentType = rootContext.parentType();
+
+                    if (rootContext.trigger() || parentType === undefined || parentType === 'context-menu') {
+                        return true;
+                    }
+
+                    if (parentType === 'menubar' && rootContext.lastOpenChangeReason() !== 'outside-press') {
+                        return true;
+                    }
+
+                    return false;
+                }
             };
         })
     ],
@@ -149,6 +171,16 @@ export class RdxMenuPopup {
             clearTimeout(this.searchTimer);
         });
 
+        this.scheduleInitialFocusFallback();
+
+        effect(() => {
+            if (!this.rootContext.isOpen()) {
+                return;
+            }
+
+            this.scheduleInitialFocusFallback();
+        });
+
         // Dismissal (ADR 0015): Escape, an outside press, or focus moving outside closes the menu.
         // Escape is owned by the capability (a document-level listener — it works regardless of where
         // focus currently sits, matching Base UI `useDismiss`). Deepest-first: a non-bubbling layer
@@ -171,7 +203,8 @@ export class RdxMenuPopup {
                 // Forward the dismissal reason + native event into the menu's open-change channel.
                 const menuReason: RdxMenuOpenChangeReason = reason === 'escape-key' ? 'escape-key' : 'outside-press';
                 this.rootContext.close(menuReason, event);
-                // Escape restores focus to the trigger (Base UI returns focus on keyboard dismissal).
+                // Escape should restore focus synchronously to the trigger / submenu trigger so the
+                // menu chain remains keyboard-stable even before the scope's queued unmount return-focus.
                 if (reason === 'escape-key') {
                     this.rootContext.trigger()?.focus({ preventScroll: true });
                 }
@@ -184,45 +217,6 @@ export class RdxMenuPopup {
             this.interactOutside.emit(event);
             if (!event.defaultPrevented) {
                 this.rootContext.close('focus-out', event);
-            }
-        });
-
-        // Suppress the composed focus scope's auto-focus when the popup mounts **closed** — i.e. an
-        // always-mounted popup rendered before its menu opens. Otherwise every closed sibling popup's
-        // scope would grab focus to itself on mount and a freshly opened menu would see that as a
-        // focus-out and immediately close. When the popup mounts already open (the normal mount-on-open
-        // case), the scope's auto-focus is allowed so focus lands in the popup (Escape / typeahead work);
-        // the effect below then refines it per `autoFocus`.
-        this.focusScope.mountAutoFocus.subscribe((event) => {
-            if (!this.rootContext.isOpen()) {
-                event.preventDefault();
-            }
-        });
-
-        // Move focus into the popup when the menu opens — unless the opener suppressed it
-        // (e.g. menubar hover-switching, where focus stays on the trigger).
-        effect(() => {
-            const autoFocus = this.rootContext.autoFocus();
-            if (this.rootContext.isOpen() && autoFocus && this.rootContext.parentType() !== 'menu') {
-                requestAnimationFrame(() => {
-                    if (
-                        this.elementRef.nativeElement.contains(
-                            this.elementRef.nativeElement.ownerDocument.activeElement
-                        )
-                    ) {
-                        return;
-                    }
-
-                    // `'popup'` focuses the container without highlighting an item (pointer opening).
-                    if (autoFocus === 'popup') {
-                        this.elementRef.nativeElement.focus({ preventScroll: true });
-                        return;
-                    }
-
-                    const items = getFocusableItems(this.elementRef.nativeElement);
-                    const item = autoFocus === 'last' ? items[items.length - 1] : items[0];
-                    item?.focus({ preventScroll: true });
-                });
             }
         });
     }
@@ -238,7 +232,7 @@ export class RdxMenuPopup {
 
     protected handleKeydown(event: KeyboardEvent): void {
         const el = this.elementRef.nativeElement;
-        const items = getFocusableItems(el);
+        const items = getFocusableMenuItems(el);
         const current = el.ownerDocument.activeElement as HTMLElement;
         const currentIndex = items.indexOf(current);
 
@@ -335,6 +329,44 @@ export class RdxMenuPopup {
                 }
                 break;
             }
+        }
+    }
+
+    private scheduleInitialFocusFallback(attempt = 0): void {
+        const view = this.elementRef.nativeElement.ownerDocument.defaultView ?? globalThis;
+        view.requestAnimationFrame(() => this.applyInitialFocusFallback(attempt));
+    }
+
+    private applyInitialFocusFallback(attempt: number): void {
+        const popup = this.elementRef.nativeElement;
+        const activeElement = popup.ownerDocument.activeElement;
+
+        if (!this.rootContext.isOpen() || this.rootContext.parentType() === 'menu' || popup.contains(activeElement)) {
+            return;
+        }
+
+        const autoFocus = this.rootContext.autoFocus();
+
+        if (autoFocus === false) {
+            return;
+        }
+
+        if (autoFocus === 'popup') {
+            popup.focus({ preventScroll: true });
+            return;
+        }
+
+        const items = getFocusableMenuItems(popup);
+        if (items.length === 0 && attempt < 2) {
+            this.scheduleInitialFocusFallback(attempt + 1);
+            return;
+        }
+
+        const target = autoFocus === 'last' ? (items.at(-1) ?? popup) : (items[0] ?? popup);
+        target.focus({ preventScroll: true });
+
+        if (attempt < 2 && !popup.contains(popup.ownerDocument.activeElement)) {
+            this.scheduleInitialFocusFallback(attempt + 1);
         }
     }
 }

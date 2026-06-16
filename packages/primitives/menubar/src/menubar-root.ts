@@ -262,6 +262,21 @@ export class RdxMenubarRoot {
                 }
                 return true;
             }
+            case 'enter':
+            case 'space': {
+                interaction.event.preventDefault();
+                interaction.event.stopPropagation();
+
+                if (root.open()) {
+                    root.close();
+                    this.deactivateAll();
+                } else {
+                    root.show('first', 'trigger-press', interaction.event);
+                    this.activateItem(id);
+                }
+
+                return true;
+            }
             case 'pointerenter': {
                 if (interaction.event.pointerType === 'touch' || !this.hasOpenMenu()) {
                     return false;

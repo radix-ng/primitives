@@ -17,6 +17,7 @@ function keydown(target: Element, key: string) {
                     <div rdxMenuPositioner>
                         <div rdxMenuPopup>
                             <button rdxMenuItem>New Tab</button>
+                            <button rdxMenuItem>New Window</button>
                         </div>
                     </div>
                 }
@@ -357,6 +358,24 @@ describe('Menubar', () => {
         fixture.detectChanges();
 
         expect(triggers[0].getAttribute('data-state')).toBe('open');
+    });
+
+    it('Enter opens the focused menu, focuses the first item, and ArrowDown advances highlight', async () => {
+        triggers[0].focus();
+        keydown(triggers[0], 'Enter');
+        fixture.detectChanges();
+        await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+        fixture.detectChanges();
+
+        const items: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('[rdxMenuItem]'));
+        expect(triggers[0].getAttribute('data-state')).toBe('open');
+        expect(document.activeElement).toBe(items[0]);
+        expect(items[0].hasAttribute('data-highlighted')).toBe(true);
+
+        keydown(items[0], 'ArrowDown');
+        fixture.detectChanges();
+        expect(document.activeElement).toBe(items[1]);
+        expect(items[1].hasAttribute('data-highlighted')).toBe(true);
     });
 
     it('does not keep the trigger highlighted after focus moves into the popup', async () => {

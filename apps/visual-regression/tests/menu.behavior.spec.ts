@@ -36,6 +36,22 @@ test('menu locks page scrolling by default and releases it when closed', async (
     expect(await scrollLocked()).toBe(false);
 });
 
+test('Enter opens the default menu, focuses the first item, and ArrowDown moves to the next item', async ({ page }) => {
+    await gotoStory(page, 'primitives-menu--default');
+
+    const trigger = page.locator('[rdxMenuTrigger]').first();
+    const items = page.locator('[rdxMenuItem]');
+
+    await trigger.focus();
+    await page.keyboard.press('Enter');
+
+    await expect(page.locator('[rdxMenuPopup]')).toBeVisible();
+    await expect(items.first()).toBeFocused();
+
+    await page.keyboard.press('ArrowDown');
+    await expect(items.nth(1)).toBeFocused();
+});
+
 test('a modal menu renders an internal backdrop that blocks the background and is the outside-press target (finding #1)', async ({
     page
 }) => {
@@ -46,7 +62,7 @@ test('a modal menu renders an internal backdrop that blocks the background and i
     await page.evaluate(() => {
         const b = document.createElement('button');
         b.id = 'rdx-bg-btn';
-        b.style.cssText = 'position:fixed; left:2px; top:2px; width:40px; height:40px';
+        b.style.cssText = 'position:fixed; right:2px; top:2px; width:40px; height:40px';
         b.addEventListener('click', () => {
             (window as { __bgHits?: number }).__bgHits = ((window as { __bgHits?: number }).__bgHits || 0) + 1;
         });

@@ -42,6 +42,7 @@ export class RdxMenuDefaultComponent {
 
 - ✅ Opens and closes from a trigger button with click or arrow-key interaction.
 - ✅ Supports uncontrolled state, `defaultOpen`, and two-way binding with `[(open)]`.
+- ✅ `onOpenChange` reports the new `open` state together with `reason`, `trigger`, and source `event`.
 - ✅ Positions the popup with the shared Floating UI-based Popper primitive.
 - ✅ Optional visual arrow connecting the popup to its trigger (`rdxMenuArrow`).
 - ✅ Optional backdrop overlay behind the popup (`rdxMenuBackdrop`).
@@ -738,6 +739,9 @@ finishes.
 ## API Reference
 
 ### RdxMenuRoot
+
+`RdxMenuRoot` owns the shared open state. Use `[(open)]` for plain state syncing, or bind
+`(onOpenChange)` when you need the full change details object.
 
 ### RdxMenuTrigger
 

@@ -50,6 +50,7 @@ const radioItemContextFactory = (): RdxMenuRadioItemContext => {
         '(blur)': 'onBlur()',
         '(pointermove)': 'onPointerMove($event)',
         '(pointerleave)': 'onPointerLeave($event)',
+        '(mouseup)': 'onMouseUp($event)',
         '(click)': 'onItemClick()',
         '(keydown.enter)': 'onActivate($event)',
         '(keydown.space)': 'onActivate($event)'
@@ -120,6 +121,15 @@ export class RdxMenuRadioItem<T = unknown> {
             return;
         }
         this.selectItem();
+    }
+
+    onMouseUp(event: MouseEvent): void {
+        if (this.effectiveDisabled() || event.button !== 0 || !this.rootContext?.allowMouseUpTrigger()) {
+            return;
+        }
+
+        this.rootContext.setAllowMouseUpTrigger(false);
+        this.elementRef.nativeElement.click();
     }
 
     protected onActivate(event: Event): void {
