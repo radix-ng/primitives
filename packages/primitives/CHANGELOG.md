@@ -1,3 +1,40 @@
+## 1.0.0-beta.4 (2026-06-16)
+
+### 🚀 Features
+
+- **direction-provider:** add RTL direction context and docs ([4972395c](https://github.com/radix-ng/primitives/commit/4972395c))
+- **combobox:** document cancellable open change flow ([03f4bd53](https://github.com/radix-ng/primitives/commit/03f4bd53))
+- **select:** add cancelable change details and interaction state ([2752dae7](https://github.com/radix-ng/primitives/commit/2752dae7))
+- **core:** add shared floating tree ([#420](https://github.com/radix-ng/primitives/pull/420))
+- **core:** dev-mode diagnostics helpers + tag-aware misuse checks (ADR 0013) ([5c9a5c79](https://github.com/radix-ng/primitives/commit/5c9a5c79))
+- ⚠️  **popper:** thin positioners — single-source inputs, unified CSS vars, z-index decoupling (ADR 0012) ([#419](https://github.com/radix-ng/primitives/pull/419))
+
+### 🩹 Fixes
+
+- **menu:** safe polygon between trigger and popup ([386a1a49](https://github.com/radix-ng/primitives/commit/386a1a49))
+- **menu:** radioGroup API and GroupLabel disabled state ([c61d45e2](https://github.com/radix-ng/primitives/commit/c61d45e2))
+- **menu:** disabled state for Root ([5fb4b826](https://github.com/radix-ng/primitives/commit/5fb4b826))
+- **menu:** align modal behavior ([a02c3e0b](https://github.com/radix-ng/primitives/commit/a02c3e0b))
+- ⚠️  **combobox:** align autocomplete and combobox behavior with Base UI ([715cbbb4](https://github.com/radix-ng/primitives/commit/715cbbb4))
+- **combobox:** align async demos, chip nav, Clear & list ([2d607102](https://github.com/radix-ng/primitives/commit/2d607102))
+
+### ⚠️  Breaking Changes
+
+- **combobox:** align autocomplete and combobox behavior with Base UI  ([715cbbb4](https://github.com/radix-ng/primitives/commit/715cbbb4))
+- **popper:** thin positioners — single-source inputs, unified CSS vars, z-index decoupling (ADR 0012)  ([#419](https://github.com/radix-ng/primitives/pull/419))
+  combobox and autocomplete now default to `sideOffset: 4`, `align: 'start'`;
+  select now defaults to `align: 'start'` and `updatePositionStrategy: 'always'` — the values
+  already documented (bind these inputs explicitly to keep the old behaviour). Set the
+  stacking `z-index` on the popper positioner element, not the popup: consumers who set `z-*`
+  on the popup must move that class up one element to the positioner. The per-primitive
+  `--radix-<name>-content-*` / `--radix-<name>-trigger-*` CSS variables are deprecated aliases
+  of the unified `--anchor-*` / `--available-*` / `--transform-origin` set and will be removed
+  next minor.
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 1.0.0-beta.3 (2026-06-13)
 
 ### 🚀 Features
