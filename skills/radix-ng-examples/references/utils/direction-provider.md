@@ -55,7 +55,7 @@ import {
                                     class="border-border bg-background focus-within:ring-ring block size-5 rounded-full border shadow-sm focus-within:ring-2"
                                     rdxSliderThumb
                                 >
-                                    <input rdxSliderThumbInput [attr.aria-label]="item.label" />
+                                    <input [attr.aria-label]="item.label" rdxSliderThumbInput />
                                 </div>
                             </div>
                         </div>
@@ -66,7 +66,11 @@ import {
     `
 })
 export class DirectionProviderSliderExample {
-    protected readonly directions: Array<{ direction: Direction; label: string; value: ReturnType<typeof signal<number>> }> = [
+    protected readonly directions: Array<{
+        direction: Direction;
+        label: string;
+        value: ReturnType<typeof signal<number>>;
+    }> = [
         { direction: 'ltr', label: 'Left to right', value: signal(65) },
         { direction: 'rtl', label: 'Right to left', value: signal(65) }
     ];
