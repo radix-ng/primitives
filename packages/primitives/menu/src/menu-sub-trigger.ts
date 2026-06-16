@@ -231,7 +231,7 @@ export class RdxMenuSubTrigger {
         }
     }
 
-    protected onEnter(event: KeyboardEvent): void {
+    protected onEnter(event: Event): void {
         if (this.effectiveDisabled()) return;
 
         event.preventDefault();
