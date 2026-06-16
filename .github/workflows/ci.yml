@@ -25,7 +25,7 @@ jobs:
       # Linters run over the whole working tree (prettier/eslint/stylelint are not nx
       # targets), so no git history is needed — keep the default shallow checkout.
       - name: Checkout code repository
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
       - uses: ./.github/actions/setup
 
@@ -40,7 +40,7 @@ jobs:
     steps:
       # fetch-depth: 0 — nx-set-shas needs full history to derive the affected base SHA.
       - name: Checkout code repository
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 0
 
@@ -60,7 +60,7 @@ jobs:
     steps:
       # fetch-depth: 0 — nx-set-shas needs full history to derive the affected base SHA.
       - name: Checkout code repository
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 0
 
@@ -81,7 +81,7 @@ jobs:
     steps:
       # Regenerates the bundle and diffs it against the working tree — no git history needed.
       - name: Checkout code repository
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
       - uses: ./.github/actions/setup
 
