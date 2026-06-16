@@ -105,9 +105,9 @@ export class RdxSelectItem {
             async (event: SelectEvent) => {
                 if (event.defaultPrevented) return;
 
-                this.rootContext.onValueChange(this.value());
+                this.rootContext.onValueChange(this.value(), 'item-press', event.detail.originalEvent);
                 if (!this.rootContext.multiple()) {
-                    this.rootContext.onOpenChange(false);
+                    this.rootContext.onOpenChange(false, 'item-press', event.detail.originalEvent);
                 }
             },
             eventDetail

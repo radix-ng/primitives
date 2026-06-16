@@ -6006,9 +6006,19 @@
           ],
           "outputs": [
             {
+              "name": "onOpenChange",
+              "type": "RdxSelectOpenChangeEvent",
+              "description": "Emits before an open-state change is committed; call `eventDetails.cancel()` to veto it."
+            },
+            {
               "name": "onOpenChangeComplete",
               "type": "boolean",
               "description": "Emits after the open/close transition (including any exit animation) finishes."
+            },
+            {
+              "name": "onValueChange",
+              "type": "RdxSelectValueChangeEvent",
+              "description": "Emits before a value change is committed; call `eventDetails.cancel()` to veto it."
             }
           ],
           "twoWay": [

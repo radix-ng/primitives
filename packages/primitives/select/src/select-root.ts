@@ -8,6 +8,7 @@ import {
     input,
     model,
     output,
+    Signal,
     signal,
     untracked
 } from '@angular/core';
@@ -23,6 +24,7 @@ import {
     RdxFloatingRootContext,
     useTransitionStatus
 } from '@radix-ng/primitives/core';
+import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 import { compare, valueComparator } from './utils';
 
@@ -30,6 +32,58 @@ export interface SelectOption {
     value: any;
     disabled?: boolean;
     textContent: string;
+}
+
+export type RdxSelectOpenMethod = RdxInteractionType;
+
+export type RdxSelectOpenChangeReason =
+    | 'trigger-press'
+    | 'item-press'
+    | 'outside-press'
+    | 'escape-key'
+    | 'window-resize'
+    | 'focus-out'
+    | 'list-navigation'
+    | 'cancel-open'
+    | 'none';
+
+export type RdxSelectValueChangeReason = RdxSelectOpenChangeReason;
+
+export interface RdxSelectChangeEventDetails<Reason extends string = string> {
+    reason: Reason;
+    event: Event;
+    cancel: () => void;
+    isCanceled: () => boolean;
+}
+
+export type RdxSelectOpenChangeEventDetails = RdxSelectChangeEventDetails<RdxSelectOpenChangeReason>;
+
+export interface RdxSelectOpenChangeEvent {
+    open: boolean;
+    eventDetails: RdxSelectOpenChangeEventDetails;
+}
+
+export type RdxSelectValueChangeEventDetails = RdxSelectChangeEventDetails<RdxSelectValueChangeReason>;
+
+export interface RdxSelectValueChangeEvent {
+    value: AcceptableValue | AcceptableValue[];
+    eventDetails: RdxSelectValueChangeEventDetails;
+}
+
+function createChangeEventDetails<Reason extends string>(
+    reason: Reason,
+    event: Event
+): RdxSelectChangeEventDetails<Reason> {
+    let canceled = false;
+
+    return {
+        reason,
+        event,
+        cancel: () => {
+            canceled = true;
+        },
+        isCanceled: () => canceled
+    };
 }
 
 const context = () => {
@@ -47,6 +101,9 @@ const context = () => {
         itemToStringLabel: context.itemToStringLabel,
         open: context.open,
         openedByTouch: context.openedByTouch,
+        openMethod: context.openMethod,
+        openInteractionType: context.openInteractionType,
+        closeInteractionType: context.closeInteractionType,
         disabled: context.disabled,
         modal: context.modal,
         isEmptyModelValue: context.isEmptyModelValue,
@@ -67,16 +124,16 @@ const context = () => {
                 context.optionsSet().delete(existingOption);
             }
         },
-        onValueChange: context.handleValueChange,
+        onValueChange: (value: AcceptableValue, reason?: RdxSelectValueChangeReason, event?: Event) =>
+            context.setValue(value, reason, event),
         onTriggerChange: (node: any) => {
             context.triggerElement.set(node.nativeElement);
         },
         onValueElementChange: (node: any) => {
             context.valueElement.set(node);
         },
-        onOpenChange: (value: any) => {
-            context.open.set(value);
-        }
+        onOpenChange: (value: boolean, reason?: RdxSelectOpenChangeReason, event?: Event) =>
+            context.setOpen(value, reason, event)
     };
 };
 
@@ -103,6 +160,12 @@ export class RdxSelectRoot {
 
     /** Whether the current open was initiated by **touch** (ADR 0016 §3 — gates the anchored scroll lock). */
     readonly openedByTouch = signal(false);
+    /** How the select was opened. Base UI names this state `openMethod`. */
+    readonly openInteractionType = signal<RdxInteractionType>(null);
+    /** How the select was closed. */
+    readonly closeInteractionType = signal<RdxInteractionType>(null);
+    /** Public Base UI-aligned alias for the open interaction type. */
+    readonly openMethod: Signal<RdxSelectOpenMethod> = computed(() => this.openInteractionType());
 
     /** Per-popup floating root context (ADR 0015) — `open` / `triggers` / reference for the dismissal engine. */
     readonly floatingContext: RdxFloatingRootContext = createFloatingRootContext({
@@ -126,6 +189,12 @@ export class RdxSelectRoot {
 
     /** Converts a value to its display label (used by `RdxSelectValue`). */
     readonly itemToStringLabel = input<(value: AcceptableValue) => string>();
+
+    /** Emits before an open-state change is committed; call `eventDetails.cancel()` to veto it. */
+    readonly onOpenChange = output<RdxSelectOpenChangeEvent>();
+
+    /** Emits before a value change is committed; call `eventDetails.cancel()` to veto it. */
+    readonly onValueChange = output<RdxSelectValueChangeEvent>();
 
     /** Emits after the open/close transition (including any exit animation) finishes. */
     readonly onOpenChangeComplete = output<boolean>();
@@ -202,15 +271,57 @@ export class RdxSelectRoot {
         );
     }
 
-    handleValueChange(value: AcceptableValue) {
-        if (this.multiple()) {
-            const current = this.value();
-            const array = Array.isArray(current) ? [...current] : [];
-            const index = array.findIndex((i) => compare(i, value, this.isItemEqualToValue()));
-            index === -1 ? array.push(value) : array.splice(index, 1);
-            this.value.set([...array]);
-        } else {
-            this.value.set(value);
+    setValue(
+        value: AcceptableValue,
+        reason: RdxSelectValueChangeReason = 'none',
+        event: Event = new Event('select.value-change')
+    ): boolean {
+        const nextValue = this.multiple()
+            ? (() => {
+                  const current = this.value();
+                  const array = Array.isArray(current) ? [...current] : [];
+                  const index = array.findIndex((i) => compare(i, value, this.isItemEqualToValue()));
+                  index === -1 ? array.push(value) : array.splice(index, 1);
+                  return [...array];
+              })()
+            : value;
+
+        const eventDetails = createChangeEventDetails(reason, event);
+        this.onValueChange.emit({ value: nextValue, eventDetails });
+
+        if (eventDetails.isCanceled()) {
+            return false;
         }
+
+        if (this.multiple()) {
+            this.value.set(nextValue);
+        } else {
+            this.value.set(nextValue);
+        }
+
+        return true;
+    }
+
+    setOpen(open: boolean, reason: RdxSelectOpenChangeReason = 'none', event?: Event): boolean {
+        const resolvedEvent = event ?? new Event('select.open-change');
+        const interactionType = getInteractionTypeFromEvent(event);
+        const eventDetails = createChangeEventDetails(reason, resolvedEvent);
+
+        this.onOpenChange.emit({ open, eventDetails });
+
+        if (eventDetails.isCanceled()) {
+            return false;
+        }
+
+        this.open.set(open);
+
+        if (open) {
+            this.openedByTouch.set((event as PointerEvent | undefined)?.pointerType === 'touch');
+            this.openInteractionType.set(interactionType);
+        } else {
+            this.closeInteractionType.set(interactionType);
+        }
+
+        return true;
     }
 }

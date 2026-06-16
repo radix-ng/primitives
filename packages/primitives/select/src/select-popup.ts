@@ -261,7 +261,12 @@ export class RdxSelectPopup {
             focusOutside: () => false,
             onEscapeKeyDown: (event) => this.escapeKeyDown.emit(event),
             onPointerDownOutside: (event) => this.pointerDownOutside.emit(event),
-            onDismiss: () => this.rootContext.onOpenChange(false)
+            onDismiss: (reason, event) =>
+                this.rootContext.onOpenChange(
+                    false,
+                    reason === 'escape-key' ? 'escape-key' : reason === 'focus-outside' ? 'focus-out' : 'outside-press',
+                    event
+                )
         });
 
         const focusScope = inject(RdxFocusScope);
@@ -307,7 +312,9 @@ export class RdxSelectPopup {
                     event.preventDefault();
                 } else {
                     // otherwise, if the event was outside the content, close.
-                    if (!this.content()?.contains(event.target as HTMLElement)) this.rootContext.onOpenChange(false);
+                    if (!this.content()?.contains(event.target as HTMLElement)) {
+                        this.rootContext.onOpenChange(false, 'outside-press', event);
+                    }
                 }
                 document.removeEventListener('pointermove', handlePointerMove);
                 this.rootContext.triggerPointerDownPosRef.set(null);
@@ -327,6 +334,26 @@ export class RdxSelectPopup {
                     capture: true
                 });
             });
+        });
+
+        effect((onCleanup) => {
+            if (!itemAlignedActive() || !this.rootContext.open()) {
+                return;
+            }
+
+            const popup = this.content();
+            const view = popup?.ownerDocument.defaultView;
+
+            if (!view) {
+                return;
+            }
+
+            const handleResize = (event: UIEvent) => {
+                this.rootContext.onOpenChange(false, 'window-resize', event);
+            };
+
+            view.addEventListener('resize', handleResize);
+            onCleanup(() => view.removeEventListener('resize', handleResize));
         });
     }
 
@@ -373,8 +400,10 @@ export class RdxSelectPopup {
             event.preventDefault();
             const item = this.highlight.highlightedItem();
             if (item && !item.disabled()) {
-                this.rootContext.onValueChange(item.value() as AcceptableValue);
-                if (!this.rootContext.multiple()) this.rootContext.onOpenChange(false);
+                this.rootContext.onValueChange(item.value() as AcceptableValue, 'item-press', event);
+                if (!this.rootContext.multiple()) {
+                    this.rootContext.onOpenChange(false, 'item-press', event);
+                }
             }
             return;
         }

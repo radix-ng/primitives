@@ -6,6 +6,8 @@ import alignedPositionWithScrollSource from './select-aligned-position-with-scro
 import alignedPositionSource from './select-aligned-position?raw';
 import { SelectDefault } from './select-default';
 import defaultSource from './select-default?raw';
+import { SelectEvents } from './select-events';
+import eventsSource from './select-events?raw';
 import { SelectMultiple } from './select-multiple';
 import multipleSource from './select-multiple?raw';
 import { SelectObjectValues } from './select-object-values';
@@ -25,6 +27,7 @@ export default {
         moduleMetadata({
             imports: [
                 SelectDefault,
+                SelectEvents,
                 SelectMultiple,
                 SelectObjectValues,
                 SelectWithScroll,
@@ -52,6 +55,15 @@ export const Multiple: Story = {
     render: () => ({
         template: html`
             <select-multiple />
+        `
+    })
+};
+
+export const Events: Story = {
+    parameters: source(eventsSource),
+    render: () => ({
+        template: html`
+            <select-events />
         `
     })
 };

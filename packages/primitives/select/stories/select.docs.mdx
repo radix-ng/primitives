@@ -23,12 +23,14 @@ native `<select>` behavior).
 
 - ✅ Controlled and uncontrolled value via `[(value)]`.
 - ✅ Single and multiple selection with the `multiple` input.
+- ✅ Cancelable `onOpenChange` and `onValueChange` outputs with reason-aware `eventDetails`.
 - ✅ Two positioning modes: Popper (Floating UI) and Item-aligned (native-like).
 - ✅ Scroll buttons appear automatically when the list overflows the viewport.
 - ✅ Typeahead: type a character to jump to matching items.
 - ✅ Custom comparison (`isItemEqualToValue`) and labels (`itemToStringLabel`) for object values.
 - ✅ Highlight-model navigation (`aria-activedescendant`) — focus stays on the listbox, not the items.
 - ✅ Full keyboard navigation: ArrowDown / ArrowUp, Home, End, Enter / Space, Escape.
+- ✅ Public interaction state via `openMethod`, `openInteractionType`, and `closeInteractionType`.
 - ✅ `modal` (default) locks page scroll and makes outside content inert, with an optional `Backdrop`.
 - ✅ Field integration on the trigger (invalid / disabled / required / focused state + `aria-describedby`).
 - ✅ WAI-ARIA `combobox` / `listbox` semantics with `aria-selected` and `aria-disabled`.
@@ -134,6 +136,14 @@ item keeps its indicator. Shows `RdxSelectIcon` and `RdxSelectSeparator`.
 
 <Canvas of={Stories.Multiple} />
 
+### Change details and interaction state
+
+`onOpenChange` and `onValueChange` expose `eventDetails.reason`, the originating DOM event, and a
+`cancel()` hook. `RdxSelectRoot` also exposes `openMethod`, `openInteractionType`, and
+`closeInteractionType`, so app logic can distinguish keyboard, mouse, and touch flows explicitly.
+
+<Canvas of={Stories.Events} />
+
 ### Object values
 
 Each item's `value` is an object. Set `[isItemEqualToValue]="'id'"` so items are matched by a stable
@@ -176,12 +186,19 @@ Item-aligned positioning combined with a long list that overflows, showing both 
 | `Escape`          | Closes the popup without changing the value.                                         |
 | Character keys    | Typeahead — jumps to the first item whose text starts with the typed character.      |
 
+Because interaction type is tracked explicitly (`openMethod`, `openInteractionType`,
+`closeInteractionType`), consumers can branch on keyboard vs pointer/touch intent without guessing
+from low-level DOM events. That matters for accessible UX: keyboard-only flows can preserve focus and
+validation policy independently from touch and mouse dismiss/open behavior.
+
 ## API Reference
 
 ### RdxSelectRoot
 
-The root context provider. Manages open state, selected value, and keyboard interaction. Exposes
-`data-disabled` on the host.
+The root context provider. Manages open state, selected value, dismiss/open lifecycle, and
+interaction-type tracking. Its `onOpenChange` and `onValueChange` outputs are cancelable and include
+reason-aware `eventDetails`, while `openMethod`, `openInteractionType`, and `closeInteractionType`
+expose how the popup was opened or closed. Exposes `data-disabled` on the host.
 
 <ArgTypes of={RdxSelectRoot} />
 

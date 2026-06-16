@@ -77,22 +77,23 @@ export class RdxSelectTrigger {
         });
     }
 
-    handleOpen() {
+    handleOpen(reason: 'trigger-press' | 'list-navigation', event: Event): boolean {
         if (!this.isDisabled()) {
-            this.rootContext.onOpenChange(true);
+            return this.rootContext.onOpenChange(true, reason, event);
         }
+
+        return false;
     }
 
     handlePointerOpen(event: Event) {
         const pointerEvent = event as PointerEvent;
-        // Record whether this open was a touch (ADR 0016 §3 — gates the anchored scroll lock). Mouse
-        // resets it to false; a keyboard open never reaches here, so it keeps the reset-on-close default.
-        this.rootContext.openedByTouch.set(pointerEvent.pointerType === 'touch');
-        this.handleOpen();
-        this.rootContext.triggerPointerDownPosRef.set({
-            x: Math.round(pointerEvent.pageX),
-            y: Math.round(pointerEvent.pageY)
-        });
+
+        if (this.handleOpen('trigger-press', event)) {
+            this.rootContext.triggerPointerDownPosRef.set({
+                x: Math.round(pointerEvent.pageX),
+                y: Math.round(pointerEvent.pageY)
+            });
+        }
     }
 
     onClickHandler(event: Event) {
@@ -134,7 +135,9 @@ export class RdxSelectTrigger {
     onKeydown(event: Event) {
         const keyEvent = event as KeyboardEvent;
         if (OPEN_KEYS.includes(keyEvent.key)) {
-            this.handleOpen();
+            const reason =
+                keyEvent.key === 'ArrowUp' || keyEvent.key === 'ArrowDown' ? 'list-navigation' : 'trigger-press';
+            this.handleOpen(reason, event);
             event.preventDefault();
         }
     }
