@@ -344,7 +344,7 @@
           "exportAs": "rdxAutocompleteClear",
           "description": "Clears the input value. Hidden when there is nothing to clear.",
           "hostDirectives": [
-            "RdxDismissableLayerBranch"
+            "RdxFloatingInsideElement"
           ],
           "inputs": [],
           "outputs": []
@@ -405,7 +405,7 @@
           "description": "The autocomplete text input. Holds DOM focus at all times; the highlighted option is referenced via\n`aria-activedescendant`. In `both` / `inline` modes it shows the active item's inline completion\nwith the completed suffix selected. Integrates with Field for labeling and validation state.",
           "hostDirectives": [
             "RdxPopperAnchor",
-            "RdxDismissableLayerBranch"
+            "RdxFloatingInsideElement"
           ],
           "inputs": [
             {
@@ -490,7 +490,7 @@
           "description": "The popup surface. Composes the popper content (for `data-side` / `data-align`) and a dismissable\nlayer for outside-dismiss. It does **not** trap focus — focus stays in the input throughout. When\nthe input lives **inside** the popup (the \"input in popup\" / emoji-picker pattern), it moves focus\nto the input once the popup is positioned.",
           "hostDirectives": [
             "RdxPopperContent",
-            "RdxDismissableLayer"
+            "RdxFloatingNodeRegistration"
           ],
           "inputs": [],
           "outputs": []
@@ -4127,11 +4127,26 @@
           "selector": "[rdxNavigationMenuPopup]",
           "description": "The shared container for the active item's content.",
           "hostDirectives": [
-            "RdxPopperContent",
-            "RdxDismissableLayer"
+            "RdxPopperContent"
           ],
           "inputs": [],
-          "outputs": []
+          "outputs": [
+            {
+              "name": "escapeKeyDown",
+              "type": "KeyboardEvent",
+              "description": "Event handler called when the escape key is down. Can be prevented."
+            },
+            {
+              "name": "focusOutside",
+              "type": "FocusEvent",
+              "description": "Event handler called when focus moves outside the popup. Can be prevented."
+            },
+            {
+              "name": "pointerDownOutside",
+              "type": "PointerEvent",
+              "description": "Event handler called when a pointerdown event happens outside the popup. Can be prevented."
+            }
+          ]
         },
         {
           "directive": "RdxNavigationMenuPortal",
