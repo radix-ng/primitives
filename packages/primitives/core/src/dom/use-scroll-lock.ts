@@ -302,6 +302,11 @@ function getLocker(doc: Document): ScrollLocker {
     return locker;
 }
 
+export interface RdxScrollLockOptions {
+    /** Element whose owner document should be locked. Defaults to Angular's injected DOCUMENT. */
+    referenceElement?: () => Element | null;
+}
+
 /**
  * Locks page scrolling while `active()` is `true`, restoring the original state when it becomes `false`
  * or the calling context is destroyed.
@@ -313,29 +318,37 @@ function getLocker(doc: Document): ScrollLocker {
  * same document via a shared per-`Document` ref count, and state is isolated per `Document` (iframe-safe).
  * No-op on the server. Must be called in an injection context.
  */
-export function useScrollLock(active: Signal<boolean>): void {
-    const document = inject(DOCUMENT);
+export function useScrollLock(active: Signal<boolean>, options: RdxScrollLockOptions = {}): void {
+    const injectedDocument = inject(DOCUMENT);
     const isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
     let release: (() => void) | null = null;
+    let releaseDocument: Document | null = null;
+
+    const releaseCurrent = (): void => {
+        release?.();
+        release = null;
+        releaseDocument = null;
+    };
 
     effect(() => {
         if (!isBrowser) {
             return;
         }
-        if (active() && !release) {
-            release = getLocker(document).acquire();
-        } else if (!active() && release) {
-            release();
-            release = null;
+        const document = options.referenceElement?.()?.ownerDocument ?? injectedDocument;
+        if (active()) {
+            if (!release || releaseDocument !== document) {
+                releaseCurrent();
+                release = getLocker(document).acquire();
+                releaseDocument = document;
+            }
+        } else if (release) {
+            releaseCurrent();
         }
     });
 
     // Only register the DOM unlock on the browser — on the server `release` is never set.
     if (isBrowser) {
-        inject(DestroyRef).onDestroy(() => {
-            release?.();
-            release = null;
-        });
+        inject(DestroyRef).onDestroy(releaseCurrent);
     }
 }
 
@@ -378,5 +391,10 @@ export function useAnchoredScrollLock(enabled: Signal<boolean>, options: RdxAnch
         );
     });
 
-    useScrollLock(computed(() => enabled() && (!options.touchOpen() || touchOpenShouldLock())));
+    useScrollLock(
+        computed(() => enabled() && (!options.touchOpen() || touchOpenShouldLock())),
+        {
+            referenceElement: options.element
+        }
+    );
 }

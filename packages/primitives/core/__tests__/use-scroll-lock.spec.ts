@@ -103,6 +103,23 @@ describe('useScrollLock', () => {
         expect(document.body.style.overflow).toBe('');
     });
 
+    it('locks the reference element ownerDocument when a reference is provided', () => {
+        const otherDoc = document.implementation.createHTMLDocument('dialog');
+        configure(document);
+        const popup = otherDoc.createElement('div');
+        const active = signal(true);
+
+        TestBed.runInInjectionContext(() => useScrollLock(active, { referenceElement: () => popup }));
+        TestBed.tick();
+
+        expect(locked(otherDoc)).toBe(true);
+        expect(locked(document)).toBe(false);
+
+        active.set(false);
+        TestBed.tick();
+        expect(locked(otherDoc)).toBe(false);
+    });
+
     it('respects an author overflow lock on <html> — applies no strategy, leaves styles untouched', () => {
         configure(document);
         const html = document.documentElement;
@@ -141,9 +158,9 @@ describe('useScrollLock', () => {
 
 describe('useAnchoredScrollLock (touch near-fullscreen gate)', () => {
     /** Stubs `<html>`'s `clientWidth` (jsdom reports 0 — no layout). Returns a cleanup. */
-    function stubViewportWidth(width: number): () => void {
-        Object.defineProperty(document.documentElement, 'clientWidth', { value: width, configurable: true });
-        return () => delete (document.documentElement as unknown as Record<string, unknown>)['clientWidth'];
+    function stubViewportWidth(width: number, doc: Document = document): () => void {
+        Object.defineProperty(doc.documentElement, 'clientWidth', { value: width, configurable: true });
+        return () => delete (doc.documentElement as unknown as Record<string, unknown>)['clientWidth'];
     }
 
     /** A detached element with a stubbed `offsetWidth` (jsdom reports 0). */
@@ -214,5 +231,18 @@ describe('useAnchoredScrollLock (touch near-fullscreen gate)', () => {
         enabled.set(true);
         TestBed.tick();
         expect(locked(document)).toBe(false); // narrow touch popup still does not lock
+    });
+
+    it('locks the measured element ownerDocument, not the injected DOCUMENT', () => {
+        const otherDoc = document.implementation.createHTMLDocument('iframe');
+        restoreViewport = stubViewportWidth(1000, otherDoc);
+        const popup = otherDoc.createElement('div');
+        Object.defineProperty(popup, 'offsetWidth', { value: 990, configurable: true });
+
+        anchoredLock(signal(true), signal(true), popup);
+        TestBed.tick();
+
+        expect(locked(otherDoc)).toBe(true);
+        expect(locked(document)).toBe(false);
     });
 });

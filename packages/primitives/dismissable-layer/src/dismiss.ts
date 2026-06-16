@@ -5,6 +5,7 @@ import { RDX_FLOATING_MARKER } from '@radix-ng/primitives/floating-focus-manager
 
 /** Why a dismissal was requested — mirrors Base UI's open-change `reason` strings (`useDismiss.ts`). */
 export type RdxDismissReason = 'escape-key' | 'outside-press' | 'focus-outside';
+export type RdxOutsidePressDomEvent = MouseEvent | PointerEvent | TouchEvent;
 
 /**
  * Configuration for {@link RdxDismiss}. Every flag is a getter so it can be a signal
@@ -59,7 +60,7 @@ export interface RdxDismissProps {
     /** Preventable pre-hook for Escape. */
     onEscapeKeyDown?: (event: KeyboardEvent) => void;
     /** Preventable pre-hook for an outside pointer press. */
-    onPointerDownOutside?: (event: PointerEvent) => void;
+    onPointerDownOutside?: (event: RdxOutsidePressDomEvent) => void;
     /** Preventable pre-hook for focus moving outside. */
     onFocusOutside?: (event: FocusEvent) => void;
     /** Called when a non-prevented dismissal is requested. */
@@ -89,6 +90,15 @@ function isHTMLElement(target: EventTarget | null): target is HTMLElement {
     return view ? target instanceof view.HTMLElement : target instanceof HTMLElement;
 }
 
+/** Owner-document-safe `Element` check for SVG/custom-element outside targets. */
+function isElement(target: EventTarget | null): target is Element {
+    if (!isNode(target)) {
+        return false;
+    }
+    const view = target.ownerDocument?.defaultView;
+    return view ? target instanceof view.Element : target instanceof Element;
+}
+
 /**
  * Whether `window` is a WebKit (Safari / any iOS browser) engine — its IME `compositionend`/`keydown`
  * ordering needs a longer guard. Requires the `Safari` token and excludes desktop Blink (Chrome /
@@ -105,9 +115,72 @@ function isPrimaryButton(event: Event): boolean {
     return !('button' in event) || (event as MouseEvent).button === 0;
 }
 
-/** Base UI third-party guard: a target inside a marker subtree is treated as inert/injected. */
-function isInsideMarkedSubtree(target: EventTarget | null): boolean {
-    return isHTMLElement(target) && target.closest(`[${RDX_FLOATING_MARKER}]`) !== null;
+function isRootElement(element: Element): boolean {
+    const document = element.ownerDocument;
+    return element === document.documentElement || element === document.body;
+}
+
+function isShadowRoot(value: Node | null): value is ShadowRoot {
+    return value !== null && value.nodeType === 11 && 'host' in value;
+}
+
+function getParentNode(element: Element): Node | null {
+    const parent = element.parentNode;
+    if (parent) {
+        return parent;
+    }
+    const root = element.getRootNode();
+    return isShadowRoot(root) ? root.host : null;
+}
+
+function isLastTraversableNode(node: Node | null): boolean {
+    return (
+        node === null ||
+        node.nodeType === Node.DOCUMENT_NODE ||
+        isShadowRoot(node) ||
+        (isElement(node) && isRootElement(node))
+    );
+}
+
+function getTargetRootAncestor(target: Element): Element {
+    let ancestor = target;
+    while (!isLastTraversableNode(ancestor)) {
+        const parent = getParentNode(ancestor);
+        if (isLastTraversableNode(parent) || !isElement(parent)) {
+            break;
+        }
+        ancestor = parent;
+    }
+    return ancestor;
+}
+
+/**
+ * Base UI third-party guard: ignore elements injected after `markOthers` ran. A normal outside target sits
+ * in a root subtree that contains at least one marker; an injected root does not.
+ */
+function isInjectedAfterMark(target: EventTarget | null, context: RdxFloatingRootContext): boolean {
+    if (!isElement(target) || isRootElement(target)) {
+        return false;
+    }
+    if (
+        target.closest(
+            '[data-rdx-internal-backdrop], [data-rdx-menu-internal-backdrop], [data-rdx-dialog-internal-backdrop]'
+        )
+    ) {
+        return false;
+    }
+    const targetRoot = target.getRootNode();
+    const queryRoot: ParentNode = isShadowRoot(targetRoot) ? targetRoot : context.ownerDocument;
+    const markers = Array.from(queryRoot.querySelectorAll(`[${RDX_FLOATING_MARKER}]`));
+    if (markers.length === 0) {
+        return false;
+    }
+    const floating = context.floatingElement;
+    if (floating && target.contains(floating)) {
+        return false;
+    }
+    const targetRootAncestor = getTargetRootAncestor(target);
+    return markers.every((marker) => !targetRootAncestor.contains(marker));
 }
 
 /**
@@ -130,8 +203,11 @@ function isScrollbarPress(event: Event): boolean {
     const press = event as MouseEvent;
     const style = view.getComputedStyle(target);
     const scrollable = /auto|scroll/;
-    const canScrollX = scrollable.test(style.overflowX) && target.scrollWidth > target.clientWidth;
-    const canScrollY = scrollable.test(style.overflowY) && target.scrollHeight > target.clientHeight;
+    const lastTraversableNode = isLastTraversableNode(target);
+    const isScrollableX = lastTraversableNode || scrollable.test(style.overflowX);
+    const isScrollableY = lastTraversableNode || scrollable.test(style.overflowY);
+    const canScrollX = isScrollableX && target.clientWidth > 0 && target.scrollWidth > target.clientWidth;
+    const canScrollY = isScrollableY && target.clientHeight > 0 && target.scrollHeight > target.clientHeight;
     const isRtl = style.direction === 'rtl';
 
     const onVerticalScrollbar =
@@ -312,7 +388,7 @@ export class RdxDismiss {
             if (!this.active() || !isPrimaryButton(event) || this.isInside(event.target) || !outsidePress(event)) {
                 return;
             }
-            if (isInsideMarkedSubtree(event.target)) {
+            if (isInjectedAfterMark(event.target, this.context)) {
                 return;
             }
             if (isScrollbarPress(event)) {
@@ -323,7 +399,7 @@ export class RdxDismiss {
             if (!outsidePressBubbles() && this.hasBlockingChild('outside-press')) {
                 return;
             }
-            config.onPointerDownOutside?.(event as PointerEvent);
+            config.onPointerDownOutside?.(event as RdxOutsidePressDomEvent);
             if (!event.defaultPrevented) {
                 dismiss('outside-press', event);
             }

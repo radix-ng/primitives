@@ -76,6 +76,22 @@ class DefaultOpenHostComponent {}
 @Component({
     imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPopup],
     template: `
+        <div [(open)]="open" (onOpenChange)="changes.push($event)" rdxDialogRoot>
+            <button rdxDialogTrigger>Open</button>
+            <ng-template rdxDialogPortal>
+                <div rdxDialogPopup>Popup</div>
+            </ng-template>
+        </div>
+    `
+})
+class NoBackdropHostComponent {
+    open = false;
+    readonly changes: RdxDialogOpenChange[] = [];
+}
+
+@Component({
+    imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPopup],
+    template: `
         <div #root="rdxDialogRoot" [(open)]="open" [(triggerId)]="triggerId" rdxDialogRoot>
             <button id="trigger-one" rdxDialogTrigger>One</button>
             <button id="trigger-two" rdxDialogTrigger>Two</button>
@@ -257,6 +273,31 @@ describe('Dialog', () => {
         document.body.dispatchEvent(new MouseEvent('click', { bubbles: true }));
         fixture.detectChanges();
         expect(fixture.componentInstance.open).toBe(false);
+    });
+
+    it('adds an internal modal backdrop when no user backdrop is rendered', async () => {
+        const noBackdropFixture = TestBed.createComponent(NoBackdropHostComponent);
+        noBackdropFixture.detectChanges();
+
+        const noBackdropTrigger: HTMLButtonElement =
+            noBackdropFixture.nativeElement.querySelector('[rdxDialogTrigger]');
+        noBackdropTrigger.click();
+        noBackdropFixture.detectChanges();
+        await new Promise((resolve) => setTimeout(resolve));
+
+        const internalBackdrop = document.body.querySelector('[data-rdx-dialog-internal-backdrop]')!;
+        expect(internalBackdrop).not.toBeNull();
+
+        internalBackdrop.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, cancelable: true }));
+        noBackdropFixture.detectChanges();
+        expect(noBackdropFixture.componentInstance.open).toBe(true);
+
+        internalBackdrop.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+        noBackdropFixture.detectChanges();
+        expect(noBackdropFixture.componentInstance.open).toBe(false);
+        expect(noBackdropFixture.componentInstance.changes.at(-1)?.reason).toBe('outside-press');
+
+        noBackdropFixture.destroy();
     });
 
     it('does not close on outside pointerdown when disablePointerDismissal is set', async () => {

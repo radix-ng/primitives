@@ -1,6 +1,6 @@
 import { computed, DestroyRef, Directive, ElementRef, inject, output } from '@angular/core';
 import { ARROW_DOWN, ARROW_UP, END, HOME, RDX_FLOATING_ROOT_CONTEXT } from '@radix-ng/primitives/core';
-import { RdxDismiss } from '@radix-ng/primitives/dismissable-layer';
+import { RdxDismiss, RdxOutsidePressDomEvent } from '@radix-ng/primitives/dismissable-layer';
 import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
 import { injectNavigationMenuRootContext, RdxNavigationMenuOpenChangeReason } from './navigation-menu-root-context';
 import { focusFirst, getTabbableCandidates } from './utils';
@@ -51,7 +51,7 @@ export class RdxNavigationMenuPopup {
     /**
      * Event handler called when a pointerdown event happens outside the popup. Can be prevented.
      */
-    readonly pointerDownOutside = output<PointerEvent>();
+    readonly pointerDownOutside = output<RdxOutsidePressDomEvent>();
 
     /**
      * Event handler called when focus moves outside the popup. Can be prevented.
@@ -76,6 +76,7 @@ export class RdxNavigationMenuPopup {
         new RdxDismiss(this.floatingContext, () => null, {
             escapeKey: () => true,
             outsidePress: () => true,
+            outsidePressEvent: () => 'intentional',
             focusOutside: () => true,
             onEscapeKeyDown: (event) => this.escapeKeyDown.emit(event),
             onPointerDownOutside: (event) => this.pointerDownOutside.emit(event),

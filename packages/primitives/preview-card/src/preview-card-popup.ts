@@ -4,7 +4,7 @@ import {
     RDX_FLOATING_ROOT_CONTEXT,
     RdxFloatingNodeRegistration
 } from '@radix-ng/primitives/core';
-import { RdxDismiss } from '@radix-ng/primitives/dismissable-layer';
+import { RdxDismiss, RdxOutsidePressDomEvent } from '@radix-ng/primitives/dismissable-layer';
 import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
 import { injectRdxPreviewCardRootContext, RdxPreviewCardOpenChangeReason } from './preview-card-root';
 
@@ -50,7 +50,7 @@ export class RdxPreviewCardPopup {
     /**
      * Event handler called when a pointerdown event happens outside of the popup. Can be prevented.
      */
-    readonly pointerDownOutside = output<PointerEvent>();
+    readonly pointerDownOutside = output<RdxOutsidePressDomEvent>();
 
     /**
      * Event handler called when focus moves outside of the popup. Can be prevented.
@@ -60,7 +60,7 @@ export class RdxPreviewCardPopup {
     /**
      * Event handler called when an interaction happens outside of the popup. Can be prevented.
      */
-    readonly interactOutside = output<PointerEvent | FocusEvent>();
+    readonly interactOutside = output<RdxOutsidePressDomEvent | FocusEvent>();
 
     constructor() {
         this.floatingContext.setFloatingElement(this.host);

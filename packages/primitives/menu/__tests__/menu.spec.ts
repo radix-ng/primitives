@@ -1525,6 +1525,16 @@ describe('Menu', () => {
             expect(subTrigger.hasAttribute('data-popup-open')).toBe(true);
         });
 
+        it('keeps focus on the submenu trigger when the submenu opens', async () => {
+            subTrigger.focus();
+            keydown(subTrigger, 'ArrowRight');
+            fixture.detectChanges();
+            await nextFrame();
+
+            expect(subTrigger.getAttribute('aria-expanded')).toBe('true');
+            expect(document.activeElement).toBe(subTrigger);
+        });
+
         it('opens submenu on hover after the configured delay', async () => {
             const pointerMove = new Event('pointermove', { bubbles: true });
             Object.defineProperty(pointerMove, 'pointerType', { value: 'mouse' });

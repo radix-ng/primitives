@@ -165,6 +165,21 @@ describe('RdxNavigationMenu', () => {
         fixture.detectChanges();
         expect(root().value()).toBeNull();
     });
+
+    it('uses intentional outside-press timing', async () => {
+        createComponent();
+        triggers()[0].click();
+        fixture.detectChanges();
+        await new Promise((resolve) => setTimeout(resolve));
+
+        document.body.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, cancelable: true }));
+        fixture.detectChanges();
+        expect(root().isOpen()).toBe(true);
+
+        document.body.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+        fixture.detectChanges();
+        expect(root().isOpen()).toBe(false);
+    });
 });
 
 describe('NavigationMenu structural portal', () => {

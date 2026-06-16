@@ -97,9 +97,7 @@ test.describe('Popover — new floating engine migration', () => {
         }
     });
 
-    test('keeps outside content inert through the exit animation, lifting only at unmount (mounted-scoped)', async ({
-        page
-    }) => {
+    test('releases marker and inert at close-start, before the exit animation finishes', async ({ page }) => {
         await gotoStory(page, 'primitives-popover--modal');
 
         // The modal demo popup has no exit animation by default — inject a slow one so the mid-exit
@@ -109,23 +107,27 @@ test.describe('Popover — new floating engine migration', () => {
                 [rdxPopoverPopup][data-closed] { animation: rdx-test-out 2000ms forwards }`
         });
 
-        const rootInert = () => page.locator('#storybook-root').evaluate((el) => el.hasAttribute('inert'));
+        const rootState = () =>
+            page.locator('#storybook-root').evaluate((el) => ({
+                inert: el.hasAttribute('inert'),
+                marked: el.hasAttribute('data-rdx-floating-inert')
+            }));
 
         await page.locator(trigger).first().click();
         await expect(page.locator(popup)).toBeVisible();
-        // A modal popover inerts outside content (background isolation), like Dialog.
-        expect(await rootInert()).toBe(true);
+        // A modal popover marks and inerts outside content while open (background isolation), like Dialog.
+        expect(await rootState()).toEqual({ inert: true, marked: true });
 
         await page.locator('[rdxPopoverClose]').click();
 
-        // Mid-exit: the popup is closing (`data-closed`) but still mounted — the focus manager's `inert`
-        // isolation HOLDS until unmount (Base UI `disabled={!mounted}`), not released at close-start.
+        // Mid-exit: the popup is closing (`data-closed`) but still mounted. Base UI keeps the focus manager
+        // mounted for trap / return-focus, but releases marker + isolation when `open` flips false.
         await expect(page.locator(popup)).toHaveAttribute('data-closed', '');
-        expect(await rootInert()).toBe(true);
+        expect(await rootState()).toEqual({ inert: false, marked: false });
 
-        // Only once the popup unmounts does the isolation lift.
+        // Still released after unmount.
         await expect(page.locator(popup)).toHaveCount(0);
-        expect(await rootInert()).toBe(false);
+        expect(await rootState()).toEqual({ inert: false, marked: false });
     });
 
     test('releases the scroll lock at close-start, before the exit animation finishes (ADR 0016 §2)', async ({
@@ -149,9 +151,8 @@ test.describe('Popover — new floating engine migration', () => {
 
         await page.locator('[rdxPopoverClose]').click();
 
-        // Mid-exit: the popup is closing (`data-closed`) but still mounted — unlike the focus manager's
-        // `inert` isolation (held until unmount), the scroll lock is already RELEASED, because the
-        // predicate gates on `open` (not mounted). Base UI parity.
+        // Mid-exit: the popup is closing (`data-closed`) but still mounted. The scroll lock is already
+        // released because the predicate gates on `open` (not mounted). Base UI parity.
         await expect(page.locator(popup)).toHaveAttribute('data-closed', '');
         expect(await scrollLocked()).toBe(false);
 

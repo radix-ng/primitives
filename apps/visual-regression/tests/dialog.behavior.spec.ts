@@ -215,17 +215,20 @@ test.describe('Dialog — new floating engine migration', () => {
         page
     }) => {
         await gotoStory(page, 'primitives-dialog--non-modal');
-        await page.locator(trigger).first().click();
-        await expect(page.locator(popup)).toBeVisible();
 
-        // A real focusable control outside the non-modal dialog. Pressing it dismisses the dialog AND
-        // moves focus onto it — the return-focus must not yank focus back to the trigger.
+        // A real focusable control outside the non-modal dialog, present before the marker pass.
+        // Pressing it dismisses the dialog AND moves focus onto it — the return-focus must not yank
+        // focus back to the trigger.
         await page.evaluate(() => {
             const button = document.createElement('button');
             button.id = 'rdx-outside-target';
             button.textContent = 'Outside';
             document.body.appendChild(button);
         });
+
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
         await page.locator('#rdx-outside-target').click();
 
         await expect(page.locator(popup)).toHaveCount(0);

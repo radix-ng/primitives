@@ -41,8 +41,11 @@ export type RdxInteractionType = 'mouse' | 'touch' | 'pen' | 'keyboard' | '' | n
 /** A focus target: an element, a getter, or `null`. */
 export type RdxFocusTarget = HTMLElement | (() => HTMLElement | null) | null;
 
-/** `initialFocus` policy (ADR 0017 §2) — a target or a callback receiving the **open** interaction type. */
-export type RdxInitialFocus = RdxFocusTarget | ((openInteractionType: RdxInteractionType) => RdxFocusTarget);
+/** `initialFocus` policy (ADR 0017 §2) — a target, `false`, or an open-interaction callback. */
+export type RdxInitialFocus =
+    | RdxFocusTarget
+    | false
+    | ((openInteractionType: RdxInteractionType) => RdxFocusTarget | false);
 
 /** `returnFocus` policy (ADR 0017 §2) — a target/boolean or a callback receiving the **close** interaction type. */
 export type RdxReturnFocus =
@@ -61,8 +64,9 @@ export function resolveFocusTarget(target: RdxFocusTarget): HTMLElement | null {
 export function resolveInitialFocus(
     policy: RdxInitialFocus,
     openInteractionType: RdxInteractionType
-): HTMLElement | null {
-    return resolveFocusTarget(typeof policy === 'function' ? policy(openInteractionType) : policy);
+): HTMLElement | null | false {
+    const resolved = typeof policy === 'function' ? policy(openInteractionType) : policy;
+    return resolved === false ? false : resolveFocusTarget(resolved);
 }
 
 /**
@@ -84,8 +88,11 @@ export function resolveReturnFocus(
  */
 export interface RdxFloatingFocusManagerConfig {
     modal?: () => boolean;
+    inert?: () => boolean;
     enabled?: () => boolean;
     closeOnFocusOut?: () => boolean;
+    initialFocus?: () => RdxInitialFocus;
+    returnFocus?: () => RdxReturnFocus;
 }
 
 export const RDX_FLOATING_FOCUS_MANAGER_CONFIG = new InjectionToken<RdxFloatingFocusManagerConfig>(
@@ -143,11 +150,17 @@ export class RdxFloatingFocusManager {
     /** Modal popup → focus trap. Combined with `enabled` to drive the composed `RdxFocusScope`. */
     readonly modal = input(undefined, { transform: coerceOptionalBoolean });
 
+    /**
+     * Whether outside elements receive the real `inert` attribute. Defaults to the effective `modal` value,
+     * but primitives can split focus trapping from pointer/AT isolation (Base UI `modal="trap-focus"`).
+     */
+    readonly inert = input(undefined, { transform: coerceOptionalBoolean });
+
     /** Where focus goes when the popup opens (ADR 0017 §2). */
-    readonly initialFocus = input<RdxInitialFocus>(null);
+    readonly initialFocus = input<RdxInitialFocus | undefined>(undefined);
 
     /** Where focus returns when the popup closes (ADR 0017 §2). */
-    readonly returnFocus = input<RdxReturnFocus>(true);
+    readonly returnFocus = input<RdxReturnFocus | undefined>(undefined);
 
     /**
      * Whether a **non-modal** popup closes when focus leaves to an unrelated node (Base UI
@@ -169,8 +182,15 @@ export class RdxFloatingFocusManager {
     /** Effective gates: `input ?? config ?? default`. */
     readonly effectiveEnabled = computed(() => this.enabled() ?? this.config?.enabled?.() ?? true);
     readonly effectiveModal = computed(() => this.modal() ?? this.config?.modal?.() ?? false);
+    readonly effectiveInert = computed(() => this.inert() ?? this.config?.inert?.() ?? this.effectiveModal());
     readonly effectiveCloseOnFocusOut = computed(
         () => this.closeOnFocusOut() ?? this.config?.closeOnFocusOut?.() ?? true
+    );
+    readonly effectiveInitialFocus = computed(() =>
+        this.initialFocus() !== undefined ? this.initialFocus()! : (this.config?.initialFocus?.() ?? null)
+    );
+    readonly effectiveReturnFocus = computed(() =>
+        this.returnFocus() !== undefined ? this.returnFocus()! : (this.config?.returnFocus?.() ?? true)
     );
 
     /** The effective trap state the composed `RdxFocusScope` reads via its config token. */
@@ -206,8 +226,8 @@ export class RdxFloatingFocusManager {
             return; // SSR: no DOM marking / listeners.
         }
 
-        // Marker pass (ADR 0017 §3) — applied to outside elements whenever the manager is **active**,
-        // independent of `modal`. Read by ADR 0015's outside-press guard.
+        // Marker pass (ADR 0017 §3) — applied to outside elements while the manager is active **and the
+        // popup is open**, independent of `modal`. Read by ADR 0015's outside-press guard.
         effect((onCleanup) => {
             if (!this.effectiveEnabled() || !this.isFloatingOpen()) {
                 return;
@@ -215,14 +235,12 @@ export class RdxFloatingFocusManager {
             onCleanup(markOthers(this.avoidElements(), { ariaHidden: false, mark: true }));
         });
 
-        // Modal isolation pass (ADR 0017 §3 / finding #4) — apply the real `inert` attribute to outside
-        // elements for a modal popup. `inert` is non-interactive **and** a11y-hidden in one, so it both
-        // replaces the old global `body { pointer-events: none }` lock (now scoped to siblings of the
-        // popup's ancestor chain — independent overlays at a higher layer keep working) and supplies the
-        // AT isolation the separate `aria-hidden` pass used to. Non-modal popups (Select / Menu root) get
-        // none.
+        // Pointer/AT isolation pass — apply the real `inert` attribute to outside elements only when the
+        // composing primitive asks for outside interaction to be blocked. This is intentionally separate from
+        // focus trapping: Base UI `modal="trap-focus"` traps focus but leaves outside pointer interaction
+        // enabled.
         effect((onCleanup) => {
-            if (!this.effectiveEnabled() || !this.isFloatingOpen() || !this.effectiveModal()) {
+            if (!this.effectiveEnabled() || !this.isFloatingOpen() || !this.effectiveInert()) {
                 return;
             }
             onCleanup(markOthers(this.avoidElements(), { inert: true, mark: false }));
@@ -262,7 +280,12 @@ export class RdxFloatingFocusManager {
         focusScope.mountAutoFocus.subscribe((event) => {
             const interactionType = this._interactionType();
             const target =
-                resolveInitialFocus(this.initialFocus(), interactionType) ?? this.defaultInitialFocus(interactionType);
+                resolveInitialFocus(this.effectiveInitialFocus(), interactionType) ??
+                this.defaultInitialFocus(interactionType);
+            if (target === false) {
+                event.preventDefault();
+                return;
+            }
             if (target) {
                 event.preventDefault(); // override the scope's first-tabbable default
                 target.focus();
@@ -279,7 +302,7 @@ export class RdxFloatingFocusManager {
      *   "focus moved elsewhere" guard).
      */
     private resolveReturnFocusTarget(): HTMLElement | false | undefined {
-        const resolved = resolveReturnFocus(this.returnFocus(), this._interactionType());
+        const resolved = resolveReturnFocus(this.effectiveReturnFocus(), this._interactionType());
         if (resolved === false) {
             return false;
         }

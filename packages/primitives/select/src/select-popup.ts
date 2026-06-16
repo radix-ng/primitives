@@ -23,7 +23,7 @@ import {
     useAnchoredScrollLock,
     useListHighlight
 } from '@radix-ng/primitives/core';
-import { RdxDismiss } from '@radix-ng/primitives/dismissable-layer';
+import { RdxDismiss, RdxOutsidePressDomEvent } from '@radix-ng/primitives/dismissable-layer';
 import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import { RdxPopperContent } from '@radix-ng/primitives/popper';
 import { injectSelectRootContext } from './select-root';
@@ -192,7 +192,7 @@ export class RdxSelectPopup {
      * Event handler called when a `pointerdown` event happens outside of the popup.
      * Can be prevented.
      */
-    readonly pointerDownOutside = output<PointerEvent>();
+    readonly pointerDownOutside = output<RdxOutsidePressDomEvent>();
 
     readonly content = signal<HTMLElement | null>(null);
 

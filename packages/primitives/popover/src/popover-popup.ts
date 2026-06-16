@@ -6,7 +6,7 @@ import {
     RdxFloatingNodeRegistration,
     useAnchoredScrollLock
 } from '@radix-ng/primitives/core';
-import { RdxDismiss } from '@radix-ng/primitives/dismissable-layer';
+import { RdxDismiss, RdxOutsidePressDomEvent } from '@radix-ng/primitives/dismissable-layer';
 import {
     provideFloatingFocusManagerConfig,
     RdxFloatingFocusManager
@@ -23,8 +23,8 @@ import { injectRdxPopoverRootContext } from './popover-root';
  * - **Hover-open disables the manager** (`enabled = isOpen && !isHoverActive`) — Base UI parity
  *   (`disabled={!mounted || openReason === triggerHover}`); a hover-opened popover does not trap / mark.
  *   (The legacy only suppressed auto-focus while still trapping — that Radix divergence is dropped.)
- * - Trap = `'trap-focus' || (modal === true && hasPopupClose())`; scroll / body-pointer lock + the
- *   popup's `pointer-events: auto` key off the full modal (`modal === true`).
+ * - Trap = `'trap-focus' || (modal === true && hasPopupClose())`; scroll lock + real outside `inert`
+ *   isolation key off the full modal (`modal === true`).
  * - No `disablePointerDismissal` — outside-press + focus-out always close.
  *
  * Note: a positioned popover does **not** auto-focus into the popup on open (pre-existing — the legacy
@@ -41,9 +41,11 @@ import { injectRdxPopoverRootContext } from './popover-root';
                 modal: () =>
                     rootContext.modal() === 'trap-focus' ||
                     (rootContext.modal() === true && rootContext.hasPopupClose()),
-                // Active for the whole MOUNTED lifetime (Base UI `disabled={!mounted}`, not `open`): the
-                // trap / marker / modal-`inert` isolation hold through the close (exit) animation, lifting
-                // only at unmount. Still suppressed while hover-opened (no trap / mark on hover) and for a
+                // Full modal blocks outside pointer interaction; `trap-focus` only traps focus.
+                inert: () => rootContext.modal() === true && rootContext.hasPopupClose(),
+                // Active for the whole MOUNTED lifetime (Base UI `disabled={!mounted}`, not `open`) for
+                // trap/return-focus. Marker + isolation are additionally gated on `open` inside the
+                // manager, so they release at close-start. Still suppressed while hover-opened and for a
                 // closed-but-never-opened mount (no `isOpen`, no `ending` transition).
                 enabled: () =>
                     (rootContext.isOpen() || rootContext.transitionStatus() === 'ending') &&
@@ -82,13 +84,13 @@ export class RdxPopoverPopup {
     readonly escapeKeyDown = output<KeyboardEvent>();
 
     /** Event handler called when a pointerdown event happens outside of the popup. Can be prevented. */
-    readonly pointerDownOutside = output<PointerEvent>();
+    readonly pointerDownOutside = output<RdxOutsidePressDomEvent>();
 
     /** Event handler called when focus moves outside of the popup. Can be prevented. */
     readonly focusOutside = output<FocusEvent>();
 
     /** Event handler called when an interaction (pointer / focus) happens outside of the popup. */
-    readonly interactOutside = output<PointerEvent | FocusEvent>();
+    readonly interactOutside = output<RdxOutsidePressDomEvent | FocusEvent>();
 
     /** Event handler called before focus moves into the popup. Can be prevented. */
     readonly openAutoFocus = outputFromObservable(outputToObservable(this.focusScope.mountAutoFocus));

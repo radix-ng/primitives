@@ -5,7 +5,7 @@ import {
     RdxFloatingNodeRegistration,
     useGraceArea
 } from '@radix-ng/primitives/core';
-import { RdxDismiss } from '@radix-ng/primitives/dismissable-layer';
+import { RdxDismiss, RdxOutsidePressDomEvent } from '@radix-ng/primitives/dismissable-layer';
 import {
     provideRdxPopperContentConfig,
     provideRdxPopperContentWrapper,
@@ -52,7 +52,7 @@ export class RdxTooltipPositioner extends RdxPopperContentWrapper {
     /**
      * Event handler called when a `pointerdown` event happens outside of the popup. Can be prevented.
      */
-    readonly pointerDownOutside = output<PointerEvent>();
+    readonly pointerDownOutside = output<RdxOutsidePressDomEvent>();
 
     private readonly triggerEl = signal<HTMLElement | null>(null);
     private readonly containerEl = signal<HTMLElement | null>(null);

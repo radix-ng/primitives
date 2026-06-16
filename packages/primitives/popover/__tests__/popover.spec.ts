@@ -587,7 +587,8 @@ describe('Popover', () => {
 
     it('updates modal behavior while the popover is open', async () => {
         // An outside sibling: a full modal isolates the background with real `inert` (finding #4),
-        // not a global body pointer-lock. `trap-focus` isolates focus but does not lock page scroll.
+        // not a global body pointer-lock. `trap-focus` traps focus but does not lock scroll or block
+        // outside pointer interaction.
         const sibling = document.createElement('div');
         document.body.appendChild(sibling);
         const modalFixture = TestBed.createComponent(ModalHostComponent);
@@ -617,7 +618,7 @@ describe('Popover', () => {
             await modalFixture.whenStable();
 
             expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
-            expect(sibling.hasAttribute('inert')).toBe(true); // trap-focus still isolates the background
+            expect(sibling.hasAttribute('inert')).toBe(false);
             expect(focusScope.isTrapped()).toBe(true);
 
             modalFixture.componentInstance.modal = false;

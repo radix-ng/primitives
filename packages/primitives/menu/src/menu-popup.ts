@@ -6,7 +6,7 @@ import {
     RdxFloatingNodeRegistration,
     useAnchoredScrollLock
 } from '@radix-ng/primitives/core';
-import { RdxDismiss } from '@radix-ng/primitives/dismissable-layer';
+import { RdxDismiss, RdxOutsidePressDomEvent } from '@radix-ng/primitives/dismissable-layer';
 import {
     provideFloatingFocusManagerConfig,
     RdxFloatingFocusManager
@@ -45,7 +45,13 @@ function getFocusableItems(popup: HTMLElement): HTMLElement[] {
                 // Only a (modal) **context menu** traps focus — Base UI's `FloatingFocusManager modal` is
                 // true for `context-menu` alone. Other menus stay non-modal and close on focus-out.
                 modal: () => rootContext.parentType() === 'context-menu',
-                enabled: () => !rootContext.disabled()
+                // The manager follows mounted/open lifecycle, not menu disabled state. Dismissal remains
+                // disabled separately below; focus/marker policy should not disappear if a menu becomes
+                // disabled while open.
+                enabled: () => rootContext.isOpen() || rootContext.transitionStatus() === 'ending',
+                // Menu owns its Angular-specific autofocus policy below. Suppress the focus-scope's
+                // first-tabbable fallback so delayed scope work cannot steal focus from submenu triggers.
+                initialFocus: () => false
             };
         })
     ],
@@ -86,7 +92,7 @@ export class RdxMenuPopup {
     /**
      * Event handler called when a pointerdown event happens outside of the popup. Can be prevented.
      */
-    readonly pointerDownOutside = output<PointerEvent>();
+    readonly pointerDownOutside = output<RdxOutsidePressDomEvent>();
 
     /**
      * Event handler called when focus moves outside of the popup. Can be prevented.
@@ -96,7 +102,7 @@ export class RdxMenuPopup {
     /**
      * Event handler called when an interaction happens outside of the popup. Can be prevented.
      */
-    readonly interactOutside = output<PointerEvent | FocusEvent>();
+    readonly interactOutside = output<RdxOutsidePressDomEvent | FocusEvent>();
 
     /**
      * Event handler called before focus moves into the popup. Can be prevented.
@@ -197,8 +203,16 @@ export class RdxMenuPopup {
         // (e.g. menubar hover-switching, where focus stays on the trigger).
         effect(() => {
             const autoFocus = this.rootContext.autoFocus();
-            if (this.rootContext.isOpen() && autoFocus) {
+            if (this.rootContext.isOpen() && autoFocus && this.rootContext.parentType() !== 'menu') {
                 requestAnimationFrame(() => {
+                    if (
+                        this.elementRef.nativeElement.contains(
+                            this.elementRef.nativeElement.ownerDocument.activeElement
+                        )
+                    ) {
+                        return;
+                    }
+
                     // `'popup'` focuses the container without highlighting an item (pointer opening).
                     if (autoFocus === 'popup') {
                         this.elementRef.nativeElement.focus({ preventScroll: true });

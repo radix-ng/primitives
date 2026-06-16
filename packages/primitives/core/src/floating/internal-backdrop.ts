@@ -24,6 +24,8 @@ export interface RdxInternalBackdropOptions {
     cutout?: () => Element | null;
     /** Marker attribute applied to the backdrop. Defaults to {@link RDX_INTERNAL_BACKDROP_ATTR}. */
     marker?: string;
+    /** Let pointer/wheel events pass through the backdrop while keeping it mounted for lifecycle parity. */
+    passThrough?: () => boolean;
 }
 
 /**
@@ -80,6 +82,8 @@ export function setupInternalBackdrop(
             }
 
             if (backdrop) {
+                backdrop.style.pointerEvents = options.passThrough?.() ? 'none' : '';
+
                 // Clickable (the outside-press target) while open; inert during the closed-but-mounted
                 // exit window so a stray click on the fading backdrop can't fire.
                 if (open) {

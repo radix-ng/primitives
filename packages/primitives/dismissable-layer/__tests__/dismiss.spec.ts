@@ -191,6 +191,52 @@ describe('RdxDismiss', () => {
         expect(onDismiss).toHaveBeenCalledWith('outside-press', expect.any(Event));
     });
 
+    it('onPointerDownOutside receives the actual outside press event type', async () => {
+        const onPointerDownOutside = vi.fn();
+        build(
+            context(() => true, el()),
+            () => null,
+            vi.fn(),
+            { outsidePressEvent: () => 'intentional', onPointerDownOutside }
+        );
+        await flush();
+
+        const target = el('button');
+        target.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+        expect(onPointerDownOutside).toHaveBeenCalledWith(expect.any(MouseEvent));
+    });
+
+    it('does not dismiss when the root scrollbar is pressed', async () => {
+        const onDismiss = vi.fn();
+        build(
+            context(() => true, el()),
+            () => null,
+            onDismiss
+        );
+        await flush();
+
+        const root = document.documentElement;
+        Object.defineProperties(root, {
+            clientWidth: { value: 100, configurable: true },
+            offsetWidth: { value: 120, configurable: true },
+            clientHeight: { value: 100, configurable: true },
+            scrollHeight: { value: 200, configurable: true }
+        });
+        const event = new MouseEvent('pointerdown', { bubbles: true });
+        Object.defineProperty(event, 'offsetX', { value: 110, configurable: true });
+
+        try {
+            root.dispatchEvent(event);
+            expect(onDismiss).not.toHaveBeenCalled();
+        } finally {
+            delete (root as unknown as Record<string, unknown>)['clientWidth'];
+            delete (root as unknown as Record<string, unknown>)['offsetWidth'];
+            delete (root as unknown as Record<string, unknown>)['clientHeight'];
+            delete (root as unknown as Record<string, unknown>)['scrollHeight'];
+        }
+    });
+
     // ─── Touch outside-press hardening (#7) ──────────────────────────────────
     function touchEvent(type: string, x: number, y: number): Event {
         const event = new Event(type, { bubbles: true });
@@ -334,12 +380,12 @@ describe('RdxDismiss', () => {
         expect(onDismiss).not.toHaveBeenCalled();
     });
 
-    it('ignores an outside press inside a marked inert subtree (third-party injected guard)', async () => {
+    it('dismisses on ordinary outside content even when that subtree is marked', async () => {
         const onDismiss = vi.fn();
         const marked = el();
-        const injected = document.createElement('button');
+        const ordinary = document.createElement('button');
         marked.setAttribute(RDX_FLOATING_MARKER, '');
-        marked.appendChild(injected);
+        marked.appendChild(ordinary);
         build(
             context(() => true, el()),
             () => null,
@@ -347,6 +393,25 @@ describe('RdxDismiss', () => {
         );
         await flush();
 
+        ordinary.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+
+        expect(onDismiss).toHaveBeenCalledWith('outside-press', expect.any(Event));
+    });
+
+    it('ignores an outside press on a root injected after the marker pass', async () => {
+        const onDismiss = vi.fn();
+        const originalOutside = el();
+        originalOutside.setAttribute(RDX_FLOATING_MARKER, '');
+        build(
+            context(() => true, el()),
+            () => null,
+            onDismiss
+        );
+        await flush();
+
+        const injectedRoot = el();
+        const injected = document.createElement('button');
+        injectedRoot.appendChild(injected);
         injected.dispatchEvent(new Event('pointerdown', { bubbles: true }));
 
         expect(onDismiss).not.toHaveBeenCalled();

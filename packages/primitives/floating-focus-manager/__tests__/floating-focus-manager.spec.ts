@@ -159,6 +159,38 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
         outside.remove();
     });
 
+    it('allows a primitive config to trap focus without inerting outside elements', async () => {
+        const sibling = document.createElement('div');
+        const outside = document.createElement('button');
+        document.body.append(sibling, outside);
+        appended.push(sibling, outside);
+
+        @Component({
+            imports: [RdxFloatingFocusManager],
+            providers: [provideFloatingFocusManagerConfig(() => ({ modal: () => true, inert: () => false }))],
+            template: `
+                <div #scope rdxFloatingFocusManager>
+                    <button #a>A</button>
+                </div>
+            `
+        })
+        class TrapOnlyHost {
+            readonly a = viewChild.required('a', { read: ElementRef });
+        }
+
+        const fixture = TestBed.createComponent(TrapOnlyHost);
+        fixture.autoDetectChanges();
+        await flush();
+
+        const inside = fixture.componentInstance.a().nativeElement as HTMLElement;
+        inside.focus();
+        outside.focus();
+
+        expect(document.activeElement).toBe(inside);
+        expect(sibling.hasAttribute('inert')).toBe(false);
+        expect(sibling.hasAttribute(RDX_FLOATING_MARKER)).toBe(true);
+    });
+
     // ─── markOthers passes (ADR 0017 §3) ─────────────────────────────────────
 
     it('marks outside elements while active, but does NOT aria-hide them when non-modal', async () => {
