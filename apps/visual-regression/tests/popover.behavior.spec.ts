@@ -96,4 +96,35 @@ test.describe('Popover — new floating engine migration', () => {
             expect(await focusInsidePopup(page)).toBe(true);
         }
     });
+
+    test('keeps outside content inert through the exit animation, lifting only at unmount (mounted-scoped)', async ({
+        page
+    }) => {
+        await gotoStory(page, 'primitives-popover--modal');
+
+        // The modal demo popup has no exit animation by default — inject a slow one so the mid-exit
+        // mounted-but-closing window (the presence machine holds it while the keyframe runs) is observable.
+        await page.addStyleTag({
+            content: `@keyframes rdx-test-out { to { opacity: 0 } }
+                [rdxPopoverPopup][data-closed] { animation: rdx-test-out 2000ms forwards }`
+        });
+
+        const rootInert = () => page.locator('#storybook-root').evaluate((el) => el.hasAttribute('inert'));
+
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+        // A modal popover inerts outside content (background isolation), like Dialog.
+        expect(await rootInert()).toBe(true);
+
+        await page.locator('[rdxPopoverClose]').click();
+
+        // Mid-exit: the popup is closing (`data-closed`) but still mounted — the focus manager's `inert`
+        // isolation HOLDS until unmount (Base UI `disabled={!mounted}`), not released at close-start.
+        await expect(page.locator(popup)).toHaveAttribute('data-closed', '');
+        expect(await rootInert()).toBe(true);
+
+        // Only once the popup unmounts does the isolation lift.
+        await expect(page.locator(popup)).toHaveCount(0);
+        expect(await rootInert()).toBe(false);
+    });
 });

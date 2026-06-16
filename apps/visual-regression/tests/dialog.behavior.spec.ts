@@ -289,6 +289,36 @@ test.describe('Dialog — new floating engine migration', () => {
         expect(await page.locator('#storybook-root').evaluate((el) => el.hasAttribute('inert'))).toBe(false);
     });
 
+    test('keeps outside content inert through the exit animation, lifting only at unmount (mounted-scoped)', async ({
+        page
+    }) => {
+        await gotoStory(page, 'primitives-dialog--default');
+
+        // Slow the exit keyframes so the mid-exit state is observable without a race.
+        await page.addStyleTag({
+            content: `[rdxDialogBackdrop][data-closed], [rdxDialogPopup][data-closed] { animation-duration: 2000ms !important; }`
+        });
+
+        const rootInert = () => page.locator('#storybook-root').evaluate((el) => el.hasAttribute('inert'));
+
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+        expect(await rootInert()).toBe(true);
+
+        await page.locator('[rdxDialogClose][aria-label="Close"]').click();
+
+        // Mid-exit: the popup is closing (`data-closed`) but still mounted — unlike the scroll lock
+        // (released at close-start), the focus manager's `inert` isolation HOLDS until unmount, matching
+        // Base UI's `disabled={!mounted}`. Focus can't escape and the background stays unreachable while
+        // the close animation plays.
+        await expect(page.locator(popup)).toHaveAttribute('data-closed', '');
+        expect(await rootInert()).toBe(true);
+
+        // Only once both roots unmount does the isolation lift.
+        await expect(page.locator(popup)).toHaveCount(0);
+        expect(await rootInert()).toBe(false);
+    });
+
     test('the backdrop is decorative — role="presentation" (Base UI parity)', async ({ page }) => {
         await gotoStory(page, 'primitives-dialog--default');
         await page.locator(trigger).first().click();

@@ -38,16 +38,19 @@ const COMPOSITE_KEYS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight
  * - `isEventOnTrigger` preventDefault → removed: the trigger is in `context.triggers`, so the engine
  *   treats a press/focus on it as **inside** (no close-then-reopen).
  *
- * **Remaining open items (not blockers; tracked for the full cutover):**
- * 1. `enabled: isOpen()` releases the trap at close-start vs legacy holding it until unmount — verified
- *    OK (return-focus + exit-animation tests pass), but the manager's single `enabled` can't yet split
- *    trap(mounted) from marker/focus-out(open).
- * 2. `markOthers` aria-hidden applies for `'trap-focus'` too (manager modal) while `aria-modal` is set
- *    only for `modal === true` — decide whether to split (AT review).
- * 3. `returnFocus` orchestration is deferred → the reworked focus scope's default return-focus is used.
- *
- * (The Phase-4 cutover is now complete — every primitive is on the new engine, so cross-primitive
- * nesting is no longer a caveat; items 1–3 remain as parity polish.)
+ * **Parity notes:**
+ * - **Mounted-scoped manager (resolved 2026-06-16):** `enabled` is now `open || transitionStatus ===
+ *   'ending'`, so the trap / marker / modal-`inert` isolation hold for the whole **mounted** lifetime
+ *   (through the exit animation) — Base UI's `FloatingFocusManager disabled={!mounted}`, not `open`.
+ * - **`trap-focus` background isolation is intended (Base UI parity):** the manager applies `inert`
+ *   (a11y-hidden + non-interactive) to outside elements for `modal === true` **and** `'trap-focus'`,
+ *   matching Base UI's `modal={modal !== false}` + `markOthers({ ariaHidden: modal })`. The separate
+ *   `aria-modal="true"` attribute is set only for `modal === true` (Base UI does not emit `aria-modal`
+ *   at all and relies on the isolation pass); whether to drop / extend the attribute is the one open
+ *   **AT-review** decision here.
+ * - **`returnFocus` orchestration is deferred** → the reworked focus scope's default return-focus is
+ *   used (overriding it means intercepting `unmountAutoFocus`, which fires during teardown after the
+ *   output subscription is gone; a robust override is a focus-manager follow-up — see ADR 0017 §2).
  */
 @Directive({
     selector: '[rdxDialogPopup]',
@@ -57,9 +60,16 @@ const COMPOSITE_KEYS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight
         provideFloatingFocusManagerConfig(() => {
             const rootContext = injectRdxDialogRootContext();
             return {
-                // Trap for a modal or trap-focus dialog; off when the dialog is closed (still mounted).
+                // Trap for a modal or trap-focus dialog (Base UI `modal={modal !== false}` — both isolate
+                // the background via the manager's marker/inert pass).
                 modal: () => rootContext.modal() === true || rootContext.modal() === 'trap-focus',
-                enabled: () => rootContext.isOpen(),
+                // Active for the whole MOUNTED lifetime — including the close (exit) animation — matching
+                // Base UI's `FloatingFocusManager disabled={!mounted}` (NOT `open`): the trap, the marker,
+                // and the modal `inert` isolation hold until the popup actually unmounts, so focus can't
+                // escape and the background can't be reached mid-close. A closed-but-never-opened mount
+                // (`forceMount`) stays disabled (`isOpen` false, no `ending` transition) so it never traps
+                // a hidden dialog.
+                enabled: () => rootContext.isOpen() || rootContext.transitionStatus() === 'ending',
                 closeOnFocusOut: () => !rootContext.disablePointerDismissal()
             };
         })

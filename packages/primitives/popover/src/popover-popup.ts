@@ -41,8 +41,13 @@ import { injectRdxPopoverRootContext } from './popover-root';
                 modal: () =>
                     rootContext.modal() === 'trap-focus' ||
                     (rootContext.modal() === true && rootContext.hasPopupClose()),
-                // Off while closed (still mounted) and while hover-opened (no trap / mark on hover).
-                enabled: () => rootContext.isOpen() && !rootContext.isHoverActive()
+                // Active for the whole MOUNTED lifetime (Base UI `disabled={!mounted}`, not `open`): the
+                // trap / marker / modal-`inert` isolation hold through the close (exit) animation, lifting
+                // only at unmount. Still suppressed while hover-opened (no trap / mark on hover) and for a
+                // closed-but-never-opened mount (no `isOpen`, no `ending` transition).
+                enabled: () =>
+                    (rootContext.isOpen() || rootContext.transitionStatus() === 'ending') &&
+                    !rootContext.isHoverActive()
             };
         })
     ],

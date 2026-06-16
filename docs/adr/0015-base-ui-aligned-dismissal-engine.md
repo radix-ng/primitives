@@ -1,13 +1,24 @@
 # ADR 0015: Base UI-aligned dismissal engine
 
-- Status: Proposed
-- Date: 2026-06-14
+- Status: Accepted
+- Date: 2026-06-14 (accepted 2026-06-16)
 - Decision owners: Radix NG maintainers
 - Related: ADR 0005 (owned floating stack), ADR 0010 (structural portal presence), ADR 0011 (WAAPI
   presence exit detection), ADR 0017 (floating focus manager: produces the `aria-hidden` isolation and
   the marker this ADR's §4 guard reads), ADR 0016 (scroll-lock parity); both follow-ups own the concerns
   this ADR scopes out (§9). `packages/primitives/dismissable-layer`, all floating primitive consumers
   listed below
+
+> **Implementation status (2026-06-16): fully landed.** Phases -1…5 are complete — the shared floating
+> tree + node/root-context/trigger-registry/event-channel pillars (§1), scoped branches (§2), Base UI
+> ownership/propagation (§3), the full outside-press contract + IME/touch hardening (§4–§5), per-`Document`
+> scoping (§6), and the directive API cleanup (§7). The Phase-4 atomic cutover migrated **every** floating
+> primitive (Dialog, Popover, Tooltip, Preview Card, Menu/Menubar/Context Menu, Select, Combobox,
+> Autocomplete, Navigation Menu) and Editable onto the engine; the legacy `RdxDismissableLayer` /
+> `…Branch` / layer-stack / `disableOutsidePointerEvents` body-toggle were **deleted**. The capability is
+> shipped as **`RdxDismiss`** / **`RdxDismissProps`** (Base UI `useDismiss` naming). Acceptance criteria
+> 1–9 are met and verified by the Chromium behavior suites. Out-of-scope follow-ups remain owned by
+> **ADR 0016** (scroll-lock behavioral parity) and **ADR 0017** (focus manager).
 
 ## Context
 
