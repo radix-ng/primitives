@@ -6,7 +6,7 @@ import {
     RdxFloatingNodeRegistration,
     useScrollLock
 } from '@radix-ng/primitives/core';
-import { RdxDismissableCapability } from '@radix-ng/primitives/dismissable-layer';
+import { RdxDismiss } from '@radix-ng/primitives/dismissable-layer';
 import {
     provideFloatingFocusManagerConfig,
     RdxFloatingFocusManager
@@ -110,7 +110,7 @@ export class RdxPopoverPopup {
 
         // Dismissal: Escape + outside-press always close (no pointer-dismissal opt-out). Focus-out is
         // owned by the focus manager (below), so the capability's own focus-out is disabled.
-        new RdxDismissableCapability(this.floatingContext, () => this.registration?.node() ?? null, {
+        new RdxDismiss(this.floatingContext, () => this.registration?.node() ?? null, {
             escapeKey: () => true,
             outsidePress: () => true,
             focusOutside: () => false,

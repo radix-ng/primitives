@@ -5,7 +5,7 @@ import {
     RdxFloatingNodeRegistration,
     useGraceArea
 } from '@radix-ng/primitives/core';
-import { RdxDismissableCapability } from '@radix-ng/primitives/dismissable-layer';
+import { RdxDismiss } from '@radix-ng/primitives/dismissable-layer';
 import {
     provideRdxPopperContentConfig,
     provideRdxPopperContentWrapper,
@@ -19,7 +19,7 @@ import { injectRdxTooltipContext } from './tooltip';
  * A "thin" positioner (ADR 0012): it inherits the popper positioning surface (inputs, `placed`
  * output, unified vars + placement attrs) from {@link RdxPopperContentWrapper} and adds tooltip's own
  * concerns — Base UI-aligned defaults (`side: 'top'`) via the config provider, dismiss handling
- * (ADR 0015 — inline {@link RdxDismissableCapability} on the shared floating tree, dismissal-only with
+ * (ADR 0015 — inline {@link RdxDismiss} on the shared floating tree, dismissal-only with
  * no focus manager), the cursor-follow pointer-through behavior (via the inherited `nonInteractive`
  * signal), the open/closed state attributes, and the hover grace area.
  */
@@ -97,7 +97,7 @@ export class RdxTooltipPositioner extends RdxPopperContentWrapper {
 
         // Dismissal-only (ADR 0017 §1 — a tooltip has no focus manager): Escape and an outside press
         // close it; focus-out is intentionally a no-op (a tooltip never traps or follows focus).
-        new RdxDismissableCapability(this.floatingContext, () => this.registration?.node() ?? null, {
+        new RdxDismiss(this.floatingContext, () => this.registration?.node() ?? null, {
             escapeKey: () => true,
             outsidePress: () => true,
             focusOutside: () => false,

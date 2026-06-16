@@ -6,7 +6,7 @@ import {
     RdxFloatingNodeRegistration,
     useScrollLock
 } from '@radix-ng/primitives/core';
-import { RdxDismissableCapability } from '@radix-ng/primitives/dismissable-layer';
+import { RdxDismiss } from '@radix-ng/primitives/dismissable-layer';
 import {
     provideFloatingFocusManagerConfig,
     RdxFloatingFocusManager
@@ -27,7 +27,7 @@ const COMPOSITE_KEYS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight
  *
  * **Mapping (legacy → new):**
  * - `RdxDismissableLayer` (legacy) → `RdxFloatingNodeRegistration` (registers the tree node) +
- *   `RdxDismissableCapability` (Escape / outside-press; reads the root context + node).
+ *   `RdxDismiss` (Escape / outside-press; reads the root context + node).
  * - `RdxFocusScope` (direct) → `RdxFloatingFocusManager` (composes the reworked focus scope; trap +
  *   markOthers + close-on-focus-out), driven by `provideFloatingFocusManagerConfig`.
  * - `disableOutsidePointerEvents` → the focus manager's `inert` pass marks outside elements
@@ -45,8 +45,9 @@ const COMPOSITE_KEYS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight
  * 2. `markOthers` aria-hidden applies for `'trap-focus'` too (manager modal) while `aria-modal` is set
  *    only for `modal === true` — decide whether to split (AT review).
  * 3. `returnFocus` orchestration is deferred → the reworked focus scope's default return-focus is used.
- * 4. Atomic-cutover caveat: Dialog is on the new engine while other primitives are legacy — cross-primitive
- *    nesting (e.g. a legacy Popover inside this Dialog) is **out of scope** until the full Phase-4 cutover.
+ *
+ * (The Phase-4 cutover is now complete — every primitive is on the new engine, so cross-primitive
+ * nesting is no longer a caveat; items 1–3 remain as parity polish.)
  */
 @Directive({
     selector: '[rdxDialogPopup]',
@@ -122,7 +123,7 @@ export class RdxDialogPopup {
         // and only when pointer dismissal is enabled. With a backdrop the press is `intentional` (closes
         // on `click`, so a text-selection drag out of the popup doesn't dismiss); without one it stays
         // `sloppy` (immediate `pointerdown`). Focus-out is owned by the focus manager (below).
-        new RdxDismissableCapability(this.floatingContext, () => this.registration?.node() ?? null, {
+        new RdxDismiss(this.floatingContext, () => this.registration?.node() ?? null, {
             escapeKey: () => true,
             outsidePress: () => this.isTopmost() && !this.rootContext.disablePointerDismissal(),
             outsidePressEvent: () =>

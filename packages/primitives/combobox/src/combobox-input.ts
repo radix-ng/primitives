@@ -215,9 +215,9 @@ export class RdxComboboxInput {
                 } else if (!this.rootContext.popupMounted()) {
                     // Base UI: Escape on a closed combobox clears the input text and the selection
                     // (`clearSelection` resets both, a no-op while read-only / disabled). Guard on
-                    // `popupMounted`: the dismissable layer closes in the capture phase, so `open()` is
-                    // already false here when this same Escape just closed an open popup — in that case
-                    // the popup is still mounted (exiting) and we must not also clear.
+                    // `popupMounted`: the input's own Escape handler (the `open` branch above) already set
+                    // `open()` false when this same Escape just closed an open popup — in that case the
+                    // popup is still mounted (exiting) and we must not also clear.
                     this.rootContext.clearSelection();
                 }
                 break;

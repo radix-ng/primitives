@@ -21,7 +21,7 @@ import {
     useListHighlight,
     useScrollLock
 } from '@radix-ng/primitives/core';
-import { RdxDismissableCapability } from '@radix-ng/primitives/dismissable-layer';
+import { RdxDismiss } from '@radix-ng/primitives/dismissable-layer';
 import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import { RdxPopperContent } from '@radix-ng/primitives/popper';
 import { injectSelectRootContext } from './select-root';
@@ -234,7 +234,7 @@ export class RdxSelectPopup {
         // Dismissal (ADR 0015): Escape or an outside press closes the select. Focus-out does NOT close it
         // — the listbox holds focus while open (items are navigated virtually), so a focus-out is not a
         // dismissal (the legacy preventDefaulted it too).
-        new RdxDismissableCapability(this.floatingContext, () => this.registration?.node() ?? null, {
+        new RdxDismiss(this.floatingContext, () => this.registration?.node() ?? null, {
             escapeKey: () => true,
             outsidePress: () => true,
             focusOutside: () => false,

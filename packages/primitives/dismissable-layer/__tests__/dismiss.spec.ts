@@ -14,12 +14,12 @@ import {
     RdxFloatingTree
 } from '@radix-ng/primitives/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { RdxDismissableCapability, RdxDismissableConfig, RdxDismissReason } from '../src/dismissable-capability';
+import { RdxDismiss, RdxDismissProps, RdxDismissReason } from '../src/dismiss';
 
 /** Drain microtasks (focus-out defers two) and the deferred `pointerdown` attach (a `setTimeout(0)`). */
 const flush = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 0));
 
-describe('RdxDismissableCapability', () => {
+describe('RdxDismiss', () => {
     const cleanups: Array<() => void> = [];
     const appended: Element[] = [];
 
@@ -39,14 +39,14 @@ describe('RdxDismissableCapability', () => {
         ctx: RdxFloatingRootContext,
         node: () => RdxFloatingNode | null,
         onDismiss: (reason: RdxDismissReason, event: Event) => void,
-        config: RdxDismissableConfig = {}
-    ): RdxDismissableCapability {
+        config: RdxDismissProps = {}
+    ): RdxDismiss {
         const injector = createEnvironmentInjector(
             [{ provide: PLATFORM_ID, useValue: 'browser' }],
             TestBed.inject(EnvironmentInjector)
         );
         cleanups.push(() => injector.destroy());
-        return runInInjectionContext(injector, () => new RdxDismissableCapability(ctx, node, { onDismiss, ...config }));
+        return runInInjectionContext(injector, () => new RdxDismiss(ctx, node, { onDismiss, ...config }));
     }
 
     beforeEach(() => TestBed.resetTestingModule());
@@ -591,7 +591,7 @@ describe('RdxDismissableCapability', () => {
         runInInjectionContext(
             injector,
             () =>
-                new RdxDismissableCapability(
+                new RdxDismiss(
                     context(() => true),
                     () => null,
                     { onDismiss }

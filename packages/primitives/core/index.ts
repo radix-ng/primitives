@@ -27,7 +27,6 @@ export * from './src/floating/trigger-registry';
 export * from './src/dom/document';
 export * from './src/dom/element-size';
 export * from './src/dom/get-active-element';
-export * from './src/dom/use-body-pointer-events-lock';
 export * from './src/dom/use-resize-observer';
 export * from './src/dom/use-scroll-lock';
 

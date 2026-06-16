@@ -4,7 +4,7 @@ import {
     RDX_FLOATING_ROOT_CONTEXT,
     RdxFloatingNodeRegistration
 } from '@radix-ng/primitives/core';
-import { RdxDismissableCapability } from '@radix-ng/primitives/dismissable-layer';
+import { RdxDismiss } from '@radix-ng/primitives/dismissable-layer';
 import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
 import { injectRdxPreviewCardRootContext, RdxPreviewCardOpenChangeReason } from './preview-card-root';
 
@@ -68,7 +68,7 @@ export class RdxPreviewCardPopup {
         const unregisterTransitionElement = this.rootContext.registerTransitionElement(this.host);
         inject(DestroyRef).onDestroy(unregisterTransitionElement);
 
-        new RdxDismissableCapability(this.floatingContext, () => this.registration?.node() ?? null, {
+        new RdxDismiss(this.floatingContext, () => this.registration?.node() ?? null, {
             escapeKey: () => true,
             outsidePress: () => true,
             focusOutside: () => true,

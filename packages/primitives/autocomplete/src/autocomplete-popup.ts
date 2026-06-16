@@ -5,7 +5,7 @@ import {
     RdxFloatingNodeRegistration,
     useScrollLock
 } from '@radix-ng/primitives/core';
-import { RdxDismissableCapability } from '@radix-ng/primitives/dismissable-layer';
+import { RdxDismiss } from '@radix-ng/primitives/dismissable-layer';
 import { injectPopperContentWrapperContext, RdxPopperContent } from '@radix-ng/primitives/popper';
 import { RdxAutocompleteRoot } from './autocomplete-root';
 
@@ -59,7 +59,7 @@ export class RdxAutocompletePopup {
         // input / trigger / clear are registered as "inside" (RdxFloatingInsideElement), so the input keeping
         // focus — or a press on those parts — never self-dismisses. Escape is owned by the input (it
         // preventDefaults + closes), so the capability does not handle it (`escapeKey: false`).
-        new RdxDismissableCapability(this.floatingContext, () => this.registration?.node() ?? null, {
+        new RdxDismiss(this.floatingContext, () => this.registration?.node() ?? null, {
             escapeKey: () => false,
             outsidePress: () => true,
             focusOutside: () => true,

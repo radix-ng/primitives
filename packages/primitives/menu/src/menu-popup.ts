@@ -6,7 +6,7 @@ import {
     RdxFloatingNodeRegistration,
     useScrollLock
 } from '@radix-ng/primitives/core';
-import { RdxDismissableCapability } from '@radix-ng/primitives/dismissable-layer';
+import { RdxDismiss } from '@radix-ng/primitives/dismissable-layer';
 import { provideRdxFocusScopeConfig, RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
 import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
@@ -136,7 +136,7 @@ export class RdxMenuPopup {
         // focus currently sits, matching Base UI `useDismiss`). Deepest-first: a non-bubbling layer
         // yields to an open child, so Escape closes only the innermost menu — unless `closeParentOnEsc`
         // makes it bubble up the whole chain.
-        new RdxDismissableCapability(this.floatingContext, () => this.registration?.node() ?? null, {
+        new RdxDismiss(this.floatingContext, () => this.registration?.node() ?? null, {
             // A disabled menu does not dismiss (Base UI `useDismiss({ enabled: !disabled })`): if an open
             // menu becomes disabled it stays put rather than closing on Escape / outside-press / focus-out.
             enabled: () => !this.rootContext.disabled(),

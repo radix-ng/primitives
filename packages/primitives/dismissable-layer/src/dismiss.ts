@@ -6,7 +6,7 @@ import { RdxFloatingNode, RdxFloatingRootContext } from '@radix-ng/primitives/co
 export type RdxDismissReason = 'escape-key' | 'outside-press' | 'focus-outside';
 
 /**
- * Configuration for {@link RdxDismissableCapability}. Every flag is a getter so it can be a signal
+ * Configuration for {@link RdxDismiss}. Every flag is a getter so it can be a signal
  * read (reactive) or a plain predicate. The `on*` pre-hooks are **preventable**: call
  * `event.preventDefault()` inside one to veto that dismissal (the layer then stays open).
  */
@@ -22,7 +22,7 @@ export type RdxOutsidePressEventConfig =
     | RdxOutsidePressEvent
     | { mouse?: RdxOutsidePressEvent; touch?: RdxOutsidePressEvent; pen?: RdxOutsidePressEvent };
 
-export interface RdxDismissableConfig {
+export interface RdxDismissProps {
     /** Whole-capability gate (on top of `context.open()`). Default `() => true`. */
     enabled?: () => boolean;
     /** Whether Escape requests dismissal. Default `() => true`. */
@@ -164,7 +164,7 @@ function childBubbles(context: RdxFloatingRootContext, reason: RdxDismissReason)
 }
 
 /**
- * The dismissal **capability** (ADR 0015 §1) — the Angular counterpart of Base UI's `useDismiss`. It
+ * The **dismiss** mechanism (ADR 0015) — the Angular counterpart of Base UI's `useDismiss`. It
  * **references** a {@link RdxFloatingRootContext} (mandatory: `open` / `triggers` / elements live there)
  * and a {@link RdxFloatingNode} (**optional**: a node-optional / Navigation-Menu state has `node ===
  * null`); it never creates them. It listens for Escape / outside-press / focus-out and **requests** a
@@ -173,37 +173,37 @@ function childBubbles(context: RdxFloatingRootContext, reason: RdxDismissReason)
  *
  * **Logical, not DOM-order, containment.** "Inside" is resolved through the shared tree — this popup's
  * floating element + its registered triggers, **plus** the same for every open descendant node, **plus**
- * this capability's own {@link branches}. So a portal-relocated child still counts as inside its parent,
- * which the legacy DOM-order `isLayerExist` cannot do.
+ * this layer's own {@link branches}. So a portal-relocated child still counts as inside its parent — which
+ * a DOM-order containment check cannot do.
  *
- * **Ownership & propagation (`hasBlockingChild`, Phase 2).** Each layer publishes per-event `bubbles`
- * flags (`escapeKeyBubbles` default `false`, `outsidePressBubbles` default `true`); an ancestor reads its
- * open children's flags via {@link childBubbles}. A non-bubbling layer **yields** to a non-bubbling open
- * child, so by default Escape closes only the **deepest** layer while an outside press closes the **whole
- * stack**. A layer with `escapeKeyBubbles = true` re-emits to its parent (Menu's `closeParentOnEsc`). The
- * owning non-bubbling Escape layer also `stopPropagation()`s so the key does not reach app handlers.
+ * **Ownership & propagation (`hasBlockingChild`).** Each layer publishes per-event `bubbles` flags
+ * (`escapeKeyBubbles` default `false`, `outsidePressBubbles` default `true`); an ancestor reads its open
+ * children's flags via {@link childBubbles}. A non-bubbling layer **yields** to a non-bubbling open child,
+ * so by default Escape closes only the **deepest** layer while an outside press closes the **whole stack**.
+ * A layer with `escapeKeyBubbles = true` re-emits to its parent (Menu's `closeParentOnEsc`). The owning
+ * non-bubbling Escape layer also `stopPropagation()`s so the key does not reach app handlers.
  *
- * **Press / IME hardening (Phase 3).** Outside-press honors `outsidePressEvent` (`'sloppy'` →
- * `pointerdown`, `'intentional'` → `click` with press-start-inside drag-out suppression), ignores
- * non-primary mouse buttons and scrollbar presses, resets on `pointercancel`, and ignores Escape while an
- * IME composition is active. **Touch** gesture hardening (long-press / drag distance thresholds) is
- * deliberately **not** ported here — jsdom cannot exercise it; it belongs in `apps/visual-regression`
- * (Playwright), and the legacy engine keeps driving touch until the Phase-4 cutover.
+ * **Press / IME hardening.** Outside-press honors `outsidePressEvent` (`'sloppy'` → `pointerdown`,
+ * `'intentional'` → `click` with press-start-inside drag-out suppression), ignores non-primary mouse
+ * buttons and scrollbar presses, resets on `pointercancel`, and ignores Escape while an IME composition is
+ * active. **Touch** sloppy-mode gesture hardening (long-press / drag-distance thresholds) is ported here
+ * but only unit-exercisable via synthetic events — real on-device behavior is covered by
+ * `apps/visual-regression` (Playwright).
  *
- * **Scope.** Built in parallel and **not wired** to the live legacy path (the Phase-4 atomic cutover does
- * that). Must be constructed in an injection context (`DestroyRef` / `PLATFORM_ID`). No-op on the server.
+ * **Scope.** Must be constructed in an injection context (`DestroyRef` / `PLATFORM_ID`). No-op on the
+ * server.
  */
-export class RdxDismissableCapability {
-    /** This capability's own inside-content set (ADR 0015 Phase 1 — separate from the legacy global). */
+export class RdxDismiss {
+    /** This layer's own inside-content set (branches that live outside the popup DOM). */
     readonly branches = new Set<Element>();
 
-    /** This capability's active-ness: the popup is open **and** the capability is enabled. */
+    /** This mechanism's active-ness: the popup is open **and** dismissal is enabled. */
     readonly active: () => boolean;
 
     constructor(
         readonly context: RdxFloatingRootContext,
         readonly node: () => RdxFloatingNode | null,
-        config: RdxDismissableConfig = {}
+        config: RdxDismissProps = {}
     ) {
         const enabled = config.enabled ?? alwaysTrue;
         const escapeKey = config.escapeKey ?? alwaysTrue;
@@ -431,7 +431,7 @@ export class RdxDismissableCapability {
         };
 
         const handleFocusIn = (event: FocusEvent): void => {
-            // Defer two microtasks so focus settles before reading containment (matches the legacy
+            // Defer two microtasks so focus settles before reading containment (matches the standalone
             // RdxFocusOutside; the `on*` hook still runs synchronously, so `preventDefault` is honored).
             void Promise.resolve()
                 .then(() => Promise.resolve())

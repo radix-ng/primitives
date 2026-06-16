@@ -1,6 +1,6 @@
 import { computed, DestroyRef, Directive, ElementRef, inject, output } from '@angular/core';
 import { ARROW_DOWN, ARROW_UP, END, HOME, RDX_FLOATING_ROOT_CONTEXT } from '@radix-ng/primitives/core';
-import { RdxDismissableCapability } from '@radix-ng/primitives/dismissable-layer';
+import { RdxDismiss } from '@radix-ng/primitives/dismissable-layer';
 import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
 import { injectNavigationMenuRootContext, RdxNavigationMenuOpenChangeReason } from './navigation-menu-root-context';
 import { focusFirst, getTabbableCandidates } from './utils';
@@ -73,7 +73,7 @@ export class RdxNavigationMenuPopup {
         // Dismissal (ADR 0015): Escape, an outside press, or focus moving outside closes the menu.
         // Navigation Menu is node-optional (one shared popup) — the capability runs with `node === null`.
         // It does not trap focus, so it closes on focus-out like a non-modal menu.
-        new RdxDismissableCapability(this.floatingContext, () => null, {
+        new RdxDismiss(this.floatingContext, () => null, {
             escapeKey: () => true,
             outsidePress: () => true,
             focusOutside: () => true,

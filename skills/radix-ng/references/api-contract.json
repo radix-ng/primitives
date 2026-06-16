@@ -2280,7 +2280,7 @@
           "directive": "RdxDialogPopup",
           "selector": "[rdxDialogPopup]",
           "exportAs": "rdxDialogPopup",
-          "description": "A container for the dialog contents.\n\n**ADR 0015/0017 Phase-4 migration — Dialog is the PILOT cutover onto the new floating dismissal +\nfocus engine. Browser-verified** by `apps/visual-regression/tests/dialog.behavior.spec.ts` (trap,\ninitial / return focus, Escape / outside-press / focus-out dismissal, nested-Escape deepest-first,\nbackdrop-not-marked).\n\n**Mapping (legacy → new):**\n- `RdxDismissableLayer` (legacy) → `RdxFloatingNodeRegistration` (registers the tree node) +\n  `RdxDismissableCapability` (Escape / outside-press; reads the root context + node).\n- `RdxFocusScope` (direct) → `RdxFloatingFocusManager` (composes the reworked focus scope; trap +\n  markOthers + close-on-focus-out), driven by `provideFloatingFocusManagerConfig`.\n- `disableOutsidePointerEvents` → the focus manager's `inert` pass marks outside elements\n  non-interactive for a modal (finding #4), scoped to siblings of the popup's ancestor chain instead\n  of a global `body { pointer-events: none }` lock — so the popup needs no `pointer-events: auto`.\n- focus-out close moved from the dismissal capability (`focusOutside: () => false`) to the manager\n  (`manager.focusOut`), per ADR 0017 §3.\n- `isEventOnTrigger` preventDefault → removed: the trigger is in `context.triggers`, so the engine\n  treats a press/focus on it as **inside** (no close-then-reopen).\n\n**Remaining open items (not blockers; tracked for the full cutover):**\n1. `enabled: isOpen()` releases the trap at close-start vs legacy holding it until unmount — verified\n   OK (return-focus + exit-animation tests pass), but the manager's single `enabled` can't yet split\n   trap(mounted) from marker/focus-out(open).\n2. `markOthers` aria-hidden applies for `'trap-focus'` too (manager modal) while `aria-modal` is set\n   only for `modal === true` — decide whether to split (AT review).\n3. `returnFocus` orchestration is deferred → the reworked focus scope's default return-focus is used.\n4. Atomic-cutover caveat: Dialog is on the new engine while other primitives are legacy — cross-primitive\n   nesting (e.g. a legacy Popover inside this Dialog) is **out of scope** until the full Phase-4 cutover.",
+          "description": "A container for the dialog contents.\n\n**ADR 0015/0017 Phase-4 migration — Dialog is the PILOT cutover onto the new floating dismissal +\nfocus engine. Browser-verified** by `apps/visual-regression/tests/dialog.behavior.spec.ts` (trap,\ninitial / return focus, Escape / outside-press / focus-out dismissal, nested-Escape deepest-first,\nbackdrop-not-marked).\n\n**Mapping (legacy → new):**\n- `RdxDismissableLayer` (legacy) → `RdxFloatingNodeRegistration` (registers the tree node) +\n  `RdxDismiss` (Escape / outside-press; reads the root context + node).\n- `RdxFocusScope` (direct) → `RdxFloatingFocusManager` (composes the reworked focus scope; trap +\n  markOthers + close-on-focus-out), driven by `provideFloatingFocusManagerConfig`.\n- `disableOutsidePointerEvents` → the focus manager's `inert` pass marks outside elements\n  non-interactive for a modal (finding #4), scoped to siblings of the popup's ancestor chain instead\n  of a global `body { pointer-events: none }` lock — so the popup needs no `pointer-events: auto`.\n- focus-out close moved from the dismissal capability (`focusOutside: () => false`) to the manager\n  (`manager.focusOut`), per ADR 0017 §3.\n- `isEventOnTrigger` preventDefault → removed: the trigger is in `context.triggers`, so the engine\n  treats a press/focus on it as **inside** (no close-then-reopen).\n\n**Remaining open items (not blockers; tracked for the full cutover):**\n1. `enabled: isOpen()` releases the trap at close-start vs legacy holding it until unmount — verified\n   OK (return-focus + exit-animation tests pass), but the manager's single `enabled` can't yet split\n   trap(mounted) from marker/focus-out(open).\n2. `markOthers` aria-hidden applies for `'trap-focus'` too (manager modal) while `aria-modal` is set\n   only for `modal === true` — decide whether to split (AT review).\n3. `returnFocus` orchestration is deferred → the reworked focus scope's default return-focus is used.\n\n(The Phase-4 cutover is now complete — every primitive is on the new engine, so cross-primitive\nnesting is no longer a caveat; items 1–3 remain as parity polish.)",
           "hostDirectives": [
             "RdxFloatingNodeRegistration",
             "RdxFloatingFocusManager"
@@ -2449,61 +2449,10 @@
       "section": "utils",
       "parts": [
         {
-          "directive": "RdxDismissableLayerBranch",
-          "selector": "[rdxDismissableLayerBranch]",
-          "inputs": [],
-          "outputs": []
-        },
-        {
-          "directive": "RdxDismissableLayer",
-          "selector": "[rdxDismissableLayer]",
-          "exportAs": "rdxDismissableLayer",
-          "hostDirectives": [
-            "RdxPointerDownOutside",
-            "RdxFocusOutside",
-            "RdxEscapeKeyDown"
-          ],
-          "inputs": [
-            {
-              "name": "disableOutsidePointerEvents",
-              "type": "boolean | undefined",
-              "default": "undefined",
-              "description": "When `true`, hover/focus/click interactions will be disabled on elements outside\nthe `DismissableLayer`. Users will need to click twice on outside elements to\ninteract with them: once to close the `DismissableLayer`, and again to trigger the element."
-            }
-          ],
-          "outputs": [
-            {
-              "name": "dismiss",
-              "type": "void",
-              "description": "Handler called when the `DismissableLayer` should be dismissed"
-            },
-            {
-              "name": "escapeKeyDown",
-              "type": "KeyboardEvent",
-              "description": "Event handler called when the escape key is down.\nCan be prevented."
-            },
-            {
-              "name": "focusOutside",
-              "type": "FocusEvent",
-              "description": "Event handler called when the focus moves outside of the `DismissableLayer`.\nCan be prevented."
-            },
-            {
-              "name": "interactOutside",
-              "type": "PointerEvent | FocusEvent",
-              "description": "Event handler called when an interaction happens outside the `DismissableLayer`.\nSpecifically, when a `pointerdown` event happens outside or focus moves outside of it.\nCan be prevented."
-            },
-            {
-              "name": "pointerDownOutside",
-              "type": "PointerEvent",
-              "description": "Event handler called when a `pointerdown` event happens outside of the `DismissableLayer`.\nCan be prevented."
-            }
-          ]
-        },
-        {
           "directive": "RdxFloatingInsideElement",
           "selector": "[rdxFloatingInside]",
           "exportAs": "rdxFloatingInside",
-          "description": "Marks its host as **inside** the enclosing floating layer (ADR 0015): a pointer / focus interaction on\nit does not count as \"outside\", so it never dismisses the popup. It registers the host into the\nfloating root context's trigger registry — the dismissal capability's `isInside` check reads it.\n\nThis is the new-engine replacement for the legacy `RdxDismissableLayerBranch`, for an element that\nlives **outside** the popup DOM but logically belongs to the layer — e.g. a Combobox input / trigger /\nchips / clear button that keeps focus (or is clicked) while the listbox is open.",
+          "description": "Marks its host as **inside** the enclosing floating layer (ADR 0015): a pointer / focus interaction on\nit does not count as \"outside\", so it never dismisses the popup. It registers the host into the\nfloating root context's trigger registry — {@link RdxDismiss}'s `isInside` check reads it.\n\nUse it for an element that lives **outside** the popup DOM but logically belongs to the layer — e.g. a\nCombobox input / trigger / chips / clear button that keeps focus (or is clicked) while the listbox is\nopen.",
           "inputs": [],
           "outputs": []
         },
@@ -7326,7 +7275,7 @@
         {
           "directive": "RdxTooltipPositioner",
           "selector": "[rdxTooltipPositioner]",
-          "description": "Positions the tooltip popup against its trigger (or a custom anchor).\n\nA \"thin\" positioner (ADR 0012): it inherits the popper positioning surface (inputs, `placed`\noutput, unified vars + placement attrs) from {@link RdxPopperContentWrapper} and adds tooltip's own\nconcerns — Base UI-aligned defaults (`side: 'top'`) via the config provider, dismiss handling\n(ADR 0015 — inline {@link RdxDismissableCapability} on the shared floating tree, dismissal-only with\nno focus manager), the cursor-follow pointer-through behavior (via the inherited `nonInteractive`\nsignal), the open/closed state attributes, and the hover grace area.",
+          "description": "Positions the tooltip popup against its trigger (or a custom anchor).\n\nA \"thin\" positioner (ADR 0012): it inherits the popper positioning surface (inputs, `placed`\noutput, unified vars + placement attrs) from {@link RdxPopperContentWrapper} and adds tooltip's own\nconcerns — Base UI-aligned defaults (`side: 'top'`) via the config provider, dismiss handling\n(ADR 0015 — inline {@link RdxDismiss} on the shared floating tree, dismissal-only with\nno focus manager), the cursor-follow pointer-through behavior (via the inherited `nonInteractive`\nsignal), the open/closed state attributes, and the hover grace area.",
           "hostDirectives": [
             "RdxFloatingNodeRegistration"
           ],
