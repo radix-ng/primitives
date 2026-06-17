@@ -24,7 +24,10 @@ import {
     useListHighlight
 } from '@radix-ng/primitives/core';
 import { RdxDismiss, RdxOutsidePressDomEvent } from '@radix-ng/primitives/dismissable-layer';
-import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
+import {
+    provideFloatingFocusManagerConfig,
+    RdxFloatingFocusManager
+} from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperContent } from '@radix-ng/primitives/popper';
 import { injectSelectRootContext } from './select-root';
 import { SELECTION_KEYS, valueComparator } from './utils';
@@ -115,8 +118,30 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
  */
 @Directive({
     selector: '[rdxSelectPopup]',
-    hostDirectives: [RdxPopperContent, RdxFocusScope, RdxFloatingNodeRegistration, RdxCollectionProvider],
-    providers: [provideSelectPopupContext(context)],
+    hostDirectives: [
+        RdxPopperContent,
+        { directive: RdxFloatingFocusManager, inputs: ['returnFocus: finalFocus'] },
+        RdxFloatingNodeRegistration,
+        RdxCollectionProvider
+    ],
+    providers: [
+        provideSelectPopupContext(context),
+        provideFloatingFocusManagerConfig(() => {
+            const rootContext = injectSelectRootContext();
+            const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+
+            return {
+                modal: () => false,
+                enabled: () => rootContext.open() || rootContext.transitionStatus() === 'ending',
+                closeOnFocusOut: () => false,
+                // The listbox owns DOM focus; items are navigated virtually through aria-activedescendant.
+                initialFocus: () => host,
+                restoreFocus: () => true,
+                openInteractionType: () => rootContext.openInteractionType(),
+                closeInteractionType: () => rootContext.closeInteractionType()
+            };
+        })
+    ],
     host: {
         role: 'listbox',
         tabindex: '-1',
@@ -142,7 +167,7 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
 export class RdxSelectPopup {
     private readonly floatingContext = inject(RDX_FLOATING_ROOT_CONTEXT);
     private readonly registration = inject(RDX_FLOATING_REGISTRATION, { optional: true });
-    private readonly currentElement = inject(ElementRef);
+    private readonly currentElement = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly collection = inject(RdxCollectionProvider);
     private readonly injector = inject(Injector);
 
@@ -269,24 +294,7 @@ export class RdxSelectPopup {
                 )
         });
 
-        const focusScope = inject(RdxFocusScope);
-
         afterNextRender(() => {
-            focusScope.unmountAutoFocus.subscribe((event) => {
-                if (event.defaultPrevented) return;
-
-                this.rootContext.triggerElement()?.focus({ preventScroll: true });
-
-                event.preventDefault();
-            });
-
-            // Focus the popup itself (not an item) — the listbox is the focus owner; items are
-            // navigated virtually via aria-activedescendant.
-            focusScope.mountAutoFocus.subscribe((event) => {
-                event.preventDefault();
-                this.content()?.focus({ preventScroll: true });
-            });
-
             // The popup is now the listbox host itself (no longer the positioner's first child).
             this.content.set(this.currentElement.nativeElement);
         });

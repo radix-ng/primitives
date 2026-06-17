@@ -19,11 +19,18 @@ import {
     BooleanInput,
     RDX_FLOATING_REGISTRATION,
     RDX_FLOATING_ROOT_CONTEXT,
-    RdxFloatingRootContext
+    RdxFloatingRootContext,
+    RdxFloatingTree
 } from '@radix-ng/primitives/core';
 import {
     composedContains,
+    createFocusGuard,
+    focus,
     FOCUS_GUARD_ATTR,
+    getNextTabbable,
+    getPreviousTabbable,
+    getTabbableCandidates,
+    isOutsideEvent,
     provideRdxFocusScopeConfig,
     RdxFocusScope,
     RdxFocusScopeConfig,
@@ -38,8 +45,8 @@ import { markOthers } from './mark-others';
  */
 export type RdxInteractionType = 'mouse' | 'touch' | 'pen' | 'keyboard' | '' | null;
 
-/** A focus target: an element, a getter, or `null`. */
-export type RdxFocusTarget = HTMLElement | (() => HTMLElement | null) | null;
+/** A focus target: an element, a getter, `null`, or `undefined` from a policy callback. */
+export type RdxFocusTarget = HTMLElement | (() => HTMLElement | null) | null | undefined;
 
 /** `initialFocus` policy (ADR 0017 §2) — a target, `false`, or an open-interaction callback. */
 export type RdxInitialFocus =
@@ -51,7 +58,7 @@ export type RdxInitialFocus =
 export type RdxReturnFocus =
     | RdxFocusTarget
     | boolean
-    | ((closeInteractionType: RdxInteractionType) => RdxFocusTarget | boolean);
+    | ((closeInteractionType: RdxInteractionType) => RdxFocusTarget | boolean | undefined);
 
 /** Normalizes a DOM event into Base UI-like interaction intent for focus policy decisions. */
 export function getInteractionTypeFromEvent(event?: Event): RdxInteractionType {
@@ -75,7 +82,7 @@ export function getInteractionTypeFromEvent(event?: Event): RdxInteractionType {
 }
 
 /** Resolves an {@link RdxFocusTarget} (element | getter | null) to a concrete element. */
-export function resolveFocusTarget(target: RdxFocusTarget): HTMLElement | null {
+export function resolveFocusTarget(target: RdxFocusTarget): HTMLElement | null | undefined {
     return typeof target === 'function' ? target() : target;
 }
 
@@ -85,7 +92,7 @@ export function resolveFocusTarget(target: RdxFocusTarget): HTMLElement | null {
 export function resolveInitialFocus(
     policy: RdxInitialFocus,
     openInteractionType: RdxInteractionType
-): HTMLElement | null | false {
+): HTMLElement | null | false | undefined {
     const resolved = typeof policy === 'function' ? policy(openInteractionType) : policy;
     return resolved === false ? false : resolveFocusTarget(resolved);
 }
@@ -97,7 +104,7 @@ export function resolveInitialFocus(
 export function resolveReturnFocus(
     policy: RdxReturnFocus,
     closeInteractionType: RdxInteractionType
-): HTMLElement | boolean | null {
+): HTMLElement | boolean | null | undefined {
     const resolved = typeof policy === 'function' ? policy(closeInteractionType) : policy;
     return typeof resolved === 'boolean' ? resolved : resolveFocusTarget(resolved);
 }
@@ -114,9 +121,19 @@ export interface RdxFloatingFocusManagerConfig {
     closeOnFocusOut?: () => boolean;
     initialFocus?: () => RdxInitialFocus;
     returnFocus?: () => RdxReturnFocus;
+    restoreFocus?: () => boolean | 'popup';
+    previousFocusableElement?: () => RdxFocusTarget;
+    nextFocusableElement?: () => RdxFocusTarget;
+    beforeContentFocusGuardRef?: () => RdxFocusGuardRef | null | undefined;
+    externalTree?: () => RdxFloatingTree | null | undefined;
+    getInsideElements?: () => Array<Element | null | undefined>;
     openInteractionType?: () => RdxInteractionType;
     closeInteractionType?: () => RdxInteractionType;
 }
+
+export type RdxFocusGuardRef =
+    | ((element: HTMLSpanElement | null) => void)
+    | { set: (element: HTMLSpanElement | null) => void };
 
 export const RDX_FLOATING_FOCUS_MANAGER_CONFIG = new InjectionToken<RdxFloatingFocusManagerConfig>(
     'RdxFloatingFocusManagerConfig'
@@ -157,8 +174,7 @@ function provideManagedFocusScopeConfig(): Provider {
  * - `loop` is forwarded to `RdxFocusScope`.
  * - `initialFocus` / `returnFocus` are **orchestrated** here (the §2 policy contract, incl. the
  *   interaction-type callback forms): `initialFocus` via the scope's `mountAutoFocus` hook, `returnFocus`
- *   via the scope's `returnFocus` config seam (resolved at the scope's queued post-unmount frame). The
- *   portal-focus bridge remains a later-phase dependency.
+ *   via the scope's `returnFocus` config seam (resolved at the scope's queued post-unmount frame).
  */
 @Directive({
     selector: '[rdxFloatingFocusManager]',
@@ -184,6 +200,28 @@ export class RdxFloatingFocusManager {
 
     /** Where focus returns when the popup closes (ADR 0017 §2). */
     readonly returnFocus = input<RdxReturnFocus | undefined>(undefined);
+
+    /**
+     * Restores focus inside the floating tree when the currently focused inside element is removed and
+     * the browser drops focus onto `<body>` (Base UI `restoreFocus`). `true` restores to the last
+     * available tabbable candidate, `'popup'` restores to the popup container.
+     */
+    readonly restoreFocus = input<boolean | 'popup' | undefined>(undefined);
+
+    /** Overrides where backward tabbing out of a non-modal portaled popup lands. */
+    readonly previousFocusableElement = input<RdxFocusTarget>(undefined);
+
+    /** Overrides where forward tabbing out of a non-modal portaled popup lands. */
+    readonly nextFocusableElement = input<RdxFocusTarget>(undefined);
+
+    /** Optional callback/signal that receives the leading content focus guard. */
+    readonly beforeContentFocusGuardRef = input<RdxFocusGuardRef | null | undefined>(undefined);
+
+    /** Explicit floating tree for detached sibling composition (Base UI `externalTree`). */
+    readonly externalTree = input<RdxFloatingTree | null | undefined>(undefined);
+
+    /** Additional elements treated as inside the floating subtree (Base UI `getInsideElements`). */
+    readonly getInsideElements = input<(() => Array<Element | null | undefined>) | undefined>(undefined);
 
     /**
      * Whether a **non-modal** popup closes when focus leaves to an unrelated node (Base UI
@@ -215,6 +253,23 @@ export class RdxFloatingFocusManager {
     readonly effectiveReturnFocus = computed(() =>
         this.returnFocus() !== undefined ? this.returnFocus()! : (this.config?.returnFocus?.() ?? true)
     );
+    readonly effectiveRestoreFocus = computed(() => this.restoreFocus() ?? this.config?.restoreFocus?.() ?? false);
+    readonly effectivePreviousFocusableElement = computed(() =>
+        this.previousFocusableElement() !== undefined
+            ? this.previousFocusableElement()
+            : this.config?.previousFocusableElement?.()
+    );
+    readonly effectiveNextFocusableElement = computed(() =>
+        this.nextFocusableElement() !== undefined ? this.nextFocusableElement() : this.config?.nextFocusableElement?.()
+    );
+    readonly effectiveBeforeContentFocusGuardRef = computed(
+        () => this.beforeContentFocusGuardRef() ?? this.config?.beforeContentFocusGuardRef?.()
+    );
+    readonly effectiveExternalTree = computed(() => this.externalTree() ?? this.config?.externalTree?.() ?? null);
+    readonly insideElements = computed(() => {
+        const getElements = this.getInsideElements() ?? this.config?.getInsideElements;
+        return (getElements?.() ?? []).filter((element): element is Element => element != null);
+    });
     readonly effectiveOpenInteractionType = computed(
         () => this.config?.openInteractionType?.() ?? this._interactionType()
     );
@@ -277,6 +332,8 @@ export class RdxFloatingFocusManager {
 
         this.trackInteractionType();
         this.wireCloseOnFocusOut();
+        this.wireRestoreFocus();
+        this.wirePortalFocusBridge();
         this.wireFocusOrchestration();
         this.wireInitialFocusFallback();
     }
@@ -334,6 +391,9 @@ export class RdxFloatingFocusManager {
     private resolveReturnFocusTarget(): HTMLElement | false | undefined {
         const resolved = resolveReturnFocus(this.effectiveReturnFocus(), this.effectiveCloseInteractionType());
         if (resolved === false) {
+            return false;
+        }
+        if (resolved === undefined) {
             return false;
         }
         if (resolved === true || resolved == null) {
@@ -452,11 +512,120 @@ export class RdxFloatingFocusManager {
     }
 
     /**
+     * Restore focus when an inside focused element disappears and the document focus falls back to
+     * `<body>`. This mirrors the practical Base UI `restoreFocus` path used by Select while keeping the
+     * broader portal-guard navigation separate.
+     */
+    private wireRestoreFocus(): void {
+        const ownerDocument = this.host.ownerDocument;
+        const onFocusOut = (event: FocusEvent): void => {
+            if (!this.effectiveEnabled() || !this.effectiveRestoreFocus() || !this.isFloatingOpen()) {
+                return;
+            }
+
+            const target = event.target as Node | null;
+            if (!target || !this.isRelatedTargetInside(target)) {
+                return;
+            }
+
+            const view = ownerDocument.defaultView ?? globalThis;
+            view.requestAnimationFrame(() => {
+                if (!this.effectiveEnabled() || !this.effectiveRestoreFocus() || !this.isFloatingOpen()) {
+                    return;
+                }
+                if (ownerDocument.activeElement !== ownerDocument.body) {
+                    return;
+                }
+
+                const popup = this.rootContext?.floatingElement ?? this.host;
+                const targetToFocus =
+                    this.effectiveRestoreFocus() === 'popup' ? popup : (getTabbableCandidates(popup).at(-1) ?? popup);
+                focus(targetToFocus);
+            });
+        };
+
+        ownerDocument.addEventListener('focusout', onFocusOut, true);
+        inject(DestroyRef).onDestroy(() => ownerDocument.removeEventListener('focusout', onFocusOut, true));
+    }
+
+    /**
+     * Portal focus bridge (Base UI inside guards): when focus reaches the hidden guards around portaled
+     * content, redirect it either back inside the popup or to the configured neighboring tabbable node.
+     */
+    private wirePortalFocusBridge(): void {
+        effect((onCleanup) => {
+            if (!this.effectiveEnabled() || !this.isFloatingOpen()) {
+                this.setBeforeContentFocusGuardRef(null);
+                return;
+            }
+
+            const ownerDocument = this.host.ownerDocument;
+            const parent = this.host.parentNode;
+            if (!parent) {
+                return;
+            }
+
+            const beforeGuard = createFocusGuard(ownerDocument);
+            const afterGuard = createFocusGuard(ownerDocument);
+            beforeGuard.setAttribute('data-type', 'inside');
+            afterGuard.setAttribute('data-type', 'inside');
+
+            parent.insertBefore(beforeGuard, this.host);
+            parent.insertBefore(afterGuard, this.host.nextSibling);
+            this.setBeforeContentFocusGuardRef(beforeGuard);
+
+            const onBeforeFocus = (event: FocusEvent): void => {
+                if (this.effectiveModal()) {
+                    focus(this.getTabbableContent().at(-1) ?? this.host);
+                    return;
+                }
+
+                if (isOutsideEvent(event, this.portalFocusContainer())) {
+                    focus(getNextTabbable(this.rootContext?.referenceElement ?? this.host));
+                    return;
+                }
+
+                focus(resolveFocusTarget(this.effectivePreviousFocusableElement()) ?? this.defaultPreviousFocusable());
+            };
+
+            const onAfterFocus = (event: FocusEvent): void => {
+                if (this.effectiveModal()) {
+                    focus(this.getTabbableContent()[0] ?? this.host);
+                    return;
+                }
+
+                if (isOutsideEvent(event, this.portalFocusContainer())) {
+                    focus(getPreviousTabbable(this.rootContext?.referenceElement ?? this.host));
+                    return;
+                }
+
+                focus(resolveFocusTarget(this.effectiveNextFocusableElement()) ?? this.defaultNextFocusable());
+            };
+
+            beforeGuard.addEventListener('focus', onBeforeFocus);
+            afterGuard.addEventListener('focus', onAfterFocus);
+
+            onCleanup(() => {
+                beforeGuard.removeEventListener('focus', onBeforeFocus);
+                afterGuard.removeEventListener('focus', onAfterFocus);
+                beforeGuard.remove();
+                afterGuard.remove();
+                this.setBeforeContentFocusGuardRef(null);
+            });
+        });
+    }
+
+    /**
      * The marker keep-set is intentionally narrow: the popup/focus host only. Own sibling roots such as a
      * user backdrop are DOM-footprint bookkeeping, not marker keep-set members.
      */
     private avoidElements(): Element[] {
-        return [this.host];
+        return [
+            this.host,
+            ...this.insideElements(),
+            resolveFocusTarget(this.effectivePreviousFocusableElement()) ?? null,
+            resolveFocusTarget(this.effectiveNextFocusableElement()) ?? null
+        ].filter((element): element is Element => element != null);
     }
 
     private isFloatingOpen(): boolean {
@@ -472,8 +641,15 @@ export class RdxFloatingFocusManager {
         if (this.rootContext && this.contextContains(this.rootContext, relatedTarget)) {
             return true;
         }
+        if (
+            this.insideElements().some(
+                (element) => element === relatedTarget || composedContains(element, relatedTarget)
+            )
+        ) {
+            return true;
+        }
 
-        const node = this.registration?.node() ?? null;
+        const node = this.currentFloatingNode();
         if (node) {
             for (const ancestor of node.tree.ancestors(node)) {
                 if (ancestor.context && this.contextContains(ancestor.context, relatedTarget)) {
@@ -497,5 +673,44 @@ export class RdxFloatingFocusManager {
             return true;
         }
         return context.triggers.contains(relatedTarget);
+    }
+
+    private currentFloatingNode() {
+        const node = this.registration?.node() ?? null;
+        if (node) {
+            return node;
+        }
+        const tree = this.effectiveExternalTree();
+        return tree?.all.find((candidate) => candidate.context === this.rootContext) ?? null;
+    }
+
+    private getTabbableContent(): HTMLElement[] {
+        return getTabbableCandidates(this.rootContext?.floatingElement ?? this.host);
+    }
+
+    private portalFocusContainer(): Element {
+        const floating = this.rootContext?.floatingElement ?? this.host;
+        const parent = floating.parentElement;
+        return parent && parent !== floating.ownerDocument.body ? parent : floating;
+    }
+
+    private defaultPreviousFocusable(): HTMLElement | null {
+        return getPreviousTabbable(this.rootContext?.referenceElement ?? this.host);
+    }
+
+    private defaultNextFocusable(): HTMLElement | null {
+        return getNextTabbable(this.rootContext?.referenceElement ?? this.host);
+    }
+
+    private setBeforeContentFocusGuardRef(element: HTMLSpanElement | null): void {
+        const ref = this.effectiveBeforeContentFocusGuardRef();
+        if (!ref) {
+            return;
+        }
+        if (typeof ref === 'function') {
+            ref(element);
+        } else {
+            ref.set(element);
+        }
     }
 }

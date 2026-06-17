@@ -3042,11 +3042,17 @@
           "directive": "RdxFloatingFocusManager",
           "selector": "[rdxFloatingFocusManager]",
           "exportAs": "rdxFloatingFocusManager",
-          "description": "`RdxFloatingFocusManager` (ADR 0017 Phase 1b skeleton) — the Angular counterpart of Base UI's\n`FloatingFocusManager`. It is a **coordinator** that composes three low-level focus parts (it never\ninherits them, which would re-fuse trap + popup policy): the **reworked {@link RdxFocusScope}** (the\ntrap, via `hostDirectives`), the portal-focus bridge, and owner-`Document` guards. Per ADR 0017 §1/§2\nits policies are **independent**, none derived from `modal`.\n\n**This skeleton wires the composition + lifecycle gates:**\n- `enabled` — the manager's active-ness (`mounted && !hover-open`). When off, **no trap** (and, later,\n  no aria-hidden / no marker — Phase 2).\n- `modal` → `RdxFocusScope.trapped`: the effective trap is `enabled() && modal()`, pushed into the\n  composed focus scope through its config token (the composition seam).\n- `loop` is forwarded to `RdxFocusScope`.\n- `initialFocus` / `returnFocus` are **orchestrated** here (the §2 policy contract, incl. the\n  interaction-type callback forms): `initialFocus` via the scope's `mountAutoFocus` hook, `returnFocus`\n  via the scope's `returnFocus` config seam (resolved at the scope's queued post-unmount frame). The\n  portal-focus bridge remains a later-phase dependency.",
+          "description": "`RdxFloatingFocusManager` (ADR 0017 Phase 1b skeleton) — the Angular counterpart of Base UI's\n`FloatingFocusManager`. It is a **coordinator** that composes three low-level focus parts (it never\ninherits them, which would re-fuse trap + popup policy): the **reworked {@link RdxFocusScope}** (the\ntrap, via `hostDirectives`), the portal-focus bridge, and owner-`Document` guards. Per ADR 0017 §1/§2\nits policies are **independent**, none derived from `modal`.\n\n**This skeleton wires the composition + lifecycle gates:**\n- `enabled` — the manager's active-ness (`mounted && !hover-open`). When off, **no trap** (and, later,\n  no aria-hidden / no marker — Phase 2).\n- `modal` → `RdxFocusScope.trapped`: the effective trap is `enabled() && modal()`, pushed into the\n  composed focus scope through its config token (the composition seam).\n- `loop` is forwarded to `RdxFocusScope`.\n- `initialFocus` / `returnFocus` are **orchestrated** here (the §2 policy contract, incl. the\n  interaction-type callback forms): `initialFocus` via the scope's `mountAutoFocus` hook, `returnFocus`\n  via the scope's `returnFocus` config seam (resolved at the scope's queued post-unmount frame).",
           "hostDirectives": [
             "RdxFocusScope"
           ],
           "inputs": [
+            {
+              "name": "beforeContentFocusGuardRef",
+              "type": "RdxFocusGuardRef | null | undefined",
+              "default": "undefined",
+              "description": "Optional callback/signal that receives the leading content focus guard."
+            },
             {
               "name": "closeOnFocusOut",
               "default": "undefined",
@@ -3056,6 +3062,12 @@
               "name": "enabled",
               "default": "undefined",
               "description": "Manager active-ness (ADR 0017 §2): the popup is mounted **and** not hover-opened."
+            },
+            {
+              "name": "externalTree",
+              "type": "RdxFloatingTree | null | undefined",
+              "default": "undefined",
+              "description": "Explicit floating tree for detached sibling composition (Base UI `externalTree`)."
             },
             {
               "name": "inert",
@@ -3072,6 +3084,24 @@
               "name": "modal",
               "default": "undefined",
               "description": "Modal popup → focus trap. Combined with `enabled` to drive the composed `RdxFocusScope`."
+            },
+            {
+              "name": "nextFocusableElement",
+              "type": "RdxFocusTarget",
+              "default": "undefined",
+              "description": "Overrides where forward tabbing out of a non-modal portaled popup lands."
+            },
+            {
+              "name": "previousFocusableElement",
+              "type": "RdxFocusTarget",
+              "default": "undefined",
+              "description": "Overrides where backward tabbing out of a non-modal portaled popup lands."
+            },
+            {
+              "name": "restoreFocus",
+              "type": "boolean | 'popup' | undefined",
+              "default": "undefined",
+              "description": "Restores focus inside the floating tree when the currently focused inside element is removed and\nthe browser drops focus onto `<body>` (Base UI `restoreFocus`). `true` restores to the last\navailable tabbable candidate, `'popup'` restores to the popup container."
             },
             {
               "name": "returnFocus",
@@ -4724,7 +4754,7 @@
         {
           "directive": "RdxPopoverPopup",
           "selector": "[rdxPopoverPopup]",
-          "description": "A container for the popover contents.\n\n**ADR 0015/0017 Phase-4 migration** onto the new floating dismissal + focus engine (same pattern as\nDialog; browser-verified via `popover.behavior` Playwright). Popover-specific:\n- **Hover-open disables the manager** (`enabled = isOpen && !isHoverActive`) — Base UI parity\n  (`disabled={!mounted || openReason === triggerHover}`); a hover-opened popover does not trap / mark.\n  (The legacy only suppressed auto-focus while still trapping — that Radix divergence is dropped.)\n- Trap = `'trap-focus' || (modal === true && hasPopupClose())`; scroll lock + real outside `inert`\n  isolation key off the full modal (`modal === true`).\n- No `disablePointerDismissal` — outside-press + focus-out always close.\n\nNote: a positioned popover does **not** auto-focus into the popup on open (pre-existing — the legacy\nbehaved the same; verified). The trap holds focus once it is inside. Auto-focus-on-open + redirecting a\nTab from the trigger into the popup needs the deferred portal-focus bridge / guards (ADR 0017 §6a).",
+          "description": "A container for the popover contents.\n\n**ADR 0015/0017 Phase-4 migration** onto the new floating dismissal + focus engine (same pattern as\nDialog; browser-verified via `popover.behavior` Playwright). Popover-specific:\n- **Hover-open disables the manager** (`enabled = isOpen && !isHoverActive`) — Base UI parity\n  (`disabled={!mounted || openReason === triggerHover}`); a hover-opened popover does not trap / mark.\n  (The legacy only suppressed auto-focus while still trapping — that Radix divergence is dropped.)\n- Trap = `'trap-focus' || (modal === true && hasPopupClose())`; scroll lock + real outside `inert`\n  isolation key off the full modal (`modal === true`).\n- No `disablePointerDismissal` — outside-press + focus-out always close.\n\nNote: a positioned popover does **not** auto-focus into the popup on open (pre-existing — the legacy\nbehaved the same; verified). The trap holds focus once it is inside; portal tab-order handoff is owned\nby `RdxFloatingFocusManager` and anchored to the active trigger below.",
           "hostDirectives": [
             "RdxPopperContent",
             "RdxFloatingNodeRegistration",
@@ -5859,7 +5889,7 @@
           "description": "The popup listbox. Holds DOM focus while open and navigates with the highlight model\n(`aria-activedescendant`) — items are not individually focusable.\n\nSince ADR 0010 §6 the popup is the **inner** element (the positioner is its ancestor): it carries\n`role=\"listbox\"`, the `contentId`, and — via the composed {@link RdxPopperContent} — the\n`data-side` / `data-align` attributes and the until-positioned animation guard previously held by\nthe deleted `rdxSelectPositionerContent`. `RdxPopperContent` also makes the popup the element the\n`RdxPopperContentWrapper` ancestor reads its content z-index from. In item-aligned mode there is no\nwrapper, so `RdxPopperContent` no-ops.",
           "hostDirectives": [
             "RdxPopperContent",
-            "RdxFocusScope",
+            "RdxFloatingFocusManager",
             "RdxFloatingNodeRegistration",
             "RdxCollectionProvider"
           ],

@@ -1,5 +1,6 @@
 import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input, untracked } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
+import { createRdxTriggerInteraction, useTriggerFocusGuardAnchor } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxDialogHandle } from './dialog-handle';
 import { injectRdxDialogRootContext } from './dialog-root';
 
@@ -13,12 +14,13 @@ import { injectRdxDialogRootContext } from './dialog-root';
         type: 'button',
         '[attr.aria-haspopup]': '"dialog"',
         '[attr.aria-controls]': 'rootContext()?.contentId',
-        '[attr.aria-expanded]': 'isOpen()',
-        '[attr.data-state]': 'isOpen() ? "open" : "closed"',
-        '[attr.data-popup-open]': 'isOpen() ? "" : undefined',
-        '[attr.disabled]': 'disabled() ? "" : undefined',
+        '[attr.aria-expanded]': 'triggerInteraction.ariaExpanded()',
+        '[attr.data-state]': 'triggerInteraction.dataState()',
+        '[attr.data-popup-open]': 'triggerInteraction.dataPopupOpen()',
+        '[attr.disabled]': 'triggerInteraction.disabled() ? "" : undefined',
         '[id]': 'triggerId()',
-        '(click)': 'handleClick($event)'
+        '(click)': 'handleClick($event)',
+        '(pointerdown)': 'handlePointerDown($event)'
     }
 })
 export class RdxDialogTrigger {
@@ -51,6 +53,13 @@ export class RdxDialogTrigger {
     protected readonly isOpen = computed(
         () => this.rootContext()?.isOpen() === true && this.rootContext()?.trigger() === this.elementRef.nativeElement
     );
+    protected readonly triggerInteraction = createRdxTriggerInteraction({
+        trigger: () => this.elementRef.nativeElement,
+        activeTrigger: () => this.rootContext()?.trigger(),
+        open: () => this.rootContext()?.isOpen() ?? false,
+        disabled: () => this.disabled(),
+        contentId: () => this.rootContext()?.contentId
+    });
 
     constructor() {
         effect((onCleanup) => {
@@ -72,6 +81,12 @@ export class RdxDialogTrigger {
                 );
             }
         });
+
+        useTriggerFocusGuardAnchor({
+            trigger: () => this.elementRef.nativeElement,
+            contentId: () => this.rootContext()?.contentId,
+            enabled: () => this.triggerInteraction.isActive()
+        });
     }
 
     protected handleClick(event: MouseEvent) {
@@ -79,10 +94,16 @@ export class RdxDialogTrigger {
             return;
         }
 
+        this.rootContext()?.setTriggerOpenInteractionType(this.triggerInteraction.clickInteractionType(event));
+
         if (this.handle()) {
             this.handle()!.toggle(this.triggerId(), event);
         } else {
             this.parentRootContext?.toggle(this.triggerId(), this.elementRef.nativeElement, this.payload(), event);
         }
+    }
+
+    protected handlePointerDown(event: PointerEvent) {
+        this.triggerInteraction.recordPointerDown(event);
     }
 }

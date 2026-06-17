@@ -26,6 +26,7 @@ import {
     RdxTransitionStatus,
     useTransitionStatus
 } from '@radix-ng/primitives/core';
+import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 import { RdxPopoverHandle } from './popover-handle';
 
@@ -78,6 +79,8 @@ export interface RdxPopoverRootContext {
     isPointerDownOnTrigger: Signal<boolean>;
     /** Whether the current open was initiated by touch (ADR 0016 §3 — gates the anchored scroll lock). */
     openedByTouch: Signal<boolean>;
+    openInteractionType: Signal<RdxInteractionType>;
+    closeInteractionType: Signal<RdxInteractionType>;
     close: (reason?: RdxPopoverOpenChangeReason, event?: Event) => void;
     cancelHoverClose: () => void;
     cancelHoverOpen: () => void;
@@ -96,6 +99,7 @@ export interface RdxPopoverRootContext {
     setTitleId: (id: string | undefined) => void;
     setPointerDownOnTrigger: (pointerDown: boolean) => void;
     setOpenedByTouch: (value: boolean) => void;
+    setTriggerOpenInteractionType: (type: RdxInteractionType) => void;
     setHoverDelays: (delay: number, closeDelay: number) => void;
     registerPopupClose: () => () => void;
     registerTransitionElement: (element: HTMLElement) => () => void;
@@ -191,8 +195,11 @@ export class RdxPopoverRoot {
 
     /** Whether the current open was initiated by touch (ADR 0016 §3 — gates the anchored scroll lock). */
     readonly openedByTouch = signal(false);
+    readonly openInteractionType = signal<RdxInteractionType>(null);
+    readonly closeInteractionType = signal<RdxInteractionType>(null);
     readonly popupCloseCount = signal(0);
     private readonly preventUnmountOnClose = signal(false);
+    private readonly pendingTriggerOpenInteractionType = signal<RdxInteractionType>(null);
     readonly onOpenChange = output<RdxPopoverOpenChange>();
     readonly onOpenChangeComplete = output<boolean>();
     private readonly registeredTriggers = new Map<string, RdxPopoverRegisteredTrigger>();
@@ -291,7 +298,7 @@ export class RdxPopoverRoot {
         payload?: unknown,
         triggerId?: string,
         reason: RdxPopoverOpenChangeReason = 'none',
-        event = new Event('popover.open-change'),
+        event?: Event,
         fromHover = false
     ) {
         this.clearHoverTimers();
@@ -309,13 +316,17 @@ export class RdxPopoverRoot {
             return;
         }
 
-        const change = this.createOpenChangeEvent(true, reason, event, trigger, triggerId ?? this.triggerId());
+        const resolvedEvent = event ?? new Event('popover.open-change');
+        const change = this.createOpenChangeEvent(true, reason, resolvedEvent, trigger, triggerId ?? this.triggerId());
         this.onOpenChange.emit(change.payload);
 
         if (change.eventDetails.isCanceled()) {
             return;
         }
 
+        const interactionType = this.consumeOpenInteractionType(event);
+        this.openInteractionType.set(interactionType);
+        this.openedByTouch.set(interactionType === 'touch');
         this.isHoverActive.set(fromHover);
         this.openChangeReason.set(reason);
         this.instant.set(changedTriggerWhileOpen || reason === 'trigger-focus');
@@ -342,20 +353,23 @@ export class RdxPopoverRoot {
         this.floatingContext.events.emit('openchange', { open: true, reason, event: change.eventDetails.event });
     }
 
-    close(reason: RdxPopoverOpenChangeReason = 'none', event = new Event('popover.open-change')) {
+    close(reason: RdxPopoverOpenChangeReason = 'none', event?: Event) {
         this.clearHoverTimers();
 
         if (!this.open()) {
             return;
         }
 
-        const change = this.createOpenChangeEvent(false, reason, event, this.trigger(), this.triggerId());
+        const resolvedEvent = event ?? new Event('popover.open-change');
+        const change = this.createOpenChangeEvent(false, reason, resolvedEvent, this.trigger(), this.triggerId());
         this.onOpenChange.emit(change.payload);
 
         if (change.eventDetails.isCanceled()) {
             return;
         }
 
+        this.pendingTriggerOpenInteractionType.set(null);
+        this.closeInteractionType.set(getInteractionTypeFromEvent(event));
         this.isHoverActive.set(false);
         this.openedByTouch.set(false);
         this.instant.set(reason !== 'none' && reason !== 'trigger-hover');
@@ -415,6 +429,10 @@ export class RdxPopoverRoot {
     setHoverDelays(delay: number, closeDelay: number) {
         this.hoverDelay = delay;
         this.hoverCloseDelay = closeDelay;
+    }
+
+    setTriggerOpenInteractionType(type: RdxInteractionType): void {
+        this.pendingTriggerOpenInteractionType.set(type);
     }
 
     registerTrigger(id: string, trigger: HTMLElement, payload: () => unknown) {
@@ -553,6 +571,12 @@ export class RdxPopoverRoot {
             }
         });
     }
+
+    private consumeOpenInteractionType(event?: Event): RdxInteractionType {
+        const pending = this.pendingTriggerOpenInteractionType();
+        this.pendingTriggerOpenInteractionType.set(null);
+        return pending ?? getInteractionTypeFromEvent(event);
+    }
 }
 
 function contextFor(root: RdxPopoverRoot): RdxPopoverRootContext {
@@ -572,6 +596,8 @@ function contextFor(root: RdxPopoverRoot): RdxPopoverRootContext {
         openChangeReason: root.openChangeReason.asReadonly(),
         isPointerDownOnTrigger: root.isPointerDownOnTrigger.asReadonly(),
         openedByTouch: root.openedByTouch.asReadonly(),
+        openInteractionType: root.openInteractionType.asReadonly(),
+        closeInteractionType: root.closeInteractionType.asReadonly(),
         close: (reason?: RdxPopoverOpenChangeReason, event?: Event) => root.close(reason, event),
         cancelHoverClose: () => root.cancelHoverClose(),
         cancelHoverOpen: () => root.cancelHoverOpen(),
@@ -583,6 +609,7 @@ function contextFor(root: RdxPopoverRoot): RdxPopoverRootContext {
         setTitleId: (id: string | undefined) => root.titleId.set(id),
         setPointerDownOnTrigger: (pointerDown: boolean) => root.isPointerDownOnTrigger.set(pointerDown),
         setOpenedByTouch: (value: boolean) => root.openedByTouch.set(value),
+        setTriggerOpenInteractionType: (type: RdxInteractionType) => root.setTriggerOpenInteractionType(type),
         setHoverDelays: (delay: number, closeDelay: number) => root.setHoverDelays(delay, closeDelay),
         registerPopupClose: () => {
             root.popupCloseCount.update((count) => count + 1);

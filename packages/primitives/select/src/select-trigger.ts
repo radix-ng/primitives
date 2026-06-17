@@ -1,6 +1,7 @@
 import { afterNextRender, booleanAttribute, computed, Directive, ElementRef, inject, input } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
 import { injectFieldRootContext } from '@radix-ng/primitives/field';
+import { createRdxTriggerInteraction } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { injectSelectRootContext } from './select-root';
 import { OPEN_KEYS } from './utils';
@@ -19,8 +20,8 @@ const attr = (value: boolean) => (value ? '' : undefined);
         '[attr.aria-required]': 'requiredState() ? "true" : undefined',
         '[attr.disabled]': 'isDisabled() ? "" : undefined',
         '[dir]': 'rootContext.dir()',
-        '[attr.data-state]': 'rootContext.open() ? "open" : "closed"',
-        '[attr.data-popup-open]': 'dataAttr(rootContext.open())',
+        '[attr.data-state]': 'triggerInteraction.dataState()',
+        '[attr.data-popup-open]': 'triggerInteraction.dataPopupOpen()',
         '[attr.data-placeholder]': 'dataAttr(rootContext.isEmptyModelValue())',
         '[attr.data-disabled]': 'dataAttr(isDisabled())',
         '[attr.data-invalid]': 'dataAttr(invalidState())',
@@ -50,6 +51,12 @@ export class RdxSelectTrigger {
     readonly isDisabled = computed(
         () => this.rootContext.disabled() || this.disabled() || Boolean(this.fieldRootContext?.disabledState())
     );
+    protected readonly triggerInteraction = createRdxTriggerInteraction({
+        trigger: () => this.elementRef.nativeElement,
+        activeTrigger: () => this.rootContext.triggerElement(),
+        open: () => this.rootContext.open(),
+        disabled: () => this.isDisabled()
+    });
 
     protected readonly invalidState = computed(() => Boolean(this.fieldRootContext?.invalidState()));
     protected readonly requiredState = computed(() => Boolean(this.fieldRootContext?.requiredState()));
@@ -107,6 +114,7 @@ export class RdxSelectTrigger {
 
     onPointerDown(event: Event) {
         const pointerEvent = event as PointerEvent;
+        this.triggerInteraction.recordPointerDown(pointerEvent);
         if (pointerEvent.pointerType === 'touch') return event.preventDefault();
 
         // prevent implicit pointer capture

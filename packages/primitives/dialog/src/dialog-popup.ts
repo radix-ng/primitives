@@ -69,6 +69,9 @@ const DIALOG_INTERNAL_BACKDROP_ATTR = 'data-rdx-dialog-internal-backdrop';
                 // `FloatingFocusManager disabled={!mounted}` (NOT `open`) for trap/return-focus.
                 // Marker + isolation are additionally gated on `open` inside the manager.
                 enabled: () => rootContext.present(),
+                restoreFocus: () => 'popup',
+                openInteractionType: () => rootContext.openInteractionType(),
+                closeInteractionType: () => rootContext.closeInteractionType(),
                 closeOnFocusOut: () => !rootContext.disablePointerDismissal()
             };
         })

@@ -14,6 +14,7 @@ import {
     resolveReturnFocus
 } from '../src/floating-focus-manager';
 import { RDX_FLOATING_MARKER } from '../src/mark-others';
+import { createRdxTriggerInteraction, RdxTriggerInteraction } from '../src/trigger-interaction';
 
 const flush = (): Promise<void> => new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
 
@@ -44,6 +45,39 @@ class ManagerHost {
     readonly a = viewChild.required('a', { read: ElementRef });
     readonly b = viewChild.required('b', { read: ElementRef });
     readonly manager = viewChild.required(RdxFloatingFocusManager);
+}
+
+@Component({
+    imports: [RdxFloatingFocusManager],
+    template: `
+        <button #previous>Previous</button>
+        <div
+            #scope
+            [beforeContentFocusGuardRef]="setBeforeGuard"
+            [getInsideElements]="getInsideElements"
+            [nextFocusableElement]="next"
+            [previousFocusableElement]="previous"
+            rdxFloatingFocusManager
+        >
+            <button #inside>Inside</button>
+        </div>
+        <button #next>Next</button>
+    `
+})
+class PortalBridgeHost {
+    readonly previous = viewChild.required('previous', { read: ElementRef });
+    readonly scope = viewChild.required('scope', { read: ElementRef });
+    readonly inside = viewChild.required('inside', { read: ElementRef });
+    readonly next = viewChild.required('next', { read: ElementRef });
+    readonly manager = viewChild.required(RdxFloatingFocusManager);
+    readonly extraInside = signal<Element | null>(null);
+    beforeGuard: HTMLSpanElement | null = null;
+
+    readonly setBeforeGuard = (guard: HTMLSpanElement | null): void => {
+        this.beforeGuard = guard;
+    };
+
+    readonly getInsideElements = (): Array<Element | null> => [this.extraInside()];
 }
 
 describe('RdxFloatingFocusManager (skeleton)', () => {
@@ -303,6 +337,70 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
         expect(sibling.hasAttribute('inert')).toBe(false);
     });
 
+    // ─── portal focus bridge / guards ────────────────────────────────────────
+
+    it('mounts focus guards around content and exposes the before-content guard ref', async () => {
+        const fixture = TestBed.createComponent(PortalBridgeHost);
+        fixture.autoDetectChanges();
+        await flush();
+
+        const host = fixture.componentInstance;
+        const scope = host.scope().nativeElement as HTMLElement;
+        const guards = Array.from(scope.parentElement!.querySelectorAll<HTMLElement>(`[${FOCUS_GUARD_ATTR}]`));
+
+        expect(guards).toHaveLength(2);
+        expect(scope.previousElementSibling).toBe(guards[0]);
+        expect(scope.nextElementSibling).toBe(guards[1]);
+        expect(host.beforeGuard).toBe(guards[0]);
+
+        fixture.destroy();
+        await flush();
+
+        expect(host.beforeGuard).toBeNull();
+        expect(guards[0].isConnected).toBe(false);
+        expect(guards[1].isConnected).toBe(false);
+    });
+
+    it('moves focus to previous/next focusable elements when tabbing out of non-modal content', async () => {
+        const fixture = TestBed.createComponent(PortalBridgeHost);
+        fixture.autoDetectChanges();
+        await flush();
+
+        const host = fixture.componentInstance;
+        const scope = host.scope().nativeElement as HTMLElement;
+        const inside = host.inside().nativeElement as HTMLElement;
+        const previous = host.previous().nativeElement as HTMLElement;
+        const next = host.next().nativeElement as HTMLElement;
+        const [beforeGuard, afterGuard] = Array.from(
+            scope.parentElement!.querySelectorAll<HTMLElement>(`[${FOCUS_GUARD_ATTR}]`)
+        );
+
+        beforeGuard.dispatchEvent(new FocusEvent('focus', { relatedTarget: inside }));
+        expect(document.activeElement).toBe(previous);
+
+        afterGuard.dispatchEvent(new FocusEvent('focus', { relatedTarget: inside }));
+        expect(document.activeElement).toBe(next);
+    });
+
+    it('keeps getInsideElements targets inside for focus-out containment', async () => {
+        const extra = document.createElement('button');
+        document.body.appendChild(extra);
+        appended.push(extra);
+
+        const fixture = TestBed.createComponent(PortalBridgeHost);
+        fixture.componentInstance.extraInside.set(extra);
+        fixture.autoDetectChanges();
+        await flush();
+
+        let emitted = false;
+        fixture.componentInstance.manager().focusOut.subscribe(() => (emitted = true));
+        const scope = fixture.componentInstance.scope().nativeElement as HTMLElement;
+
+        scope.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: extra }));
+
+        expect(emitted).toBe(false);
+    });
+
     // ─── close-on-focus-out (ADR 0017 §3) ────────────────────────────────────
 
     function focusOutTo(host: HTMLElement, relatedTarget: EventTarget | null): void {
@@ -439,6 +537,21 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
     // ─── policy resolvers (§2 contract) ───────────────────────────────────────
 
     describe('policy resolvers', () => {
+        it('shared trigger interaction resolves touch and keyboard click open methods', () => {
+            const trigger = document.createElement('button');
+            const interaction: RdxTriggerInteraction = createRdxTriggerInteraction({
+                trigger: () => trigger,
+                open: () => false
+            });
+            const pointerDown = new Event('pointerdown') as PointerEvent;
+            Object.defineProperty(pointerDown, 'pointerType', { value: 'touch' });
+
+            interaction.recordPointerDown(pointerDown);
+
+            expect(interaction.clickInteractionType(new MouseEvent('click', { detail: 1 }))).toBe('touch');
+            expect(interaction.clickInteractionType(new MouseEvent('click', { detail: 0 }))).toBe('keyboard');
+        });
+
         it('resolveFocusTarget handles element, getter, and null', () => {
             const el = document.createElement('button');
             expect(resolveFocusTarget(el)).toBe(el);

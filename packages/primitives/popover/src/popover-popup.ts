@@ -28,8 +28,8 @@ import { injectRdxPopoverRootContext } from './popover-root';
  * - No `disablePointerDismissal` — outside-press + focus-out always close.
  *
  * Note: a positioned popover does **not** auto-focus into the popup on open (pre-existing — the legacy
- * behaved the same; verified). The trap holds focus once it is inside. Auto-focus-on-open + redirecting a
- * Tab from the trigger into the popup needs the deferred portal-focus bridge / guards (ADR 0017 §6a).
+ * behaved the same; verified). The trap holds focus once it is inside; portal tab-order handoff is owned
+ * by `RdxFloatingFocusManager` and anchored to the active trigger below.
  */
 @Directive({
     selector: '[rdxPopoverPopup]',
@@ -43,11 +43,15 @@ import { injectRdxPopoverRootContext } from './popover-root';
                     (rootContext.modal() === true && rootContext.hasPopupClose()),
                 // Full modal blocks outside pointer interaction; `trap-focus` only traps focus.
                 inert: () => rootContext.modal() === true && rootContext.hasPopupClose(),
+                restoreFocus: () => 'popup',
+                previousFocusableElement: () => rootContext.trigger() ?? null,
                 // Active for the whole MOUNTED lifetime (Base UI `disabled={!mounted}`, not `open`) for
                 // trap/return-focus — including an explicit `preventUnmountOnClose()` cycle after the
                 // exit transition. Marker + isolation are additionally gated on `open` inside the
                 // manager. Still suppressed while hover-opened.
-                enabled: () => rootContext.present() && !rootContext.isHoverActive()
+                enabled: () => rootContext.present() && !rootContext.isHoverActive(),
+                openInteractionType: () => rootContext.openInteractionType(),
+                closeInteractionType: () => rootContext.closeInteractionType()
             };
         })
     ],

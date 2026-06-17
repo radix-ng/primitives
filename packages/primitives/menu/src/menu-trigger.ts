@@ -12,6 +12,7 @@ import {
     PLATFORM_ID
 } from '@angular/core';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
+import { createRdxTriggerInteraction } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { getFocusableMenuItems } from './menu-focus';
 import { injectRdxMenuRootContext } from './menu-root';
@@ -32,13 +33,14 @@ const numberOrUndefined = (value: NumberInput | undefined) => (value == null ? u
             'rootContext.hasTriggerInteractionHandler() ? "menuitem" : nativeButtonState() ? undefined : "button"',
         '[attr.tabindex]': 'rootContext.hasTriggerInteractionHandler() ? "-1" : undefined',
         '[attr.aria-haspopup]': '"menu"',
-        '[attr.aria-expanded]': 'rootContext.isOpen()',
+        '[attr.aria-expanded]': 'triggerInteraction.ariaExpanded()',
         '[attr.aria-disabled]': 'isDisabled() ? true : undefined',
         '[attr.disabled]': 'nativeButtonState() && isDisabled() ? "" : undefined',
-        '[attr.data-state]': 'rootContext.isOpen() ? "open" : "closed"',
+        '[attr.data-state]': 'triggerInteraction.dataState()',
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
-        '[attr.data-popup-open]': 'rootContext.isOpen() ? "" : undefined',
+        '[attr.data-popup-open]': 'triggerInteraction.dataPopupOpen()',
         '[style.pointer-events]': 'rootContext.isOpen() && rootContext.modal() ? "auto" : undefined',
+        '(pointerdown)': 'handlePointerDown($event)',
         '(mousedown)': 'handleMouseDown($event)',
         '(click)': 'handleClick($event)',
         '(pointerenter)': 'handlePointerEnter($event)',
@@ -105,6 +107,12 @@ export class RdxMenuTrigger {
     );
 
     protected readonly isDisabled = computed(() => this.rootContext.disabled() || this.disabled());
+    protected readonly triggerInteraction = createRdxTriggerInteraction({
+        trigger: () => this.elementRef.nativeElement,
+        activeTrigger: () => this.rootContext.trigger(),
+        open: () => this.rootContext.isOpen(),
+        disabled: () => this.isDisabled()
+    });
 
     constructor() {
         effect((onCleanup) => {
@@ -191,6 +199,10 @@ export class RdxMenuTrigger {
         if (!wasOpen && this.rootContext.isOpen()) {
             this.armMouseUpGuard(event.currentTarget as HTMLElement);
         }
+    }
+
+    protected handlePointerDown(event: PointerEvent): void {
+        this.triggerInteraction.recordPointerDown(event);
     }
 
     protected handleClick(event: MouseEvent): void {

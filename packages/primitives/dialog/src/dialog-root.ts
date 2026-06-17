@@ -26,6 +26,7 @@ import {
     RdxTransitionStatus,
     useTransitionStatus
 } from '@radix-ng/primitives/core';
+import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxDialogHandle } from './dialog-handle';
 import { RDX_DIALOG_VARIANT, RdxDialogRole } from './dialog-variant';
 
@@ -78,6 +79,8 @@ export interface RdxDialogRootContext {
     trigger: Signal<HTMLElement | undefined>;
     triggers: Signal<HTMLElement[]>;
     payload: Signal<unknown>;
+    openInteractionType: Signal<RdxInteractionType>;
+    closeInteractionType: Signal<RdxInteractionType>;
     /** Whether this dialog is nested in another; constant, fixed at construction. */
     nested: boolean;
     nestedDialogOpen: Signal<boolean>;
@@ -85,6 +88,7 @@ export interface RdxDialogRootContext {
     setDescriptionId: (id: string | undefined) => void;
     registerTransitionElement: (element: HTMLElement) => () => void;
     registerTrigger: (id: string, trigger: HTMLElement, payload: () => unknown) => () => void;
+    setTriggerOpenInteractionType: (type: RdxInteractionType) => void;
     open: (
         trigger?: HTMLElement,
         payload?: unknown,
@@ -182,7 +186,10 @@ export class RdxDialogRoot {
     readonly triggers = signal<HTMLElement[]>([]);
     readonly payload = signal<unknown>(undefined);
     readonly nestedOpenCount = signal(0);
+    readonly openInteractionType = signal<RdxInteractionType>(null);
+    readonly closeInteractionType = signal<RdxInteractionType>(null);
     private readonly preventUnmountOnClose = signal(false);
+    private readonly pendingTriggerOpenInteractionType = signal<RdxInteractionType>(null);
 
     readonly present = computed(() => this.open() || this.preventUnmountOnClose());
 
@@ -277,7 +284,7 @@ export class RdxDialogRoot {
         payload?: unknown,
         triggerId?: string,
         reason: RdxDialogOpenChangeReason = 'none',
-        event = new Event('dialog.open-change')
+        event?: Event
     ) {
         const shouldAdoptPayload = trigger !== undefined || payload !== undefined;
 
@@ -299,12 +306,15 @@ export class RdxDialogRoot {
             return;
         }
 
-        const change = this.createOpenChangeEvent(true, reason, event, trigger, triggerId ?? this.triggerId());
+        const resolvedEvent = event ?? new Event('dialog.open-change');
+        const change = this.createOpenChangeEvent(true, reason, resolvedEvent, trigger, triggerId ?? this.triggerId());
         this.onOpenChange.emit(change.payload);
 
         if (change.eventDetails.isCanceled()) {
             return;
         }
+
+        this.openInteractionType.set(this.consumeOpenInteractionType(event));
 
         if (trigger) {
             this.trigger.set(trigger);
@@ -323,18 +333,21 @@ export class RdxDialogRoot {
         this.floatingContext.events.emit('openchange', { open: true, reason, event: change.eventDetails.event });
     }
 
-    close(reason: RdxDialogOpenChangeReason = 'none', event = new Event('dialog.open-change')) {
+    close(reason: RdxDialogOpenChangeReason = 'none', event?: Event) {
         if (!this.open()) {
             return;
         }
 
-        const change = this.createOpenChangeEvent(false, reason, event, this.trigger(), this.triggerId());
+        const resolvedEvent = event ?? new Event('dialog.open-change');
+        const change = this.createOpenChangeEvent(false, reason, resolvedEvent, this.trigger(), this.triggerId());
         this.onOpenChange.emit(change.payload);
 
         if (change.eventDetails.isCanceled()) {
             return;
         }
 
+        this.pendingTriggerOpenInteractionType.set(null);
+        this.closeInteractionType.set(getInteractionTypeFromEvent(event));
         this.preventUnmountOnClose.set(change.shouldPreventUnmountOnClose());
         this.open.set(false);
         this.floatingContext.events.emit('openchange', { open: false, reason, event: change.eventDetails.event });
@@ -347,6 +360,10 @@ export class RdxDialogRoot {
         }
 
         this.show(trigger, payload, triggerId, 'trigger-press', event);
+    }
+
+    setTriggerOpenInteractionType(type: RdxInteractionType): void {
+        this.pendingTriggerOpenInteractionType.set(type);
     }
 
     registerTrigger(id: string, trigger: HTMLElement, payload: () => unknown) {
@@ -435,6 +452,12 @@ export class RdxDialogRoot {
             this.onOpenChangeComplete.emit(open);
         }
     }
+
+    private consumeOpenInteractionType(event?: Event): RdxInteractionType {
+        const pending = this.pendingTriggerOpenInteractionType();
+        this.pendingTriggerOpenInteractionType.set(null);
+        return pending ?? getInteractionTypeFromEvent(event);
+    }
 }
 
 function contextFor(root: RdxDialogRoot): RdxDialogRootContext {
@@ -451,12 +474,15 @@ function contextFor(root: RdxDialogRoot): RdxDialogRootContext {
         trigger: root.trigger.asReadonly(),
         triggers: root.triggers.asReadonly(),
         payload: root.payload.asReadonly(),
+        openInteractionType: root.openInteractionType.asReadonly(),
+        closeInteractionType: root.closeInteractionType.asReadonly(),
         nested: root.nested,
         nestedDialogOpen: root.nestedDialogOpen,
         setTitleId: (id: string | undefined) => root.titleId.set(id),
         setDescriptionId: (id: string | undefined) => root.descriptionId.set(id),
         registerTransitionElement: (element) => root.registerTransitionElement(element),
         registerTrigger: (id, trigger, payload) => root.registerTrigger(id, trigger, payload),
+        setTriggerOpenInteractionType: (type) => root.setTriggerOpenInteractionType(type),
         open: (trigger, payload, triggerId, reason, event) => root.show(trigger, payload, triggerId, reason, event),
         close: (reason, event) => root.close(reason, event),
         toggle: (triggerId, trigger, payload, event) => root.toggle(triggerId, trigger, payload, event)

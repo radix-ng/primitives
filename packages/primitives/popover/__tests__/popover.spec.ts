@@ -367,6 +367,25 @@ describe('Popover', () => {
         expect(fixture.componentInstance.open).toBe(false);
     });
 
+    it('stores the opening interaction type before the popup manager mounts', () => {
+        const root = fixture.debugElement.query(By.directive(RdxPopoverRoot)).injector.get(RdxPopoverRoot);
+
+        trigger.dispatchEvent(pointerEvent('pointerdown', 'touch'));
+        trigger.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 1 }));
+        fixture.detectChanges();
+
+        expect(root.openInteractionType()).toBe('touch');
+        expect(root.openedByTouch()).toBe(true);
+
+        trigger.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 1 }));
+        fixture.detectChanges();
+        trigger.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 0 }));
+        fixture.detectChanges();
+
+        expect(root.openInteractionType()).toBe('keyboard');
+        expect(root.openedByTouch()).toBe(false);
+    });
+
     it('exposes pressed state while the trigger press keeps the popover open', () => {
         trigger.click();
         fixture.detectChanges();

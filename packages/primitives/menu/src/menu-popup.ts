@@ -36,6 +36,8 @@ import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
                 // disabled separately below; focus/marker policy should not disappear if a menu becomes
                 // disabled while open, or if `preventUnmountOnClose()` keeps it mounted after close.
                 enabled: () => rootContext.present(),
+                restoreFocus: () => true,
+                previousFocusableElement: () => rootContext.trigger() ?? null,
                 // Base UI's submenu policy: a submenu mount does not steal focus from its trigger.
                 // Root menus still choose first / last item vs popup container from the menu's own
                 // open policy (`autoFocus`), but the decision now lives in the focus manager instead

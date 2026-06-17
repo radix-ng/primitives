@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import {
     createRdxDialogHandle,
     dialogImports,
@@ -187,6 +188,12 @@ function popup(): HTMLElement | null {
     return document.body.querySelector('[rdxDialogPopup]');
 }
 
+function pointerEvent(type: string, pointerType = 'mouse') {
+    const event = new Event(type, { bubbles: true });
+    Object.defineProperty(event, 'pointerType', { value: pointerType });
+    return event;
+}
+
 describe('Dialog', () => {
     let fixture: ComponentFixture<TestHostComponent>;
     let trigger: HTMLButtonElement;
@@ -227,6 +234,23 @@ describe('Dialog', () => {
         expect(fixture.componentInstance.open).toBe(false);
         // Closing via the trigger is a trigger press, distinct from a Close button ('close-press').
         expect(fixture.componentInstance.changes.at(-1)).toMatchObject({ open: false, reason: 'trigger-press' });
+    });
+
+    it('stores the opening interaction type before the popup manager mounts', () => {
+        const root = fixture.debugElement.query(By.directive(RdxDialogRoot)).injector.get(RdxDialogRoot);
+
+        trigger.dispatchEvent(pointerEvent('pointerdown', 'touch'));
+        trigger.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 1 }));
+        fixture.detectChanges();
+
+        expect(root.openInteractionType()).toBe('touch');
+
+        trigger.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 1 }));
+        fixture.detectChanges();
+        trigger.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 0 }));
+        fixture.detectChanges();
+
+        expect(root.openInteractionType()).toBe('keyboard');
     });
 
     it('mounts the portal content in the document body while open', () => {

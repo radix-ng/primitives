@@ -10,6 +10,7 @@ import {
     untracked
 } from '@angular/core';
 import { injectId, NumberInput } from '@radix-ng/primitives/core';
+import { createRdxTriggerInteraction, useTriggerFocusGuardAnchor } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { RdxPopoverHandle } from './popover-handle';
 import { injectRdxPopoverRootContext } from './popover-root';
@@ -23,12 +24,12 @@ import { injectRdxPopoverRootContext } from './popover-root';
     host: {
         type: 'button',
         '[attr.aria-controls]': 'rootContext()?.contentId',
-        '[attr.aria-expanded]': 'isOpen()',
+        '[attr.aria-expanded]': 'triggerInteraction.ariaExpanded()',
         '[attr.aria-haspopup]': '"dialog"',
-        '[attr.data-state]': 'isOpen() ? "open" : "closed"',
-        '[attr.data-popup-open]': 'isOpen() ? "" : undefined',
+        '[attr.data-state]': 'triggerInteraction.dataState()',
+        '[attr.data-popup-open]': 'triggerInteraction.dataPopupOpen()',
         '[attr.data-pressed]': 'isPressed() ? "" : undefined',
-        '[attr.disabled]': 'disabled() ? "" : undefined',
+        '[attr.disabled]': 'triggerInteraction.disabled() ? "" : undefined',
         '[id]': 'triggerId()',
         '(click)': 'handleClick($event)',
         '(pointerenter)': 'handlePointerEnter($event)',
@@ -41,9 +42,6 @@ import { injectRdxPopoverRootContext } from './popover-root';
 export class RdxPopoverTrigger {
     private readonly parentRootContext = injectRdxPopoverRootContext(true);
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
-
-    /** Pointer type of the most recent `pointerdown`, used to detect a touch open (ADR 0016 §3). */
-    private lastPointerType = '';
 
     /**
      * Associates this trigger with a detached popover root.
@@ -85,8 +83,15 @@ export class RdxPopoverTrigger {
     protected readonly isOpen = computed(
         () => this.rootContext()?.isOpen() === true && this.rootContext()?.trigger() === this.elementRef.nativeElement
     );
+    protected readonly triggerInteraction = createRdxTriggerInteraction({
+        trigger: () => this.elementRef.nativeElement,
+        activeTrigger: () => this.rootContext()?.trigger(),
+        open: () => this.rootContext()?.isOpen() ?? false,
+        disabled: () => this.disabled(),
+        contentId: () => this.rootContext()?.contentId
+    });
     protected readonly isPressed = computed(
-        () => this.isOpen() && this.rootContext()?.openChangeReason() === 'trigger-press'
+        () => this.triggerInteraction.isActive() && this.rootContext()?.openChangeReason() === 'trigger-press'
     );
     private readonly generatedId = injectId('rdx-popover-trigger-');
 
@@ -110,6 +115,12 @@ export class RdxPopoverTrigger {
                 );
             }
         });
+
+        useTriggerFocusGuardAnchor({
+            trigger: () => this.elementRef.nativeElement,
+            contentId: () => this.rootContext()?.contentId,
+            enabled: () => this.triggerInteraction.isActive()
+        });
     }
 
     protected handleClick(event: MouseEvent) {
@@ -119,7 +130,9 @@ export class RdxPopoverTrigger {
 
         // Record whether this open is a touch tap (ADR 0016 §3). `detail === 0` is a keyboard-activated
         // click (no preceding pointerdown), which must read non-touch regardless of the last pointer type.
-        this.rootContext()?.setOpenedByTouch(event.detail !== 0 && this.lastPointerType === 'touch');
+        const interactionType = this.triggerInteraction.clickInteractionType(event);
+        this.rootContext()?.setOpenedByTouch(interactionType === 'touch');
+        this.rootContext()?.setTriggerOpenInteractionType(interactionType);
         this.rootContext()?.setPointerDownOnTrigger(false);
 
         if (this.handle()) {
@@ -149,7 +162,7 @@ export class RdxPopoverTrigger {
     }
 
     protected handlePointerDown(event: PointerEvent) {
-        this.lastPointerType = event.pointerType;
+        this.triggerInteraction.recordPointerDown(event);
         this.rootContext()?.setPointerDownOnTrigger(true);
     }
 

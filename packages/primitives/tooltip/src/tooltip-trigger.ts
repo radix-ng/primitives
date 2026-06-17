@@ -11,6 +11,7 @@ import {
     untracked
 } from '@angular/core';
 import { BooleanInput, injectId, NumberInput } from '@radix-ng/primitives/core';
+import { createRdxTriggerInteraction } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { injectRdxTooltipContext } from './tooltip';
 import { RdxTooltipHandle } from './tooltip-handle';
@@ -23,8 +24,8 @@ import { RdxTooltipHandle } from './tooltip-handle';
         'data-grace-area-trigger': "''",
         '[id]': 'triggerId()',
         '[attr.aria-describedby]': 'isOpen() ? rootContext()?.contentId : undefined',
-        '[attr.data-popup-open]': 'isOpen() ? "" : undefined',
-        '[attr.data-trigger-disabled]': 'isDisabled() ? "" : undefined',
+        '[attr.data-popup-open]': 'triggerInteraction.dataPopupOpen()',
+        '[attr.data-trigger-disabled]': 'triggerInteraction.disabled() ? "" : undefined',
         '(pointermove)': 'handlePointerMove($event)',
         '(pointerleave)': 'handlePointerLeave()',
         '(pointerdown)': 'handlePointerDown($event)',
@@ -94,6 +95,13 @@ export class RdxTooltipTrigger {
     protected readonly isOpen = computed(
         () => this.rootContext()?.isOpen() === true && this.rootContext()?.trigger() === this.elementRef.nativeElement
     );
+    protected readonly triggerInteraction = createRdxTriggerInteraction({
+        trigger: () => this.elementRef.nativeElement,
+        activeTrigger: () => this.rootContext()?.trigger(),
+        open: () => this.rootContext()?.isOpen() ?? false,
+        disabled: () => this.isDisabled(),
+        contentId: () => this.rootContext()?.contentId
+    });
 
     private readonly isPointerDown = signal(false);
     private readonly hasPointerMoveOpened = signal(false);
@@ -178,6 +186,7 @@ export class RdxTooltipTrigger {
         }
 
         this.isPointerDown.set(true);
+        this.triggerInteraction.recordPointerDown(event);
 
         const handlePointerUp = () => {
             setTimeout(() => this.isPointerDown.set(false), 1);
