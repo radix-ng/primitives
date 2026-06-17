@@ -46,6 +46,9 @@ export interface RdxTooltipContext {
     payload: Signal<unknown>;
     open: (trigger?: HTMLElement, payload?: unknown) => void;
     close: () => void;
+    openChangeReason: Signal<RdxTooltipOpenChangeReason>;
+    cancelPendingOpen: () => void;
+    closeHoverOpen: () => void;
     /** Closes after the resolved close delay (used when hover/focus is lost). */
     closeDelayed: () => void;
     registerTrigger: (trigger: HTMLElement) => () => void;
@@ -56,6 +59,8 @@ export interface RdxTooltipContext {
     setCursorPosition: (position: { x: number; y: number } | undefined) => void;
     setDelays: (delay: number | undefined, closeDelay: number | undefined) => void;
 }
+
+export type RdxTooltipOpenChangeReason = 'trigger-hover' | 'trigger-focus' | 'trigger-press' | 'escape-key' | 'none';
 
 export const [injectRdxTooltipContext, provideRdxTooltipContext] = createContext<RdxTooltipContext>(
     'RdxTooltipContext',
@@ -149,6 +154,7 @@ export class RdxTooltip {
     readonly triggers = signal<HTMLElement[]>([]);
     readonly payload = signal<unknown>(undefined);
     readonly cursorPosition = signal<{ x: number; y: number } | undefined>(undefined);
+    readonly openChangeReason = signal<RdxTooltipOpenChangeReason>('none');
 
     private readonly openedInstant = signal(false);
 
@@ -209,7 +215,7 @@ export class RdxTooltip {
     });
 
     private readonly openTimer = useTimeoutFn(
-        () => this.applyOpen(false),
+        () => this.applyOpen(false, this.trigger(), this.payload(), 'trigger-hover'),
         () => this.resolvedDelay(),
         { immediate: false },
         this.destroyRef
@@ -265,13 +271,25 @@ export class RdxTooltip {
 
     /** Opens immediately, optionally switching the active trigger/payload. */
     show(trigger = this.trigger(), payload?: unknown) {
-        this.applyOpen(true, trigger, payload);
+        this.applyOpen(true, trigger, payload, 'trigger-focus');
     }
 
     close() {
         this.openTimer.stop();
         this.closeTimer.stop();
-        this.applyClose();
+        this.applyClose('none');
+    }
+
+    cancelPendingOpen(): void {
+        this.openTimer.stop();
+    }
+
+    closeHoverOpen(): void {
+        this.openTimer.stop();
+        this.closeTimer.stop();
+        if (this.open() && this.openChangeReason() === 'trigger-hover') {
+            this.applyClose('trigger-hover');
+        }
     }
 
     /** Closes after the resolved close delay, e.g. when the pointer or focus leaves. */
@@ -279,7 +297,7 @@ export class RdxTooltip {
         this.openTimer.stop();
 
         if (this.resolvedCloseDelay() <= 0) {
-            this.applyClose();
+            this.applyClose('trigger-hover');
         } else {
             this.closeTimer.start();
         }
@@ -299,7 +317,7 @@ export class RdxTooltip {
         this.closeTimer.stop();
 
         if (this.instantGroup.isInstant() || this.resolvedDelay() <= 0) {
-            this.applyOpen(true, trigger, payload);
+            this.applyOpen(true, trigger, payload, 'trigger-hover');
         } else {
             this.openTimer.start();
         }
@@ -331,7 +349,7 @@ export class RdxTooltip {
                 this.trigger.set(nextTrigger);
 
                 if (!nextTrigger && !this.destroyRef.destroyed) {
-                    this.applyClose();
+                    this.applyClose('none');
                 }
             }
         };
@@ -347,7 +365,12 @@ export class RdxTooltip {
         this.triggerCloseDelay.set(closeDelay);
     }
 
-    private applyOpen(instant: boolean, trigger = this.trigger(), payload?: unknown) {
+    private applyOpen(
+        instant: boolean,
+        trigger = this.trigger(),
+        payload?: unknown,
+        reason: RdxTooltipOpenChangeReason = 'none'
+    ) {
         if (this.disabled()) {
             return;
         }
@@ -364,11 +387,13 @@ export class RdxTooltip {
         }
 
         this.openedInstant.set(instant || this.instantGroup.isInstant());
+        this.openChangeReason.set(reason);
         this.open.set(true);
     }
 
-    private applyClose() {
+    private applyClose(reason: RdxTooltipOpenChangeReason = 'none') {
         this.openedInstant.set(this.instantGroup.isInstant());
+        this.openChangeReason.set(reason);
         this.open.set(false);
     }
 }
@@ -384,8 +409,11 @@ function contextFor(root: RdxTooltip): RdxTooltipContext {
         trigger: root.trigger.asReadonly(),
         triggers: root.triggers.asReadonly(),
         payload: root.payload.asReadonly(),
+        openChangeReason: root.openChangeReason.asReadonly(),
         open: (trigger?: HTMLElement, payload?: unknown) => root.show(trigger, payload),
         close: () => root.close(),
+        cancelPendingOpen: () => root.cancelPendingOpen(),
+        closeHoverOpen: () => root.closeHoverOpen(),
         closeDelayed: () => root.scheduleClose(),
         registerTrigger: (trigger: HTMLElement) => root.registerTrigger(trigger),
         onTriggerEnter: (trigger?: HTMLElement, payload?: unknown) => root.onTriggerEnter(trigger, payload),

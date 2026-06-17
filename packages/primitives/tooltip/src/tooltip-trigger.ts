@@ -16,6 +16,44 @@ import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { injectRdxTooltipContext } from './tooltip';
 import { RdxTooltipHandle } from './tooltip-handle';
 
+const TOOLTIP_TRIGGER_ATTR = 'data-rdx-tooltip-trigger';
+
+function getTargetElement(event: Event): Element | null {
+    if ('composedPath' in event) {
+        for (const target of event.composedPath()) {
+            if (target instanceof Element) {
+                return target;
+            }
+        }
+    }
+
+    return event.target instanceof Element ? event.target : null;
+}
+
+function closestEnabledTooltipTrigger(element: Element | null): Element | null {
+    let current = element;
+
+    while (current) {
+        if (current.hasAttribute(TOOLTIP_TRIGGER_ATTR)) {
+            return current;
+        }
+
+        if (current.parentElement) {
+            current = current.parentElement;
+            continue;
+        }
+
+        const root = current.getRootNode();
+        current = 'host' in root && root.host instanceof Element ? root.host : null;
+    }
+
+    return null;
+}
+
+function isMouseLikePointerType(pointerType: string | undefined): boolean {
+    return pointerType !== 'touch';
+}
+
 @Directive({
     selector: '[rdxTooltipTrigger]',
     hostDirectives: [RdxPopperAnchor],
@@ -26,8 +64,12 @@ import { RdxTooltipHandle } from './tooltip-handle';
         '[attr.aria-describedby]': 'isOpen() ? rootContext()?.contentId : undefined',
         '[attr.data-popup-open]': 'triggerInteraction.dataPopupOpen()',
         '[attr.data-trigger-disabled]': 'triggerInteraction.disabled() ? "" : undefined',
+        '[attr.data-rdx-tooltip-trigger]': 'isDisabled() ? undefined : ""',
+        '(pointerenter)': 'handlePointerEnter($event)',
         '(pointermove)': 'handlePointerMove($event)',
         '(pointerleave)': 'handlePointerLeave()',
+        '(mouseover)': 'handleMouseOver($event)',
+        '(mouseleave)': 'handleMouseLeave()',
         '(pointerdown)': 'handlePointerDown($event)',
         '(focus)': 'handleFocus()',
         '(blur)': 'handleBlur()',
@@ -105,6 +147,8 @@ export class RdxTooltipTrigger {
 
     private readonly isPointerDown = signal(false);
     private readonly hasPointerMoveOpened = signal(false);
+    private readonly isNestedTriggerHovered = signal(false);
+    private pointerType: string | undefined;
 
     constructor() {
         effect((onCleanup) => {
@@ -142,7 +186,16 @@ export class RdxTooltipTrigger {
 
         if (rootContext?.isOpen() && this.closeOnClick()) {
             rootContext.close();
+            return;
         }
+
+        if (rootContext && this.closeOnClick()) {
+            rootContext.cancelPendingOpen();
+        }
+    }
+
+    protected handlePointerEnter(event: PointerEvent) {
+        this.pointerType = event.pointerType;
     }
 
     protected handlePointerMove(event: PointerEvent) {
@@ -153,6 +206,11 @@ export class RdxTooltipTrigger {
         const rootContext = this.rootContext();
 
         if (!rootContext || this.isDisabled()) {
+            return;
+        }
+
+        this.pointerType = event.pointerType;
+        if (this.detectNestedTriggerHover(getTargetElement(event))) {
             return;
         }
 
@@ -172,6 +230,42 @@ export class RdxTooltipTrigger {
         this.hasPointerMoveOpened.set(false);
     }
 
+    protected handleMouseOver(event: MouseEvent) {
+        const wasNestedTriggerHovered = this.isNestedTriggerHovered();
+        const target = getTargetElement(event);
+        const nestedTriggerHovered = this.detectNestedTriggerHover(target);
+        const trigger = this.elementRef.nativeElement;
+        const targetInsideTrigger = target ? trigger.contains(target) : false;
+        const rootContext = this.rootContext();
+
+        if (!rootContext) {
+            return;
+        }
+
+        if (nestedTriggerHovered && rootContext.isOpen() && rootContext.openChangeReason() === 'trigger-hover') {
+            rootContext.closeHoverOpen();
+            return;
+        }
+
+        if (
+            wasNestedTriggerHovered &&
+            !nestedTriggerHovered &&
+            targetInsideTrigger &&
+            !this.isDisabled() &&
+            !rootContext.isOpen() &&
+            isMouseLikePointerType(this.pointerType)
+        ) {
+            rootContext.setDelays(this.delay(), this.closeDelay());
+            rootContext.onTriggerEnter(trigger, this.payload());
+            this.hasPointerMoveOpened.set(true);
+        }
+    }
+
+    protected handleMouseLeave() {
+        this.isNestedTriggerHovered.set(false);
+        this.pointerType = undefined;
+    }
+
     protected async handlePointerDown(event: PointerEvent) {
         const user = this.userOnPointerDown();
         let result: unknown;
@@ -187,11 +281,29 @@ export class RdxTooltipTrigger {
 
         this.isPointerDown.set(true);
         this.triggerInteraction.recordPointerDown(event);
+        this.pointerType = event.pointerType;
+        if (this.closeOnClick() && !this.rootContext()?.isOpen()) {
+            this.rootContext()?.cancelPendingOpen();
+        }
 
         const handlePointerUp = () => {
             setTimeout(() => this.isPointerDown.set(false), 1);
         };
 
         document.addEventListener('pointerup', handlePointerUp, { once: true });
+    }
+
+    private detectNestedTriggerHover(target: Element | null): boolean {
+        const trigger = this.elementRef.nativeElement;
+        const nearestTrigger = closestEnabledTooltipTrigger(target);
+        const nestedTriggerHovered =
+            nearestTrigger !== null && nearestTrigger !== trigger && trigger.contains(nearestTrigger);
+
+        this.isNestedTriggerHovered.set(nestedTriggerHovered);
+        if (nestedTriggerHovered) {
+            this.rootContext()?.cancelPendingOpen();
+        }
+
+        return nestedTriggerHovered;
     }
 }

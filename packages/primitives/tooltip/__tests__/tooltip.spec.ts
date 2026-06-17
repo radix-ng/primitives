@@ -147,9 +147,45 @@ class RemovableTriggerHostComponent {
     readonly showTrigger = signal(true);
 }
 
+@Component({
+    imports: [RdxTooltip, RdxTooltipPopup, RdxTooltipPositioner, RdxTooltipTrigger],
+    template: `
+        <span id="outer-root" #outerRoot="rdxTooltip" [delay]="outerDelay" rdxTooltip>
+            <span id="outer-trigger" rdxTooltipTrigger>
+                <span id="outer-area">Outer</span>
+                <span id="inner-root" #innerRoot="rdxTooltip" [delay]="innerDelay" rdxTooltip>
+                    <span id="inner-trigger" rdxTooltipTrigger>Inner</span>
+                    @if (innerRoot.open()) {
+                        <span rdxTooltipPositioner>
+                            <span id="inner-popup" rdxTooltipPopup>Inner popup</span>
+                        </span>
+                    }
+                </span>
+            </span>
+            @if (outerRoot.open()) {
+                <span rdxTooltipPositioner>
+                    <span id="outer-popup" rdxTooltipPopup>Outer popup</span>
+                </span>
+            }
+        </span>
+    `
+})
+class NestedTooltipHostComponent {
+    outerDelay = 600;
+    innerDelay = 6000;
+}
+
 /** RdxTooltip can sit on an <ng-container> (a comment node); resolve it from a descendant. */
 function getRoot(fixture: ComponentFixture<unknown>): RdxTooltip {
     return fixture.debugElement.query(By.directive(RdxTooltipTrigger)).injector.get(RdxTooltip);
+}
+
+function pointerEvent(type: string, pointerType = 'mouse', clientX = 0, clientY = 0): Event {
+    const event = new Event(type, { bubbles: true });
+    Object.defineProperty(event, 'pointerType', { value: pointerType });
+    Object.defineProperty(event, 'clientX', { value: clientX });
+    Object.defineProperty(event, 'clientY', { value: clientY });
+    return event;
 }
 
 describe('Tooltip', () => {
@@ -412,6 +448,71 @@ describe('Tooltip disabled trigger', () => {
         fixture.detectChanges();
 
         expect(root.open()).toBe(false);
+    });
+});
+
+describe('Tooltip nested triggers', () => {
+    beforeEach(() => vi.useFakeTimers());
+    afterEach(() => {
+        vi.clearAllTimers();
+        vi.useRealTimers();
+    });
+
+    function setup() {
+        TestBed.configureTestingModule({ imports: [NestedTooltipHostComponent] });
+        const fixture = TestBed.createComponent(NestedTooltipHostComponent);
+        fixture.detectChanges();
+
+        return {
+            fixture,
+            outerRoot: fixture.debugElement.query(By.css('#outer-root')).injector.get(RdxTooltip),
+            innerRoot: fixture.debugElement.query(By.css('#inner-root')).injector.get(RdxTooltip),
+            outerTrigger: fixture.nativeElement.querySelector('#outer-trigger') as HTMLElement,
+            outerArea: fixture.nativeElement.querySelector('#outer-area') as HTMLElement,
+            innerTrigger: fixture.nativeElement.querySelector('#inner-trigger') as HTMLElement
+        };
+    }
+
+    it('does not open the outer tooltip when a nested trigger is hovered before the delay expires', () => {
+        const { fixture, outerRoot, innerTrigger } = setup();
+
+        innerTrigger.dispatchEvent(pointerEvent('pointermove', 'mouse', 50, 10));
+        fixture.detectChanges();
+        vi.advanceTimersByTime(600);
+        fixture.detectChanges();
+
+        expect(outerRoot.open()).toBe(false);
+    });
+
+    it('closes a hover-opened outer tooltip when the pointer moves onto a nested trigger', () => {
+        const { fixture, outerRoot, outerArea, innerTrigger } = setup();
+
+        outerArea.dispatchEvent(pointerEvent('pointermove', 'mouse', 10, 10));
+        vi.advanceTimersByTime(600);
+        fixture.detectChanges();
+        expect(outerRoot.open()).toBe(true);
+
+        innerTrigger.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
+        fixture.detectChanges();
+
+        expect(outerRoot.open()).toBe(false);
+    });
+
+    it('reopens the outer tooltip when moving from a nested trigger back to the parent area', () => {
+        const { fixture, outerRoot, outerArea, innerTrigger } = setup();
+
+        innerTrigger.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
+        fixture.detectChanges();
+        expect(outerRoot.open()).toBe(false);
+
+        outerArea.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
+        vi.advanceTimersByTime(599);
+        fixture.detectChanges();
+        expect(outerRoot.open()).toBe(false);
+
+        vi.advanceTimersByTime(1);
+        fixture.detectChanges();
+        expect(outerRoot.open()).toBe(true);
     });
 });
 
