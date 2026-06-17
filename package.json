@@ -29,6 +29,7 @@
         "----Playground---": "-----------------------------------------------------------------------",
         "playground": "nx serve radix-playground",
         "playground:build": "nx build radix-playground",
+        "build-site": "CI=1 NX_DAEMON=false nx build radix-playground && CI=1 NX_DAEMON=false nx run radix-storybook:build-storybook && node tools/scripts/build-site.mjs",
         "----Radix Docs---": "-----------------------------------------------------------------------",
         "radix-docs:dev": "nx run radix-docs:dev",
         "radix-docs:build": "nx run radix-docs:build",

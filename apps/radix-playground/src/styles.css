@@ -24,3 +24,104 @@ body {
     font-family: var(--font-sans);
     margin: 0;
 }
+
+:root {
+    --landing-accent-tint: #f2f2f7;
+    --landing-accent-border: #d9dae6;
+    --landing-accent-fill: #7477a8;
+    --landing-accent-text: #6f719c;
+    --landing-blue: #4f6fa8;
+    --landing-green: #5f835f;
+    --landing-red: #b65f4a;
+}
+
+:root[data-theme='dark'] {
+    --landing-accent-tint: #1f2025;
+    --landing-accent-border: #2e3038;
+    --landing-accent-fill: #7679b8;
+    --landing-accent-text: #a8abd8;
+    --landing-blue: #7897d8;
+    --landing-green: #82a976;
+    --landing-red: #d47c5f;
+}
+
+.landing-code-line {
+    display: inline-block;
+    margin-inline: -0.5rem;
+    min-width: 100%;
+    padding-inline: 0.5rem;
+    border-radius: 0.375rem;
+    animation: landing-code-spotlight 7.2s ease-in-out infinite;
+}
+
+.landing-code-line--state {
+    animation-delay: 2.4s;
+}
+
+.landing-code-line--styling {
+    animation-delay: 4.8s;
+}
+
+.landing-code-status__label {
+    position: absolute;
+    inset: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translateY(0.35rem);
+    animation: landing-code-label 7.2s ease-in-out infinite;
+}
+
+.landing-code-status__label--state {
+    animation-delay: 2.4s;
+}
+
+.landing-code-status__label--styling {
+    animation-delay: 4.8s;
+}
+
+@keyframes landing-code-spotlight {
+    0%,
+    24% {
+        background: color-mix(in srgb, var(--landing-accent-fill) 13%, transparent);
+        box-shadow: inset 2px 0 0 var(--landing-accent-fill);
+    }
+
+    34%,
+    100% {
+        background: transparent;
+        box-shadow: inset 2px 0 0 transparent;
+    }
+}
+
+@keyframes landing-code-label {
+    0%,
+    24% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    34%,
+    100% {
+        opacity: 0;
+        transform: translateY(-0.35rem);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .landing-code-line,
+    .landing-code-status__label {
+        animation: none;
+    }
+
+    .landing-code-line--behavior {
+        background: color-mix(in srgb, var(--landing-accent-fill) 13%, transparent);
+        box-shadow: inset 2px 0 0 var(--landing-accent-fill);
+    }
+
+    .landing-code-status__label--behavior {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

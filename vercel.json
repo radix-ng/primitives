@@ -1,0 +1,19 @@
+{
+    "redirects": [
+        {
+            "source": "/docs",
+            "destination": "/docs/",
+            "permanent": false
+        }
+    ],
+    "rewrites": [
+        {
+            "source": "/playground",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/playground/:path*",
+            "destination": "/index.html"
+        }
+    ]
+}
