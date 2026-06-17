@@ -727,7 +727,7 @@ type CopyTarget = 'install' | 'skill';
                         </a>
                         <a
                             class="no-underline hover:text-[var(--landing-accent-text)]"
-                            href="https://x.com/headless_angular"
+                            href="https://x.com/pimenovoleg"
                             target="_blank"
                             rel="noreferrer"
                         >
@@ -735,7 +735,7 @@ type CopyTarget = 'install' | 'skill';
                         </a>
                         <a
                             class="no-underline hover:text-[var(--landing-accent-text)]"
-                            href="https://t.me/headless_angular"
+                            href="https://t.me/pimenovoleg"
                             target="_blank"
                             rel="noreferrer"
                         >
