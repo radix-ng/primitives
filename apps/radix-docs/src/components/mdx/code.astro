@@ -1,9 +1,0 @@
----
-import { cn } from '@/utils/utils';
-
-const { className, ...props } = Astro.props;
----
-
-<code class={cn('relative font-mono inline-block p-1 text-sm leading-4', className)} {...props}>
-    <slot />
-</code>

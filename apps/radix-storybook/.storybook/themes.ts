@@ -27,7 +27,7 @@ const logo = (fill: string) => {
 const base = {
     // Empty string keeps img decorative (text is in the SVG) and hides the separate title span.
     brandTitle: '',
-    brandUrl: 'https://github.com/radix-ng/primitives',
+    brandUrl: 'https://radix-ng.com',
     brandTarget: '_blank',
     fontBase: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
     fontCode: "'JetBrains Mono', 'Roboto Mono', Consolas, Menlo, Monaco, monospace"
