@@ -1,3 +1,21 @@
+## 1.0.0-beta.5 (2026-06-18)
+
+### 🚀 Features
+
+- **slider:** align with Base UI event and thumb positioning ([fd3cac7c](https://github.com/radix-ng/primitives/commit/fd3cac7c))
+- **primitives:** add cancelable value change events ([e02f16b0](https://github.com/radix-ng/primitives/commit/e02f16b0))
+- **tooltip:** align nested trigger hover behavior ([e0b1298e](https://github.com/radix-ng/primitives/commit/e0b1298e))
+- **primitives:** add floating focus portal bridge and shared trigger interaction ([e4ef0fd6](https://github.com/radix-ng/primitives/commit/e4ef0fd6))
+
+### 🩹 Fixes
+
+- align floating focus and open-change contracts ([063b5ff9](https://github.com/radix-ng/primitives/commit/063b5ff9))
+- align select ids and trigger focus guards ([f9ba1a4e](https://github.com/radix-ng/primitives/commit/f9ba1a4e))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 1.0.0-beta.4 (2026-06-16)
 
 ### 🚀 Features
