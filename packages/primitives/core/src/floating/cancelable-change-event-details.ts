@@ -4,6 +4,8 @@ export interface RdxCancelableChangeEventDetails<Reason extends string = string>
     trigger: HTMLElement | undefined;
     cancel: () => void;
     isCanceled: () => boolean;
+    allowPropagation: () => void;
+    readonly isPropagationAllowed: boolean;
     preventUnmountOnClose: () => void;
 }
 
@@ -18,6 +20,7 @@ export function createCancelableChangeEventDetails<Reason extends string>(
     trigger?: HTMLElement
 ): RdxCancelableChangeEventTransaction<Reason> {
     let canceled = false;
+    let propagationAllowed = false;
     let preventUnmountOnClose = false;
 
     return {
@@ -29,6 +32,12 @@ export function createCancelableChangeEventDetails<Reason extends string>(
                 canceled = true;
             },
             isCanceled: () => canceled,
+            allowPropagation: () => {
+                propagationAllowed = true;
+            },
+            get isPropagationAllowed() {
+                return propagationAllowed;
+            },
             preventUnmountOnClose: () => {
                 preventUnmountOnClose = true;
             }

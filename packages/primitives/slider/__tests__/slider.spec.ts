@@ -94,6 +94,15 @@ function press(el: HTMLElement, key: string, shiftKey = false): void {
     el.dispatchEvent(new KeyboardEvent('keydown', { key, shiftKey, bubbles: true, cancelable: true }));
 }
 
+function touchEvent(type: string, x: number, y = 0, identifier = 1): TouchEvent {
+    const event = new Event(type, { bubbles: true, cancelable: true }) as TouchEvent;
+    Object.defineProperty(event, 'changedTouches', {
+        configurable: true,
+        value: [{ identifier, clientX: x, clientY: y }]
+    });
+    return event;
+}
+
 describe('RdxSlider', () => {
     let fixture: ComponentFixture<TestComponent>;
     let component: TestComponent;
@@ -158,6 +167,42 @@ describe('RdxSlider', () => {
     it('positions the indicator to the current percentage', () => {
         const indicator = fixture.debugElement.query(By.css('[rdxSliderIndicator]')).nativeElement as HTMLElement;
         expect(indicator.style.width).toBe('40%');
+    });
+
+    it('updates from touch drag on mobile', () => {
+        const control = fixture.debugElement.query(By.css('[rdxSliderControl]')).nativeElement as HTMLElement;
+        const thumb = fixture.debugElement.query(By.css('[rdxSliderThumb]')).nativeElement as HTMLElement;
+
+        vi.spyOn(control, 'getBoundingClientRect').mockReturnValue({
+            width: 100,
+            height: 20,
+            top: 0,
+            right: 100,
+            bottom: 20,
+            left: 0,
+            x: 0,
+            y: 0,
+            toJSON: () => ({})
+        } as DOMRect);
+        vi.spyOn(thumb, 'getBoundingClientRect').mockReturnValue({
+            width: 20,
+            height: 20,
+            top: 0,
+            right: 50,
+            bottom: 20,
+            left: 30,
+            x: 30,
+            y: 0,
+            toJSON: () => ({})
+        } as DOMRect);
+
+        control.dispatchEvent(touchEvent('touchstart', 40));
+        document.dispatchEvent(touchEvent('touchmove', 70));
+        document.dispatchEvent(touchEvent('touchend', 70));
+        fixture.detectChanges();
+
+        expect(component.value()).toBe(70);
+        expect(component.onChange).toHaveBeenLastCalledWith(70);
     });
 
     it('supports multiple thumbs and keeps them sorted', () => {

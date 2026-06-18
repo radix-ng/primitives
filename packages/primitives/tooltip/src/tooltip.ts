@@ -17,12 +17,14 @@ import {
 import type { ReferenceElement } from '@floating-ui/dom';
 import {
     BooleanInput,
+    createCancelableChangeEventDetails,
     createContext,
     createFloatingRootContext,
     injectId,
     NumberInput,
     provideFloatingRootContext,
     provideFloatingTree,
+    RdxCancelableChangeEventDetails,
     RdxFloatingRootContext,
     watch
 } from '@radix-ng/primitives/core';
@@ -35,6 +37,7 @@ import { createTooltipInstantController, TooltipInstantController, useTimeoutFn 
 export interface RdxTooltipContext {
     contentId: string;
     isOpen: Signal<boolean>;
+    present: Signal<boolean>;
     /** Whether the tooltip opened/closed without waiting for the delay. */
     instant: Signal<boolean>;
     disabled: Signal<boolean>;
@@ -44,23 +47,38 @@ export interface RdxTooltipContext {
     trigger: Signal<HTMLElement | undefined>;
     triggers: Signal<HTMLElement[]>;
     payload: Signal<unknown>;
-    open: (trigger?: HTMLElement, payload?: unknown) => void;
-    close: () => void;
+    open: (trigger?: HTMLElement, payload?: unknown, event?: Event) => void;
+    close: (reason?: RdxTooltipOpenChangeReason, event?: Event) => void;
     openChangeReason: Signal<RdxTooltipOpenChangeReason>;
     cancelPendingOpen: () => void;
-    closeHoverOpen: () => void;
+    closeHoverOpen: (event?: Event) => void;
     /** Closes after the resolved close delay (used when hover/focus is lost). */
-    closeDelayed: () => void;
+    closeDelayed: (event?: Event) => void;
     registerTrigger: (trigger: HTMLElement) => () => void;
     /** Hover entered a trigger — opens after the resolved delay (or instantly). */
-    onTriggerEnter: (trigger?: HTMLElement, payload?: unknown) => void;
+    onTriggerEnter: (trigger?: HTMLElement, payload?: unknown, event?: Event) => void;
     /** Hover left a trigger — cancels a pending open and closes when appropriate. */
     onTriggerLeave: () => void;
     setCursorPosition: (position: { x: number; y: number } | undefined) => void;
     setDelays: (delay: number | undefined, closeDelay: number | undefined) => void;
 }
 
-export type RdxTooltipOpenChangeReason = 'trigger-hover' | 'trigger-focus' | 'trigger-press' | 'escape-key' | 'none';
+export type RdxTooltipOpenChangeReason =
+    | 'trigger-hover'
+    | 'trigger-focus'
+    | 'trigger-press'
+    | 'outside-press'
+    | 'escape-key'
+    | 'disabled'
+    | 'imperative-action'
+    | 'none';
+
+export type RdxTooltipOpenChangeEventDetails = RdxCancelableChangeEventDetails<RdxTooltipOpenChangeReason>;
+
+export interface RdxTooltipOpenChangeEvent {
+    open: boolean;
+    eventDetails: RdxTooltipOpenChangeEventDetails;
+}
 
 export const [injectRdxTooltipContext, provideRdxTooltipContext] = createContext<RdxTooltipContext>(
     'RdxTooltipContext',
@@ -147,7 +165,7 @@ export class RdxTooltip {
     /**
      * Event handler called when the open state changes.
      */
-    readonly onOpenChange = output<boolean>();
+    readonly onOpenChange = output<RdxTooltipOpenChangeEvent>();
 
     readonly contentId = injectId('rdx-tooltip-content-');
     readonly trigger = signal<HTMLElement | undefined>(undefined);
@@ -155,8 +173,10 @@ export class RdxTooltip {
     readonly payload = signal<unknown>(undefined);
     readonly cursorPosition = signal<{ x: number; y: number } | undefined>(undefined);
     readonly openChangeReason = signal<RdxTooltipOpenChangeReason>('none');
+    private readonly preventUnmountOnClose = signal(false);
 
     private readonly openedInstant = signal(false);
+    private suppressNextOpenChangeEmit = false;
 
     /** Local instant window used when this tooltip is not inside a provider. */
     private readonly localInstant: TooltipInstantController = createTooltipInstantController(
@@ -183,6 +203,7 @@ export class RdxTooltip {
 
     /** Whether the most recent open happened without the delay. */
     readonly instant = this.openedInstant.asReadonly();
+    readonly present = computed(() => this.open() || this.preventUnmountOnClose());
 
     private readonly virtualAnchor = computed<ReferenceElement | undefined>(() => {
         const axis = this.trackCursorAxis();
@@ -256,9 +277,19 @@ export class RdxTooltip {
         watch(
             [this.open],
             ([isOpen]) => {
-                this.onOpenChange.emit(isOpen);
+                if (this.suppressNextOpenChangeEmit) {
+                    this.suppressNextOpenChangeEmit = false;
+                } else {
+                    const { eventDetails } = createCancelableChangeEventDetails(
+                        this.openChangeReason(),
+                        new Event('tooltip.open-change'),
+                        this.trigger()
+                    );
+                    this.onOpenChange.emit({ open: isOpen, eventDetails });
+                }
 
                 if (isOpen) {
+                    this.preventUnmountOnClose.set(false);
                     this.instantGroup.onOpen();
                 } else {
                     this.instantGroup.onClose();
@@ -270,41 +301,41 @@ export class RdxTooltip {
     }
 
     /** Opens immediately, optionally switching the active trigger/payload. */
-    show(trigger = this.trigger(), payload?: unknown) {
-        this.applyOpen(true, trigger, payload, 'trigger-focus');
+    show(trigger = this.trigger(), payload?: unknown, event?: Event) {
+        this.applyOpen(true, trigger, payload, 'trigger-focus', event);
     }
 
-    close() {
+    close(reason: RdxTooltipOpenChangeReason = 'none', event?: Event) {
         this.openTimer.stop();
         this.closeTimer.stop();
-        this.applyClose('none');
+        this.applyClose(reason, event);
     }
 
     cancelPendingOpen(): void {
         this.openTimer.stop();
     }
 
-    closeHoverOpen(): void {
+    closeHoverOpen(event?: Event): void {
         this.openTimer.stop();
         this.closeTimer.stop();
         if (this.open() && this.openChangeReason() === 'trigger-hover') {
-            this.applyClose('trigger-hover');
+            this.applyClose('trigger-hover', event);
         }
     }
 
     /** Closes after the resolved close delay, e.g. when the pointer or focus leaves. */
-    scheduleClose() {
+    scheduleClose(event?: Event) {
         this.openTimer.stop();
 
         if (this.resolvedCloseDelay() <= 0) {
-            this.applyClose('trigger-hover');
+            this.applyClose('trigger-hover', event);
         } else {
             this.closeTimer.start();
         }
     }
 
     /** Hover/focus entered — open after the delay, or instantly within the instant window. */
-    onTriggerEnter(trigger = this.trigger(), payload?: unknown) {
+    onTriggerEnter(trigger = this.trigger(), payload?: unknown, event?: Event) {
         if (this.disabled()) {
             return;
         }
@@ -317,7 +348,7 @@ export class RdxTooltip {
         this.closeTimer.stop();
 
         if (this.instantGroup.isInstant() || this.resolvedDelay() <= 0) {
-            this.applyOpen(true, trigger, payload, 'trigger-hover');
+            this.applyOpen(true, trigger, payload, 'trigger-hover', event);
         } else {
             this.openTimer.start();
         }
@@ -369,14 +400,30 @@ export class RdxTooltip {
         instant: boolean,
         trigger = this.trigger(),
         payload?: unknown,
-        reason: RdxTooltipOpenChangeReason = 'none'
+        reason: RdxTooltipOpenChangeReason = 'none',
+        event?: Event
     ) {
         if (this.disabled()) {
             return;
         }
+        const wasOpen = this.open();
 
         this.openTimer.stop();
         this.closeTimer.stop();
+
+        if (!wasOpen) {
+            const { eventDetails } = createCancelableChangeEventDetails(
+                reason,
+                event ?? new Event('tooltip.open-change'),
+                trigger
+            );
+            this.onOpenChange.emit({ open: true, eventDetails });
+
+            if (eventDetails.isCanceled()) {
+                return;
+            }
+            this.suppressNextOpenChangeEmit = true;
+        }
 
         if (trigger) {
             this.trigger.set(trigger);
@@ -387,11 +434,28 @@ export class RdxTooltip {
         }
 
         this.openedInstant.set(instant || this.instantGroup.isInstant());
+        this.preventUnmountOnClose.set(false);
         this.openChangeReason.set(reason);
         this.open.set(true);
     }
 
-    private applyClose(reason: RdxTooltipOpenChangeReason = 'none') {
+    private applyClose(reason: RdxTooltipOpenChangeReason = 'none', event?: Event) {
+        if (!this.open()) {
+            return;
+        }
+        const change = createCancelableChangeEventDetails(
+            reason,
+            event ?? new Event('tooltip.open-change'),
+            this.trigger()
+        );
+        const { eventDetails } = change;
+        this.onOpenChange.emit({ open: false, eventDetails });
+
+        if (eventDetails.isCanceled()) {
+            return;
+        }
+        this.suppressNextOpenChangeEmit = true;
+        this.preventUnmountOnClose.set(change.shouldPreventUnmountOnClose());
         this.openedInstant.set(this.instantGroup.isInstant());
         this.openChangeReason.set(reason);
         this.open.set(false);
@@ -402,6 +466,7 @@ function contextFor(root: RdxTooltip): RdxTooltipContext {
     return {
         contentId: root.contentId,
         isOpen: root.open,
+        present: root.present,
         instant: root.instant,
         disabled: root.disabled,
         disableHoverablePopup: root.disableHoverablePopup,
@@ -410,13 +475,14 @@ function contextFor(root: RdxTooltip): RdxTooltipContext {
         triggers: root.triggers.asReadonly(),
         payload: root.payload.asReadonly(),
         openChangeReason: root.openChangeReason.asReadonly(),
-        open: (trigger?: HTMLElement, payload?: unknown) => root.show(trigger, payload),
-        close: () => root.close(),
+        open: (trigger?: HTMLElement, payload?: unknown, event?: Event) => root.show(trigger, payload, event),
+        close: (reason?: RdxTooltipOpenChangeReason, event?: Event) => root.close(reason, event),
         cancelPendingOpen: () => root.cancelPendingOpen(),
-        closeHoverOpen: () => root.closeHoverOpen(),
-        closeDelayed: () => root.scheduleClose(),
+        closeHoverOpen: (event?: Event) => root.closeHoverOpen(event),
+        closeDelayed: (event?: Event) => root.scheduleClose(event),
         registerTrigger: (trigger: HTMLElement) => root.registerTrigger(trigger),
-        onTriggerEnter: (trigger?: HTMLElement, payload?: unknown) => root.onTriggerEnter(trigger, payload),
+        onTriggerEnter: (trigger?: HTMLElement, payload?: unknown, event?: Event) =>
+            root.onTriggerEnter(trigger, payload, event),
         onTriggerLeave: () => root.onTriggerLeave(),
         setCursorPosition: (position) => root.setCursorPosition(position),
         setDelays: (delay, closeDelay) => root.setDelays(delay, closeDelay)

@@ -25,6 +25,7 @@ import {
 import {
     composedContains,
     createFocusGuard,
+    enableFocusInside,
     focus,
     FOCUS_GUARD_ATTR,
     getNextTabbable,
@@ -34,7 +35,8 @@ import {
     provideRdxFocusScopeConfig,
     RdxFocusScope,
     RdxFocusScopeConfig,
-    RdxFocusScopeConfigToken
+    RdxFocusScopeConfigToken,
+    useFocusGuardsTabbability
 } from '@radix-ng/primitives/focus-scope';
 import { markOthers } from './mark-others';
 
@@ -331,6 +333,10 @@ export class RdxFloatingFocusManager {
         });
 
         this.trackInteractionType();
+        useFocusGuardsTabbability(() => (this.rootContext?.floatingElement ?? this.host) as HTMLElement, {
+            enabled: () =>
+                Boolean(this.rootContext) && this.effectiveEnabled() && this.isFloatingOpen() && !this.effectiveModal()
+        });
         this.wireCloseOnFocusOut();
         this.wireRestoreFocus();
         this.wirePortalFocusBridge();
@@ -580,6 +586,13 @@ export class RdxFloatingFocusManager {
                     return;
                 }
 
+                if (this.isFromOutsideFocusGuard(event)) {
+                    const popup = this.rootContext?.floatingElement ?? this.host;
+                    enableFocusInside(popup);
+                    focus(this.getTabbableContent()[0] ?? this.host);
+                    return;
+                }
+
                 if (isOutsideEvent(event, this.portalFocusContainer())) {
                     focus(getNextTabbable(this.rootContext?.referenceElement ?? this.host));
                     return;
@@ -712,5 +725,14 @@ export class RdxFloatingFocusManager {
         } else {
             ref.set(element);
         }
+    }
+
+    private isFromOutsideFocusGuard(event: FocusEvent): boolean {
+        const relatedTarget = event.relatedTarget;
+        return (
+            relatedTarget instanceof Element &&
+            relatedTarget.hasAttribute(FOCUS_GUARD_ATTR) &&
+            relatedTarget.getAttribute('data-type') === 'outside'
+        );
     }
 }

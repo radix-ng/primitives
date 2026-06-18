@@ -71,9 +71,9 @@ function isMouseLikePointerType(pointerType: string | undefined): boolean {
         '(mouseover)': 'handleMouseOver($event)',
         '(mouseleave)': 'handleMouseLeave()',
         '(pointerdown)': 'handlePointerDown($event)',
-        '(focus)': 'handleFocus()',
-        '(blur)': 'handleBlur()',
-        '(click)': 'handleClick()'
+        '(focus)': 'handleFocus($event)',
+        '(blur)': 'handleBlur($event)',
+        '(click)': 'handleClick($event)'
     }
 })
 export class RdxTooltipTrigger {
@@ -166,7 +166,7 @@ export class RdxTooltipTrigger {
         });
     }
 
-    protected handleFocus() {
+    protected handleFocus(event: FocusEvent) {
         const rootContext = this.rootContext();
 
         if (!rootContext || this.isDisabled() || this.isPointerDown()) {
@@ -174,18 +174,18 @@ export class RdxTooltipTrigger {
         }
 
         rootContext.setDelays(this.delay(), this.closeDelay());
-        rootContext.open(this.elementRef.nativeElement, this.payload());
+        rootContext.open(this.elementRef.nativeElement, this.payload(), event);
     }
 
-    protected handleBlur() {
-        this.rootContext()?.closeDelayed();
+    protected handleBlur(event: FocusEvent) {
+        this.rootContext()?.closeDelayed(event);
     }
 
-    protected handleClick() {
+    protected handleClick(event: MouseEvent) {
         const rootContext = this.rootContext();
 
         if (rootContext?.isOpen() && this.closeOnClick()) {
-            rootContext.close();
+            rootContext.close('trigger-press', event);
             return;
         }
 
@@ -220,7 +220,7 @@ export class RdxTooltipTrigger {
 
         if (!this.hasPointerMoveOpened()) {
             rootContext.setDelays(this.delay(), this.closeDelay());
-            rootContext.onTriggerEnter(this.elementRef.nativeElement, this.payload());
+            rootContext.onTriggerEnter(this.elementRef.nativeElement, this.payload(), event);
             this.hasPointerMoveOpened.set(true);
         }
     }
@@ -256,7 +256,7 @@ export class RdxTooltipTrigger {
             isMouseLikePointerType(this.pointerType)
         ) {
             rootContext.setDelays(this.delay(), this.closeDelay());
-            rootContext.onTriggerEnter(trigger, this.payload());
+            rootContext.onTriggerEnter(trigger, this.payload(), event);
             this.hasPointerMoveOpened.set(true);
         }
     }

@@ -7593,7 +7593,7 @@
           "outputs": [
             {
               "name": "onOpenChange",
-              "type": "boolean",
+              "type": "RdxTooltipOpenChangeEvent",
               "description": "Event handler called when the open state changes."
             }
           ],

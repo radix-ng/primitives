@@ -16,7 +16,7 @@ import { injectRdxTooltipContext } from './tooltip';
     selector: 'ng-template[rdxTooltipPortal]',
     exportAs: 'rdxTooltipPortal',
     hostDirectives: [{ directive: RdxPortalPresence, inputs: ['container'] }],
-    providers: [provideRdxPresenceContext(() => ({ present: injectRdxTooltipContext().isOpen }))]
+    providers: [provideRdxPresenceContext(() => ({ present: injectRdxTooltipContext().present }))]
 })
 export class RdxTooltipPortal {}
 

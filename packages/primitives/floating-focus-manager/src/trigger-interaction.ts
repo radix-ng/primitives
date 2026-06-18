@@ -4,7 +4,7 @@ import {
     createAriaOwnsAnchor,
     createFocusGuard,
     focus,
-    getNextTabbable,
+    FOCUS_GUARD_ATTR,
     getTabbableAfterElement,
     getTabbableBeforeElement,
     isOutsideEvent
@@ -99,12 +99,15 @@ export function useTriggerFocusGuards(options: RdxTriggerFocusGuardOptions): voi
         const trigger = options.trigger();
         const preGuard = createFocusGuard(trigger.ownerDocument);
         const postGuard = createFocusGuard(trigger.ownerDocument);
+        preGuard.setAttribute('data-type', 'outside');
+        postGuard.setAttribute('data-type', 'outside');
         const contentId = options.contentId?.();
         const anchor = contentId ? createAriaOwnsAnchor(trigger.ownerDocument, contentId) : null;
 
         const handlePreGuardFocus = (event: FocusEvent): void => {
+            const previousTabbable = getTabbableBeforeElement(preGuard);
             options.close(event);
-            focus(getTabbableBeforeElement(preGuard));
+            focus(previousTabbable);
         };
 
         const handlePostGuardFocus = (event: FocusEvent): void => {
@@ -116,17 +119,19 @@ export function useTriggerFocusGuards(options: RdxTriggerFocusGuardOptions): voi
                 return;
             }
 
-            options.close(event);
-
             let nextTabbable = getTabbableAfterElement(postGuard);
-            while (nextTabbable && popup && composedContains(popup, nextTabbable)) {
+            while (
+                nextTabbable &&
+                (nextTabbable.hasAttribute(FOCUS_GUARD_ATTR) || (popup && composedContains(popup, nextTabbable)))
+            ) {
                 const previous = nextTabbable;
-                nextTabbable = getNextTabbable(nextTabbable);
+                nextTabbable = getTabbableAfterElement(nextTabbable);
                 if (nextTabbable === previous) {
                     break;
                 }
             }
 
+            options.close(event);
             focus(nextTabbable);
         };
 

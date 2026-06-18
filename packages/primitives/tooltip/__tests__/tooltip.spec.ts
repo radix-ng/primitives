@@ -5,6 +5,7 @@ import { RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
 import {
     createRdxTooltipHandle,
     RdxTooltip,
+    RdxTooltipOpenChangeEvent,
     RdxTooltipPopup,
     RdxTooltipPortal,
     RdxTooltipPortalMisuseGuard,
@@ -25,7 +26,7 @@ import { defaultTooltipConfig, injectRdxTooltipConfig, provideRdxTooltipConfig }
             [delay]="delay"
             [closeDelay]="closeDelay"
             [disableHoverablePopup]="disableHoverablePopup"
-            (onOpenChange)="changes.push($event)"
+            (onOpenChange)="handleOpenChange($event)"
             rdxTooltip
         >
             <button [closeOnClick]="closeOnClick" rdxTooltipTrigger>Trigger</button>
@@ -39,7 +40,21 @@ class TestHostComponent {
     closeDelay = 0;
     disableHoverablePopup = false;
     closeOnClick = true;
-    changes: boolean[] = [];
+    cancelNextOpen = false;
+    cancelNextClose = false;
+    changes: RdxTooltipOpenChangeEvent[] = [];
+
+    handleOpenChange(event: RdxTooltipOpenChangeEvent): void {
+        if (event.open && this.cancelNextOpen) {
+            event.eventDetails.cancel();
+            this.cancelNextOpen = false;
+        }
+        if (!event.open && this.cancelNextClose) {
+            event.eventDetails.cancel();
+            this.cancelNextClose = false;
+        }
+        this.changes.push(event);
+    }
 }
 
 @Component({
@@ -175,6 +190,29 @@ class NestedTooltipHostComponent {
     innerDelay = 6000;
 }
 
+@Component({
+    imports: [RdxTooltip, RdxTooltipPopup, RdxTooltipPortal, RdxTooltipPositioner, RdxTooltipTrigger],
+    template: `
+        <div [(open)]="open" (onOpenChange)="handleOpenChange($event)" rdxTooltip>
+            <button rdxTooltipTrigger>Trigger</button>
+            <div *rdxTooltipPortal rdxTooltipPositioner>
+                <div rdxTooltipPopup>Popup</div>
+            </div>
+        </div>
+    `
+})
+class PreventUnmountTooltipHostComponent {
+    open = false;
+    preventNextClose = false;
+
+    handleOpenChange(event: RdxTooltipOpenChangeEvent): void {
+        if (!event.open && this.preventNextClose) {
+            event.eventDetails.preventUnmountOnClose();
+            this.preventNextClose = false;
+        }
+    }
+}
+
 /** RdxTooltip can sit on an <ng-container> (a comment node); resolve it from a descendant. */
 function getRoot(fixture: ComponentFixture<unknown>): RdxTooltip {
     return fixture.debugElement.query(By.directive(RdxTooltipTrigger)).injector.get(RdxTooltip);
@@ -234,7 +272,41 @@ describe('Tooltip', () => {
         vi.advanceTimersByTime(0);
         fixture.detectChanges();
 
-        expect(host.changes).toEqual([true, false]);
+        expect(host.changes.map((event) => event.open)).toEqual([true, false]);
+        expect(host.changes.map((event) => event.eventDetails.reason)).toEqual(['none', 'none']);
+    });
+
+    it('emits Base UI-like open-change details and allows canceling opens', () => {
+        host.cancelNextOpen = true;
+
+        trigger.dispatchEvent(new Event('focus'));
+        fixture.detectChanges();
+
+        expect(root.open()).toBe(false);
+        expect(host.changes).toHaveLength(1);
+        expect(host.changes[0].open).toBe(true);
+        expect(host.changes[0].eventDetails.reason).toBe('trigger-focus');
+        expect(host.changes[0].eventDetails.trigger).toBe(trigger);
+        expect(host.changes[0].eventDetails.isCanceled()).toBe(true);
+        expect(host.changes[0].eventDetails.isPropagationAllowed).toBe(false);
+
+        host.changes[0].eventDetails.allowPropagation();
+        expect(host.changes[0].eventDetails.isPropagationAllowed).toBe(true);
+    });
+
+    it('allows canceling closes', () => {
+        trigger.dispatchEvent(new Event('focus'));
+        fixture.detectChanges();
+        expect(root.open()).toBe(true);
+
+        host.cancelNextClose = true;
+        trigger.click();
+        fixture.detectChanges();
+
+        expect(root.open()).toBe(true);
+        expect(host.changes.at(-1)?.open).toBe(false);
+        expect(host.changes.at(-1)?.eventDetails.reason).toBe('trigger-press');
+        expect(host.changes.at(-1)?.eventDetails.isCanceled()).toBe(true);
     });
 
     it('opens instantly on focus', () => {
@@ -569,6 +641,24 @@ describe('Tooltip handle', () => {
         vi.advanceTimersByTime(0);
         fixture.detectChanges();
         expect(handle.isOpen()).toBe(false);
+    });
+
+    it('keeps the portal mounted after close when preventUnmountOnClose is requested', () => {
+        TestBed.configureTestingModule({ imports: [PreventUnmountTooltipHostComponent] });
+        const fixture = TestBed.createComponent(PreventUnmountTooltipHostComponent);
+        fixture.detectChanges();
+
+        const trigger: HTMLButtonElement = fixture.nativeElement.querySelector('[rdxTooltipTrigger]');
+        trigger.dispatchEvent(new Event('focus'));
+        fixture.detectChanges();
+        expect(document.querySelector('[rdxTooltipPopup]')).toBeTruthy();
+
+        fixture.componentInstance.preventNextClose = true;
+        trigger.click();
+        fixture.detectChanges();
+
+        expect(fixture.componentInstance.open).toBe(false);
+        expect(document.querySelector('[rdxTooltipPopup]')).toBeTruthy();
     });
 });
 

@@ -68,7 +68,7 @@ export class RdxTooltipPositioner extends RdxPopperContentWrapper {
             const trigger = this.rootContext.trigger();
 
             if (trigger && target?.contains(trigger)) {
-                this.rootContext.close();
+                this.rootContext.close('none', event);
             }
         };
 
@@ -103,7 +103,8 @@ export class RdxTooltipPositioner extends RdxPopperContentWrapper {
             focusOutside: () => false,
             onEscapeKeyDown: (event) => this.escapeKeyDown.emit(event),
             onPointerDownOutside: (event) => this.pointerDownOutside.emit(event),
-            onDismiss: () => this.rootContext.close()
+            onDismiss: (reason, event) =>
+                this.rootContext.close(reason === 'escape-key' ? 'escape-key' : 'outside-press', event)
         });
 
         // While following the cursor the popup sits right under the pointer; if it could intercept

@@ -134,6 +134,21 @@ describe('focus guards', () => {
             expect(inner.hasAttribute('tabindex')).toBe(false);
         });
 
+        it('disables content tabbability on mount while focus is outside', () => {
+            const outside = document.createElement('button');
+            document.body.appendChild(outside);
+            appended.push(outside);
+            outside.focus();
+
+            const fixture = TestBed.createComponent(GuardHost);
+            fixture.detectChanges();
+
+            const portal = fixture.componentInstance.portal().nativeElement as HTMLElement;
+            const inner = portal.querySelector('button') as HTMLElement;
+
+            expect(inner.getAttribute('tabindex')).toBe('-1');
+        });
+
         it('ignores focus moves that stay inside the portal (relatedTarget inside)', () => {
             const fixture = TestBed.createComponent(GuardHost);
             fixture.detectChanges();
@@ -141,6 +156,7 @@ describe('focus guards', () => {
             const portal = fixture.componentInstance.portal().nativeElement as HTMLElement;
             const inner = portal.querySelector('button') as HTMLElement;
 
+            portal.dispatchEvent(new FocusEvent('focusin', { bubbles: true, relatedTarget: document.body }));
             // a focusout whose relatedTarget is still inside must NOT disable tabbability
             portal.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: inner }));
             expect(inner.hasAttribute('tabindex')).toBe(false);

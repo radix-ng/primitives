@@ -13,6 +13,8 @@ import {
 
 const INTENTIONAL_DRAG_COUNT_THRESHOLD = 2;
 
+type PointerCoords = { x: number; y: number };
+
 /**
  * The interactive area of the slider. Handles pointer presses and drags on the
  * track, mapping pointer position to a value and moving the closest thumb.
@@ -37,14 +39,24 @@ export class RdxSliderControl {
     private styles: CSSStyleDeclaration | null = null;
     private moveCount = 0;
     private currentInteractionValue: number | number[] | null = null;
+    private touchId: number | null = null;
 
+    private readonly onTouchStart = (event: TouchEvent) => this.handleTouchStart(event);
     private readonly onMove = (event: PointerEvent) => this.handleMove(event);
     private readonly onUp = (event: PointerEvent) => this.handleUp(event);
     private readonly onCancel = (event: PointerEvent) => this.handleUp(event);
+    private readonly onTouchMove = (event: TouchEvent) => this.handleMove(event);
+    private readonly onTouchEnd = (event: TouchEvent) => this.handleUp(event);
 
     constructor() {
-        this.root.controlRef.set(this.elementRef.nativeElement);
-        inject(DestroyRef).onDestroy(() => this.stopListening());
+        const control = this.elementRef.nativeElement;
+        this.root.controlRef.set(control);
+        control.style.setProperty('touch-action', 'none');
+        control.addEventListener('touchstart', this.onTouchStart, { passive: true });
+        inject(DestroyRef).onDestroy(() => {
+            control.removeEventListener('touchstart', this.onTouchStart);
+            this.stopListening();
+        });
     }
 
     protected onPointerDown(event: PointerEvent): void {
@@ -56,6 +68,10 @@ export class RdxSliderControl {
         if (!target) {
             return;
         }
+        if (this.isTargetDisabledThumb(target)) {
+            this.root.resetPressedThumb();
+            return;
+        }
 
         // Suppress the nested range input's native click-to-set and drag so the
         // control fully owns pointer interaction (otherwise releasing on a thumb
@@ -63,6 +79,7 @@ export class RdxSliderControl {
         // the thumb-sized input). Focus is restored manually via focusThumb.
         event.preventDefault();
 
+        this.touchId = null;
         this.styles = this.document.defaultView?.getComputedStyle(control) ?? null;
         this.startPressing({ x: event.clientX, y: event.clientY });
         const finger = this.getFingerState({ x: event.clientX, y: event.clientY });
@@ -86,13 +103,59 @@ export class RdxSliderControl {
         this.document.addEventListener('pointercancel', this.onCancel, { once: true });
     }
 
-    private handleMove(event: PointerEvent): void {
+    private handleTouchStart(event: TouchEvent): void {
+        if (this.root.isDisabled()) {
+            return;
+        }
+
+        const touch = event.changedTouches[0];
+        if (!touch) {
+            return;
+        }
+        if (this.isTargetDisabledThumb(event.target)) {
+            this.root.resetPressedThumb();
+            return;
+        }
+
+        this.touchId = touch.identifier;
+        this.styles = this.document.defaultView?.getComputedStyle(this.elementRef.nativeElement) ?? null;
+
+        const fingerCoords = this.getFingerCoords(event);
+        if (fingerCoords == null) {
+            return;
+        }
+
+        this.startPressing(fingerCoords);
+        const finger = this.getFingerState(fingerCoords);
+        if (finger == null) {
+            return;
+        }
+
+        this.root.focusThumb(finger.thumbIndex);
+        const applied = this.setValueFromPointer(finger, 'track-press');
+        if (applied && finger.didSwap) {
+            this.root.focusThumb(finger.thumbIndex);
+        }
+
+        this.moveCount = 0;
+        this.document.addEventListener('touchmove', this.onTouchMove, { passive: true });
+        this.document.addEventListener('touchend', this.onTouchEnd, { passive: true, once: true });
+        this.document.addEventListener('touchcancel', this.onTouchEnd, { passive: true, once: true });
+    }
+
+    private handleMove(event: PointerEvent | TouchEvent): void {
+        const fingerCoords = this.getFingerCoords(event);
+        if (fingerCoords == null) {
+            return;
+        }
+
         this.moveCount += 1;
-        if (event.buttons === 0) {
+        if ('buttons' in event && event.buttons === 0) {
             this.handleUp(event);
             return;
         }
-        const finger = this.getFingerState({ x: event.clientX, y: event.clientY });
+
+        const finger = this.getFingerState(fingerCoords);
         if (finger == null) {
             return;
         }
@@ -107,7 +170,7 @@ export class RdxSliderControl {
         }
     }
 
-    private handleUp(event: PointerEvent): void {
+    private handleUp(event: PointerEvent | TouchEvent): void {
         this.root.setActive(-1);
         this.root.setDragging(false);
         this.root.pressedThumbCenterOffset = null;
@@ -118,11 +181,12 @@ export class RdxSliderControl {
         }
 
         const control = this.elementRef.nativeElement;
-        if (control.hasPointerCapture?.(event.pointerId)) {
+        if ('pointerId' in event && control.hasPointerCapture?.(event.pointerId)) {
             control.releasePointerCapture(event.pointerId);
         }
 
         this.root.resetPressedThumb();
+        this.touchId = null;
         this.root.pressedValues = null;
         this.currentInteractionValue = null;
         this.stopListening();
@@ -132,6 +196,37 @@ export class RdxSliderControl {
         this.document.removeEventListener('pointermove', this.onMove);
         this.document.removeEventListener('pointerup', this.onUp);
         this.document.removeEventListener('pointercancel', this.onCancel);
+        this.document.removeEventListener('touchmove', this.onTouchMove);
+        this.document.removeEventListener('touchend', this.onTouchEnd);
+        this.document.removeEventListener('touchcancel', this.onTouchEnd);
+    }
+
+    private getFingerCoords(event: PointerEvent | TouchEvent): PointerCoords | null {
+        if ('changedTouches' in event) {
+            if (this.touchId == null) {
+                return null;
+            }
+
+            for (let i = 0; i < event.changedTouches.length; i += 1) {
+                const touch = event.changedTouches[i];
+                if (touch.identifier === this.touchId) {
+                    return { x: touch.clientX, y: touch.clientY };
+                }
+            }
+
+            return null;
+        }
+
+        return { x: event.clientX, y: event.clientY };
+    }
+
+    private isTargetDisabledThumb(target: EventTarget | null): boolean {
+        const NodeCtor = this.elementRef.nativeElement.ownerDocument.defaultView?.Node;
+        if (!NodeCtor || !(target instanceof NodeCtor)) {
+            return false;
+        }
+
+        return this.root.thumbList().some((thumb) => thumb.disabled() && thumb.element.contains(target));
     }
 
     private startPressing(finger: { x: number; y: number }): void {

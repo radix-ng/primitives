@@ -104,6 +104,7 @@ export function useFocusGuardsTabbability(
         if (!node || !enabled()) {
             return;
         }
+        const ownerDocument = node.ownerDocument;
 
         const onFocus = (event: FocusEvent): void => {
             // Only react to focus actually crossing the portal boundary.
@@ -121,11 +122,20 @@ export function useFocusGuardsTabbability(
             }
         };
 
+        if (isOutsideEvent(new FocusEvent('focusin', { relatedTarget: ownerDocument.activeElement }), node)) {
+            disableFocusInside(node);
+            focusInsideDisabled = true;
+        }
+
         node.addEventListener('focusin', onFocus, true);
         node.addEventListener('focusout', onFocus, true);
         onCleanup(() => {
             node.removeEventListener('focusin', onFocus, true);
             node.removeEventListener('focusout', onFocus, true);
+            if (focusInsideDisabled) {
+                enableFocusInside(node);
+                focusInsideDisabled = false;
+            }
         });
     });
 }

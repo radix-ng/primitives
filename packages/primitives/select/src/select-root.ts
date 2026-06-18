@@ -14,6 +14,7 @@ import {
 } from '@angular/core';
 import {
     AcceptableValue,
+    createCancelableChangeEventDetails,
     createContext,
     createFloatingRootContext,
     Direction,
@@ -22,6 +23,7 @@ import {
     ItemValueComparator,
     provideFloatingRootContext,
     provideFloatingTree,
+    RdxCancelableChangeEventDetails,
     RdxFloatingRootContext,
     useTransitionStatus
 } from '@radix-ng/primitives/core';
@@ -51,41 +53,18 @@ export type RdxSelectOpenChangeReason =
 
 export type RdxSelectValueChangeReason = RdxSelectOpenChangeReason;
 
-export interface RdxSelectChangeEventDetails<Reason extends string = string> {
-    reason: Reason;
-    event: Event;
-    cancel: () => void;
-    isCanceled: () => boolean;
-}
-
-export type RdxSelectOpenChangeEventDetails = RdxSelectChangeEventDetails<RdxSelectOpenChangeReason>;
+export type RdxSelectOpenChangeEventDetails = RdxCancelableChangeEventDetails<RdxSelectOpenChangeReason>;
 
 export interface RdxSelectOpenChangeEvent {
     open: boolean;
     eventDetails: RdxSelectOpenChangeEventDetails;
 }
 
-export type RdxSelectValueChangeEventDetails = RdxSelectChangeEventDetails<RdxSelectValueChangeReason>;
+export type RdxSelectValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxSelectValueChangeReason>;
 
 export interface RdxSelectValueChangeEvent {
     value: AcceptableValue | AcceptableValue[];
     eventDetails: RdxSelectValueChangeEventDetails;
-}
-
-function createChangeEventDetails<Reason extends string>(
-    reason: Reason,
-    event: Event
-): RdxSelectChangeEventDetails<Reason> {
-    let canceled = false;
-
-    return {
-        reason,
-        event,
-        cancel: () => {
-            canceled = true;
-        },
-        isCanceled: () => canceled
-    };
 }
 
 const context = () => {
@@ -291,7 +270,7 @@ export class RdxSelectRoot {
               })()
             : value;
 
-        const eventDetails = createChangeEventDetails(reason, event);
+        const { eventDetails } = createCancelableChangeEventDetails(reason, event, this.triggerElement() ?? undefined);
         this.onValueChange.emit({ value: nextValue, eventDetails });
 
         if (eventDetails.isCanceled()) {
@@ -310,7 +289,11 @@ export class RdxSelectRoot {
     setOpen(open: boolean, reason: RdxSelectOpenChangeReason = 'none', event?: Event): boolean {
         const resolvedEvent = event ?? new Event('select.open-change');
         const interactionType = getInteractionTypeFromEvent(event);
-        const eventDetails = createChangeEventDetails(reason, resolvedEvent);
+        const { eventDetails } = createCancelableChangeEventDetails(
+            reason,
+            resolvedEvent,
+            this.triggerElement() ?? undefined
+        );
 
         this.onOpenChange.emit({ open, eventDetails });
 

@@ -130,6 +130,10 @@ describe('Select onOpenChange', () => {
         expect(host.events).toHaveLength(1);
         expect(host.events[0].open).toBe(true);
         expect(host.events[0].eventDetails.reason).toBe('trigger-press');
+        expect(host.events[0].eventDetails.trigger).toBe(trigger());
+        expect(host.events[0].eventDetails.isPropagationAllowed).toBe(false);
+        host.events[0].eventDetails.allowPropagation();
+        expect(host.events[0].eventDetails.isPropagationAllowed).toBe(true);
         expect(host.events[0].eventDetails.isCanceled()).toBe(true);
     });
 
