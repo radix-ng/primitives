@@ -56,6 +56,28 @@ plus a `Panel` per value and an optional `Indicator`.
 </div>
 ```
 
+## Change events
+
+`onValueChange` emits `{ value, eventDetails }`. Use `eventDetails.cancel()` to reject a tab
+activation before the selected value changes.
+
+```html
+<div [value]="value()" (onValueChange)="setValue($event)" rdxTabsRoot>
+    ...
+</div>
+```
+
+```ts
+setValue(change: RdxTabsValueChangeEvent) {
+    if (this.hasUnsavedChanges()) {
+        change.eventDetails.cancel();
+        return;
+    }
+
+    this.value.set(change.value);
+}
+```
+
 ## Examples
 
 ### Activate on focus

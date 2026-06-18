@@ -22,7 +22,7 @@ export interface RdxTabsRootContext {
     readonly tabListElement: Signal<HTMLElement | null>;
 
     /** Select a tab by value. No-op when the value is unchanged. */
-    setValue(value: RdxTabsValue): void;
+    setValue(value: RdxTabsValue, event?: Event, reason?: string): void;
 
     /** Mirror the list's `activateOnFocus` input onto the root context. */
     setActivateOnFocus(value: boolean): void;

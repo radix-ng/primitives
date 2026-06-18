@@ -8,7 +8,7 @@ import { injectEditableRootContext } from './editable-root';
         '[attr.aria-label]': 'ariaLabel()',
         '[attr.data-disabled]': 'rootContext.disabled() ? "" : undefined',
         '[attr.disabled]': 'rootContext.disabled() ? "" : undefined',
-        '(click)': 'rootContext.submit()'
+        '(click)': 'rootContext.submit($event)'
     }
 })
 export class RdxEditableSubmitTrigger {

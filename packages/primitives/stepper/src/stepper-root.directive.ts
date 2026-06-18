@@ -11,9 +11,24 @@ import {
     output,
     signal
 } from '@angular/core';
-import { BooleanInput, Direction, NumberInput, RdxLiveAnnouncer } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    createCancelableChangeEventDetails,
+    Direction,
+    NumberInput,
+    RdxCancelableChangeEventDetails,
+    RdxLiveAnnouncer
+} from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { STEPPER_ROOT_CONTEXT, StepperRootContext } from './stepper-root-context.token';
+
+export type RdxStepperValueChangeReason = 'trigger-press' | 'keyboard' | 'none';
+export type RdxStepperValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxStepperValueChangeReason>;
+
+export interface RdxStepperValueChangeEvent {
+    value: number;
+    eventDetails: RdxStepperValueChangeEventDetails;
+}
 
 @Directive({
     selector: '[rdxStepperRoot]',
@@ -48,7 +63,7 @@ export class RdxStepperRootDirective implements StepperRootContext {
     /** @ignore */
     readonly totalStepperItemsArray = computed(() => Array.from(this.totalStepperItems()));
 
-    readonly onValueChange = output<number>();
+    readonly onValueChange = output<RdxStepperValueChangeEvent>();
 
     /** @ignore */
     readonly isFirstStep = computed(() => this.value() === 1);
@@ -95,13 +110,12 @@ export class RdxStepperRootDirective implements StepperRootContext {
                     this.prevStepperItem.set(null);
                 }
 
-                this.onValueChange.emit(currentValue);
                 this.liveAnnouncer.announce(`Step ${currentValue} of ${items.length}`);
             }
         });
     }
 
-    goToStep(step: number) {
+    goToStep(step: number, event?: Event, reason: RdxStepperValueChangeReason = event ? 'trigger-press' : 'none') {
         if (step > this.totalSteps()) {
             return;
         }
@@ -124,7 +138,18 @@ export class RdxStepperRootDirective implements StepperRootContext {
                 return;
             }
         }
+
+        const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
+        const { eventDetails } = createCancelableChangeEventDetails(
+            reason,
+            event ?? new Event('stepper.value-change'),
+            trigger
+        );
+        this.onValueChange.emit({ value: step, eventDetails });
+        if (eventDetails.isCanceled()) {
+            return;
+        }
+
         this.value.set(step);
-        this.onValueChange.emit(step);
     }
 }

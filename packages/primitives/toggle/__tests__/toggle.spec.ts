@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RdxToggleGroup } from '@radix-ng/primitives/toggle-group';
 import { vi } from 'vitest';
-import { RdxToggle } from '../src/toggle';
+import { RdxToggle, RdxTogglePressedChangeEvent } from '../src/toggle';
 
 @Component({
     imports: [RdxToggle],
@@ -24,7 +24,7 @@ class TestComponent {
     readonly disabled = signal(false);
     readonly defaultPressed = signal(false);
 
-    onToggle = vi.fn();
+    onToggle = vi.fn<(change: RdxTogglePressedChangeEvent) => void>();
 }
 
 describe('RdxToggle (standalone)', () => {
@@ -63,12 +63,27 @@ describe('RdxToggle (standalone)', () => {
         button.click();
         fixture.detectChanges();
         expect(component.pressed()).toBe(true);
-        expect(component.onToggle).toHaveBeenLastCalledWith(true);
+        expect(component.onToggle).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+                pressed: true,
+                eventDetails: expect.objectContaining({ reason: 'trigger-press', trigger: button })
+            })
+        );
 
         button.click();
         fixture.detectChanges();
         expect(component.pressed()).toBe(false);
-        expect(component.onToggle).toHaveBeenLastCalledWith(false);
+        expect(component.onToggle).toHaveBeenLastCalledWith(expect.objectContaining({ pressed: false }));
+    });
+
+    it('allows canceling before pressed state updates', () => {
+        component.onToggle.mockImplementationOnce((change) => change.eventDetails.cancel());
+
+        button.click();
+        fixture.detectChanges();
+
+        expect(component.pressed()).toBeUndefined();
+        expect(button.getAttribute('aria-pressed')).toBe('false');
     });
 
     it('exposes and respects the disabled state', () => {

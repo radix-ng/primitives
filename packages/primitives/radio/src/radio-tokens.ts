@@ -15,7 +15,7 @@ export interface RadioGroupProps {
 }
 
 export interface RadioGroupDirective extends RadioGroupProps {
-    select(value: string | null): void;
+    select(value: string | null, event?: Event, reason?: string): void;
 
     onTouched(): void;
 

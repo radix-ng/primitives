@@ -4,12 +4,18 @@ import { DataOrientation } from '@radix-ng/primitives/core';
 import { RdxTabsList } from '../src/tabs-list';
 import { RdxTabsPanel } from '../src/tabs-panel';
 import { RdxTabsPanelPresence } from '../src/tabs-panel-presence';
-import { RdxTabsRoot } from '../src/tabs-root';
+import { RdxTabsRoot, RdxTabsValueChangeEvent } from '../src/tabs-root';
 import { RdxTabsTab } from '../src/tabs-tab';
 
 @Component({
     template: `
-        <div [(value)]="value" [defaultValue]="defaultValue" [orientation]="orientation()" rdxTabsRoot>
+        <div
+            [(value)]="value"
+            [defaultValue]="defaultValue"
+            [orientation]="orientation()"
+            (onValueChange)="onValueChange($event)"
+            rdxTabsRoot
+        >
             <div [activateOnFocus]="activateOnFocus()" rdxTabsList>
                 <button rdxTabsTab value="one">One</button>
                 <button [disabled]="disabledTwo()" rdxTabsTab value="two">Two</button>
@@ -28,6 +34,16 @@ class TestHostComponent {
     readonly orientation = signal<DataOrientation>('horizontal');
     readonly activateOnFocus = signal(false);
     readonly disabledTwo = signal(false);
+    cancelNext = false;
+    changes: string[] = [];
+
+    onValueChange(change: RdxTabsValueChangeEvent): void {
+        this.changes.push(change.value);
+        if (this.cancelNext) {
+            change.eventDetails.cancel();
+            this.cancelNext = false;
+        }
+    }
 }
 
 describe('Tabs', () => {
@@ -78,6 +94,19 @@ describe('Tabs', () => {
         expect(two.getAttribute('data-active')).toBe('');
         expect(panels()[1].hidden).toBe(false);
         expect(host.value()).toBe('two');
+        expect(host.changes).toEqual(['two']);
+    });
+
+    it('allows canceling selection before state updates', () => {
+        host.cancelNext = true;
+
+        const [, two] = tabs();
+        two.dispatchEvent(new MouseEvent('mousedown', { button: 0, bubbles: true }));
+        fixture.detectChanges();
+
+        expect(host.value()).toBe('one');
+        expect(host.changes).toEqual(['two']);
+        expect(two.getAttribute('data-active')).toBeNull();
     });
 
     it('does not activate a disabled tab on click', () => {

@@ -49,6 +49,28 @@ Assemble the parts: a root, a button trigger, the indicator, and a hidden input 
 
 ## Examples
 
+### Change events
+
+`onCheckedChange` emits `{ checked, eventDetails }`; `rdxCheckboxGroup` emits `{ value, eventDetails }`.
+Call `eventDetails.cancel()` before updating controlled state to reject a change.
+
+```html
+<div [checked]="checked()" (onCheckedChange)="setChecked($event)" rdxCheckboxRoot>
+  ...
+</div>
+```
+
+```ts
+setChecked(change: RdxCheckboxCheckedChangeEvent) {
+  if (this.readOnlyPolicy()) {
+    change.eventDetails.cancel();
+    return;
+  }
+
+  this.checked.set(change.checked);
+}
+```
+
 ### Indeterminate
 
 The third "mixed" state. Clicking a checkbox in the indeterminate state resolves it to checked.
@@ -80,7 +102,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
             <div
                 [checked]="checked()"
                 [indeterminate]="indeterminate()"
-                (onCheckedChange)="checked.set($event); indeterminate.set(false)"
+                (onCheckedChange)="checked.set($event.checked); indeterminate.set(false)"
                 rdxCheckboxRoot
             >
                 <button id="r1" [class]="c.button" rdxCheckboxButton>
@@ -150,7 +172,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
     ],
     template: `
         <div class="flex items-center gap-3">
-            <div [checked]="checked()" (onCheckedChange)="checked.set($event)" rdxCheckboxRoot>
+            <div [checked]="checked()" (onCheckedChange)="checked.set($event.checked)" rdxCheckboxRoot>
                 <button id="r1" [class]="c.button" rdxCheckboxButton>
                     <ng-template rdxCheckboxIndicatorPresence>
                         <svg [class]="c.indicator" [lucideIcon]="Check" rdxCheckboxIndicator size="16" />
@@ -509,14 +531,16 @@ export class CheckboxSelectAllExample {
         return items.some((item) => item.checked) ? 'indeterminate' : false;
     });
 
-    protected toggleAll(checked: boolean): void {
-        // `onCheckedChange` emits a boolean: clicking the parent resolves
-        // indeterminate -> checked (tick all), or checked -> unchecked (clear all).
-        this.items.update((items) => items.map((item) => ({ ...item, checked })));
+    protected toggleAll(change: { checked: boolean }): void {
+        // Clicking the parent resolves indeterminate -> checked (tick all),
+        // or checked -> unchecked (clear all).
+        this.items.update((items) => items.map((item) => ({ ...item, checked: change.checked })));
     }
 
-    protected toggleItem(id: string, checked: boolean): void {
-        this.items.update((items) => items.map((item) => (item.id === id ? { ...item, checked } : item)));
+    protected toggleItem(id: string, change: { checked: boolean }): void {
+        this.items.update((items) =>
+            items.map((item) => (item.id === id ? { ...item, checked: change.checked } : item))
+        );
     }
 }
 ```

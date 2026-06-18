@@ -7,7 +7,7 @@ import { RdxNumberFieldGroup } from '../src/number-field-group';
 import { RdxNumberFieldHiddenInput } from '../src/number-field-hidden-input';
 import { RdxNumberFieldIncrement } from '../src/number-field-increment';
 import { RdxNumberFieldInput } from '../src/number-field-input';
-import { RdxNumberFieldRoot } from '../src/number-field-root';
+import { RdxNumberFieldRoot, RdxNumberFieldValueChangeEvent } from '../src/number-field-root';
 
 @Component({
     imports: [
@@ -55,7 +55,7 @@ class TestComponent {
     readonly required = signal(false);
     readonly format = signal<Intl.NumberFormatOptions | undefined>(undefined);
 
-    onValueChange = vi.fn();
+    onValueChange = vi.fn<(change: RdxNumberFieldValueChangeEvent) => void>();
     onValueCommitted = vi.fn();
 }
 
@@ -107,7 +107,12 @@ describe('RdxNumberField', () => {
         increment.dispatchEvent(new MouseEvent('click', { bubbles: true }));
         fixture.detectChanges();
         expect(component.value()).toBe(6);
-        expect(component.onValueChange).toHaveBeenCalledWith(6);
+        expect(component.onValueChange).toHaveBeenCalledWith(
+            expect.objectContaining({
+                value: 6,
+                eventDetails: expect.objectContaining({ reason: 'increment-press' })
+            })
+        );
 
         decrement.dispatchEvent(new MouseEvent('click', { bubbles: true }));
         decrement.dispatchEvent(new MouseEvent('click', { bubbles: true }));
@@ -169,7 +174,24 @@ describe('RdxNumberField', () => {
         input.dispatchEvent(new Event('input', { bubbles: true }));
         fixture.detectChanges();
         expect(component.value()).toBe(7);
-        expect(component.onValueChange).toHaveBeenCalledWith(7);
+        expect(component.onValueChange).toHaveBeenCalledWith(
+            expect.objectContaining({
+                value: 7,
+                eventDetails: expect.objectContaining({ reason: 'input-change' })
+            })
+        );
+    });
+
+    it('allows canceling value changes before state updates', () => {
+        component.value.set(5);
+        fixture.detectChanges();
+        component.onValueChange.mockImplementationOnce((change) => change.eventDetails.cancel());
+
+        increment.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        fixture.detectChanges();
+
+        expect(component.value()).toBe(5);
+        expect(input.value).toBe('5');
     });
 
     it('clears the value when the input is emptied', () => {

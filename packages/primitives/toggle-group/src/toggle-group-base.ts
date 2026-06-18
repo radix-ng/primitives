@@ -1,7 +1,20 @@
 import { booleanAttribute, computed, Directive, effect, input, model, output, signal, untracked } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
-import { BooleanInput, DataOrientation } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    createCancelableChangeEventDetails,
+    DataOrientation,
+    RdxCancelableChangeEventDetails
+} from '@radix-ng/primitives/core';
 import { RdxToggleGroupContext } from './toggle-group-context';
+
+export type RdxToggleGroupValueChangeReason = 'trigger-press' | 'none';
+export type RdxToggleGroupValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxToggleGroupValueChangeReason>;
+
+export interface RdxToggleGroupValueChangeEvent {
+    value: string[];
+    eventDetails: RdxToggleGroupValueChangeEventDetails;
+}
 
 /** Builds the shared context a {@link RdxToggle} reads when it belongs to this group. */
 export function toggleGroupContext(instance: RdxToggleGroupBase): RdxToggleGroupContext {
@@ -10,7 +23,7 @@ export function toggleGroupContext(instance: RdxToggleGroupBase): RdxToggleGroup
         disabled: instance.isDisabled,
         multiple: instance.multiple,
         orientation: instance.orientation,
-        toggle: (value) => instance.toggle(value)
+        toggle: (value, event) => instance.toggle(value, event)
     };
 }
 
@@ -60,7 +73,7 @@ export abstract class RdxToggleGroupBase implements ControlValueAccessor {
     readonly orientation = input<DataOrientation>('horizontal');
 
     /** Event emitted when the pressed values change. */
-    readonly onValueChange = output<string[]>();
+    readonly onValueChange = output<RdxToggleGroupValueChangeEvent>();
 
     /** @ignore */
     readonly pressedValues = computed(() => this.value() ?? []);
@@ -82,7 +95,7 @@ export abstract class RdxToggleGroupBase implements ControlValueAccessor {
     }
 
     /** @ignore */
-    toggle(value: string): void {
+    toggle(value: string, event?: Event): void {
         if (this.isDisabled()) {
             return;
         }
@@ -96,8 +109,18 @@ export abstract class RdxToggleGroupBase implements ControlValueAccessor {
             next = current.includes(value) ? [] : [value];
         }
 
+        const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
+        const { eventDetails } = createCancelableChangeEventDetails(
+            event ? 'trigger-press' : 'none',
+            event ?? new Event('toggle-group.value-change'),
+            trigger
+        );
+        this.onValueChange.emit({ value: next, eventDetails });
+        if (eventDetails.isCanceled()) {
+            return;
+        }
+
         this.value.set(next);
-        this.onValueChange.emit(next);
         this.onChange?.(next);
     }
 

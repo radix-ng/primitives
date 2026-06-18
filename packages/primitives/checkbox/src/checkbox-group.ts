@@ -11,8 +11,23 @@ import {
     Signal
 } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
-import { BooleanInput, createContext, provideValueAccessor } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    createCancelableChangeEventDetails,
+    createContext,
+    provideValueAccessor,
+    RdxCancelableChangeEventDetails
+} from '@radix-ng/primitives/core';
 import type { CheckedState } from './checkbox-root';
+
+export type RdxCheckboxGroupValueChangeReason = 'child-press' | 'parent-press' | 'none';
+export type RdxCheckboxGroupValueChangeEventDetails =
+    RdxCancelableChangeEventDetails<RdxCheckboxGroupValueChangeReason>;
+
+export interface RdxCheckboxGroupValueChangeEvent {
+    value: string[];
+    eventDetails: RdxCheckboxGroupValueChangeEventDetails;
+}
 
 export interface RdxCheckboxGroupContext {
     /** The names of the currently checked checkboxes. */
@@ -28,9 +43,9 @@ export interface RdxCheckboxGroupContext {
     /** A stable id for a child's control element, derived from the group id and the child name. */
     controlId: (name: string) => string;
     /** Toggle a single child by name. */
-    toggleValue: (name: string) => void;
+    toggleValue: (name: string, event?: Event) => void;
     /** Toggle every child on or off (used by a `parent` checkbox). */
-    toggleAll: () => void;
+    toggleAll: (event?: Event) => void;
     /** Register a child's name and disabled state so the parent can preserve disabled items. */
     registerChild: (name: string, disabled: Signal<boolean>) => () => void;
     /** Register a child's control element id so the parent can reference it via `aria-controls`. */
@@ -51,8 +66,8 @@ const groupContext = (): RdxCheckboxGroupContext => {
         parentState: group.parentState,
         controlledIds: group.controlledIds,
         controlId: (name) => group.controlId(name),
-        toggleValue: (name) => group.toggleValue(name),
-        toggleAll: () => group.toggleAll(),
+        toggleValue: (name, event) => group.toggleValue(name, event),
+        toggleAll: (event) => group.toggleAll(event),
         registerChild: (name, disabled) => group.registerChild(name, disabled),
         registerControl: (name, id) => group.registerControl(name, id)
     };
@@ -89,7 +104,7 @@ export class RdxCheckboxGroupDirective implements ControlValueAccessor {
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /** Emits the new array of checked names whenever the value changes. */
-    readonly onValueChange = output<string[]>();
+    readonly onValueChange = output<RdxCheckboxGroupValueChangeEvent>();
 
     private readonly disabledByCva = signal(false);
     readonly disabledState = computed(() => this.disabledByCva() || this.disabled());
@@ -178,14 +193,16 @@ export class RdxCheckboxGroupDirective implements ControlValueAccessor {
     }
 
     /** Add/remove a single child name from the value (a direct child change). */
-    toggleValue(name: string): void {
+    toggleValue(name: string, event?: Event): void {
         if (this.disabledState()) {
             return;
         }
 
         const current = this.value();
         const next = current.includes(name) ? current.filter((v) => v !== name) : [...current, name];
-        this.emit(next);
+        if (!this.emit(next, 'child-press', event)) {
+            return;
+        }
 
         // A direct child change becomes the new "remembered" selection and resets the parent cycle.
         this.seeded = true;
@@ -202,7 +219,7 @@ export class RdxCheckboxGroupDirective implements ControlValueAccessor {
      *
      * Disabled-but-checked children are always preserved (they cannot be toggled programmatically).
      */
-    toggleAll(): void {
+    toggleAll(event?: Event): void {
         if (this.disabledState()) {
             return;
         }
@@ -218,7 +235,7 @@ export class RdxCheckboxGroupDirective implements ControlValueAccessor {
 
         const rememberedIsAllOrNone = remembered.length === all.length || remembered.length === 0;
         if (rememberedIsAllOrNone) {
-            this.emit(this.value().length === all.length ? none : all);
+            this.emit(this.value().length === all.length ? none : all, 'parent-press', event);
             return;
         }
 
@@ -232,7 +249,9 @@ export class RdxCheckboxGroupDirective implements ControlValueAccessor {
             nextValue = none;
         }
 
-        this.emit(nextValue);
+        if (!this.emit(nextValue, 'parent-press', event)) {
+            return;
+        }
         this.parentStatus = nextStatus;
     }
 
@@ -248,11 +267,22 @@ export class RdxCheckboxGroupDirective implements ControlValueAccessor {
         }
     }
 
-    private emit(next: string[]): void {
+    private emit(next: string[], reason: RdxCheckboxGroupValueChangeReason, event?: Event): boolean {
+        const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
+        const { eventDetails } = createCancelableChangeEventDetails(
+            reason,
+            event ?? new Event('checkbox-group.value-change'),
+            trigger
+        );
+        this.onValueChange.emit({ value: next, eventDetails });
+        if (eventDetails.isCanceled()) {
+            return false;
+        }
+
         this.value.set(next);
-        this.onValueChange.emit(next);
         this.onChange(next);
         this.onTouched();
+        return true;
     }
 
     /** @ignore */

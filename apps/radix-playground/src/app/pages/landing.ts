@@ -249,7 +249,7 @@ type CopyTarget = 'install' | 'skill';
                                     <button
                                         class="bg-muted relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-0 p-0 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--landing-accent-text)] data-[checked]:bg-[color:var(--landing-accent-fill)]"
                                         [checked]="emailEnabled()"
-                                        (onCheckedChange)="emailEnabled.set($event)"
+                                        (onCheckedChange)="emailEnabled.set($event.checked)"
                                         aria-label="Email notifications"
                                         rdxSwitchRoot
                                     >
@@ -271,7 +271,7 @@ type CopyTarget = 'install' | 'skill';
                                     </span>
                                     <div
                                         [checked]="licenseAccepted()"
-                                        (onCheckedChange)="licenseAccepted.set($event)"
+                                        (onCheckedChange)="licenseAccepted.set($event.checked)"
                                         rdxCheckboxRoot
                                     >
                                         <button
@@ -301,7 +301,7 @@ type CopyTarget = 'install' | 'skill';
                                     <button
                                         class="bg-muted relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-0 p-0 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--landing-accent-text)] data-[checked]:bg-[color:var(--landing-accent-fill)]"
                                         [checked]="marketingEnabled()"
-                                        (onCheckedChange)="marketingEnabled.set($event)"
+                                        (onCheckedChange)="marketingEnabled.set($event.checked)"
                                         aria-label="Marketing emails"
                                         rdxSwitchRoot
                                     >

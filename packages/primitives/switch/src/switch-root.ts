@@ -1,12 +1,22 @@
 import { booleanAttribute, computed, Directive, inject, input, model, output } from '@angular/core';
 import {
     BooleanInput,
+    createCancelableChangeEventDetails,
     injectControlValueAccessor,
     injectId,
+    RdxCancelableChangeEventDetails,
     RdxControlValueAccessor,
     RdxFormCheckboxControl
 } from '@radix-ng/primitives/core';
 import { provideSwitchContext, RdxSwitchContext } from './switch-context';
+
+export type RdxSwitchCheckedChangeReason = 'trigger-press' | 'none';
+export type RdxSwitchCheckedChangeEventDetails = RdxCancelableChangeEventDetails<RdxSwitchCheckedChangeReason>;
+
+export interface RdxSwitchCheckedChangeEvent {
+    checked: boolean;
+    eventDetails: RdxSwitchCheckedChangeEventDetails;
+}
 
 const context = (): RdxSwitchContext => {
     const root = inject(RdxSwitchRoot);
@@ -53,7 +63,7 @@ const context = (): RdxSwitchContext => {
         '[attr.data-readonly]': 'readonly() ? "" : undefined',
         '[attr.data-required]': 'required() ? "" : undefined',
         '[attr.disabled]': 'isDisabled() ? "" : undefined',
-        '(click)': 'toggle()',
+        '(click)': 'toggle($event)',
         '(blur)': 'cva.markAsTouched()',
         '(keydown.enter)': '$event.preventDefault()'
     }
@@ -116,7 +126,7 @@ export class RdxSwitchRoot implements RdxFormCheckboxControl {
     readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
 
     /** Event handler called when the checked state of the switch changes. */
-    readonly onCheckedChange = output<boolean>();
+    readonly onCheckedChange = output<RdxSwitchCheckedChangeEvent>();
 
     /** @ignore */
     readonly checkedState = computed(() => !!this.cva.value());
@@ -124,14 +134,24 @@ export class RdxSwitchRoot implements RdxFormCheckboxControl {
     protected readonly isDisabled = computed(() => !!this.cva.disabled());
 
     /** @ignore Toggles the checked state unless disabled or read-only. */
-    toggle(): void {
+    toggle(event?: Event): void {
         if (this.isDisabled() || this.readonly()) {
             return;
         }
 
         const next = !this.cva.value();
+        const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
+        const { eventDetails } = createCancelableChangeEventDetails(
+            event ? 'trigger-press' : 'none',
+            event ?? new Event('switch.checked-change'),
+            trigger
+        );
+        this.onCheckedChange.emit({ checked: next, eventDetails });
+        if (eventDetails.isCanceled()) {
+            return;
+        }
+
         this.checked.set(next);
         this.cva.setValue(next);
-        this.onCheckedChange.emit(next);
     }
 }

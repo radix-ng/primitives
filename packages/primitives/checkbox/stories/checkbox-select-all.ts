@@ -85,13 +85,15 @@ export class CheckboxSelectAllExample {
         return items.some((item) => item.checked) ? 'indeterminate' : false;
     });
 
-    protected toggleAll(checked: boolean): void {
-        // `onCheckedChange` emits a boolean: clicking the parent resolves
-        // indeterminate -> checked (tick all), or checked -> unchecked (clear all).
-        this.items.update((items) => items.map((item) => ({ ...item, checked })));
+    protected toggleAll(change: { checked: boolean }): void {
+        // Clicking the parent resolves indeterminate -> checked (tick all),
+        // or checked -> unchecked (clear all).
+        this.items.update((items) => items.map((item) => ({ ...item, checked: change.checked })));
     }
 
-    protected toggleItem(id: string, checked: boolean): void {
-        this.items.update((items) => items.map((item) => (item.id === id ? { ...item, checked } : item)));
+    protected toggleItem(id: string, change: { checked: boolean }): void {
+        this.items.update((items) =>
+            items.map((item) => (item.id === id ? { ...item, checked: change.checked } : item))
+        );
     }
 }

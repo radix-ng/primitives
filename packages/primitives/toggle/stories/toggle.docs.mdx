@@ -36,6 +36,28 @@ part used either on its own or inside a `[rdxToggleGroup]`.
 When placed inside a `[rdxToggleGroup]`, give each toggle a `value` — its pressed state is then
 derived from the group's value and it joins the group's roving focus.
 
+## Change events
+
+Standalone `onPressedChange` emits `{ pressed, eventDetails }`. Call `eventDetails.cancel()` to
+reject a press before state updates.
+
+```html
+<button [pressed]="pressed()" (onPressedChange)="setPressed($event)" rdxToggle>
+    Toggle
+</button>
+```
+
+```ts
+setPressed(change: RdxTogglePressedChangeEvent) {
+    if (this.preventToggle()) {
+        change.eventDetails.cancel();
+        return;
+    }
+
+    this.pressed.set(change.pressed);
+}
+```
+
 ## Examples
 
 ### Pressed by default

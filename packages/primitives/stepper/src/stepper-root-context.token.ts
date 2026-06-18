@@ -15,6 +15,7 @@ export interface StepperRootContext {
     dir: Signal<Direction>;
     linear: InputSignalWithTransform<boolean, BooleanInput>;
     totalStepperItems: WritableSignal<HTMLElement[]>;
+    goToStep(step: number, event?: Event, reason?: string): void;
 }
 
 export const STEPPER_ROOT_CONTEXT = new InjectionToken<StepperRootContext>('StepperRootContext');

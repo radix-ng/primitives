@@ -4,7 +4,7 @@ import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
 import { RdxSliderControl } from '../src/slider-control';
 import { RdxSliderIndicator } from '../src/slider-indicator';
-import { RdxSliderRoot, SliderValue } from '../src/slider-root';
+import { RdxSliderRoot, RdxSliderValueChangeEvent, SliderValue } from '../src/slider-root';
 import { RdxSliderThumb } from '../src/slider-thumb';
 import { RdxSliderThumbInput } from '../src/slider-thumb-input';
 import { RdxSliderTrack } from '../src/slider-track';
@@ -87,7 +87,7 @@ class TestComponent {
     readonly step = signal(5);
     readonly disabled = signal(false);
 
-    onChange = vi.fn();
+    onChange = vi.fn<(change: RdxSliderValueChangeEvent) => void>();
 }
 
 function press(el: HTMLElement, key: string, shiftKey = false): void {
@@ -138,7 +138,23 @@ describe('RdxSlider', () => {
         press(inputs[0], 'ArrowRight');
         fixture.detectChanges();
         expect(component.value()).toBe(45);
-        expect(component.onChange).toHaveBeenCalledWith(45);
+        expect(component.onChange).toHaveBeenCalledWith(
+            expect.objectContaining({
+                value: 45,
+                eventDetails: expect.objectContaining({ reason: 'keyboard' })
+            })
+        );
+    });
+
+    it('allows canceling value changes before state updates', () => {
+        component.onChange.mockImplementationOnce((change) => change.eventDetails.cancel());
+
+        inputs[0].focus();
+        press(inputs[0], 'ArrowRight');
+        fixture.detectChanges();
+
+        expect(component.value()).toBe(40);
+        expect(inputs[0].value).toBe('40');
     });
 
     it('uses the large step with Shift + Arrow', () => {
@@ -202,7 +218,7 @@ describe('RdxSlider', () => {
         fixture.detectChanges();
 
         expect(component.value()).toBe(70);
-        expect(component.onChange).toHaveBeenLastCalledWith(70);
+        expect(component.onChange).toHaveBeenLastCalledWith(expect.objectContaining({ value: 70 }));
     });
 
     it('supports multiple thumbs and keeps them sorted', () => {

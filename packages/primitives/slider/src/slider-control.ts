@@ -91,7 +91,7 @@ export class RdxSliderControl {
 
         // Pressing directly on a thumb sets a center offset; only a rail press changes value on down.
         if (this.root.pressedThumbCenterOffset == null) {
-            this.setValueFromPointer(finger, 'track-press');
+            this.setValueFromPointer(finger, 'track-press', event);
         }
 
         this.root.focusThumb(finger.thumbIndex);
@@ -132,7 +132,7 @@ export class RdxSliderControl {
         }
 
         this.root.focusThumb(finger.thumbIndex);
-        const applied = this.setValueFromPointer(finger, 'track-press');
+        const applied = this.setValueFromPointer(finger, 'track-press', event);
         if (applied && finger.didSwap) {
             this.root.focusThumb(finger.thumbIndex);
         }
@@ -163,7 +163,7 @@ export class RdxSliderControl {
             if (!this.root.dragging() && this.moveCount > INTENTIONAL_DRAG_COUNT_THRESHOLD) {
                 this.root.setDragging(true);
             }
-            const applied = this.setValueFromPointer(finger, 'drag');
+            const applied = this.setValueFromPointer(finger, 'drag', event);
             if (applied && finger.didSwap) {
                 this.root.focusThumb(finger.thumbIndex);
             }
@@ -273,9 +273,9 @@ export class RdxSliderControl {
         }
     }
 
-    private setValueFromPointer(finger: ResolveThumbCollisionResult, reason: string): boolean {
+    private setValueFromPointer(finger: ResolveThumbCollisionResult, reason: string, event?: Event): boolean {
         const nextValues = Array.isArray(finger.value) ? finger.value : [finger.value];
-        const applied = this.root.setValue(nextValues, reason);
+        const applied = this.root.setValue(nextValues, reason, event);
         if (applied) {
             this.currentInteractionValue = finger.value;
             if (finger.didSwap) {

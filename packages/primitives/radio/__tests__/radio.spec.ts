@@ -1,7 +1,12 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { RdxRadioGroupDirective, RdxRadioIndicatorDirective, RdxRadioItemDirective } from '../index';
+import {
+    RdxRadioGroupDirective,
+    RdxRadioIndicatorDirective,
+    RdxRadioItemDirective,
+    RdxRadioValueChangeEvent
+} from '../index';
 
 @Component({
     imports: [RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioIndicatorDirective],
@@ -33,10 +38,16 @@ class RadioHost {
     required = false;
     readonly = false;
     changes: string[] = [];
+    cancelNext = false;
 
-    onValueChange(value: string): void {
-        this.changes.push(value);
-        this.value = value;
+    onValueChange(change: RdxRadioValueChangeEvent): void {
+        this.changes.push(change.value);
+        if (this.cancelNext) {
+            change.eventDetails.cancel();
+            this.cancelNext = false;
+            return;
+        }
+        this.value = change.value;
     }
 }
 
@@ -65,9 +76,9 @@ class LabelWrappedRadioHost {
     value: string | null = 'ssd';
     changes: string[] = [];
 
-    onValueChange(value: string): void {
-        this.changes.push(value);
-        this.value = value;
+    onValueChange(change: RdxRadioValueChangeEvent): void {
+        this.changes.push(change.value);
+        this.value = change.value;
     }
 }
 
@@ -118,6 +129,17 @@ describe('RdxRadio', () => {
         expect(host.value).toBe('comfortable');
         expect(host.changes).toEqual(['comfortable']);
         expect(inputs()[1].checked).toBe(true);
+    });
+
+    it('allows canceling selection before state updates', () => {
+        host.cancelNext = true;
+
+        buttons()[1].click();
+        fixture.detectChanges();
+
+        expect(host.value).toBe('default');
+        expect(host.changes).toEqual(['comfortable']);
+        expect(inputs()[0].checked).toBe(true);
     });
 
     it('selects the newly focused item during arrow navigation', async () => {

@@ -61,7 +61,7 @@ export class RdxCheckboxButtonDirective {
             return;
         }
 
-        this.rootContext.toggle();
+        this.rootContext.toggle(event);
 
         if (this.rootContext.form() || this.elementRef.nativeElement.closest('form')) {
             // if checkbox is in a form, stop propagation from the button so that we only propagate

@@ -4306,6 +4306,28 @@ Assemble the parts: a root, a button trigger, the indicator, and a hidden input 
 
 ## Examples
 
+### Change events
+
+`onCheckedChange` emits `{ checked, eventDetails }`; `rdxCheckboxGroup` emits `{ value, eventDetails }`.
+Call `eventDetails.cancel()` before updating controlled state to reject a change.
+
+```html
+<div [checked]="checked()" (onCheckedChange)="setChecked($event)" rdxCheckboxRoot>
+  ...
+</div>
+```
+
+```ts
+setChecked(change: RdxCheckboxCheckedChangeEvent) {
+  if (this.readOnlyPolicy()) {
+    change.eventDetails.cancel();
+    return;
+  }
+
+  this.checked.set(change.checked);
+}
+```
+
 ### Indeterminate
 
 The third "mixed" state. Clicking a checkbox in the indeterminate state resolves it to checked.
@@ -4337,7 +4359,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
             <div
                 [checked]="checked()"
                 [indeterminate]="indeterminate()"
-                (onCheckedChange)="checked.set($event); indeterminate.set(false)"
+                (onCheckedChange)="checked.set($event.checked); indeterminate.set(false)"
                 rdxCheckboxRoot
             >
                 <button id="r1" [class]="c.button" rdxCheckboxButton>
@@ -4407,7 +4429,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
     ],
     template: `
         <div class="flex items-center gap-3">
-            <div [checked]="checked()" (onCheckedChange)="checked.set($event)" rdxCheckboxRoot>
+            <div [checked]="checked()" (onCheckedChange)="checked.set($event.checked)" rdxCheckboxRoot>
                 <button id="r1" [class]="c.button" rdxCheckboxButton>
                     <ng-template rdxCheckboxIndicatorPresence>
                         <svg [class]="c.indicator" [lucideIcon]="Check" rdxCheckboxIndicator size="16" />
@@ -4766,14 +4788,16 @@ export class CheckboxSelectAllExample {
         return items.some((item) => item.checked) ? 'indeterminate' : false;
     });
 
-    protected toggleAll(checked: boolean): void {
-        // `onCheckedChange` emits a boolean: clicking the parent resolves
-        // indeterminate -> checked (tick all), or checked -> unchecked (clear all).
-        this.items.update((items) => items.map((item) => ({ ...item, checked })));
+    protected toggleAll(change: { checked: boolean }): void {
+        // Clicking the parent resolves indeterminate -> checked (tick all),
+        // or checked -> unchecked (clear all).
+        this.items.update((items) => items.map((item) => ({ ...item, checked: change.checked })));
     }
 
-    protected toggleItem(id: string, checked: boolean): void {
-        this.items.update((items) => items.map((item) => (item.id === id ? { ...item, checked } : item)));
+    protected toggleItem(id: string, change: { checked: boolean }): void {
+        this.items.update((items) =>
+            items.map((item) => (item.id === id ? { ...item, checked: change.checked } : item))
+        );
     }
 }
 ```
@@ -10069,6 +10093,28 @@ All parts are also bundled in `RdxEditableModule`.
 The `Preview` is focusable (`tabindex="0"`); the `Input` is hidden until edit mode is active. The triggers
 are optional — `activationMode` and `submitMode` can drive the whole interaction without them.
 
+## Change events
+
+`onValueChange` emits `{ value, eventDetails }` when the edited value is submitted. Call
+`eventDetails.cancel()` to keep the editor open and preserve the previous committed value.
+
+```html
+<div [value]="value()" (onValueChange)="submitValue($event)" rdxEditableRoot>
+    ...
+</div>
+```
+
+```ts
+submitValue(change: RdxEditableValueChangeEvent) {
+    if (change.value.trim() === '') {
+        change.eventDetails.cancel();
+        return;
+    }
+
+    this.value.set(change.value);
+}
+```
+
 ## Examples
 
 ### Double-click to edit
@@ -14030,7 +14076,7 @@ export class NumberFieldDefaultExample {
 
 ## Features
 
-- ✅ Controlled or uncontrolled value, with `(onValueChange)` and `(onValueCommitted)`.
+- ✅ Controlled or uncontrolled value, with cancelable `(onValueChange)` and `(onValueCommitted)`.
 - ✅ Stepper buttons with press-and-hold auto-repeat.
 - ✅ Keyboard control — arrow keys, `Home`/`End`, plus `Alt` (small) and `Shift` (large) steps.
 - ✅ Drag-to-scrub via the Scrub Area (Pointer Lock with an optional virtual cursor).
@@ -14076,6 +14122,28 @@ Import all parts and piece them together.
     <button rdxNumberFieldIncrement></button>
   </div>
 </div>
+```
+
+## Change events
+
+`onValueChange` emits `{ value, eventDetails }`. `onValueCommitted` still emits the committed
+number (or `null`). Call `eventDetails.cancel()` to reject a value before it updates.
+
+```html
+<div [value]="value()" (onValueChange)="setValue($event)" rdxNumberFieldRoot>
+    ...
+</div>
+```
+
+```ts
+setValue(change: RdxNumberFieldValueChangeEvent) {
+    if (change.value != null && change.value > this.limit()) {
+        change.eventDetails.cancel();
+        return;
+    }
+
+    this.value.set(change.value);
+}
 ```
 
 ## Examples
@@ -16331,6 +16399,28 @@ submission, native validation, and labels work without rendering an `<input>` in
 Use `nativeButton` only when you render the item as a standalone `<button>` and handle the label
 outside of native label activation.
 
+## Change events
+
+`onValueChange` emits `{ value, eventDetails }`. The details include the `reason`, originating DOM
+event, and trigger element; call `eventDetails.cancel()` to keep the previous selection.
+
+```html
+<div [value]="value()" (onValueChange)="setValue($event)" rdxRadioRoot>
+    ...
+</div>
+```
+
+```ts
+setValue(change: RdxRadioValueChangeEvent) {
+    if (this.preventSelection(change.value)) {
+        change.eventDetails.cancel();
+        return;
+    }
+
+    this.value.set(change.value);
+}
+```
+
 ## Examples
 
 ### Default
@@ -18354,6 +18444,29 @@ Each thumb owns a nested `input[rdxSliderThumbInput]`. It is visually hidden but
 remains the focusable element that powers keyboard interaction, accessibility and
 form submission.
 
+## Change events
+
+`onValueChange` emits `{ value, eventDetails }`, where `value` is a number for a single slider or a
+number array for a range slider. `onValueCommitted` still emits the committed number or number
+array. Call `eventDetails.cancel()` to reject a live value change before it updates.
+
+```html
+<div [value]="value()" (onValueChange)="setValue($event)" rdxSliderRoot>
+    ...
+</div>
+```
+
+```ts
+setValue(change: RdxSliderValueChangeEvent) {
+    if (this.isLocked()) {
+        change.eventDetails.cancel();
+        return;
+    }
+
+    this.value.set(change.value);
+}
+```
+
 ## Examples
 
 ### Range
@@ -18730,6 +18843,28 @@ Import all parts and piece them together.
 </div>
 ```
 
+## Change events
+
+`onValueChange` emits `{ value, eventDetails }`. Call `eventDetails.cancel()` to reject a step
+activation before the current step changes.
+
+```html
+<div [value]="step()" (onValueChange)="setStep($event)" rdxStepperRoot>
+    ...
+</div>
+```
+
+```ts
+setStep(change: RdxStepperValueChangeEvent) {
+    if (!this.canVisit(change.value)) {
+        change.eventDetails.cancel();
+        return;
+    }
+
+    this.step.set(change.value);
+}
+```
+
 ## API Reference
 
 ### Root
@@ -18860,6 +18995,28 @@ The API follows [Base UI Switch](https://base-ui.com/react/components/switch): a
 ```
 
 The `[rdxSwitchInput]` is optional — include it when the switch must submit a value with a native form.
+
+## Change events
+
+`onCheckedChange` emits `{ checked, eventDetails }`. Use `eventDetails.cancel()` to reject a
+state change before the switch updates.
+
+```html
+<button [checked]="checked()" (onCheckedChange)="setChecked($event)" rdxSwitchRoot>
+    <span rdxSwitchThumb></span>
+</button>
+```
+
+```ts
+setChecked(change: RdxSwitchCheckedChangeEvent) {
+    if (this.locked()) {
+        change.eventDetails.cancel();
+        return;
+    }
+
+    this.checked.set(change.checked);
+}
+```
 
 ## Examples
 
@@ -19141,6 +19298,28 @@ plus a `Panel` per value and an optional `Indicator`.
     <div rdxTabsPanel value="1"></div>
     <div rdxTabsPanel value="2"></div>
 </div>
+```
+
+## Change events
+
+`onValueChange` emits `{ value, eventDetails }`. Use `eventDetails.cancel()` to reject a tab
+activation before the selected value changes.
+
+```html
+<div [value]="value()" (onValueChange)="setValue($event)" rdxTabsRoot>
+    ...
+</div>
+```
+
+```ts
+setValue(change: RdxTabsValueChangeEvent) {
+    if (this.hasUnsavedChanges()) {
+        change.eventDetails.cancel();
+        return;
+    }
+
+    this.value.set(change.value);
+}
 ```
 
 ## Examples
@@ -20896,6 +21075,28 @@ part used either on its own or inside a `[rdxToggleGroup]`.
 When placed inside a `[rdxToggleGroup]`, give each toggle a `value` — its pressed state is then
 derived from the group's value and it joins the group's roving focus.
 
+## Change events
+
+Standalone `onPressedChange` emits `{ pressed, eventDetails }`. Call `eventDetails.cancel()` to
+reject a press before state updates.
+
+```html
+<button [pressed]="pressed()" (onPressedChange)="setPressed($event)" rdxToggle>
+    Toggle
+</button>
+```
+
+```ts
+setPressed(change: RdxTogglePressedChangeEvent) {
+    if (this.preventToggle()) {
+        change.eventDetails.cancel();
+        return;
+    }
+
+    this.pressed.set(change.pressed);
+}
+```
+
 ## Examples
 
 ### Pressed by default
@@ -20996,6 +21197,28 @@ The API follows [Base UI Toggle Group](https://base-ui.com/react/components/togg
     <button rdxToggle value="center"></button>
     <button rdxToggle value="right"></button>
 </div>
+```
+
+## Change events
+
+`onValueChange` emits `{ value, eventDetails }`, where `value` is the next array of pressed item
+values. Call `eventDetails.cancel()` to reject the change.
+
+```html
+<div [value]="value()" (onValueChange)="setValue($event)" rdxToggleGroup>
+    ...
+</div>
+```
+
+```ts
+setValue(change: RdxToggleGroupValueChangeEvent) {
+    if (this.locked()) {
+        change.eventDetails.cancel();
+        return;
+    }
+
+    this.value.set(change.value);
+}
 ```
 
 ## Examples

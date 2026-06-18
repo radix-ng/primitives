@@ -82,8 +82,8 @@ Because it's a `model()`, two-way binding works too when every change should be 
 ```
 
 Use the long form (`[open]` + `(onOpenChange)`) when you want to **inspect or reject** a change
-before applying it; popup primitives emit a change object, not just a bare boolean. Use `[(open)]`
-when you simply want your signal kept in sync.
+before applying it. Base UI-aligned outputs emit a change object with `eventDetails.cancel()`.
+Use `[(open)]` when you simply want your signal kept in sync.
 
 ## The mental rule
 

@@ -31,7 +31,7 @@ import { makePanelId, makeTabId, RdxTabsValue } from './utils';
         '[attr.disabled]': 'disabled() ? "" : undefined',
         '(mousedown)': 'onMouseDown($event)',
         '(keydown)': 'onKeyDown($event)',
-        '(focus)': 'onFocus()'
+        '(focus)': 'onFocus($event)'
     }
 })
 export class RdxTabsTab {
@@ -67,7 +67,7 @@ export class RdxTabsTab {
     protected onMouseDown(event: MouseEvent): void {
         // Only the primary button selects; ignore Ctrl-click (macOS right-click emulation).
         if (!this.disabled() && event.button === 0 && !event.ctrlKey) {
-            this.rootContext.setValue(this.value());
+            this.rootContext.setValue(this.value(), event, 'trigger-press');
         } else {
             // Prevent focus to avoid accidental activation.
             event.preventDefault();
@@ -77,14 +77,14 @@ export class RdxTabsTab {
     /** @ignore */
     protected onKeyDown(event: KeyboardEvent): void {
         if (!this.disabled() && (event.key === ' ' || event.key === 'Enter')) {
-            this.rootContext.setValue(this.value());
+            this.rootContext.setValue(this.value(), event, 'keyboard');
         }
     }
 
     /** @ignore */
-    protected onFocus(): void {
+    protected onFocus(event: FocusEvent): void {
         if (!this.active() && !this.disabled() && this.rootContext.activateOnFocus()) {
-            this.rootContext.setValue(this.value());
+            this.rootContext.setValue(this.value(), event, 'focus');
         }
     }
 }

@@ -18,7 +18,7 @@ export interface RdxToggleGroupContext {
     readonly orientation: Signal<DataOrientation>;
 
     /** Toggle the pressed state of `value` within the group. */
-    toggle(value: string): void;
+    toggle(value: string, event?: Event): void;
 }
 
 export const [injectToggleGroupContext, provideToggleGroupContext] = createContext<RdxToggleGroupContext>(

@@ -72,7 +72,7 @@ export class RdxEditableInput {
             !keyEvent.shiftKey &&
             !keyEvent.metaKey
         ) {
-            this.rootContext.submit();
+            this.rootContext.submit(event);
         }
     }
 }

@@ -10,7 +10,7 @@ import { RdxCheckboxModule } from '../index';
             [(value)]="value"
             [allValues]="all"
             [disabled]="disabled"
-            (onValueChange)="changes.push($event)"
+            (onValueChange)="onValueChange($event)"
             rdxCheckboxGroup
         >
             <div parent rdxCheckboxRoot>
@@ -30,6 +30,15 @@ class GroupHost {
     all = ['fizz', 'buzz'];
     disabled = false;
     changes: string[][] = [];
+    cancelNext = false;
+
+    onValueChange(change: { value: string[]; eventDetails: { cancel(): void } }): void {
+        this.changes.push(change.value);
+        if (this.cancelNext) {
+            change.eventDetails.cancel();
+            this.cancelNext = false;
+        }
+    }
 }
 
 @Component({
@@ -148,6 +157,17 @@ describe('RdxCheckboxGroup', () => {
         expect(host.value).toEqual([]);
         expect(buttons()[1].hasAttribute('disabled')).toBe(true);
         expect(state(1)).toBe('unchecked');
+    });
+
+    it('allows canceling child changes before state updates', () => {
+        setup();
+        host.cancelNext = true;
+
+        buttons()[1].click();
+        fixture.detectChanges();
+
+        expect(host.value).toEqual([]);
+        expect(host.changes).toEqual([['fizz']]);
     });
 
     it('parent remembers a partial selection across the cycle (partial → all → none → partial)', () => {

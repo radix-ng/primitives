@@ -58,7 +58,7 @@ export class NumberFieldDefaultExample {
 
 ## Features
 
-- ✅ Controlled or uncontrolled value, with `(onValueChange)` and `(onValueCommitted)`.
+- ✅ Controlled or uncontrolled value, with cancelable `(onValueChange)` and `(onValueCommitted)`.
 - ✅ Stepper buttons with press-and-hold auto-repeat.
 - ✅ Keyboard control — arrow keys, `Home`/`End`, plus `Alt` (small) and `Shift` (large) steps.
 - ✅ Drag-to-scrub via the Scrub Area (Pointer Lock with an optional virtual cursor).
@@ -104,6 +104,28 @@ Import all parts and piece them together.
     <button rdxNumberFieldIncrement></button>
   </div>
 </div>
+```
+
+## Change events
+
+`onValueChange` emits `{ value, eventDetails }`. `onValueCommitted` still emits the committed
+number (or `null`). Call `eventDetails.cancel()` to reject a value before it updates.
+
+```html
+<div [value]="value()" (onValueChange)="setValue($event)" rdxNumberFieldRoot>
+    ...
+</div>
+```
+
+```ts
+setValue(change: RdxNumberFieldValueChangeEvent) {
+    if (change.value != null && change.value > this.limit()) {
+        change.eventDetails.cancel();
+        return;
+    }
+
+    this.value.set(change.value);
+}
 ```
 
 ## Examples

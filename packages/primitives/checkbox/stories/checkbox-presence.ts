@@ -23,7 +23,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
     ],
     template: `
         <div class="flex items-center gap-3">
-            <div [checked]="checked()" (onCheckedChange)="checked.set($event)" rdxCheckboxRoot>
+            <div [checked]="checked()" (onCheckedChange)="checked.set($event.checked)" rdxCheckboxRoot>
                 <button id="r1" [class]="c.button" rdxCheckboxButton>
                     <ng-template rdxCheckboxIndicatorPresence>
                         <svg [class]="c.indicator" [lucideIcon]="Check" rdxCheckboxIndicator size="16" />

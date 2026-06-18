@@ -24,7 +24,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
             <div
                 [checked]="checked()"
                 [indeterminate]="indeterminate()"
-                (onCheckedChange)="checked.set($event); indeterminate.set(false)"
+                (onCheckedChange)="checked.set($event.checked); indeterminate.set(false)"
                 rdxCheckboxRoot
             >
                 <button id="r1" [class]="c.button" rdxCheckboxButton>

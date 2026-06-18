@@ -9,9 +9,21 @@ import {
     model,
     output
 } from '@angular/core';
-import { BooleanInput } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    createCancelableChangeEventDetails,
+    RdxCancelableChangeEventDetails
+} from '@radix-ng/primitives/core';
 import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 import { injectToggleGroupContext } from '@radix-ng/primitives/toggle-group';
+
+export type RdxTogglePressedChangeReason = 'trigger-press' | 'none';
+export type RdxTogglePressedChangeEventDetails = RdxCancelableChangeEventDetails<RdxTogglePressedChangeReason>;
+
+export interface RdxTogglePressedChangeEvent {
+    pressed: boolean;
+    eventDetails: RdxTogglePressedChangeEventDetails;
+}
 
 /**
  * A two-state button that can be either on (pressed) or off.
@@ -33,7 +45,7 @@ import { injectToggleGroupContext } from '@radix-ng/primitives/toggle-group';
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
         '[attr.disabled]': 'nativeButton() && isDisabled() ? "" : undefined',
         '[attr.aria-disabled]': '!nativeButton() && isDisabled() ? "true" : undefined',
-        '(click)': 'onClick()',
+        '(click)': 'onClick($event)',
         '(keydown)': 'onKeyDown($event)'
     }
 })
@@ -74,7 +86,7 @@ export class RdxToggle {
     readonly nativeButton = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
 
     /** Event emitted when the pressed state changes (standalone). */
-    readonly onPressedChange = output<boolean>();
+    readonly onPressedChange = output<RdxTogglePressedChangeEvent>();
 
     private readonly internalPressed = linkedSignal(() => this.pressed() ?? this.defaultPressed());
 
@@ -96,7 +108,7 @@ export class RdxToggle {
     }
 
     /** @ignore */
-    protected onClick(): void {
+    protected onClick(event?: Event): void {
         if (this.isDisabled()) {
             return;
         }
@@ -104,15 +116,25 @@ export class RdxToggle {
         if (this.group) {
             const value = this.value();
             if (value !== undefined) {
-                this.group.toggle(value);
+                this.group.toggle(value, event);
             }
             return;
         }
 
         const next = !this.internalPressed();
+        const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
+        const { eventDetails } = createCancelableChangeEventDetails(
+            event ? 'trigger-press' : 'none',
+            event ?? new Event('toggle.pressed-change'),
+            trigger
+        );
+        this.onPressedChange.emit({ pressed: next, eventDetails });
+        if (eventDetails.isCanceled()) {
+            return;
+        }
+
         this.internalPressed.set(next);
         this.pressed.set(next);
-        this.onPressedChange.emit(next);
     }
 
     /** @ignore */
@@ -122,7 +144,7 @@ export class RdxToggle {
         }
         if (event.key === ' ' || event.key === 'Enter') {
             event.preventDefault();
-            this.onClick();
+            this.onClick(event);
         }
     }
 }

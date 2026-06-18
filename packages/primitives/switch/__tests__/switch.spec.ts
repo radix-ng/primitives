@@ -4,7 +4,7 @@ import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } 
 import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
 import { RdxSwitchInput } from '../src/switch-input';
-import { RdxSwitchRoot } from '../src/switch-root';
+import { RdxSwitchCheckedChangeEvent, RdxSwitchRoot } from '../src/switch-root';
 import { RdxSwitchThumb } from '../src/switch-thumb';
 
 @Component({
@@ -31,7 +31,7 @@ class TestComponent {
     readonly required = signal(false);
     readonly defaultChecked = signal(false);
 
-    onChange = vi.fn();
+    onChange = vi.fn<(change: RdxSwitchCheckedChangeEvent) => void>();
 }
 
 describe('RdxSwitch', () => {
@@ -75,12 +75,27 @@ describe('RdxSwitch', () => {
         expect(component.checked()).toBe(true);
         expect(root.getAttribute('data-checked')).toBe('');
         expect(thumb.getAttribute('data-checked')).toBe('');
-        expect(component.onChange).toHaveBeenLastCalledWith(true);
+        expect(component.onChange).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+                checked: true,
+                eventDetails: expect.objectContaining({ reason: 'trigger-press', trigger: root })
+            })
+        );
 
         root.click();
         fixture.detectChanges();
         expect(component.checked()).toBe(false);
-        expect(component.onChange).toHaveBeenLastCalledWith(false);
+        expect(component.onChange).toHaveBeenLastCalledWith(expect.objectContaining({ checked: false }));
+    });
+
+    it('allows canceling before checked state updates', () => {
+        component.onChange.mockImplementationOnce((change) => change.eventDetails.cancel());
+
+        root.click();
+        fixture.detectChanges();
+
+        expect(component.checked()).toBeFalsy();
+        expect(root.getAttribute('aria-checked')).toBe('false');
     });
 
     it('does not toggle when disabled', () => {

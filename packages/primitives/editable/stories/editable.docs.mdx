@@ -53,6 +53,28 @@ All parts are also bundled in `RdxEditableModule`.
 The `Preview` is focusable (`tabindex="0"`); the `Input` is hidden until edit mode is active. The triggers
 are optional — `activationMode` and `submitMode` can drive the whole interaction without them.
 
+## Change events
+
+`onValueChange` emits `{ value, eventDetails }` when the edited value is submitted. Call
+`eventDetails.cancel()` to keep the editor open and preserve the previous committed value.
+
+```html
+<div [value]="value()" (onValueChange)="submitValue($event)" rdxEditableRoot>
+    ...
+</div>
+```
+
+```ts
+submitValue(change: RdxEditableValueChangeEvent) {
+    if (change.value.trim() === '') {
+        change.eventDetails.cancel();
+        return;
+    }
+
+    this.value.set(change.value);
+}
+```
+
 ## Examples
 
 ### Double-click to edit

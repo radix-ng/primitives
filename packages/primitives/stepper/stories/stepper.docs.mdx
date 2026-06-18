@@ -36,6 +36,28 @@ Import all parts and piece them together.
 </div>
 ```
 
+## Change events
+
+`onValueChange` emits `{ value, eventDetails }`. Call `eventDetails.cancel()` to reject a step
+activation before the current step changes.
+
+```html
+<div [value]="step()" (onValueChange)="setStep($event)" rdxStepperRoot>
+    ...
+</div>
+```
+
+```ts
+setStep(change: RdxStepperValueChangeEvent) {
+    if (!this.canVisit(change.value)) {
+        change.eventDetails.cancel();
+        return;
+    }
+
+    this.step.set(change.value);
+}
+```
+
 ## API Reference
 
 ### Root

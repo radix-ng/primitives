@@ -45,6 +45,28 @@ Assemble the parts: a root, a button trigger, the indicator, and a hidden input 
 
 ## Examples
 
+### Change events
+
+`onCheckedChange` emits `{ checked, eventDetails }`; `rdxCheckboxGroup` emits `{ value, eventDetails }`.
+Call `eventDetails.cancel()` before updating controlled state to reject a change.
+
+```html
+<div [checked]="checked()" (onCheckedChange)="setChecked($event)" rdxCheckboxRoot>
+  ...
+</div>
+```
+
+```ts
+setChecked(change: RdxCheckboxCheckedChangeEvent) {
+  if (this.readOnlyPolicy()) {
+    change.eventDetails.cancel();
+    return;
+  }
+
+  this.checked.set(change.checked);
+}
+```
+
 ### Indeterminate
 
 The third "mixed" state. Clicking a checkbox in the indeterminate state resolves it to checked.

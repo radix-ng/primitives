@@ -48,6 +48,28 @@ submission, native validation, and labels work without rendering an `<input>` in
 Use `nativeButton` only when you render the item as a standalone `<button>` and handle the label
 outside of native label activation.
 
+## Change events
+
+`onValueChange` emits `{ value, eventDetails }`. The details include the `reason`, originating DOM
+event, and trigger element; call `eventDetails.cancel()` to keep the previous selection.
+
+```html
+<div [value]="value()" (onValueChange)="setValue($event)" rdxRadioRoot>
+    ...
+</div>
+```
+
+```ts
+setValue(change: RdxRadioValueChangeEvent) {
+    if (this.preventSelection(change.value)) {
+        change.eventDetails.cancel();
+        return;
+    }
+
+    this.value.set(change.value);
+}
+```
+
 ## Examples
 
 ### Default

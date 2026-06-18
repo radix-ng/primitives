@@ -13,9 +13,11 @@ import {
 } from '@angular/core';
 import {
     BooleanInput,
+    createCancelableChangeEventDetails,
     injectControlValueAccessor,
     injectId,
     NumberInput,
+    RdxCancelableChangeEventDetails,
     RdxControlValueAccessor,
     RdxFormValueControl
 } from '@radix-ng/primitives/core';
@@ -30,6 +32,13 @@ const INPUT_REASONS: NumberFieldChangeReason[] = [
     REASONS.inputPaste,
     REASONS.none
 ];
+
+export type RdxNumberFieldValueChangeEventDetails = RdxCancelableChangeEventDetails<NumberFieldChangeReason>;
+
+export interface RdxNumberFieldValueChangeEvent {
+    value: number | null;
+    eventDetails: RdxNumberFieldValueChangeEventDetails;
+}
 
 /**
  * Groups all parts of the number field and manages its state, parsing/formatting
@@ -143,7 +152,7 @@ export class RdxNumberFieldRoot implements RdxFormValueControl<number | null> {
     readonly value = model<number | null>(null);
 
     /** Emitted when the value changes (during interaction or programmatically). */
-    readonly onValueChange = output<number | null>();
+    readonly onValueChange = output<RdxNumberFieldValueChangeEvent>();
 
     /**
      * Emitted when the value is committed: on blur after typing, or when a pointer is released
@@ -306,8 +315,18 @@ export class RdxNumberFieldRoot implements RdxFormValueControl<number | null> {
             (isInputReason && (unvalidatedValue !== value || this.allowInputSync === false));
 
         if (shouldFireChange) {
+            const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
+            const { eventDetails } = createCancelableChangeEventDetails(
+                reason,
+                event ?? new Event('number-field.value-change'),
+                trigger
+            );
+            this.onValueChange.emit({ value: validatedValue, eventDetails });
+            if (eventDetails.isCanceled()) {
+                return false;
+            }
+
             this.applyValue(validatedValue);
-            this.onValueChange.emit(validatedValue);
             this.hasPendingCommit = true;
         }
 

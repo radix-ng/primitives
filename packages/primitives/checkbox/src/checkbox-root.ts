@@ -1,8 +1,9 @@
-import { booleanAttribute, computed, Directive, effect, inject, input, model } from '@angular/core';
-import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
+import { booleanAttribute, computed, Directive, effect, inject, input, model, output } from '@angular/core';
 import {
     BooleanInput,
+    createCancelableChangeEventDetails,
     createContext,
+    RdxCancelableChangeEventDetails,
     RdxControlValueAccessor,
     RdxFormCheckboxControl
 } from '@radix-ng/primitives/core';
@@ -24,6 +25,14 @@ export function getState(checked: CheckedState) {
     return isIndeterminate(checked) ? 'indeterminate' : checked ? 'checked' : 'unchecked';
 }
 
+export type RdxCheckboxCheckedChangeReason = 'trigger-press' | 'none';
+export type RdxCheckboxCheckedChangeEventDetails = RdxCancelableChangeEventDetails<RdxCheckboxCheckedChangeReason>;
+
+export interface RdxCheckboxCheckedChangeEvent {
+    checked: boolean;
+    eventDetails: RdxCheckboxCheckedChangeEventDetails;
+}
+
 const rootContext = () => {
     const checkbox = inject(RdxCheckboxRootDirective);
 
@@ -40,8 +49,8 @@ const rootContext = () => {
         form: checkbox.form,
         readonly: checkbox.readonly,
         state: checkbox.state,
-        toggle() {
-            checkbox.toggle();
+        toggle(event?: Event) {
+            checkbox.toggle(event);
         }
     };
 };
@@ -157,7 +166,7 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
      * Event emitted when the checkbox checked state changes.
      * @group Emits
      */
-    readonly onCheckedChange = outputFromObservable(outputToObservable(this.controlValueAccessor.valueChange));
+    readonly onCheckedChange = output<RdxCheckboxCheckedChangeEvent>();
 
     /**
      * @ignore
@@ -214,17 +223,17 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
         });
     }
 
-    toggle() {
+    toggle(event?: Event) {
         const group = this.group;
         if (group) {
             if (this.parent()) {
-                group.toggleAll();
+                group.toggleAll(event);
                 return;
             }
 
             const name = this.name();
             if (name !== undefined) {
-                group.toggleValue(name);
+                group.toggleValue(name, event);
                 return;
             }
         }
@@ -234,6 +243,16 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
         // onCheckedChange fires once; the `checked`/`indeterminate` models are
         // kept in sync so `[(checked)]` / `[(indeterminate)]` reflect the change.
         const next = this.indeterminateState() ? true : !this.checkedState();
+        const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
+        const { eventDetails } = createCancelableChangeEventDetails(
+            event ? 'trigger-press' : 'none',
+            event ?? new Event('checkbox.checked-change'),
+            trigger
+        );
+        this.onCheckedChange.emit({ checked: next, eventDetails });
+        if (eventDetails.isCanceled()) {
+            return;
+        }
 
         this.indeterminate.set(false);
         this.checked.set(next);

@@ -37,6 +37,28 @@ The API follows [Base UI Switch](https://base-ui.com/react/components/switch): a
 
 The `[rdxSwitchInput]` is optional — include it when the switch must submit a value with a native form.
 
+## Change events
+
+`onCheckedChange` emits `{ checked, eventDetails }`. Use `eventDetails.cancel()` to reject a
+state change before the switch updates.
+
+```html
+<button [checked]="checked()" (onCheckedChange)="setChecked($event)" rdxSwitchRoot>
+    <span rdxSwitchThumb></span>
+</button>
+```
+
+```ts
+setChecked(change: RdxSwitchCheckedChangeEvent) {
+    if (this.locked()) {
+        change.eventDetails.cancel();
+        return;
+    }
+
+    this.checked.set(change.checked);
+}
+```
+
 ## Examples
 
 ### Preselection

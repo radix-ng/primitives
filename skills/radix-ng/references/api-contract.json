@@ -1191,7 +1191,7 @@
           "outputs": [
             {
               "name": "onValueChange",
-              "type": "string[]",
+              "type": "RdxCheckboxGroupValueChangeEvent",
               "description": "Emits the new array of checked names whenever the value changes."
             }
           ],
@@ -1280,7 +1280,13 @@
               "description": "The value of the checkbox. This is what is submitted with the form when the checkbox is checked.\n\nBound publicly as `[value]`; the TS member is named `submitValue` so the\ndirective can satisfy `RdxFormCheckboxControl`, whose contract reserves a\n`value` member for `RdxFormValueControl` and forbids it on checkbox-style\ncontrols. (Checkbox is not yet marked `implements` — its `checked` is still\n`CheckedState`; see the `indeterminate` half of collision #1.)"
             }
           ],
-          "outputs": [],
+          "outputs": [
+            {
+              "name": "onCheckedChange",
+              "type": "RdxCheckboxCheckedChangeEvent",
+              "description": "Event emitted when the checkbox checked state changes."
+            }
+          ],
           "twoWay": [
             "checked",
             "indeterminate"
@@ -2866,7 +2872,7 @@
           "outputs": [
             {
               "name": "onValueChange",
-              "type": "string",
+              "type": "RdxEditableValueChangeEvent",
               "description": "Emitted when the value is committed (on submit)."
             }
           ],
@@ -4558,7 +4564,7 @@
           "outputs": [
             {
               "name": "onValueChange",
-              "type": "number | null",
+              "type": "RdxNumberFieldValueChangeEvent",
               "description": "Emitted when the value changes (during interaction or programmatically)."
             },
             {
@@ -5614,7 +5620,7 @@
           "outputs": [
             {
               "name": "onValueChange",
-              "type": "string",
+              "type": "RdxRadioValueChangeEvent",
               "description": "Event handler called when the value changes."
             }
           ],
@@ -6299,7 +6305,7 @@
           "outputs": [
             {
               "name": "onValueChange",
-              "type": "SliderValue",
+              "type": "RdxSliderValueChangeEvent",
               "description": "Emitted when the value changes (during interaction)."
             },
             {
@@ -6445,7 +6451,7 @@
           "outputs": [
             {
               "name": "onValueChange",
-              "type": "number"
+              "type": "RdxStepperValueChangeEvent"
             }
           ],
           "twoWay": [
@@ -6556,7 +6562,7 @@
           "outputs": [
             {
               "name": "onCheckedChange",
-              "type": "boolean",
+              "type": "RdxSwitchCheckedChangeEvent",
               "description": "Event handler called when the checked state of the switch changes."
             }
           ],
@@ -6664,7 +6670,7 @@
           "outputs": [
             {
               "name": "onValueChange",
-              "type": "RdxTabsValue",
+              "type": "RdxTabsValueChangeEvent",
               "description": "Event emitted when the selected tab changes."
             }
           ],
@@ -7049,7 +7055,7 @@
           "outputs": [
             {
               "name": "onPressedChange",
-              "type": "boolean",
+              "type": "RdxTogglePressedChangeEvent",
               "description": "Event emitted when the pressed state changes (standalone)."
             }
           ],
@@ -7101,7 +7107,7 @@
           "outputs": [
             {
               "name": "onValueChange",
-              "type": "string[]",
+              "type": "RdxToggleGroupValueChangeEvent",
               "description": "Event emitted when the pressed values change."
             }
           ],
@@ -7162,7 +7168,7 @@
           "outputs": [
             {
               "name": "onValueChange",
-              "type": "string[]",
+              "type": "RdxToggleGroupValueChangeEvent",
               "description": "Event emitted when the pressed values change."
             }
           ],

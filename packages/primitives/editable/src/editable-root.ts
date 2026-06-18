@@ -14,11 +14,25 @@ import {
     Signal,
     WritableSignal
 } from '@angular/core';
-import { BooleanInput, createContext, NumberInput, watch } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    createCancelableChangeEventDetails,
+    createContext,
+    NumberInput,
+    RdxCancelableChangeEventDetails,
+    watch
+} from '@radix-ng/primitives/core';
 import { RdxFocusOutside, RdxPointerDownOutside } from '@radix-ng/primitives/dismissable-layer';
 
 export type EditableActivationMode = 'focus' | 'dblclick' | 'none';
 export type EditableSubmitMode = 'blur' | 'enter' | 'none' | 'both';
+export type RdxEditableValueChangeReason = 'submit' | 'none';
+export type RdxEditableValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxEditableValueChangeReason>;
+
+export interface RdxEditableValueChangeEvent {
+    value: string;
+    eventDetails: RdxEditableValueChangeEventDetails;
+}
 
 export type EditableRootContext = {
     disabled: Signal<boolean>;
@@ -30,7 +44,7 @@ export type EditableRootContext = {
     activationMode: Signal<EditableActivationMode>;
     edit: () => void;
     cancel: () => void;
-    submit: () => void;
+    submit: (event?: Event) => void;
     maxLength: Signal<number | undefined>;
     required: Signal<boolean>;
     startWithEditMode: Signal<boolean>;
@@ -60,7 +74,7 @@ const rootContext = (): EditableRootContext => {
         activationMode: context.activationMode,
         edit: () => context.edit(),
         cancel: () => context.cancel(),
-        submit: () => context.submit(),
+        submit: (event) => context.submit(event),
         maxLength: context.maxLength,
         required: context.required,
         startWithEditMode: context.startWithEditMode,
@@ -119,7 +133,7 @@ export class RdxEditableRoot {
     readonly required = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /** Emitted when the value is committed (on submit). */
-    readonly onValueChange = output<string>();
+    readonly onValueChange = output<RdxEditableValueChangeEvent>();
 
     readonly isEmpty = computed(() => {
         const value = this.value();
@@ -191,10 +205,20 @@ export class RdxEditableRoot {
         }
     }
 
-    submit() {
+    submit(event?: Event) {
         const value = this.inputValue() ?? '';
+        const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
+        const { eventDetails } = createCancelableChangeEventDetails(
+            event ? 'submit' : 'none',
+            event ?? new Event('editable.value-change'),
+            trigger
+        );
+        this.onValueChange.emit({ value, eventDetails });
+        if (eventDetails.isCanceled()) {
+            return;
+        }
+
         this.value.set(value);
-        this.onValueChange.emit(value);
         this.restoreFocusOnExit = true;
         this.isEditing.set(false);
     }

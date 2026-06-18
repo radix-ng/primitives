@@ -41,10 +41,10 @@ export function injectRadioItem(): RdxRadioItemDirective {
         '[attr.data-required]': 'requiredState() ? "" : undefined',
         '[attr.data-state]': 'checkedState() ? "checked" : "unchecked"',
         '[attr.disabled]': 'nativeButtonState() && disabledState() ? "" : undefined',
-        '(click)': 'onClick()',
+        '(click)': 'onClick($event)',
         '(keydown)': 'onKeyDown($event)',
         '(keyup)': 'onKeyUp()',
-        '(focus)': 'onFocus()'
+        '(focus)': 'onFocus($event)'
     }
 })
 export class RdxRadioItemDirective {
@@ -84,9 +84,9 @@ export class RdxRadioItemDirective {
 
     constructor() {
         this.createHiddenInput();
-        const unlistenInputChange = this.renderer.listen(this.inputElement, 'change', () => {
+        const unlistenInputChange = this.renderer.listen(this.inputElement, 'change', (event: Event) => {
             if (this.inputElement.checked) {
-                this.radioGroup.select(this.value());
+                this.radioGroup.select(this.value(), event, 'trigger-press');
             }
         });
 
@@ -107,9 +107,9 @@ export class RdxRadioItemDirective {
     }
 
     /** @ignore */
-    onClick() {
+    onClick(event?: Event) {
         if (!this.disabledState() && !this.readonlyState()) {
-            this.radioGroup.select(this.value());
+            this.radioGroup.select(this.value(), event, 'trigger-press');
         }
     }
 
@@ -117,7 +117,7 @@ export class RdxRadioItemDirective {
     onKeyDown(event: Event): void {
         const keyEvent = event as KeyboardEvent;
         if (keyEvent.key === ' ' || keyEvent.key === 'Enter') {
-            this.onClick();
+            this.onClick(keyEvent);
             return;
         }
 
@@ -132,10 +132,10 @@ export class RdxRadioItemDirective {
     }
 
     /** @ignore */
-    onFocus() {
+    onFocus(event?: FocusEvent) {
         queueMicrotask(() => {
             if (this.radioGroup.isArrowNavigation()) {
-                this.radioGroup.select(this.value());
+                this.radioGroup.select(this.value(), event, 'keyboard');
                 this.radioGroup.setArrowNavigation(false);
             }
         });

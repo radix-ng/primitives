@@ -12,9 +12,11 @@ import {
 } from '@angular/core';
 import {
     BooleanInput,
+    createCancelableChangeEventDetails,
     injectControlValueAccessor,
     injectId,
     NumberInput,
+    RdxCancelableChangeEventDetails,
     RdxControlValueAccessor
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
@@ -31,6 +33,13 @@ import {
 } from './slider.utils';
 
 export type SliderValue = number | number[];
+export type RdxSliderValueChangeReason = string;
+export type RdxSliderValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxSliderValueChangeReason>;
+
+export interface RdxSliderValueChangeEvent {
+    value: SliderValue;
+    eventDetails: RdxSliderValueChangeEventDetails;
+}
 
 /** Minimal shape a thumb registers with the root, used for hit-testing and focus. */
 export interface RdxSliderThumbRef {
@@ -166,7 +175,7 @@ export class RdxSliderRoot {
     readonly ariaLabelledBy = input<string | undefined>(undefined, { alias: 'aria-labelledby' });
 
     /** Emitted when the value changes (during interaction). */
-    readonly onValueChange = output<SliderValue>();
+    readonly onValueChange = output<RdxSliderValueChangeEvent>();
 
     /** Emitted when interaction ends, with the final value — useful for committing to a backend. */
     readonly onValueCommitted = output<SliderValue>();
@@ -261,22 +270,33 @@ export class RdxSliderRoot {
      * Applies a new full set of values, preserving the single/range value shape.
      * Returns `false` when the value did not change.
      */
-    setValue(nextValues: number[], reason: string): boolean {
+    setValue(nextValues: number[], reason: string, event?: Event): boolean {
         const next: SliderValue = this.range() ? nextValues : nextValues[0];
         const current = this.outputValue();
         const hasNaN = Array.isArray(next) ? next.some((v) => Number.isNaN(v)) : Number.isNaN(next);
         if (hasNaN || areValuesEqual(next, current)) {
             return false;
         }
+
+        const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
+        const { eventDetails } = createCancelableChangeEventDetails(
+            reason,
+            event ?? new Event('slider.value-change'),
+            trigger
+        );
+        this.onValueChange.emit({ value: next, eventDetails });
+        if (eventDetails.isCanceled()) {
+            return false;
+        }
+
         this.lastChangeReason = reason;
         this.value.set(next);
         this.cva.setValue(next);
-        this.onValueChange.emit(next);
         return true;
     }
 
     /** @ignore Keyboard / native input path: clamps to neighbours, commits immediately. */
-    handleInputChange(valueInput: number, index: number, reason = 'keyboard'): void {
+    handleInputChange(valueInput: number, index: number, reason = 'keyboard', event?: Event): void {
         if (this.isDisabled()) {
             return;
         }
@@ -285,7 +305,7 @@ export class RdxSliderRoot {
             return;
         }
         const arr = Array.isArray(result) ? result : [result];
-        const applied = this.setValue(arr, reason);
+        const applied = this.setValue(arr, reason, event);
         this.cva.markAsTouched();
         if (applied) {
             this.onValueCommitted.emit(this.outputValue());

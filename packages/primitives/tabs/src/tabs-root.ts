@@ -1,7 +1,20 @@
 import { Directive, effect, inject, input, model, output, signal, untracked } from '@angular/core';
-import { DataOrientation, injectId } from '@radix-ng/primitives/core';
+import {
+    createCancelableChangeEventDetails,
+    DataOrientation,
+    injectId,
+    RdxCancelableChangeEventDetails
+} from '@radix-ng/primitives/core';
 import { provideTabsRootContext, RdxTabsRootContext } from './tabs-root-context';
 import { makeTabId, RdxTabsActivationDirection, RdxTabsValue } from './utils';
+
+export type RdxTabsValueChangeReason = 'trigger-press' | 'keyboard' | 'focus' | 'none';
+export type RdxTabsValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxTabsValueChangeReason>;
+
+export interface RdxTabsValueChangeEvent {
+    value: RdxTabsValue;
+    eventDetails: RdxTabsValueChangeEventDetails;
+}
 
 const rootContext = (): RdxTabsRootContext => {
     const root = inject(RdxTabsRoot);
@@ -13,7 +26,7 @@ const rootContext = (): RdxTabsRootContext => {
         activationDirection: root.activationDirection.asReadonly(),
         activateOnFocus: root.activateOnFocus.asReadonly(),
         tabListElement: root.tabListElement.asReadonly(),
-        setValue: (value) => root.setValue(value),
+        setValue: (value, event, reason) => root.setValue(value, event, reason as RdxTabsValueChangeReason | undefined),
         setActivateOnFocus: (value) => root.activateOnFocus.set(value),
         setTabListElement: (element) => root.tabListElement.set(element)
     };
@@ -58,7 +71,7 @@ export class RdxTabsRoot {
     /**
      * Event emitted when the selected tab changes.
      */
-    readonly onValueChange = output<RdxTabsValue>();
+    readonly onValueChange = output<RdxTabsValueChangeEvent>();
 
     /** @ignore Set by `[rdxTabsList]`. */
     readonly activateOnFocus = signal(false);
@@ -79,15 +92,29 @@ export class RdxTabsRoot {
     }
 
     /** @ignore */
-    setValue(value: RdxTabsValue): void {
+    setValue(
+        value: RdxTabsValue,
+        event?: Event,
+        reason: RdxTabsValueChangeReason = event ? 'trigger-press' : 'none'
+    ): void {
         const previous = this.value();
         if (previous === value) {
             return;
         }
 
+        const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
+        const { eventDetails } = createCancelableChangeEventDetails(
+            reason,
+            event ?? new Event('tabs.value-change'),
+            trigger
+        );
+        this.onValueChange.emit({ value, eventDetails });
+        if (eventDetails.isCanceled()) {
+            return;
+        }
+
         this.activationDirection.set(this.computeDirection(previous, value));
         this.value.set(value);
-        this.onValueChange.emit(value);
     }
 
     private computeDirection(previous: RdxTabsValue | undefined, next: RdxTabsValue): RdxTabsActivationDirection {

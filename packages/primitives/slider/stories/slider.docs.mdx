@@ -69,6 +69,29 @@ Each thumb owns a nested `input[rdxSliderThumbInput]`. It is visually hidden but
 remains the focusable element that powers keyboard interaction, accessibility and
 form submission.
 
+## Change events
+
+`onValueChange` emits `{ value, eventDetails }`, where `value` is a number for a single slider or a
+number array for a range slider. `onValueCommitted` still emits the committed number or number
+array. Call `eventDetails.cancel()` to reject a live value change before it updates.
+
+```html
+<div [value]="value()" (onValueChange)="setValue($event)" rdxSliderRoot>
+    ...
+</div>
+```
+
+```ts
+setValue(change: RdxSliderValueChangeEvent) {
+    if (this.isLocked()) {
+        change.eventDetails.cancel();
+        return;
+    }
+
+    this.value.set(change.value);
+}
+```
+
 ## Examples
 
 ### Range

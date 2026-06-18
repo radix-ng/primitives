@@ -4,7 +4,12 @@ import { By } from '@angular/platform-browser';
 import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input';
-import { getState, isIndeterminate, RdxCheckboxRootDirective } from '../src/checkbox-root';
+import {
+    getState,
+    isIndeterminate,
+    RdxCheckboxCheckedChangeEvent,
+    RdxCheckboxRootDirective
+} from '../src/checkbox-root';
 
 @Component({
     imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective, RdxCheckboxIndicatorDirective],
@@ -35,9 +40,9 @@ class CheckboxHost {
 
     // Controlled: reflect the change back into the bound value and clear the
     // mixed state, mirroring the recommended consumer pattern.
-    onChange(value: boolean): void {
-        this.changes.push(value);
-        this.checked = value;
+    onChange(change: RdxCheckboxCheckedChangeEvent): void {
+        this.changes.push(change.checked);
+        this.checked = change.checked;
         this.indeterminate = false;
     }
 }
@@ -200,7 +205,7 @@ describe('RdxCheckbox', () => {
         <div
             [checked]="checked"
             [indeterminate]="indeterminate"
-            (onCheckedChange)="checked = $event; indeterminate = false"
+            (onCheckedChange)="checked = $event.checked; indeterminate = false"
             rdxCheckboxRoot
         >
             <button rdxCheckboxButton><span>x</span></button>

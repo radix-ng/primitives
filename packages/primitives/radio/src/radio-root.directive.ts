@@ -1,8 +1,22 @@
 import { booleanAttribute, computed, Directive, effect, input, model, output, signal } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
-import { BooleanInput, provideValueAccessor, RdxFormValueControl } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    createCancelableChangeEventDetails,
+    provideValueAccessor,
+    RdxCancelableChangeEventDetails,
+    RdxFormValueControl
+} from '@radix-ng/primitives/core';
 import { Orientation, RdxRovingFocusGroupDirective } from '@radix-ng/primitives/roving-focus';
 import { RadioGroupDirective, RadioGroupProps, RDX_RADIO_GROUP } from './radio-tokens';
+
+export type RdxRadioValueChangeReason = 'trigger-press' | 'keyboard' | 'focus' | 'none';
+export type RdxRadioValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxRadioValueChangeReason>;
+
+export interface RdxRadioValueChangeEvent {
+    value: string;
+    eventDetails: RdxRadioValueChangeEventDetails;
+}
 
 @Directive({
     selector: '[rdxRadioRoot]',
@@ -44,7 +58,7 @@ export class RdxRadioGroupDirective
     /**
      * Event handler called when the value changes.
      */
-    readonly onValueChange = output<string>();
+    readonly onValueChange = output<RdxRadioValueChangeEvent>();
 
     private readonly disable = signal<boolean>(this.disabled());
     readonly disabledState = computed(() => this.disable() || this.disabled());
@@ -78,15 +92,29 @@ export class RdxRadioGroupDirective
      * @param value The value of the radio item to select.
      * @ignore
      */
-    select(value: string | null): void {
+    select(
+        value: string | null,
+        event?: Event,
+        reason: RdxRadioValueChangeReason = event ? 'trigger-press' : 'none'
+    ): void {
         if (this.disabledState() || this.readonly() || this.value() === value) {
             return;
         }
 
-        this.value.set(value);
         if (value !== null) {
-            this.onValueChange.emit(value);
+            const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
+            const { eventDetails } = createCancelableChangeEventDetails(
+                reason,
+                event ?? new Event('radio.value-change'),
+                trigger
+            );
+            this.onValueChange.emit({ value, eventDetails });
+            if (eventDetails.isCanceled()) {
+                return;
+            }
         }
+
+        this.value.set(value);
         this.onChange?.(value);
         this.onTouched();
     }

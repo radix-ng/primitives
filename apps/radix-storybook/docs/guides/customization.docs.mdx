@@ -29,35 +29,30 @@ application-level workarounds.
 ## Listening to change events
 
 Stateful primitives expose Angular outputs such as `onOpenChange`, `onValueChange`, and
-`onPressedChange`. Use them to react to changes caused by user interaction.
+`onPressedChange`. Use them to react to changes caused by user interaction. Base UI-aligned
+primitives emit a change object that contains the next state plus `eventDetails`.
 
 ```html
-<div (onOpenChange)="trackOpenChange($event)" rdxCollapsibleRoot>
+<button [checked]="checked()" (onCheckedChange)="setChecked($event)" rdxSwitchRoot>
     ...
-</div>
+</button>
 ```
 
 ```ts
-trackOpenChange(open: boolean) {
-    this.analytics.track('collapsible_changed', { open });
-}
-```
-
-Simple value outputs often emit the next value directly (`boolean`, `string`, etc.). Popup
-primitives are richer: `Dialog`, `Popover`, `Menu`, `Combobox`, `Autocomplete`, and
-`Navigation Menu` emit an object with `open`, `reason`, the originating DOM `event`, and
-cancellable `eventDetails`.
-
-```ts
-handleDialogChange(change: { open: boolean; reason: string; eventDetails: { cancel(): void } }) {
-    if (!change.open && this.blockClose) {
+setChecked(change: { checked: boolean; eventDetails: { cancel(): void } }) {
+    if (this.blockChanges()) {
         change.eventDetails.cancel();
         return;
     }
 
-    this.open.set(change.open);
+    this.checked.set(change.checked);
 }
 ```
+
+Value/form primitives use `{ value, eventDetails }`, checkbox-like primitives use
+`{ checked, eventDetails }`, toggles use `{ pressed, eventDetails }`, and popup primitives use
+`{ open, eventDetails }`. `eventDetails` includes the reason, originating DOM event, trigger element,
+and `cancel()`.
 
 ## Controlling components with state
 
@@ -67,24 +62,22 @@ accept.
 
 ```ts
 import { Component, signal } from '@angular/core';
-import { RdxCollapsibleModule } from '@radix-ng/primitives/collapsible';
+import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
-    selector: 'app-details',
-    imports: [RdxCollapsibleModule],
+    selector: 'app-notifications',
+    imports: [RdxSwitchRoot, RdxSwitchThumb],
     template: `
-        <button type="button" (click)="open.set(true)">Show details</button>
-
-        <div [open]="open()" (onOpenChange)="setOpen($event)" rdxCollapsibleRoot>
-            ...
-        </div>
+        <button [checked]="checked()" (onCheckedChange)="setChecked($event)" rdxSwitchRoot>
+            <span rdxSwitchThumb></span>
+        </button>
     `
 })
-export class Details {
-    protected readonly open = signal(false);
+export class Notifications {
+    protected readonly checked = signal(false);
 
-    protected setOpen(open: boolean) {
-        this.open.set(open);
+    protected setChecked(change: { checked: boolean; eventDetails: { cancel(): void } }) {
+        this.checked.set(change.checked);
     }
 }
 ```
@@ -95,7 +88,7 @@ For `model()` inputs, standard Angular two-way binding is also available when ev
 accepted:
 
 ```html
-<div [(open)]="open" rdxCollapsibleRoot>...</div>
+<button [(checked)]="checked" rdxSwitchRoot>...</button>
 ```
 
 ## Customizing DOM event handling
@@ -111,7 +104,7 @@ Use native DOM event methods when customizing how an event moves through your ap
 - `stopImmediatePropagation()` also prevents later listeners on the same element from running.
 
 Stopping propagation does not automatically cancel a primitive's internal state update. For that,
-prefer controlled state or a hook explicitly exposed by the primitive.
+use a cancelable change output when the primitive exposes one, or prefer controlled state.
 
 ## Using primitive-specific event hooks
 

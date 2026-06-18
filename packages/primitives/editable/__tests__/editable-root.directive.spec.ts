@@ -8,7 +8,12 @@ import { RdxEditableCancelTrigger } from '../src/editable-cancel-trigger';
 import { RdxEditableEditTrigger } from '../src/editable-edit-trigger';
 import { RdxEditableInput } from '../src/editable-input';
 import { RdxEditablePreview } from '../src/editable-preview';
-import { EditableActivationMode, EditableSubmitMode, RdxEditableRoot } from '../src/editable-root';
+import {
+    EditableActivationMode,
+    EditableSubmitMode,
+    RdxEditableRoot,
+    RdxEditableValueChangeEvent
+} from '../src/editable-root';
 import { RdxEditableSubmitTrigger } from '../src/editable-submit-trigger';
 
 @Component({
@@ -54,7 +59,7 @@ class TestComponent {
     readonly disabled = signal(false);
     readonly startWithEditMode = signal(false);
 
-    onValueChange = vi.fn();
+    onValueChange = vi.fn<(change: RdxEditableValueChangeEvent) => void>();
 }
 
 describe('RdxEditable', () => {
@@ -137,13 +142,32 @@ describe('RdxEditable', () => {
         fixture.detectChanges();
         type('World');
 
-        submitTrigger()!.click();
+        const submit = submitTrigger()!;
+        submit.click();
         fixture.detectChanges();
 
         expect(component.value()).toBe('World');
-        expect(component.onValueChange).toHaveBeenCalledWith('World');
+        expect(component.onValueChange).toHaveBeenCalledWith(
+            expect.objectContaining({
+                value: 'World',
+                eventDetails: expect.objectContaining({ reason: 'submit', trigger: submit })
+            })
+        );
         expect(submitTrigger()).toBeFalsy();
         expect(editTrigger()).toBeTruthy();
+    });
+
+    it('allows canceling submit before value updates', () => {
+        editTrigger()!.click();
+        fixture.detectChanges();
+        type('World');
+        component.onValueChange.mockImplementationOnce((change) => change.eventDetails.cancel());
+
+        submitTrigger()!.click();
+        fixture.detectChanges();
+
+        expect(component.value()).toBe('Hello');
+        expect(submitTrigger()).toBeTruthy();
     });
 
     it('discards the edit on cancel', () => {
@@ -169,7 +193,7 @@ describe('RdxEditable', () => {
         key('Enter');
 
         expect(component.value()).toBe('Entered');
-        expect(component.onValueChange).toHaveBeenCalledWith('Entered');
+        expect(component.onValueChange).toHaveBeenCalledWith(expect.objectContaining({ value: 'Entered' }));
     });
 
     it('does not submit on Enter when submitMode is "blur"', () => {

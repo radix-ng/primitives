@@ -64,13 +64,13 @@ export class RdxStepperTriggerDirective {
                 this.itemContext.step() === this.rootContext.value()! + 1
             ) {
                 if (!mouseEvent.ctrlKey) {
-                    this.rootContext.value.set(this.itemContext.step());
+                    this.rootContext.goToStep(this.itemContext.step(), event, 'trigger-press');
                     return;
                 }
             }
         } else {
             if (!mouseEvent.ctrlKey) {
-                this.rootContext.value.set(this.itemContext.step());
+                this.rootContext.goToStep(this.itemContext.step(), event, 'trigger-press');
                 return;
             }
         }
@@ -88,7 +88,7 @@ export class RdxStepperTriggerDirective {
         }
 
         if ((keyEvent.key === kbd.ENTER || keyEvent.key === kbd.SPACE) && !keyEvent.ctrlKey && !keyEvent.shiftKey)
-            this.rootContext.value.set(this.itemContext.step());
+            this.rootContext.goToStep(this.itemContext.step(), event, 'keyboard');
 
         if ([kbd.ARROW_LEFT, kbd.ARROW_RIGHT, kbd.ARROW_UP, kbd.ARROW_DOWN].includes(keyEvent.key)) {
             useArrowNavigation(keyEvent, getActiveElement() as HTMLElement, undefined, {

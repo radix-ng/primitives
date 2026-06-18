@@ -37,6 +37,28 @@ The API follows [Base UI Toggle Group](https://base-ui.com/react/components/togg
 </div>
 ```
 
+## Change events
+
+`onValueChange` emits `{ value, eventDetails }`, where `value` is the next array of pressed item
+values. Call `eventDetails.cancel()` to reject the change.
+
+```html
+<div [value]="value()" (onValueChange)="setValue($event)" rdxToggleGroup>
+    ...
+</div>
+```
+
+```ts
+setValue(change: RdxToggleGroupValueChangeEvent) {
+    if (this.locked()) {
+        change.eventDetails.cancel();
+        return;
+    }
+
+    this.value.set(change.value);
+}
+```
+
 ## Examples
 
 ### Multiple
