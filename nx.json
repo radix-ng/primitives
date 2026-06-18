@@ -94,6 +94,7 @@
         "version": {
             "conventionalCommits": false,
             "preVersionCommand": "npx nx run-many -t build -p primitives",
+            "versionActions": "tools/scripts/release/skills-version-actions.cjs",
             "updateDependents": "auto"
         },
         "changelog": {
