@@ -515,6 +515,16 @@
       "dataAttributes": []
     },
     {
+      "name": "Composite",
+      "slug": "composite",
+      "section": "utils",
+      "description": "Composite",
+      "doc": "radix-ng-examples/references/utils/composite.md",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-composite--docs",
+      "anatomy": "<div rdxCompositeRoot orientation=\"horizontal\">\n  <button rdxCompositeItem>One</button>\n  <button rdxCompositeItem>Two</button>\n  <button rdxCompositeItem>Three</button>\n</div>",
+      "dataAttributes": []
+    },
+    {
       "name": "Direction Provider",
       "slug": "direction-provider",
       "section": "utils",

@@ -1978,6 +1978,104 @@
       ]
     },
     {
+      "slug": "composite",
+      "section": "components",
+      "parts": [
+        {
+          "directive": "RdxCompositeItem",
+          "selector": "[rdxCompositeItem]",
+          "exportAs": "rdxCompositeItem",
+          "description": "Internal Base UI-style composite item. Registers itself with the nearest composite root and\nreceives the roving `tabindex` from the root's highlighted index.",
+          "inputs": [
+            {
+              "name": "metadata",
+              "type": "RdxCompositeItemMetadata | null | undefined",
+              "default": "undefined",
+              "description": "Arbitrary metadata included in the root's ordered item map."
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "directive": "RdxCompositeRoot",
+          "selector": "[rdxCompositeRoot]",
+          "exportAs": "rdxCompositeRoot",
+          "description": "Internal Base UI-style composite root for roving index and arrow-key navigation.",
+          "inputs": [
+            {
+              "name": "dir",
+              "type": "Direction | undefined",
+              "default": "undefined",
+              "description": "Text direction for horizontal arrow-key navigation."
+            },
+            {
+              "name": "disabledIndices",
+              "type": "readonly number[] | undefined",
+              "default": "undefined",
+              "description": "Indices that are skipped by keyboard navigation."
+            },
+            {
+              "name": "enableHomeAndEndKeys",
+              "type": "boolean",
+              "default": "false",
+              "description": "Enables Home and End keys."
+            },
+            {
+              "name": "highlightedIndex",
+              "type": "number",
+              "default": "0",
+              "description": "The currently highlighted item index."
+            },
+            {
+              "name": "highlightItemOnHover",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether hovering an item should focus it."
+            },
+            {
+              "name": "loopFocus",
+              "type": "boolean",
+              "default": "true",
+              "description": "Whether arrow-key navigation wraps at the first/last item."
+            },
+            {
+              "name": "modifierKeys",
+              "type": "readonly RdxCompositeModifierKey[]",
+              "default": "[]",
+              "description": "Modifier keys that should not block composite navigation."
+            },
+            {
+              "name": "orientation",
+              "type": "RdxCompositeOrientation",
+              "default": "'both'",
+              "description": "The composite orientation."
+            },
+            {
+              "name": "stopEventPropagation",
+              "type": "boolean",
+              "default": "true",
+              "description": "Whether handled navigation keys stop propagation."
+            }
+          ],
+          "outputs": [
+            {
+              "name": "onHighlightedIndexChange",
+              "type": "number",
+              "description": "Emits when this root changes the highlighted index."
+            },
+            {
+              "name": "onMapChange",
+              "type": "Map<HTMLElement, RdxCompositeMetadata>",
+              "description": "Emits when the ordered item map changes."
+            }
+          ],
+          "twoWay": [
+            "highlightedIndex"
+          ]
+        }
+      ]
+    },
+    {
       "slug": "context-menu",
       "section": "components",
       "parts": [

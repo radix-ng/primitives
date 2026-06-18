@@ -55,6 +55,7 @@ Generated from `@radix-ng/primitives@1.0.0-beta.5` — if the installed version 
 
 ## Utilities
 
+- [Composite](https://radix-ng.com/utils/composite.md): Composite
 - [Direction Provider](https://radix-ng.com/utils/direction-provider.md): Provides reading direction to descendant primitives through Angular DI.
 - [Dismissable Layer](https://radix-ng.com/utils/dismissable-layer.md): Dismissable Layer
 - [Focus Scope](https://radix-ng.com/utils/focus-scope.md): Manages focus within a component boundary with support for trapping and looping focus navigation.
