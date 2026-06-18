@@ -6291,6 +6291,12 @@
               "description": "The granularity with which the value can change through user interaction."
             },
             {
+              "name": "thumbAlignment",
+              "type": "RdxSliderThumbAlignment",
+              "default": "'center'",
+              "description": "How the thumbs align with the control when the value is at min/max.\n`center` aligns the thumb center to the control edge; `edge`/`edge-client-only`\ninset thumbs so their outer edge aligns to the control edge."
+            },
+            {
               "name": "thumbCollisionBehavior",
               "type": "ThumbCollisionBehavior",
               "default": "'push'",
@@ -6310,7 +6316,7 @@
             },
             {
               "name": "onValueCommitted",
-              "type": "SliderValue",
+              "type": "RdxSliderValueCommitEvent",
               "description": "Emitted when interaction ends, with the final value — useful for committing to a backend."
             }
           ],

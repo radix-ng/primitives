@@ -14,6 +14,7 @@ import {
     BooleanInput,
     createCancelableChangeEventDetails,
     injectControlValueAccessor,
+    injectDocument,
     injectId,
     NumberInput,
     RdxCancelableChangeEventDetails,
@@ -33,12 +34,27 @@ import {
 } from './slider.utils';
 
 export type SliderValue = number | number[];
-export type RdxSliderValueChangeReason = string;
-export type RdxSliderValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxSliderValueChangeReason>;
+export type RdxSliderThumbAlignment = 'center' | 'edge' | 'edge-client-only';
+export type RdxSliderValueChangeReason = 'input-change' | 'track-press' | 'drag' | 'keyboard' | 'none';
+export type RdxSliderValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxSliderValueChangeReason> & {
+    activeThumbIndex: number;
+};
+export type RdxSliderValueCommitReason = RdxSliderValueChangeReason;
+
+export interface RdxSliderValueCommitEventDetails {
+    reason: RdxSliderValueCommitReason;
+    event: Event;
+    trigger: HTMLElement | undefined;
+}
 
 export interface RdxSliderValueChangeEvent {
     value: SliderValue;
     eventDetails: RdxSliderValueChangeEventDetails;
+}
+
+export interface RdxSliderValueCommitEvent {
+    value: SliderValue;
+    eventDetails: RdxSliderValueCommitEventDetails;
 }
 
 /** Minimal shape a thumb registers with the root, used for hit-testing and focus. */
@@ -64,6 +80,23 @@ function sortByDomOrder(list: readonly RdxSliderThumbRef[]): RdxSliderThumbRef[]
         }
         return 0;
     });
+}
+
+function cloneChangeEventWithTarget(event: Event, value: SliderValue, name: string | undefined): Event {
+    const EventCtor = event.constructor as typeof Event;
+    let clonedEvent: Event;
+    try {
+        clonedEvent = new EventCtor(event.type, event);
+    } catch {
+        clonedEvent = new Event(event.type, event);
+    }
+
+    Object.defineProperty(clonedEvent, 'target', {
+        writable: true,
+        value: { value, name }
+    });
+
+    return clonedEvent;
 }
 
 /**
@@ -96,6 +129,7 @@ function sortByDomOrder(list: readonly RdxSliderThumbRef[]): RdxSliderThumbRef[]
 export class RdxSliderRoot {
     /** @ignore */
     protected readonly cva = injectControlValueAccessor<SliderValue>();
+    private readonly document = injectDocument();
 
     readonly id = input<string>(injectId('rdx-slider-'));
 
@@ -148,6 +182,14 @@ export class RdxSliderRoot {
      */
     readonly thumbCollisionBehavior = input<ThumbCollisionBehavior>('push');
 
+    /**
+     * How the thumbs align with the control when the value is at min/max.
+     * `center` aligns the thumb center to the control edge; `edge`/`edge-client-only`
+     * inset thumbs so their outer edge aligns to the control edge.
+     * @default 'center'
+     */
+    readonly thumbAlignment = input<RdxSliderThumbAlignment>('center');
+
     /** Options forwarded to `Intl.NumberFormat` when displaying and announcing values. */
     readonly format = input<Intl.NumberFormatOptions>();
 
@@ -178,7 +220,7 @@ export class RdxSliderRoot {
     readonly onValueChange = output<RdxSliderValueChangeEvent>();
 
     /** Emitted when interaction ends, with the final value — useful for committing to a backend. */
-    readonly onValueCommitted = output<SliderValue>();
+    readonly onValueCommitted = output<RdxSliderValueCommitEvent>();
 
     /** @ignore */
     readonly controlRef = signal<HTMLElement | null>(null);
@@ -189,6 +231,8 @@ export class RdxSliderRoot {
     readonly lastUsedThumbIndex = signal(-1);
     /** @ignore Whether a pointer drag is in progress. */
     readonly dragging = signal(false);
+    /** @ignore Edge-aligned thumb/indicator positions, in control-relative percentages. */
+    readonly indicatorPosition = signal<[number | undefined, number | undefined]>([undefined, undefined]);
 
     /** @ignore Pointer-drag scratch state (not reactive). */
     pressedThumbIndex = -1;
@@ -200,9 +244,15 @@ export class RdxSliderRoot {
     pressedValues: number[] | null = null;
     /** @ignore */
     lastChangeReason = 'none';
+    /** @ignore */
+    lastChangeEvent: Event | undefined;
 
     /** @ignore */
     readonly isDisabled = computed(() => !!this.cva.disabled());
+    /** @ignore */
+    readonly inset = computed(() => this.thumbAlignment() !== 'center');
+    /** @ignore */
+    readonly renderBeforeHydration = computed(() => this.thumbAlignment() === 'edge');
 
     /** @ignore The current value source (controlled value, else default, else min). */
     private readonly currentRaw = computed<SliderValue>(() => this.cva.value() ?? this.defaultValue() ?? this.min());
@@ -252,6 +302,19 @@ export class RdxSliderRoot {
     }
 
     /** @ignore */
+    setIndicatorPosition(index: number, position: number | undefined): void {
+        this.indicatorPosition.update(([start, end]) => {
+            if (index === 0) {
+                return [position, end];
+            }
+            if (index === this.values().length - 1) {
+                return [start, position];
+            }
+            return [start, end];
+        });
+    }
+
+    /** @ignore */
     formatValue(value: number): string {
         return formatNumber(value, this.locale(), this.format());
     }
@@ -270,7 +333,7 @@ export class RdxSliderRoot {
      * Applies a new full set of values, preserving the single/range value shape.
      * Returns `false` when the value did not change.
      */
-    setValue(nextValues: number[], reason: string, event?: Event): boolean {
+    setValue(nextValues: number[], reason: RdxSliderValueChangeReason, event?: Event, activeThumbIndex = -1): boolean {
         const next: SliderValue = this.range() ? nextValues : nextValues[0];
         const current = this.outputValue();
         const hasNaN = Array.isArray(next) ? next.some((v) => Number.isNaN(v)) : Number.isNaN(next);
@@ -279,24 +342,28 @@ export class RdxSliderRoot {
         }
 
         const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
-        const { eventDetails } = createCancelableChangeEventDetails(
-            reason,
-            event ?? new Event('slider.value-change'),
-            trigger
-        );
+        const changeEvent = cloneChangeEventWithTarget(event ?? new Event('slider.value-change'), next, this.name());
+        const { eventDetails: baseEventDetails } = createCancelableChangeEventDetails(reason, changeEvent, trigger);
+        const eventDetails = Object.assign(baseEventDetails, { activeThumbIndex }) as RdxSliderValueChangeEventDetails;
         this.onValueChange.emit({ value: next, eventDetails });
         if (eventDetails.isCanceled()) {
             return false;
         }
 
         this.lastChangeReason = reason;
+        this.lastChangeEvent = eventDetails.event;
         this.value.set(next);
         this.cva.setValue(next);
         return true;
     }
 
     /** @ignore Keyboard / native input path: clamps to neighbours, commits immediately. */
-    handleInputChange(valueInput: number, index: number, reason = 'keyboard', event?: Event): void {
+    handleInputChange(
+        valueInput: number,
+        index: number,
+        reason: RdxSliderValueChangeReason = 'keyboard',
+        event?: Event
+    ): void {
         if (this.isDisabled()) {
             return;
         }
@@ -305,16 +372,28 @@ export class RdxSliderRoot {
             return;
         }
         const arr = Array.isArray(result) ? result : [result];
-        const applied = this.setValue(arr, reason, event);
+        const applied = this.setValue(arr, reason, event, index);
         this.cva.markAsTouched();
         if (applied) {
-            this.onValueCommitted.emit(this.outputValue());
+            this.commitValue(event, reason);
         }
     }
 
     /** @ignore Emits the committed value at the end of a pointer drag. */
-    commitValue(): void {
-        this.onValueCommitted.emit(this.outputValue());
+    commitValue(
+        event?: Event,
+        reason: RdxSliderValueCommitReason = this.lastChangeReason as RdxSliderValueCommitReason
+    ): void {
+        const commitEvent = event ?? this.lastChangeEvent ?? new Event('slider.value-commit');
+        const trigger = commitEvent.currentTarget instanceof HTMLElement ? commitEvent.currentTarget : undefined;
+        this.onValueCommitted.emit({
+            value: this.outputValue(),
+            eventDetails: {
+                reason,
+                event: commitEvent,
+                trigger
+            }
+        });
     }
 
     /** @ignore */
@@ -332,5 +411,10 @@ export class RdxSliderRoot {
         this.pressedThumbIndex = -1;
         this.pressedThumbCenterOffset = null;
         this.pressedInput = null;
+    }
+
+    /** @ignore */
+    getOwnerWindow(): Window | undefined {
+        return this.document.defaultView ?? undefined;
     }
 }

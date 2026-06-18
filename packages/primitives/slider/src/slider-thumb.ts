@@ -1,4 +1,6 @@
 import {
+    afterNextRender,
+    afterRenderEffect,
     booleanAttribute,
     computed,
     DestroyRef,
@@ -6,12 +8,14 @@ import {
     ElementRef,
     inject,
     input,
-    numberAttribute
+    numberAttribute,
+    signal,
+    untracked
 } from '@angular/core';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
 import { injectSliderRootContext } from './slider-context';
 import { RdxSliderThumbRef } from './slider-root';
-import { valueToPercent } from './slider.utils';
+import { getInsetThumbPositionPercent, valueToPercent } from './slider.utils';
 
 /**
  * A draggable handle. Render one per value; place an `input[rdxSliderThumbInput]`
@@ -60,6 +64,7 @@ export class RdxSliderThumb implements RdxSliderThumbRef {
         const value = this.value();
         return value === undefined ? NaN : valueToPercent(value, this.root.min(), this.root.max());
     });
+    private readonly insetPosition = signal<number | undefined>(undefined);
 
     protected readonly thumbStyle = computed<Record<string, string | number>>(() => {
         const vertical = this.root.orientation() === 'vertical';
@@ -67,6 +72,8 @@ export class RdxSliderThumb implements RdxSliderThumbRef {
         const startEdge = vertical ? 'bottom' : 'inset-inline-start';
         const crossOffset = vertical ? 'left' : 'top';
         const percent = this.percent();
+        const inset = this.root.inset();
+        const position = this.insetPosition();
 
         if (!Number.isFinite(percent)) {
             return { position: 'absolute', visibility: 'hidden' };
@@ -86,10 +93,13 @@ export class RdxSliderThumb implements RdxSliderThumbRef {
 
         const style: Record<string, string | number> = {
             position: 'absolute',
-            [startEdge]: `${percent}%`,
+            [startEdge]: inset ? `${position ?? 0}%` : `${percent}%`,
             [crossOffset]: '50%',
             translate: `${(vertical || !rtl ? -1 : 1) * 50}% ${(vertical ? 1 : -1) * 50}%`
         };
+        if (inset && position === undefined) {
+            style['visibility'] = 'hidden';
+        }
         if (zIndex !== undefined) {
             style['z-index'] = zIndex;
         }
@@ -100,7 +110,55 @@ export class RdxSliderThumb implements RdxSliderThumbRef {
         // Registration is DOM-order sorted on the root and reads no inputs, so the constructor
         // (where the host element already exists) is the right place; cleanup goes via DestroyRef.
         this.root.registerThumb(this);
-        inject(DestroyRef).onDestroy(() => this.root.unregisterThumb(this));
+        const destroyRef = inject(DestroyRef);
+        destroyRef.onDestroy(() => this.root.unregisterThumb(this));
+
+        afterNextRender(() => {
+            const win = this.root.getOwnerWindow();
+            const ResizeObserverCtor = (win as (Window & { ResizeObserver?: typeof ResizeObserver }) | undefined)
+                ?.ResizeObserver;
+            if (!ResizeObserverCtor) {
+                this.updateInsetPosition();
+                return;
+            }
+
+            const observer = new ResizeObserverCtor(() => this.updateInsetPosition());
+            const control = this.root.controlRef();
+            if (control) {
+                observer.observe(control);
+            }
+            observer.observe(this.element);
+            destroyRef.onDestroy(() => observer.disconnect());
+        });
+
+        afterRenderEffect(() => {
+            this.root.inset();
+            this.percent();
+            this.index();
+            this.root.values();
+            untracked(() => queueMicrotask(() => this.updateInsetPosition()));
+        });
+    }
+
+    private updateInsetPosition(): void {
+        if (!this.root.inset()) {
+            this.insetPosition.set(undefined);
+            return;
+        }
+
+        const control = this.root.controlRef();
+        if (!control) {
+            return;
+        }
+
+        const position = getInsetThumbPositionPercent(
+            control,
+            this.element,
+            this.percent(),
+            this.root.orientation() === 'vertical'
+        );
+        this.insetPosition.set(position);
+        this.root.setIndicatorPosition(this.index(), position);
     }
 
     protected onPointerDown(event: PointerEvent): void {

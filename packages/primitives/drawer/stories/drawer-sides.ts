@@ -2,27 +2,34 @@ import { Component } from '@angular/core';
 import { drawerImports, RdxDrawerSwipeDirection } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
-const SIDES: RdxDrawerSwipeDirection[] = ['top', 'right', 'bottom', 'left'];
+type DrawerSide = 'top' | 'right' | 'bottom' | 'left';
+
+const SIDES: { side: DrawerSide; swipeDirection: RdxDrawerSwipeDirection }[] = [
+    { side: 'top', swipeDirection: 'up' },
+    { side: 'right', swipeDirection: 'right' },
+    { side: 'bottom', swipeDirection: 'down' },
+    { side: 'left', swipeDirection: 'left' }
+];
 
 @Component({
     selector: 'rdx-drawer-sides',
     imports: [...drawerImports],
     template: `
         <div class="flex flex-wrap gap-3">
-            @for (side of sides; track side) {
-                <div [swipeDirection]="side" rdxDrawerRoot>
+            @for (item of sides; track item.side) {
+                <div [swipeDirection]="item.swipeDirection" rdxDrawerRoot>
                     <button [class]="cn(b.base, b.outline, b.size.md, 'capitalize')" rdxDrawerTrigger>
-                        {{ side }}
+                        {{ item.side }}
                     </button>
 
                     <ng-template rdxDrawerPortal>
                         <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
 
-                        <div [class]="cn(d.popup, d.side[side])" rdxDrawerPopup>
+                        <div [class]="cn(d.popup, d.side[item.side])" rdxDrawerPopup>
                             <div [class]="d.body" rdxDrawerContent>
-                                <h2 [class]="cn(d.title, 'capitalize')" rdxDrawerTitle>{{ side }} drawer</h2>
+                                <h2 [class]="cn(d.title, 'capitalize')" rdxDrawerTitle>{{ item.side }} drawer</h2>
                                 <p [class]="d.description" rdxDrawerDescription>
-                                    Swipe toward the {{ side }} edge to dismiss.
+                                    Swipe {{ item.swipeDirection }} to dismiss.
                                 </p>
 
                                 <div [class]="d.footer">

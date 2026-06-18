@@ -2,6 +2,36 @@ import { computed, Directive } from '@angular/core';
 import { injectSliderRootContext } from './slider-context';
 import { valueToPercent } from './slider.utils';
 
+function getInsetStyles(
+    vertical: boolean,
+    range: boolean,
+    start: number | undefined,
+    end: number | undefined
+): Record<string, string | number> {
+    const startEdge = vertical ? 'bottom' : 'inset-inline-start';
+    const mainSide = vertical ? 'height' : 'width';
+    const crossSide = vertical ? 'width' : 'height';
+
+    const styles: Record<string, string | number> = {
+        position: vertical ? 'absolute' : 'relative',
+        [crossSide]: 'inherit'
+    };
+
+    if (start === undefined || (range && end === undefined)) {
+        styles['visibility'] = 'hidden';
+    }
+
+    if (!range) {
+        styles[startEdge] = 0;
+        styles[mainSide] = `${start ?? 0}%`;
+        return styles;
+    }
+
+    styles[startEdge] = `${start ?? 0}%`;
+    styles[mainSide] = `${(end ?? 0) - (start ?? 0)}%`;
+    return styles;
+}
+
 /**
  * Visualises the portion of the track between the slider's minimum (or the first
  * thumb in a range) and the active value.
@@ -27,6 +57,7 @@ export class RdxSliderIndicator {
         const values = this.root.values();
         const min = this.root.min();
         const max = this.root.max();
+        const inset = this.root.inset();
 
         const startEdge = vertical ? 'bottom' : 'inset-inline-start';
         const mainSide = vertical ? 'height' : 'width';
@@ -34,6 +65,11 @@ export class RdxSliderIndicator {
 
         const start = valueToPercent(values[0], min, max);
         const end = valueToPercent(values[values.length - 1], min, max);
+
+        if (inset) {
+            const [startPosition, endPosition] = this.root.indicatorPosition();
+            return getInsetStyles(vertical, range, startPosition, endPosition);
+        }
 
         const styles: Record<string, string | number> = {
             position: vertical ? 'absolute' : 'relative',

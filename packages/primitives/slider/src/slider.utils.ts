@@ -28,6 +28,27 @@ export function getMidpoint(element: Element): { x: number; y: number } {
     return { x: (rect.left + rect.right) / 2, y: (rect.top + rect.bottom) / 2 };
 }
 
+/** Calculates the control-relative percent for an edge-aligned thumb. */
+export function getInsetThumbPositionPercent(
+    control: Element,
+    thumb: Element,
+    thumbValuePercent: number,
+    vertical: boolean
+): number | undefined {
+    const thumbRect = thumb.getBoundingClientRect();
+    const controlRect = control.getBoundingClientRect();
+    const side = vertical ? 'height' : 'width';
+    const controlSide = controlRect[side];
+    if (!(controlSide > 0)) {
+        return undefined;
+    }
+
+    const controlSize = controlSide - thumbRect[side];
+    const thumbOffsetFromControlEdge = thumbRect[side] / 2 + (controlSize * thumbValuePercent) / 100;
+    const nextPosition = (thumbOffsetFromControlEdge / controlSide) * 100;
+    return Number.isFinite(nextPosition) ? nextPosition : undefined;
+}
+
 /** Converts an array of values into clamped 0–100 percentages. */
 export function valueArrayToPercentages(values: readonly number[], min: number, max: number): number[] {
     return values.map((value) => clamp(valueToPercent(value, min, max), 0, 100));

@@ -42,6 +42,7 @@ export class SliderDefaultExample {}
 - ✅ Configurable thumb collision behavior (`push`, `swap`, `none`).
 - ✅ Minimum distance between thumbs.
 - ✅ Press or drag anywhere on the control to update the value.
+- ✅ Thumb alignment modes: `center`, `edge`, and `edge-client-only`.
 - ✅ Horizontal and vertical orientation, with RTL support.
 - ✅ Value formatting with `Intl.NumberFormat`.
 - ✅ Full keyboard navigation, including large steps.
@@ -94,8 +95,12 @@ form submission.
 ## Change events
 
 `onValueChange` emits `{ value, eventDetails }`, where `value` is a number for a single slider or a
-number array for a range slider. `onValueCommitted` still emits the committed number or number
-array. Call `eventDetails.cancel()` to reject a live value change before it updates.
+number array for a range slider. The change details include `reason`, `activeThumbIndex`, the
+originating event, `event.target.value` / `event.target.name`, and `cancel()`.
+
+`onValueCommitted` emits `{ value, eventDetails }` when an interaction commits. Its details include
+the commit `reason` and originating event. This is a generic event like Base UI, so it is not
+cancelable.
 
 ```html
 <div [value]="value()" (onValueChange)="setValue($event)" rdxSliderRoot>
@@ -112,6 +117,68 @@ setValue(change: RdxSliderValueChangeEvent) {
 
     this.value.set(change.value);
 }
+```
+
+## Thumb alignment
+
+`thumbAlignment="center"` aligns each thumb's center with the control edge at `min` and `max`.
+`thumbAlignment="edge"` and `thumbAlignment="edge-client-only"` inset thumbs so the thumb edge,
+not its center, reaches the control edge. In edge modes the indicator uses measured thumb positions
+so the filled range lines up with the thumb centers.
+
+```typescript
+import { Component } from '@angular/core';
+import {
+    RdxSliderControl,
+    RdxSliderIndicator,
+    RdxSliderRoot,
+    RdxSliderThumb,
+    RdxSliderThumbInput,
+    RdxSliderTrack
+} from '@radix-ng/primitives/slider';
+
+@Component({
+    selector: 'slider-thumb-alignment-example',
+    imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
+    template: `
+        <div class="grid w-72 gap-6">
+            <div class="grid gap-2">
+                <span class="text-foreground text-sm font-medium">Center</span>
+                <div class="relative px-2 select-none" [value]="50" thumbAlignment="center" rdxSliderRoot>
+                    <div class="flex h-6 w-full touch-none items-center" rdxSliderControl>
+                        <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
+                            <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>
+                            <div
+                                class="border-border bg-background focus-within:ring-ring block size-5 rounded-full border shadow-sm focus-within:ring-2"
+                                rdxSliderThumb
+                            >
+                                <input rdxSliderThumbInput aria-label="Centered thumb value" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid gap-2">
+                <span class="text-foreground text-sm font-medium">Edge</span>
+                <div class="relative px-2 select-none" [value]="50" thumbAlignment="edge" rdxSliderRoot>
+                    <div class="flex h-6 w-full touch-none items-center" rdxSliderControl>
+                        <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
+                            <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>
+                            <div
+                                class="border-border bg-background focus-within:ring-ring block size-5 rounded-full border shadow-sm focus-within:ring-2"
+                                rdxSliderThumb
+                            >
+                                <input rdxSliderThumbInput aria-label="Edge aligned thumb value" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+})
+export class SliderThumbAlignmentExample {}
 ```
 
 ## Examples

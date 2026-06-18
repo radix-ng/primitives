@@ -72,7 +72,7 @@ export class RdxSliderThumbInput {
     protected onChange(event: Event): void {
         const value = (event.target as HTMLInputElement).valueAsNumber;
         if (!Number.isNaN(value)) {
-            this.root.handleInputChange(value, this.thumb.index(), 'input', event);
+            this.root.handleInputChange(value, this.thumb.index(), 'input-change', event);
         }
     }
 

@@ -4,7 +4,13 @@ import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
 import { RdxSliderControl } from '../src/slider-control';
 import { RdxSliderIndicator } from '../src/slider-indicator';
-import { RdxSliderRoot, RdxSliderValueChangeEvent, SliderValue } from '../src/slider-root';
+import {
+    RdxSliderRoot,
+    RdxSliderThumbAlignment,
+    RdxSliderValueChangeEvent,
+    RdxSliderValueCommitEvent,
+    SliderValue
+} from '../src/slider-root';
 import { RdxSliderThumb } from '../src/slider-thumb';
 import { RdxSliderThumbInput } from '../src/slider-thumb-input';
 import { RdxSliderTrack } from '../src/slider-track';
@@ -67,7 +73,14 @@ describe('slider utils', () => {
 @Component({
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
-        <div [(value)]="value" [step]="step()" [disabled]="disabled()" (onValueChange)="onChange($event)" rdxSliderRoot>
+        <div
+            [(value)]="value"
+            [step]="step()"
+            [disabled]="disabled()"
+            [name]="name()"
+            (onValueChange)="onChange($event)"
+            rdxSliderRoot
+        >
             <div rdxSliderControl>
                 <div rdxSliderTrack>
                     <div rdxSliderIndicator></div>
@@ -86,8 +99,37 @@ class TestComponent {
     readonly thumbs = signal([0]);
     readonly step = signal(5);
     readonly disabled = signal(false);
+    readonly name = signal<string | undefined>(undefined);
 
     onChange = vi.fn<(change: RdxSliderValueChangeEvent) => void>();
+}
+
+@Component({
+    imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
+    template: `
+        <div
+            [(value)]="value"
+            [thumbAlignment]="thumbAlignment()"
+            (onValueChange)="onChange($event)"
+            (onValueCommitted)="onCommit($event)"
+            rdxSliderRoot
+        >
+            <div rdxSliderControl>
+                <div rdxSliderTrack>
+                    <div rdxSliderIndicator></div>
+                    <div rdxSliderThumb>
+                        <input rdxSliderThumbInput aria-label="value" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+})
+class EdgeComponent {
+    readonly value = signal<SliderValue>(50);
+    readonly thumbAlignment = signal<RdxSliderThumbAlignment>('edge');
+    onChange = vi.fn<(change: RdxSliderValueChangeEvent) => void>();
+    onCommit = vi.fn<(change: RdxSliderValueCommitEvent) => void>();
 }
 
 function press(el: HTMLElement, key: string, shiftKey = false): void {
@@ -134,15 +176,23 @@ describe('RdxSlider', () => {
     });
 
     it('increments by the step on ArrowRight', () => {
+        component.name.set('volume');
+        fixture.detectChanges();
         inputs[0].focus();
         press(inputs[0], 'ArrowRight');
         fixture.detectChanges();
+        const change = component.onChange.mock.lastCall?.[0];
+
         expect(component.value()).toBe(45);
         expect(component.onChange).toHaveBeenCalledWith(
             expect.objectContaining({
                 value: 45,
-                eventDetails: expect.objectContaining({ reason: 'keyboard' })
+                eventDetails: expect.objectContaining({ reason: 'keyboard', activeThumbIndex: 0 })
             })
+        );
+        expect((change?.eventDetails.event.target as { value: SliderValue; name: string | undefined }).value).toBe(45);
+        expect((change?.eventDetails.event.target as { value: SliderValue; name: string | undefined }).name).toBe(
+            'volume'
         );
     });
 
@@ -232,5 +282,64 @@ describe('RdxSlider', () => {
         fixture.detectChanges();
         // second thumb cannot move below the first
         expect(component.value()).toEqual([20, 20]);
+    });
+
+    it('emits commit events with Base UI-like event details', () => {
+        inputs[0].focus();
+        press(inputs[0], 'ArrowRight');
+        fixture.detectChanges();
+
+        const commits: RdxSliderValueCommitEvent[] = [];
+        const rootDirective = fixture.debugElement.query(By.directive(RdxSliderRoot)).injector.get(RdxSliderRoot);
+        rootDirective.onValueCommitted.subscribe((commit) => commits.push(commit));
+
+        press(inputs[0], 'ArrowRight');
+        fixture.detectChanges();
+
+        expect(commits.at(-1)).toEqual(
+            expect.objectContaining({
+                value: 50,
+                eventDetails: expect.objectContaining({ reason: 'keyboard' })
+            })
+        );
+    });
+
+    it('supports edge-aligned thumb and indicator positioning', async () => {
+        const edgeFixture = TestBed.createComponent(EdgeComponent);
+        edgeFixture.detectChanges();
+        const control = edgeFixture.debugElement.query(By.css('[rdxSliderControl]')).nativeElement as HTMLElement;
+        const thumb = edgeFixture.debugElement.query(By.css('[rdxSliderThumb]')).nativeElement as HTMLElement;
+        const indicator = edgeFixture.debugElement.query(By.css('[rdxSliderIndicator]')).nativeElement as HTMLElement;
+
+        vi.spyOn(control, 'getBoundingClientRect').mockReturnValue({
+            width: 100,
+            height: 20,
+            top: 0,
+            right: 100,
+            bottom: 20,
+            left: 0,
+            x: 0,
+            y: 0,
+            toJSON: () => ({})
+        } as DOMRect);
+        vi.spyOn(thumb, 'getBoundingClientRect').mockReturnValue({
+            width: 20,
+            height: 20,
+            top: 0,
+            right: 60,
+            bottom: 20,
+            left: 40,
+            x: 40,
+            y: 0,
+            toJSON: () => ({})
+        } as DOMRect);
+
+        await edgeFixture.whenStable();
+        edgeFixture.detectChanges();
+        await new Promise<void>((resolve) => queueMicrotask(resolve));
+        edgeFixture.detectChanges();
+
+        expect(thumb.style.insetInlineStart).toBe('50%');
+        expect(indicator.style.width).toBe('50%');
     });
 });
