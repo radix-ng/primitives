@@ -28,6 +28,7 @@
             "@radix-ng/primitives/collapsible": ["packages/primitives/collapsible/index.ts"],
             "@radix-ng/primitives/collection": ["packages/primitives/collection/index.ts"],
             "@radix-ng/primitives/combobox": ["packages/primitives/combobox/index.ts"],
+            "@radix-ng/primitives/composite": ["packages/primitives/composite/index.ts"],
             "@radix-ng/primitives/config": ["packages/primitives/config/index.ts"],
             "@radix-ng/primitives/context-menu": ["packages/primitives/context-menu/index.ts"],
             "@radix-ng/primitives/core": ["packages/primitives/core/index.ts"],

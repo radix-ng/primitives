@@ -1,0 +1,252 @@
+import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ARROW_UP, Direction, END, HOME } from '@radix-ng/primitives/core';
+import { RdxCompositeModifierKey, RdxCompositeOrientation } from './types';
+
+export const ACTIVE_COMPOSITE_ITEM = 'data-composite-item-active';
+
+export const ARROW_KEYS = new Set([ARROW_UP, ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT]);
+export const COMPOSITE_KEYS = new Set([...ARROW_KEYS, HOME, END]);
+export const MODIFIER_KEYS: RdxCompositeModifierKey[] = ['Shift', 'Control', 'Alt', 'Meta'];
+
+export function sortByDocumentPosition<T extends { element: HTMLElement }>(items: readonly T[]): T[] {
+    return [...items]
+        .filter((item) => item.element.isConnected)
+        .sort((a, b) => {
+            const position = a.element.compareDocumentPosition(b.element);
+
+            if (position & Node.DOCUMENT_POSITION_FOLLOWING || position & Node.DOCUMENT_POSITION_CONTAINED_BY) {
+                return -1;
+            }
+
+            if (position & Node.DOCUMENT_POSITION_PRECEDING || position & Node.DOCUMENT_POSITION_CONTAINS) {
+                return 1;
+            }
+
+            return 0;
+        });
+}
+
+export function isModifierKeySet(
+    event: KeyboardEvent,
+    allowedModifierKeys: readonly RdxCompositeModifierKey[]
+): boolean {
+    return MODIFIER_KEYS.some((key) => !allowedModifierKeys.includes(key) && event.getModifierState(key));
+}
+
+export function isNativeTextInput(target: EventTarget | null): target is HTMLInputElement | HTMLTextAreaElement {
+    if (!(target instanceof HTMLElement)) {
+        return false;
+    }
+
+    return target.tagName === 'TEXTAREA' || target.tagName === 'INPUT';
+}
+
+export function getCompositeNavigationKeys(orientation: RdxCompositeOrientation, dir: Direction) {
+    const horizontalForwardKey = dir === 'rtl' ? ARROW_LEFT : ARROW_RIGHT;
+    const horizontalBackwardKey = dir === 'rtl' ? ARROW_RIGHT : ARROW_LEFT;
+
+    return {
+        forwardKeys:
+            orientation === 'horizontal'
+                ? [horizontalForwardKey]
+                : orientation === 'vertical'
+                  ? [ARROW_DOWN]
+                  : [horizontalForwardKey, ARROW_DOWN],
+        backwardKeys:
+            orientation === 'horizontal'
+                ? [horizontalBackwardKey]
+                : orientation === 'vertical'
+                  ? [ARROW_UP]
+                  : [horizontalBackwardKey, ARROW_UP]
+    };
+}
+
+export function shouldKeepNativeTextInputBehavior(
+    event: KeyboardEvent,
+    target: HTMLInputElement | HTMLTextAreaElement,
+    orientation: RdxCompositeOrientation,
+    dir: Direction
+): boolean {
+    const { forwardKeys, backwardKeys } = getCompositeNavigationKeys(orientation, dir);
+    const selectionStart = target.selectionStart;
+    const selectionEnd = target.selectionEnd;
+    const value = target.value ?? '';
+
+    if (selectionStart == null || selectionEnd == null || event.shiftKey || selectionStart !== selectionEnd) {
+        return true;
+    }
+
+    if (!backwardKeys.includes(event.key) && selectionStart < value.length) {
+        return true;
+    }
+
+    if (!forwardKeys.includes(event.key) && selectionStart > 0) {
+        return true;
+    }
+
+    return false;
+}
+
+export function isIndexOutOfListBounds<T>(list: readonly T[], index: number): boolean {
+    return index < 0 || index >= list.length;
+}
+
+export function getMinListIndex(list: readonly HTMLElement[], disabledIndices?: readonly number[]): number {
+    return findNonDisabledListIndex(list, { startingIndex: -1, disabledIndices });
+}
+
+export function getMaxListIndex(list: readonly HTMLElement[], disabledIndices?: readonly number[]): number {
+    return findNonDisabledListIndex(list, { startingIndex: list.length, decrement: true, disabledIndices });
+}
+
+export function findNonDisabledListIndex(
+    list: readonly HTMLElement[],
+    options: { startingIndex?: number; decrement?: boolean; disabledIndices?: readonly number[] } = {}
+): number {
+    const { startingIndex = -1, decrement = false, disabledIndices } = options;
+    const step = decrement ? -1 : 1;
+
+    for (let index = startingIndex + step; index >= 0 && index < list.length; index += step) {
+        if (!isListIndexDisabled(list, index, disabledIndices)) {
+            return index;
+        }
+    }
+
+    return -1;
+}
+
+export function isListIndexDisabled(
+    list: readonly HTMLElement[],
+    index: number,
+    disabledIndices?: readonly number[]
+): boolean {
+    if (disabledIndices?.includes(index)) {
+        return true;
+    }
+
+    const element = list[index];
+
+    if (!element) {
+        return false;
+    }
+
+    if (!isElementVisible(element)) {
+        return true;
+    }
+
+    return (
+        disabledIndices === undefined &&
+        (element.hasAttribute('disabled') || element.getAttribute('aria-disabled') === 'true')
+    );
+}
+
+export function isElementDisabled(element: HTMLElement | null): boolean {
+    return element === null || element.hasAttribute('disabled') || element.getAttribute('aria-disabled') === 'true';
+}
+
+export function isElementVisible(element: HTMLElement | null): boolean {
+    if (!element || !element.isConnected) {
+        return false;
+    }
+
+    const styles = getComputedStyle(element);
+    return styles.visibility !== 'hidden' && styles.visibility !== 'collapse';
+}
+
+export function scrollIntoViewIfNeeded(
+    scrollContainer: HTMLElement | null,
+    element: HTMLElement | null,
+    direction: Direction,
+    orientation: RdxCompositeOrientation
+): void {
+    if (!scrollContainer || !element || typeof scrollContainer.scrollTo !== 'function') {
+        return;
+    }
+
+    const isOverflowingX = scrollContainer.clientWidth < scrollContainer.scrollWidth;
+    const isOverflowingY = scrollContainer.clientHeight < scrollContainer.scrollHeight;
+    let left = scrollContainer.scrollLeft;
+    let top = scrollContainer.scrollTop;
+
+    if (isOverflowingX && orientation !== 'vertical') {
+        const elementOffsetLeft = getOffset(scrollContainer, element, 'left');
+        const containerStyles = getScrollStyles(scrollContainer);
+        const elementStyles = getScrollStyles(element);
+
+        if (
+            elementOffsetLeft - elementStyles.scrollMarginLeft <
+            scrollContainer.scrollLeft + containerStyles.scrollPaddingLeft
+        ) {
+            left = elementOffsetLeft - elementStyles.scrollMarginLeft - containerStyles.scrollPaddingLeft;
+        } else if (
+            elementOffsetLeft + element.offsetWidth + elementStyles.scrollMarginRight >
+            scrollContainer.scrollLeft + scrollContainer.clientWidth - containerStyles.scrollPaddingRight
+        ) {
+            left =
+                elementOffsetLeft +
+                element.offsetWidth +
+                elementStyles.scrollMarginRight -
+                scrollContainer.clientWidth +
+                containerStyles.scrollPaddingRight;
+        }
+
+        if (direction === 'rtl') {
+            left = Math.max(left, 0);
+        }
+    }
+
+    if (isOverflowingY && orientation !== 'horizontal') {
+        const elementOffsetTop = getOffset(scrollContainer, element, 'top');
+        const containerStyles = getScrollStyles(scrollContainer);
+        const elementStyles = getScrollStyles(element);
+
+        if (
+            elementOffsetTop - elementStyles.scrollMarginTop <
+            scrollContainer.scrollTop + containerStyles.scrollPaddingTop
+        ) {
+            top = elementOffsetTop - elementStyles.scrollMarginTop - containerStyles.scrollPaddingTop;
+        } else if (
+            elementOffsetTop + element.offsetHeight + elementStyles.scrollMarginBottom >
+            scrollContainer.scrollTop + scrollContainer.clientHeight - containerStyles.scrollPaddingBottom
+        ) {
+            top =
+                elementOffsetTop +
+                element.offsetHeight +
+                elementStyles.scrollMarginBottom -
+                scrollContainer.clientHeight +
+                containerStyles.scrollPaddingBottom;
+        }
+    }
+
+    scrollContainer.scrollTo({ left, top, behavior: 'auto' });
+}
+
+function getOffset(ancestor: HTMLElement, element: HTMLElement, side: 'left' | 'top'): number {
+    const propName = side === 'left' ? 'offsetLeft' : 'offsetTop';
+    let result = 0;
+    let current: HTMLElement | null = element;
+
+    while (current?.offsetParent) {
+        result += current[propName];
+        if (current.offsetParent === ancestor) {
+            break;
+        }
+        current = current.offsetParent as HTMLElement;
+    }
+
+    return result;
+}
+
+function getScrollStyles(element: HTMLElement) {
+    const styles = getComputedStyle(element);
+
+    return {
+        scrollMarginTop: parseFloat(styles.scrollMarginTop) || 0,
+        scrollMarginRight: parseFloat(styles.scrollMarginRight) || 0,
+        scrollMarginBottom: parseFloat(styles.scrollMarginBottom) || 0,
+        scrollMarginLeft: parseFloat(styles.scrollMarginLeft) || 0,
+        scrollPaddingTop: parseFloat(styles.scrollPaddingTop) || 0,
+        scrollPaddingRight: parseFloat(styles.scrollPaddingRight) || 0,
+        scrollPaddingBottom: parseFloat(styles.scrollPaddingBottom) || 0,
+        scrollPaddingLeft: parseFloat(styles.scrollPaddingLeft) || 0
+    };
+}

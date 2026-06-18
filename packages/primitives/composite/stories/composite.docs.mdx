@@ -1,0 +1,56 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './composite.stories';
+import { RdxCompositeItem } from '../src/composite-item';
+import { RdxCompositeRoot } from '../src/composite-root';
+
+<Meta title="Utilities/Composite" />
+
+# Composite
+
+Low-level Base UI-style composite navigation for roving `tabindex`, ordered item metadata, and delegated arrow-key
+focus movement.
+
+## Features
+
+- Keeps exactly one item in the tab order with `tabindex="0"`.
+- Registers items in DOM order and exposes an ordered metadata map.
+- Supports horizontal, vertical, and both-axis arrow navigation.
+- Supports RTL horizontal navigation.
+- Supports `disabledIndices`, matching Base UI semantics.
+- Supports `Home` and `End` when enabled.
+- Keeps native text input arrow behavior until the caret reaches an edge.
+- Provides `relayKeyboardEvent` through context for detached popup scenarios.
+
+## Import
+
+```ts
+import { RdxCompositeRoot, RdxCompositeItem } from '@radix-ng/primitives/composite';
+```
+
+## Anatomy
+
+```html
+<div rdxCompositeRoot orientation="horizontal">
+  <button rdxCompositeItem>One</button>
+  <button rdxCompositeItem>Two</button>
+  <button rdxCompositeItem>Three</button>
+</div>
+```
+
+Use `data-composite-item-active` on an item when it should provide the initial highlighted index.
+
+## Examples
+
+### Default
+
+<Canvas sourceState="hidden" of={Stories.Default} />
+
+## API Reference
+
+### RdxCompositeRoot
+
+<ArgTypes of={RdxCompositeRoot} />
+
+### RdxCompositeItem
+
+<ArgTypes of={RdxCompositeItem} />

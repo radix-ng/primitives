@@ -370,11 +370,11 @@ export class RdxMenubarRoot {
         this.handleOpenMenuNavigation(event, 1);
     }
 
-    protected handleArrowDown(event: KeyboardEvent): void {
+    protected handleArrowDown(event: Event): void {
         this.handleVerticalOpen(event, 'first');
     }
 
-    protected handleArrowUp(event: KeyboardEvent): void {
+    protected handleArrowUp(event: Event): void {
         this.handleVerticalOpen(event, 'last');
     }
 
@@ -391,7 +391,7 @@ export class RdxMenubarRoot {
         this.focusAdjacent(activeId, offset, true);
     }
 
-    private handleVerticalOpen(event: KeyboardEvent, autoFocus: 'first' | 'last'): void {
+    private handleVerticalOpen(event: Event, autoFocus: 'first' | 'last'): void {
         if (event.defaultPrevented || this.disabled()) {
             return;
         }
@@ -408,7 +408,7 @@ export class RdxMenubarRoot {
 
         event.preventDefault();
         event.stopPropagation();
-        event.stopImmediatePropagation();
+        (event as KeyboardEvent).stopImmediatePropagation();
 
         this.updateTriggerTabStops(item.id);
         item.el.focus({ preventScroll: true });

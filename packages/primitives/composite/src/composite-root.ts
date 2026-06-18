@@ -1,0 +1,289 @@
+import {
+    booleanAttribute,
+    computed,
+    Directive,
+    effect,
+    ElementRef,
+    inject,
+    input,
+    model,
+    output,
+    signal
+} from '@angular/core';
+import { BooleanInput, createContext, Direction } from '@radix-ng/primitives/core';
+import { injectDirection } from '@radix-ng/primitives/direction-provider';
+import {
+    RdxCompositeItemMetadata,
+    RdxCompositeItemRegistration,
+    RdxCompositeMetadata,
+    RdxCompositeModifierKey,
+    RdxCompositeOrientation,
+    RdxCompositeRootContext
+} from './types';
+import {
+    ACTIVE_COMPOSITE_ITEM,
+    ARROW_KEYS,
+    COMPOSITE_KEYS,
+    findNonDisabledListIndex,
+    getCompositeNavigationKeys,
+    getMaxListIndex,
+    getMinListIndex,
+    isElementDisabled,
+    isIndexOutOfListBounds,
+    isListIndexDisabled,
+    isModifierKeySet,
+    isNativeTextInput,
+    scrollIntoViewIfNeeded,
+    shouldKeepNativeTextInputBehavior,
+    sortByDocumentPosition
+} from './utils';
+
+const rootContext = (): RdxCompositeRootContext => {
+    const root = inject(RdxCompositeRoot);
+
+    return {
+        highlightedIndex: root.highlightedIndex.asReadonly(),
+        highlightItemOnHover: root.highlightItemOnHover,
+        orientation: root.orientation,
+        dir: root.dir,
+        registerItem: (item) => root.registerItem(item),
+        indexOf: (element) => root.indexOf(element),
+        isIndexDisabled: (index) => root.isIndexDisabled(index),
+        setHighlightedIndex: (index, shouldScrollIntoView) => root.setHighlightedIndex(index, shouldScrollIntoView),
+        relayKeyboardEvent: (event) => root.relayKeyboardEvent(event)
+    };
+};
+
+export const [injectRdxCompositeRootContext, provideRdxCompositeRootContext] = createContext<RdxCompositeRootContext>(
+    'RdxCompositeRootContext',
+    'utils/composite'
+);
+
+/**
+ * Internal Base UI-style composite root for roving index and arrow-key navigation.
+ */
+@Directive({
+    selector: '[rdxCompositeRoot]',
+    exportAs: 'rdxCompositeRoot',
+    providers: [provideRdxCompositeRootContext(rootContext)],
+    host: {
+        '(keydown)': 'handleKeydown($event)'
+    }
+})
+export class RdxCompositeRoot {
+    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    private readonly registeredItems = signal<RdxCompositeItemRegistration[]>([]);
+    private hasSetInitialIndex = false;
+
+    /** The composite orientation. */
+    readonly orientation = input<RdxCompositeOrientation>('both');
+
+    /** Text direction for horizontal arrow-key navigation. */
+    readonly dirInput = input<Direction | undefined>(undefined, { alias: 'dir' });
+    readonly dir = injectDirection(this.dirInput);
+
+    /** Whether arrow-key navigation wraps at the first/last item. */
+    readonly loopFocus = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
+
+    /** Enables Home and End keys. */
+    readonly enableHomeAndEndKeys = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /** Indices that are skipped by keyboard navigation. */
+    readonly disabledIndices = input<readonly number[] | undefined>(undefined);
+
+    /** Modifier keys that should not block composite navigation. */
+    readonly modifierKeys = input<readonly RdxCompositeModifierKey[]>([]);
+
+    /** Whether hovering an item should focus it. */
+    readonly highlightItemOnHover = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /** Whether handled navigation keys stop propagation. */
+    readonly stopEventPropagation = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
+
+    /** The currently highlighted item index. */
+    readonly highlightedIndex = model<number>(0);
+
+    /** Emits when this root changes the highlighted index. */
+    readonly onHighlightedIndexChange = output<number>();
+
+    /** Emits when the ordered item map changes. */
+    readonly onMapChange = output<Map<HTMLElement, RdxCompositeMetadata>>();
+
+    readonly items = computed(() => sortByDocumentPosition(this.registeredItems()));
+
+    readonly itemMap = computed(() => {
+        const map = new Map<HTMLElement, RdxCompositeMetadata>();
+
+        this.items().forEach((item, index) => {
+            map.set(item.element, { ...(item.metadata() ?? {}), index });
+        });
+
+        return map;
+    });
+
+    constructor() {
+        effect(() => {
+            const items = this.items();
+            if (items.length === 0) {
+                return;
+            }
+
+            if (!this.hasSetInitialIndex) {
+                this.hasSetInitialIndex = true;
+                const activeIndex = items.findIndex((item) => item.element.hasAttribute(ACTIVE_COMPOSITE_ITEM));
+
+                if (activeIndex !== -1) {
+                    this.setHighlightedIndex(activeIndex, true);
+                    return;
+                }
+            }
+
+            if (this.isIndexDisabled(this.highlightedIndex())) {
+                const firstEnabledIndex = getMinListIndex(this.elements(), this.disabledIndices());
+
+                if (!isIndexOutOfListBounds(items, firstEnabledIndex)) {
+                    this.setHighlightedIndex(firstEnabledIndex);
+                }
+            }
+        });
+
+        effect(() => {
+            this.onMapChange.emit(this.itemMap());
+        });
+    }
+
+    registerItem<Metadata extends RdxCompositeItemMetadata>(item: RdxCompositeItemRegistration<Metadata>): () => void {
+        this.registeredItems.update((items) => [
+            ...items.filter((registered) => registered.element !== item.element),
+            item
+        ]);
+
+        return () => {
+            this.registeredItems.update((items) => items.filter((registered) => registered.element !== item.element));
+        };
+    }
+
+    indexOf(element: HTMLElement): number {
+        return this.items().findIndex((item) => item.element === element);
+    }
+
+    isIndexDisabled(index: number): boolean {
+        return isListIndexDisabled(this.elements(), index, this.disabledIndices());
+    }
+
+    setHighlightedIndex(index: number, shouldScrollIntoView = false): void {
+        if (this.highlightedIndex() !== index) {
+            this.highlightedIndex.set(index);
+            this.onHighlightedIndexChange.emit(index);
+        }
+
+        if (shouldScrollIntoView) {
+            scrollIntoViewIfNeeded(
+                this.elementRef.nativeElement,
+                this.elements()[index],
+                this.dir(),
+                this.orientation()
+            );
+        }
+    }
+
+    relayKeyboardEvent(event: KeyboardEvent): void {
+        this.handleCompositeKeydown(event, true);
+    }
+
+    protected handleKeydown(event: KeyboardEvent): void {
+        this.handleCompositeKeydown(event, false);
+    }
+
+    private handleCompositeKeydown(event: KeyboardEvent, relayed: boolean): void {
+        const relevantKeys = this.enableHomeAndEndKeys() ? COMPOSITE_KEYS : ARROW_KEYS;
+
+        if (!relevantKeys.has(event.key) || isModifierKeySet(event, this.modifierKeys())) {
+            return;
+        }
+
+        const target = event.target;
+        const rootElement = this.elementRef.nativeElement;
+
+        if (!relayed && target instanceof HTMLElement) {
+            const closestRoot = target.closest('[rdxCompositeRoot]');
+            if (closestRoot && closestRoot !== rootElement) {
+                return;
+            }
+        }
+
+        if (isNativeTextInput(target) && !isElementDisabled(target)) {
+            try {
+                if (shouldKeepNativeTextInputBehavior(event, target, this.orientation(), this.dir())) {
+                    return;
+                }
+            } catch {
+                return;
+            }
+        }
+
+        const elements = this.elements();
+        if (elements.length === 0) {
+            return;
+        }
+
+        const nextIndex = this.getNextIndex(event, elements);
+
+        if (nextIndex === this.highlightedIndex() || isIndexOutOfListBounds(elements, nextIndex)) {
+            return;
+        }
+
+        if (this.stopEventPropagation()) {
+            event.stopPropagation();
+        }
+
+        event.preventDefault();
+        this.setHighlightedIndex(nextIndex, true);
+
+        queueMicrotask(() => {
+            this.elements()[nextIndex]?.focus();
+        });
+    }
+
+    private getNextIndex(event: KeyboardEvent, elements: HTMLElement[]): number {
+        const highlightedIndex = this.highlightedIndex();
+        const minIndex = getMinListIndex(elements, this.disabledIndices());
+        const maxIndex = getMaxListIndex(elements, this.disabledIndices());
+
+        if (this.enableHomeAndEndKeys()) {
+            if (event.key === 'Home') {
+                return minIndex;
+            }
+
+            if (event.key === 'End') {
+                return maxIndex;
+            }
+        }
+
+        const { forwardKeys, backwardKeys } = getCompositeNavigationKeys(this.orientation(), this.dir());
+        const isForward = forwardKeys.includes(event.key);
+        const isBackward = backwardKeys.includes(event.key);
+
+        if (!isForward && !isBackward) {
+            return highlightedIndex;
+        }
+
+        const decrement = isBackward;
+        const boundaryIndex = decrement ? minIndex : maxIndex;
+        const loopIndex = decrement ? maxIndex : minIndex;
+
+        if (this.loopFocus() && highlightedIndex === boundaryIndex) {
+            return loopIndex;
+        }
+
+        return findNonDisabledListIndex(elements, {
+            startingIndex: highlightedIndex,
+            decrement,
+            disabledIndices: this.disabledIndices()
+        });
+    }
+
+    private elements(): HTMLElement[] {
+        return this.items().map((item) => item.element);
+    }
+}
