@@ -1,5 +1,14 @@
 import { isPlatformBrowser } from '@angular/common';
-import { afterNextRender, DestroyRef, Directive, effect, ElementRef, inject, PLATFORM_ID } from '@angular/core';
+import {
+    afterNextRender,
+    CSP_NONCE,
+    DestroyRef,
+    Directive,
+    effect,
+    ElementRef,
+    inject,
+    PLATFORM_ID
+} from '@angular/core';
 import { clamp, createContext } from '@radix-ng/primitives/core';
 import { MIN_THUMB_SIZE, SCROLL_END_TIMEOUT } from './constants';
 import { HiddenState, injectScrollAreaRootContext } from './scroll-area-root';
@@ -56,6 +65,7 @@ export class RdxScrollAreaViewport {
     private readonly element: HTMLElement = inject(ElementRef).nativeElement;
     private readonly destroyRef = inject(DestroyRef);
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+    private readonly cspNonce = inject(CSP_NONCE, { optional: true });
 
     private programmaticScroll = true;
     private lastMeasuredMetrics: [number, number, number, number] = [NaN, NaN, NaN, NaN];
@@ -66,7 +76,11 @@ export class RdxScrollAreaViewport {
         this.rootContext.viewportRef.current = this.element;
 
         if (this.isBrowser) {
-            injectScrollbarHideStyles(document);
+            effect(() => {
+                if (!this.rootContext.disableStyleElements()) {
+                    injectScrollbarHideStyles(this.element.ownerDocument, this.cspNonce);
+                }
+            });
         }
 
         // Recompute after hidden-state toggles (so newly shown scrollbars get measured),
@@ -91,6 +105,9 @@ export class RdxScrollAreaViewport {
         });
 
         this.destroyRef.onDestroy(() => {
+            if (this.rootContext.viewportRef.current === this.element) {
+                this.rootContext.viewportRef.current = null;
+            }
             clearTimeout(this.scrollEndTimer);
             clearTimeout(this.animationsTimer);
         });

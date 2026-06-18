@@ -35,6 +35,7 @@ plain Tailwind utilities driven by `data-*` attributes and CSS variables.
 - ✅ Independent vertical and horizontal scrollbars, plus a `Corner` where they meet.
 - ✅ Rich styling state: `data-scrolling`, `data-hovering`, `data-has-overflow-x/y`, and per-edge `data-overflow-*-start/end`.
 - ✅ Edge-distance CSS variables (`--scroll-area-overflow-*`) for masks and fade effects.
+- ✅ CSP nonce support through Angular's `CSP_NONCE` injection token.
 - ✅ RTL aware and SSR safe.
 
 ## Import
@@ -359,6 +360,11 @@ CSS variables.
 The actual scrollable container (`overflow: scroll` with the native scrollbar hidden). Wrap your
 `Content` in it. Sets the `--scroll-area-overflow-*` edge-distance variables. Reads everything from
 context — no inputs.
+
+The viewport injects a small stylesheet to hide native scrollbars in browsers that cannot express
+that rule inline. If your app provides Angular's `CSP_NONCE` token, that nonce is applied to the
+style element. Set `disableStyleElements` on `Root` when you want to ship the scrollbar-hiding CSS
+yourself.
 
 ### Content
 

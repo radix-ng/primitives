@@ -1,5 +1,15 @@
-import { computed, DestroyRef, Directive, ElementRef, inject, input, signal, Signal } from '@angular/core';
-import { createContext, Direction } from '@radix-ng/primitives/core';
+import {
+    booleanAttribute,
+    computed,
+    DestroyRef,
+    Directive,
+    ElementRef,
+    inject,
+    input,
+    signal,
+    Signal
+} from '@angular/core';
+import { BooleanInput, createContext, Direction } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { SCROLL_TIMEOUT } from './constants';
 import { getOffset } from './utils';
@@ -22,6 +32,7 @@ export interface ScrollAreaRootContext {
     readonly rootId: string;
     readonly direction: Signal<Direction>;
     readonly overflowEdgeThreshold: Signal<{ xStart: number; xEnd: number; yStart: number; yEnd: number }>;
+    readonly disableStyleElements: Signal<boolean>;
 
     // Reactive state
     readonly hovering: Signal<boolean>;
@@ -71,6 +82,7 @@ const rootContext = (): ScrollAreaRootContext => {
         rootId: root.rootId,
         direction: root.direction,
         overflowEdgeThreshold: root.normalizedThreshold,
+        disableStyleElements: root.disableStyleElements,
         hovering: root.hovering,
         scrollingX: root.scrollingX,
         scrollingY: root.scrollingY,
@@ -146,6 +158,7 @@ export class RdxScrollAreaRoot {
      * Accepts a single number for all edges or an object to configure them individually.
      */
     readonly overflowEdgeThreshold = input<OverflowEdgeThreshold>(0);
+    readonly disableStyleElements = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     readonly normalizedThreshold = computed(() => normalizeOverflowEdgeThreshold(this.overflowEdgeThreshold()));
 

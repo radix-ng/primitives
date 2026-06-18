@@ -139,7 +139,18 @@ Bind `[(value)]` to read and write the pressed values.
 
 ### Item
 
-`RdxToggle` — see the [Toggle](?path=/docs/primitives-toggle--docs) page. Each item needs a `value`.
+`RdxToggle` — see the [Toggle](?path=/docs/primitives-toggle--docs) page. Each item needs a stable
+`value`. In dev mode, a grouped toggle without `value` emits a warning because the group cannot derive
+or update its pressed state.
+
+### WithoutFocus
+
+`RdxToggleGroupWithoutFocus`
+
+Use `rdxToggleGroupWithoutFocus` inside a composite parent that already owns roving focus, such as
+`rdxToolbarRoot`. It keeps the same value, disabled, orientation and multiple-selection behavior as
+`rdxToggleGroup`, but lets its toggles register with the ancestor focus group. When placed inside
+`rdxToolbarRoot` or `rdxToolbarGroup`, disabled state cascades into the toggle group and its items.
 
 ## Accessibility
 

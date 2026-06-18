@@ -16770,6 +16770,7 @@ plain Tailwind utilities driven by `data-*` attributes and CSS variables.
 - ✅ Independent vertical and horizontal scrollbars, plus a `Corner` where they meet.
 - ✅ Rich styling state: `data-scrolling`, `data-hovering`, `data-has-overflow-x/y`, and per-edge `data-overflow-*-start/end`.
 - ✅ Edge-distance CSS variables (`--scroll-area-overflow-*`) for masks and fade effects.
+- ✅ CSP nonce support through Angular's `CSP_NONCE` injection token.
 - ✅ RTL aware and SSR safe.
 
 ## Import
@@ -17094,6 +17095,11 @@ CSS variables.
 The actual scrollable container (`overflow: scroll` with the native scrollbar hidden). Wrap your
 `Content` in it. Sets the `--scroll-area-overflow-*` edge-distance variables. Reads everything from
 context — no inputs.
+
+The viewport injects a small stylesheet to hide native scrollbars in browsers that cannot express
+that rule inline. If your app provides Angular's `CSP_NONCE` token, that nonce is applied to the
+style element. Set `disableStyleElements` on `Root` when you want to ship the scrollbar-hiding CSS
+yourself.
 
 ### Content
 
@@ -21384,8 +21390,9 @@ part used either on its own or inside a `[rdxToggleGroup]`.
 </button>
 ```
 
-When placed inside a `[rdxToggleGroup]`, give each toggle a `value` — its pressed state is then
-derived from the group's value and it joins the group's roving focus.
+When placed inside a `[rdxToggleGroup]`, give each toggle a stable `value` — its pressed state is then
+derived from the group's value and it joins the group's roving focus. In dev mode, a grouped toggle
+without `value` emits a warning because it cannot participate in group value changes.
 
 ## Change events
 
@@ -21607,7 +21614,18 @@ Bind `[(value)]` to read and write the pressed values.
 
 ### Item
 
-`RdxToggle` — see the [Toggle](?path=/docs/primitives-toggle--docs) page. Each item needs a `value`.
+`RdxToggle` — see the [Toggle](?path=/docs/primitives-toggle--docs) page. Each item needs a stable
+`value`. In dev mode, a grouped toggle without `value` emits a warning because the group cannot derive
+or update its pressed state.
+
+### WithoutFocus
+
+`RdxToggleGroupWithoutFocus`
+
+Use `rdxToggleGroupWithoutFocus` inside a composite parent that already owns roving focus, such as
+`rdxToolbarRoot`. It keeps the same value, disabled, orientation and multiple-selection behavior as
+`rdxToggleGroup`, but lets its toggles register with the ancestor focus group. When placed inside
+`rdxToolbarRoot` or `rdxToolbarGroup`, disabled state cascades into the toggle group and its items.
 
 ## Accessibility
 
@@ -21712,6 +21730,9 @@ roving focus over `Button`, `Link`, `Input`, `Group` and `Separator` parts.
 
 Stack a toolbar part on another primitive's trigger/input to compose it — e.g.
 `<button rdxToolbarButton rdxMenuTrigger>` or `<input rdxToolbarInput rdxNumberFieldInput>`.
+Use `rdxToggleGroupWithoutFocus` for toggle groups inside a toolbar so the toggles share the toolbar's
+roving focus. Disabled state from `rdxToolbarRoot` or `rdxToolbarGroup` cascades into those toggle
+groups and their items.
 
 ## Examples
 

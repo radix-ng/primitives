@@ -81,6 +81,9 @@ roving focus over `Button`, `Link`, `Input`, `Group` and `Separator` parts.
 
 Stack a toolbar part on another primitive's trigger/input to compose it — e.g.
 `<button rdxToolbarButton rdxMenuTrigger>` or `<input rdxToolbarInput rdxNumberFieldInput>`.
+Use `rdxToggleGroupWithoutFocus` for toggle groups inside a toolbar so the toggles share the toolbar's
+roving focus. Disabled state from `rdxToolbarRoot` or `rdxToolbarGroup` cascades into those toggle
+groups and their items.
 
 ## Examples
 

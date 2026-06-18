@@ -31,8 +31,9 @@ part used either on its own or inside a `[rdxToggleGroup]`.
 </button>
 ```
 
-When placed inside a `[rdxToggleGroup]`, give each toggle a `value` — its pressed state is then
-derived from the group's value and it joins the group's roving focus.
+When placed inside a `[rdxToggleGroup]`, give each toggle a stable `value` — its pressed state is then
+derived from the group's value and it joins the group's roving focus. In dev mode, a grouped toggle
+without `value` emits a warning because it cannot participate in group value changes.
 
 ## Change events
 

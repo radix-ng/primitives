@@ -28,12 +28,17 @@ export class RdxScrollAreaThumb {
     private readonly element: HTMLElement = inject(ElementRef).nativeElement;
 
     constructor() {
-        effect(() => {
-            if (this.scrollbarContext.orientation() === 'vertical') {
-                this.rootContext.thumbYRef.current = this.element;
-            } else {
-                this.rootContext.thumbXRef.current = this.element;
-            }
+        effect((onCleanup) => {
+            const ref =
+                this.scrollbarContext.orientation() === 'vertical'
+                    ? this.rootContext.thumbYRef
+                    : this.rootContext.thumbXRef;
+            ref.current = this.element;
+            onCleanup(() => {
+                if (ref.current === this.element) {
+                    ref.current = null;
+                }
+            });
         });
     }
 

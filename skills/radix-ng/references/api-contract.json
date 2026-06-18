@@ -5759,6 +5759,11 @@
               "description": "Text direction of the scroll area. Affects horizontal (RTL) scroll math."
             },
             {
+              "name": "disableStyleElements",
+              "type": "boolean",
+              "default": "false"
+            },
+            {
               "name": "overflowEdgeThreshold",
               "type": "OverflowEdgeThreshold",
               "default": "0",

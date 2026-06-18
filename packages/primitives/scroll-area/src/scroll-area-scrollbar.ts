@@ -84,12 +84,15 @@ export class RdxScrollAreaScrollbar {
     constructor() {
         // Register this element as the vertical or horizontal scrollbar ref.
         // Runs as an effect so the bound `orientation` input is available.
-        effect(() => {
-            if (this.orientation() === 'vertical') {
-                this.rootContext.scrollbarYRef.current = this.element;
-            } else {
-                this.rootContext.scrollbarXRef.current = this.element;
-            }
+        effect((onCleanup) => {
+            const ref =
+                this.orientation() === 'vertical' ? this.rootContext.scrollbarYRef : this.rootContext.scrollbarXRef;
+            ref.current = this.element;
+            onCleanup(() => {
+                if (ref.current === this.element) {
+                    ref.current = null;
+                }
+            });
         });
     }
 
@@ -137,12 +140,11 @@ export class RdxScrollAreaScrollbar {
         }
 
         const orientation = this.orientation();
-        const target = event.target as Node | null;
         const thumb =
             orientation === 'vertical' ? this.rootContext.thumbYRef.current : this.rootContext.thumbXRef.current;
 
         // Ignore clicks on the thumb itself.
-        if (thumb && target && thumb.contains(target)) {
+        if (thumb && eventTargetsElement(event, thumb)) {
             return;
         }
 
@@ -204,4 +206,17 @@ export class RdxScrollAreaScrollbar {
         this.rootContext.handleScroll({ x: viewportEl.scrollLeft, y: viewportEl.scrollTop });
         this.rootContext.handlePointerDown(event);
     }
+}
+
+function eventTargetsElement(event: Event, element: Element): boolean {
+    if (event.composedPath().includes(element)) {
+        return true;
+    }
+
+    const target = event.target;
+    return isNode(target) && element.contains(target);
+}
+
+function isNode(value: EventTarget | null): value is Node {
+    return !!value && 'nodeType' in value;
 }

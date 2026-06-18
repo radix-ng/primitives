@@ -1,4 +1,4 @@
-import { Directive, ElementRef, inject } from '@angular/core';
+import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 import { injectScrollAreaRootContext } from './scroll-area-root';
 
 /**
@@ -23,6 +23,13 @@ export class RdxScrollAreaCorner {
     protected readonly rootContext = injectScrollAreaRootContext();
 
     constructor() {
-        this.rootContext.cornerRef.current = inject(ElementRef).nativeElement;
+        const element: HTMLElement = inject(ElementRef).nativeElement;
+        const destroyRef = inject(DestroyRef);
+        this.rootContext.cornerRef.current = element;
+        destroyRef.onDestroy(() => {
+            if (this.rootContext.cornerRef.current === element) {
+                this.rootContext.cornerRef.current = null;
+            }
+        });
     }
 }

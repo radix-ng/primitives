@@ -53,21 +53,21 @@ export function normalizeScrollOffset(value: number, max: number): number {
     return clamped;
 }
 
-let scrollbarHideStylesInjected = false;
-
 /**
  * Injects (once per document) the CSS that hides the native scrollbars of the viewport.
  * Headless directives can't hide WebKit scrollbars via inline styles, so a small
  * stylesheet keyed by the `[rdxScrollAreaViewport]` selector is appended to `<head>`.
  */
-export function injectScrollbarHideStyles(document: Document): void {
-    if (scrollbarHideStylesInjected || typeof document === 'undefined') {
+export function injectScrollbarHideStyles(document: Document, nonce?: string | null): void {
+    if (typeof document === 'undefined' || document.head.querySelector('style[data-rdx-scroll-area]')) {
         return;
     }
-    scrollbarHideStylesInjected = true;
 
     const style = document.createElement('style');
     style.setAttribute('data-rdx-scroll-area', '');
+    if (nonce) {
+        style.nonce = nonce;
+    }
     style.textContent = `[rdxScrollAreaViewport]{scrollbar-width:none;-ms-overflow-style:none}[rdxScrollAreaViewport]::-webkit-scrollbar{display:none}`;
     document.head.appendChild(style);
 }
