@@ -14982,7 +14982,7 @@ export class RdxPopoverDefaultComponent {
 - ✅ Exposes transition lifecycle attributes and `onOpenChangeComplete` for CSS animations.
 - ✅ Supports non-modal, modal, and focus-trapping-only behavior.
 - ✅ Closes on Escape, outside pointer interaction, or an explicit close button.
-- ✅ Restores focus through the shared Focus Scope behavior.
+- ✅ Controls initial and final focus through the shared Floating Focus Manager behavior.
 - ✅ Exposes state, transition, placement, and anchor measurement attributes and CSS variables for styling.
 - ✅ Keeps portal content mounted while CSS exit keyframes finish.
 - ✅ Links the popup to optional title and description parts for accessible labeling.
@@ -15689,7 +15689,10 @@ optional `anchor` input overrides the trigger only for positioning.
 
 ### Popup
 
-`RdxPopoverPopup` owns dialog semantics, dismissal events, and focus lifecycle events.
+`RdxPopoverPopup` owns dialog semantics, dismissal events, and focus lifecycle events. Bind
+`[initialFocus]` to control the element focused on open and `[finalFocus]` to control where focus
+returns on close. Both inputs accept the same policy values as `RdxFloatingFocusManager`: `false`,
+`true`, an element, or a callback that receives the interaction type.
 
 ### Viewport
 
@@ -15697,7 +15700,10 @@ optional `anchor` input overrides the trigger only for positioning.
 
 ### Arrow, Backdrop, Title, Description, and Close
 
-These parts read their behavior and state from context and do not expose additional inputs or outputs.
+These parts read their behavior and state from context. `Title` and `Description` preserve a custom
+`id` when provided and otherwise generate one for `aria-labelledby` / `aria-describedby`.
+`Backdrop` is presentational and becomes pointer-transparent for hover-opened popovers so it does not
+interrupt the hover grace area.
 
 ## Accessibility
 

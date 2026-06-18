@@ -1,4 +1,4 @@
-import { DestroyRef, Directive, inject } from '@angular/core';
+import { computed, DestroyRef, Directive, effect, inject, input } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
 import { injectRdxPopoverRootContext } from './popover-root';
 
@@ -8,15 +8,23 @@ import { injectRdxPopoverRootContext } from './popover-root';
 @Directive({
     selector: '[rdxPopoverDescription]',
     host: {
-        '[id]': 'id'
+        '[id]': 'id()'
     }
 })
 export class RdxPopoverDescription {
     private readonly rootContext = injectRdxPopoverRootContext();
-    readonly id = injectId('rdx-popover-description-');
+    private readonly generatedId = injectId('rdx-popover-description-');
+
+    readonly idInput = input<string | undefined>(undefined, { alias: 'id' });
+    readonly id = computed(() => this.idInput() ?? this.generatedId);
 
     constructor() {
-        this.rootContext.setDescriptionId(this.id);
+        effect((onCleanup) => {
+            const id = this.id();
+            this.rootContext.setDescriptionId(id);
+            onCleanup(() => this.rootContext.setDescriptionId(undefined));
+        });
+
         inject(DestroyRef).onDestroy(() => this.rootContext.setDescriptionId(undefined));
     }
 }

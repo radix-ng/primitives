@@ -4762,7 +4762,13 @@
           "directive": "RdxPopoverDescription",
           "selector": "[rdxPopoverDescription]",
           "description": "An accessible description for the popover.",
-          "inputs": [],
+          "inputs": [
+            {
+              "name": "id",
+              "type": "string | undefined",
+              "default": "undefined"
+            }
+          ],
           "outputs": []
         },
         {
@@ -4969,7 +4975,13 @@
           "directive": "RdxPopoverTitle",
           "selector": "[rdxPopoverTitle]",
           "description": "An accessible title for the popover.",
-          "inputs": [],
+          "inputs": [
+            {
+              "name": "id",
+              "type": "string | undefined",
+              "default": "undefined"
+            }
+          ],
           "outputs": []
         },
         {

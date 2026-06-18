@@ -1,10 +1,12 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { RdxFloatingFocusManager } from '@radix-ng/primitives/floating-focus-manager';
 import { FOCUS_GUARD_ATTR, RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import {
     createRdxPopoverHandle,
     RdxPopoverArrow,
+    RdxPopoverBackdrop,
     RdxPopoverClose,
     RdxPopoverDescription,
     RdxPopoverOpenChange,
@@ -305,6 +307,80 @@ class ControlledMultipleTriggersHostComponent {
 }
 
 @Component({
+    imports: [RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
+    template: `
+        <div #root="rdxPopoverRoot" [open]="true" rdxPopoverRoot>
+            <button rdxPopoverTrigger>Open</button>
+
+            @if (root.open()) {
+                <div rdxPopoverPositioner>
+                    <div [finalFocus]="finalFocus" [initialFocus]="initialFocus" rdxPopoverPopup>
+                        <button>Inside</button>
+                    </div>
+                </div>
+            }
+        </div>
+    `
+})
+class PopupFocusPolicyHostComponent {
+    initialFocus = false;
+    finalFocus = false;
+}
+
+@Component({
+    imports: [
+        RdxPopoverClose,
+        RdxPopoverDescription,
+        RdxPopoverPopup,
+        RdxPopoverPositioner,
+        RdxPopoverRoot,
+        RdxPopoverTitle,
+        RdxPopoverTrigger
+    ],
+    template: `
+        <div #root="rdxPopoverRoot" [open]="true" rdxPopoverRoot>
+            <button rdxPopoverTrigger>Open</button>
+
+            @if (root.open()) {
+                <div rdxPopoverPositioner>
+                    <div rdxPopoverPopup>
+                        <h2 id="custom-title" rdxPopoverTitle>Title</h2>
+                        <p id="custom-description" rdxPopoverDescription>Description</p>
+                        <button rdxPopoverClose>Close</button>
+                    </div>
+                </div>
+            }
+        </div>
+    `
+})
+class CustomLabelIdsHostComponent {}
+
+@Component({
+    imports: [RdxPopoverBackdrop, RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
+    template: `
+        <div #root="rdxPopoverRoot" rdxPopoverRoot>
+            <button [delay]="0" openOnHover rdxPopoverTrigger>Open</button>
+
+            @if (root.open()) {
+                <div rdxPopoverBackdrop></div>
+                <div rdxPopoverPositioner>
+                    <div rdxPopoverPopup>Popup</div>
+                </div>
+            }
+        </div>
+    `
+})
+class HoverBackdropHostComponent {}
+
+@Component({
+    imports: [RdxPopoverTrigger],
+    template: `
+        <button rdxPopoverTrigger>Open</button>
+    `
+})
+class TriggerWithoutRootHostComponent {}
+
+@Component({
     imports: [
         RdxPopoverClose,
         RdxPopoverPopup,
@@ -433,6 +509,59 @@ describe('Popover', () => {
         expect(popup.getAttribute('aria-labelledby')).toBe(title.id);
         expect(popup.getAttribute('aria-describedby')).toBe(description.id);
         expect(popup.hasAttribute('data-open')).toBe(true);
+    });
+
+    it('passes initialFocus and finalFocus through to the floating focus manager', () => {
+        const focusPolicyFixture = TestBed.createComponent(PopupFocusPolicyHostComponent);
+        focusPolicyFixture.detectChanges();
+
+        const focusManager = focusPolicyFixture.debugElement
+            .query(By.directive(RdxFloatingFocusManager))
+            .injector.get(RdxFloatingFocusManager);
+
+        expect(focusManager.initialFocus()).toBe(false);
+        expect(focusManager.returnFocus()).toBe(false);
+    });
+
+    it('preserves custom title and description ids for popup labelling', () => {
+        const labelFixture = TestBed.createComponent(CustomLabelIdsHostComponent);
+        labelFixture.detectChanges();
+
+        const popup: HTMLElement = labelFixture.nativeElement.querySelector('[rdxPopoverPopup]');
+        const title: HTMLElement = labelFixture.nativeElement.querySelector('[rdxPopoverTitle]');
+        const description: HTMLElement = labelFixture.nativeElement.querySelector('[rdxPopoverDescription]');
+
+        expect(title.id).toBe('custom-title');
+        expect(description.id).toBe('custom-description');
+        expect(popup.getAttribute('aria-labelledby')).toBe('custom-title');
+        expect(popup.getAttribute('aria-describedby')).toBe('custom-description');
+    });
+
+    it('marks hover-opened backdrops as presentational and non-interactive', () => {
+        vi.useFakeTimers();
+        try {
+            const backdropFixture = TestBed.createComponent(HoverBackdropHostComponent);
+            backdropFixture.detectChanges();
+
+            const hoverTrigger: HTMLButtonElement = backdropFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
+            hoverTrigger.dispatchEvent(pointerEvent('pointerenter'));
+            vi.advanceTimersByTime(0);
+            backdropFixture.detectChanges();
+
+            const backdrop: HTMLElement = backdropFixture.nativeElement.querySelector('[rdxPopoverBackdrop]');
+            expect(backdrop.getAttribute('role')).toBe('presentation');
+            expect(backdrop.style.pointerEvents).toBe('none');
+            expect(backdrop.style.userSelect).toBe('none');
+        } finally {
+            vi.useRealTimers();
+        }
+    });
+
+    it('throws when a trigger is used without a root or handle', () => {
+        expect(() => {
+            const missingRootFixture = TestBed.createComponent(TriggerWithoutRootHostComponent);
+            missingRootFixture.detectChanges();
+        }).toThrow(/rdxPopoverTrigger.*rdxPopoverRoot.*handle/);
     });
 
     it('bridges trigger tab order into portaled popup focus guards', async () => {

@@ -33,7 +33,11 @@ import { injectRdxPopoverRootContext } from './popover-root';
  */
 @Directive({
     selector: '[rdxPopoverPopup]',
-    hostDirectives: [RdxPopperContent, RdxFloatingNodeRegistration, RdxFloatingFocusManager],
+    hostDirectives: [
+        RdxPopperContent,
+        RdxFloatingNodeRegistration,
+        { directive: RdxFloatingFocusManager, inputs: ['initialFocus', 'returnFocus: finalFocus'] }
+    ],
     providers: [
         provideFloatingFocusManagerConfig(() => {
             const rootContext = injectRdxPopoverRootContext();

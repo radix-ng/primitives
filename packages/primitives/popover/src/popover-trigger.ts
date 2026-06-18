@@ -9,7 +9,7 @@ import {
     numberAttribute,
     untracked
 } from '@angular/core';
-import { injectId, NumberInput } from '@radix-ng/primitives/core';
+import { injectId, NumberInput, rdxDevError } from '@radix-ng/primitives/core';
 import { createRdxTriggerInteraction, useTriggerFocusGuards } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { RdxPopoverHandle } from './popover-handle';
@@ -96,6 +96,16 @@ export class RdxPopoverTrigger {
     private readonly generatedId = injectId('rdx-popover-trigger-');
 
     constructor() {
+        effect(() => {
+            if (!this.handle() && !this.parentRootContext) {
+                rdxDevError(
+                    'popover/trigger-missing-root',
+                    '`rdxPopoverTrigger` must be used inside `rdxPopoverRoot` or receive a `handle` connected to a root.',
+                    'components/popover'
+                );
+            }
+        });
+
         effect((onCleanup) => {
             const handle = this.handle();
 
