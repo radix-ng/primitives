@@ -2740,6 +2740,14 @@
           ],
           "inputs": [],
           "outputs": []
+        },
+        {
+          "directive": "RdxDrawerVirtualKeyboardProvider",
+          "selector": "[rdxDrawerVirtualKeyboardProvider]",
+          "exportAs": "rdxDrawerVirtualKeyboardProvider",
+          "description": "Provides mobile virtual-keyboard handling for bottom-sheet drawers with form fields.\n\nPut it on the drawer viewport that contains the popup. The directive writes\n`--drawer-keyboard-inset` to the host, keeps the focused keyboard input visible when\n`visualViewport` shrinks, adds temporary scroll slack to the nearest drawer scroller, and uses\nsynchronous tap-to-focus on touch devices so iOS opens the software keyboard reliably.",
+          "inputs": [],
+          "outputs": []
         }
       ]
     },

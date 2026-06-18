@@ -1,6 +1,6 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as Stories from './drawer.stories';
-import { RdxDrawerRoot, RdxDrawerPopup, RdxDrawerSwipeArea } from '../index';
+import { RdxDrawerRoot, RdxDrawerPopup, RdxDrawerSwipeArea, RdxDrawerVirtualKeyboardProvider } from '../index';
 
 <Meta title="Primitives/Drawer" />
 
@@ -26,6 +26,7 @@ and native CSS animations belong to the consumer.
 - ✅ Swipe-to-open from an off-canvas `rdxDrawerSwipeArea` strip.
 - ✅ Snap points (`[snapPoints]`, `[(snapPoint)]`, `[defaultSnapPoint]`, `[snapToSequentialPoints]`) with velocity skipping and `data-expanded`.
 - ✅ Nested drawers (detected through the dialog hierarchy): the parent gains `data-nested-drawer-open` / `--nested-drawers`.
+- ✅ Virtual keyboard provider for mobile bottom-sheet forms: `visualViewport` inset, focus alignment, scroll slack, tap-to-focus, and nested drawer guards.
 - ✅ Optional `rdxDrawerProvider` + `rdxDrawerIndent` / `rdxDrawerIndentBackground` for an app-wide page-scale effect.
 - ✅ Exposes swipe progress on the backdrop with `--drawer-swipe-progress` for a gesture-linked fade.
 - ✅ Supports two-way `[(open)]`, `defaultOpen`, multiple triggers, controlled `triggerId`, and detached triggers via a shared handle.
@@ -50,6 +51,7 @@ import {
     RdxDrawerSwipeArea,
     RdxDrawerTitle,
     RdxDrawerTrigger,
+    RdxDrawerVirtualKeyboardProvider,
     RdxDrawerViewport
 } from '@radix-ng/primitives/drawer';
 ```
@@ -106,11 +108,13 @@ and its slide-out keyframe should hold the closed position with `forwards`:
 
     <ng-template rdxDrawerPortal>
         <div rdxDrawerBackdrop></div>
-        <div rdxDrawerPopup>
-            <h2 rdxDrawerTitle>Title</h2>
-            <p rdxDrawerDescription>Description</p>
-            <div rdxDrawerContent>…scrollable body…</div>
-            <button rdxDrawerClose>Close</button>
+        <div rdxDrawerViewport>
+            <div rdxDrawerPopup>
+                <h2 rdxDrawerTitle>Title</h2>
+                <p rdxDrawerDescription>Description</p>
+                <div rdxDrawerContent>…scrollable body…</div>
+                <button rdxDrawerClose>Close</button>
+            </div>
         </div>
     </ng-template>
 </div>
@@ -180,6 +184,16 @@ each closing the drawer.
 
 <Canvas of={Stories.ActionSheet} />
 
+### Virtual keyboard
+
+Add `rdxDrawerVirtualKeyboardProvider` to the drawer viewport for mobile bottom-sheet forms. It writes
+`--drawer-keyboard-inset` on the viewport, keeps the focused keyboard input visible as
+`visualViewport` changes, adds temporary scroll slack to the nearest drawer scroller, and avoids
+handling the parent drawer while a nested drawer is open. Use the CSS variable in viewport padding or
+popup max-height.
+
+<Canvas of={Stories.VirtualKeyboard} />
+
 ### Nested drawers
 
 Drawers stack on top of each other — each level's content hosts the trigger for the next. Nesting is
@@ -228,6 +242,15 @@ context.
 `RdxDrawerSwipeArea` opens the drawer when swiped inward from a screen edge.
 
 <ArgTypes of={RdxDrawerSwipeArea} />
+
+### VirtualKeyboardProvider
+
+`RdxDrawerVirtualKeyboardProvider` is a no-input directive for the drawer viewport. It exposes
+`--drawer-keyboard-inset`, aligns focused keyboard inputs above the virtual keyboard, applies and
+restores scroll slack, uses touch tap-to-focus for iOS keyboard opening, and suspends itself while a
+nested drawer is open.
+
+<ArgTypes of={RdxDrawerVirtualKeyboardProvider} />
 
 ### Provider, Indent, and IndentBackground
 

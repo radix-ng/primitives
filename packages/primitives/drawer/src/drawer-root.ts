@@ -48,6 +48,8 @@ export interface RdxDrawerRootContext {
     frontmostHeight: Signal<number>;
     /** Reports the popup's measured size (px) so the provider can expose it. */
     reportPopupHeight: (height: number) => void;
+    /** Whether the drawer is currently open. */
+    open: Signal<boolean>;
 }
 
 export const [injectRdxDrawerRootContext, provideRdxDrawerRootContext] = createContext<RdxDrawerRootContext>(
@@ -76,7 +78,8 @@ const context = (): RdxDrawerRootContext => {
         nestedDrawerOpen: root.nestedDrawerOpen,
         nestedDrawerCount: root.nestedDrawerCount,
         frontmostHeight: root.frontmostHeight,
-        reportPopupHeight: (height) => root.popupHeight.set(height)
+        reportPopupHeight: (height) => root.popupHeight.set(height),
+        open: root.open
     };
 };
 

@@ -31,7 +31,7 @@ Working examples built on `@radix-ng/primitives`. Full source is **bundled offli
 To style a primitive with a custom design system, pair an example with the data-attribute contract in
 the `radix-ng` skill (`references/styling-contract.json`).
 
-Total: **231 examples** across **42 components**.
+Total: **232 examples** across **42 components**.
 
 ## Components
 
@@ -199,6 +199,7 @@ Full source (all examples): [`references/components/drawer.md`](./references/com
 - **Mobile navigation**
 - **Non-modal**
 - **Action sheet with separate destructive action**
+- **Virtual keyboard**
 - **Nested drawers**
 - **Indent effect**
 - **Detached triggers**

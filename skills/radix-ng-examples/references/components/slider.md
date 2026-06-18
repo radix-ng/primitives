@@ -95,12 +95,14 @@ form submission.
 ## Change events
 
 `onValueChange` emits `{ value, eventDetails }`, where `value` is a number for a single slider or a
-number array for a range slider. The change details include `reason`, `activeThumbIndex`, the
-originating event, `event.target.value` / `event.target.name`, and `cancel()`.
+number array for a range slider. The change details match Base UI's cancellable change contract:
+`reason`, `event`, `trigger`, `activeThumbIndex`, `cancel()`, `allowPropagation()`, and
+`isCanceled()`. The emitted event is cloned so `event.target.value` and `event.target.name` contain
+the candidate slider value and root `name`.
 
 `onValueCommitted` emits `{ value, eventDetails }` when an interaction commits. Its details include
-the commit `reason` and originating event. This is a generic event like Base UI, so it is not
-cancelable.
+the commit `reason`, originating event, and trigger. This is a generic event like Base UI, so it is
+not cancelable and does not include `activeThumbIndex`.
 
 ```html
 <div [value]="value()" (onValueChange)="setValue($event)" rdxSliderRoot>
@@ -119,12 +121,122 @@ setValue(change: RdxSliderValueChangeEvent) {
 }
 ```
 
+```typescript
+import { Component, computed, signal } from '@angular/core';
+import {
+    RdxSliderControl,
+    RdxSliderIndicator,
+    RdxSliderRoot,
+    RdxSliderThumb,
+    RdxSliderThumbInput,
+    RdxSliderTrack,
+    RdxSliderValueChangeEvent,
+    RdxSliderValueCommitEvent
+} from '@radix-ng/primitives/slider';
+
+@Component({
+    selector: 'slider-events-example',
+    imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
+    template: `
+        <div class="grid w-80 gap-4">
+            <div
+                class="relative w-full select-none"
+                [value]="value()"
+                [step]="5"
+                (onValueChange)="onValueChange($event)"
+                (onValueCommitted)="onValueCommitted($event)"
+                rdxSliderRoot
+                name="volume"
+            >
+                <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>
+                    <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
+                        <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>
+                        <div
+                            class="border-border bg-background focus-within:ring-ring block size-5 rounded-full border shadow-sm focus-within:ring-2"
+                            rdxSliderThumb
+                        >
+                            <input rdxSliderThumbInput aria-label="Volume" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <label class="text-foreground flex items-center gap-2 text-sm">
+                <input
+                    class="accent-primary size-4"
+                    [checked]="locked()"
+                    (change)="locked.set($any($event.target).checked)"
+                    type="checkbox"
+                />
+                Cancel value changes
+            </label>
+
+            <dl class="border-border bg-muted/40 grid gap-2 rounded-md border p-3 text-sm">
+                <div class="flex justify-between gap-4">
+                    <dt class="text-muted-foreground">Value</dt>
+                    <dd class="text-foreground font-medium">{{ value() }}</dd>
+                </div>
+                <div class="flex justify-between gap-4">
+                    <dt class="text-muted-foreground">Change</dt>
+                    <dd class="text-foreground text-right">{{ changeSummary() }}</dd>
+                </div>
+                <div class="flex justify-between gap-4">
+                    <dt class="text-muted-foreground">Commit</dt>
+                    <dd class="text-foreground text-right">{{ commitSummary() }}</dd>
+                </div>
+            </dl>
+        </div>
+    `
+})
+export class SliderEventsExample {
+    readonly value = signal(45);
+    readonly locked = signal(false);
+    readonly change = signal<RdxSliderValueChangeEvent | null>(null);
+    readonly commit = signal<RdxSliderValueCommitEvent | null>(null);
+
+    readonly changeSummary = computed(() => {
+        const change = this.change();
+        if (!change) {
+            return 'none';
+        }
+
+        const details = change.eventDetails;
+        return `${details.reason}, thumb ${details.activeThumbIndex}, canceled ${details.isCanceled()}`;
+    });
+
+    readonly commitSummary = computed(() => {
+        const commit = this.commit();
+        if (!commit) {
+            return 'none';
+        }
+
+        return `${commit.eventDetails.reason}, value ${commit.value}`;
+    });
+
+    onValueChange(change: RdxSliderValueChangeEvent): void {
+        if (this.locked()) {
+            change.eventDetails.cancel();
+        } else {
+            this.value.set(change.value as number);
+        }
+
+        this.change.set(change);
+    }
+
+    onValueCommitted(commit: RdxSliderValueCommitEvent): void {
+        this.commit.set(commit);
+    }
+}
+```
+
 ## Thumb alignment
 
 `thumbAlignment="center"` aligns each thumb's center with the control edge at `min` and `max`.
 `thumbAlignment="edge"` and `thumbAlignment="edge-client-only"` inset thumbs so the thumb edge,
-not its center, reaches the control edge. In edge modes the indicator uses measured thumb positions
-so the filled range lines up with the thumb centers.
+not its center, reaches the control edge. In edge modes the pointer math accounts for the inset thumb
+radius, and the indicator uses measured thumb positions so the filled range lines up with the thumb
+centers. Both edge modes currently share the same Angular runtime positioning path; the
+`edge-client-only` value is accepted for Base UI API parity.
 
 ```typescript
 import { Component } from '@angular/core';
@@ -170,6 +282,23 @@ import {
                                 rdxSliderThumb
                             >
                                 <input rdxSliderThumbInput aria-label="Edge aligned thumb value" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid gap-2">
+                <span class="text-foreground text-sm font-medium">Edge client only</span>
+                <div class="relative px-2 select-none" [value]="50" thumbAlignment="edge-client-only" rdxSliderRoot>
+                    <div class="flex h-6 w-full touch-none items-center" rdxSliderControl>
+                        <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
+                            <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>
+                            <div
+                                class="border-border bg-background focus-within:ring-ring block size-5 rounded-full border shadow-sm focus-within:ring-2"
+                                rdxSliderThumb
+                            >
+                                <input rdxSliderThumbInput aria-label="Client-only edge aligned thumb value" />
                             </div>
                         </div>
                     </div>

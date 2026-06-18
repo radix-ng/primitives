@@ -22,6 +22,8 @@ import { RdxDrawerSnapPointsComponent } from './drawer-snap-points';
 import snapPointsSource from './drawer-snap-points?raw';
 import { RdxDrawerSwipeToOpenComponent } from './drawer-swipe-to-open';
 import swipeToOpenSource from './drawer-swipe-to-open?raw';
+import { RdxDrawerVirtualKeyboardComponent } from './drawer-virtual-keyboard';
+import virtualKeyboardSource from './drawer-virtual-keyboard?raw';
 
 const html = String.raw;
 
@@ -47,6 +49,7 @@ export default {
                 RdxDrawerScrollableComponent,
                 RdxDrawerNonModalComponent,
                 RdxDrawerActionSheetComponent,
+                RdxDrawerVirtualKeyboardComponent,
                 RdxDrawerNestedComponent,
                 RdxDrawerPageScaleComponent,
                 RdxDrawerDetachedComponent
@@ -133,6 +136,16 @@ export const ActionSheet: Story = {
     render: () => ({
         template: html`
             <rdx-drawer-action-sheet />
+        `
+    })
+};
+
+export const VirtualKeyboard: Story = {
+    name: 'Virtual keyboard',
+    parameters: source(virtualKeyboardSource),
+    render: () => ({
+        template: html`
+            <rdx-drawer-virtual-keyboard />
         `
     })
 };

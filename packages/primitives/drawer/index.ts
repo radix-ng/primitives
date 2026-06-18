@@ -13,6 +13,7 @@ import { RdxDrawerSwipeArea } from './src/drawer-swipe-area';
 import { RdxDrawerTitle } from './src/drawer-title';
 import { RdxDrawerTrigger } from './src/drawer-trigger';
 import { RdxDrawerViewport } from './src/drawer-viewport';
+import { RdxDrawerVirtualKeyboardProvider } from './src/drawer-virtual-keyboard-provider';
 
 export * from './src/drawer-backdrop';
 export * from './src/drawer-close';
@@ -32,6 +33,7 @@ export * from './src/drawer-swipe-area';
 export * from './src/drawer-title';
 export * from './src/drawer-trigger';
 export * from './src/drawer-viewport';
+export * from './src/drawer-virtual-keyboard-provider';
 
 export const drawerImports = [
     RdxDrawerProviderDirective,
@@ -42,6 +44,7 @@ export const drawerImports = [
     RdxDrawerPortalMisuseGuard,
     RdxDrawerBackdrop,
     RdxDrawerViewport,
+    RdxDrawerVirtualKeyboardProvider,
     RdxDrawerPopup,
     RdxDrawerContent,
     RdxDrawerTitle,

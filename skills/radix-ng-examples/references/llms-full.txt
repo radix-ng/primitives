@@ -9020,6 +9020,7 @@ export class RdxDrawerDefaultComponent {
 - ✅ Swipe-to-open from an off-canvas `rdxDrawerSwipeArea` strip.
 - ✅ Snap points (`[snapPoints]`, `[(snapPoint)]`, `[defaultSnapPoint]`, `[snapToSequentialPoints]`) with velocity skipping and `data-expanded`.
 - ✅ Nested drawers (detected through the dialog hierarchy): the parent gains `data-nested-drawer-open` / `--nested-drawers`.
+- ✅ Virtual keyboard provider for mobile bottom-sheet forms: `visualViewport` inset, focus alignment, scroll slack, tap-to-focus, and nested drawer guards.
 - ✅ Optional `rdxDrawerProvider` + `rdxDrawerIndent` / `rdxDrawerIndentBackground` for an app-wide page-scale effect.
 - ✅ Exposes swipe progress on the backdrop with `--drawer-swipe-progress` for a gesture-linked fade.
 - ✅ Supports two-way `[(open)]`, `defaultOpen`, multiple triggers, controlled `triggerId`, and detached triggers via a shared handle.
@@ -9044,6 +9045,7 @@ import {
     RdxDrawerSwipeArea,
     RdxDrawerTitle,
     RdxDrawerTrigger,
+    RdxDrawerVirtualKeyboardProvider,
     RdxDrawerViewport
 } from '@radix-ng/primitives/drawer';
 ```
@@ -9100,11 +9102,13 @@ and its slide-out keyframe should hold the closed position with `forwards`:
 
     <ng-template rdxDrawerPortal>
         <div rdxDrawerBackdrop></div>
-        <div rdxDrawerPopup>
-            <h2 rdxDrawerTitle>Title</h2>
-            <p rdxDrawerDescription>Description</p>
-            <div rdxDrawerContent>…scrollable body…</div>
-            <button rdxDrawerClose>Close</button>
+        <div rdxDrawerViewport>
+            <div rdxDrawerPopup>
+                <h2 rdxDrawerTitle>Title</h2>
+                <p rdxDrawerDescription>Description</p>
+                <div rdxDrawerContent>…scrollable body…</div>
+                <button rdxDrawerClose>Close</button>
+            </div>
         </div>
     </ng-template>
 </div>
@@ -9767,6 +9771,104 @@ export class RdxDrawerActionSheetComponent {
 }
 ```
 
+### Virtual keyboard
+
+Add `rdxDrawerVirtualKeyboardProvider` to the drawer viewport for mobile bottom-sheet forms. It writes
+`--drawer-keyboard-inset` on the viewport, keeps the focused keyboard input visible as
+`visualViewport` changes, adds temporary scroll slack to the nearest drawer scroller, and avoids
+handling the parent drawer while a nested drawer is open. Use the CSS variable in viewport padding or
+popup max-height.
+
+```typescript
+import { Component } from '@angular/core';
+import { drawerImports } from '@radix-ng/primitives/drawer';
+import { cn, demoButton, demoDrawer, demoInput } from '../../storybook/styles';
+
+@Component({
+    selector: 'rdx-drawer-virtual-keyboard',
+    imports: [...drawerImports],
+    template: `
+        <div rdxDrawerRoot>
+            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Edit delivery</button>
+
+            <ng-template rdxDrawerPortal>
+                <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
+
+                <div
+                    class="fixed inset-0 z-50 flex items-end justify-center px-4 pb-[calc(env(safe-area-inset-bottom,0px)+var(--drawer-keyboard-inset,0px))] transition-[padding-bottom] duration-200"
+                    rdxDrawerViewport
+                    rdxDrawerVirtualKeyboardProvider
+                >
+                    <div
+                        class="border-border bg-card text-card-foreground max-h-[min(82vh,calc(100vh-var(--drawer-keyboard-inset,0px)-2rem))] w-full max-w-lg [transform:translateY(var(--drawer-swipe-movement-y))] overflow-hidden rounded-t-xl border px-0 pt-3 shadow-lg outline-none [transition:transform_450ms_cubic-bezier(0.32,0.72,0,1),max-height_200ms_ease] data-[ending-style]:[transform:translateY(100%)] data-[starting-style]:[transform:translateY(100%)] data-[swiping]:select-none data-[swiping]:[transition:none]"
+                        rdxDrawerPopup
+                    >
+                        <div class="bg-muted mx-auto mb-4 h-1 w-10 rounded-full"></div>
+
+                        <form
+                            class="max-h-[inherit] [scroll-padding-bottom:calc(var(--drawer-keyboard-inset,0px)+4rem)] overflow-y-auto px-6 pb-6"
+                        >
+                            <div class="mb-5">
+                                <h2 [class]="d.title" rdxDrawerTitle>Delivery details</h2>
+                                <p [class]="d.description" rdxDrawerDescription>
+                                    Confirm the address and contact fields before placing the order.
+                                </p>
+                            </div>
+
+                            <div class="grid gap-4">
+                                <label class="grid gap-1.5">
+                                    <span class="text-foreground text-sm font-medium">Name</span>
+                                    <input [class]="i.base" value="Ada Lovelace" />
+                                </label>
+
+                                <label class="grid gap-1.5">
+                                    <span class="text-foreground text-sm font-medium">Phone</span>
+                                    <input [class]="i.base" inputmode="tel" value="+1 415 555 0142" />
+                                </label>
+
+                                <label class="grid gap-1.5">
+                                    <span class="text-foreground text-sm font-medium">Street address</span>
+                                    <input [class]="i.base" value="12 Market Street" />
+                                </label>
+
+                                <label class="grid gap-1.5">
+                                    <span class="text-foreground text-sm font-medium">Apartment</span>
+                                    <input [class]="i.base" placeholder="Optional" />
+                                </label>
+
+                                <label class="grid gap-1.5">
+                                    <span class="text-foreground text-sm font-medium">Delivery notes</span>
+                                    <textarea
+                                        class="border-input bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring min-h-24 rounded-md border px-3 py-2 text-sm outline-none focus-visible:ring-2"
+                                    >
+Leave at reception if nobody answers.</textarea
+                                    >
+                                </label>
+                            </div>
+
+                            <div class="bg-card sticky bottom-0 mt-6 flex justify-end gap-2 border-t py-4">
+                                <button [class]="cn(b.base, b.outline, b.size.sm)" type="button" rdxDrawerClose>
+                                    Cancel
+                                </button>
+                                <button [class]="cn(b.base, b.primary, b.size.sm)" type="button" rdxDrawerClose>
+                                    Save
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </ng-template>
+        </div>
+    `
+})
+export class RdxDrawerVirtualKeyboardComponent {
+    protected readonly b = demoButton;
+    protected readonly d = demoDrawer;
+    protected readonly i = demoInput;
+    protected readonly cn = cn;
+}
+```
+
 ### Nested drawers
 
 Drawers stack on top of each other — each level's content hosts the trigger for the next. Nesting is
@@ -9980,6 +10082,13 @@ context.
 ### SwipeArea
 
 `RdxDrawerSwipeArea` opens the drawer when swiped inward from a screen edge.
+
+### VirtualKeyboardProvider
+
+`RdxDrawerVirtualKeyboardProvider` is a no-input directive for the drawer viewport. It exposes
+`--drawer-keyboard-inset`, aligns focused keyboard inputs above the virtual keyboard, applies and
+restores scroll slack, uses touch tap-to-focus for iOS keyboard opening, and suspends itself while a
+nested drawer is open.
 
 ### Provider, Indent, and IndentBackground
 
@@ -18455,12 +18564,14 @@ form submission.
 ## Change events
 
 `onValueChange` emits `{ value, eventDetails }`, where `value` is a number for a single slider or a
-number array for a range slider. The change details include `reason`, `activeThumbIndex`, the
-originating event, `event.target.value` / `event.target.name`, and `cancel()`.
+number array for a range slider. The change details match Base UI's cancellable change contract:
+`reason`, `event`, `trigger`, `activeThumbIndex`, `cancel()`, `allowPropagation()`, and
+`isCanceled()`. The emitted event is cloned so `event.target.value` and `event.target.name` contain
+the candidate slider value and root `name`.
 
 `onValueCommitted` emits `{ value, eventDetails }` when an interaction commits. Its details include
-the commit `reason` and originating event. This is a generic event like Base UI, so it is not
-cancelable.
+the commit `reason`, originating event, and trigger. This is a generic event like Base UI, so it is
+not cancelable and does not include `activeThumbIndex`.
 
 ```html
 <div [value]="value()" (onValueChange)="setValue($event)" rdxSliderRoot>
@@ -18479,12 +18590,122 @@ setValue(change: RdxSliderValueChangeEvent) {
 }
 ```
 
+```typescript
+import { Component, computed, signal } from '@angular/core';
+import {
+    RdxSliderControl,
+    RdxSliderIndicator,
+    RdxSliderRoot,
+    RdxSliderThumb,
+    RdxSliderThumbInput,
+    RdxSliderTrack,
+    RdxSliderValueChangeEvent,
+    RdxSliderValueCommitEvent
+} from '@radix-ng/primitives/slider';
+
+@Component({
+    selector: 'slider-events-example',
+    imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
+    template: `
+        <div class="grid w-80 gap-4">
+            <div
+                class="relative w-full select-none"
+                [value]="value()"
+                [step]="5"
+                (onValueChange)="onValueChange($event)"
+                (onValueCommitted)="onValueCommitted($event)"
+                rdxSliderRoot
+                name="volume"
+            >
+                <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>
+                    <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
+                        <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>
+                        <div
+                            class="border-border bg-background focus-within:ring-ring block size-5 rounded-full border shadow-sm focus-within:ring-2"
+                            rdxSliderThumb
+                        >
+                            <input rdxSliderThumbInput aria-label="Volume" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <label class="text-foreground flex items-center gap-2 text-sm">
+                <input
+                    class="accent-primary size-4"
+                    [checked]="locked()"
+                    (change)="locked.set($any($event.target).checked)"
+                    type="checkbox"
+                />
+                Cancel value changes
+            </label>
+
+            <dl class="border-border bg-muted/40 grid gap-2 rounded-md border p-3 text-sm">
+                <div class="flex justify-between gap-4">
+                    <dt class="text-muted-foreground">Value</dt>
+                    <dd class="text-foreground font-medium">{{ value() }}</dd>
+                </div>
+                <div class="flex justify-between gap-4">
+                    <dt class="text-muted-foreground">Change</dt>
+                    <dd class="text-foreground text-right">{{ changeSummary() }}</dd>
+                </div>
+                <div class="flex justify-between gap-4">
+                    <dt class="text-muted-foreground">Commit</dt>
+                    <dd class="text-foreground text-right">{{ commitSummary() }}</dd>
+                </div>
+            </dl>
+        </div>
+    `
+})
+export class SliderEventsExample {
+    readonly value = signal(45);
+    readonly locked = signal(false);
+    readonly change = signal<RdxSliderValueChangeEvent | null>(null);
+    readonly commit = signal<RdxSliderValueCommitEvent | null>(null);
+
+    readonly changeSummary = computed(() => {
+        const change = this.change();
+        if (!change) {
+            return 'none';
+        }
+
+        const details = change.eventDetails;
+        return `${details.reason}, thumb ${details.activeThumbIndex}, canceled ${details.isCanceled()}`;
+    });
+
+    readonly commitSummary = computed(() => {
+        const commit = this.commit();
+        if (!commit) {
+            return 'none';
+        }
+
+        return `${commit.eventDetails.reason}, value ${commit.value}`;
+    });
+
+    onValueChange(change: RdxSliderValueChangeEvent): void {
+        if (this.locked()) {
+            change.eventDetails.cancel();
+        } else {
+            this.value.set(change.value as number);
+        }
+
+        this.change.set(change);
+    }
+
+    onValueCommitted(commit: RdxSliderValueCommitEvent): void {
+        this.commit.set(commit);
+    }
+}
+```
+
 ## Thumb alignment
 
 `thumbAlignment="center"` aligns each thumb's center with the control edge at `min` and `max`.
 `thumbAlignment="edge"` and `thumbAlignment="edge-client-only"` inset thumbs so the thumb edge,
-not its center, reaches the control edge. In edge modes the indicator uses measured thumb positions
-so the filled range lines up with the thumb centers.
+not its center, reaches the control edge. In edge modes the pointer math accounts for the inset thumb
+radius, and the indicator uses measured thumb positions so the filled range lines up with the thumb
+centers. Both edge modes currently share the same Angular runtime positioning path; the
+`edge-client-only` value is accepted for Base UI API parity.
 
 ```typescript
 import { Component } from '@angular/core';
@@ -18530,6 +18751,23 @@ import {
                                 rdxSliderThumb
                             >
                                 <input rdxSliderThumbInput aria-label="Edge aligned thumb value" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid gap-2">
+                <span class="text-foreground text-sm font-medium">Edge client only</span>
+                <div class="relative px-2 select-none" [value]="50" thumbAlignment="edge-client-only" rdxSliderRoot>
+                    <div class="flex h-6 w-full touch-none items-center" rdxSliderControl>
+                        <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
+                            <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>
+                            <div
+                                class="border-border bg-background focus-within:ring-ring block size-5 rounded-full border shadow-sm focus-within:ring-2"
+                                rdxSliderThumb
+                            >
+                                <input rdxSliderThumbInput aria-label="Client-only edge aligned thumb value" />
                             </div>
                         </div>
                     </div>

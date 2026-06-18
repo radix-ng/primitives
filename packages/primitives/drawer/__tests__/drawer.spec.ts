@@ -18,9 +18,11 @@ import {
     RdxDrawerSwipeArea,
     RdxDrawerTitle,
     RdxDrawerTrigger,
-    RdxDrawerViewport
+    RdxDrawerViewport,
+    RdxDrawerVirtualKeyboardProvider
 } from '@radix-ng/primitives/drawer';
 import { axe } from 'jest-axe';
+import { vi } from 'vitest';
 
 @Component({
     imports: [
@@ -157,6 +159,34 @@ class NestedHostComponent {
 })
 class LocalSwipeAreaHostComponent {}
 
+@Component({
+    imports: [RdxDrawerRoot, RdxDrawerPortal, RdxDrawerViewport, RdxDrawerVirtualKeyboardProvider, RdxDrawerPopup],
+    template: `
+        <div [(open)]="open" rdxDrawerRoot>
+            <ng-template rdxDrawerPortal>
+                <div data-testid="viewport" rdxDrawerViewport rdxDrawerVirtualKeyboardProvider>
+                    <div rdxDrawerPopup>
+                        <div data-testid="scroller" style="height: 240px; overflow-y: auto">
+                            <input data-testid="field" />
+                            <button data-testid="button">Button</button>
+                        </div>
+
+                        <div [(open)]="nested" rdxDrawerRoot>
+                            <ng-template rdxDrawerPortal>
+                                <div rdxDrawerPopup>Nested</div>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </div>
+    `
+})
+class VirtualKeyboardHostComponent {
+    open = true;
+    nested = false;
+}
+
 function popup(): HTMLElement | null {
     return document.body.querySelector('[rdxDrawerPopup]');
 }
@@ -167,6 +197,114 @@ function pointer(type: string, props: { clientX?: number; clientY?: number }): M
     Object.defineProperty(event, 'pointerId', { value: 1 });
     return event;
 }
+
+function touch(type: string, target: EventTarget, props: { clientX: number; clientY: number }): TouchEvent {
+    const event = new Event(type, { bubbles: true, cancelable: true }) as TouchEvent;
+    const touchLike = { clientX: props.clientX, clientY: props.clientY, target };
+
+    Object.defineProperty(event, 'touches', {
+        value: type === 'touchend' || type === 'touchcancel' ? [] : [touchLike]
+    });
+    Object.defineProperty(event, 'changedTouches', { value: [touchLike] });
+
+    return event;
+}
+
+function mockRect(element: HTMLElement, rect: Partial<DOMRect>): void {
+    element.getBoundingClientRect = () =>
+        ({
+            x: rect.left ?? 0,
+            y: rect.top ?? 0,
+            width: rect.width ?? 0,
+            height: rect.height ?? 0,
+            top: rect.top ?? 0,
+            right: rect.right ?? rect.width ?? 0,
+            bottom: rect.bottom ?? rect.height ?? 0,
+            left: rect.left ?? 0,
+            toJSON: () => ({})
+        }) as DOMRect;
+}
+
+function setReadonlyNumber(element: HTMLElement, key: 'clientHeight' | 'scrollHeight', value: number): void {
+    Object.defineProperty(element, key, { configurable: true, value });
+}
+
+async function nextAnimationFrame(): Promise<void> {
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+}
+
+function installVisualViewportMock(initial: { height: number; offsetTop?: number; scale?: number }) {
+    const listeners = new Map<string, Set<EventListenerOrEventListenerObject>>();
+    const originalDescriptor = Object.getOwnPropertyDescriptor(window, 'visualViewport');
+    const viewport = {
+        height: initial.height,
+        width: window.innerWidth,
+        offsetTop: initial.offsetTop ?? 0,
+        offsetLeft: 0,
+        pageTop: 0,
+        pageLeft: 0,
+        scale: initial.scale ?? 1,
+        addEventListener: (type: string, listener: EventListenerOrEventListenerObject) => {
+            const typeListeners = listeners.get(type) ?? new Set<EventListenerOrEventListenerObject>();
+            typeListeners.add(listener);
+            listeners.set(type, typeListeners);
+        },
+        removeEventListener: (type: string, listener: EventListenerOrEventListenerObject) => {
+            listeners.get(type)?.delete(listener);
+        },
+        dispatch: (type: string) => {
+            for (const listener of listeners.get(type) ?? []) {
+                if (typeof listener === 'function') {
+                    listener(new Event(type));
+                } else {
+                    listener.handleEvent(new Event(type));
+                }
+            }
+        }
+    };
+
+    Object.defineProperty(window, 'visualViewport', {
+        configurable: true,
+        value: viewport
+    });
+
+    return {
+        viewport,
+        restore: () => {
+            if (originalDescriptor) {
+                Object.defineProperty(window, 'visualViewport', originalDescriptor);
+            } else {
+                delete (window as Partial<Window>).visualViewport;
+            }
+        }
+    };
+}
+
+beforeAll(() => {
+    class ResizeObserverMock {
+        observe() {}
+        unobserve() {}
+        disconnect() {}
+    }
+
+    Object.defineProperty(window, 'ResizeObserver', {
+        configurable: true,
+        value: ResizeObserverMock
+    });
+    Object.defineProperty(globalThis, 'ResizeObserver', {
+        configurable: true,
+        value: ResizeObserverMock
+    });
+    Object.defineProperty(document, 'elementFromPoint', {
+        configurable: true,
+        value: () => null
+    });
+});
+
+afterEach(() => {
+    (document.activeElement as HTMLElement | null)?.blur();
+    vi.restoreAllMocks();
+});
 
 describe('Drawer', () => {
     let fixture: ComponentFixture<TestHostComponent>;
@@ -529,5 +667,117 @@ describe('Drawer structural portal', () => {
             const misuseFixture = TestBed.createComponent(MisuseHostComponent);
             misuseFixture.detectChanges();
         }).toThrow(/structural directive/);
+    });
+});
+
+describe('Drawer virtual keyboard provider', () => {
+    let fixture: ComponentFixture<VirtualKeyboardHostComponent>;
+    let viewportMock: ReturnType<typeof installVisualViewportMock>;
+
+    beforeEach(() => {
+        viewportMock = installVisualViewportMock({ height: 500 });
+        TestBed.configureTestingModule({ imports: [VirtualKeyboardHostComponent] });
+        fixture = TestBed.createComponent(VirtualKeyboardHostComponent);
+        fixture.detectChanges();
+    });
+
+    afterEach(() => {
+        fixture.destroy();
+        viewportMock.restore();
+    });
+
+    function viewport(): HTMLElement {
+        return document.body.querySelector('[data-testid="viewport"]')!;
+    }
+
+    function scroller(): HTMLElement {
+        return document.body.querySelector('[data-testid="scroller"]')!;
+    }
+
+    function field(): HTMLInputElement {
+        return document.body.querySelector('[data-testid="field"]')!;
+    }
+
+    it('exports the virtual keyboard provider via drawerImports', () => {
+        expect(drawerImports).toContain(RdxDrawerVirtualKeyboardProvider);
+    });
+
+    it('publishes keyboard inset and adds temporary scroll slack while a focused field overlaps it', async () => {
+        const scrollElement = scroller();
+        const input = field();
+
+        setReadonlyNumber(scrollElement, 'clientHeight', 240);
+        setReadonlyNumber(scrollElement, 'scrollHeight', 1000);
+        mockRect(scrollElement, { top: 0, bottom: 600 });
+        mockRect(input, { top: 520, bottom: 560 });
+        scrollElement.scrollTo = ({ top }: ScrollToOptions) => {
+            scrollElement.scrollTop = Number(top);
+        };
+
+        input.dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+        viewportMock.viewport.dispatch('resize');
+        await nextAnimationFrame();
+
+        expect(viewport().style.getPropertyValue('--drawer-keyboard-inset')).toBe('268px');
+        expect(scrollElement.style.overflowAnchor).toBe('none');
+        expect(scrollElement.style.paddingBottom).toBe('148px');
+        expect(scrollElement.style.scrollPaddingBottom).toBe('16px');
+        expect(scrollElement.scrollTop).toBeGreaterThan(0);
+
+        input.dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+        await nextAnimationFrame();
+
+        expect(viewport().style.getPropertyValue('--drawer-keyboard-inset')).toBe('0px');
+        expect(scrollElement.style.overflowAnchor).toBe('');
+        expect(scrollElement.style.paddingBottom).toBe('');
+        expect(scrollElement.style.scrollPaddingBottom).toBe('');
+    });
+
+    it('uses synchronous tap-to-focus and redispatches click for keyboard inputs', () => {
+        const input = field();
+        const clicked = vi.fn();
+        (document.activeElement as HTMLElement | null)?.blur();
+        input.addEventListener('click', clicked);
+        vi.spyOn(document, 'elementFromPoint').mockReturnValue(input);
+
+        viewport().dispatchEvent(touch('touchstart', input, { clientX: 10, clientY: 20 }));
+        const touchEnd = touch('touchend', input, { clientX: 10, clientY: 20 });
+        const preventDefault = vi.spyOn(touchEnd, 'preventDefault');
+        viewport().dispatchEvent(touchEnd);
+
+        expect(document.activeElement).toBe(input);
+        expect(preventDefault).toHaveBeenCalled();
+        expect(clicked).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not steal a tap that lands on another interactive element', () => {
+        const input = field();
+        const button: HTMLButtonElement = document.body.querySelector('[data-testid="button"]')!;
+        const clicked = vi.fn();
+        (document.activeElement as HTMLElement | null)?.blur();
+        button.addEventListener('click', clicked);
+        vi.spyOn(document, 'elementFromPoint').mockReturnValue(button);
+
+        viewport().dispatchEvent(touch('touchstart', input, { clientX: 10, clientY: 20 }));
+        const touchEnd = touch('touchend', input, { clientX: 10, clientY: 20 });
+        const preventDefault = vi.spyOn(touchEnd, 'preventDefault');
+        viewport().dispatchEvent(touchEnd);
+
+        expect(preventDefault).not.toHaveBeenCalled();
+        expect(document.activeElement).not.toBe(input);
+        expect(clicked).not.toHaveBeenCalled();
+    });
+
+    it('suspends keyboard alignment while a nested drawer is open', async () => {
+        const input = field();
+        fixture.componentInstance.nested = true;
+        fixture.changeDetectorRef.markForCheck();
+        fixture.detectChanges();
+
+        input.dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+        viewportMock.viewport.dispatch('resize');
+        await nextAnimationFrame();
+
+        expect(viewport().style.getPropertyValue('--drawer-keyboard-inset')).toBe('0px');
     });
 });
