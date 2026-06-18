@@ -75,6 +75,15 @@ describe('Select popup focus manager', () => {
         expect(document.activeElement).toBe(popup());
     });
 
+    it('does not let the trigger click steal focus from the open listbox', async () => {
+        await openSelect();
+
+        trigger().dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        await settle();
+
+        expect(document.activeElement).toBe(popup());
+    });
+
     it('returns focus to the trigger by default when closed', async () => {
         await openSelect();
 

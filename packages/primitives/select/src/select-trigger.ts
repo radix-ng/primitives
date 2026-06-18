@@ -111,6 +111,9 @@ export class RdxSelectTrigger {
         // We force `focus` in this case. Note: this doesn't create any other side-effect
         // because we are preventing default in `onPointerDown` so effectively
         // this only runs for a label 'click'
+        if (this.rootContext.open()) {
+            return;
+        }
         (event?.currentTarget as HTMLElement)?.focus();
     }
 

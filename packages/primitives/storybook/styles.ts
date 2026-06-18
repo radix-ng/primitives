@@ -410,10 +410,10 @@ export const demoAccordion = {
 } as const;
 
 /**
- * Navigation menu parts: a horizontal menubar of triggers/links sharing one popup.
+ * Navigation menu parts: a horizontal navigation list of triggers/links sharing one popup.
  *
  * The popup wraps the {@link demoNavigationMenu.viewport}, which is sized from the active content via
- * the `--popup-width` / `--popup-height` variables set by the viewport and transitioned for the
+ * the `--popup-width` / `--popup-height` variables set on the popup and transitioned for the
  * morph effect. Content morphs between items via the `data-current` / `data-previous` attributes.
  */
 export const demoNavigationMenu = {
@@ -441,7 +441,7 @@ export const demoNavigationMenu = {
     ),
     arrow: demoArrow('text-card'),
     viewport: cn(
-        // Size to the active content via the variables the viewport measures; fall back to
+        // Size to the active content via the variables inherited from the popup; fall back to
         // `max-content`/`auto` so the popup hugs its content before the first measurement instead of
         // a bare `var(--popup-width)` (which is invalid until set and would let the block fill the page).
         'relative block h-[var(--popup-height,auto)] w-[var(--popup-width,max-content)] overflow-hidden',
@@ -493,7 +493,7 @@ export const demoMenu = {
     positioner: 'z-50 data-[closed]:pointer-events-none',
     popup: cn(
         'bg-popover text-popover-foreground',
-        'min-w-[8rem] rounded-md border border-border p-1 shadow-md',
+        'min-w-[8rem] rounded-md border border-border p-1 shadow-md outline-none',
         'data-[closed]:hidden data-[closed]:pointer-events-none'
     ),
     item: cn(

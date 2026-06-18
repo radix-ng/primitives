@@ -128,8 +128,9 @@ ArrowRight navigation. There is no separate menubar trigger directive — the me
 interactions to the menubar through context, mirroring [Base UI](https://base-ui.com/react/components/menubar).
 
 During hover-switching the trigger keeps focus (the popup opens without grabbing it), so the bar
-stays keyboard-navigable. It also reports `role="menuitem"` and is taken out of the tab order
-(`tabindex="-1"`) so the whole bar acts as a single tab stop.
+stays keyboard-navigable. It also reports `role="menuitem"`. The menubar owns roving tabindex:
+the current trigger uses `tabindex="0"` and the other triggers use `tabindex="-1"`, so Tab enters
+the menubar on a trigger rather than focusing the container.
 
 | Data attribute | Value                  |
 | -------------- | ---------------------- |

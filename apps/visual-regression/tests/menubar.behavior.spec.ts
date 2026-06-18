@@ -15,6 +15,26 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
 const trigger = '[rdxMenuTrigger]';
 const openPopup = '[rdxMenuPopup][data-state="open"]';
 
+test('Tab enters the menubar on a trigger and arrow navigation keeps working', async ({ page }) => {
+    await gotoStory(page, 'primitives-menubar--default');
+    const triggers = page.locator(trigger);
+
+    await expect(page.locator('[rdxMenubarRoot]')).not.toHaveAttribute('tabindex', /.+/);
+    await expect(triggers.first()).toHaveAttribute('tabindex', '0');
+
+    await page.keyboard.press('Tab');
+    await expect(triggers.first()).toBeFocused();
+
+    await page.keyboard.press('ArrowRight');
+    await expect(triggers.nth(1)).toBeFocused();
+    await expect(triggers.first()).toHaveAttribute('tabindex', '-1');
+    await expect(triggers.nth(1)).toHaveAttribute('tabindex', '0');
+
+    await page.keyboard.press('ArrowDown');
+    await expect(page.locator(openPopup)).toHaveCount(1);
+    await expect(triggers.nth(1)).toHaveAttribute('data-state', 'open');
+});
+
 test('opens a menu and keeps it open without runtime errors', async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', (e) => errors.push(String(e)));

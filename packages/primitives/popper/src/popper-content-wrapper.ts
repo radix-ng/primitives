@@ -45,6 +45,26 @@ export type RdxPopperAnchorElement =
     | null
     | undefined;
 
+type PopperPositionParams = {
+    anchor: ReferenceElement | null;
+    strategy: 'fixed' | 'absolute';
+    placement: Placement;
+    sideOffset: number;
+    alignOffset: number;
+    arrowHeight: number;
+    arrowWidth: number;
+    avoidCollisions: boolean;
+    sticky: 'partial' | 'always';
+    detectOverflowOptions: {
+        padding: number | Partial<Record<Side, number>>;
+        boundary: Element[];
+        altBoundary: boolean;
+    };
+    arrow: RdxPopperArrow | undefined;
+    arrowPadding: number;
+    hideWhenDetached: boolean;
+};
+
 const context = () => {
     const popperContentWrapper = inject(RdxPopperContentWrapper);
 
@@ -223,7 +243,7 @@ export class RdxPopperContentWrapper {
         altBoundary: this.hasExplicitBoundaries()
     }));
 
-    private readonly resolvedAnchor = computed<ReferenceElement>(() => {
+    private readonly resolvedAnchor = computed<ReferenceElement | null>(() => {
         const anchor = this.anchor();
         const resolvedAnchor = typeof anchor === 'function' ? anchor() : anchor;
 
@@ -235,33 +255,17 @@ export class RdxPopperContentWrapper {
             return resolvedAnchor;
         }
 
-        const fallbackAnchor = this.context.anchorOverride() ?? this.context.anchor()?.elementRef.nativeElement;
-
-        if (!fallbackAnchor) {
-            throw new Error('RdxPopperContentWrapper requires an anchor.');
-        }
-
-        return fallbackAnchor;
+        return this.context.anchorOverride() ?? this.context.anchor()?.elementRef.nativeElement ?? null;
     });
 
-    private readonly position = resource({
-        params: () => ({
-            anchor: this.resolvedAnchor(),
-            strategy: this.positionStrategy(),
-            placement: this.desiredPlacement(),
-            sideOffset: this.sideOffset(),
-            alignOffset: this.alignOffset(),
-            arrowHeight: this.arrowSize()().height,
-            arrowWidth: this.arrowSize()().width,
-            avoidCollisions: this.avoidCollisions(),
-            sticky: this.sticky(),
-            detectOverflowOptions: this.detectOverflowOptions(),
-            arrow: this.arrow(),
-            arrowPadding: this.arrowPadding(),
-            hideWhenDetached: this.hideWhenDetached()
-        }),
-        loader: ({ params }) =>
-            computePosition(params.anchor, this.elementRef.nativeElement, {
+    private readonly position = resource<ComputePositionReturn | null, PopperPositionParams>({
+        params: () => this.positionParams(),
+        loader: ({ params }) => {
+            if (!params.anchor) {
+                return Promise.resolve(null);
+            }
+
+            return computePosition(params.anchor, this.elementRef.nativeElement, {
                 // default to `fixed` strategy so users don't have to pick and we also avoid focus scroll issues
                 strategy: params.strategy,
                 placement: params.placement,
@@ -304,8 +308,27 @@ export class RdxPopperContentWrapper {
                             ...params.detectOverflowOptions
                         })
                 ]
-            })
+            });
+        }
     });
+
+    private positionParams(): PopperPositionParams {
+        return {
+            anchor: this.resolvedAnchor(),
+            strategy: this.positionStrategy(),
+            placement: this.desiredPlacement(),
+            sideOffset: this.sideOffset(),
+            alignOffset: this.alignOffset(),
+            arrowHeight: this.arrowSize()().height,
+            arrowWidth: this.arrowSize()().width,
+            avoidCollisions: this.avoidCollisions(),
+            sticky: this.sticky(),
+            detectOverflowOptions: this.detectOverflowOptions(),
+            arrow: this.arrow(),
+            arrowPadding: this.arrowPadding(),
+            hideWhenDetached: this.hideWhenDetached()
+        };
+    }
 
     /**
      * The last successfully computed position, retained while a new one is being computed.
@@ -320,14 +343,14 @@ export class RdxPopperContentWrapper {
         ComputePositionReturn | undefined,
         ComputePositionReturn | undefined
     >({
-        source: () => this.position.value(),
+        source: () => this.position.value() ?? undefined,
         computation: (value, previous) => value ?? previous?.value
     });
 
     /**
      * Whether the panel is positioned.
      */
-    readonly isPositioned = computed(() => this.position.hasValue());
+    readonly isPositioned = computed(() => !!this.position.value());
 
     /**
      * The current placement of the panel.
@@ -407,7 +430,12 @@ export class RdxPopperContentWrapper {
     private readonly afterRenderEffect = afterRenderEffect((onCleanup) => {
         this.position.reload();
 
-        const cleanup = autoUpdate(this.resolvedAnchor(), this.elementRef.nativeElement, () => this.position.reload(), {
+        const anchor = this.resolvedAnchor();
+        if (!anchor) {
+            return;
+        }
+
+        const cleanup = autoUpdate(anchor, this.elementRef.nativeElement, () => this.position.reload(), {
             animationFrame: this.updatePositionStrategy() === 'always'
         });
 

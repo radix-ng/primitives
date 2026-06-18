@@ -20,6 +20,7 @@ import { Direction, ENTRY_FOCUS, EVENT_OPTIONS, focusFirst, Orientation, sortByD
 const rootContext = () => {
     const rovingFocusGroup = inject(RdxRovingFocusGroupDirective);
     return {
+        enabled: rovingFocusGroup.enabled,
         loop: rovingFocusGroup.loop,
         dir: rovingFocusGroup.dir,
         orientation: rovingFocusGroup.orientation,
@@ -51,7 +52,7 @@ export const [injectRovingFocusGroupContext, provideRovingFocusGroupContext] = c
     providers: [provideRovingFocusGroupContext(rootContext)],
     host: {
         '[attr.data-orientation]': 'orientation()',
-        '[attr.tabindex]': 'isTabbingBackOut() || focusableItems().length === 0 ? -1 : 0',
+        '[attr.tabindex]': 'enabled() ? (isTabbingBackOut() || focusableItems().length === 0 ? -1 : 0) : null',
         '[attr.dir]': 'dir()',
         '(focus)': 'handleFocus($event)',
         '(focusout)': 'isTabbingBackOut.set(false)',
@@ -79,6 +80,12 @@ export class RdxRovingFocusGroupDirective {
      * Whether keyboard navigation should loop around
      */
     readonly loopInput = input<boolean, BooleanInput>(true, { transform: booleanAttribute, alias: 'loop' });
+
+    /**
+     * Whether roving focus behavior is active for the group.
+     * @group Props
+     */
+    readonly enabledInput = input<boolean, BooleanInput>(true, { transform: booleanAttribute, alias: 'enabled' });
 
     /**
      * When `true`, will prevent scrolling to the focus item when focused.
@@ -115,6 +122,9 @@ export class RdxRovingFocusGroupDirective {
     private readonly _loop = linkedSignal(() => this.loopInput());
     readonly loop = this._loop.asReadonly();
 
+    private readonly _enabled = linkedSignal(() => this.enabledInput());
+    readonly enabled = this._enabled.asReadonly();
+
     readonly focusableItems = signal<HTMLElement[]>([]);
     protected readonly isClickFocus = signal(false);
     readonly isTabbingBackOut = signal(false);
@@ -146,6 +156,10 @@ export class RdxRovingFocusGroupDirective {
 
     setLoop(value: boolean) {
         this._loop.set(value);
+    }
+
+    setEnabled(value: boolean) {
+        this._enabled.set(value);
     }
 
     /** @ignore */
@@ -187,6 +201,7 @@ export class RdxRovingFocusGroupDirective {
         const isKeyboardFocus = !this.isClickFocus();
 
         if (
+            this.enabled() &&
             event.currentTarget === this.elementRef.nativeElement &&
             event.target === event.currentTarget &&
             isKeyboardFocus &&

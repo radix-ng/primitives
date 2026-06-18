@@ -9,6 +9,7 @@ import {
     input,
     linkedSignal,
     PLATFORM_ID,
+    signal,
     untracked
 } from '@angular/core';
 import { BooleanInput } from '@radix-ng/primitives/core';
@@ -22,9 +23,9 @@ import { focusFirst, generateId, getFocusIntent, wrapArray } from './utils';
     selector: '[rdxRovingFocusItem]',
     host: {
         '[attr.tabindex]': 'tabindex()',
-        '[attr.data-orientation]': 'rootContext?.orientation()',
+        '[attr.data-orientation]': 'enabled() ? rootContext?.orientation() : undefined',
         '[attr.data-active]': 'active() ? "true" : undefined',
-        '[attr.data-disabled]': '!focusable() ? "" : undefined',
+        '[attr.data-disabled]': 'enabled() && !focusable() ? "" : undefined',
         '(mousedown)': 'handleMouseDown($event)',
         '(keydown)': 'handleKeydown($event)',
         '(focus)': 'onFocus()'
@@ -70,6 +71,7 @@ export class RdxRovingFocusItemDirective {
 
     protected readonly focusable = linkedSignal(() => this.focusableInput());
     protected readonly active = linkedSignal(() => this.activeInput());
+    protected readonly enabled = signal(true);
     private readonly tabStopId = linkedSignal(() => this.tabStopIdInput());
 
     /**
@@ -78,6 +80,12 @@ export class RdxRovingFocusItemDirective {
      */
     protected readonly tabindex = computed(() => {
         if (!this.rootContext) {
+            return null;
+        }
+        if (!this.enabled()) {
+            return null;
+        }
+        if (!this.rootContext.enabled()) {
             return null;
         }
         return this.focusable() && this.isCurrentTabStop() ? 0 : -1;
@@ -89,7 +97,7 @@ export class RdxRovingFocusItemDirective {
         // destroy, so a single effect covers register/unregister for the whole lifecycle.
         effect((onCleanup) => {
             const rootContext = this.rootContext;
-            if (!rootContext || !this.focusable()) return;
+            if (!rootContext || !this.enabled() || !this.focusable()) return;
 
             const element = this.elementRef.nativeElement;
             // `registerItem` reads and writes the group's `focusableItems` signal; calling it
@@ -105,6 +113,10 @@ export class RdxRovingFocusItemDirective {
         this.focusable.set(value);
     }
 
+    setEnabled(value: boolean) {
+        this.enabled.set(value);
+    }
+
     setActive(value: boolean) {
         this.active.set(value);
     }
@@ -115,11 +127,19 @@ export class RdxRovingFocusItemDirective {
 
     /** @ignore */
     onFocus() {
+        if (!this.enabled()) {
+            return;
+        }
+
         this.rootContext?.onItemFocus(this.id());
     }
 
     /** @ignore */
     handleMouseDown(event: Event) {
+        if (!this.enabled()) {
+            return;
+        }
+
         if (!this.focusable()) {
             // We prevent focusing non-focusable items on `mousedown`.
             // Even though the item has tabIndex={-1}, that only means take it out of the tab order.
@@ -140,6 +160,8 @@ export class RdxRovingFocusItemDirective {
     handleKeydown(event: Event) {
         const rootContext = this.rootContext;
         if (!rootContext) return;
+        if (!this.enabled()) return;
+        if (!rootContext.enabled()) return;
 
         const keyEvent = event as KeyboardEvent;
         if (keyEvent.key === 'Tab' && keyEvent.shiftKey) {

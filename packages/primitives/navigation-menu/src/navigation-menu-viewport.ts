@@ -19,6 +19,7 @@ import { getActivationDirection, removeIds } from './utils';
 
 interface RenderedContent {
     value: string;
+    entry: RdxNavigationMenuContentEntry;
     view: EmbeddedViewRef<unknown>;
     /** The `data-current` wrapper appended to the viewport (stretches to the viewport box). */
     element: HTMLElement;
@@ -39,9 +40,7 @@ interface RenderedContent {
         '[attr.data-state]': 'rootContext.isOpen() ? "open" : "closed"',
         '[attr.data-orientation]': 'rootContext.orientation()',
         '[attr.data-activation-direction]': 'activationDirection()',
-        '[attr.data-transitioning]': 'transitioning() ? "" : undefined',
-        '[style.--popup-width.px]': 'size()?.width',
-        '[style.--popup-height.px]': 'size()?.height'
+        '[attr.data-transitioning]': 'transitioning() ? "" : undefined'
     }
 })
 export class RdxNavigationMenuViewport {
@@ -60,13 +59,19 @@ export class RdxNavigationMenuViewport {
     protected readonly size = signal<{ width: number; height: number } | null>(null);
 
     private current: RenderedContent | null = null;
+    private readonly rendered = new Map<string, RenderedContent>();
     private previousElement: HTMLElement | null = null;
     private pendingDirection: string | undefined;
     private cleanupTimer: ReturnType<typeof setTimeout> | undefined;
     private readonly resizeObserver =
         typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => this.measure()) : null;
 
-    private readonly activeContent = computed(() => this.rootContext.activeContent());
+    private readonly activeContent = computed(() =>
+        this.rootContext.isOpen() || this.rootContext.transitionStatus() === 'ending'
+            ? this.rootContext.activeContent()
+            : undefined
+    );
+    private readonly contents = computed(() => this.rootContext.contents());
 
     constructor() {
         const unregister = this.rootContext.registerViewport((previous, next) => {
@@ -75,7 +80,8 @@ export class RdxNavigationMenuViewport {
 
         effect(() => {
             const entry = this.activeContent();
-            untracked(() => this.render(entry));
+            const contents = this.contents();
+            untracked(() => this.sync(contents, entry));
         });
 
         inject(DestroyRef).onDestroy(() => {
@@ -83,12 +89,41 @@ export class RdxNavigationMenuViewport {
             this.resizeObserver?.disconnect();
             this.clearCleanupTimer();
             this.removePrevious();
-            this.current?.view.destroy();
+            this.rendered.forEach((content) => content.view.destroy());
+            this.rendered.clear();
+            this.current = null;
         });
+    }
+
+    private sync(
+        contents: Map<string, RdxNavigationMenuContentEntry>,
+        activeEntry: RdxNavigationMenuContentEntry | undefined
+    ) {
+        for (const content of [...this.rendered.values()]) {
+            if (content.value === activeEntry?.value) {
+                continue;
+            }
+
+            const latestEntry = contents.get(content.value);
+            if (!latestEntry || !latestEntry.forceMount()) {
+                if (content !== this.current) {
+                    this.destroyRendered(content);
+                }
+            }
+        }
+
+        for (const entry of contents.values()) {
+            if (entry.value !== activeEntry?.value && entry.forceMount() && !this.rendered.has(entry.value)) {
+                this.markInactive(this.createRendered(entry));
+            }
+        }
+
+        this.render(activeEntry);
     }
 
     private render(entry: RdxNavigationMenuContentEntry | undefined) {
         if (!entry) {
+            this.deactivateCurrent();
             return;
         }
 
@@ -96,13 +131,16 @@ export class RdxNavigationMenuViewport {
             return;
         }
 
-        // Snapshot the outgoing content so it can animate out as `data-previous`.
-        if (this.current) {
-            this.resizeObserver?.unobserve(this.current.measureTarget);
-            this.startLeave(this.current.element);
-            this.current.view.destroy();
-        }
+        this.deactivateCurrent();
 
+        const next = this.rendered.get(entry.value) ?? this.createRendered(entry);
+        this.markCurrent(next);
+        this.current = next;
+        this.resizeObserver?.observe(next.measureTarget);
+        this.measure();
+    }
+
+    private createRendered(entry: RdxNavigationMenuContentEntry): RenderedContent {
         const view = this.viewContainerRef.createEmbeddedView(entry.templateRef);
         view.detectChanges();
 
@@ -120,9 +158,54 @@ export class RdxNavigationMenuViewport {
         // and the popup would balloon to fill the page. The content root sizes to its content.
         const measureTarget = (element.firstElementChild as HTMLElement | null) ?? element;
 
-        this.current = { value: entry.value, view, element, measureTarget };
-        this.resizeObserver?.observe(measureTarget);
-        this.measure();
+        const rendered = { value: entry.value, entry, view, element, measureTarget };
+        this.rendered.set(entry.value, rendered);
+        return rendered;
+    }
+
+    private deactivateCurrent() {
+        const current = this.current;
+        if (!current) {
+            return;
+        }
+
+        this.resizeObserver?.unobserve(current.measureTarget);
+
+        if (current.entry.forceMount()) {
+            this.markInactive(current);
+        } else {
+            this.startLeave(current.element);
+            current.view.destroy();
+            this.rendered.delete(current.value);
+        }
+
+        this.current = null;
+    }
+
+    private markCurrent(content: RenderedContent) {
+        content.element.hidden = false;
+        content.element.removeAttribute('aria-hidden');
+        content.element.removeAttribute('inert');
+        content.element.setAttribute('data-current', '');
+        content.element.removeAttribute('data-previous');
+    }
+
+    private markInactive(content: RenderedContent) {
+        this.resizeObserver?.unobserve(content.measureTarget);
+        content.element.hidden = true;
+        content.element.setAttribute('aria-hidden', 'true');
+        content.element.setAttribute('inert', '');
+        content.element.removeAttribute('data-current');
+        content.element.removeAttribute('data-previous');
+    }
+
+    private destroyRendered(content: RenderedContent) {
+        this.resizeObserver?.unobserve(content.measureTarget);
+        content.view.destroy();
+        this.rendered.delete(content.value);
+        if (this.current === content) {
+            this.current = null;
+        }
     }
 
     private startLeave(element: HTMLElement) {
@@ -180,7 +263,9 @@ export class RdxNavigationMenuViewport {
         const size = this.size();
 
         if (!size || size.width !== width || size.height !== height) {
-            this.size.set({ width, height });
+            const nextSize = { width, height };
+            this.size.set(nextSize);
+            this.rootContext.setSize(nextSize);
         }
     }
 }

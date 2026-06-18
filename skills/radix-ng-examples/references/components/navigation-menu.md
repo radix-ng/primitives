@@ -2,7 +2,7 @@
 
 #### A collection of links and menus for website navigation.
 
-Navigation Menu is a menubar of triggers and links whose content is rendered into one shared popup.
+Navigation Menu is a navigation list of triggers and links whose content is rendered into one shared popup.
 It composes the shared Popper, Portal, Presence, Dismissable Layer, and Roving Focus primitives and
 remains headless: styles and native CSS animations belong to the consumer.
 
@@ -143,13 +143,13 @@ export class RdxNavigationMenuDefaultComponent {
 - ✅ Content morphs between items, exposing `data-activation-direction` and a `data-previous` snapshot for slide animations.
 - ✅ Opens on hover with configurable `delay` / `closeDelay`, and a polygon grace area that keeps the popup reachable.
 - ✅ `value` / `defaultValue` model with `onValueChange`, `onOpenChange`, and `onOpenChangeComplete` outputs.
-- ✅ Menubar keyboard navigation (arrow keys) via the shared Roving Focus primitive.
+- ✅ Keyboard navigation between triggers (arrow keys) via the shared Roving Focus primitive.
 - ✅ Enter / Space / arrow keys open a trigger and move focus into its content; arrows / Home / End navigate the open panel.
 - ✅ Open-follows-focus: while open, moving keyboard focus to another trigger switches the active item.
 - ✅ Horizontal and vertical orientations and LTR / RTL layouts.
-- ✅ Nested navigation menus, each owning its own keyboard navigation.
+- ✅ Nested navigation menus; selecting a nested link also closes the parent menu.
 - ✅ Closes on Escape and outside pointer interaction, restoring focus to the trigger.
-- ✅ Keeps the popup mounted while CSS exit keyframes finish.
+- ✅ Keeps the popup mounted while CSS exit keyframes finish, with opt-in persistent mounting through `keepMounted` / `forceMount`.
 - ✅ Exposes state, transition, placement, and size attributes and CSS variables for styling.
 
 ## Import
@@ -183,9 +183,10 @@ import { RdxNavigationMenuModule } from '@radix-ng/primitives/navigation-menu';
 Apply the parts to your own markup. Each item's `*rdxNavigationMenuContent` template is rendered into
 the shared `rdxNavigationMenuViewport`. `rdxNavigationMenuPortal` is a **structural** directive: it
 teleports the popup into `document.body` while the menu is open and keeps it mounted until the
-closed-state exit keyframes finish. Use `*rdxNavigationMenuPortal` on the positioner for the common
-single-root case, or the explicit `<ng-template rdxNavigationMenuPortal>` form shown below when an
-optional `rdxNavigationMenuBackdrop` makes the content multi-root.
+closed-state exit keyframes finish. Add `[keepMounted]="true"` when the portal should stay in the DOM
+even while closed. Use `*rdxNavigationMenuPortal` on the positioner for the common single-root case,
+or the explicit `<ng-template rdxNavigationMenuPortal>` form shown below when an optional
+`rdxNavigationMenuBackdrop` makes the content multi-root.
 
 ```html
 <nav rdxNavigationMenuRoot>
@@ -222,7 +223,7 @@ optional `rdxNavigationMenuBackdrop` makes the content multi-root.
 
 ### Default
 
-A horizontal menubar with two content panels and a standalone link. Content slides and resizes as
+A horizontal navigation list with two content panels and a standalone link. Content slides and resizes as
 the active item changes.
 
 ```typescript
@@ -485,7 +486,7 @@ export class RdxNavigationMenuRtlComponent {
 
 ### Links only
 
-A menubar of links without any popup. Links are plain tabbable anchors and expose `data-active`.
+A navigation list of links without any popup. Links are plain tabbable anchors and expose `data-active`.
 
 ```typescript
 import { Component } from '@angular/core';
@@ -522,8 +523,9 @@ export class RdxNavigationMenuLinksComponent {
 ### Custom links
 
 `rdxNavigationMenuLink` composes onto your own anchor markup — rich rows with icons, external links,
-and an "action" link that runs a handler via `(onSelect)` without closing the menu
-(`[closeOnClick]="false"`). The same directive sits on a router link.
+and an "action" link that runs a handler via `(onSelect)` without closing the menu. Set
+`[closeOnClick]="true"` on links that should close the menu after selection. The same directive sits
+on a router link.
 
 ```typescript
 import { Component, signal } from '@angular/core';
@@ -534,7 +536,8 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
 /**
  * Custom links: `rdxNavigationMenuLink` composes onto your own anchor markup — rich rows with icons,
  * an external link (opens in a new tab), and an "action" link that runs a handler via `(onSelect)`
- * without closing the menu (`[closeOnClick]="false"`). The same directive would sit on a router link.
+ * without closing the menu. Add `[closeOnClick]="true"` when a link selection should close the menu.
+ * The same directive would sit on a router link.
  */
 @Component({
     selector: 'rdx-navigation-menu-custom-links',
@@ -596,13 +599,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                             </li>
                             <li>
                                 <!-- Action link: keeps the menu open and runs a handler instead of navigating. -->
-                                <a
-                                    [class]="row"
-                                    [closeOnClick]="false"
-                                    (onSelect)="copy($event)"
-                                    rdxNavigationMenuLink
-                                    href="#"
-                                >
+                                <a [class]="row" (onSelect)="copy($event)" rdxNavigationMenuLink href="#">
                                     <span [class]="iconBox"><svg lucideCode size="18"></svg></span>
                                     <span class="flex min-w-0 flex-1 flex-col">
                                         <span [class]="m.cardHeading">
@@ -724,8 +721,8 @@ export class RdxNavigationMenuLargeComponent {
 
 ### Nested submenus
 
-Render a `rdxNavigationMenuRoot` inside content for a nested menu. The nested root detects its parent
-and positions its own popup inline; arrow keys navigate the nested menu independently.
+Render a `rdxNavigationMenuRoot` inside content for a nested menu. The nested root detects its parent,
+positions its own popup inline, and link selection closes both the nested and parent roots.
 
 ```typescript
 import { Component } from '@angular/core';
@@ -961,38 +958,43 @@ export class RdxNavigationMenuNestedInlineComponent {
 
 ### Trigger
 
-`RdxNavigationMenuTrigger` opens its item's content and exposes ARIA and state attributes.
+`RdxNavigationMenuTrigger` opens its item's content and exposes state attributes. While open it points
+`aria-controls` at the shared popup id, matching Base UI's navigation semantics.
 
 ### Content
 
 `RdxNavigationMenuContent` is a structural directive; its template is rendered into the shared
-viewport when its item is active.
+viewport when its item is active. Add `[forceMount]="true"` on the explicit
+`<ng-template rdxNavigationMenuContent>` form to keep inactive content mounted, hidden, and inert.
 
 ### Link
 
-`RdxNavigationMenuLink` is a navigation link that closes the menu on selection unless prevented.
+`RdxNavigationMenuLink` is a navigation link. It emits `(onSelect)` and keeps the menu open by
+default; set `[closeOnClick]="true"` when selection should close the menu.
 
 ### Portal
 
 `RdxNavigationMenuPortal` is a structural directive (`*rdxNavigationMenuPortal` or
 `<ng-template rdxNavigationMenuPortal>`) that teleports the popup to `document.body` by default. Pass
-`[container]` on the explicit `<ng-template>` form to portal into a different element.
+`[container]` on the explicit `<ng-template>` form to portal into a different element, and
+`[keepMounted]="true"` to keep the closed portal mounted.
 
 ### Positioner
 
 `RdxNavigationMenuPositioner` delegates placement and collision handling to the shared Popper
-primitive and exposes anchor / positioner CSS variables.
+primitive and exposes anchor / `--positioner-width` / `--positioner-height` CSS variables.
 
 ### Viewport
 
 `RdxNavigationMenuViewport` renders the active item's content, animates the transition between items,
-and exposes `--popup-width` / `--popup-height` for the size morph.
+and consumes the inherited `--popup-width` / `--popup-height` variables for the size morph.
 
 ### List, Item, Icon, Popup, Arrow, and Backdrop
 
-These parts read their behavior and state from context. `List` is the `menubar` container with roving
-focus, `Item` carries the `value`, `Icon` exposes the open state for a caret, and `Popup`, `Arrow`,
-and `Backdrop` reflect open / placement / transition state for styling.
+These parts read their behavior and state from context. `List` groups the navigation items with
+roving focus, `Item` carries the `value`, `Icon` exposes the open state for a caret, and `Popup`,
+`Arrow`, and `Backdrop` reflect open / placement / transition state for styling. `Popup` owns
+`--popup-width` / `--popup-height`, and `Backdrop` is presentational.
 
 ## Accessibility
 
@@ -1000,10 +1002,10 @@ and `Backdrop` reflect open / placement / transition state for styling.
 
 | Key | Description |
 | --- | --- |
-| `ArrowLeft` / `ArrowRight` | Moves focus between triggers in a horizontal menubar. Respects `dir` — `ArrowLeft` moves to the previous item in LTR and to the next in RTL. |
-| `ArrowUp` / `ArrowDown` | Moves focus between triggers in a vertical menubar. |
-| `Home` / `PageUp` | Moves focus to the first trigger in the menubar. |
-| `End` / `PageDown` | Moves focus to the last trigger in the menubar. |
+| `ArrowLeft` / `ArrowRight` | Moves focus between triggers in a horizontal root. Respects `dir` — `ArrowLeft` moves to the previous item in LTR and to the next in RTL. |
+| `ArrowUp` / `ArrowDown` | Moves focus between triggers in a vertical root. |
+| `Home` / `PageUp` | Moves focus to the first trigger in the list. |
+| `End` / `PageDown` | Moves focus to the last trigger in the list. |
 | `Enter` / `Space` | Toggles the focused trigger's content panel open or closed and moves focus into the open panel. |
 | `ArrowDown` | When a horizontal trigger is focused and the panel is open, moves focus to the first focusable element inside the content panel. |
 | `ArrowRight` | When a vertical (LTR) trigger is focused and the panel is open, moves focus to the first focusable element inside the content panel. |

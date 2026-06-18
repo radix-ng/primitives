@@ -151,7 +151,7 @@ describe('Menubar', () => {
         const root: HTMLElement = fixture.nativeElement.querySelector('[rdxMenubarRoot]');
         expect(root.getAttribute('role')).toBe('menubar');
         expect(root.getAttribute('data-orientation')).toBe('horizontal');
-        expect(root.getAttribute('tabindex')).toBe('0');
+        expect(root.hasAttribute('tabindex')).toBe(false);
     });
 
     it('triggers have role="menuitem" and aria-haspopup="menu"', () => {
@@ -161,10 +161,17 @@ describe('Menubar', () => {
         });
     });
 
-    it('does not put every trigger in the tab order', () => {
-        triggers.forEach((trigger) => {
-            expect(trigger.getAttribute('tabindex')).toBe('-1');
-        });
+    it('puts only the current trigger in the tab order', () => {
+        expect(triggers[0].getAttribute('tabindex')).toBe('0');
+        expect(triggers[1].getAttribute('tabindex')).toBe('-1');
+        expect(triggers[2].getAttribute('tabindex')).toBe('-1');
+
+        keydown(triggers[0], 'ArrowRight');
+        fixture.detectChanges();
+
+        expect(triggers[0].getAttribute('tabindex')).toBe('-1');
+        expect(triggers[1].getAttribute('tabindex')).toBe('0');
+        expect(triggers[2].getAttribute('tabindex')).toBe('-1');
     });
 
     it('click opens a menu', () => {
@@ -358,6 +365,19 @@ describe('Menubar', () => {
         fixture.detectChanges();
 
         expect(triggers[0].getAttribute('data-state')).toBe('open');
+    });
+
+    it('ArrowDown opens the menu after moving focus with ArrowRight', () => {
+        triggers[0].focus();
+        keydown(triggers[0], 'ArrowRight');
+        fixture.detectChanges();
+
+        expect(document.activeElement).toBe(triggers[1]);
+
+        keydown(triggers[1], 'ArrowDown');
+        fixture.detectChanges();
+
+        expect(triggers[1].getAttribute('data-state')).toBe('open');
     });
 
     it('Enter opens the focused menu, focuses the first item, and ArrowDown advances highlight', async () => {

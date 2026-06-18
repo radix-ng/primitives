@@ -37,6 +37,20 @@ test.describe('Navigation Menu — new floating engine migration', () => {
         await expect(page.locator(trigger).first()).toBeFocused();
     });
 
+    test('closing popup animation holds its final frame until unmount', async ({ page }) => {
+        await gotoStory(page, 'primitives-navigation-menu--default');
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        await page.keyboard.press('Escape');
+
+        const closingPopup = page.locator(`${popup}[data-ending-style]`);
+        await expect(closingPopup).toBeVisible();
+        await expect(closingPopup).toHaveCSS('animation-fill-mode', 'forwards');
+        await expect(page.locator('[rdxNavigationMenuViewport] > [data-current]')).toHaveCount(1);
+        await expect(page.locator('[rdxNavigationMenuViewport] > [data-previous]')).toHaveCount(0);
+    });
+
     test('an outside press closes the menu', async ({ page }) => {
         await gotoStory(page, 'primitives-navigation-menu--default');
         await page.locator(trigger).first().click();
@@ -56,6 +70,55 @@ test.describe('Navigation Menu — new floating engine migration', () => {
         // rather than counting as an outside press / focus-out that would dismiss.
         await triggers.nth(1).click();
         await expect(page.locator(popup)).toBeVisible();
+    });
+
+    test('ArrowLeft and ArrowRight move focus inside the open popup', async ({ page }) => {
+        await gotoStory(page, 'primitives-navigation-menu--default');
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        const links = page.locator(`${popup} a`);
+        await links.nth(0).focus();
+        await expect(links.nth(0)).toBeFocused();
+
+        await page.keyboard.press('ArrowRight');
+        await expect(links.nth(1)).toBeFocused();
+
+        await page.keyboard.press('ArrowLeft');
+        await expect(links.nth(0)).toBeFocused();
+    });
+
+    test('ArrowLeft and ArrowRight include top-level links in list navigation', async ({ page }) => {
+        await gotoStory(page, 'primitives-navigation-menu--default');
+        const triggers = page.locator(trigger);
+        const githubLink = page.locator('a[rdxNavigationMenuLink]:has-text("GitHub")');
+
+        await triggers.nth(1).focus();
+        await expect(triggers.nth(1)).toBeFocused();
+
+        await page.keyboard.press('ArrowRight');
+        await expect(githubLink).toBeFocused();
+
+        await page.keyboard.press('ArrowLeft');
+        await expect(triggers.nth(1)).toBeFocused();
+    });
+
+    test('Tab exits the popup through the top-level navigation order', async ({ page }) => {
+        await gotoStory(page, 'primitives-navigation-menu--default');
+        const triggers = page.locator(trigger);
+
+        await triggers.first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        await page.locator(`${popup} a`).last().focus();
+        await page.keyboard.press('Tab');
+        await expect(triggers.nth(1)).toBeFocused();
+        await expect(page.locator(popup)).toContainText('Styling');
+
+        await page.locator(`${popup} a`).last().focus();
+        await page.keyboard.press('Tab');
+        await expect(page.locator('a[rdxNavigationMenuLink]:has-text("GitHub")')).toBeFocused();
+        await expect(page.locator(popup)).toHaveCount(0);
     });
 });
 

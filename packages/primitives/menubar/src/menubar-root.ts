@@ -4,6 +4,7 @@ import {
     contentChildren,
     Directive,
     effect,
+    ElementRef,
     inject,
     input,
     signal,
@@ -81,16 +82,19 @@ let nextMenubarItemId = 0;
     ],
     host: {
         role: 'menubar',
-        tabindex: '0',
         '[attr.aria-orientation]': 'orientation()',
         '[attr.data-orientation]': 'orientation()',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
         '[attr.data-has-submenu-open]': 'isAnyOpen() ? "" : undefined',
+        '(focusin)': 'handleFocusIn($event)',
+        '(keydown.arrowdown)': 'handleArrowDown($event)',
+        '(keydown.arrowup)': 'handleArrowUp($event)',
         '(keydown.arrowleft)': 'handleArrowLeft($event)',
         '(keydown.arrowright)': 'handleArrowRight($event)'
     }
 })
 export class RdxMenubarRoot {
+    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly menuRoots = contentChildren(RdxMenuRoot);
     private readonly ids = new WeakMap<RdxMenuRoot, string>();
     private items: RdxMenubarItem[] = [];
@@ -366,6 +370,14 @@ export class RdxMenubarRoot {
         this.handleOpenMenuNavigation(event, 1);
     }
 
+    protected handleArrowDown(event: KeyboardEvent): void {
+        this.handleVerticalOpen(event, 'first');
+    }
+
+    protected handleArrowUp(event: KeyboardEvent): void {
+        this.handleVerticalOpen(event, 'last');
+    }
+
     private handleOpenMenuNavigation(event: Event, offset: 1 | -1): void {
         const activeId = this.activeId();
 
@@ -379,9 +391,39 @@ export class RdxMenubarRoot {
         this.focusAdjacent(activeId, offset, true);
     }
 
+    private handleVerticalOpen(event: KeyboardEvent, autoFocus: 'first' | 'last'): void {
+        if (event.defaultPrevented || this.disabled()) {
+            return;
+        }
+
+        const target = event.target as Element | null;
+        if (target?.closest('[rdxMenuPopup]')) {
+            return;
+        }
+
+        const item = this.resolveKeyboardTarget(target);
+        if (!item || item.disabled()) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+
+        this.updateTriggerTabStops(item.id);
+        item.el.focus({ preventScroll: true });
+        if (item.root) {
+            item.root.show(autoFocus);
+        } else {
+            item.open();
+        }
+        this.activateItem(item.id);
+    }
+
     private focusItem(item: RdxMenubarItem | undefined, openOnMove: boolean): void {
         if (!item || this.disabled()) return;
 
+        this.updateTriggerTabStops(item.id);
         item.el.focus();
         if (openOnMove) {
             item.open();
@@ -389,8 +431,46 @@ export class RdxMenubarRoot {
         }
     }
 
-    private updateTriggerTabStops(): void {
-        this.items.forEach((item) => item.el.setAttribute('tabindex', '-1'));
+    protected handleFocusIn(event: FocusEvent): void {
+        const target = event.target;
+
+        if (target === this.elementRef.nativeElement) {
+            this.focusItem(this.enabledItems()[0], false);
+            return;
+        }
+
+        const focusedItem = this.items.find((item) => item.el === target);
+        if (focusedItem) {
+            this.updateTriggerTabStops(focusedItem.id);
+        }
+    }
+
+    private updateTriggerTabStops(preferredId?: string): void {
+        const enabled = this.enabledItems();
+        const focused = this.items.find((item) => item.el === item.el.ownerDocument.activeElement);
+        const tabbable =
+            enabled.find((item) => item.id === preferredId) ??
+            enabled.find((item) => item.id === this.activeId()) ??
+            (focused && !focused.disabled() ? focused : undefined) ??
+            enabled[0];
+
+        this.items.forEach((item) => item.el.setAttribute('tabindex', item === tabbable ? '0' : '-1'));
+    }
+
+    private resolveKeyboardTarget(target: Element | null): RdxMenubarItem | undefined {
+        const enabled = this.enabledItems();
+
+        if (target && target !== this.elementRef.nativeElement) {
+            const item = enabled.find((candidate) => candidate.el === target);
+            if (item) {
+                return item;
+            }
+        }
+
+        const activeId = this.activeId();
+        return (
+            enabled.find((item) => item.id === activeId) ?? enabled.find((item) => item.el.tabIndex === 0) ?? enabled[0]
+        );
     }
 
     private enabledItems(): RdxMenubarItem[] {

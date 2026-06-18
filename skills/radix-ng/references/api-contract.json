@@ -4122,7 +4122,10 @@
         {
           "directive": "RdxNavigationMenuLink",
           "selector": "[rdxNavigationMenuLink]",
-          "description": "A navigation link. Closes the menu on selection unless prevented.\n\nUsed both as a top-level menubar item and inside content. It is a plain tabbable anchor (not part\nof the menubar's arrow-key roving), matching Base UI.",
+          "description": "A navigation link. Can close the menu on selection when `closeOnClick` is enabled.\n\nUsed both as a top-level navigation item and inside content. Top-level links join the list's\nroving focus collection, matching Base UI's CompositeItem-backed NavigationMenu.Link.",
+          "hostDirectives": [
+            "RdxRovingFocusItemDirective"
+          ],
           "inputs": [
             {
               "name": "active",
@@ -4131,7 +4134,7 @@
             },
             {
               "name": "closeOnClick",
-              "default": "true",
+              "default": "false",
               "description": "Whether selecting the link should close the menu."
             }
           ],
@@ -4146,7 +4149,7 @@
         {
           "directive": "RdxNavigationMenuList",
           "selector": "[rdxNavigationMenuList]",
-          "description": "Contains the navigation menu items. Renders as a menubar with roving keyboard focus.",
+          "description": "Contains the navigation menu items and coordinates roving keyboard focus between triggers.",
           "hostDirectives": [
             "RdxRovingFocusGroupDirective"
           ],
@@ -4183,11 +4186,17 @@
           "directive": "RdxNavigationMenuPortal",
           "selector": "ng-template[rdxNavigationMenuPortal]",
           "exportAs": "rdxNavigationMenuPortal",
-          "description": "Structural directive that teleports the navigation menu popup into a container (default\n`document.body`) while the menu is open, and keeps it mounted until any CSS exit `@keyframes`\nfinishes.\n\nApply it with the `*` microsyntax on the positioner —\n`<div *rdxNavigationMenuPortal rdxNavigationMenuPositioner>` — or as an explicit\n`<ng-template rdxNavigationMenuPortal>`. For a custom container use the explicit form with\n`[container]`.",
+          "description": "Structural directive that teleports the navigation menu popup into a container (default\n`document.body`) while the menu is open, and keeps it mounted until any CSS exit `@keyframes`\nfinishes. Set `[keepMounted]=\"true\"` to keep the portal mounted while closed.\n\nApply it with the `*` microsyntax on the positioner —\n`<div *rdxNavigationMenuPortal rdxNavigationMenuPositioner>` — or as an explicit\n`<ng-template rdxNavigationMenuPortal>`. For a custom container use the explicit form with\n`[container]`.",
           "hostDirectives": [
             "RdxPortalPresence"
           ],
-          "inputs": [],
+          "inputs": [
+            {
+              "name": "keepMounted",
+              "default": "false",
+              "description": "Keep the portal mounted while the menu is closed."
+            }
+          ],
           "outputs": []
         },
         {
@@ -5675,6 +5684,12 @@
               "type": "Direction | undefined",
               "default": "undefined",
               "description": "The direction of navigation between items."
+            },
+            {
+              "name": "enabled",
+              "type": "boolean",
+              "default": "true",
+              "description": "Whether roving focus behavior is active for the group."
             },
             {
               "name": "loop",

@@ -63,9 +63,8 @@ const context = () => contextFor(inject(RdxNavigationMenuRoot));
     ],
     hostDirectives: [RdxPopper, RdxFloatingNodeRegistration],
     host: {
-        role: 'navigation',
-        'aria-label': 'Main',
         '[attr.data-orientation]': 'orientation()',
+        '[attr.data-nested]': 'nested ? "" : undefined',
         '[attr.dir]': 'dir()'
     }
 })
@@ -154,7 +153,10 @@ export class RdxNavigationMenuRoot {
     readonly present = computed(() => this.isOpen() || this.preventUnmountOnClose());
     readonly trigger = signal<HTMLElement | undefined>(undefined);
     readonly triggers = signal<HTMLElement[]>([]);
+    readonly list = signal<HTMLElement | undefined>(undefined);
     readonly contents = signal<Map<string, RdxNavigationMenuContentEntry>>(new Map());
+    readonly popup = signal<HTMLElement | undefined>(undefined);
+    readonly size = signal<{ width: number; height: number } | null>(null);
 
     readonly activeContent = computed(() => {
         const value = this.value() ?? this.previousValue();
@@ -249,6 +251,10 @@ export class RdxNavigationMenuRoot {
         this.preventUnmountOnClose.set(value === null ? change.shouldPreventUnmountOnClose() : false);
         this.value.set(value);
         this.onValueChange.emit(value);
+
+        if (this.nested && value === null && reason === 'link-select') {
+            this.parentRoot?.close(reason, event);
+        }
     }
 
     open(value: string, trigger: HTMLElement, reason: RdxNavigationMenuOpenChangeReason = 'none', event?: Event) {
@@ -360,6 +366,16 @@ export class RdxNavigationMenuRoot {
         };
     }
 
+    registerList(list: HTMLElement) {
+        this.list.set(list);
+
+        return () => {
+            if (this.list() === list) {
+                this.list.set(undefined);
+            }
+        };
+    }
+
     registerContent(entry: RdxNavigationMenuContentEntry) {
         this.contents.update((contents) => new Map(contents).set(entry.value, entry));
 
@@ -374,6 +390,20 @@ export class RdxNavigationMenuRoot {
                 return next;
             });
         };
+    }
+
+    registerPopup(element: HTMLElement) {
+        this.popup.set(element);
+
+        return () => {
+            if (this.popup() === element) {
+                this.popup.set(undefined);
+            }
+        };
+    }
+
+    setSize(size: { width: number; height: number } | null) {
+        this.size.set(size);
     }
 
     registerTransitionElement(element: HTMLElement) {
@@ -462,7 +492,11 @@ function contextFor(root: RdxNavigationMenuRoot): RdxNavigationMenuRootContext {
         transitionStatus: root.transitionStatus,
         trigger: root.trigger.asReadonly(),
         triggers: root.triggers.asReadonly(),
+        list: root.list.asReadonly(),
+        contents: root.contents.asReadonly(),
         activeContent: root.activeContent,
+        popup: root.popup.asReadonly(),
+        size: root.size.asReadonly(),
         contentId: (value) => root.contentId(value),
         triggerId: (value) => root.triggerId(value),
         setValue: (value, reason, event) => root.setValue(value, reason, event),
@@ -473,8 +507,11 @@ function contextFor(root: RdxNavigationMenuRoot): RdxNavigationMenuRootContext {
         closeOnHover: (event) => root.closeOnHover(event),
         cancelHoverOpen: () => root.cancelHoverOpen(),
         cancelHoverClose: () => root.cancelHoverClose(),
+        setSize: (size) => root.setSize(size),
         registerTrigger: (value, trigger) => root.registerTrigger(value, trigger),
+        registerList: (list) => root.registerList(list),
         registerContent: (entry) => root.registerContent(entry),
+        registerPopup: (element) => root.registerPopup(element),
         registerTransitionElement: (element) => root.registerTransitionElement(element),
         registerViewport: (onTriggerChange) => root.registerViewport(onTriggerChange)
     };

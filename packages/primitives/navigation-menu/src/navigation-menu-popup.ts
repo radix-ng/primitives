@@ -1,11 +1,14 @@
 import { computed, DestroyRef, Directive, ElementRef, inject, output } from '@angular/core';
 import {
     ARROW_DOWN,
+    ARROW_LEFT,
+    ARROW_RIGHT,
     ARROW_UP,
     END,
     HOME,
     RDX_FLOATING_REGISTRATION,
-    RDX_FLOATING_ROOT_CONTEXT
+    RDX_FLOATING_ROOT_CONTEXT,
+    TAB
 } from '@radix-ng/primitives/core';
 import { RdxDismiss, RdxOutsidePressDomEvent } from '@radix-ng/primitives/dismissable-layer';
 import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
@@ -19,9 +22,8 @@ import { focusFirst, getTabbableCandidates } from './utils';
     selector: '[rdxNavigationMenuPopup]',
     hostDirectives: [RdxPopperContent],
     host: {
-        role: 'menu',
         tabindex: '-1',
-        '[attr.aria-labelledby]': 'labelledBy()',
+        '[id]': 'id()',
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
         '[attr.data-starting-style]': 'rootContext.transitionStatus() === "starting" ? "" : undefined',
@@ -30,6 +32,8 @@ import { focusFirst, getTabbableCandidates } from './utils';
         '[attr.data-state]': 'rootContext.isOpen() ? "open" : "closed"',
         '[attr.data-side]': 'side()',
         '[attr.data-align]': 'align()',
+        '[style.--popup-width.px]': 'rootContext.size()?.width',
+        '[style.--popup-height.px]': 'rootContext.size()?.height',
         '(pointerenter)': 'rootContext.cancelHoverClose()',
         '(pointerleave)': 'onPointerLeave($event)',
         '(keydown)': 'onKeydown($event)'
@@ -45,10 +49,9 @@ export class RdxNavigationMenuPopup {
     protected readonly side = computed(() => this.wrapper?.placedSide());
     protected readonly align = computed(() => this.wrapper?.placedAlign());
 
-    /** Names the menu after the active trigger so the `role="menu"` element has an accessible name. */
-    protected readonly labelledBy = computed(() => {
+    protected readonly id = computed(() => {
         const value = this.rootContext.value() ?? this.rootContext.previousValue();
-        return value ? this.rootContext.triggerId(value) : undefined;
+        return value ? `${this.rootContext.baseId}-popup-${value}` : `${this.rootContext.baseId}-popup`;
     });
 
     /**
@@ -69,8 +72,10 @@ export class RdxNavigationMenuPopup {
     constructor() {
         const destroyRef = inject(DestroyRef);
         const unregisterTransitionElement = this.rootContext.registerTransitionElement(this.elementRef.nativeElement);
+        const unregisterPopup = this.rootContext.registerPopup(this.elementRef.nativeElement);
 
         destroyRef.onDestroy(unregisterTransitionElement);
+        destroyRef.onDestroy(unregisterPopup);
 
         // The popup is this layer's floating element (the inside surface for containment checks). The
         // triggers are registered as "inside" on the shared root context (in `registerTrigger`), so a
@@ -113,12 +118,21 @@ export class RdxNavigationMenuPopup {
     }
 
     /**
-     * Keyboard navigation inside the open panel: Down/Up move between the panel's focusable items in
-     * DOM order, Home/End jump to the first/last, and Up from the first item returns focus to the
-     * trigger. (Tab keeps working natively; Escape is handled by the dismissal capability.)
+     * Keyboard navigation inside the open panel mirrors Base UI's CompositeRoot-backed content:
+     * arrow keys move between panel focusables in DOM order, Home/End jump to the first/last, Up from
+     * the first item returns focus to the trigger, and Tab exits the portalled panel through the
+     * logical top-level navigation order. Escape is handled by the dismissal capability.
      */
     protected onKeydown(event: KeyboardEvent) {
-        if (event.key !== ARROW_DOWN && event.key !== ARROW_UP && event.key !== HOME && event.key !== END) {
+        if (
+            event.key !== ARROW_DOWN &&
+            event.key !== ARROW_UP &&
+            event.key !== ARROW_LEFT &&
+            event.key !== ARROW_RIGHT &&
+            event.key !== TAB &&
+            event.key !== HOME &&
+            event.key !== END
+        ) {
             return;
         }
 
@@ -136,9 +150,14 @@ export class RdxNavigationMenuPopup {
             return;
         }
 
-        event.preventDefault();
-
         const currentIndex = candidates.indexOf(document.activeElement as HTMLElement);
+
+        if (event.key === TAB) {
+            this.handleTabKey(event, candidates, currentIndex);
+            return;
+        }
+
+        event.preventDefault();
 
         if (event.key === HOME) {
             focusFirst([candidates[0]]);
@@ -156,11 +175,81 @@ export class RdxNavigationMenuPopup {
             return;
         }
 
+        if (event.key === ARROW_RIGHT || event.key === ARROW_LEFT) {
+            const moveNext = this.rootContext.dir() === 'rtl' ? event.key === ARROW_LEFT : event.key === ARROW_RIGHT;
+            const next = moveNext
+                ? currentIndex < candidates.length - 1
+                    ? currentIndex + 1
+                    : 0
+                : currentIndex > 0
+                  ? currentIndex - 1
+                  : candidates.length - 1;
+            focusFirst([candidates[next]]);
+            return;
+        }
+
         // ArrowUp: from the first item, return focus to the trigger; otherwise move to the previous.
         if (currentIndex <= 0) {
             this.rootContext.trigger()?.focus();
         } else {
             focusFirst([candidates[currentIndex - 1]]);
         }
+    }
+
+    private handleTabKey(event: KeyboardEvent, candidates: HTMLElement[], currentIndex: number) {
+        if (event.altKey || event.ctrlKey || event.metaKey) {
+            return;
+        }
+
+        const isFirst = currentIndex <= 0;
+        const isLast = currentIndex === candidates.length - 1;
+
+        if (event.shiftKey) {
+            if (!isFirst) {
+                return;
+            }
+
+            event.preventDefault();
+            this.rootContext.trigger()?.focus();
+            return;
+        }
+
+        if (!isLast) {
+            return;
+        }
+
+        const nextItem = this.getNextTopLevelItem();
+
+        if (!nextItem) {
+            return;
+        }
+
+        event.preventDefault();
+        nextItem.focus();
+    }
+
+    private getNextTopLevelItem(): HTMLElement | undefined {
+        const activeTrigger = this.rootContext.trigger();
+
+        if (!activeTrigger) {
+            return undefined;
+        }
+
+        const items = this.getTopLevelItems();
+        const currentIndex = items.indexOf(activeTrigger);
+
+        return currentIndex === -1 ? undefined : items[currentIndex + 1];
+    }
+
+    private getTopLevelItems(): HTMLElement[] {
+        const list = this.rootContext.list();
+
+        if (!list) {
+            return this.rootContext.triggers();
+        }
+
+        return Array.from(list.querySelectorAll<HTMLElement>('[rdxNavigationMenuTrigger], [rdxNavigationMenuLink]'))
+            .filter((item) => !item.hasAttribute('disabled'))
+            .filter((item) => item.getAttribute('aria-hidden') !== 'true');
     }
 }

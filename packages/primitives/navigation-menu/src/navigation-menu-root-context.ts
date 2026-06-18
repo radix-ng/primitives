@@ -59,7 +59,11 @@ export interface RdxNavigationMenuRootContext {
     /** The active trigger element the popup is anchored to. */
     readonly trigger: Signal<HTMLElement | undefined>;
     readonly triggers: Signal<HTMLElement[]>;
+    readonly list: Signal<HTMLElement | undefined>;
+    readonly contents: Signal<Map<string, RdxNavigationMenuContentEntry>>;
     readonly activeContent: Signal<RdxNavigationMenuContentEntry | undefined>;
+    readonly popup: Signal<HTMLElement | undefined>;
+    readonly size: Signal<{ width: number; height: number } | null>;
 
     contentId(value: string): string;
     triggerId(value: string): string;
@@ -72,9 +76,12 @@ export interface RdxNavigationMenuRootContext {
     closeOnHover(event?: PointerEvent): void;
     cancelHoverOpen(): void;
     cancelHoverClose(): void;
+    setSize(size: { width: number; height: number } | null): void;
 
     registerTrigger(value: string, trigger: HTMLElement): () => void;
+    registerList(list: HTMLElement): () => void;
     registerContent(entry: RdxNavigationMenuContentEntry): () => void;
+    registerPopup(element: HTMLElement): () => void;
     registerTransitionElement(element: HTMLElement): () => void;
     registerViewport(onTriggerChange: (previous: HTMLElement, next: HTMLElement) => void): () => void;
 }

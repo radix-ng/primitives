@@ -11,7 +11,7 @@ function pressKey(element: HTMLElement, key: string, init: KeyboardEventInit = {
 
 @Component({
     template: `
-        <div [orientation]="orientation" [loop]="loop" rdxRovingFocusGroup>
+        <div [enabled]="enabled" [orientation]="orientation" [loop]="loop" rdxRovingFocusGroup>
             <button rdxRovingFocusItem>One</button>
             <button [focusable]="secondFocusable" rdxRovingFocusItem>Two</button>
             <button rdxRovingFocusItem>Three</button>
@@ -22,6 +22,7 @@ function pressKey(element: HTMLElement, key: string, init: KeyboardEventInit = {
 class ItemHostComponent {
     orientation: 'horizontal' | 'vertical' = 'horizontal';
     loop = true;
+    enabled = true;
     secondFocusable = true;
 }
 
@@ -220,5 +221,24 @@ describe('RdxRovingFocusItemDirective', () => {
 
     it('does not apply visual styles to the group', () => {
         expect(host.style.outline).toBe('');
+    });
+
+    it('can disable roving tabindex and arrow-key handling', async () => {
+        fixture.componentInstance.enabled = false;
+        fixture.changeDetectorRef.markForCheck();
+        fixture.detectChanges();
+
+        expect(buttons.every((button) => !button.hasAttribute('tabindex'))).toBe(true);
+        expect(host.hasAttribute('tabindex')).toBe(false);
+
+        buttons[0].focus();
+        fixture.detectChanges();
+
+        const event = new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true });
+        buttons[0].dispatchEvent(event);
+        await flushMicrotasks();
+
+        expect(event.defaultPrevented).toBe(false);
+        expect(document.activeElement).toBe(buttons[0]);
     });
 });

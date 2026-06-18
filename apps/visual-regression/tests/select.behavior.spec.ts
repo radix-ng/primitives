@@ -215,6 +215,20 @@ test('keyboard navigation: opening focuses the listbox and arrows move the highl
     await expect.poll(activeDescendant).not.toBe(first); // highlight advanced via aria-activedescendant
 });
 
+test('mouse-opened select keeps keyboard navigation on the popup listbox', async ({ page }) => {
+    await gotoStory(page, 'primitives-select--default');
+
+    await page.locator('[rdxSelectTrigger]').click();
+    await expect(page.locator('[rdxSelectPopup]')).toBeFocused();
+    await expect(page.locator('[rdxSelectItem]').nth(0)).toHaveAttribute('data-highlighted', '');
+
+    await page.keyboard.press('ArrowDown');
+    await expect(page.locator('[rdxSelectItem]').nth(1)).toHaveAttribute('data-highlighted', '');
+
+    await page.keyboard.press('ArrowUp');
+    await expect(page.locator('[rdxSelectItem]').nth(0)).toHaveAttribute('data-highlighted', '');
+});
+
 /**
  * Arrow navigation must stop at the ends, not wrap around (native `<select>` behavior). Guards the
  * `loop: false` highlight model.

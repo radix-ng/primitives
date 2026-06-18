@@ -135,9 +135,9 @@
     --animate-popover-viewport-out: popover-viewport-out 200ms ease-in forwards;
 
     --animate-navigation-menu-popup-in: navigation-menu-popup-in 200ms ease;
-    --animate-navigation-menu-popup-out: navigation-menu-popup-out 200ms ease;
+    --animate-navigation-menu-popup-out: navigation-menu-popup-out 200ms ease forwards;
     --animate-navigation-menu-content-in: navigation-menu-content-in 250ms ease;
-    --animate-navigation-menu-content-out: navigation-menu-content-out 250ms ease;
+    --animate-navigation-menu-content-out: navigation-menu-content-out 250ms ease forwards;
 
     --animate-dialog-overlay-in: dialog-overlay-in 150ms ease-out;
     --animate-dialog-overlay-out: dialog-overlay-out 150ms ease-in forwards;

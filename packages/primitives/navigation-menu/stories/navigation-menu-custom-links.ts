@@ -6,7 +6,8 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
 /**
  * Custom links: `rdxNavigationMenuLink` composes onto your own anchor markup — rich rows with icons,
  * an external link (opens in a new tab), and an "action" link that runs a handler via `(onSelect)`
- * without closing the menu (`[closeOnClick]="false"`). The same directive would sit on a router link.
+ * without closing the menu. Add `[closeOnClick]="true"` when a link selection should close the menu.
+ * The same directive would sit on a router link.
  */
 @Component({
     selector: 'rdx-navigation-menu-custom-links',
@@ -68,13 +69,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                             </li>
                             <li>
                                 <!-- Action link: keeps the menu open and runs a handler instead of navigating. -->
-                                <a
-                                    [class]="row"
-                                    [closeOnClick]="false"
-                                    (onSelect)="copy($event)"
-                                    rdxNavigationMenuLink
-                                    href="#"
-                                >
+                                <a [class]="row" (onSelect)="copy($event)" rdxNavigationMenuLink href="#">
                                     <span [class]="iconBox"><svg lucideCode size="18"></svg></span>
                                     <span class="flex min-w-0 flex-1 flex-col">
                                         <span [class]="m.cardHeading">

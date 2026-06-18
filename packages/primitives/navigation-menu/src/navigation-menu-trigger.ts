@@ -14,9 +14,8 @@ import { focusFirst, getTabbableCandidates } from './utils';
     host: {
         type: 'button',
         '[id]': 'item.triggerId()',
-        '[attr.aria-controls]': 'item.contentId()',
+        '[attr.aria-controls]': 'open() ? rootContext.popup()?.id : undefined',
         '[attr.aria-expanded]': 'open()',
-        '[attr.aria-haspopup]': '"menu"',
         '[attr.data-state]': 'open() ? "open" : "closed"',
         '[attr.data-popup-open]': 'open() ? "" : undefined',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
@@ -30,7 +29,7 @@ import { focusFirst, getTabbableCandidates } from './utils';
 })
 export class RdxNavigationMenuTrigger {
     protected readonly item = inject(RdxNavigationMenuItem);
-    private readonly rootContext = injectNavigationMenuRootContext();
+    protected readonly rootContext = injectNavigationMenuRootContext();
     private readonly rovingFocusItem = inject(RdxRovingFocusItemDirective, { self: true });
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly document = injectDocument();
@@ -105,6 +104,10 @@ export class RdxNavigationMenuTrigger {
 
     protected onKeydown(event: KeyboardEvent) {
         if (this.disabled()) {
+            return;
+        }
+
+        if (this.rootContext.nested) {
             return;
         }
 

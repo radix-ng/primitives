@@ -31,7 +31,6 @@ const numberOrUndefined = (value: NumberInput | undefined) => (value == null ? u
         '[attr.type]': 'nativeButtonState() ? "button" : undefined',
         '[attr.role]':
             'rootContext.hasTriggerInteractionHandler() ? "menuitem" : nativeButtonState() ? undefined : "button"',
-        '[attr.tabindex]': 'rootContext.hasTriggerInteractionHandler() ? "-1" : undefined',
         '[attr.aria-haspopup]': '"menu"',
         '[attr.aria-expanded]': 'triggerInteraction.ariaExpanded()',
         '[attr.aria-disabled]': 'isDisabled() ? true : undefined',
