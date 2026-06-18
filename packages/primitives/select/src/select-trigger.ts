@@ -16,6 +16,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
         type: 'button',
         '[attr.id]': 'id()',
         '[attr.aria-describedby]': 'describedBy()',
+        '[attr.aria-controls]': 'triggerInteraction.ariaControls()',
         '[attr.aria-invalid]': 'invalidState() ? "true" : undefined',
         '[attr.aria-required]': 'requiredState() ? "true" : undefined',
         '[attr.disabled]': 'isDisabled() ? "" : undefined',
@@ -55,7 +56,8 @@ export class RdxSelectTrigger {
         trigger: () => this.elementRef.nativeElement,
         activeTrigger: () => this.rootContext.triggerElement(),
         open: () => this.rootContext.open(),
-        disabled: () => this.isDisabled()
+        disabled: () => this.isDisabled(),
+        contentId: () => this.rootContext.contentId
     });
 
     protected readonly invalidState = computed(() => Boolean(this.fieldRootContext?.invalidState()));

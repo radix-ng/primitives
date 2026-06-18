@@ -45,6 +45,7 @@ import { injectRdxPopoverRootContext } from './popover-root';
                 inert: () => rootContext.modal() === true && rootContext.hasPopupClose(),
                 restoreFocus: () => 'popup',
                 previousFocusableElement: () => rootContext.trigger() ?? null,
+                beforeContentFocusGuardRef: () => (element) => rootContext.setBeforeContentFocusGuard(element),
                 // Active for the whole MOUNTED lifetime (Base UI `disabled={!mounted}`, not `open`) for
                 // trap/return-focus — including an explicit `preventUnmountOnClose()` cycle after the
                 // exit transition. Marker + isolation are additionally gated on `open` inside the

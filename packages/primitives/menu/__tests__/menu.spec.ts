@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FOCUS_GUARD_ATTR } from '@radix-ng/primitives/focus-scope';
 import {
     RdxMenuArrow,
     RdxMenuBackdrop,
@@ -63,6 +64,28 @@ afterEach(() => {
 class BasicMenuComponent {
     open = false;
     selected: string[] = [];
+}
+
+@Component({
+    imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
+    template: `
+        <button data-testid="previous">Previous</button>
+        <div #root="rdxMenuRoot" [(open)]="open" rdxMenuRoot>
+            <button rdxMenuTrigger>Open</button>
+
+            @if (root.open()) {
+                <div rdxMenuPositioner>
+                    <div rdxMenuPopup>
+                        <button data-testid="inside" rdxMenuItem>Inside</button>
+                    </div>
+                </div>
+            }
+        </div>
+        <button data-testid="next">Next</button>
+    `
+})
+class FocusGuardMenuComponent {
+    open = false;
 }
 
 @Component({
@@ -364,6 +387,32 @@ describe('Menu', () => {
             fixture.detectChanges();
 
             expect(document.activeElement).toBe(items[1]);
+        });
+
+        it('closes through trigger-side focus guards when focus leaves the popup', async () => {
+            const focusFixture = TestBed.createComponent(FocusGuardMenuComponent);
+            focusFixture.detectChanges();
+
+            const focusTrigger: HTMLButtonElement = focusFixture.nativeElement.querySelector('[rdxMenuTrigger]');
+            focusTrigger.click();
+            focusFixture.detectChanges();
+            await nextFrame();
+            focusFixture.detectChanges();
+
+            const preGuard = focusTrigger.previousElementSibling as HTMLElement | null;
+            const postGuard = focusTrigger.nextElementSibling as HTMLElement | null;
+            const inside: HTMLButtonElement = focusFixture.nativeElement.querySelector('[data-testid="inside"]');
+            const next: HTMLButtonElement = focusFixture.nativeElement.querySelector('[data-testid="next"]');
+
+            expect(preGuard?.hasAttribute(FOCUS_GUARD_ATTR)).toBe(true);
+            expect(postGuard?.hasAttribute(FOCUS_GUARD_ATTR)).toBe(true);
+            expect(document.activeElement).toBe(inside);
+
+            postGuard?.focus();
+            focusFixture.detectChanges();
+
+            expect(document.activeElement).toBe(next);
+            expect(focusFixture.componentInstance.open).toBe(false);
         });
 
         it('opens on mousedown before click for standard triggers', () => {

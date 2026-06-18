@@ -104,6 +104,7 @@ export interface RdxMenuRootContext {
     trigger: Signal<HTMLElement | undefined>;
     /** The popup element, once mounted. Used by submenu safe-polygon geometry. */
     popupElement: Signal<HTMLElement | undefined>;
+    beforeContentFocusGuard: Signal<HTMLElement | null>;
     transitionStatus: Signal<RdxMenuTransitionStatus>;
     close: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
     /** Close this menu and every ancestor — used by item selection (the whole menu dismisses). */
@@ -114,6 +115,7 @@ export interface RdxMenuRootContext {
     showWithoutAutoFocus: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
     registerTrigger: (el: HTMLElement) => () => void;
     registerPopup: (el: HTMLElement) => () => void;
+    setBeforeContentFocusGuard: (element: HTMLElement | null) => void;
     registerTransitionElement: (element: HTMLElement) => () => void;
     registerPopupArrowNavigationHandler: (handler: (offset: 1 | -1) => boolean) => () => void;
     registerTriggerInteractionHandler: (handler: RdxMenuTriggerInteractionHandler) => () => void;
@@ -168,6 +170,7 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         hasTriggerInteractionHandler: instance.hasTriggerInteractionHandler.asReadonly(),
         trigger: instance.trigger.asReadonly(),
         popupElement: instance.popupElement.asReadonly(),
+        beforeContentFocusGuard: instance.beforeContentFocusGuard.asReadonly(),
         transitionStatus: instance.transitionStatus,
         close: (reason, event) => instance.close(reason, event),
         closeEntireMenu: (reason, event) => instance.closeEntireMenu(reason, event),
@@ -176,6 +179,7 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         showWithoutAutoFocus: (reason, event) => instance.show(false, reason, event),
         registerTrigger: (el) => instance.registerTrigger(el),
         registerPopup: (el) => instance.registerPopup(el),
+        setBeforeContentFocusGuard: (element) => instance.setBeforeContentFocusGuard(element),
         registerTransitionElement: (el) => instance.registerTransitionElement(el),
         registerPopupArrowNavigationHandler: (handler) => instance.registerPopupArrowNavigationHandler(handler),
         registerTriggerInteractionHandler: (handler) => instance.registerTriggerInteractionHandler(handler),
@@ -266,6 +270,7 @@ export class RdxMenuRoot {
 
     readonly trigger = signal<HTMLElement | undefined>(undefined);
     readonly popupElement = signal<HTMLElement | undefined>(undefined);
+    readonly beforeContentFocusGuard = signal<HTMLElement | null>(null);
     readonly transitionStatus = this.transition.status;
     /** Whether the popup grabs focus when it opens. Set false for menubar hover-switching. */
     readonly autoFocus = signal<RdxMenuAutoFocus>('first');
@@ -446,6 +451,10 @@ export class RdxMenuRoot {
                 this.popupElement.set(undefined);
             }
         };
+    }
+
+    setBeforeContentFocusGuard(element: HTMLElement | null): void {
+        this.beforeContentFocusGuard.set(element);
     }
 
     registerTransitionElement(element: HTMLElement): () => void {

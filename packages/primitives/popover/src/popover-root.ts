@@ -104,7 +104,9 @@ export interface RdxPopoverRootContext {
     registerPopupClose: () => () => void;
     registerTransitionElement: (element: HTMLElement) => () => void;
     transitionStatus: Signal<RdxPopoverTransitionStatus>;
+    beforeContentFocusGuard: Signal<HTMLElement | null>;
     registerViewport: (onTriggerChange: (previous: HTMLElement, next: HTMLElement) => void) => () => void;
+    setBeforeContentFocusGuard: (element: HTMLElement | null) => void;
     toggle: (triggerId: string, trigger: HTMLElement, payload?: unknown, event?: Event) => void;
 }
 
@@ -186,6 +188,7 @@ export class RdxPopoverRoot {
     readonly handle = input<RdxPopoverHandle<any>>();
 
     readonly contentId = injectId('rdx-popover-content-');
+    readonly beforeContentFocusGuard = signal<HTMLElement | null>(null);
     readonly descriptionId = signal<string | undefined>(undefined);
     readonly titleId = signal<string | undefined>(undefined);
     readonly trigger = signal<HTMLElement | undefined>(undefined);
@@ -483,6 +486,10 @@ export class RdxPopoverRoot {
         return () => this.viewportTriggerChange.delete(onTriggerChange);
     }
 
+    setBeforeContentFocusGuard(element: HTMLElement | null) {
+        this.beforeContentFocusGuard.set(element);
+    }
+
     registerTransitionElement(element: HTMLElement) {
         return this.transition.registerElement(element);
     }
@@ -617,7 +624,9 @@ function contextFor(root: RdxPopoverRoot): RdxPopoverRootContext {
         },
         registerTransitionElement: (element) => root.registerTransitionElement(element),
         transitionStatus: root.transitionStatus,
+        beforeContentFocusGuard: root.beforeContentFocusGuard.asReadonly(),
         registerViewport: (onTriggerChange) => root.registerViewport(onTriggerChange),
+        setBeforeContentFocusGuard: (element) => root.setBeforeContentFocusGuard(element),
         toggle: (triggerId, trigger, payload, event) => root.toggle(triggerId, trigger, payload, event)
     };
 }

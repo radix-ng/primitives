@@ -17,6 +17,7 @@ import {
     createContext,
     createFloatingRootContext,
     Direction,
+    injectId,
     isNullish,
     ItemValueComparator,
     provideFloatingRootContext,
@@ -94,7 +95,7 @@ const context = () => {
         triggerElement: context.triggerElement,
         valueElement: context.valueElement,
         triggerPointerDownPosRef: context.triggerPointerDownPosRef,
-        contentId: '',
+        contentId: context.contentId,
         dir: context.dir,
         value: context.value,
         multiple: context.multiple,
@@ -157,6 +158,8 @@ export const [injectSelectRootContext, provideSelectRootContext] = createContext
     hostDirectives: [RdxPopper]
 })
 export class RdxSelectRoot {
+    readonly contentId = injectId('rdx-select-content-');
+
     readonly open = model<boolean>(false);
 
     /** Whether the current open was initiated by **touch** (ADR 0016 §3 — gates the anchored scroll lock). */

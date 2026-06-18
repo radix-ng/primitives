@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
+import { FOCUS_GUARD_ATTR, RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import {
     createRdxPopoverHandle,
     RdxPopoverArrow,
@@ -49,6 +49,28 @@ import { vi } from 'vitest';
 class TestHostComponent {
     open = false;
     defaultOpen = false;
+}
+
+@Component({
+    imports: [RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
+    template: `
+        <button data-testid="previous">Previous</button>
+        <div #root="rdxPopoverRoot" [(open)]="open" rdxPopoverRoot>
+            <button rdxPopoverTrigger>Open</button>
+
+            @if (root.open()) {
+                <div rdxPopoverPositioner>
+                    <div rdxPopoverPopup>
+                        <button data-testid="inside">Inside</button>
+                    </div>
+                </div>
+            }
+        </div>
+        <button data-testid="next">Next</button>
+    `
+})
+class FocusGuardHostComponent {
+    open = false;
 }
 
 @Component({
@@ -411,6 +433,36 @@ describe('Popover', () => {
         expect(popup.getAttribute('aria-labelledby')).toBe(title.id);
         expect(popup.getAttribute('aria-describedby')).toBe(description.id);
         expect(popup.hasAttribute('data-open')).toBe(true);
+    });
+
+    it('bridges trigger tab order into portaled popup focus guards', async () => {
+        const focusFixture = TestBed.createComponent(FocusGuardHostComponent);
+        focusFixture.detectChanges();
+
+        const focusTrigger: HTMLButtonElement = focusFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
+        focusTrigger.click();
+        focusFixture.detectChanges();
+        await focusFixture.whenStable();
+        focusFixture.detectChanges();
+
+        const preGuard = focusTrigger.previousElementSibling as HTMLElement | null;
+        const maybeAriaOwns = focusTrigger.nextElementSibling as HTMLElement | null;
+        const postGuard = maybeAriaOwns?.hasAttribute('aria-owns')
+            ? (maybeAriaOwns.nextElementSibling as HTMLElement | null)
+            : maybeAriaOwns;
+        const inside: HTMLButtonElement = focusFixture.nativeElement.querySelector('[data-testid="inside"]');
+
+        expect(preGuard?.hasAttribute(FOCUS_GUARD_ATTR)).toBe(true);
+        expect(maybeAriaOwns?.getAttribute('aria-owns')).toBe(
+            focusFixture.nativeElement.querySelector('[rdxPopoverPopup]').id
+        );
+        expect(postGuard?.hasAttribute(FOCUS_GUARD_ATTR)).toBe(true);
+
+        focusTrigger.focus();
+        postGuard?.focus();
+
+        expect(document.activeElement).toBe(inside);
+        expect(focusFixture.componentInstance.open).toBe(true);
     });
 
     it('closes from the close button', () => {

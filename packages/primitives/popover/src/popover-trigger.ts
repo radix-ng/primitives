@@ -10,7 +10,7 @@ import {
     untracked
 } from '@angular/core';
 import { injectId, NumberInput } from '@radix-ng/primitives/core';
-import { createRdxTriggerInteraction, useTriggerFocusGuardAnchor } from '@radix-ng/primitives/floating-focus-manager';
+import { createRdxTriggerInteraction, useTriggerFocusGuards } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { RdxPopoverHandle } from './popover-handle';
 import { injectRdxPopoverRootContext } from './popover-root';
@@ -116,10 +116,18 @@ export class RdxPopoverTrigger {
             }
         });
 
-        useTriggerFocusGuardAnchor({
+        useTriggerFocusGuards({
             trigger: () => this.elementRef.nativeElement,
+            close: (event) => this.rootContext()?.close('focus-out', event),
+            beforeContentFocusGuard: () => this.rootContext()?.beforeContentFocusGuard(),
             contentId: () => this.rootContext()?.contentId,
-            enabled: () => this.triggerInteraction.isActive()
+            enabled: () => this.triggerInteraction.isActive(),
+            popupElement: () => {
+                const contentId = this.rootContext()?.contentId;
+                return contentId
+                    ? (this.elementRef.nativeElement.ownerDocument.getElementById(contentId) as HTMLElement | null)
+                    : null;
+            }
         });
     }
 

@@ -1,5 +1,14 @@
 import { computed, effect, Signal, signal } from '@angular/core';
-import { createAriaOwnsAnchor } from '@radix-ng/primitives/focus-scope';
+import {
+    composedContains,
+    createAriaOwnsAnchor,
+    createFocusGuard,
+    focus,
+    getNextTabbable,
+    getTabbableAfterElement,
+    getTabbableBeforeElement,
+    isOutsideEvent
+} from '@radix-ng/primitives/focus-scope';
 import { getInteractionTypeFromEvent, RdxInteractionType } from './floating-focus-manager';
 
 export interface RdxTriggerInteractionOptions {
@@ -24,6 +33,15 @@ export interface RdxTriggerInteraction {
 }
 
 export interface RdxTriggerFocusGuardOptions {
+    trigger: () => HTMLElement;
+    close: (event: FocusEvent) => void;
+    beforeContentFocusGuard?: () => HTMLElement | null | undefined;
+    contentId?: () => string | null | undefined;
+    enabled?: () => boolean;
+    popupElement?: () => HTMLElement | null | undefined;
+}
+
+export interface RdxTriggerFocusGuardAnchorOptions {
     trigger: () => HTMLElement;
     contentId: () => string | null | undefined;
     enabled?: () => boolean;
@@ -66,10 +84,77 @@ export function createRdxTriggerInteraction(options: RdxTriggerInteractionOption
 }
 
 /**
- * Adds Base UI's trigger-side `aria-owns` bridge for portaled content. The content guards remain owned by
- * `RdxFloatingFocusManager`; this only links the active trigger into the portal's accessibility order.
+ * Adds Base UI's trigger-side focus guards for portaled content. The content guards remain owned by
+ * `RdxFloatingFocusManager`; these guards bridge tab order from the trigger into the portal and close the
+ * popup when focus leaves past either trigger-side boundary.
  */
-export function useTriggerFocusGuardAnchor(options: RdxTriggerFocusGuardOptions): void {
+export function useTriggerFocusGuards(options: RdxTriggerFocusGuardOptions): void {
+    const enabled = options.enabled ?? (() => true);
+
+    effect((onCleanup) => {
+        if (!enabled()) {
+            return;
+        }
+
+        const trigger = options.trigger();
+        const preGuard = createFocusGuard(trigger.ownerDocument);
+        const postGuard = createFocusGuard(trigger.ownerDocument);
+        const contentId = options.contentId?.();
+        const anchor = contentId ? createAriaOwnsAnchor(trigger.ownerDocument, contentId) : null;
+
+        const handlePreGuardFocus = (event: FocusEvent): void => {
+            options.close(event);
+            focus(getTabbableBeforeElement(preGuard));
+        };
+
+        const handlePostGuardFocus = (event: FocusEvent): void => {
+            const popup = options.popupElement?.() ?? null;
+            const beforeContentGuard = options.beforeContentFocusGuard?.() ?? null;
+
+            if (popup && beforeContentGuard && isOutsideEvent(event, popup)) {
+                focus(beforeContentGuard);
+                return;
+            }
+
+            options.close(event);
+
+            let nextTabbable = getTabbableAfterElement(postGuard);
+            while (nextTabbable && popup && composedContains(popup, nextTabbable)) {
+                const previous = nextTabbable;
+                nextTabbable = getNextTabbable(nextTabbable);
+                if (nextTabbable === previous) {
+                    break;
+                }
+            }
+
+            focus(nextTabbable);
+        };
+
+        preGuard.addEventListener('focus', handlePreGuardFocus);
+        postGuard.addEventListener('focus', handlePostGuardFocus);
+
+        trigger.insertAdjacentElement('beforebegin', preGuard);
+        if (anchor) {
+            trigger.insertAdjacentElement('afterend', anchor);
+            anchor.insertAdjacentElement('afterend', postGuard);
+        } else {
+            trigger.insertAdjacentElement('afterend', postGuard);
+        }
+
+        onCleanup(() => {
+            preGuard.removeEventListener('focus', handlePreGuardFocus);
+            postGuard.removeEventListener('focus', handlePostGuardFocus);
+            preGuard.remove();
+            postGuard.remove();
+            anchor?.remove();
+        });
+    });
+}
+
+/**
+ * Backwards-compatible aria-owns-only bridge for modal popups that do not need trigger-side tab guards.
+ */
+export function useTriggerFocusGuardAnchor(options: RdxTriggerFocusGuardAnchorOptions): void {
     const enabled = options.enabled ?? (() => true);
 
     effect((onCleanup) => {

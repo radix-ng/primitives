@@ -82,6 +82,25 @@ describe('Select data attributes', () => {
         expect(trigger().hasAttribute('data-filled')).toBe(true);
     });
 
+    it('links the open trigger to the listbox with a stable content id', async () => {
+        expect(trigger().getAttribute('aria-controls')).toBeNull();
+
+        host.open.set(true);
+        await settle();
+
+        const controls = trigger().getAttribute('aria-controls');
+        const popup = controls ? document.getElementById(controls) : null;
+
+        expect(controls).toMatch(/^rdx-select-content-/);
+        expect(popup).toBeTruthy();
+        expect(popup?.getAttribute('role')).toBe('listbox');
+
+        host.open.set(false);
+        await settle();
+
+        expect(trigger().getAttribute('aria-controls')).toBeNull();
+    });
+
     it('modal locks body scroll while open and restores on close', async () => {
         expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
         host.open.set(true);

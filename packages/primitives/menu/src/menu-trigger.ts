@@ -12,7 +12,7 @@ import {
     PLATFORM_ID
 } from '@angular/core';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
-import { createRdxTriggerInteraction } from '@radix-ng/primitives/floating-focus-manager';
+import { createRdxTriggerInteraction, useTriggerFocusGuards } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { getFocusableMenuItems } from './menu-focus';
 import { injectRdxMenuRootContext } from './menu-root';
@@ -165,6 +165,14 @@ export class RdxMenuTrigger {
         // (A press/focus on the trigger no longer needs a dismissable-layer branch to avoid
         // self-dismissal: the trigger is registered in the menu's floating context, so the dismissal
         // capability already treats it as "inside" — ADR 0015 trigger registry replaces the branch.)
+
+        useTriggerFocusGuards({
+            trigger: () => this.elementRef.nativeElement,
+            close: (event) => this.rootContext.close('focus-out', event),
+            beforeContentFocusGuard: () => this.rootContext.beforeContentFocusGuard(),
+            enabled: () => this.triggerInteraction.isActive(),
+            popupElement: () => this.rootContext.popupElement()
+        });
 
         this.destroyRef.onDestroy(() => {
             this.clearOpenTimer();
