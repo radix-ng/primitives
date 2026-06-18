@@ -10,12 +10,12 @@ import {
     input,
     PLATFORM_ID
 } from '@angular/core';
+import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import { BooleanInput } from '@radix-ng/primitives/core';
-import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 import { injectToolbarGroupContext, injectToolbarRootContext } from './toolbar-context';
 
 /**
- * A native input within a toolbar. Participates in the toolbar's roving focus while keeping native
+ * A native input within a toolbar. Participates in the toolbar's composite focus while keeping native
  * text-editing: the arrow keys move the caret within the text and only move focus to the
  * neighbouring toolbar item once the caret is at the corresponding edge (Base UI "composite" input).
  *
@@ -24,7 +24,7 @@ import { injectToolbarGroupContext, injectToolbarRootContext } from './toolbar-c
 @Directive({
     selector: 'input[rdxToolbarInput]',
     exportAs: 'rdxToolbarInput',
-    hostDirectives: [RdxRovingFocusItemDirective],
+    hostDirectives: [RdxCompositeItem],
     host: {
         '[attr.data-orientation]': 'rootContext.orientation()',
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
@@ -36,7 +36,7 @@ import { injectToolbarGroupContext, injectToolbarRootContext } from './toolbar-c
 export class RdxToolbarInput {
     protected readonly rootContext = injectToolbarRootContext();
     private readonly groupContext = injectToolbarGroupContext(true);
-    private readonly rovingItem = inject(RdxRovingFocusItemDirective);
+    private readonly compositeItem = inject(RdxCompositeItem, { self: true });
     private readonly elementRef = inject<ElementRef<HTMLInputElement>>(ElementRef);
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
@@ -65,7 +65,12 @@ export class RdxToolbarInput {
     private appliedDefault = false;
 
     constructor() {
-        effect(() => this.rovingItem.setFocusable(!this.isDisabled() || this.focusableWhenDisabled()));
+        effect(() => {
+            this.compositeItem.setMetadata({
+                disabled: this.isDisabled(),
+                focusableWhenDisabled: this.focusableWhenDisabled()
+            });
+        });
 
         effect(() => {
             const value = this.defaultValue();
@@ -76,10 +81,10 @@ export class RdxToolbarInput {
         });
 
         if (this.isBrowser) {
-            // Registered in the constructor — i.e. before the roving item's host `(keydown)` listener
+            // Registered in the constructor — i.e. before the composite root's delegated keydown
             // — so it runs first and can keep arrow keys for caret movement (via
             // `stopImmediatePropagation`) unless the caret is at the edge, where the event is allowed
-            // to reach the roving group and move focus.
+            // to reach the composite root and move focus.
             const element = this.elementRef.nativeElement;
             const handler = (event: KeyboardEvent) => this.handleCaretKeydown(event);
             element.addEventListener('keydown', handler, { capture: true });

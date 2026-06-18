@@ -83,7 +83,9 @@ export class RdxCompositeRoot {
 
     /** Text direction for horizontal arrow-key navigation. */
     readonly dirInput = input<Direction | undefined>(undefined, { alias: 'dir' });
-    readonly dir = injectDirection(this.dirInput);
+    private readonly effectiveDir = injectDirection(this.dirInput);
+    private readonly _dir = linkedSignal(() => this.effectiveDir());
+    readonly dir = this._dir.asReadonly();
 
     /** Whether arrow-key navigation wraps at the first/last item. */
     readonly loopFocusInput = input<boolean, BooleanInput>(true, {
@@ -190,6 +192,10 @@ export class RdxCompositeRoot {
 
     setLoopFocus(value: boolean): void {
         this._loopFocus.set(value);
+    }
+
+    setDir(value: Direction): void {
+        this._dir.set(value);
     }
 
     setEnableHomeAndEndKeys(value: boolean): void {

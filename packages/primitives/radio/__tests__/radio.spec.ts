@@ -123,6 +123,18 @@ describe('RdxRadio', () => {
         expect(host.changes).toEqual([]);
     });
 
+    it('keeps the tab stop on the checked item', () => {
+        expect(buttons()[0].getAttribute('tabindex')).toBe('0');
+        expect(buttons()[1].getAttribute('tabindex')).toBe('-1');
+
+        host.value = 'comfortable';
+        fixture.changeDetectorRef.markForCheck();
+        fixture.detectChanges();
+
+        expect(buttons()[0].getAttribute('tabindex')).toBe('-1');
+        expect(buttons()[1].getAttribute('tabindex')).toBe('0');
+    });
+
     it('selects an item on click and emits once', () => {
         buttons()[1].click();
         fixture.detectChanges();

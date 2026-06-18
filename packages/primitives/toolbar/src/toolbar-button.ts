@@ -1,6 +1,6 @@
 import { booleanAttribute, computed, Directive, effect, inject, input } from '@angular/core';
+import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import { BooleanInput } from '@radix-ng/primitives/core';
-import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 import { injectToolbarGroupContext, injectToolbarRootContext } from './toolbar-context';
 
 /**
@@ -11,7 +11,7 @@ import { injectToolbarGroupContext, injectToolbarRootContext } from './toolbar-c
 @Directive({
     selector: '[rdxToolbarButton]',
     exportAs: 'rdxToolbarButton',
-    hostDirectives: [RdxRovingFocusItemDirective],
+    hostDirectives: [RdxCompositeItem],
     host: {
         '[attr.type]': 'nativeButton() ? "button" : undefined',
         '[attr.role]': 'nativeButton() ? undefined : "button"',
@@ -26,7 +26,7 @@ import { injectToolbarGroupContext, injectToolbarRootContext } from './toolbar-c
 export class RdxToolbarButton {
     protected readonly rootContext = injectToolbarRootContext();
     private readonly groupContext = injectToolbarGroupContext(true);
-    private readonly rovingItem = inject(RdxRovingFocusItemDirective);
+    private readonly compositeItem = inject(RdxCompositeItem, { self: true });
 
     /**
      * Whether the button is disabled.
@@ -56,8 +56,12 @@ export class RdxToolbarButton {
     );
 
     constructor() {
-        // A disabled-but-focusable item stays in the roving sequence; otherwise it is removed.
-        effect(() => this.rovingItem.setFocusable(!this.isDisabled() || this.focusableWhenDisabled()));
+        effect(() => {
+            this.compositeItem.setMetadata({
+                disabled: this.isDisabled(),
+                focusableWhenDisabled: this.focusableWhenDisabled()
+            });
+        });
     }
 
     /** @ignore */

@@ -9,16 +9,16 @@ import {
     model,
     output
 } from '@angular/core';
+import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
     RdxCancelableChangeEventDetails,
     rdxDevWarning
 } from '@radix-ng/primitives/core';
-import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 import { injectToggleGroupContext } from '@radix-ng/primitives/toggle-group';
 
-export type RdxTogglePressedChangeReason = 'trigger-press' | 'none';
+export type RdxTogglePressedChangeReason = 'none';
 export type RdxTogglePressedChangeEventDetails = RdxCancelableChangeEventDetails<RdxTogglePressedChangeReason>;
 
 export interface RdxTogglePressedChangeEvent {
@@ -30,18 +30,19 @@ export interface RdxTogglePressedChangeEvent {
  * A two-state button that can be either on (pressed) or off.
  *
  * Works standalone or as an item of a `[rdxToggleGroup]`: inside a group it derives its pressed
- * state from the group's value (matched by `value`) and participates in the group's roving focus.
+ * state from the group's value (matched by `value`) and participates in the group's composite focus.
  *
  * @see https://base-ui.com/react/components/toggle
  */
 @Directive({
     selector: '[rdxToggle]',
     exportAs: 'rdxToggle',
-    hostDirectives: [RdxRovingFocusItemDirective],
+    hostDirectives: [RdxCompositeItem],
     host: {
         '[attr.type]': 'nativeButton() ? "button" : undefined',
         '[attr.role]': 'nativeButton() ? undefined : "button"',
         '[attr.aria-pressed]': 'pressedState()',
+        '[attr.data-composite-item-active]': 'pressedState() ? "" : undefined',
         '[attr.data-pressed]': 'pressedState() ? "" : undefined',
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
         '[attr.disabled]': 'nativeButton() && isDisabled() ? "" : undefined',
@@ -52,7 +53,7 @@ export interface RdxTogglePressedChangeEvent {
 })
 export class RdxToggle {
     private readonly group = injectToggleGroupContext(true);
-    private readonly rovingItem = inject(RdxRovingFocusItemDirective);
+    private readonly compositeItem = inject(RdxCompositeItem, { self: true });
 
     /**
      * A value identifying this toggle inside a `[rdxToggleGroup]`. Required when used in a group.
@@ -105,7 +106,7 @@ export class RdxToggle {
 
     constructor() {
         effect(() => {
-            if (this.group && this.value() === undefined) {
+            if (this.group && this.value() === undefined && this.group.isValueInitialized()) {
                 rdxDevWarning(
                     'toggle-group/missing-toggle-value',
                     '`rdxToggle` is inside a toggle group but has no `value`. Add a stable `value` so the group can derive and update its pressed state.',
@@ -113,8 +114,13 @@ export class RdxToggle {
                 );
             }
         });
-        effect(() => this.rovingItem.setActive(this.pressedState()));
-        effect(() => this.rovingItem.setFocusable(!this.isDisabled()));
+        effect(() => {
+            this.compositeItem.setMetadata({
+                disabled: this.isDisabled(),
+                focusableWhenDisabled: false,
+                value: this.value()
+            });
+        });
     }
 
     /** @ignore */
@@ -129,7 +135,7 @@ export class RdxToggle {
                 const next = !this.pressedState();
                 const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
                 const { eventDetails } = createCancelableChangeEventDetails(
-                    event ? 'trigger-press' : 'none',
+                    'none',
                     event ?? new Event('toggle.pressed-change'),
                     trigger
                 );
@@ -146,7 +152,7 @@ export class RdxToggle {
         const next = !this.internalPressed();
         const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
         const { eventDetails } = createCancelableChangeEventDetails(
-            event ? 'trigger-press' : 'none',
+            'none',
             event ?? new Event('toggle.pressed-change'),
             trigger
         );

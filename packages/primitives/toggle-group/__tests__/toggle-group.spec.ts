@@ -41,11 +41,14 @@ class ToggleGroupTestComponent {
     readonly loopFocus = signal(true);
     readonly itemPressedChanges: boolean[] = [];
     readonly groupValueChanges: string[][] = [];
+    itemLastReason: string | undefined;
+    groupLastReason: string | undefined;
     cancelNextItemChange = false;
     cancelNextGroupChange = false;
 
     onItemPressedChange(change: RdxTogglePressedChangeEvent): void {
         this.itemPressedChanges.push(change.pressed);
+        this.itemLastReason = change.eventDetails.reason;
         if (this.cancelNextItemChange) {
             change.eventDetails.cancel();
             this.cancelNextItemChange = false;
@@ -54,6 +57,7 @@ class ToggleGroupTestComponent {
 
     onGroupValueChange(change: RdxToggleGroupValueChangeEvent): void {
         this.groupValueChanges.push(change.value);
+        this.groupLastReason = change.eventDetails.reason;
         if (this.cancelNextGroupChange) {
             change.eventDetails.cancel();
             this.cancelNextGroupChange = false;
@@ -84,6 +88,19 @@ describe('RdxToggleGroup', () => {
         expect(items[0].getAttribute('data-pressed')).toBeNull();
     });
 
+    it('keeps the tab stop on the pressed item', () => {
+        expect(items[0].getAttribute('tabindex')).toBe('-1');
+        expect(items[1].getAttribute('tabindex')).toBe('0');
+        expect(items[2].getAttribute('tabindex')).toBe('-1');
+
+        component.value.set(['right']);
+        fixture.detectChanges();
+
+        expect(items[0].getAttribute('tabindex')).toBe('-1');
+        expect(items[1].getAttribute('tabindex')).toBe('-1');
+        expect(items[2].getAttribute('tabindex')).toBe('0');
+    });
+
     it('changes the value on item click (single)', () => {
         items[0].click();
         fixture.detectChanges();
@@ -92,6 +109,8 @@ describe('RdxToggleGroup', () => {
         expect(items[1].getAttribute('data-pressed')).toBeNull();
         expect(component.itemPressedChanges).toEqual([true]);
         expect(component.groupValueChanges).toEqual([['left']]);
+        expect(component.itemLastReason).toBe('none');
+        expect(component.groupLastReason).toBe('none');
     });
 
     it('lets an item-level pressed change cancel the group value change', () => {
@@ -282,6 +301,20 @@ describe('RdxToggleGroupWithoutFocus inside Toolbar', () => {
         buttons[1].click();
         fixture.detectChanges();
         expect(component.value()).toEqual(['left']);
+    });
+
+    it('shares toolbar composite focus', async () => {
+        expect(buttons[0].getAttribute('tabindex')).toBe('0');
+        expect(buttons[1].getAttribute('tabindex')).toBe('-1');
+
+        buttons[0].focus();
+        buttons[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+        await Promise.resolve();
+        fixture.detectChanges();
+
+        expect(document.activeElement).toBe(buttons[1]);
+        expect(buttons[0].getAttribute('tabindex')).toBe('-1');
+        expect(buttons[1].getAttribute('tabindex')).toBe('0');
     });
 });
 

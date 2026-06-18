@@ -7157,9 +7157,9 @@
           "directive": "RdxToggle",
           "selector": "[rdxToggle]",
           "exportAs": "rdxToggle",
-          "description": "A two-state button that can be either on (pressed) or off.\n\nWorks standalone or as an item of a `[rdxToggleGroup]`: inside a group it derives its pressed\nstate from the group's value (matched by `value`) and participates in the group's roving focus.\n\nSee https://base-ui.com/react/components/toggle",
+          "description": "A two-state button that can be either on (pressed) or off.\n\nWorks standalone or as an item of a `[rdxToggleGroup]`: inside a group it derives its pressed\nstate from the group's value (matched by `value`) and participates in the group's composite focus.\n\nSee https://base-ui.com/react/components/toggle",
           "hostDirectives": [
-            "RdxRovingFocusItemDirective"
+            "RdxCompositeItem"
           ],
           "inputs": [
             {
@@ -7213,7 +7213,7 @@
           "directive": "RdxToggleGroupWithoutFocus",
           "selector": "[rdxToggleGroupWithoutFocus]",
           "exportAs": "rdxToggleGroupWithoutFocus",
-          "description": "A toggle group that does NOT create its own roving-focus group, for use inside a container that\nalready owns keyboard focus (e.g. a toolbar). The `[rdxToggle]` children register with the nearest\nancestor roving-focus group instead. Mirrors Base UI's behavior of skipping its composite root\nwhen nested in a toolbar.",
+          "description": "A toggle group that does NOT create its own composite root, for use inside a container that\nalready owns keyboard focus (e.g. a toolbar). The `[rdxToggle]` children register with the nearest\nancestor composite root instead. Mirrors Base UI's behavior of skipping its composite root\nwhen nested in a toolbar.",
           "inputs": [
             {
               "name": "defaultValue",
@@ -7259,9 +7259,9 @@
           "directive": "RdxToggleGroup",
           "selector": "[rdxToggleGroup]",
           "exportAs": "rdxToggleGroup",
-          "description": "A set of two-state buttons that can be toggled on or off. Owns roving keyboard focus over its\n`[rdxToggle]` children.\n\nSee https://base-ui.com/react/components/toggle-group",
+          "description": "A set of two-state buttons that can be toggled on or off. Owns composite keyboard focus over its\n`[rdxToggle]` children.\n\nSee https://base-ui.com/react/components/toggle-group",
           "hostDirectives": [
-            "RdxRovingFocusGroupDirective"
+            "RdxCompositeRoot"
           ],
           "inputs": [
             {
@@ -7328,7 +7328,7 @@
           "exportAs": "rdxToolbarButton",
           "description": "A button within a toolbar.\n\nSee https://base-ui.com/react/components/toolbar",
           "hostDirectives": [
-            "RdxRovingFocusItemDirective"
+            "RdxCompositeItem"
           ],
           "inputs": [
             {
@@ -7371,9 +7371,9 @@
           "directive": "RdxToolbarInput",
           "selector": "input[rdxToolbarInput]",
           "exportAs": "rdxToolbarInput",
-          "description": "A native input within a toolbar. Participates in the toolbar's roving focus while keeping native\ntext-editing: the arrow keys move the caret within the text and only move focus to the\nneighbouring toolbar item once the caret is at the corresponding edge (Base UI \"composite\" input).\n\nSee https://base-ui.com/react/components/toolbar",
+          "description": "A native input within a toolbar. Participates in the toolbar's composite focus while keeping native\ntext-editing: the arrow keys move the caret within the text and only move focus to the\nneighbouring toolbar item once the caret is at the corresponding edge (Base UI \"composite\" input).\n\nSee https://base-ui.com/react/components/toolbar",
           "hostDirectives": [
-            "RdxRovingFocusItemDirective"
+            "RdxCompositeItem"
           ],
           "inputs": [
             {
@@ -7402,7 +7402,7 @@
           "exportAs": "rdxToolbarLink",
           "description": "A link within a toolbar.\n\nSee https://base-ui.com/react/components/toolbar",
           "hostDirectives": [
-            "RdxRovingFocusItemDirective"
+            "RdxCompositeItem"
           ],
           "inputs": [],
           "outputs": []
@@ -7411,9 +7411,9 @@
           "directive": "RdxToolbarRoot",
           "selector": "[rdxToolbarRoot]",
           "exportAs": "rdxToolbarRoot",
-          "description": "A container for grouping a set of controls, such as buttons, toggle groups or menus.\nOwns roving keyboard focus over its items.\n\nSee https://base-ui.com/react/components/toolbar",
+          "description": "A container for grouping a set of controls, such as buttons, toggle groups or menus.\nOwns composite keyboard focus over its items.\n\nSee https://base-ui.com/react/components/toolbar",
           "hostDirectives": [
-            "RdxRovingFocusGroupDirective"
+            "RdxCompositeRoot"
           ],
           "inputs": [
             {

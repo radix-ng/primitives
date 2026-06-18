@@ -1,4 +1,15 @@
-import { booleanAttribute, computed, Directive, effect, inject, input, model, output, signal } from '@angular/core';
+import {
+    booleanAttribute,
+    computed,
+    Directive,
+    effect,
+    ElementRef,
+    inject,
+    input,
+    model,
+    output,
+    signal
+} from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 import { RdxCompositeMetadata, RdxCompositeRoot } from '@radix-ng/primitives/composite';
 import {
@@ -41,6 +52,7 @@ export interface RdxRadioValueChangeEvent {
 export class RdxRadioGroupDirective
     implements RadioGroupProps, RadioGroupDirective, ControlValueAccessor, RdxFormValueControl<string | null>
 {
+    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly compositeRoot = inject(RdxCompositeRoot, { self: true });
 
     readonly value = model<string | null>(null);
@@ -73,6 +85,14 @@ export class RdxRadioGroupDirective
             .filter((metadata) => metadata.disabled)
             .map((metadata) => metadata.index)
     );
+    private readonly activeIndex = computed(() => {
+        const value = this.value();
+        if (value === null) {
+            return -1;
+        }
+
+        return this.itemMetadata().find((metadata) => metadata.value === value)?.index ?? -1;
+    });
 
     /**
      * The callback function to call when the value of the radio group changes.
@@ -103,6 +123,21 @@ export class RdxRadioGroupDirective
 
         effect(() => {
             this.compositeRoot.setDisabledIndices(this.disabledIndices());
+        });
+
+        effect(() => {
+            const activeIndex = this.activeIndex();
+
+            if (activeIndex === -1 || this.disabledIndices().includes(activeIndex)) {
+                return;
+            }
+
+            const activeElement = this.elementRef.nativeElement.ownerDocument.activeElement;
+            if (activeElement && this.elementRef.nativeElement.contains(activeElement)) {
+                return;
+            }
+
+            this.compositeRoot.setHighlightedIndex(activeIndex);
         });
     }
 

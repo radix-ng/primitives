@@ -58,9 +58,11 @@ describe('Toolbar', () => {
         expect(separator.getAttribute('data-orientation')).toBe('vertical');
     });
 
-    it('uses the toolbar as the focus entry and keeps items out of the tab order', () => {
-        expect(root().getAttribute('tabindex')).toBe('0');
-        expect(buttons().every((b) => b.getAttribute('tabindex') === '-1')).toBe(true);
+    it('uses the first item as the focus entry and keeps the rest out of the tab order', () => {
+        expect(root().getAttribute('tabindex')).toBeNull();
+        expect(buttons()[0].getAttribute('tabindex')).toBe('0');
+        expect(buttons()[1].getAttribute('tabindex')).toBe('-1');
+        expect(buttons()[2].getAttribute('tabindex')).toBe('-1');
     });
 
     it('disables a single button (aria-disabled, data-disabled, focusable by default)', () => {
@@ -100,12 +102,12 @@ describe('Toolbar', () => {
         expect(buttons()[0].getAttribute('data-orientation')).toBe('vertical');
     });
 
-    it('moves focus with arrow keys (roving)', () => {
+    it('moves focus with arrow keys', () => {
         const items = buttons();
         items[0].focus();
         items[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
         fixture.detectChanges();
-        // The roving group focuses the next item asynchronously (microtask).
+        // The composite root focuses the next item asynchronously (microtask).
         return Promise.resolve().then(() => {
             expect(document.activeElement).toBe(items[1]);
         });

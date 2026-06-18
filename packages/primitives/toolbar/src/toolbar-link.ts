@@ -1,6 +1,11 @@
-import { Directive } from '@angular/core';
-import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
+import { Directive, inject } from '@angular/core';
+import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import { injectToolbarRootContext } from './toolbar-context';
+
+const TOOLBAR_LINK_METADATA = {
+    disabled: false,
+    focusableWhenDisabled: true
+};
 
 /**
  * A link within a toolbar.
@@ -10,7 +15,7 @@ import { injectToolbarRootContext } from './toolbar-context';
 @Directive({
     selector: '[rdxToolbarLink]',
     exportAs: 'rdxToolbarLink',
-    hostDirectives: [RdxRovingFocusItemDirective],
+    hostDirectives: [RdxCompositeItem],
     host: {
         '[attr.data-orientation]': 'rootContext.orientation()',
         '(keydown)': 'onKeyDown($event)'
@@ -18,6 +23,11 @@ import { injectToolbarRootContext } from './toolbar-context';
 })
 export class RdxToolbarLink {
     protected readonly rootContext = injectToolbarRootContext();
+    private readonly compositeItem = inject(RdxCompositeItem, { self: true });
+
+    constructor() {
+        this.compositeItem.setMetadata(TOOLBAR_LINK_METADATA);
+    }
 
     /** @ignore Space activates a link, matching native button behavior in a toolbar. */
     protected onKeyDown(event: KeyboardEvent): void {

@@ -1,7 +1,7 @@
-import { booleanAttribute, Directive, effect, inject, input } from '@angular/core';
-import { BooleanInput, DataOrientation } from '@radix-ng/primitives/core';
+import { booleanAttribute, computed, Directive, effect, inject, input } from '@angular/core';
+import { RdxCompositeMetadata, RdxCompositeRoot } from '@radix-ng/primitives/composite';
+import { BooleanInput, DataOrientation, Direction } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
-import { Direction, RdxRovingFocusGroupDirective } from '@radix-ng/primitives/roving-focus';
 import { provideToolbarRootContext, RdxToolbarRootContext } from './toolbar-context';
 
 const rootContext = (): RdxToolbarRootContext => {
@@ -14,14 +14,14 @@ const rootContext = (): RdxToolbarRootContext => {
 
 /**
  * A container for grouping a set of controls, such as buttons, toggle groups or menus.
- * Owns roving keyboard focus over its items.
+ * Owns composite keyboard focus over its items.
  *
  * @see https://base-ui.com/react/components/toolbar
  */
 @Directive({
     selector: '[rdxToolbarRoot]',
     exportAs: 'rdxToolbarRoot',
-    hostDirectives: [RdxRovingFocusGroupDirective],
+    hostDirectives: [RdxCompositeRoot],
     providers: [provideToolbarRootContext(rootContext)],
     host: {
         role: 'toolbar',
@@ -56,13 +56,38 @@ export class RdxToolbarRoot {
      */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    private readonly rovingFocusGroup = inject(RdxRovingFocusGroupDirective, { self: true });
+    private readonly compositeRoot = inject(RdxCompositeRoot, { self: true });
+    private readonly itemMetadata = computed(() =>
+        Array.from(this.compositeRoot.itemMap().values()).filter(isToolbarItemMetadata)
+    );
+    private readonly disabledIndices = computed(() =>
+        this.itemMetadata()
+            .filter((metadata) => metadata.disabled && !metadata.focusableWhenDisabled)
+            .map((metadata) => metadata.index)
+    );
 
     constructor() {
         effect(() => {
-            this.rovingFocusGroup.setOrientation(this.orientation());
-            this.rovingFocusGroup.setDir(this.dir());
-            this.rovingFocusGroup.setLoop(this.loopFocus());
+            this.compositeRoot.setOrientation(this.orientation());
+            this.compositeRoot.setDir(this.dir());
+            this.compositeRoot.setLoopFocus(this.loopFocus());
+            this.compositeRoot.setEnableHomeAndEndKeys(true);
+        });
+
+        effect(() => {
+            this.compositeRoot.setDisabledIndices(this.disabledIndices());
         });
     }
+}
+
+export interface RdxToolbarItemMetadata {
+    [key: string]: unknown;
+    disabled: boolean;
+    focusableWhenDisabled: boolean;
+}
+
+function isToolbarItemMetadata(
+    metadata: RdxCompositeMetadata
+): metadata is RdxCompositeMetadata<RdxToolbarItemMetadata> {
+    return typeof metadata['disabled'] === 'boolean' && typeof metadata['focusableWhenDisabled'] === 'boolean';
 }

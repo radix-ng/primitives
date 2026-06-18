@@ -44,7 +44,7 @@
 
 ## Features
 
-- ✅ Full keyboard navigation with roving focus.
+- ✅ Full keyboard navigation with composite focus.
 - ✅ Horizontal and vertical orientation.
 - ✅ Disabling the toolbar or a group cascades to its items.
 - ✅ Composes with Toggle Group, Menu, Tooltip, NumberField and more.
@@ -63,7 +63,7 @@ import {
 ```
 
 The API follows [Base UI Toolbar](https://base-ui.com/react/components/toolbar): a `Root` owning
-roving focus over `Button`, `Link`, `Input`, `Group` and `Separator` parts.
+composite focus over `Button`, `Link`, `Input`, `Group` and `Separator` parts.
 
 ## Anatomy
 
@@ -82,7 +82,7 @@ roving focus over `Button`, `Link`, `Input`, `Group` and `Separator` parts.
 Stack a toolbar part on another primitive's trigger/input to compose it — e.g.
 `<button rdxToolbarButton rdxMenuTrigger>` or `<input rdxToolbarInput rdxNumberFieldInput>`.
 Use `rdxToggleGroupWithoutFocus` for toggle groups inside a toolbar so the toggles share the toolbar's
-roving focus. Disabled state from `rdxToolbarRoot` or `rdxToolbarGroup` cascades into those toggle
+composite focus. Disabled state from `rdxToolbarRoot` or `rdxToolbarGroup` cascades into those toggle
 groups and their items.
 
 ## Examples
@@ -363,7 +363,7 @@ Adheres to the [Toolbar WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg
 
 | Key          | Description                                        |
 | ------------ | -------------------------------------------------- |
-| `Tab`        | Moves focus into/out of the toolbar (single stop). |
+| `Tab`        | Moves focus into/out of the toolbar through the current item. |
 | `ArrowRight` | (Horizontal) Moves focus to the next item.         |
 | `ArrowLeft`  | (Horizontal) Moves focus to the previous item.     |
 | `ArrowDown`  | (Vertical) Moves focus to the next item.           |

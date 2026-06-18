@@ -66,7 +66,7 @@ describe('RdxToggle (standalone)', () => {
         expect(component.onToggle).toHaveBeenLastCalledWith(
             expect.objectContaining({
                 pressed: true,
-                eventDetails: expect.objectContaining({ reason: 'trigger-press', trigger: button })
+                eventDetails: expect.objectContaining({ reason: 'none', trigger: button })
             })
         );
 

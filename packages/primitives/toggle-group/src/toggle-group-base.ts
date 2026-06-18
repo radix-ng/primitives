@@ -8,7 +8,7 @@ import {
 } from '@radix-ng/primitives/core';
 import { RdxToggleGroupContext } from './toggle-group-context';
 
-export type RdxToggleGroupValueChangeReason = 'trigger-press' | 'none';
+export type RdxToggleGroupValueChangeReason = 'none';
 export type RdxToggleGroupValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxToggleGroupValueChangeReason>;
 
 export interface RdxToggleGroupValueChangeEvent {
@@ -21,14 +21,14 @@ export function toggleGroupContext(instance: RdxToggleGroupBase): RdxToggleGroup
     return {
         value: instance.pressedValues,
         disabled: instance.isDisabled,
-        multiple: instance.multiple,
         orientation: instance.orientation,
+        isValueInitialized: instance.isValueInitialized,
         toggle: (value, event, eventDetails) => instance.toggle(value, event, eventDetails)
     };
 }
 
 /**
- * Shared state and behavior for the toggle group. Concrete directives add the roving-focus group
+ * Shared state and behavior for the toggle group. Concrete directives add the composite root
  * ({@link RdxToggleGroup}) or omit it when an ancestor already owns focus, e.g. a toolbar
  * ({@link RdxToggleGroupWithoutFocus}).
  */
@@ -77,6 +77,8 @@ export abstract class RdxToggleGroupBase implements ControlValueAccessor {
 
     /** @ignore */
     readonly pressedValues = computed(() => this.value() ?? []);
+    /** @ignore */
+    readonly isValueInitialized = computed(() => this.value() !== undefined || this.defaultValue() !== undefined);
 
     protected readonly accessorDisabled = signal(false);
     /** @ignore */
@@ -117,7 +119,7 @@ export abstract class RdxToggleGroupBase implements ControlValueAccessor {
         const resolvedEventDetails =
             eventDetails ??
             createCancelableChangeEventDetails(
-                event ? 'trigger-press' : 'none',
+                'none',
                 event ?? new Event('toggle-group.value-change'),
                 event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined
             ).eventDetails;

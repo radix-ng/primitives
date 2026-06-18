@@ -32,7 +32,7 @@ part used either on its own or inside a `[rdxToggleGroup]`.
 ```
 
 When placed inside a `[rdxToggleGroup]`, give each toggle a stable `value` — its pressed state is then
-derived from the group's value and it joins the group's roving focus. In dev mode, a grouped toggle
+derived from the group's value and it joins the group's composite focus. In dev mode, a grouped toggle
 without `value` emits a warning because it cannot participate in group value changes.
 
 ## Change events

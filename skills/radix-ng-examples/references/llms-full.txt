@@ -21397,7 +21397,7 @@ part used either on its own or inside a `[rdxToggleGroup]`.
 ```
 
 When placed inside a `[rdxToggleGroup]`, give each toggle a stable `value` — its pressed state is then
-derived from the group's value and it joins the group's roving focus. In dev mode, a grouped toggle
+derived from the group's value and it joins the group's composite focus. In dev mode, a grouped toggle
 without `value` emits a warning because it cannot participate in group value changes.
 
 ## Change events
@@ -21499,7 +21499,7 @@ When `disabled` is present the toggle cannot be activated.
 
 ## Features
 
-- ✅ Full keyboard navigation with roving focus.
+- ✅ Full keyboard navigation with composite focus.
 - ✅ Supports horizontal and vertical orientation.
 - ✅ Single or multiple pressed items.
 - ✅ Can be controlled or uncontrolled.
@@ -21628,14 +21628,14 @@ or update its pressed state.
 
 `RdxToggleGroupWithoutFocus`
 
-Use `rdxToggleGroupWithoutFocus` inside a composite parent that already owns roving focus, such as
+Use `rdxToggleGroupWithoutFocus` inside a composite parent that already owns focus, such as
 `rdxToolbarRoot`. It keeps the same value, disabled, orientation and multiple-selection behavior as
-`rdxToggleGroup`, but lets its toggles register with the ancestor focus group. When placed inside
+`rdxToggleGroup`, but lets its toggles register with the ancestor composite root. When placed inside
 `rdxToolbarRoot` or `rdxToolbarGroup`, disabled state cascades into the toggle group and its items.
 
 ## Accessibility
 
-Uses [roving tabindex](https://www.w3.org/WAI/ARIA/apg/patterns/) to manage focus among items.
+Uses composite focus with a single item tab stop to manage focus among items.
 
 ### Keyboard Interactions
 
@@ -21699,7 +21699,7 @@ Uses [roving tabindex](https://www.w3.org/WAI/ARIA/apg/patterns/) to manage focu
 
 ## Features
 
-- ✅ Full keyboard navigation with roving focus.
+- ✅ Full keyboard navigation with composite focus.
 - ✅ Horizontal and vertical orientation.
 - ✅ Disabling the toolbar or a group cascades to its items.
 - ✅ Composes with Toggle Group, Menu, Tooltip, NumberField and more.
@@ -21718,7 +21718,7 @@ import {
 ```
 
 The API follows [Base UI Toolbar](https://base-ui.com/react/components/toolbar): a `Root` owning
-roving focus over `Button`, `Link`, `Input`, `Group` and `Separator` parts.
+composite focus over `Button`, `Link`, `Input`, `Group` and `Separator` parts.
 
 ## Anatomy
 
@@ -21737,7 +21737,7 @@ roving focus over `Button`, `Link`, `Input`, `Group` and `Separator` parts.
 Stack a toolbar part on another primitive's trigger/input to compose it — e.g.
 `<button rdxToolbarButton rdxMenuTrigger>` or `<input rdxToolbarInput rdxNumberFieldInput>`.
 Use `rdxToggleGroupWithoutFocus` for toggle groups inside a toolbar so the toggles share the toolbar's
-roving focus. Disabled state from `rdxToolbarRoot` or `rdxToolbarGroup` cascades into those toggle
+composite focus. Disabled state from `rdxToolbarRoot` or `rdxToolbarGroup` cascades into those toggle
 groups and their items.
 
 ## Examples
@@ -22018,7 +22018,7 @@ Adheres to the [Toolbar WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg
 
 | Key          | Description                                        |
 | ------------ | -------------------------------------------------- |
-| `Tab`        | Moves focus into/out of the toolbar (single stop). |
+| `Tab`        | Moves focus into/out of the toolbar through the current item. |
 | `ArrowRight` | (Horizontal) Moves focus to the next item.         |
 | `ArrowLeft`  | (Horizontal) Moves focus to the previous item.     |
 | `ArrowDown`  | (Vertical) Moves focus to the next item.           |

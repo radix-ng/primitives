@@ -18,7 +18,7 @@
 
 ## Features
 
-- ✅ Full keyboard navigation with roving focus.
+- ✅ Full keyboard navigation with composite focus.
 - ✅ Supports horizontal and vertical orientation.
 - ✅ Single or multiple pressed items.
 - ✅ Can be controlled or uncontrolled.
@@ -147,14 +147,14 @@ or update its pressed state.
 
 `RdxToggleGroupWithoutFocus`
 
-Use `rdxToggleGroupWithoutFocus` inside a composite parent that already owns roving focus, such as
+Use `rdxToggleGroupWithoutFocus` inside a composite parent that already owns focus, such as
 `rdxToolbarRoot`. It keeps the same value, disabled, orientation and multiple-selection behavior as
-`rdxToggleGroup`, but lets its toggles register with the ancestor focus group. When placed inside
+`rdxToggleGroup`, but lets its toggles register with the ancestor composite root. When placed inside
 `rdxToolbarRoot` or `rdxToolbarGroup`, disabled state cascades into the toggle group and its items.
 
 ## Accessibility
 
-Uses [roving tabindex](https://www.w3.org/WAI/ARIA/apg/patterns/) to manage focus among items.
+Uses composite focus with a single item tab stop to manage focus among items.
 
 ### Keyboard Interactions
 
