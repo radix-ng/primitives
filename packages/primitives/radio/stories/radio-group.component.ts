@@ -12,7 +12,6 @@ import { cn, demoButton, demoRadio } from '../../storybook/styles';
                 [(ngModel)]="hotelRoom"
                 [class]="r.group"
                 name="hotelRoom"
-                orientation="vertical"
                 rdxRadioRoot
                 required
                 aria-label="Hotel room"

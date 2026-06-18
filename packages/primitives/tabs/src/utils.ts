@@ -7,6 +7,14 @@ export type RdxTabsActivationDirection = 'left' | 'right' | 'up' | 'down' | 'non
 /** A value that identifies a tab / panel pair. */
 export type RdxTabsValue = string | number | null;
 
+/** Metadata registered for each tab in the composite list. */
+export interface RdxTabsTabMetadata {
+    [key: string]: unknown;
+    disabled: boolean;
+    id: string;
+    value: RdxTabsValue;
+}
+
 export function makeTabId(baseId: string, value: RdxTabsValue): string {
     return `${baseId}-tab-${value}`;
 }

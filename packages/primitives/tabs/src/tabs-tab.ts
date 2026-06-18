@@ -1,6 +1,6 @@
 import { booleanAttribute, computed, Directive, effect, inject, input } from '@angular/core';
+import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import { BooleanInput } from '@radix-ng/primitives/core';
-import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 import { injectTabsRootContext } from './tabs-root-context';
 import { makePanelId, makeTabId, RdxTabsValue } from './utils';
 
@@ -12,23 +12,19 @@ import { makePanelId, makeTabId, RdxTabsValue } from './utils';
 @Directive({
     selector: '[rdxTabsTab]',
     exportAs: 'rdxTabsTab',
-    hostDirectives: [
-        {
-            directive: RdxRovingFocusItemDirective,
-            inputs: ['allowShiftKey']
-        }
-    ],
+    hostDirectives: [RdxCompositeItem],
     host: {
         type: 'button',
         role: 'tab',
         '[id]': 'tabId()',
         '[attr.aria-selected]': 'active()',
         '[attr.aria-controls]': 'panelId()',
+        '[attr.aria-disabled]': 'disabled() ? "true" : undefined',
+        '[attr.data-composite-item-active]': 'active() ? "" : undefined',
         '[attr.data-orientation]': 'rootContext.orientation()',
         '[attr.data-activation-direction]': 'rootContext.activationDirection()',
         '[attr.data-active]': 'active() ? "" : undefined',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
-        '[attr.disabled]': 'disabled() ? "" : undefined',
         '(mousedown)': 'onMouseDown($event)',
         '(keydown)': 'onKeyDown($event)',
         '(focus)': 'onFocus($event)'
@@ -36,7 +32,7 @@ import { makePanelId, makeTabId, RdxTabsValue } from './utils';
 })
 export class RdxTabsTab {
     protected readonly rootContext = injectTabsRootContext();
-    private readonly rovingFocusItem = inject(RdxRovingFocusItemDirective);
+    private readonly compositeItem = inject(RdxCompositeItem, { self: true });
 
     /**
      * A unique value that associates the tab with a panel.
@@ -58,8 +54,11 @@ export class RdxTabsTab {
 
     constructor() {
         effect(() => {
-            this.rovingFocusItem.setActive(this.active());
-            this.rovingFocusItem.setFocusable(!this.disabled());
+            this.compositeItem.setMetadata({
+                disabled: this.disabled(),
+                id: this.tabId(),
+                value: this.value()
+            });
         });
     }
 

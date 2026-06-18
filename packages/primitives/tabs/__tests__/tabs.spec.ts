@@ -16,7 +16,7 @@ import { RdxTabsTab } from '../src/tabs-tab';
             (onValueChange)="onValueChange($event)"
             rdxTabsRoot
         >
-            <div [activateOnFocus]="activateOnFocus()" rdxTabsList>
+            <div [activateOnFocus]="activateOnFocus()" [loopFocus]="loopFocus()" rdxTabsList>
                 <button rdxTabsTab value="one">One</button>
                 <button [disabled]="disabledTwo()" rdxTabsTab value="two">Two</button>
                 <button rdxTabsTab value="three">Three</button>
@@ -33,6 +33,7 @@ class TestHostComponent {
     defaultValue: string | undefined = 'one';
     readonly orientation = signal<DataOrientation>('horizontal');
     readonly activateOnFocus = signal(false);
+    readonly loopFocus = signal(true);
     readonly disabledTwo = signal(false);
     cancelNext = false;
     changes: string[] = [];
@@ -70,7 +71,9 @@ describe('Tabs', () => {
         const [one, two] = tabs();
         expect(one.getAttribute('data-active')).toBe('');
         expect(one.getAttribute('aria-selected')).toBe('true');
+        expect(one.getAttribute('tabindex')).toBe('0');
         expect(two.getAttribute('data-active')).toBeNull();
+        expect(two.getAttribute('tabindex')).toBe('-1');
     });
 
     it('wires aria-controls / aria-labelledby between tab and panel', () => {
@@ -141,6 +144,100 @@ describe('Tabs', () => {
         three.dispatchEvent(new FocusEvent('focus'));
         fixture.detectChanges();
         expect(host.value()).toBe('three');
+    });
+
+    it('moves focus with arrow keys without selecting when activateOnFocus is false', async () => {
+        const [one, two] = tabs();
+
+        one.focus();
+        one.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        expect(document.activeElement).toBe(two);
+        expect(one.getAttribute('tabindex')).toBe('-1');
+        expect(two.getAttribute('tabindex')).toBe('0');
+        expect(host.value()).toBe('one');
+    });
+
+    it('selects the focused tab during arrow navigation when activateOnFocus is true', async () => {
+        host.activateOnFocus.set(true);
+        fixture.detectChanges();
+
+        const [one, two] = tabs();
+
+        one.focus();
+        one.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        expect(document.activeElement).toBe(two);
+        expect(host.value()).toBe('two');
+    });
+
+    it('supports Home and End key navigation', async () => {
+        const [one, , three] = tabs();
+
+        one.focus();
+        one.dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }));
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        expect(document.activeElement).toBe(three);
+        expect(three.getAttribute('tabindex')).toBe('0');
+
+        three.dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true }));
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        expect(document.activeElement).toBe(one);
+        expect(one.getAttribute('tabindex')).toBe('0');
+    });
+
+    it('does not loop arrow navigation when loopFocus is false', async () => {
+        host.loopFocus.set(false);
+        fixture.detectChanges();
+
+        const [one] = tabs();
+
+        one.focus();
+        one.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        expect(document.activeElement).toBe(one);
+        expect(one.getAttribute('tabindex')).toBe('0');
+    });
+
+    it('skips disabled tabs during arrow navigation', async () => {
+        host.disabledTwo.set(true);
+        fixture.detectChanges();
+
+        const [one, two, three] = tabs();
+
+        one.focus();
+        one.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        expect(two.getAttribute('aria-disabled')).toBe('true');
+        expect(document.activeElement).toBe(three);
+        expect(two.getAttribute('tabindex')).toBe('-1');
+        expect(three.getAttribute('tabindex')).toBe('0');
+    });
+
+    it('does not give tabindex 0 to a disabled selected tab', async () => {
+        host.disabledTwo.set(true);
+        host.value.set('two');
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        const [one, two] = tabs();
+
+        expect(two.getAttribute('aria-selected')).toBe('true');
+        expect(two.getAttribute('tabindex')).toBe('-1');
+        expect(one.getAttribute('tabindex')).toBe('0');
     });
 
     it('exposes data-orientation and aria-orientation', () => {

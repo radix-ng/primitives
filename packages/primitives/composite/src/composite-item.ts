@@ -21,7 +21,7 @@ export class RdxCompositeItem {
 
     /** Arbitrary metadata included in the root's ordered item map. */
     readonly metadataInput = input<RdxCompositeItemMetadata | null | undefined>(undefined, { alias: 'metadata' });
-    private readonly metadata = linkedSignal(() => this.metadataInput());
+    private readonly _metadata = linkedSignal(() => this.metadataInput());
 
     readonly index = computed(() => this.rootContext?.indexOf(this.elementRef.nativeElement) ?? -1);
     protected readonly highlighted = computed(() => this.rootContext?.highlightedIndex() === this.index());
@@ -45,11 +45,15 @@ export class RdxCompositeItem {
 
             const element = this.elementRef.nativeElement;
             const unregister = untracked(() =>
-                rootContext.registerItem({ element, metadata: this.metadata.asReadonly() })
+                rootContext.registerItem({ element, metadata: this._metadata.asReadonly() })
             );
 
             onCleanup(unregister);
         });
+    }
+
+    setMetadata(value: RdxCompositeItemMetadata | null | undefined): void {
+        this._metadata.set(value);
     }
 
     protected handleFocus(): void {

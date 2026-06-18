@@ -1,6 +1,7 @@
-import { booleanAttribute, Directive, effect, ElementRef, inject, input } from '@angular/core';
-import { RdxRovingFocusGroupDirective } from '@radix-ng/primitives/roving-focus';
+import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input } from '@angular/core';
+import { RdxCompositeMetadata, RdxCompositeRoot } from '@radix-ng/primitives/composite';
 import { injectTabsRootContext } from './tabs-root-context';
+import { RdxTabsTabMetadata } from './utils';
 
 /**
  * Groups the individual tab buttons and manages keyboard navigation.
@@ -10,7 +11,7 @@ import { injectTabsRootContext } from './tabs-root-context';
 @Directive({
     selector: '[rdxTabsList]',
     exportAs: 'rdxTabsList',
-    hostDirectives: [RdxRovingFocusGroupDirective],
+    hostDirectives: [RdxCompositeRoot],
     host: {
         role: 'tablist',
         '[attr.aria-orientation]': 'rootContext.orientation()',
@@ -21,7 +22,7 @@ import { injectTabsRootContext } from './tabs-root-context';
 export class RdxTabsList {
     protected readonly rootContext = injectTabsRootContext();
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
-    private readonly rovingFocusGroup = inject(RdxRovingFocusGroupDirective, { self: true });
+    private readonly compositeRoot = inject(RdxCompositeRoot, { self: true });
 
     /**
      * Whether a tab is activated when it receives focus (automatic activation).
@@ -38,14 +39,61 @@ export class RdxTabsList {
      */
     readonly loopFocus = input(true, { transform: booleanAttribute });
 
+    private readonly tabMetadata = computed(() =>
+        Array.from(this.compositeRoot.itemMap().values()).filter(isTabsTabMetadata)
+    );
+
+    private readonly disabledIndices = computed(() =>
+        this.tabMetadata()
+            .filter((metadata) => metadata.disabled)
+            .map((metadata) => metadata.index)
+    );
+
+    private readonly activeIndex = computed(() => {
+        const value = this.rootContext.value();
+        const metadata = this.tabMetadata().find((tab) => tab.value === value);
+
+        return metadata?.index ?? -1;
+    });
+
     constructor() {
         this.rootContext.setTabListElement(this.elementRef.nativeElement);
 
         effect(() => {
-            this.rovingFocusGroup.setOrientation(this.rootContext.orientation());
-            this.rovingFocusGroup.setLoop(this.loopFocus());
+            this.compositeRoot.setOrientation(this.rootContext.orientation());
+            this.compositeRoot.setLoopFocus(this.loopFocus());
+            this.compositeRoot.setEnableHomeAndEndKeys(true);
+        });
+
+        effect(() => {
+            this.compositeRoot.setDisabledIndices(this.disabledIndices());
+        });
+
+        effect(() => {
+            const activeIndex = this.activeIndex();
+
+            if (activeIndex === -1 || this.disabledIndices().includes(activeIndex)) {
+                return;
+            }
+
+            const list = this.elementRef.nativeElement;
+            const activeElement = list.ownerDocument.activeElement;
+
+            if (activeElement && list.contains(activeElement)) {
+                return;
+            }
+
+            this.compositeRoot.setHighlightedIndex(activeIndex);
         });
 
         effect(() => this.rootContext.setActivateOnFocus(this.activateOnFocus()));
     }
+}
+
+function isTabsTabMetadata(metadata: RdxCompositeMetadata): metadata is RdxCompositeMetadata<RdxTabsTabMetadata> {
+    return (
+        typeof metadata['disabled'] === 'boolean' &&
+        typeof metadata['id'] === 'string' &&
+        Object.prototype.hasOwnProperty.call(metadata, 'value')
+    );
 }

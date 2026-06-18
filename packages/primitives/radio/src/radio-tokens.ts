@@ -1,6 +1,7 @@
 import { InjectionToken, InputSignal, InputSignalWithTransform, ModelSignal, Signal } from '@angular/core';
 import { BooleanInput } from '@radix-ng/primitives/core';
-import { Orientation } from '@radix-ng/primitives/roving-focus';
+
+export type RdxRadioValueChangeReason = 'none';
 
 export interface RadioGroupProps {
     value: ModelSignal<string | null>;
@@ -10,12 +11,11 @@ export interface RadioGroupProps {
     disabled: InputSignalWithTransform<boolean, BooleanInput>;
     readonly: InputSignalWithTransform<boolean, BooleanInput>;
     required: InputSignalWithTransform<boolean, BooleanInput>;
-    orientation: InputSignal<Orientation | undefined>;
     disabledState: Signal<boolean>;
 }
 
 export interface RadioGroupDirective extends RadioGroupProps {
-    select(value: string | null, event?: Event, reason?: string): void;
+    select(value: string | null, event?: Event, reason?: RdxRadioValueChangeReason): void;
 
     onTouched(): void;
 

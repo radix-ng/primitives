@@ -12,7 +12,7 @@ import { demoRadio } from '../../storybook/styles';
     selector: 'radio-default-example',
     template: `
         <form>
-            <div [class]="r.group" rdxRadioRoot name="density" orientation="vertical" aria-label="View density">
+            <div [class]="r.group" rdxRadioRoot name="density" aria-label="View density">
                 <label [class]="r.row" rdxLabel>
                     <span [class]="r.item" rdxRadioItem value="default">
                         <span [class]="r.indicator" rdxRadioIndicator></span>
@@ -44,7 +44,6 @@ export class RadioDefaultComponent {
 ## Features
 
 - ✅ Full keyboard navigation.
-- ✅ Supports horizontal/vertical orientation.
 - ✅ Can be controlled or uncontrolled.
 
 ## Import
@@ -104,7 +103,7 @@ setValue(change: RdxRadioValueChangeEvent) {
 
 ### Default
 
-A vertical radio group with sibling labels and native button items.
+A radio group with sibling labels and hidden native inputs.
 
 ```typescript
 import { Component } from '@angular/core';
@@ -116,7 +115,7 @@ import { demoRadio } from '../../storybook/styles';
     selector: 'radio-default-example',
     template: `
         <form>
-            <div [class]="r.group" rdxRadioRoot name="density" orientation="vertical" aria-label="View density">
+            <div [class]="r.group" rdxRadioRoot name="density" aria-label="View density">
                 <label [class]="r.row" rdxLabel>
                     <span [class]="r.item" rdxRadioItem value="default">
                         <span [class]="r.indicator" rdxRadioIndicator></span>
@@ -164,7 +163,6 @@ import { demoRadio } from '../../storybook/styles';
             rdxRadioRoot
             name="density-disabled"
             disabled
-            orientation="vertical"
             aria-label="View density"
         >
             <label [class]="r.row" rdxLabel>
@@ -213,7 +211,6 @@ import { cn, demoButton, demoRadio } from '../../storybook/styles';
                 [(ngModel)]="hotelRoom"
                 [class]="r.group"
                 name="hotelRoom"
-                orientation="vertical"
                 rdxRadioRoot
                 required
                 aria-label="Hotel room"

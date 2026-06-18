@@ -12,7 +12,6 @@ import { demoRadio } from '../../storybook/styles';
             rdxRadioRoot
             name="density-disabled"
             disabled
-            orientation="vertical"
             aria-label="View density"
         >
             <label [class]="r.row" rdxLabel>

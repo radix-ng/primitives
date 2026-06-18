@@ -10,8 +10,8 @@ import {
     input,
     Renderer2
 } from '@angular/core';
+import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, provideToken } from '@radix-ng/primitives/core';
-import { Orientation, RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 import { RDX_RADIO_GROUP } from './radio-tokens';
 
 export const RdxRadioItemToken = new InjectionToken<RdxRadioItemDirective>('RadioItemToken');
@@ -24,16 +24,16 @@ export function injectRadioItem(): RdxRadioItemDirective {
     selector: '[rdxRadioItem]',
     exportAs: 'rdxRadioItem',
     providers: [provideToken(RdxRadioItemToken, RdxRadioItemDirective)],
-    hostDirectives: [
-        { directive: RdxRovingFocusItemDirective, inputs: ['tabStopId: id', 'focusable', 'active', 'allowShiftKey'] }
-    ],
+    hostDirectives: [RdxCompositeItem],
 
     host: {
         '[attr.type]': 'nativeButtonState() ? "button" : undefined',
         role: 'radio',
         '[attr.aria-checked]': 'checkedState()',
+        '[attr.aria-disabled]': 'disabledState() ? "true" : undefined',
         '[attr.aria-readonly]': 'readonlyState() ? "true" : undefined',
         '[attr.aria-required]': 'requiredState() ? "true" : undefined',
+        '[attr.data-composite-item-active]': 'checkedState() ? "" : undefined',
         '[attr.data-checked]': 'checkedState() ? "" : undefined',
         '[attr.data-unchecked]': '!checkedState() ? "" : undefined',
         '[attr.data-disabled]': 'disabledState() ? "" : undefined',
@@ -51,7 +51,7 @@ export class RdxRadioItemDirective {
     private readonly radioGroup = inject(RDX_RADIO_GROUP);
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly renderer = inject(Renderer2);
-    private readonly rovingFocusItem = inject(RdxRovingFocusItemDirective);
+    private readonly compositeItem = inject(RdxCompositeItem, { self: true });
     private readonly destroyRef = inject(DestroyRef);
     private readonly inputElement = this.renderer.createElement('input') as HTMLInputElement;
     private previousCheckedState: boolean | undefined;
@@ -68,9 +68,7 @@ export class RdxRadioItemDirective {
 
     readonly nativeButton = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    readonly nativeButtonState = computed(
-        () => this.nativeButton() || this.elementRef.nativeElement.tagName === 'BUTTON'
-    );
+    readonly nativeButtonState = computed(() => this.nativeButton());
 
     readonly disabledState = computed(() => this.radioGroup.disabledState() || this.disabled());
 
@@ -86,7 +84,7 @@ export class RdxRadioItemDirective {
         this.createHiddenInput();
         const unlistenInputChange = this.renderer.listen(this.inputElement, 'change', (event: Event) => {
             if (this.inputElement.checked) {
-                this.radioGroup.select(this.value(), event, 'trigger-press');
+                this.radioGroup.select(this.value(), event);
             }
         });
 
@@ -100,8 +98,10 @@ export class RdxRadioItemDirective {
         });
 
         effect(() => {
-            this.rovingFocusItem.setActive(this.checkedState());
-            this.rovingFocusItem.setFocusable(!this.disabledState());
+            this.compositeItem.setMetadata({
+                disabled: this.disabledState(),
+                value: this.value()
+            });
             this.syncHiddenInput();
         });
     }
@@ -109,15 +109,20 @@ export class RdxRadioItemDirective {
     /** @ignore */
     onClick(event?: Event) {
         if (!this.disabledState() && !this.readonlyState()) {
-            this.radioGroup.select(this.value(), event, 'trigger-press');
+            this.radioGroup.select(this.value(), event);
         }
     }
 
     /** @ignore */
     onKeyDown(event: Event): void {
         const keyEvent = event as KeyboardEvent;
-        if (keyEvent.key === ' ' || keyEvent.key === 'Enter') {
+        if (keyEvent.key === ' ') {
             this.onClick(keyEvent);
+            return;
+        }
+
+        if (keyEvent.key === 'Enter') {
+            keyEvent.preventDefault();
             return;
         }
 
@@ -135,7 +140,7 @@ export class RdxRadioItemDirective {
     onFocus(event?: FocusEvent) {
         queueMicrotask(() => {
             if (this.radioGroup.isArrowNavigation()) {
-                this.radioGroup.select(this.value(), event, 'keyboard');
+                this.radioGroup.select(this.value(), event);
                 this.radioGroup.setArrowNavigation(false);
             }
         });
@@ -146,13 +151,7 @@ export class RdxRadioItemDirective {
             return false;
         }
 
-        const orientation = this.radioGroup.orientation() ?? ('horizontal' satisfies Orientation);
-
-        if (orientation === 'vertical') {
-            return key === 'ArrowUp' || key === 'ArrowDown';
-        }
-
-        return key === 'ArrowLeft' || key === 'ArrowRight';
+        return true;
     }
 
     private createHiddenInput(): void {

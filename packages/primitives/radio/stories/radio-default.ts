@@ -7,7 +7,7 @@ import { demoRadio } from '../../storybook/styles';
     selector: 'radio-default-example',
     template: `
         <form>
-            <div [class]="r.group" rdxRadioRoot name="density" orientation="vertical" aria-label="View density">
+            <div [class]="r.group" rdxRadioRoot name="density" aria-label="View density">
                 <label [class]="r.row" rdxLabel>
                     <span [class]="r.item" rdxRadioItem value="default">
                         <span [class]="r.indicator" rdxRadioIndicator></span>

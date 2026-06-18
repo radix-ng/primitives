@@ -6,6 +6,7 @@ import {
     ElementRef,
     inject,
     input,
+    linkedSignal,
     model,
     output,
     signal
@@ -76,23 +77,39 @@ export class RdxCompositeRoot {
     private hasSetInitialIndex = false;
 
     /** The composite orientation. */
-    readonly orientation = input<RdxCompositeOrientation>('both');
+    readonly orientationInput = input<RdxCompositeOrientation>('both', { alias: 'orientation' });
+    private readonly _orientation = linkedSignal(() => this.orientationInput());
+    readonly orientation = this._orientation.asReadonly();
 
     /** Text direction for horizontal arrow-key navigation. */
     readonly dirInput = input<Direction | undefined>(undefined, { alias: 'dir' });
     readonly dir = injectDirection(this.dirInput);
 
     /** Whether arrow-key navigation wraps at the first/last item. */
-    readonly loopFocus = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
+    readonly loopFocusInput = input<boolean, BooleanInput>(true, {
+        alias: 'loopFocus',
+        transform: booleanAttribute
+    });
+    private readonly _loopFocus = linkedSignal(() => this.loopFocusInput());
+    readonly loopFocus = this._loopFocus.asReadonly();
 
     /** Enables Home and End keys. */
-    readonly enableHomeAndEndKeys = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+    readonly enableHomeAndEndKeysInput = input<boolean, BooleanInput>(false, {
+        alias: 'enableHomeAndEndKeys',
+        transform: booleanAttribute
+    });
+    private readonly _enableHomeAndEndKeys = linkedSignal(() => this.enableHomeAndEndKeysInput());
+    readonly enableHomeAndEndKeys = this._enableHomeAndEndKeys.asReadonly();
 
     /** Indices that are skipped by keyboard navigation. */
-    readonly disabledIndices = input<readonly number[] | undefined>(undefined);
+    readonly disabledIndicesInput = input<readonly number[] | undefined>(undefined, { alias: 'disabledIndices' });
+    private readonly _disabledIndices = linkedSignal(() => this.disabledIndicesInput());
+    readonly disabledIndices = this._disabledIndices.asReadonly();
 
     /** Modifier keys that should not block composite navigation. */
-    readonly modifierKeys = input<readonly RdxCompositeModifierKey[]>([]);
+    readonly modifierKeysInput = input<readonly RdxCompositeModifierKey[]>([], { alias: 'modifierKeys' });
+    private readonly _modifierKeys = linkedSignal(() => this.modifierKeysInput());
+    readonly modifierKeys = this._modifierKeys.asReadonly();
 
     /** Whether hovering an item should focus it. */
     readonly highlightItemOnHover = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
@@ -165,6 +182,26 @@ export class RdxCompositeRoot {
 
     indexOf(element: HTMLElement): number {
         return this.items().findIndex((item) => item.element === element);
+    }
+
+    setOrientation(value: RdxCompositeOrientation): void {
+        this._orientation.set(value);
+    }
+
+    setLoopFocus(value: boolean): void {
+        this._loopFocus.set(value);
+    }
+
+    setEnableHomeAndEndKeys(value: boolean): void {
+        this._enableHomeAndEndKeys.set(value);
+    }
+
+    setDisabledIndices(value: readonly number[] | undefined): void {
+        this._disabledIndices.set(value);
+    }
+
+    setModifierKeys(value: readonly RdxCompositeModifierKey[]): void {
+        this._modifierKeys.set(value);
     }
 
     isIndexDisabled(index: number): boolean {

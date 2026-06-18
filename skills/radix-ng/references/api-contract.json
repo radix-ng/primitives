@@ -5664,7 +5664,7 @@
           "selector": "[rdxRadioItem]",
           "exportAs": "rdxRadioItem",
           "hostDirectives": [
-            "RdxRovingFocusItemDirective"
+            "RdxCompositeItem"
           ],
           "inputs": [
             {
@@ -5704,7 +5704,7 @@
           "selector": "[rdxRadioRoot]",
           "exportAs": "rdxRadioRoot",
           "hostDirectives": [
-            "RdxRovingFocusGroupDirective"
+            "RdxCompositeRoot"
           ],
           "inputs": [
             {
@@ -5723,10 +5723,6 @@
             {
               "name": "name",
               "type": "string"
-            },
-            {
-              "name": "orientation",
-              "type": "Orientation"
             },
             {
               "name": "readonly",
@@ -6742,7 +6738,7 @@
           "exportAs": "rdxTabsList",
           "description": "Groups the individual tab buttons and manages keyboard navigation.\n\nSee https://base-ui.com/react/components/tabs",
           "hostDirectives": [
-            "RdxRovingFocusGroupDirective"
+            "RdxCompositeRoot"
           ],
           "inputs": [
             {
@@ -6828,7 +6824,7 @@
           "exportAs": "rdxTabsTab",
           "description": "An individual interactive tab button that activates its corresponding panel.\n\nSee https://base-ui.com/react/components/tabs",
           "hostDirectives": [
-            "RdxRovingFocusItemDirective"
+            "RdxCompositeItem"
           ],
           "inputs": [
             {

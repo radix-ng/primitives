@@ -20,12 +20,11 @@ import {
                 (onValueChange)="onValueChange($event)"
                 rdxRadioRoot
                 name="density"
-                orientation="vertical"
             >
-                <button id="default" rdxRadioItem value="default">
+                <button id="default" nativeButton rdxRadioItem value="default">
                     <span rdxRadioIndicator></span>
                 </button>
-                <button id="comfortable" rdxRadioItem value="comfortable">
+                <button id="comfortable" nativeButton rdxRadioItem value="comfortable">
                     <span rdxRadioIndicator></span>
                 </button>
             </div>
@@ -38,10 +37,12 @@ class RadioHost {
     required = false;
     readonly = false;
     changes: string[] = [];
+    lastReason: string | undefined;
     cancelNext = false;
 
     onValueChange(change: RdxRadioValueChangeEvent): void {
         this.changes.push(change.value);
+        this.lastReason = change.eventDetails.reason;
         if (this.cancelNext) {
             change.eventDetails.cancel();
             this.cancelNext = false;
@@ -156,6 +157,49 @@ describe('RdxRadio', () => {
 
         expect(host.value).toBe('comfortable');
         expect(host.changes).toEqual(['comfortable']);
+    });
+
+    it('supports horizontal arrow navigation without an orientation input', async () => {
+        buttons()[0].focus();
+        await Promise.resolve();
+
+        buttons()[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+        await new Promise<void>((resolve) => setTimeout(resolve));
+        fixture.detectChanges();
+
+        expect(document.activeElement).toBe(buttons()[1]);
+        expect(host.value).toBe('comfortable');
+    });
+
+    it('allows Shift+Arrow navigation like Base UI RadioGroup', async () => {
+        buttons()[0].focus();
+        await Promise.resolve();
+
+        buttons()[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', shiftKey: true, bubbles: true }));
+        await new Promise<void>((resolve) => setTimeout(resolve));
+        fixture.detectChanges();
+
+        expect(document.activeElement).toBe(buttons()[1]);
+        expect(host.value).toBe('comfortable');
+    });
+
+    it('does not use Home and End for radio group navigation', async () => {
+        buttons()[0].focus();
+        await Promise.resolve();
+
+        buttons()[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }));
+        await new Promise<void>((resolve) => setTimeout(resolve));
+        fixture.detectChanges();
+
+        expect(document.activeElement).toBe(buttons()[0]);
+        expect(host.value).toBe('default');
+    });
+
+    it('uses the Base UI none reason for value changes', () => {
+        buttons()[1].click();
+        fixture.detectChanges();
+
+        expect(host.lastReason).toBe('none');
     });
 
     it('propagates group disabled and required state to items, indicators, and hidden inputs', () => {

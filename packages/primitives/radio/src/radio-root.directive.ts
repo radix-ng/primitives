@@ -1,5 +1,6 @@
-import { booleanAttribute, computed, Directive, effect, input, model, output, signal } from '@angular/core';
+import { booleanAttribute, computed, Directive, effect, inject, input, model, output, signal } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
+import { RdxCompositeMetadata, RdxCompositeRoot } from '@radix-ng/primitives/composite';
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
@@ -7,10 +8,10 @@ import {
     RdxCancelableChangeEventDetails,
     RdxFormValueControl
 } from '@radix-ng/primitives/core';
-import { Orientation, RdxRovingFocusGroupDirective } from '@radix-ng/primitives/roving-focus';
-import { RadioGroupDirective, RadioGroupProps, RDX_RADIO_GROUP } from './radio-tokens';
+import { RadioGroupDirective, RadioGroupProps, RDX_RADIO_GROUP, RdxRadioValueChangeReason } from './radio-tokens';
 
-export type RdxRadioValueChangeReason = 'trigger-press' | 'keyboard' | 'focus' | 'none';
+export type { RdxRadioValueChangeReason } from './radio-tokens';
+
 export type RdxRadioValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxRadioValueChangeReason>;
 
 export interface RdxRadioValueChangeEvent {
@@ -25,11 +26,12 @@ export interface RdxRadioValueChangeEvent {
         provideValueAccessor(RdxRadioGroupDirective),
         { provide: RDX_RADIO_GROUP, useExisting: RdxRadioGroupDirective }
     ],
-    hostDirectives: [{ directive: RdxRovingFocusGroupDirective, inputs: ['dir', 'orientation', 'loop'] }],
+    hostDirectives: [RdxCompositeRoot],
     host: {
         role: 'radiogroup',
-        '[attr.aria-orientation]': 'orientation()',
         '[attr.aria-required]': 'required() ? "true" : undefined',
+        '[attr.aria-disabled]': 'disabledState() ? "true" : undefined',
+        '[attr.aria-readonly]': 'readonly() ? "true" : undefined',
         '[attr.data-disabled]': 'disabledState() ? "" : undefined',
         '[attr.data-readonly]': 'readonly() ? "" : undefined',
         '[attr.data-required]': 'required() ? "" : undefined',
@@ -39,6 +41,8 @@ export interface RdxRadioValueChangeEvent {
 export class RdxRadioGroupDirective
     implements RadioGroupProps, RadioGroupDirective, ControlValueAccessor, RdxFormValueControl<string | null>
 {
+    private readonly compositeRoot = inject(RdxCompositeRoot, { self: true });
+
     readonly value = model<string | null>(null);
 
     readonly defaultValue = input<string>();
@@ -53,8 +57,6 @@ export class RdxRadioGroupDirective
 
     readonly required = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    readonly orientation = input<Orientation>();
-
     /**
      * Event handler called when the value changes.
      */
@@ -63,6 +65,14 @@ export class RdxRadioGroupDirective
     private readonly disable = signal<boolean>(this.disabled());
     readonly disabledState = computed(() => this.disable() || this.disabled());
     private readonly arrowNavigation = signal(false);
+    private readonly itemMetadata = computed(() =>
+        Array.from(this.compositeRoot.itemMap().values()).filter(isRadioItemMetadata)
+    );
+    private readonly disabledIndices = computed(() =>
+        this.itemMetadata()
+            .filter((metadata) => metadata.disabled)
+            .map((metadata) => metadata.index)
+    );
 
     /**
      * The callback function to call when the value of the radio group changes.
@@ -85,6 +95,15 @@ export class RdxRadioGroupDirective
                 this.value.set(this.defaultValue()!);
             }
         });
+
+        effect(() => {
+            this.compositeRoot.setEnableHomeAndEndKeys(false);
+            this.compositeRoot.setModifierKeys(['Shift']);
+        });
+
+        effect(() => {
+            this.compositeRoot.setDisabledIndices(this.disabledIndices());
+        });
     }
 
     /**
@@ -92,11 +111,7 @@ export class RdxRadioGroupDirective
      * @param value The value of the radio item to select.
      * @ignore
      */
-    select(
-        value: string | null,
-        event?: Event,
-        reason: RdxRadioValueChangeReason = event ? 'trigger-press' : 'none'
-    ): void {
+    select(value: string | null, event?: Event, reason: RdxRadioValueChangeReason = 'none'): void {
         if (this.disabledState() || this.readonly() || this.value() === value) {
             return;
         }
@@ -162,4 +177,14 @@ export class RdxRadioGroupDirective
     protected onKeydown(): void {
         if (this.disabledState()) return;
     }
+}
+
+interface RdxRadioItemMetadata {
+    [key: string]: unknown;
+    disabled: boolean;
+    value: string;
+}
+
+function isRadioItemMetadata(metadata: RdxCompositeMetadata): metadata is RdxCompositeMetadata<RdxRadioItemMetadata> {
+    return typeof metadata['disabled'] === 'boolean' && typeof metadata['value'] === 'string';
 }
