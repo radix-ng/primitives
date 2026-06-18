@@ -2,8 +2,9 @@ import { Component, inject, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
-import { RdxToggle } from '@radix-ng/primitives/toggle';
+import { RdxToggle, RdxTogglePressedChangeEvent } from '@radix-ng/primitives/toggle';
 import { RdxToggleGroup } from '../src/toggle-group';
+import { RdxToggleGroupValueChangeEvent } from '../src/toggle-group-base';
 
 @Component({
     imports: [RdxToggleGroup, RdxToggle],
@@ -13,10 +14,13 @@ import { RdxToggleGroup } from '../src/toggle-group';
             [multiple]="multiple()"
             [disabled]="disabled()"
             [orientation]="orientation()"
+            (onValueChange)="onGroupValueChange($event)"
             rdxToggleGroup
             aria-label="Text alignment"
         >
-            <button rdxToggle value="left" aria-label="Left aligned">Left</button>
+            <button (onPressedChange)="onItemPressedChange($event)" rdxToggle value="left" aria-label="Left aligned">
+                Left
+            </button>
             <button rdxToggle value="center" aria-label="Center aligned">Center</button>
             <button rdxToggle value="right" aria-label="Right aligned">Right</button>
         </div>
@@ -27,6 +31,26 @@ class ToggleGroupTestComponent {
     readonly multiple = signal(false);
     readonly disabled = signal(false);
     readonly orientation = signal<'horizontal' | 'vertical'>('horizontal');
+    readonly itemPressedChanges: boolean[] = [];
+    readonly groupValueChanges: string[][] = [];
+    cancelNextItemChange = false;
+    cancelNextGroupChange = false;
+
+    onItemPressedChange(change: RdxTogglePressedChangeEvent): void {
+        this.itemPressedChanges.push(change.pressed);
+        if (this.cancelNextItemChange) {
+            change.eventDetails.cancel();
+            this.cancelNextItemChange = false;
+        }
+    }
+
+    onGroupValueChange(change: RdxToggleGroupValueChangeEvent): void {
+        this.groupValueChanges.push(change.value);
+        if (this.cancelNextGroupChange) {
+            change.eventDetails.cancel();
+            this.cancelNextGroupChange = false;
+        }
+    }
 }
 
 describe('RdxToggleGroup', () => {
@@ -58,6 +82,34 @@ describe('RdxToggleGroup', () => {
         expect(component.value()).toEqual(['left']);
         expect(items[0].getAttribute('data-pressed')).toBe('');
         expect(items[1].getAttribute('data-pressed')).toBeNull();
+        expect(component.itemPressedChanges).toEqual([true]);
+        expect(component.groupValueChanges).toEqual([['left']]);
+    });
+
+    it('lets an item-level pressed change cancel the group value change', () => {
+        component.cancelNextItemChange = true;
+
+        items[0].click();
+        fixture.detectChanges();
+
+        expect(component.value()).toEqual(['center']);
+        expect(component.itemPressedChanges).toEqual([true]);
+        expect(component.groupValueChanges).toEqual([]);
+        expect(items[0].getAttribute('data-pressed')).toBeNull();
+        expect(items[1].getAttribute('data-pressed')).toBe('');
+    });
+
+    it('lets a group-level value change cancel before committing state', () => {
+        component.cancelNextGroupChange = true;
+
+        items[0].click();
+        fixture.detectChanges();
+
+        expect(component.value()).toEqual(['center']);
+        expect(component.itemPressedChanges).toEqual([true]);
+        expect(component.groupValueChanges).toEqual([['left']]);
+        expect(items[0].getAttribute('data-pressed')).toBeNull();
+        expect(items[1].getAttribute('data-pressed')).toBe('');
     });
 
     it('reflects programmatic value changes', () => {

@@ -116,7 +116,19 @@ export class RdxToggle {
         if (this.group) {
             const value = this.value();
             if (value !== undefined) {
-                this.group.toggle(value, event);
+                const next = !this.pressedState();
+                const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
+                const { eventDetails } = createCancelableChangeEventDetails(
+                    event ? 'trigger-press' : 'none',
+                    event ?? new Event('toggle.pressed-change'),
+                    trigger
+                );
+                this.onPressedChange.emit({ pressed: next, eventDetails });
+                if (eventDetails.isCanceled()) {
+                    return;
+                }
+
+                this.group.toggle(value, event, eventDetails);
             }
             return;
         }

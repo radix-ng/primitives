@@ -73,12 +73,14 @@ form submission.
 ## Change events
 
 `onValueChange` emits `{ value, eventDetails }`, where `value` is a number for a single slider or a
-number array for a range slider. The change details include `reason`, `activeThumbIndex`, the
-originating event, `event.target.value` / `event.target.name`, and `cancel()`.
+number array for a range slider. The change details match Base UI's cancellable change contract:
+`reason`, `event`, `trigger`, `activeThumbIndex`, `cancel()`, `allowPropagation()`, and
+`isCanceled()`. The emitted event is cloned so `event.target.value` and `event.target.name` contain
+the candidate slider value and root `name`.
 
 `onValueCommitted` emits `{ value, eventDetails }` when an interaction commits. Its details include
-the commit `reason` and originating event. This is a generic event like Base UI, so it is not
-cancelable.
+the commit `reason`, originating event, and trigger. This is a generic event like Base UI, so it is
+not cancelable and does not include `activeThumbIndex`.
 
 ```html
 <div [value]="value()" (onValueChange)="setValue($event)" rdxSliderRoot>
@@ -97,12 +99,16 @@ setValue(change: RdxSliderValueChangeEvent) {
 }
 ```
 
+<Canvas of={SliderStories.Events} />
+
 ## Thumb alignment
 
 `thumbAlignment="center"` aligns each thumb's center with the control edge at `min` and `max`.
 `thumbAlignment="edge"` and `thumbAlignment="edge-client-only"` inset thumbs so the thumb edge,
-not its center, reaches the control edge. In edge modes the indicator uses measured thumb positions
-so the filled range lines up with the thumb centers.
+not its center, reaches the control edge. In edge modes the pointer math accounts for the inset thumb
+radius, and the indicator uses measured thumb positions so the filled range lines up with the thumb
+centers. Both edge modes currently share the same Angular runtime positioning path; the
+`edge-client-only` value is accepted for Base UI API parity.
 
 <Canvas of={SliderStories.ThumbAlignment} />
 

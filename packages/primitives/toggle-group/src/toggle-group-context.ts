@@ -1,5 +1,7 @@
 import { Signal } from '@angular/core';
-import { createContext, DataOrientation } from '@radix-ng/primitives/core';
+import { createContext, DataOrientation, RdxCancelableChangeEventDetails } from '@radix-ng/primitives/core';
+
+type RdxToggleGroupContextChangeReason = 'trigger-press' | 'none';
 
 /**
  * Shared state a {@link RdxToggle} reads when it participates in a toggle group.
@@ -18,7 +20,11 @@ export interface RdxToggleGroupContext {
     readonly orientation: Signal<DataOrientation>;
 
     /** Toggle the pressed state of `value` within the group. */
-    toggle(value: string, event?: Event): void;
+    toggle(
+        value: string,
+        event?: Event,
+        eventDetails?: RdxCancelableChangeEventDetails<RdxToggleGroupContextChangeReason>
+    ): void;
 }
 
 export const [injectToggleGroupContext, provideToggleGroupContext] = createContext<RdxToggleGroupContext>(

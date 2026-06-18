@@ -4,6 +4,8 @@ import { SliderDefaultExample } from './slider-default';
 import defaultSource from './slider-default?raw';
 import { SliderDisabledExample } from './slider-disabled';
 import disabledSource from './slider-disabled?raw';
+import { SliderEventsExample } from './slider-events';
+import eventsSource from './slider-events?raw';
 import { SliderFormsExample } from './slider-forms';
 import formsSource from './slider-forms?raw';
 import { SliderRangeExample } from './slider-range';
@@ -30,7 +32,8 @@ export default {
                 SliderValueExample,
                 SliderDisabledExample,
                 SliderFormsExample,
-                SliderThumbAlignmentExample
+                SliderThumbAlignmentExample,
+                SliderEventsExample
             ]
         }),
         tailwindDemoDecorator()
@@ -80,6 +83,15 @@ export const ThumbAlignment: Story = {
     render: () => ({
         template: html`
             <slider-thumb-alignment-example />
+        `
+    })
+};
+
+export const Events: Story = {
+    parameters: source(eventsSource),
+    render: () => ({
+        template: html`
+            <slider-events-example />
         `
     })
 };

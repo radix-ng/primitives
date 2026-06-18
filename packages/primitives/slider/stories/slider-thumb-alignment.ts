@@ -46,6 +46,23 @@ import {
                     </div>
                 </div>
             </div>
+
+            <div class="grid gap-2">
+                <span class="text-foreground text-sm font-medium">Edge client only</span>
+                <div class="relative px-2 select-none" [value]="50" thumbAlignment="edge-client-only" rdxSliderRoot>
+                    <div class="flex h-6 w-full touch-none items-center" rdxSliderControl>
+                        <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
+                            <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>
+                            <div
+                                class="border-border bg-background focus-within:ring-ring block size-5 rounded-full border shadow-sm focus-within:ring-2"
+                                rdxSliderThumb
+                            >
+                                <input rdxSliderThumbInput aria-label="Client-only edge aligned thumb value" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     `
 })

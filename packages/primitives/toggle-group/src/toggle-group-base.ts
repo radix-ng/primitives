@@ -23,7 +23,7 @@ export function toggleGroupContext(instance: RdxToggleGroupBase): RdxToggleGroup
         disabled: instance.isDisabled,
         multiple: instance.multiple,
         orientation: instance.orientation,
-        toggle: (value, event) => instance.toggle(value, event)
+        toggle: (value, event, eventDetails) => instance.toggle(value, event, eventDetails)
     };
 }
 
@@ -95,7 +95,7 @@ export abstract class RdxToggleGroupBase implements ControlValueAccessor {
     }
 
     /** @ignore */
-    toggle(value: string, event?: Event): void {
+    toggle(value: string, event?: Event, eventDetails?: RdxToggleGroupValueChangeEventDetails): void {
         if (this.isDisabled()) {
             return;
         }
@@ -109,14 +109,16 @@ export abstract class RdxToggleGroupBase implements ControlValueAccessor {
             next = current.includes(value) ? [] : [value];
         }
 
-        const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
-        const { eventDetails } = createCancelableChangeEventDetails(
-            event ? 'trigger-press' : 'none',
-            event ?? new Event('toggle-group.value-change'),
-            trigger
-        );
-        this.onValueChange.emit({ value: next, eventDetails });
-        if (eventDetails.isCanceled()) {
+        const resolvedEventDetails =
+            eventDetails ??
+            createCancelableChangeEventDetails(
+                event ? 'trigger-press' : 'none',
+                event ?? new Event('toggle-group.value-change'),
+                event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined
+            ).eventDetails;
+
+        this.onValueChange.emit({ value: next, eventDetails: resolvedEventDetails });
+        if (resolvedEventDetails.isCanceled()) {
             return;
         }
 
