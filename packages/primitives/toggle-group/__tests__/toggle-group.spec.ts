@@ -2,9 +2,13 @@ import { Component, inject, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
+import { resetRdxDevWarnings } from '@radix-ng/primitives/core';
 import { RdxToggle, RdxTogglePressedChangeEvent } from '@radix-ng/primitives/toggle';
+import { RdxToolbarGroup, RdxToolbarRoot } from '@radix-ng/primitives/toolbar';
+import { vi } from 'vitest';
 import { RdxToggleGroup } from '../src/toggle-group';
 import { RdxToggleGroupValueChangeEvent } from '../src/toggle-group-base';
+import { RdxToggleGroupWithoutFocus } from '../src/toggle-group-without-focus';
 
 @Component({
     imports: [RdxToggleGroup, RdxToggle],
@@ -14,6 +18,8 @@ import { RdxToggleGroupValueChangeEvent } from '../src/toggle-group-base';
             [multiple]="multiple()"
             [disabled]="disabled()"
             [orientation]="orientation()"
+            [dir]="dir()"
+            [loopFocus]="loopFocus()"
             (onValueChange)="onGroupValueChange($event)"
             rdxToggleGroup
             aria-label="Text alignment"
@@ -31,6 +37,8 @@ class ToggleGroupTestComponent {
     readonly multiple = signal(false);
     readonly disabled = signal(false);
     readonly orientation = signal<'horizontal' | 'vertical'>('horizontal');
+    readonly dir = signal<'ltr' | 'rtl'>('ltr');
+    readonly loopFocus = signal(true);
     readonly itemPressedChanges: boolean[] = [];
     readonly groupValueChanges: string[][] = [];
     cancelNextItemChange = false;
@@ -145,6 +153,135 @@ describe('RdxToggleGroup', () => {
         component.orientation.set('vertical');
         fixture.detectChanges();
         expect(group.getAttribute('data-orientation')).toBe('vertical');
+    });
+
+    it('moves focus with arrow keys according to orientation and direction', async () => {
+        items[0].focus();
+        items[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+        await Promise.resolve();
+        expect(document.activeElement).toBe(items[1]);
+
+        items[1].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+        await Promise.resolve();
+        expect(document.activeElement).toBe(items[1]);
+
+        component.orientation.set('vertical');
+        fixture.detectChanges();
+        items[1].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+        await Promise.resolve();
+        expect(document.activeElement).toBe(items[2]);
+
+        component.orientation.set('horizontal');
+        component.dir.set('rtl');
+        fixture.detectChanges();
+        items[2].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+        await Promise.resolve();
+        expect(document.activeElement).toBe(items[1]);
+    });
+
+    it('supports Home, End, and non-looping arrow navigation', async () => {
+        items[1].focus();
+
+        items[1].dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }));
+        await Promise.resolve();
+        expect(document.activeElement).toBe(items[2]);
+
+        items[2].dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true }));
+        await Promise.resolve();
+        expect(document.activeElement).toBe(items[0]);
+
+        component.loopFocus.set(false);
+        fixture.detectChanges();
+        items[2].focus();
+        items[2].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+        await Promise.resolve();
+        expect(document.activeElement).toBe(items[2]);
+    });
+});
+
+@Component({
+    imports: [RdxToggleGroup, RdxToggle],
+    template: `
+        <div [value]="['known']" rdxToggleGroup aria-label="Missing value">
+            <button rdxToggle>Missing value</button>
+        </div>
+    `
+})
+class MissingValueToggleGroup {}
+
+describe('RdxToggleGroup diagnostics', () => {
+    beforeEach(() => {
+        resetRdxDevWarnings();
+    });
+
+    it('warns when a grouped toggle omits value', () => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+        try {
+            TestBed.configureTestingModule({ imports: [MissingValueToggleGroup] });
+            const fixture = TestBed.createComponent(MissingValueToggleGroup);
+            fixture.detectChanges();
+
+            expect(warn).toHaveBeenCalledWith(expect.stringContaining('[rdx:toggle-group/missing-toggle-value]'));
+        } finally {
+            warn.mockRestore();
+        }
+    });
+});
+
+@Component({
+    imports: [RdxToolbarRoot, RdxToolbarGroup, RdxToggleGroupWithoutFocus, RdxToggle],
+    template: `
+        <div [disabled]="toolbarDisabled()" rdxToolbarRoot aria-label="Toolbar">
+            <div [disabled]="toolbarGroupDisabled()" rdxToolbarGroup>
+                <div [(value)]="value" rdxToggleGroupWithoutFocus aria-label="Alignment">
+                    <button rdxToggle value="left">Left</button>
+                    <button rdxToggle value="right">Right</button>
+                </div>
+            </div>
+        </div>
+    `
+})
+class ToolbarToggleGroupHost {
+    readonly value = signal<string[] | undefined>(['left']);
+    readonly toolbarDisabled = signal(false);
+    readonly toolbarGroupDisabled = signal(false);
+}
+
+describe('RdxToggleGroupWithoutFocus inside Toolbar', () => {
+    let fixture: ComponentFixture<ToolbarToggleGroupHost>;
+    let component: ToolbarToggleGroupHost;
+    let group: HTMLElement;
+    let buttons: HTMLButtonElement[];
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [ToolbarToggleGroupHost] });
+        fixture = TestBed.createComponent(ToolbarToggleGroupHost);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        group = fixture.debugElement.query(By.css('[rdxToggleGroupWithoutFocus]')).nativeElement;
+        buttons = fixture.debugElement.queryAll(By.css('[rdxToggle]')).map((d) => d.nativeElement);
+    });
+
+    it('inherits disabled state from the toolbar root', () => {
+        component.toolbarDisabled.set(true);
+        fixture.detectChanges();
+
+        expect(group.getAttribute('data-disabled')).toBe('');
+        expect(buttons[1].getAttribute('data-disabled')).toBe('');
+        buttons[1].click();
+        fixture.detectChanges();
+        expect(component.value()).toEqual(['left']);
+    });
+
+    it('inherits disabled state from the toolbar group', () => {
+        component.toolbarGroupDisabled.set(true);
+        fixture.detectChanges();
+
+        expect(group.getAttribute('data-disabled')).toBe('');
+        expect(buttons[1].getAttribute('data-disabled')).toBe('');
+        buttons[1].click();
+        fixture.detectChanges();
+        expect(component.value()).toEqual(['left']);
     });
 });
 

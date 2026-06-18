@@ -12,7 +12,8 @@ import {
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
-    RdxCancelableChangeEventDetails
+    RdxCancelableChangeEventDetails,
+    rdxDevWarning
 } from '@radix-ng/primitives/core';
 import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 import { injectToggleGroupContext } from '@radix-ng/primitives/toggle-group';
@@ -103,6 +104,15 @@ export class RdxToggle {
     readonly isDisabled = computed(() => this.disabled() || (this.group?.disabled() ?? false));
 
     constructor() {
+        effect(() => {
+            if (this.group && this.value() === undefined) {
+                rdxDevWarning(
+                    'toggle-group/missing-toggle-value',
+                    '`rdxToggle` is inside a toggle group but has no `value`. Add a stable `value` so the group can derive and update its pressed state.',
+                    'components/toggle-group'
+                );
+            }
+        });
         effect(() => this.rovingItem.setActive(this.pressedState()));
         effect(() => this.rovingItem.setFocusable(!this.isDisabled()));
     }

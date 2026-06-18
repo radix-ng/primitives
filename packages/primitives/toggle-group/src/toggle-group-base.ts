@@ -80,7 +80,7 @@ export abstract class RdxToggleGroupBase implements ControlValueAccessor {
 
     protected readonly accessorDisabled = signal(false);
     /** @ignore */
-    readonly isDisabled = computed(() => this.disabled() || this.accessorDisabled());
+    readonly isDisabled = computed(() => this.disabled() || this.accessorDisabled() || this.isExternallyDisabled());
 
     private onChange?: (value: string[]) => void;
     protected onTouched?: () => void;
@@ -92,6 +92,11 @@ export abstract class RdxToggleGroupBase implements ControlValueAccessor {
                 this.value.set(initial);
             }
         });
+    }
+
+    /** @ignore Extra disabled state inherited from composite parents such as Toolbar. */
+    protected isExternallyDisabled(): boolean {
+        return false;
     }
 
     /** @ignore */

@@ -1,5 +1,6 @@
 import { Directive, inject } from '@angular/core';
 import { provideValueAccessor } from '@radix-ng/primitives/core';
+import { injectToolbarGroupContext, injectToolbarRootContext } from '@radix-ng/primitives/toolbar';
 import { RdxToggleGroupBase, toggleGroupContext } from './toggle-group-base';
 import { provideToggleGroupContext } from './toggle-group-context';
 
@@ -17,4 +18,11 @@ import { provideToggleGroupContext } from './toggle-group-context';
         provideValueAccessor(RdxToggleGroupWithoutFocus)
     ]
 })
-export class RdxToggleGroupWithoutFocus extends RdxToggleGroupBase {}
+export class RdxToggleGroupWithoutFocus extends RdxToggleGroupBase {
+    private readonly toolbarRootContext = injectToolbarRootContext(true);
+    private readonly toolbarGroupContext = injectToolbarGroupContext(true);
+
+    protected override isExternallyDisabled(): boolean {
+        return (this.toolbarRootContext?.disabled() ?? false) || (this.toolbarGroupContext?.disabled() ?? false);
+    }
+}
