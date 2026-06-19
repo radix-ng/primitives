@@ -1,3 +1,20 @@
+## 1.0.3 (2026-06-19)
+
+### 🚀 Features
+
+- ⚠️  **collapsible:** align panel lifecycle with Base UI ([07ca554b](https://github.com/radix-ng/primitives/commit/07ca554b))
+
+### ⚠️  Breaking Changes
+
+- **collapsible:** align panel lifecycle with Base UI  ([07ca554b](https://github.com/radix-ng/primitives/commit/07ca554b))
+  onOpenChange now emits { open, eventDetails } instead of boolean.
+    BREAKING CHANGE: RdxCollapsiblePanelPresenceDirective was removed.
+    BREAKING CHANGE: RdxAccordionContentPresenceDirective was removed.
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 1.0.2 (2026-06-19)
 
 ### 🚀 Features
