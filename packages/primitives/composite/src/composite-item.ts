@@ -24,22 +24,26 @@ export class RdxCompositeItem {
     private readonly _metadata = linkedSignal(() => this.metadataInput());
 
     readonly index = computed(() => this.rootContext?.indexOf(this.elementRef.nativeElement) ?? -1);
+    private readonly inRootElement = computed(() => {
+        const rootContext = this.rootContext;
+        return !!rootContext && rootContext.rootElement.contains(this.elementRef.nativeElement);
+    });
     protected readonly highlighted = computed(() => this.rootContext?.highlightedIndex() === this.index());
     protected readonly tabIndex = computed(() => {
-        if (!this.rootContext) {
+        const rootContext = this.rootContext;
+
+        if (!rootContext || !this.inRootElement()) {
             return null;
         }
 
         const index = this.index();
-        return index !== -1 && this.rootContext.highlightedIndex() === index && !this.rootContext.isIndexDisabled(index)
-            ? 0
-            : -1;
+        return index !== -1 && rootContext.highlightedIndex() === index && !rootContext.isIndexDisabled(index) ? 0 : -1;
     });
 
     constructor() {
         effect((onCleanup) => {
             const rootContext = this.rootContext;
-            if (!rootContext) {
+            if (!rootContext || !this.inRootElement()) {
                 return;
             }
 
@@ -59,7 +63,7 @@ export class RdxCompositeItem {
     protected handleFocus(): void {
         const index = this.index();
 
-        if (index !== -1) {
+        if (this.inRootElement() && index !== -1) {
             this.rootContext?.setHighlightedIndex(index);
         }
     }
@@ -68,7 +72,13 @@ export class RdxCompositeItem {
         const rootContext = this.rootContext;
         const index = this.index();
 
-        if (!rootContext || index === -1 || !rootContext.highlightItemOnHover() || this.highlighted()) {
+        if (
+            !this.inRootElement() ||
+            !rootContext ||
+            index === -1 ||
+            !rootContext.highlightItemOnHover() ||
+            this.highlighted()
+        ) {
             return;
         }
 

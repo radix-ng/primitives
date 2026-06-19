@@ -43,6 +43,7 @@ const rootContext = (): RdxCompositeRootContext => {
     const root = inject(RdxCompositeRoot);
 
     return {
+        rootElement: root.elementRef.nativeElement,
         highlightedIndex: root.highlightedIndex.asReadonly(),
         highlightItemOnHover: root.highlightItemOnHover,
         orientation: root.orientation,
@@ -72,7 +73,7 @@ export const [injectRdxCompositeRootContext, provideRdxCompositeRootContext] = c
     }
 })
 export class RdxCompositeRoot {
-    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly registeredItems = signal<RdxCompositeItemRegistration[]>([]);
     private hasSetInitialIndex = false;
 

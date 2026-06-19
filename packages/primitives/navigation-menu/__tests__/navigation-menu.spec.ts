@@ -72,7 +72,7 @@ class HostComponent {
                 <li rdxNavigationMenuItem value="outer">
                     <button rdxNavigationMenuTrigger>Outer</button>
                     <ng-container *rdxNavigationMenuContent>
-                        <nav defaultValue="nested" rdxNavigationMenuRoot>
+                        <nav defaultValue="nested" orientation="vertical" rdxNavigationMenuRoot>
                             <ul rdxNavigationMenuList>
                                 <li rdxNavigationMenuItem value="nested">
                                     <button rdxNavigationMenuTrigger>Nested</button>
@@ -192,20 +192,22 @@ describe('RdxNavigationMenu', () => {
         expect(root().previousValue()).toBe('one');
     });
 
-    it('opens-follows-focus: focusing a trigger only switches content while already open', () => {
+    it('keeps focus navigation separate from opening until the entry key is pressed', () => {
         createComponent();
         const [one, two] = triggers();
         document.body.appendChild(fixture.nativeElement);
 
-        // Closed: focusing a trigger must not open the menu.
         one.dispatchEvent(new FocusEvent('focus'));
         fixture.detectChanges();
         expect(root().value()).toBeNull();
 
-        // Open, then focus a sibling trigger → the shared popup follows focus.
         one.click();
         fixture.detectChanges();
         two.dispatchEvent(new FocusEvent('focus'));
+        fixture.detectChanges();
+        expect(root().value()).toBe('one');
+
+        two.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true }));
         fixture.detectChanges();
         expect(root().value()).toBe('two');
 
@@ -221,6 +223,14 @@ describe('RdxNavigationMenu', () => {
         one.focus();
         expect(document.activeElement).toBe(one);
 
+        const leftBoundaryEvent = new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true, cancelable: true });
+        one.dispatchEvent(leftBoundaryEvent);
+        await new Promise((resolve) => queueMicrotask(resolve));
+        fixture.detectChanges();
+
+        expect(leftBoundaryEvent.defaultPrevented).toBe(false);
+        expect(document.activeElement).toBe(one);
+
         one.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }));
         await new Promise((resolve) => queueMicrotask(resolve));
         fixture.detectChanges();
@@ -231,6 +241,14 @@ describe('RdxNavigationMenu', () => {
         await new Promise((resolve) => queueMicrotask(resolve));
         fixture.detectChanges();
 
+        expect(document.activeElement).toBe(plainLink);
+
+        const rightBoundaryEvent = new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true });
+        plainLink?.dispatchEvent(rightBoundaryEvent);
+        await new Promise((resolve) => queueMicrotask(resolve));
+        fixture.detectChanges();
+
+        expect(rightBoundaryEvent.defaultPrevented).toBe(false);
         expect(document.activeElement).toBe(plainLink);
 
         plainLink?.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true, cancelable: true }));
@@ -298,6 +316,7 @@ describe('RdxNavigationMenu', () => {
         const popup = document.querySelector<HTMLElement>('[data-test-popup]');
         const links = document.querySelectorAll<HTMLAnchorElement>('[data-test-viewport] a[rdxNavigationMenuLink]');
         expect(links.length).toBeGreaterThanOrEqual(1);
+        expect(links[0].hasAttribute('tabindex')).toBe(false);
 
         const extraLink = document.createElement('a');
         extraLink.href = '#extra';
@@ -359,7 +378,7 @@ describe('RdxNavigationMenu', () => {
 
         expect(event.defaultPrevented).toBe(true);
         expect(document.activeElement).toBe(two);
-        expect(root().value()).toBe('two');
+        expect(root().value()).toBe('one');
     });
 
     it('moves Tab from the last popup focusable to the next top-level link', async () => {
@@ -585,7 +604,7 @@ describe('RdxNavigationMenu nested behavior', () => {
         expect(roots[1].value()).toBeNull();
     });
 
-    it('does not apply roving trigger handling inside nested roots', async () => {
+    it('keeps nested roots composite-managed and leaves arrow keys to the parent content', async () => {
         fixture = TestBed.createComponent(NestedHostComponent);
         fixture.detectChanges();
         await fixture.whenStable();
@@ -594,11 +613,19 @@ describe('RdxNavigationMenu nested behavior', () => {
         const nestedTrigger = fixture.nativeElement.querySelectorAll(
             'button[rdxNavigationMenuTrigger]'
         )[1] as HTMLButtonElement;
-        expect(nestedTrigger.hasAttribute('tabindex')).toBe(false);
+        expect(nestedTrigger.getAttribute('tabindex')).toBe('0');
 
         const event = new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true });
         nestedTrigger.dispatchEvent(event);
         expect(event.defaultPrevented).toBe(false);
+
+        const entryArrowEvent = new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true });
+        nestedTrigger.dispatchEvent(entryArrowEvent);
+        expect(entryArrowEvent.defaultPrevented).toBe(false);
+
+        const activationEvent = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
+        nestedTrigger.dispatchEvent(activationEvent);
+        expect(activationEvent.defaultPrevented).toBe(true);
     });
 });
 

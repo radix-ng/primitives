@@ -6,7 +6,6 @@ export type NavigationMenuDirection = 'ltr' | 'rtl';
 
 export type RdxNavigationMenuOpenChangeReason =
     | 'trigger-hover'
-    | 'trigger-focus'
     | 'trigger-press'
     | 'list-navigation'
     | 'outside-press'
@@ -45,7 +44,6 @@ export interface RdxNavigationMenuRootContext {
     readonly baseId: string;
     readonly orientation: Signal<NavigationMenuOrientation>;
     readonly dir: Signal<NavigationMenuDirection>;
-    readonly loop: Signal<boolean>;
 
     /** Value of the currently open item, or `null` when closed. */
     readonly value: Signal<string | null>;

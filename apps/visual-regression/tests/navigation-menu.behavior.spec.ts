@@ -103,6 +103,53 @@ test.describe('Navigation Menu — new floating engine migration', () => {
         await expect(triggers.nth(1)).toBeFocused();
     });
 
+    test('ArrowLeft and ArrowRight move between open dropdown triggers and top-level links', async ({ page }) => {
+        await gotoStory(page, 'primitives-navigation-menu--default');
+        const triggers = page.locator(trigger);
+        const githubLink = page.locator('a[rdxNavigationMenuLink]:has-text("GitHub")');
+
+        await triggers.first().click();
+        await expect(page.locator(popup)).toBeVisible();
+        await expect(triggers.first()).toBeFocused();
+
+        await page.keyboard.press('ArrowRight');
+        await expect(triggers.nth(1)).toBeFocused();
+        await expect(page.locator(popup)).toContainText('Quick Start');
+
+        await page.keyboard.press('ArrowRight');
+        await expect(githubLink).toBeFocused();
+
+        await page.keyboard.press('ArrowLeft');
+        await expect(triggers.nth(1)).toBeFocused();
+
+        await page.keyboard.press('ArrowDown');
+        await expect(page.locator(popup)).toContainText('Styling');
+        await expect(page.locator(`${popup} a`).first()).toBeFocused();
+    });
+
+    test('top-level list navigation does not loop at either boundary', async ({ page }) => {
+        await gotoStory(page, 'primitives-navigation-menu--default');
+        const triggers = page.locator(trigger);
+        const githubLink = page.locator('a[rdxNavigationMenuLink]:has-text("GitHub")');
+
+        await triggers.first().focus();
+        await page.keyboard.press('ArrowLeft');
+        await expect(triggers.first()).toBeFocused();
+
+        await githubLink.focus();
+        await page.keyboard.press('ArrowRight');
+        await expect(githubLink).toBeFocused();
+    });
+
+    test('popup links keep their natural tab order outside the top-level composite list', async ({ page }) => {
+        await gotoStory(page, 'primitives-navigation-menu--default');
+        await page.locator(trigger).first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        const firstPopupLink = page.locator(`${popup} a[rdxNavigationMenuLink]`).first();
+        await expect(firstPopupLink).not.toHaveAttribute('tabindex', /.+/);
+    });
+
     test('Tab exits the popup through the top-level navigation order', async ({ page }) => {
         await gotoStory(page, 'primitives-navigation-menu--default');
         const triggers = page.locator(trigger);
@@ -113,45 +160,89 @@ test.describe('Navigation Menu — new floating engine migration', () => {
         await page.locator(`${popup} a`).last().focus();
         await page.keyboard.press('Tab');
         await expect(triggers.nth(1)).toBeFocused();
+        await expect(page.locator(popup)).toContainText('Quick Start');
+
+        await page.keyboard.press('ArrowDown');
         await expect(page.locator(popup)).toContainText('Styling');
 
         await page.locator(`${popup} a`).last().focus();
         await page.keyboard.press('Tab');
         await expect(page.locator('a[rdxNavigationMenuLink]:has-text("GitHub")')).toBeFocused();
-        await expect(page.locator(popup)).toHaveCount(0);
+    });
+
+    test('ArrowRight reaches a top-level link after Tab exits the popup to a dropdown trigger', async ({ page }) => {
+        await gotoStory(page, 'primitives-navigation-menu--default');
+        const triggers = page.locator(trigger);
+        const githubLink = page.locator('a[rdxNavigationMenuLink]:has-text("GitHub")');
+
+        await triggers.first().click();
+        await expect(page.locator(popup)).toBeVisible();
+
+        await page.locator(`${popup} a`).last().focus();
+        await page.keyboard.press('Tab');
+        await expect(triggers.nth(1)).toBeFocused();
+        await expect(page.locator(popup)).toContainText('Quick Start');
+
+        await page.keyboard.press('ArrowRight');
+        await expect(githubLink).toBeFocused();
     });
 });
 
-test('nested navigation menu keeps parent and nested popups open when hovering the last nested trigger', async ({
+test('nested navigation menu keeps parent and nested popups open when hovering the nested trigger', async ({
     page
 }) => {
     await gotoStory(page, 'primitives-navigation-menu--nested');
 
-    await page.locator('[rdxNavigationMenuTrigger]:has-text("Company")').hover();
-    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("About")')).toBeVisible();
+    await page.locator('[rdxNavigationMenuTrigger]:has-text("Overview")').hover();
+    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("Quick Start")')).toBeVisible();
 
-    await page.locator('[rdxNavigationMenuTrigger]:has-text("Press")').hover();
-    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("News")')).toBeVisible();
+    await page.locator('[rdxNavigationMenuTrigger]:has-text("Handbook")').hover();
+    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("Styling")')).toBeVisible();
 
     await page.waitForTimeout(120);
-    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("About")')).toBeVisible();
-    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("News")')).toBeVisible();
+    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("Quick Start")')).toBeVisible();
+    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("Styling")')).toBeVisible();
 });
 
 test('nested navigation menu keeps parent popup open when hovering a nested popup link', async ({ page }) => {
     await gotoStory(page, 'primitives-navigation-menu--nested');
 
-    await page.locator('[rdxNavigationMenuTrigger]:has-text("Company")').hover();
-    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("About")')).toBeVisible();
+    await page.locator('[rdxNavigationMenuTrigger]:has-text("Overview")').hover();
+    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("Quick Start")')).toBeVisible();
 
-    await page.locator('[rdxNavigationMenuTrigger]:has-text("About")').hover();
-    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("Mission")')).toBeVisible();
+    await page.locator('[rdxNavigationMenuTrigger]:has-text("Handbook")').hover();
+    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("Styling")')).toBeVisible();
 
-    await page.locator('[rdxNavigationMenuLink]:has-text("Mission")').hover();
+    await page.locator('[rdxNavigationMenuLink]:has-text("Styling")').hover();
     await page.waitForTimeout(120);
 
-    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("About")')).toBeVisible();
-    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("Mission")')).toBeVisible();
+    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("Quick Start")')).toBeVisible();
+    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("Styling")')).toBeVisible();
+});
+
+test('nested navigation menu opens the nested popup with Enter and keeps arrow navigation inside it', async ({
+    page
+}) => {
+    await gotoStory(page, 'primitives-navigation-menu--nested');
+
+    await page.locator('[rdxNavigationMenuTrigger]:has-text("Overview")').click();
+    await expect(page.locator('[rdxNavigationMenuPopup]:has-text("Quick Start")')).toBeVisible();
+
+    await page.locator('[rdxNavigationMenuTrigger]:has-text("Handbook")').focus();
+    await page.keyboard.press('Enter');
+
+    const nestedPopup = page.locator('[rdxNavigationMenuPopup]').filter({ hasText: 'Styling' });
+    await expect(nestedPopup).toBeVisible();
+
+    const nestedLinks = nestedPopup.locator('a[rdxNavigationMenuLink]');
+    await expect(nestedLinks.nth(0)).toHaveCSS('text-align', 'left');
+    await expect(nestedLinks.nth(0)).toBeFocused();
+
+    await page.keyboard.press('ArrowDown');
+    await expect(nestedLinks.nth(1)).toBeFocused();
+
+    await page.keyboard.press('ArrowDown');
+    await expect(nestedLinks.nth(2)).toBeFocused();
 });
 
 test('nested inline navigation menu keeps the parent popup open when hovering the last nested trigger', async ({

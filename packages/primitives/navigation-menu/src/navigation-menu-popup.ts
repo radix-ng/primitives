@@ -137,7 +137,7 @@ export class RdxNavigationMenuPopup {
         }
 
         // If the key originates from a nested navigation menu rendered inside this popup, let that
-        // menu's own roving group / popup handle it — otherwise both react and focus jumps/skips.
+        // menu's own composite list / popup handle it — otherwise both react and focus jumps/skips.
         const nestedRoot = (event.target as HTMLElement).closest('[rdxNavigationMenuRoot]');
 
         if (nestedRoot && this.elementRef.nativeElement.contains(nestedRoot)) {

@@ -1,5 +1,4 @@
 import {
-    booleanAttribute,
     computed,
     DestroyRef,
     Directive,
@@ -14,7 +13,6 @@ import {
     untracked
 } from '@angular/core';
 import {
-    BooleanInput,
     createCancelableChangeEventDetails,
     createFloatingRootContext,
     NumberInput,
@@ -104,11 +102,6 @@ export class RdxNavigationMenuRoot {
      */
     readonly dirInput = input<NavigationMenuDirection | undefined>(undefined, { alias: 'dir' });
     readonly dir = injectDirection(this.dirInput);
-
-    /**
-     * Whether keyboard navigation loops from the last item back to the first and vice versa.
-     */
-    readonly loop = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
      * How long to wait before opening the menu on hover, in milliseconds.
@@ -233,7 +226,7 @@ export class RdxNavigationMenuRoot {
             return;
         }
 
-        this.instant.set(changedTriggerWhileOpen || reason === 'trigger-focus');
+        this.instant.set(changedTriggerWhileOpen);
 
         if (changedTriggerWhileOpen) {
             this.scheduleInstantReset();
@@ -483,7 +476,6 @@ function contextFor(root: RdxNavigationMenuRoot): RdxNavigationMenuRootContext {
         baseId: root.baseId,
         orientation: root.orientation,
         dir: root.dir,
-        loop: root.loop,
         value: root.value,
         previousValue: root.previousValue.asReadonly(),
         isOpen: root.isOpen,

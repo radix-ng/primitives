@@ -1,6 +1,6 @@
 import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input, untracked } from '@angular/core';
+import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ENTER, injectDocument, SPACE } from '@radix-ng/primitives/core';
-import { RdxRovingFocusItemDirective } from '@radix-ng/primitives/roving-focus';
 import { RdxNavigationMenuItem } from './navigation-menu-item';
 import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
 import { focusFirst, getTabbableCandidates } from './utils';
@@ -10,7 +10,7 @@ import { focusFirst, getTabbableCandidates } from './utils';
  */
 @Directive({
     selector: 'button[rdxNavigationMenuTrigger]',
-    hostDirectives: [RdxRovingFocusItemDirective],
+    hostDirectives: [RdxCompositeItem],
     host: {
         type: 'button',
         '[id]': 'item.triggerId()',
@@ -23,14 +23,12 @@ import { focusFirst, getTabbableCandidates } from './utils';
         '(click)': 'onClick($event)',
         '(pointerenter)': 'onPointerEnter($event)',
         '(pointerleave)': 'onPointerLeave($event)',
-        '(keydown)': 'onKeydown($event)',
-        '(focus)': 'onFocus()'
+        '(keydown)': 'onKeydown($event)'
     }
 })
 export class RdxNavigationMenuTrigger {
     protected readonly item = inject(RdxNavigationMenuItem);
     protected readonly rootContext = injectNavigationMenuRootContext();
-    private readonly rovingFocusItem = inject(RdxRovingFocusItemDirective, { self: true });
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly document = injectDocument();
 
@@ -49,11 +47,6 @@ export class RdxNavigationMenuTrigger {
     constructor() {
         // Host element is available in the constructor; the trigger ref does not depend on inputs.
         this.item.triggerRef.set(this.elementRef.nativeElement);
-
-        effect(() => this.rovingFocusItem.setFocusable(!this.disabled()));
-
-        // `value` is an input on the item, so read it in an effect (kept in sync if it ever changes).
-        effect(() => this.rovingFocusItem.setTabStopId(this.item.value()));
 
         effect((onCleanup) => {
             const value = this.item.value();
@@ -89,25 +82,8 @@ export class RdxNavigationMenuTrigger {
         this.rootContext.cancelHoverOpen();
     }
 
-    /**
-     * Open-follows-focus: while the menu is already open, moving keyboard focus (arrow keys via
-     * roving) to another trigger switches the shared popup to that item — matching Base UI, so the
-     * open menu visibly responds to arrow-key navigation. Focus never *opens* a closed menu.
-     */
-    protected onFocus() {
-        if (this.disabled() || !this.rootContext.isOpen() || this.open()) {
-            return;
-        }
-
-        this.rootContext.open(this.item.value(), this.elementRef.nativeElement, 'trigger-focus');
-    }
-
     protected onKeydown(event: KeyboardEvent) {
         if (this.disabled()) {
-            return;
-        }
-
-        if (this.rootContext.nested) {
             return;
         }
 
@@ -124,11 +100,15 @@ export class RdxNavigationMenuTrigger {
             return;
         }
 
+        if (this.rootContext.nested) {
+            return;
+        }
+
         if (event.key === entryKey) {
             event.preventDefault();
 
             if (!this.open()) {
-                this.rootContext.open(this.item.value(), this.elementRef.nativeElement, 'trigger-press', event);
+                this.rootContext.open(this.item.value(), this.elementRef.nativeElement, 'list-navigation', event);
             }
 
             this.focusContent();

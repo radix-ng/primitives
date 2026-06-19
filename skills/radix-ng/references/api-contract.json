@@ -4220,9 +4220,9 @@
         {
           "directive": "RdxNavigationMenuLink",
           "selector": "[rdxNavigationMenuLink]",
-          "description": "A navigation link. Can close the menu on selection when `closeOnClick` is enabled.\n\nUsed both as a top-level navigation item and inside content. Top-level links join the list's\nroving focus collection, matching Base UI's CompositeItem-backed NavigationMenu.Link.",
+          "description": "A navigation link. Can close the menu on selection when `closeOnClick` is enabled.\n\nUsed both as a top-level navigation item and inside content. Top-level links join the list's\ncomposite collection, matching Base UI's CompositeItem-backed NavigationMenu.Link.",
           "hostDirectives": [
-            "RdxRovingFocusItemDirective"
+            "RdxCompositeItem"
           ],
           "inputs": [
             {
@@ -4247,9 +4247,9 @@
         {
           "directive": "RdxNavigationMenuList",
           "selector": "[rdxNavigationMenuList]",
-          "description": "Contains the navigation menu items and coordinates roving keyboard focus between triggers.",
+          "description": "Contains the navigation menu items and coordinates composite keyboard focus between triggers.",
           "hostDirectives": [
-            "RdxRovingFocusGroupDirective"
+            "RdxCompositeRoot"
           ],
           "inputs": [],
           "outputs": []
@@ -4429,12 +4429,6 @@
               "description": "The reading direction of the navigation menu."
             },
             {
-              "name": "loop",
-              "type": "boolean",
-              "default": "false",
-              "description": "Whether keyboard navigation loops from the last item back to the first and vice versa."
-            },
-            {
               "name": "orientation",
               "type": "NavigationMenuOrientation",
               "default": "'horizontal'",
@@ -4473,7 +4467,7 @@
           "selector": "button[rdxNavigationMenuTrigger]",
           "description": "A button that opens its item's content in the shared popup.",
           "hostDirectives": [
-            "RdxRovingFocusItemDirective"
+            "RdxCompositeItem"
           ],
           "inputs": [
             {

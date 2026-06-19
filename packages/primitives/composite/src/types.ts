@@ -16,6 +16,7 @@ export type RdxCompositeMetadata<Metadata extends RdxCompositeItemMetadata = Rdx
 } & Metadata;
 
 export interface RdxCompositeRootContext {
+    rootElement: HTMLElement;
     highlightedIndex: Signal<number>;
     highlightItemOnHover: Signal<boolean>;
     orientation: Signal<RdxCompositeOrientation>;
