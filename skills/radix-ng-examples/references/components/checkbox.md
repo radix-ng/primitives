@@ -630,15 +630,66 @@ export class CheckboxGroupExample {
 
 ## API Reference
 
-The `Button` and `Input` parts take no inputs of their own — they read the checkbox state from the
-root context. The `Indicator` part supports `keepMounted`.
-
 ### Root
+
+`RdxCheckboxRootDirective` — groups the parts and owns the checked / indeterminate state and form wiring. Apply to a container element (typically a `<div>`).
+
+**Data attributes**
+
+| Attribute            | Present when                        |
+| -------------------- | ----------------------------------- |
+| `data-checked`       | The checkbox is checked.            |
+| `data-unchecked`     | The checkbox is unchecked.          |
+| `data-indeterminate` | The checkbox is in the mixed state. |
+| `data-disabled`      | The checkbox is disabled.           |
+| `data-readonly`      | The checkbox is read-only.          |
+| `data-required`      | The checkbox is required.           |
+
+### Button
+
+`RdxCheckboxButtonDirective` — the toggle control; reads everything from the root context, so it takes no inputs. Apply to a native `<button>` element (the selector requires `button`).
+
+**Data attributes**
+
+| Attribute            | Present when                        |
+| -------------------- | ----------------------------------- |
+| `data-checked`       | The checkbox is checked.            |
+| `data-unchecked`     | The checkbox is unchecked.          |
+| `data-indeterminate` | The checkbox is in the mixed state. |
+| `data-disabled`      | The checkbox is disabled.           |
+| `data-readonly`      | The checkbox is read-only.          |
+| `data-required`      | The checkbox is required.           |
+
+### Indicator
+
+`RdxCheckboxIndicatorDirective` — renders the check / indeterminate mark; removed from the DOM when unchecked unless `keepMounted`. Apply to the indicator element (the Anatomy uses an `<svg>` icon).
+
+**Data attributes**
+
+| Attribute             | Present when                             |
+| --------------------- | ---------------------------------------- |
+| `data-checked`        | The checkbox is checked.                 |
+| `data-unchecked`      | The checkbox is unchecked.               |
+| `data-indeterminate`  | The checkbox is in the mixed state.      |
+| `data-disabled`       | The checkbox is disabled.                |
+| `data-readonly`       | The checkbox is read-only.               |
+| `data-required`       | The checkbox is required.                |
+| `data-starting-style` | The indicator is visible (enter motion). |
+| `data-ending-style`   | The indicator is hidden (exit motion).   |
+
+### Input
+
+`RdxCheckboxInputDirective` — the hidden native input for form submission and validation; reads everything from the root context, so it takes no inputs. Apply to a native `<input>` element (the selector requires `input`).
 
 ### Checkbox Group
 
-`rdxCheckboxGroup` — a `role="group"` container holding the array of checked `name`s. Mark a child
-checkbox `parent` to make it select/deselect every name in `allValues`.
+`RdxCheckboxGroupDirective` (`rdxCheckboxGroup`) — a `role="group"` container holding the array of checked `name`s. Mark a child checkbox `parent` to make it select/deselect every name in `allValues`. Apply to a container element (typically a `<div>`).
+
+**Data attributes**
+
+| Attribute       | Present when           |
+| --------------- | ---------------------- |
+| `data-disabled` | The group is disabled. |
 
 ## Accessibility
 
