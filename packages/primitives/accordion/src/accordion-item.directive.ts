@@ -12,6 +12,7 @@ import {
     WritableSignal
 } from '@angular/core';
 import { injectCollapsibleRootContext, RdxCollapsibleRootDirective } from '@radix-ng/primitives/collapsible';
+import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, createContext } from '@radix-ng/primitives/core';
 import { injectAccordionRootContext } from './accordion-root.directive';
 
@@ -61,7 +62,8 @@ const itemContext = (): AccordionItemContext => {
         {
             directive: RdxCollapsibleRootDirective,
             inputs: ['disabled: disabled', 'open: open']
-        }
+        },
+        RdxCompositeListItem
     ],
     host: {
         '[attr.data-orientation]': 'rootContext.orientation()',
@@ -74,6 +76,7 @@ export class RdxAccordionItemDirective {
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
     private readonly collapsibleContext = injectCollapsibleRootContext();
+    private readonly listItem = inject(RdxCompositeListItem, { self: true });
 
     protected readonly rootContext = injectAccordionRootContext();
 
@@ -113,10 +116,7 @@ export class RdxAccordionItemDirective {
     /** Set by the trigger; links the content's `aria-labelledby` to the trigger `id`. */
     readonly triggerId = signal('');
 
-    readonly index = computed(() => {
-        const allItems = Array.from(this.rootContext.elementRef.nativeElement.querySelectorAll('[rdxAccordionItem]'));
-        return allItems.indexOf(this.elementRef.nativeElement);
-    });
+    readonly index = this.listItem.index;
 
     constructor() {
         // Collapsed accordion panels stay findable by the browser's in-page search; opening one

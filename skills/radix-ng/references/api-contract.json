@@ -34,7 +34,8 @@
           "selector": "[rdxAccordionItem]",
           "exportAs": "rdxAccordionItem",
           "hostDirectives": [
-            "RdxCollapsibleRootDirective"
+            "RdxCollapsibleRootDirective",
+            "RdxCompositeListItem"
           ],
           "inputs": [
             {
@@ -61,6 +62,9 @@
           "directive": "RdxAccordionRootDirective",
           "selector": "[rdxAccordionRoot]",
           "exportAs": "rdxAccordionRoot",
+          "hostDirectives": [
+            "RdxCompositeList"
+          ],
           "inputs": [
             {
               "name": "collapsible",
@@ -6280,6 +6284,7 @@
           "exportAs": "rdxSliderRoot",
           "description": "Groups all parts of the slider and owns its state, value-change logic and\nthumb registration. A single directive drives both orientations — there are no\nseparate horizontal/vertical components.\n\nSee https://base-ui.com/react/components/slider",
           "hostDirectives": [
+            "RdxCompositeList",
             "RdxControlValueAccessor"
           ],
           "inputs": [
@@ -6424,6 +6429,9 @@
           "selector": "div[rdxSliderThumb]",
           "exportAs": "rdxSliderThumb",
           "description": "A draggable handle. Render one per value; place an `input[rdxSliderThumbInput]`\ninside it for keyboard, accessibility and form submission.\n\nSee https://base-ui.com/react/components/slider",
+          "hostDirectives": [
+            "RdxCompositeListItem"
+          ],
           "inputs": [
             {
               "name": "index",

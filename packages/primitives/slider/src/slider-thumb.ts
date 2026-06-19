@@ -12,6 +12,7 @@ import {
     signal,
     untracked
 } from '@angular/core';
+import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
 import { injectSliderRootContext } from './slider-context';
 import { RdxSliderThumbRef } from './slider-root';
@@ -26,6 +27,7 @@ import { getInsetThumbPositionPercent, valueToPercent } from './slider.utils';
 @Directive({
     selector: 'div[rdxSliderThumb]',
     exportAs: 'rdxSliderThumb',
+    hostDirectives: [RdxCompositeListItem],
     host: {
         '[style]': 'thumbStyle()',
         '[attr.data-index]': 'index()',
@@ -37,6 +39,7 @@ import { getInsetThumbPositionPercent, valueToPercent } from './slider.utils';
 })
 export class RdxSliderThumb implements RdxSliderThumbRef {
     protected readonly root = injectSliderRootContext();
+    private readonly listItem = inject(RdxCompositeListItem, { self: true });
     readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
     /** The nested range input, set by `[rdxSliderThumbInput]`. */
@@ -52,7 +55,19 @@ export class RdxSliderThumb implements RdxSliderThumbRef {
     readonly thumbDisabled = input<boolean, BooleanInput>(false, { alias: 'disabled', transform: booleanAttribute });
 
     /** The position of this thumb among its siblings. */
-    readonly index = computed(() => this.indexInput() ?? this.root.thumbIndexOf(this));
+    readonly index = computed(() => {
+        if (!this.root.range()) {
+            return 0;
+        }
+
+        const explicitIndex = this.indexInput();
+        if (explicitIndex !== undefined) {
+            return explicitIndex;
+        }
+
+        const compositeIndex = this.listItem.index();
+        return compositeIndex === -1 ? this.root.thumbIndexOf(this) : compositeIndex;
+    });
 
     /** Whether this thumb is disabled (own state OR root disabled). */
     readonly disabled = computed(() => this.thumbDisabled() || this.root.isDisabled());

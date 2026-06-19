@@ -3,7 +3,6 @@ import {
     computed,
     Directive,
     effect,
-    ElementRef,
     inject,
     input,
     InputSignal,
@@ -13,6 +12,7 @@ import {
     output,
     Signal
 } from '@angular/core';
+import { RdxCompositeList } from '@radix-ng/primitives/composite';
 import { AcceptableValue, BooleanInput, createContext, DataOrientation, injectId } from '@radix-ng/primitives/core';
 
 export type AccordionRootContext = {
@@ -22,7 +22,6 @@ export type AccordionRootContext = {
     collapsible: Signal<boolean>;
     isSingle: Signal<boolean>;
     keepMounted: InputSignalWithTransform<boolean, BooleanInput>;
-    elementRef: ElementRef<HTMLElement>;
     changeModelValue: (value: string) => void;
 };
 
@@ -38,7 +37,6 @@ const rootContext = (): AccordionRootContext => {
         disabled: instance.disabled,
         collapsible: instance.collapsible,
         orientation: instance.orientation,
-        elementRef: instance.elementRef,
         value: instance.value,
         isSingle: instance.isSingle,
         keepMounted: instance.keepMounted,
@@ -53,14 +51,13 @@ const rootContext = (): AccordionRootContext => {
     selector: '[rdxAccordionRoot]',
     exportAs: 'rdxAccordionRoot',
     providers: [provideAccordionRootContext(rootContext)],
+    hostDirectives: [RdxCompositeList],
     host: {
         '[attr.data-orientation]': 'orientation()',
         '[attr.data-disabled]': 'disabled() ? "" : undefined'
     }
 })
 export class RdxAccordionRootDirective {
-    readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
-
     readonly id = input<string>(injectId('rdx-accordion-'));
 
     /** Whether the Accordion is disabled.

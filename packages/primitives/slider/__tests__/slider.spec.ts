@@ -132,6 +132,25 @@ class EdgeComponent {
     onCommit = vi.fn<(change: RdxSliderValueCommitEvent) => void>();
 }
 
+@Component({
+    imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
+    template: `
+        <div [value]="value()" rdxSliderRoot>
+            <div rdxSliderControl>
+                <div rdxSliderTrack>
+                    <div rdxSliderIndicator></div>
+                    <div [index]="1" rdxSliderThumb>
+                        <input rdxSliderThumbInput aria-label="value" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+})
+class SingleExplicitIndexComponent {
+    readonly value = signal<SliderValue>(40);
+}
+
 function press(el: HTMLElement, key: string, shiftKey = false): void {
     el.dispatchEvent(new KeyboardEvent('keydown', { key, shiftKey, bubbles: true, cancelable: true }));
 }
@@ -173,6 +192,17 @@ describe('RdxSlider', () => {
         expect(inputs[0].value).toBe('40');
         expect(inputs[0].getAttribute('aria-valuenow')).toBe('40');
         expect(inputs[0].getAttribute('max')).toBe('100');
+    });
+
+    it('ignores explicit thumb index for a single-value slider', () => {
+        const singleFixture = TestBed.createComponent(SingleExplicitIndexComponent);
+        singleFixture.detectChanges();
+        const thumb = singleFixture.debugElement.query(By.css('[rdxSliderThumb]')).nativeElement as HTMLElement;
+        const input = singleFixture.debugElement.query(By.css('[rdxSliderThumbInput]'))
+            .nativeElement as HTMLInputElement;
+
+        expect(thumb.getAttribute('data-index')).toBe('0');
+        expect(input.value).toBe('40');
     });
 
     it('increments by the step on ArrowRight', () => {

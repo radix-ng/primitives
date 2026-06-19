@@ -10,6 +10,7 @@ import {
     signal,
     Signal
 } from '@angular/core';
+import { RdxCompositeList } from '@radix-ng/primitives/composite';
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
@@ -111,6 +112,7 @@ function cloneChangeEventWithTarget(event: Event, value: SliderValue, name: stri
     exportAs: 'rdxSliderRoot',
     providers: [provideSliderRootContext(() => inject(RdxSliderRoot))],
     hostDirectives: [
+        RdxCompositeList,
         {
             directive: RdxControlValueAccessor,
             inputs: ['value: value', 'disabled']
