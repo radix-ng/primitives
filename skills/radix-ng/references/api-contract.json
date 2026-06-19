@@ -74,12 +74,6 @@
               "description": "The default active value of the item(s).\n\nUse when you do not need to control the state of the item(s)."
             },
             {
-              "name": "dir",
-              "type": "Direction | undefined",
-              "default": "undefined",
-              "description": "The reading direction of the accordion when applicable. If omitted, assumes LTR (left-to-right) reading mode."
-            },
-            {
               "name": "disabled",
               "type": "boolean",
               "default": "false",
@@ -100,7 +94,8 @@
               "name": "loopFocus",
               "type": "boolean",
               "default": "true",
-              "description": "Whether keyboard focus wraps from the last item to the first and vice versa."
+              "deprecated": true,
+              "description": "Deprecated following the APG guidance update to remove roving focus.\nThis prop no longer affects keyboard focus behavior."
             },
             {
               "name": "multiple",
@@ -112,7 +107,8 @@
               "name": "orientation",
               "type": "DataOrientation",
               "default": "'vertical'",
-              "description": "The orientation of the accordion."
+              "deprecated": true,
+              "description": "The orientation of the accordion.\n\nDeprecated following the APG guidance update to remove roving focus.\nThis prop no longer affects keyboard focus behavior."
             },
             {
               "name": "type",

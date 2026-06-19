@@ -35,9 +35,8 @@
 
 ## Features
 
-- ✅ Full keyboard navigation, with optional focus looping (`loopFocus`).
-- ✅ Supports horizontal/vertical orientation.
-- ✅ Supports Right to Left direction.
+- ✅ Native button keyboard interaction (`Space` / `Enter`) with browser tab order.
+- ✅ Exposes horizontal/vertical orientation state for styling.
 - ✅ Expand a single item or multiple items at once.
 - ✅ Can be controlled or uncontrolled.
 - ✅ Emits an event per item when its panel opens or closes (`onOpenChange`).
@@ -265,7 +264,7 @@ export class AccordionCollapsibleExample {
 
 ### Horizontal
 
-Set `orientation="horizontal"` to lay items out in a row; arrow-key navigation follows the orientation.
+Set `orientation="horizontal"` to expose horizontal state for styling. Following the APG guidance update adopted by Base UI, orientation no longer changes keyboard focus behavior.
 
 ```typescript
 import { Component } from '@angular/core';
@@ -472,12 +471,10 @@ export class AccordionKeepMountedExample {
 | Key                        | Description                                                                            |
 | -------------------------- | -------------------------------------------------------------------------------------- |
 | `Space` / `Enter`          | Toggles the focused item (in single non-collapsible mode an open item stays open).     |
-| `ArrowDown` / `ArrowRight` | Moves focus to the next trigger, wrapping to the first when `loopFocus` is enabled.    |
-| `ArrowUp` / `ArrowLeft`    | Moves focus to the previous trigger, wrapping to the last when `loopFocus` is enabled. |
-| `Home`                     | Moves focus to the first trigger.                                                      |
-| `End`                      | Moves focus to the last trigger.                                                       |
 
-Arrow keys follow `orientation`: Up/Down for vertical accordions, Left/Right for horizontal ones.
+Focus moves through accordion triggers using the browser's normal tab order. `Arrow*`, `Home`, and `End` are not handled by Accordion.
+
+`loopFocus` and focus behavior from `orientation` are deprecated for Base UI parity and no longer affect keyboard focus.
 
 ## Data attributes
 
