@@ -13,16 +13,33 @@ import {
     Signal
 } from '@angular/core';
 import { RdxCompositeList } from '@radix-ng/primitives/composite';
-import { AcceptableValue, BooleanInput, createContext, DataOrientation, injectId } from '@radix-ng/primitives/core';
+import {
+    AcceptableValue,
+    BooleanInput,
+    createCancelableChangeEventDetails,
+    createContext,
+    DataOrientation,
+    RdxCancelableChangeEventDetails
+} from '@radix-ng/primitives/core';
+
+/** The reason an accordion value change was requested. */
+export type RdxAccordionValueChangeReason = 'trigger-press' | 'none';
+export type RdxAccordionValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxAccordionValueChangeReason>;
+
+/** Payload of {@link RdxAccordionRootDirective.onValueChange}, mirroring Base UI's `(value, eventDetails)`. */
+export interface RdxAccordionValueChangeEvent {
+    value: AcceptableValue | AcceptableValue[] | undefined;
+    eventDetails: RdxAccordionValueChangeEventDetails;
+}
 
 export type AccordionRootContext = {
     disabled: InputSignalWithTransform<boolean, BooleanInput>;
     orientation: InputSignal<DataOrientation>;
     value: ModelSignal<AcceptableValue | AcceptableValue[] | undefined>;
-    collapsible: Signal<boolean>;
     isSingle: Signal<boolean>;
     keepMounted: InputSignalWithTransform<boolean, BooleanInput>;
-    changeModelValue: (value: string) => void;
+    hiddenUntilFound: InputSignalWithTransform<boolean, BooleanInput>;
+    changeModelValue: (value: string, event?: Event) => void;
 };
 
 export const [injectAccordionRootContext, provideAccordionRootContext] = createContext<AccordionRootContext>(
@@ -35,11 +52,11 @@ const rootContext = (): AccordionRootContext => {
 
     return {
         disabled: instance.disabled,
-        collapsible: instance.collapsible,
         orientation: instance.orientation,
         value: instance.value,
         isSingle: instance.isSingle,
         keepMounted: instance.keepMounted,
+        hiddenUntilFound: instance.hiddenUntilFound,
         changeModelValue: instance.changeModelValue
     };
 };
@@ -58,8 +75,6 @@ const rootContext = (): AccordionRootContext => {
     }
 })
 export class RdxAccordionRootDirective {
-    readonly id = input<string>(injectId('rdx-accordion-'));
-
     /** Whether the Accordion is disabled.
      * @defaultValue false
      * @group Props
@@ -94,25 +109,8 @@ export class RdxAccordionRootDirective {
     readonly value = model<AcceptableValue | AcceptableValue[]>();
 
     /**
-     * When type is "single", allows closing content when clicking trigger for an open item.
-     * When type is "multiple", this prop has no effect.
-     *
-     * @defaultValue false
-     * @group Props
-     */
-    readonly collapsible = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
-
-    /**
-     * Determines whether a "single" or "multiple" items can be selected at a time.
-     *
-     * @defaultValue 'single'
-     * @group Props
-     */
-    readonly type = input<'multiple' | 'single'>('single');
-
-    /**
-     * Allow multiple panels to be open simultaneously.
-     * Takes precedence over `type` when `true`.
+     * Allow multiple panels to be open simultaneously. In single mode an open item can always be
+     * closed by clicking its trigger again (Base UI parity — there is no separate `collapsible`).
      *
      * @defaultValue false
      * @group Props
@@ -139,12 +137,22 @@ export class RdxAccordionRootDirective {
     readonly keepMounted = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
-     * Event handler called when the expanded state of an item changes.
+     * Allow collapsed panels to remain mounted (but hidden) so the browser's in-page search
+     * can find and reveal them. Mirrors Base UI's `hiddenUntilFound`.
+     *
+     * @defaultValue false
+     * @group Props
+     */
+    readonly hiddenUntilFound = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /**
+     * Event handler called when the expanded value changes. Emits the next value plus a cancelable
+     * `eventDetails` (Base UI parity); call `eventDetails.cancel()` to reject the change.
      * @group Emits
      */
-    readonly onValueChange = output<AcceptableValue | AcceptableValue[] | undefined>();
+    readonly onValueChange = output<RdxAccordionValueChangeEvent>();
 
-    readonly isSingle = computed(() => !this.multiple() && this.type() !== 'multiple');
+    readonly isSingle = computed(() => !this.multiple());
 
     constructor() {
         effect(() => {
@@ -154,9 +162,11 @@ export class RdxAccordionRootDirective {
         });
     }
 
-    changeModelValue = (newValue: string) => {
+    changeModelValue = (newValue: string, event?: Event) => {
+        let nextValue: AcceptableValue | AcceptableValue[] | undefined;
+
         if (this.isSingle()) {
-            this.value.set(this.isEqual(newValue, this.value()) ? undefined : newValue);
+            nextValue = this.isEqual(newValue, this.value()) ? undefined : newValue;
         } else {
             const currentValue = this.value();
             let modelValueArray: AcceptableValue[] = [];
@@ -176,10 +186,21 @@ export class RdxAccordionRootDirective {
                 modelValueArray.push(newValue);
             }
 
-            this.value.set(modelValueArray);
+            nextValue = modelValueArray;
         }
 
-        this.onValueChange.emit(this.value());
+        const { eventDetails } = createCancelableChangeEventDetails<RdxAccordionValueChangeReason>(
+            event ? 'trigger-press' : 'none',
+            event ?? new Event('change')
+        );
+
+        this.onValueChange.emit({ value: nextValue, eventDetails });
+
+        if (eventDetails.isCanceled()) {
+            return;
+        }
+
+        this.value.set(nextValue);
     };
 
     private isValueEqualOrExist(arr: AcceptableValue[], value: AcceptableValue): boolean {

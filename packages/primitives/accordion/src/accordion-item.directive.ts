@@ -13,16 +13,19 @@ import {
 } from '@angular/core';
 import { injectCollapsibleRootContext, RdxCollapsibleRootDirective } from '@radix-ng/primitives/collapsible';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
-import { BooleanInput, createContext } from '@radix-ng/primitives/core';
-import { injectAccordionRootContext } from './accordion-root.directive';
+import { BooleanInput, createCancelableChangeEventDetails, createContext } from '@radix-ng/primitives/core';
+import { injectAccordionRootContext, RdxAccordionValueChangeEventDetails } from './accordion-root.directive';
 
-export type RdxAccordionItemState = 'open' | 'closed';
+/** Payload of {@link RdxAccordionItemDirective.onOpenChange}, mirroring Base UI's `(open, eventDetails)`. */
+export interface RdxAccordionItemOpenChangeEvent {
+    open: boolean;
+    eventDetails: RdxAccordionValueChangeEventDetails;
+}
 
 export type AccordionItemContext = {
     open: Signal<boolean>;
     disabled: Signal<boolean>;
     triggerId: WritableSignal<string>;
-    dataState: Signal<RdxAccordionItemState>;
     dataDisabled: Signal<boolean>;
     currentElement: ElementRef<HTMLElement>;
     value: Signal<string | undefined>;
@@ -40,7 +43,6 @@ const itemContext = (): AccordionItemContext => {
 
     return {
         open: instance.open,
-        dataState: instance.dataState,
         disabled: instance.disabled,
         dataDisabled: instance.isDisabled,
         triggerId: instance.triggerId,
@@ -66,9 +68,8 @@ const itemContext = (): AccordionItemContext => {
         RdxCompositeListItem
     ],
     host: {
-        '[attr.data-orientation]': 'rootContext.orientation()',
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
-        '[attr.data-state]': 'dataState()',
+        '[attr.data-open]': 'open() ? "" : undefined',
         '[attr.data-index]': 'index()'
     }
 })
@@ -94,10 +95,11 @@ export class RdxAccordionItemDirective {
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
-     * Event handler called when the panel open state changes.
+     * Event handler called when the panel open state changes. Emits `{ open, eventDetails }`
+     * (Base UI parity).
      * @group Emits
      */
-    readonly onOpenChange = output<boolean>();
+    readonly onOpenChange = output<RdxAccordionItemOpenChangeEvent>();
 
     readonly isDisabled = computed(() => {
         return this.rootContext.disabled() || this.disabled();
@@ -111,24 +113,22 @@ export class RdxAccordionItemDirective {
             : Array.isArray(rootValue) && rootValue.includes(this.value()!);
     });
 
-    readonly dataState = computed((): RdxAccordionItemState => (this.open() ? 'open' : 'closed'));
-
     /** Set by the trigger; links the content's `aria-labelledby` to the trigger `id`. */
     readonly triggerId = signal('');
 
     readonly index = this.listItem.index;
 
     constructor() {
-        // Collapsed accordion panels stay findable by the browser's in-page search; opening one
-        // via find-in-page expands the item. (The standalone Collapsible defaults to plain `hidden`.)
-        this.collapsibleContext.hiddenUntilFound.set(true);
-
         effect(() => {
             this.updateOpen();
         });
 
+        // Forward the accordion-level mount controls onto the composed collapsible panel.
         effect(() => {
             this.collapsibleContext.keepMounted.set(this.rootContext.keepMounted());
+        });
+        effect(() => {
+            this.collapsibleContext.hiddenUntilFound.set(this.rootContext.hiddenUntilFound());
         });
 
         let initialized = false;
@@ -138,7 +138,8 @@ export class RdxAccordionItemDirective {
                 initialized = true;
                 return;
             }
-            this.onOpenChange.emit(isOpen);
+            const { eventDetails } = createCancelableChangeEventDetails('none', new Event('change'));
+            this.onOpenChange.emit({ open: isOpen, eventDetails });
         });
     }
 

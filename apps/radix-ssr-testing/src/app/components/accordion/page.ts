@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
-    RdxAccordionContentDirective,
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
+    RdxAccordionPanelDirective,
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
@@ -15,15 +15,15 @@ import {
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionContentDirective
+        RdxAccordionPanelDirective
     ],
     template: `
-        <div rdxAccordionRoot type="multiple">
+        <div rdxAccordionRoot multiple>
             <div [value]="'one'" rdxAccordionItem>
                 <h3 rdxAccordionHeader>
                     <button type="button" rdxAccordionTrigger>One</button>
                 </h3>
-                <div rdxAccordionContent>
+                <div rdxAccordionPanel>
                     Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra integer
                     ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam suscipit habitant sed.
                 </div>
@@ -33,7 +33,7 @@ import {
                 <h3 rdxAccordionHeader>
                     <button type="button" rdxAccordionTrigger>Two</button>
                 </h3>
-                <div rdxAccordionContent>
+                <div rdxAccordionPanel>
                     Cursus sed mattis commodo fermentum conubia ipsum pulvinar sagittis, diam eget bibendum porta
                     nascetur ac dictum, leo tellus dis integer platea ultrices mi.
                 </div>
@@ -43,7 +43,7 @@ import {
                 <h3 rdxAccordionHeader>
                     <button type="button" rdxAccordionTrigger>Three</button>
                 </h3>
-                <div rdxAccordionContent>
+                <div rdxAccordionPanel>
                     Sociis hac sapien turpis conubia sagittis justo dui, inceptos penatibus feugiat himenaeos euismod
                     magna, nec tempor pulvinar eu etiam mattis.
                 </div>
@@ -53,7 +53,7 @@ import {
                 <h3 rdxAccordionHeader>
                     <button type="button" rdxAccordionTrigger>Four</button>
                 </h3>
-                <div rdxAccordionContent>
+                <div rdxAccordionPanel>
                     Odio placerat quisque sapien sagittis non sociis ligula penatibus dignissim vitae, enim vulputate
                     nullam semper potenti etiam volutpat libero.
                     <button>Cool</button>

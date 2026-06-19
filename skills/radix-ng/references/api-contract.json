@@ -6,15 +6,6 @@
       "section": "components",
       "parts": [
         {
-          "directive": "RdxAccordionContentDirective",
-          "selector": "[rdxAccordionContent]",
-          "hostDirectives": [
-            "RdxCollapsiblePanelDirective"
-          ],
-          "inputs": [],
-          "outputs": []
-        },
-        {
           "directive": "RdxAccordionHeaderDirective",
           "selector": "[rdxAccordionHeader]",
           "inputs": [],
@@ -44,10 +35,19 @@
           "outputs": [
             {
               "name": "onOpenChange",
-              "type": "boolean",
-              "description": "Event handler called when the panel open state changes."
+              "type": "RdxAccordionItemOpenChangeEvent",
+              "description": "Event handler called when the panel open state changes. Emits `{ open, eventDetails }`\n(Base UI parity)."
             }
           ]
+        },
+        {
+          "directive": "RdxAccordionPanelDirective",
+          "selector": "[rdxAccordionPanel]",
+          "hostDirectives": [
+            "RdxCollapsiblePanelDirective"
+          ],
+          "inputs": [],
+          "outputs": []
         },
         {
           "directive": "RdxAccordionRootDirective",
@@ -57,12 +57,6 @@
             "RdxCompositeList"
           ],
           "inputs": [
-            {
-              "name": "collapsible",
-              "type": "boolean",
-              "default": "false",
-              "description": "When type is \"single\", allows closing content when clicking trigger for an open item.\nWhen type is \"multiple\", this prop has no effect."
-            },
             {
               "name": "defaultValue",
               "type": "string | string[]",
@@ -75,9 +69,10 @@
               "description": "Whether the Accordion is disabled."
             },
             {
-              "name": "id",
-              "type": "string",
-              "default": "injectId('rdx-accordion-')"
+              "name": "hiddenUntilFound",
+              "type": "boolean",
+              "default": "false",
+              "description": "Allow collapsed panels to remain mounted (but hidden) so the browser's in-page search\ncan find and reveal them. Mirrors Base UI's `hiddenUntilFound`."
             },
             {
               "name": "keepMounted",
@@ -96,7 +91,7 @@
               "name": "multiple",
               "type": "boolean",
               "default": "false",
-              "description": "Allow multiple panels to be open simultaneously.\nTakes precedence over `type` when `true`."
+              "description": "Allow multiple panels to be open simultaneously. In single mode an open item can always be\nclosed by clicking its trigger again (Base UI parity — there is no separate `collapsible`)."
             },
             {
               "name": "orientation",
@@ -104,12 +99,6 @@
               "default": "'vertical'",
               "deprecated": true,
               "description": "The orientation of the accordion.\n\nDeprecated following the APG guidance update to remove roving focus.\nThis prop no longer affects keyboard focus behavior."
-            },
-            {
-              "name": "type",
-              "type": "\"multiple\" | \"single\"",
-              "default": "'single'",
-              "description": "Determines whether a \"single\" or \"multiple\" items can be selected at a time."
             },
             {
               "name": "value",
@@ -120,8 +109,8 @@
           "outputs": [
             {
               "name": "onValueChange",
-              "type": "AcceptableValue | AcceptableValue[] | undefined",
-              "description": "Event handler called when the expanded state of an item changes."
+              "type": "RdxAccordionValueChangeEvent",
+              "description": "Event handler called when the expanded value changes. Emits the next value plus a cancelable\n`eventDetails` (Base UI parity); call `eventDetails.cancel()` to reject the change."
             }
           ],
           "twoWay": [

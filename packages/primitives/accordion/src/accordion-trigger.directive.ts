@@ -7,17 +7,14 @@ import { injectAccordionRootContext } from './accordion-root.directive';
     selector: '[rdxAccordionTrigger]',
     host: {
         '[id]': 'itemContext.triggerId()',
-        '[attr.data-rdx-collection-item]': '""',
         '[attr.role]': '"button"',
         '[attr.aria-expanded]': 'itemContext.open()',
-        '[attr.aria-disabled]': 'itemContext.open() && !rootContext.collapsible() ? "true" : undefined',
-        '[attr.data-orientation]': 'rootContext.orientation()',
-        '[attr.data-state]': 'itemContext.dataState()',
-        '[attr.disabled]': 'itemContext.dataDisabled() ? "" : undefined',
+        // Disabled triggers stay focusable (Base UI parity) — `aria-disabled`, not native `disabled`.
+        '[attr.aria-disabled]': 'itemContext.dataDisabled() ? "true" : undefined',
+        '[attr.data-disabled]': 'itemContext.dataDisabled() ? "" : undefined',
         '[attr.data-panel-open]': 'itemContext.open() ? "" : undefined',
-        '[attr.data-index]': 'itemContext.index()',
 
-        '(click)': 'changeItem()'
+        '(click)': 'changeItem($event)'
     }
 })
 export class RdxAccordionTriggerDirective {
@@ -28,15 +25,12 @@ export class RdxAccordionTriggerDirective {
         this.itemContext.triggerId.set(injectId('rdx-accordion-trigger-'));
     }
 
-    changeItem() {
-        // In single mode an open item stays open (unless `collapsible`), so a click on it is a no-op.
-        const lockedOpen = this.rootContext.isSingle() && this.itemContext.open() && !this.rootContext.collapsible();
-
+    changeItem(event: Event) {
         // `dataDisabled` is the effective disabled state (accordion-root OR item level).
-        if (this.itemContext.dataDisabled() || lockedOpen) {
+        if (this.itemContext.dataDisabled()) {
             return;
         }
 
-        this.rootContext.changeModelValue(this.itemContext.value()!);
+        this.rootContext.changeModelValue(this.itemContext.value()!, event);
     }
 }

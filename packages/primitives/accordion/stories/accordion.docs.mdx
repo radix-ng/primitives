@@ -2,8 +2,7 @@ import { ArgTypes, Canvas, Controls, Meta, Primary } from '@storybook/addon-docs
 import * as AccordionStories from './accordion.stories';
 import { RdxAccordionRootDirective } from '../src/accordion-root.directive';
 import { RdxAccordionItemDirective } from '../src/accordion-item.directive';
-import { RdxAccordionTriggerDirective } from '../src/accordion-trigger.directive';
-import { RdxAccordionContentDirective } from '../src/accordion-content.directive';
+import { RdxAccordionPanelDirective } from '../src/accordion-panel.directive';
 
 <Meta title="Primitives/Accordion" of={AccordionStories} />
 
@@ -17,11 +16,13 @@ import { RdxAccordionContentDirective } from '../src/accordion-content.directive
 ## Features
 
 - ✅ Native button keyboard interaction (`Space` / `Enter`) with browser tab order.
+- ✅ Base UI state hooks: `data-open` / `data-panel-open` plus enter/leave `data-starting-style` / `data-ending-style`.
 - ✅ Exposes horizontal/vertical orientation state for styling.
-- ✅ Expand a single item or multiple items at once.
+- ✅ Expand a single item or multiple items at once (`multiple`).
 - ✅ Can be controlled or uncontrolled.
-- ✅ Emits an event per item when its panel opens or closes (`onOpenChange`).
-- ✅ Can keep collapsed panels mounted in the DOM while hidden (`keepMounted`).
+- ✅ Cancelable `onValueChange` (root) and `onOpenChange` (item) events carry an `eventDetails` payload.
+- ✅ Exposes the panel size as `--accordion-panel-height` / `--accordion-panel-width` for animations.
+- ✅ Keep collapsed panels mounted (`keepMounted`) or findable by browser search (`hiddenUntilFound`).
 
 ## Import
 
@@ -33,7 +34,7 @@ import {
   RdxAccordionItemDirective,
   RdxAccordionHeaderDirective,
   RdxAccordionTriggerDirective,
-  RdxAccordionContentDirective
+  RdxAccordionPanelDirective
 } from '@radix-ng/primitives/accordion';
 ```
 
@@ -45,7 +46,7 @@ import {
     <div rdxAccordionHeader>
       <button rdxAccordionTrigger></button>
     </div>
-    <div rdxAccordionContent></div>
+    <div rdxAccordionPanel></div>
   </div>
 </div>
 ```
@@ -60,13 +61,14 @@ Disable the whole accordion via `disabled` on the root, or a single item via `di
 
 ### Multiple
 
-Set `multiple` (or `type="multiple"`) to let several items stay open at once.
+Set `multiple` to let several items stay open at once.
 
 <Canvas of={AccordionStories.Multiple} />
 
 ### Collapsible
 
-In single mode, `collapsible` lets the user close the currently open item.
+In single mode the open item can always be closed by clicking its trigger again (Base UI parity —
+there is no separate `collapsible` input).
 
 <Canvas of={AccordionStories.Collapsible} />
 
@@ -78,14 +80,17 @@ Set `orientation="horizontal"` to expose horizontal state for styling. Following
 
 ### Events
 
-Each item emits `onOpenChange` with its new open state whenever it expands or collapses.
+Each item emits `onOpenChange` with `{ open, eventDetails }` whenever it expands or collapses; the
+root emits `onValueChange` with `{ value, eventDetails }`. Call `eventDetails.cancel()` to reject a
+change before it commits.
 
 <Canvas of={AccordionStories.Events} />
 
 ### Keep mounted
 
-With `keepMounted`, collapsed panels keep their element in the DOM while hidden — useful to
-preserve form state. Accordion content also stays discoverable by the browser's find-in-page.
+With `keepMounted`, collapsed panels keep their element in the DOM while hidden — useful to preserve
+form state. Use `hiddenUntilFound` instead to keep collapsed content discoverable by the browser's
+find-in-page (it renders `hidden="until-found"`).
 
 <Canvas of={AccordionStories.KeepMounted} />
 
@@ -101,32 +106,78 @@ Focus moves through accordion triggers using the browser's normal tab order. `Ar
 
 `loopFocus` and focus behavior from `orientation` are deprecated for Base UI parity and no longer affect keyboard focus.
 
-## Data attributes
-
-State is exposed through `data-*` attributes for styling:
-
-| Attribute          | Parts                                | Values                                                            |
-| ------------------ | ------------------------------------ | ----------------------------------------------------------------- |
-| `data-state`       | item, header, trigger, content       | `"open"` \| `"closed"`                                            |
-| `data-disabled`    | root, item, header, content          | Present when disabled                                             |
-| `data-orientation` | root, item, header, trigger, content | `"horizontal"` \| `"vertical"`                                    |
-| `data-index`       | item, header, trigger, content       | Zero-based position of the item                                   |
-| `data-panel-open`  | trigger                              | Present while the trigger's panel is open (e.g. rotate a chevron) |
-
 ## API Reference
 
-### RdxAccordionRootDirective
+### Root
+
+`RdxAccordionRootDirective` — groups all parts and owns the expanded value. Apply to a container element (typically a `<div>`).
 
 <ArgTypes of={RdxAccordionRootDirective} />
 
-### RdxAccordionItemDirective
+**Data attributes**
+
+| Attribute          | Present when                                |
+| ------------------ | ------------------------------------------- |
+| `data-orientation` | Always — `"horizontal"` \| `"vertical"`.    |
+| `data-disabled`    | The accordion is disabled.                  |
+
+### Item
+
+`RdxAccordionItemDirective` — groups a header with its panel. Apply to a container element (typically a `<div>`).
 
 <ArgTypes of={RdxAccordionItemDirective} />
 
-### RdxAccordionTriggerDirective
+**Data attributes**
 
-<ArgTypes of={RdxAccordionTriggerDirective} />
+| Attribute       | Present when                            |
+| --------------- | --------------------------------------- |
+| `data-open`     | The item is open.                       |
+| `data-disabled` | The item is disabled.                   |
+| `data-index`    | Always — the item's zero-based index.   |
 
-### RdxAccordionContentDirective
+### Header
 
-<ArgTypes of={RdxAccordionContentDirective} />
+`RdxAccordionHeaderDirective` — the heading that labels the panel. Reads everything from context, so it takes no inputs. Apply to a heading element (typically an `<h3>`).
+
+**Data attributes**
+
+| Attribute       | Present when                            |
+| --------------- | --------------------------------------- |
+| `data-open`     | The item is open.                       |
+| `data-disabled` | The item is disabled.                   |
+| `data-index`    | Always — the item's zero-based index.   |
+
+### Trigger
+
+`RdxAccordionTriggerDirective` — the button that toggles the panel. Reads everything from context, so it takes no inputs. Apply to a native `<button>` element. Disabled triggers stay focusable via `aria-disabled`.
+
+**Data attributes**
+
+| Attribute         | Present when                |
+| ----------------- | --------------------------- |
+| `data-panel-open` | The item's panel is open.   |
+| `data-disabled`   | The item is disabled.       |
+
+### Panel
+
+`RdxAccordionPanelDirective` — the collapsible content. Apply to a container element (typically a `<div>`).
+
+<ArgTypes of={RdxAccordionPanelDirective} />
+
+**Data attributes**
+
+| Attribute             | Present when                            |
+| --------------------- | --------------------------------------- |
+| `data-open`           | The panel is open.                      |
+| `data-orientation`    | Always — `"horizontal"` \| `"vertical"`.|
+| `data-disabled`       | The item is disabled.                   |
+| `data-index`          | Always — the item's zero-based index.   |
+| `data-starting-style` | The panel is animating in.              |
+| `data-ending-style`   | The panel is animating out.             |
+
+**CSS variables**
+
+| Variable                     | Description                                         |
+| ---------------------------- | --------------------------------------------------- |
+| `--accordion-panel-height`   | The panel's measured height, for height animations. |
+| `--accordion-panel-width`    | The panel's measured width, for width animations.   |

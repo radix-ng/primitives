@@ -1,9 +1,9 @@
 import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { cn, demoAccordion } from '../../storybook/styles';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
-import { RdxAccordionContentDirective } from '../src/accordion-content.directive';
 import { RdxAccordionHeaderDirective } from '../src/accordion-header.directive';
 import { RdxAccordionItemDirective } from '../src/accordion-item.directive';
+import { RdxAccordionPanelDirective } from '../src/accordion-panel.directive';
 import { RdxAccordionRootDirective } from '../src/accordion-root.directive';
 import { RdxAccordionTriggerDirective } from '../src/accordion-trigger.directive';
 import { AccordionCollapsibleExample } from './accordion-collapsible';
@@ -37,7 +37,7 @@ export default {
                 RdxAccordionItemDirective,
                 RdxAccordionHeaderDirective,
                 RdxAccordionTriggerDirective,
-                RdxAccordionContentDirective,
+                RdxAccordionPanelDirective,
                 AccordionDisabledExample,
                 AccordionMultipleExample,
                 AccordionCollapsibleExample,
@@ -56,7 +56,7 @@ type Story = StoryObj;
 export const Default: Story = {
     args: {
         disabled: false,
-        collapsible: false
+        multiple: false
     },
     render: (args) => ({
         props: { ...args, cn, a: demoAccordion },
@@ -66,7 +66,7 @@ export const Default: Story = {
                     <h3 [class]="a.header" rdxAccordionHeader>
                         <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
                     </h3>
-                    <div [class]="a.content" rdxAccordionContent>
+                    <div [class]="a.content" rdxAccordionPanel>
                         <div [class]="a.contentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
                     </div>
                 </div>
@@ -74,7 +74,7 @@ export const Default: Story = {
                     <h3 [class]="a.header" rdxAccordionHeader>
                         <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
                     </h3>
-                    <div [class]="a.content" rdxAccordionContent>
+                    <div [class]="a.content" rdxAccordionPanel>
                         <div [class]="a.contentText">
                             Yes. It's unstyled by default, giving you freedom over the look and feel.
                         </div>
@@ -84,7 +84,7 @@ export const Default: Story = {
                     <h3 [class]="a.header" rdxAccordionHeader>
                         <button [class]="a.trigger" type="button" rdxAccordionTrigger>Can it be animated?</button>
                     </h3>
-                    <div [class]="a.content" rdxAccordionContent>
+                    <div [class]="a.content" rdxAccordionPanel>
                         <div [class]="a.contentText">Yes! You can animate the Accordion with CSS or JavaScript.</div>
                     </div>
                 </div>

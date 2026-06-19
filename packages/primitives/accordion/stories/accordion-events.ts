@@ -1,8 +1,8 @@
 import { Component, signal } from '@angular/core';
 import {
-    RdxAccordionContentDirective,
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
+    RdxAccordionPanelDirective,
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
@@ -15,16 +15,16 @@ import { cn, demoAccordion } from '../../storybook/styles';
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionContentDirective
+        RdxAccordionPanelDirective
     ],
     template: `
         <div class="flex w-[300px] flex-col gap-3">
-            <div [class]="a.root" [defaultValue]="'item-1'" collapsible rdxAccordionRoot>
+            <div [class]="a.root" [defaultValue]="'item-1'" rdxAccordionRoot>
                 <div [class]="a.item" [value]="'item-1'" (onOpenChange)="log('Accessibility', $event)" rdxAccordionItem>
                     <h3 [class]="a.header" rdxAccordionHeader>
                         <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
                     </h3>
-                    <div [class]="a.content" rdxAccordionContent>
+                    <div [class]="a.content" rdxAccordionPanel>
                         <div [class]="a.contentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
                     </div>
                 </div>
@@ -33,7 +33,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
                     <h3 [class]="a.header" rdxAccordionHeader>
                         <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
                     </h3>
-                    <div [class]="a.content" rdxAccordionContent>
+                    <div [class]="a.content" rdxAccordionPanel>
                         <div [class]="a.contentText">Yes. It's unstyled by default.</div>
                     </div>
                 </div>
@@ -49,7 +49,7 @@ export class AccordionEventsExample {
 
     readonly status = signal('—');
 
-    log(title: string, open: boolean): void {
-        this.status.set(`${title} ${open ? 'opened' : 'closed'}`);
+    log(title: string, event: { open: boolean }): void {
+        this.status.set(`${title} ${event.open ? 'opened' : 'closed'}`);
     }
 }

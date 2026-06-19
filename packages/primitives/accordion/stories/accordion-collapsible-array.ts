@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
-    RdxAccordionContentDirective,
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
+    RdxAccordionPanelDirective,
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
@@ -15,17 +15,17 @@ import { cn, demoAccordion } from '../../storybook/styles';
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionContentDirective
+        RdxAccordionPanelDirective
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-        <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="'item-1'" collapsible rdxAccordionRoot>
+        <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="'item-1'" rdxAccordionRoot>
             @for (item of items; track item.id) {
                 <div [class]="a.item" [value]="item.id" rdxAccordionItem>
                     <h3 [class]="a.header" rdxAccordionHeader>
                         <button [class]="a.trigger" type="button" rdxAccordionTrigger>{{ item.title }}</button>
                     </h3>
-                    <div [class]="a.content" rdxAccordionContent>
+                    <div [class]="a.content" rdxAccordionPanel>
                         <div [class]="a.contentText">{{ item.content }}</div>
                     </div>
                 </div>

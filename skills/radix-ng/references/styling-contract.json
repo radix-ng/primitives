@@ -8,34 +8,8 @@
       "description": "A vertically stacked set of interactive headings that each reveal an associated section of content.",
       "doc": "radix-ng-examples/references/components/accordion.md",
       "storybook": "https://radix-ng.com/?path=/docs/primitives-accordion--docs",
-      "anatomy": "<div rdxAccordionRoot>\n  <div rdxAccordionItem>\n    <div rdxAccordionHeader>\n      <button rdxAccordionTrigger></button>\n    </div>\n    <div rdxAccordionContent></div>\n  </div>\n</div>",
-      "dataAttributes": [
-        {
-          "attribute": "data-state",
-          "parts": "item, header, trigger, content",
-          "values": "\"open\" | \"closed\""
-        },
-        {
-          "attribute": "data-disabled",
-          "parts": "root, item, header, content",
-          "values": "Present when disabled"
-        },
-        {
-          "attribute": "data-orientation",
-          "parts": "root, item, header, trigger, content",
-          "values": "\"horizontal\" | \"vertical\""
-        },
-        {
-          "attribute": "data-index",
-          "parts": "item, header, trigger, content",
-          "values": "Zero-based position of the item"
-        },
-        {
-          "attribute": "data-panel-open",
-          "parts": "trigger",
-          "values": "Present while the trigger's panel is open (e.g. rotate a chevron)"
-        }
-      ]
+      "anatomy": "<div rdxAccordionRoot>\n  <div rdxAccordionItem>\n    <div rdxAccordionHeader>\n      <button rdxAccordionTrigger></button>\n    </div>\n    <div rdxAccordionPanel></div>\n  </div>\n</div>",
+      "dataAttributes": []
     },
     {
       "name": "Alert Dialog",

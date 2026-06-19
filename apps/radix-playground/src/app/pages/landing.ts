@@ -16,9 +16,9 @@ import {
     LucideZap
 } from '@lucide/angular';
 import {
-    RdxAccordionContentDirective,
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
+    RdxAccordionPanelDirective,
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
@@ -54,7 +54,7 @@ type CopyTarget = 'install' | 'skill';
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionContentDirective,
+        RdxAccordionPanelDirective,
         NgTemplateOutlet,
         LucideArrowRight,
         LucideBox,
@@ -350,20 +350,19 @@ type CopyTarget = 'install' | 'skill';
                                 <span
                                     class="rounded-full border border-[color:var(--landing-green)]/30 bg-[color:var(--landing-green)]/10 px-2 py-0.5 font-mono text-[0.7rem] text-[var(--landing-green)]"
                                 >
-                                    single · collapsible
+                                    single
                                 </span>
                             </div>
 
                             <div
                                 class="border-border bg-background overflow-hidden rounded-md border"
                                 [defaultValue]="'accessibility'"
-                                collapsible
                                 keepMounted
                                 rdxAccordionRoot
                             >
                                 @for (item of accordionItems; track item.value) {
                                     <div
-                                        class="border-border border-t first:border-t-0 data-[state=open]:bg-[color:var(--landing-accent-tint)]"
+                                        class="border-border border-t first:border-t-0 data-[open]:bg-[color:var(--landing-accent-tint)]"
                                         [value]="item.value"
                                         rdxAccordionItem
                                     >
@@ -381,8 +380,8 @@ type CopyTarget = 'install' | 'skill';
                                             </button>
                                         </h3>
                                         <div
-                                            class="grid overflow-hidden transition-[grid-template-rows] duration-200 data-[state=closed]:grid-rows-[0fr] data-[state=open]:grid-rows-[1fr]"
-                                            rdxAccordionContent
+                                            class="grid overflow-hidden transition-[grid-template-rows] duration-200 data-[closed]:grid-rows-[0fr] data-[open]:grid-rows-[1fr]"
+                                            rdxAccordionPanel
                                         >
                                             <div class="overflow-hidden">
                                                 <p class="text-muted-foreground px-3.5 pb-3.5 text-sm leading-6">
@@ -832,12 +831,12 @@ export default class LandingPage {
         {
             value: 'unstyled',
             title: 'Is it unstyled?',
-            body: "By default, yes. It ships no styles - every surface you see here is CSS keyed off the primitive's data-state."
+            body: "By default, yes. It ships no styles - every surface you see here is CSS keyed off the primitive's data-* state attributes."
         },
         {
             value: 'animation',
             title: 'Can I animate it?',
-            body: 'Yes. Transitions key off [data-state=open], so open and close animate without a line of JavaScript.'
+            body: 'Yes. Transitions key off [data-open], so open and close animate without a line of JavaScript.'
         }
     ] as const;
 

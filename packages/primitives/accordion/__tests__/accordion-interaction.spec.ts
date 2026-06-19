@@ -1,10 +1,10 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { vi } from 'vitest';
-import { RdxAccordionContentDirective } from '../src/accordion-content.directive';
+import { expect, vi } from 'vitest';
 import { RdxAccordionHeaderDirective } from '../src/accordion-header.directive';
 import { RdxAccordionItemDirective } from '../src/accordion-item.directive';
+import { RdxAccordionPanelDirective } from '../src/accordion-panel.directive';
 import { RdxAccordionRootDirective } from '../src/accordion-root.directive';
 import { RdxAccordionTriggerDirective } from '../src/accordion-trigger.directive';
 
@@ -14,21 +14,15 @@ import { RdxAccordionTriggerDirective } from '../src/accordion-trigger.directive
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionContentDirective
+        RdxAccordionPanelDirective
     ],
     template: `
-        <div
-            [disabled]="rootDisabled()"
-            (onValueChange)="onValueChange($event)"
-            type="single"
-            collapsible
-            rdxAccordionRoot
-        >
+        <div [disabled]="rootDisabled()" (onValueChange)="onValueChange($event)" keepMounted rdxAccordionRoot>
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionHeader>
                     <button id="trigger-one" rdxAccordionTrigger>Trigger one</button>
                 </div>
-                <div rdxAccordionContent>Content one</div>
+                <div rdxAccordionPanel>Content one</div>
             </div>
         </div>
     `
@@ -43,7 +37,7 @@ describe('RdxAccordion — interaction', () => {
     let host: AccordionHost;
 
     const trigger = () => fixture.debugElement.query(By.css('[rdxAccordionTrigger]')).nativeElement as HTMLElement;
-    const content = () => fixture.debugElement.query(By.css('[rdxAccordionContent]')).nativeElement as HTMLElement;
+    const content = () => fixture.debugElement.query(By.css('[rdxAccordionPanel]')).nativeElement as HTMLElement;
 
     beforeEach(() => {
         fixture = TestBed.createComponent(AccordionHost);
@@ -51,16 +45,16 @@ describe('RdxAccordion — interaction', () => {
         fixture.detectChanges();
     });
 
-    // A2
+    // A2 — Base UI emits `{ value, eventDetails }` and exposes `data-open`.
     it('emits onValueChange with the new value when toggled', () => {
         trigger().click();
         fixture.detectChanges();
 
-        expect(host.onValueChange).toHaveBeenCalledWith('one');
-        expect(content().getAttribute('data-state')).toBe('open');
+        expect(host.onValueChange).toHaveBeenCalledWith(expect.objectContaining({ value: 'one' }));
+        expect(content().getAttribute('data-open')).toBe('');
     });
 
-    // A1
+    // A1 — disabled triggers stay focusable via `aria-disabled` (Base UI parity).
     it('does not open when the accordion root is disabled', () => {
         host.rootDisabled.set(true);
         fixture.detectChanges();
@@ -68,9 +62,11 @@ describe('RdxAccordion — interaction', () => {
         trigger().click();
         fixture.detectChanges();
 
-        expect(content().getAttribute('data-state')).toBe('closed');
+        expect(content().getAttribute('data-open')).toBeNull();
         expect(host.onValueChange).not.toHaveBeenCalled();
-        expect(trigger().getAttribute('disabled')).toBe('');
+        expect(trigger().getAttribute('aria-disabled')).toBe('true');
+        expect(trigger().getAttribute('data-disabled')).toBe('');
+        expect(trigger().hasAttribute('disabled')).toBe(false);
     });
 
     // A3
@@ -82,6 +78,55 @@ describe('RdxAccordion — interaction', () => {
     });
 });
 
+// ─── value-change cancellation ────────────────────────────────────────────────
+
+@Component({
+    imports: [
+        RdxAccordionRootDirective,
+        RdxAccordionItemDirective,
+        RdxAccordionHeaderDirective,
+        RdxAccordionTriggerDirective,
+        RdxAccordionPanelDirective
+    ],
+    template: `
+        <div (onValueChange)="onValueChange($event)" keepMounted rdxAccordionRoot>
+            <div value="one" rdxAccordionItem>
+                <div rdxAccordionHeader><button rdxAccordionTrigger>One</button></div>
+                <div rdxAccordionPanel>One</div>
+            </div>
+        </div>
+    `
+})
+class CancelHost {
+    readonly onValueChange = vi.fn((event: { eventDetails: { cancel: () => void } }) => event.eventDetails.cancel());
+}
+
+describe('RdxAccordion — cancelable onValueChange', () => {
+    let fixture: ComponentFixture<CancelHost>;
+
+    const trigger = () => fixture.debugElement.query(By.css('[rdxAccordionTrigger]')).nativeElement as HTMLElement;
+    const content = () => fixture.debugElement.query(By.css('[rdxAccordionPanel]')).nativeElement as HTMLElement;
+
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CancelHost);
+        fixture.detectChanges();
+    });
+
+    it('does not commit the value when eventDetails.cancel() is called', () => {
+        trigger().click();
+        fixture.detectChanges();
+
+        expect(fixture.componentInstance.onValueChange).toHaveBeenCalledWith(
+            expect.objectContaining({
+                value: 'one',
+                eventDetails: expect.objectContaining({ reason: 'trigger-press' })
+            })
+        );
+        // canceled → stays closed
+        expect(content().getAttribute('data-open')).toBeNull();
+    });
+});
+
 // ─── disabled propagation ────────────────────────────────────────────────────
 
 @Component({
@@ -90,13 +135,13 @@ describe('RdxAccordion — interaction', () => {
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionContentDirective
+        RdxAccordionPanelDirective
     ],
     template: `
-        <div [disabled]="rootDisabled()" rdxAccordionRoot collapsible>
+        <div [disabled]="rootDisabled()" keepMounted rdxAccordionRoot>
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionHeader><button rdxAccordionTrigger>One</button></div>
-                <div rdxAccordionContent>Content</div>
+                <div rdxAccordionPanel>Content</div>
             </div>
         </div>
     `
@@ -112,7 +157,7 @@ describe('RdxAccordion — disabled propagation', () => {
     const item = () => fixture.debugElement.query(By.css('[rdxAccordionItem]')).nativeElement as HTMLElement;
     const header = () => fixture.debugElement.query(By.css('[rdxAccordionHeader]')).nativeElement as HTMLElement;
     const trigger = () => fixture.debugElement.query(By.css('[rdxAccordionTrigger]')).nativeElement as HTMLElement;
-    const content = () => fixture.debugElement.query(By.css('[rdxAccordionContent]')).nativeElement as HTMLElement;
+    const content = () => fixture.debugElement.query(By.css('[rdxAccordionPanel]')).nativeElement as HTMLElement;
 
     beforeEach(() => {
         fixture = TestBed.createComponent(DisabledPropagationHost);
@@ -168,17 +213,17 @@ describe('RdxAccordion — disabled propagation', () => {
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionContentDirective
+        RdxAccordionPanelDirective
     ],
     template: `
-        <div [multiple]="multipleEnabled()" rdxAccordionRoot collapsible>
+        <div [multiple]="multipleEnabled()" keepMounted rdxAccordionRoot>
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionHeader><button id="t1" rdxAccordionTrigger>One</button></div>
-                <div rdxAccordionContent>One</div>
+                <div rdxAccordionPanel>One</div>
             </div>
             <div value="two" rdxAccordionItem>
                 <div rdxAccordionHeader><button id="t2" rdxAccordionTrigger>Two</button></div>
-                <div rdxAccordionContent>Two</div>
+                <div rdxAccordionPanel>Two</div>
             </div>
         </div>
     `
@@ -193,7 +238,7 @@ describe('RdxAccordion — multiple input', () => {
     const triggers = () =>
         fixture.debugElement.queryAll(By.css('[rdxAccordionTrigger]')).map((d) => d.nativeElement as HTMLElement);
     const contents = () =>
-        fixture.debugElement.queryAll(By.css('[rdxAccordionContent]')).map((d) => d.nativeElement as HTMLElement);
+        fixture.debugElement.queryAll(By.css('[rdxAccordionPanel]')).map((d) => d.nativeElement as HTMLElement);
 
     beforeEach(() => {
         fixture = TestBed.createComponent(MultipleHost);
@@ -206,8 +251,8 @@ describe('RdxAccordion — multiple input', () => {
         triggers()[1].click();
         fixture.detectChanges();
 
-        expect(contents()[0].getAttribute('data-state')).toBe('closed');
-        expect(contents()[1].getAttribute('data-state')).toBe('open');
+        expect(contents()[0].getAttribute('data-open')).toBeNull();
+        expect(contents()[1].getAttribute('data-open')).toBe('');
     });
 
     it('keeps both items open when multiple=true', () => {
@@ -219,48 +264,14 @@ describe('RdxAccordion — multiple input', () => {
         triggers()[1].click();
         fixture.detectChanges();
 
-        expect(contents()[0].getAttribute('data-state')).toBe('open');
-        expect(contents()[1].getAttribute('data-state')).toBe('open');
+        expect(contents()[0].getAttribute('data-open')).toBe('');
+        expect(contents()[1].getAttribute('data-open')).toBe('');
     });
 
-    it('type="multiple" still works for backwards compatibility', () => {
-        fixture.destroy();
-        @Component({
-            imports: [
-                RdxAccordionRootDirective,
-                RdxAccordionItemDirective,
-                RdxAccordionHeaderDirective,
-                RdxAccordionTriggerDirective,
-                RdxAccordionContentDirective
-            ],
-            template: `
-                <div type="multiple" rdxAccordionRoot>
-                    <div value="one" rdxAccordionItem>
-                        <div rdxAccordionHeader><button rdxAccordionTrigger>One</button></div>
-                        <div rdxAccordionContent>One</div>
-                    </div>
-                    <div value="two" rdxAccordionItem>
-                        <div rdxAccordionHeader><button rdxAccordionTrigger>Two</button></div>
-                        <div rdxAccordionContent>Two</div>
-                    </div>
-                </div>
-            `
-        })
-        class TypeMultipleHost {}
-
-        const f = TestBed.createComponent(TypeMultipleHost);
-        f.detectChanges();
-
-        const t = f.debugElement.queryAll(By.css('[rdxAccordionTrigger]')).map((d) => d.nativeElement as HTMLElement);
-        const c = f.debugElement.queryAll(By.css('[rdxAccordionContent]')).map((d) => d.nativeElement as HTMLElement);
-
-        t[0].click();
-        f.detectChanges();
-        t[1].click();
-        f.detectChanges();
-
-        expect(c[0].getAttribute('data-state')).toBe('open');
-        expect(c[1].getAttribute('data-state')).toBe('open');
+    it('does not expose data-closed on the panel (Base UI parity)', () => {
+        // closed panel (item two), kept mounted
+        expect(contents()[1].getAttribute('data-open')).toBeNull();
+        expect(contents()[1].getAttribute('data-closed')).toBeNull();
     });
 });
 
@@ -272,13 +283,13 @@ describe('RdxAccordion — multiple input', () => {
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionContentDirective
+        RdxAccordionPanelDirective
     ],
     template: `
-        <div collapsible rdxAccordionRoot>
+        <div rdxAccordionRoot>
             <div (onOpenChange)="onChange($event)" value="one" rdxAccordionItem>
                 <div rdxAccordionHeader><button rdxAccordionTrigger>One</button></div>
-                <div rdxAccordionContent>One</div>
+                <div rdxAccordionPanel>One</div>
             </div>
         </div>
     `
@@ -301,20 +312,20 @@ describe('RdxAccordion — onOpenChange', () => {
         expect(fixture.componentInstance.onChange).not.toHaveBeenCalled();
     });
 
-    it('emits true when item opens', () => {
+    it('emits { open: true } when item opens', () => {
         trigger().click();
         fixture.detectChanges();
-        expect(fixture.componentInstance.onChange).toHaveBeenCalledWith(true);
+        expect(fixture.componentInstance.onChange).toHaveBeenCalledWith(expect.objectContaining({ open: true }));
     });
 
-    it('emits false when item closes', () => {
+    it('emits { open: false } when item closes', () => {
         trigger().click();
         fixture.detectChanges();
         fixture.componentInstance.onChange.mockClear();
 
         trigger().click();
         fixture.detectChanges();
-        expect(fixture.componentInstance.onChange).toHaveBeenCalledWith(false);
+        expect(fixture.componentInstance.onChange).toHaveBeenCalledWith(expect.objectContaining({ open: false }));
     });
 });
 
@@ -326,21 +337,21 @@ describe('RdxAccordion — onOpenChange', () => {
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionContentDirective
+        RdxAccordionPanelDirective
     ],
     template: `
-        <div rdxAccordionRoot>
+        <div keepMounted rdxAccordionRoot>
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionHeader><button rdxAccordionTrigger>One</button></div>
-                <div rdxAccordionContent>One</div>
+                <div rdxAccordionPanel>One</div>
             </div>
             <div value="two" rdxAccordionItem>
                 <div rdxAccordionHeader><button rdxAccordionTrigger>Two</button></div>
-                <div rdxAccordionContent>Two</div>
+                <div rdxAccordionPanel>Two</div>
             </div>
             <div value="three" rdxAccordionItem>
                 <div rdxAccordionHeader><button rdxAccordionTrigger>Three</button></div>
-                <div rdxAccordionContent>Three</div>
+                <div rdxAccordionPanel>Three</div>
             </div>
         </div>
     `
@@ -354,10 +365,8 @@ describe('RdxAccordion — data-index', () => {
         fixture.debugElement.queryAll(By.css('[rdxAccordionItem]')).map((d) => d.nativeElement as HTMLElement);
     const headers = () =>
         fixture.debugElement.queryAll(By.css('[rdxAccordionHeader]')).map((d) => d.nativeElement as HTMLElement);
-    const triggers = () =>
-        fixture.debugElement.queryAll(By.css('[rdxAccordionTrigger]')).map((d) => d.nativeElement as HTMLElement);
     const contents = () =>
-        fixture.debugElement.queryAll(By.css('[rdxAccordionContent]')).map((d) => d.nativeElement as HTMLElement);
+        fixture.debugElement.queryAll(By.css('[rdxAccordionPanel]')).map((d) => d.nativeElement as HTMLElement);
 
     beforeEach(() => {
         fixture = TestBed.createComponent(DataIndexHost);
@@ -376,10 +385,11 @@ describe('RdxAccordion — data-index', () => {
         expect(headers()[2].getAttribute('data-index')).toBe('2');
     });
 
-    it('sets data-index on triggers', () => {
-        expect(triggers()[0].getAttribute('data-index')).toBe('0');
-        expect(triggers()[1].getAttribute('data-index')).toBe('1');
-        expect(triggers()[2].getAttribute('data-index')).toBe('2');
+    it('does not set data-index on triggers (Base UI parity)', () => {
+        const triggers = fixture.debugElement
+            .queryAll(By.css('[rdxAccordionTrigger]'))
+            .map((d) => d.nativeElement as HTMLElement);
+        expect(triggers[0].getAttribute('data-index')).toBeNull();
     });
 
     it('sets data-index on contents', () => {
@@ -397,17 +407,17 @@ describe('RdxAccordion — data-index', () => {
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionContentDirective
+        RdxAccordionPanelDirective
     ],
     template: `
         <div [loopFocus]="loop()" rdxAccordionRoot>
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionHeader><button rdxAccordionTrigger>One</button></div>
-                <div rdxAccordionContent>One</div>
+                <div rdxAccordionPanel>One</div>
             </div>
             <div value="two" rdxAccordionItem>
                 <div rdxAccordionHeader><button rdxAccordionTrigger>Two</button></div>
-                <div rdxAccordionContent>Two</div>
+                <div rdxAccordionPanel>Two</div>
             </div>
         </div>
     `
@@ -458,7 +468,7 @@ describe('RdxAccordion — keyboard focus', () => {
     });
 });
 
-// ─── keepMounted ─────────────────────────────────────────────────────────────
+// ─── mount behavior (keepMounted / hiddenUntilFound) ──────────────────────────
 
 @Component({
     imports: [
@@ -466,54 +476,68 @@ describe('RdxAccordion — keyboard focus', () => {
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionContentDirective
+        RdxAccordionPanelDirective
     ],
     template: `
-        <div [keepMounted]="keep()" rdxAccordionRoot collapsible>
+        <div [keepMounted]="keep()" [hiddenUntilFound]="findable()" rdxAccordionRoot>
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionHeader><button rdxAccordionTrigger>One</button></div>
-                <div rdxAccordionContent>Content one</div>
+                <div rdxAccordionPanel>Content one</div>
             </div>
         </div>
     `
 })
-class KeepMountedHost {
+class MountHost {
     readonly keep = signal(false);
+    readonly findable = signal(false);
 }
 
-describe('RdxAccordion — keepMounted', () => {
-    let fixture: ComponentFixture<KeepMountedHost>;
+describe('RdxAccordion — mount behavior', () => {
+    let fixture: ComponentFixture<MountHost>;
 
     const trigger = () => fixture.debugElement.query(By.css('[rdxAccordionTrigger]')).nativeElement as HTMLElement;
-    const content = () => fixture.debugElement.query(By.css('[rdxAccordionContent]')).nativeElement as HTMLElement;
+    const panel = () => fixture.debugElement.query(By.css('[rdxAccordionPanel]'));
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(KeepMountedHost);
+        fixture = TestBed.createComponent(MountHost);
         fixture.detectChanges();
     });
 
-    it('hides closed content with hidden="until-found" by default', () => {
-        expect(content().getAttribute('hidden')).toBe('until-found');
+    it('hides closed content with plain `hidden` by default (no longer hidden="until-found")', () => {
+        expect(panel()).not.toBeNull();
+        expect((panel().nativeElement as HTMLElement).getAttribute('hidden')).toBe('');
+        expect((panel().nativeElement as HTMLElement).getAttribute('data-open')).toBeNull();
+        // Base UI accordion panel has no `data-closed` (suppressed from the composed collapsible).
+        expect((panel().nativeElement as HTMLElement).getAttribute('data-closed')).toBeNull();
     });
 
-    it('keeps closed content mounted with hiddenUntilFound when keepMounted=true', () => {
+    it('keeps closed content mounted but hidden with keepMounted=true', () => {
         fixture.componentInstance.keep.set(true);
         fixture.detectChanges();
 
-        expect(content().getAttribute('hidden')).toBe('until-found');
-        expect(content().getAttribute('data-state')).toBe('closed');
+        expect(panel()).not.toBeNull();
+        expect((panel().nativeElement as HTMLElement).getAttribute('hidden')).toBe('');
+        expect((panel().nativeElement as HTMLElement).getAttribute('data-open')).toBeNull();
     });
 
-    it('keeps content unhidden when open regardless of keepMounted', () => {
+    it('keeps closed content findable with hidden="until-found" when hiddenUntilFound=true', () => {
+        fixture.componentInstance.findable.set(true);
+        fixture.detectChanges();
+
+        expect(panel()).not.toBeNull();
+        expect((panel().nativeElement as HTMLElement).getAttribute('hidden')).toBe('until-found');
+    });
+
+    it('shows content (no hidden, data-open) when open', () => {
         trigger().click();
         fixture.detectChanges();
 
-        expect(content().getAttribute('hidden')).toBeNull();
-        expect(content().getAttribute('data-state')).toBe('open');
+        expect(panel().nativeElement.getAttribute('hidden')).toBeNull();
+        expect(panel().nativeElement.getAttribute('data-open')).toBe('');
     });
 });
 
-// ─── single mode lock (no flicker on re-click) ───────────────────────────────
+// ─── single mode (re-click closes; no flicker on the open item) ───────────────
 
 @Component({
     imports: [
@@ -521,55 +545,51 @@ describe('RdxAccordion — keepMounted', () => {
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionContentDirective
+        RdxAccordionPanelDirective
     ],
     template: `
-        <div [defaultValue]="'one'" (onValueChange)="onValueChange($event)" type="single" rdxAccordionRoot>
+        <div [defaultValue]="'one'" (onValueChange)="onValueChange($event)" keepMounted rdxAccordionRoot>
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionHeader><button id="t1" rdxAccordionTrigger>One</button></div>
-                <div rdxAccordionContent>One</div>
+                <div rdxAccordionPanel>One</div>
             </div>
             <div value="two" rdxAccordionItem>
                 <div rdxAccordionHeader><button id="t2" rdxAccordionTrigger>Two</button></div>
-                <div rdxAccordionContent>Two</div>
+                <div rdxAccordionPanel>Two</div>
             </div>
         </div>
     `
 })
-class SingleLockHost {
+class SingleModeHost {
     readonly onValueChange = vi.fn();
 }
 
-describe('RdxAccordion — single mode lock', () => {
-    let fixture: ComponentFixture<SingleLockHost>;
+describe('RdxAccordion — single mode', () => {
+    let fixture: ComponentFixture<SingleModeHost>;
 
     const triggers = () =>
         fixture.debugElement.queryAll(By.css('[rdxAccordionTrigger]')).map((d) => d.nativeElement as HTMLElement);
     const contents = () =>
-        fixture.debugElement.queryAll(By.css('[rdxAccordionContent]')).map((d) => d.nativeElement as HTMLElement);
+        fixture.debugElement.queryAll(By.css('[rdxAccordionPanel]')).map((d) => d.nativeElement as HTMLElement);
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(SingleLockHost);
+        fixture = TestBed.createComponent(SingleModeHost);
         fixture.detectChanges();
     });
 
-    it('re-clicking the open item keeps it open without emitting (no flicker)', () => {
-        // item-1 is open by default
-        expect(contents()[0].getAttribute('data-state')).toBe('open');
-
-        triggers()[0].click();
-        fixture.detectChanges();
-
-        // stays open, and no value churn was emitted
-        expect(contents()[0].getAttribute('data-state')).toBe('open');
-        expect(fixture.componentInstance.onValueChange).not.toHaveBeenCalled();
+    it('opens with defaultValue', () => {
+        expect(contents()[0].getAttribute('data-open')).toBe('');
     });
 
-    it('does not unmount/hide the open content when re-clicked', () => {
+    // Base UI single accordions are always collapsible — re-clicking the open item closes it.
+    it('re-clicking the open item closes it', () => {
         triggers()[0].click();
         fixture.detectChanges();
 
-        expect(contents()[0].getAttribute('hidden')).toBeNull();
+        expect(contents()[0].getAttribute('data-open')).toBeNull();
+        expect(fixture.componentInstance.onValueChange).toHaveBeenCalledWith(
+            expect.objectContaining({ value: undefined })
+        );
     });
 
     it('reflects open state via aria-expanded', () => {
