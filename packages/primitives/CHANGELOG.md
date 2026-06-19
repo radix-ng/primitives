@@ -1,3 +1,13 @@
+## 1.0.1 (2026-06-19)
+
+### 🩹 Fixes
+
+- ssr support for composite ([03544e49](https://github.com/radix-ng/primitives/commit/03544e49))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 # 1.0.0 (2026-06-19)
 
 ### 🚀 Features
