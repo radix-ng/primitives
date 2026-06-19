@@ -16,7 +16,7 @@ Generated from `@radix-ng/primitives@1.0.2` — if the installed version differs
 - [Button](https://radix-ng.com/components/button.md): A button, or any element that should behave like one.
 - [Calendar](https://radix-ng.com/components/calendar.md): Displays dates and days of the week, facilitating date-related interactions.
 - [Checkbox](https://radix-ng.com/components/checkbox.md): A control that allows the user to toggle between checked and not checked.
-- [Collapsible](https://radix-ng.com/components/collapsible.md): A panel that expands and collapses, revealing or hiding its contents.
+- [Collapsible](https://radix-ng.com/components/collapsible.md): A collapsible panel controlled by a button.
 - [Combobox](https://radix-ng.com/components/combobox.md): A filterable select: a text input that filters a list of options, with the highlighted option tracked via `aria-activedescendant`.
 - [Context Menu](https://radix-ng.com/components/context-menu.md): A menu that appears at the pointer on right click (or touch long-press), built on the Menu primitive.
 - [Cropper](https://radix-ng.com/components/cropper.md): Headless component for interactive image cropping — inspired by the experience on [X](https://x.com/).

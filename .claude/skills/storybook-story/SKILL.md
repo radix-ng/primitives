@@ -93,7 +93,7 @@ description: |
 ## Anatomy    (HTML block showing all parts)
 ## Examples   (### Title + one-line desc + <Canvas of={Stories.X} /> per example)
 ## Data attributes  (optional table, if the primitive exposes data-* state separately)
-## API Reference  (### per part → <ArgTypes of={Directive} /> only for parts with inputs/outputs)
+## API Reference  (### per part → "Renders a `<x>` element" note + <ArgTypes> + Data attributes / CSS variables tables; see "API Reference — Base UI parity")
 ## Accessibility  (a11y notes + a ### Keyboard Interactions table; goes LAST — see rules below)
 ```
 
@@ -102,6 +102,43 @@ description: |
 - **API Reference parts are `###` subheadings** under the `## API Reference` `##` — never repeat `##` for each directive (that makes them siblings of API Reference, not children).
 - **No empty `<ArgTypes>` tables.** Parts with no inputs → one-line prose note instead.
 - Imports at the top: Storybook blocks (incl. `Primary`, `Controls`) → `* as Stories` → individual directive classes for ArgTypes.
+
+### API Reference — Base UI parity (canonical convention)
+
+Mirror the matching [base-ui.com](https://base-ui.com/) component's `.md` page so our API Reference reads
+the same. Each `###` part subsection, in this order:
+
+1. **One-line summary + host element.** `` `RdxFooPanelDirective` `` — what the part does. End with the
+   host element. **These are attribute-directives, not React components — they do not _render_ an element,
+   the consumer supplies it. Write "Apply to a `<x>` element", never Base UI's "Renders a `<x>`".** Use the
+   tag shown in Anatomy: a container part → "Apply to a container element (typically a `<div>`)"; a part
+   that needs native button semantics → "Apply to a native `<button>` element". Only say a specific tag is
+   required when the selector enforces it (e.g. `button[rdxFoo]`) — otherwise it's the recommended host.
+   Add behavior/a11y prose (exposed `aria-*`, context-only parts) on the next line.
+2. **`<ArgTypes of={Directive} />`** — only for parts with inputs/outputs (no empty tables; context-only
+   parts get prose instead, see above).
+3. **Data attributes table** (`**Data attributes**` bold label, not a heading), when the part sets any
+   `data-*`. Shape: `| Attribute | Present when |`, one `data-*` per row in backticks, descriptions end
+   with a period. Mirror Base UI's wording where it maps cleanly.
+4. **CSS variables table** (`**CSS variables**` bold label), when the part sets any `--*` custom property.
+   Shape: `| Variable | Description |`.
+
+- **Ground every `data-*` / `--*` in source — never invent.** Read the part's `host: {}` bindings (and any
+  `style.--*` / `setProperty`); list exactly what's there. This is the same "trace it to a real handler"
+  rule as Keyboard Interactions. Internal inline-style manipulation (temporary `node.style.height = 'auto'`
+  for measuring, toggling `transitionDuration`/`animationName`) is **not** a public CSS variable — only
+  list `--*` properties actually bound on the host.
+- **Take the host tag from the selector / Anatomy, never assume.** When rolling this out to other primitives,
+  derive each part's element from its `@Directive({ selector })`: a tag-qualified selector (`button[rdxFoo]`)
+  → that tag is required; a plain attribute selector (`[rdxFoo]`) → use the tag shown in that primitive's
+  Anatomy block as the recommended host. Do not copy Collapsible's tags (`<button>`/`<div>`) onto another
+  primitive by analogy — verify per part.
+- **Per-part, not one global section.** Prefer Base UI's layout (each table inside its part's `###`) over a
+  single top-level `## Data attributes` section. Drop the global section once a primitive uses per-part tables.
+- **Subtitle (`#### …`) matches Base UI's** one-liner where one exists (e.g. Collapsible → "A collapsible
+  panel controlled by a button.").
+- **Reference page to copy:** `packages/primitives/collapsible/stories/collapsible.docs.mdx`.
+- After editing any `*.docs.mdx`, run `pnpm skills:build` to regenerate the LLM bundle (CI-verified).
 
 ### Keyboard Interactions & Accessibility (canonical convention)
 

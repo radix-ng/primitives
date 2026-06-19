@@ -4906,7 +4906,7 @@ Adheres to the [tri-state Checkbox WAI-ARIA design pattern](https://www.w3.org/W
 
 # Collapsible
 
-#### A panel that expands and collapses, revealing or hiding its contents.
+#### A collapsible panel controlled by a button.
 
 ```html
 <div class="w-full max-w-sm" rdxCollapsibleRoot [open]="true" #collapsibleRoot="rdxCollapsibleRoot">
@@ -5047,19 +5047,50 @@ The open state can be controlled from outside the collapsible via the `open` mod
 
 ### Root
 
-`RdxCollapsibleRootDirective`
+`RdxCollapsibleRootDirective` — groups the trigger and panel and manages the open state. Apply to a container element (typically a `<div>`).
+
+**Data attributes**
+
+| Attribute       | Present when                  |
+| --------------- | ----------------------------- |
+| `data-open`     | The collapsible is open.      |
+| `data-closed`   | The collapsible is closed.    |
+| `data-disabled` | The collapsible is disabled.  |
 
 ### Trigger
 
-`RdxCollapsibleTriggerDirective`
+`RdxCollapsibleTriggerDirective` — a button that toggles the panel. Apply to a native `<button>` element.
 
-A button that toggles the panel. Reads everything from the root context; it exposes
-`aria-expanded`, `aria-controls` while open, and `data-panel-open` while open. Disabled triggers
-remain focusable and expose `aria-disabled`.
+Reads everything from the root context; it exposes `aria-expanded` and, while open, `aria-controls`.
+Disabled triggers remain focusable and expose `aria-disabled`.
+
+**Data attributes**
+
+| Attribute         | Present when                  |
+| ----------------- | ----------------------------- |
+| `data-panel-open` | The panel is open.            |
+| `data-disabled`   | The collapsible is disabled.  |
 
 ### Panel
 
-`RdxCollapsiblePanelDirective`
+`RdxCollapsiblePanelDirective` — the collapsible content. Unmounts when closed by default; `keepMounted` / `hiddenUntilFound` keep it in the DOM. Apply to a container element (typically a `<div>`).
+
+**Data attributes**
+
+| Attribute             | Present when                  |
+| --------------------- | ----------------------------- |
+| `data-open`           | The panel is open.            |
+| `data-closed`         | The panel is closed.          |
+| `data-disabled`       | The collapsible is disabled.  |
+| `data-starting-style` | The panel is in the enter transition. |
+| `data-ending-style`   | The panel is in the exit transition.  |
+
+**CSS variables**
+
+| Variable                     | Description                                          |
+| ---------------------------- | ---------------------------------------------------- |
+| `--collapsible-panel-height` | The panel's measured height, for height animations.  |
+| `--collapsible-panel-width`  | The panel's measured width, for width animations.    |
 
 ## Accessibility
 

@@ -111,7 +111,7 @@
       "name": "Collapsible",
       "slug": "collapsible",
       "section": "components",
-      "description": "A panel that expands and collapses, revealing or hiding its contents.",
+      "description": "A collapsible panel controlled by a button.",
       "doc": "radix-ng-examples/references/components/collapsible.md",
       "storybook": "https://radix-ng.com/?path=/docs/primitives-collapsible--docs",
       "anatomy": "<div rdxCollapsibleRoot>\n  <button rdxCollapsibleTrigger>Trigger</button>\n  <div rdxCollapsiblePanel>Panel</div>\n</div>",
