@@ -3984,7 +3984,8 @@
           "exportAs": "rdxMenuTrigger",
           "description": "A button that opens the menu.",
           "hostDirectives": [
-            "RdxPopperAnchor"
+            "RdxPopperAnchor",
+            "RdxCompositeItem"
           ],
           "inputs": [
             {
@@ -4039,6 +4040,9 @@
           "selector": "[rdxMenubarRoot]",
           "exportAs": "rdxMenubarRoot",
           "description": "Container for a horizontal application menu bar.\nCoordinates open/close state across multiple menus and provides arrow-key navigation.",
+          "hostDirectives": [
+            "RdxCompositeRoot"
+          ],
           "inputs": [
             {
               "name": "disabled",
