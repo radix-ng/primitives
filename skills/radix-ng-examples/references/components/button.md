@@ -254,3 +254,11 @@ export class RdxButtonLoadingComponent {
 ```
 
 ## API Reference
+
+`RdxButtonDirective` — headless button behavior. Apply to a native `<button>` element, or to any other element (e.g. `<a>`, `<span>`) to give it button semantics (`role="button"`, keyboard activation, focus management) — the host tag is detected automatically, so there is no `nativeButton` prop.
+
+**Data attributes**
+
+| Attribute       | Present when             |
+| --------------- | ------------------------ |
+| `data-disabled` | The button is disabled.  |
