@@ -1,10 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { RdxCollectionProvider } from '@radix-ng/primitives/collection';
+import { RdxCompositeList, RdxCompositeMetadata } from '@radix-ng/primitives/composite';
 import { _importsSelect } from '../index';
 import { RdxSelectPopup } from '../src/select-popup';
 import { RdxSelectRoot } from '../src/select-root';
+import { RdxSelectItemMetadata } from '../src/utils';
 
 interface Fruit {
     label: string;
@@ -43,16 +44,23 @@ class SelectHostComponent {
     ]);
 }
 
-describe('Select collection integration', () => {
+describe('Select composite list integration', () => {
     let fixture: ComponentFixture<SelectHostComponent>;
 
-    function open(): RdxCollectionProvider {
+    async function open(): Promise<RdxCompositeList> {
         const root = fixture.debugElement.query(By.directive(RdxSelectRoot)).injector.get(RdxSelectRoot);
         root.open.set(true);
         fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
 
         const content = fixture.debugElement.query(By.directive(RdxSelectPopup));
-        return content.injector.get(RdxCollectionProvider);
+        return content.injector.get(RdxCompositeList);
+    }
+
+    function itemValues(list: RdxCompositeList): unknown[] {
+        const map = list.itemMap() as Map<HTMLElement, RdxCompositeMetadata<RdxSelectItemMetadata>>;
+        return list.items().map((item) => map.get(item.element)?.value);
     }
 
     beforeEach(() => {
@@ -61,33 +69,37 @@ describe('Select collection integration', () => {
         fixture.detectChanges();
     });
 
-    it('collects the rendered select items in DOM order', () => {
-        const collection = open();
+    it('collects the rendered select items in DOM order', async () => {
+        const list = await open();
 
-        expect(collection.items().length).toBe(3);
-        expect(collection.items().map((item) => item.value())).toEqual(['apple', 'banana', 'blueberry']);
+        expect(list.items().length).toBe(3);
+        expect(itemValues(list)).toEqual(['apple', 'banana', 'blueberry']);
     });
 
-    it('points each collection item at its rendered option element', () => {
-        const collection = open();
+    it('points each composite item at its rendered option element', async () => {
+        const list = await open();
         const renderedOptions = Array.from(document.querySelectorAll('[rdxSelectItem]')) as HTMLElement[];
 
-        expect(collection.items().map((item) => item.element)).toEqual(renderedOptions);
+        expect(list.items().map((item) => item.element)).toEqual(renderedOptions);
     });
 
-    it('reacts when options are added or removed', () => {
-        const collection = open();
-        expect(collection.items().length).toBe(3);
+    it('reacts when options are added or removed', async () => {
+        const list = await open();
+        expect(list.items().length).toBe(3);
 
         fixture.componentInstance.fruits.update((fruits) => [
             ...fruits,
             { label: 'Grapes', value: 'grapes', disabled: false }
         ]);
         fixture.detectChanges();
-        expect(collection.items().map((item) => item.value())).toEqual(['apple', 'banana', 'blueberry', 'grapes']);
+        await fixture.whenStable();
+        fixture.detectChanges();
+        expect(itemValues(list)).toEqual(['apple', 'banana', 'blueberry', 'grapes']);
 
         fixture.componentInstance.fruits.update((fruits) => fruits.filter((fruit) => fruit.value !== 'banana'));
         fixture.detectChanges();
-        expect(collection.items().map((item) => item.value())).toEqual(['apple', 'blueberry', 'grapes']);
+        await fixture.whenStable();
+        fixture.detectChanges();
+        expect(itemValues(list)).toEqual(['apple', 'blueberry', 'grapes']);
     });
 });

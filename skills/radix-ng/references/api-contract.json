@@ -5944,7 +5944,7 @@
           "selector": "[rdxSelectItem]",
           "exportAs": "rdxSelectItem",
           "hostDirectives": [
-            "RdxCollectionItem"
+            "RdxCompositeListItem"
           ],
           "inputs": [
             {
@@ -5977,7 +5977,7 @@
             "RdxPopperContent",
             "RdxFloatingFocusManager",
             "RdxFloatingNodeRegistration",
-            "RdxCollectionProvider"
+            "RdxCompositeList"
           ],
           "inputs": [],
           "outputs": [

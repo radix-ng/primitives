@@ -13,7 +13,7 @@ import {
     signal,
     Signal
 } from '@angular/core';
-import { RdxCollectionItem, RdxCollectionProvider } from '@radix-ng/primitives/collection';
+import { RdxCompositeItemRegistration, RdxCompositeList } from '@radix-ng/primitives/composite';
 import {
     AcceptableValue,
     createContext,
@@ -30,7 +30,9 @@ import {
 } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperContent } from '@radix-ng/primitives/popper';
 import { injectSelectRootContext } from './select-root';
-import { SELECTION_KEYS, valueComparator } from './utils';
+import { RdxSelectItemMetadata, SELECTION_KEYS, valueComparator } from './utils';
+
+type RdxSelectCompositeItem = RdxCompositeItemRegistration<RdxSelectItemMetadata>;
 
 const context = () => {
     const context = inject(RdxSelectPopup);
@@ -41,9 +43,15 @@ const context = () => {
         isPositioned: context.isPositioned,
         selectedItem: context.selectedItem,
         selectedItemText: context.selectedItemText,
+        items: context.items,
         highlightedItem: context.highlight.highlightedItem,
-        isHighlighted: (item: RdxCollectionItem) => context.highlight.highlightedItem() === item,
-        highlightItem: (item: RdxCollectionItem) => context.highlight.set(item),
+        isHighlighted: (element: HTMLElement) => context.highlight.highlightedItem()?.element === element,
+        highlightItem: (element: HTMLElement) => {
+            const item = context.items().find((item) => item.element === element);
+            if (item) {
+                context.highlight.set(item);
+            }
+        },
         isKeyboardActive: () => context.isKeyboardActive(),
         setKeyboardActive: (value: boolean) => context.setKeyboardActive(value),
         onViewportChange: (node: any) => {
@@ -122,7 +130,7 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
         RdxPopperContent,
         { directive: RdxFloatingFocusManager, inputs: ['returnFocus: finalFocus'] },
         RdxFloatingNodeRegistration,
-        RdxCollectionProvider
+        RdxCompositeList
     ],
     providers: [
         provideSelectPopupContext(context),
@@ -168,26 +176,26 @@ export class RdxSelectPopup {
     private readonly floatingContext = inject(RDX_FLOATING_ROOT_CONTEXT);
     private readonly registration = inject(RDX_FLOATING_REGISTRATION, { optional: true });
     private readonly currentElement = inject<ElementRef<HTMLElement>>(ElementRef);
-    private readonly collection = inject(RdxCollectionProvider);
+    private readonly compositeList = inject(RdxCompositeList, { self: true });
     private readonly injector = inject(Injector);
 
     readonly rootContext = injectSelectRootContext();
 
     /**
      * The collected items (DOM order). Exposed so the `item-aligned` positioner — now the popup's
-     * **ancestor** — can read them without injecting {@link RdxCollectionProvider} (which the popup
-     * provides as a descendant, so an upward `inject` would not find it).
+     * **ancestor** — can read them without injecting the composite list (which the popup provides as
+     * a descendant, so an upward `inject` would not find it).
      */
-    readonly items = this.collection.items;
+    readonly items = computed(() => this.compositeList.items() as RdxSelectCompositeItem[]);
 
     /**
      * Highlight-model navigation over the collected items (DOM order). `loop` is disabled so arrow
      * navigation stops at the first / last item instead of wrapping around — matching native
      * `<select>` behavior.
      */
-    readonly highlight = useListHighlight<RdxCollectionItem>({
-        items: this.collection.items,
-        isNavigable: (item) => !item.disabled(),
+    readonly highlight = useListHighlight<RdxSelectCompositeItem>({
+        items: this.items,
+        isNavigable: (item) => !item.metadata()?.disabled,
         getId: (item) => item.element.id,
         loop: signal(false),
         injector: this.injector
@@ -206,6 +214,7 @@ export class RdxSelectPopup {
     // Tracks whether the last interaction was the keyboard, so the highlight doesn't jump to an item
     // the cursor happens to rest on when arrow-key navigation scrolls the list.
     private keyboardActive = false;
+    private hasHighlightedOpen = false;
 
     /**
      * Event handler called when the escape key is down.
@@ -230,9 +239,8 @@ export class RdxSelectPopup {
 
     constructor() {
         this.positioner?.placed.subscribe(() => {
-            this.highlightSelectedItem();
-            this.scrollSelectedIntoView();
             this.isPositioned.set(true);
+            this.highlightSelectedItemAfterPositioned();
 
             // In Popper mode the popup lives inside the positioner, which stays `visibility: hidden`
             // until it is placed — so the mount-time `mountAutoFocus` call no-ops on the hidden
@@ -242,6 +250,19 @@ export class RdxSelectPopup {
             if (popup && !popup.contains(document.activeElement)) {
                 popup.focus({ preventScroll: true });
             }
+        });
+
+        effect(() => {
+            if (!this.rootContext.open()) {
+                this.hasHighlightedOpen = false;
+                return;
+            }
+
+            if (!this.isPositioned() || this.hasHighlightedOpen) {
+                return;
+            }
+
+            this.highlightSelectedItemAfterPositioned();
         });
 
         // Keep the highlighted item in view during keyboard navigation. The highlight model is pure
@@ -367,11 +388,11 @@ export class RdxSelectPopup {
 
     /** Highlights the selected item (or the first enabled one) when the popup opens. */
     highlightSelectedItem() {
-        const items = this.collection.items();
+        const items = this.items();
         const selected = items.find((item) =>
             valueComparator(
                 this.rootContext.value(),
-                item.value() as AcceptableValue,
+                item.metadata()?.value as AcceptableValue,
                 this.rootContext.isItemEqualToValue()
             )
         );
@@ -380,6 +401,16 @@ export class RdxSelectPopup {
         } else {
             this.highlight.first();
         }
+    }
+
+    private highlightSelectedItemAfterPositioned() {
+        if (this.items().length === 0) {
+            return;
+        }
+
+        this.highlightSelectedItem();
+        this.scrollSelectedIntoView();
+        this.hasHighlightedOpen = true;
     }
 
     private scrollSelectedIntoView() {
@@ -407,8 +438,9 @@ export class RdxSelectPopup {
         if (SELECTION_KEYS.includes(keyEvent.key)) {
             event.preventDefault();
             const item = this.highlight.highlightedItem();
-            if (item && !item.disabled()) {
-                this.rootContext.onValueChange(item.value() as AcceptableValue, 'item-press', event);
+            const metadata = item?.metadata();
+            if (item && metadata && !metadata.disabled) {
+                this.rootContext.onValueChange(metadata.value as AcceptableValue, 'item-press', event);
                 if (!this.rootContext.multiple()) {
                     this.rootContext.onOpenChange(false, 'item-press', event);
                 }

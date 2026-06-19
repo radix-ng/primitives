@@ -1,6 +1,4 @@
 import { DestroyRef, Directive, effect, inject, output, signal } from '@angular/core';
-import { RdxCollectionProvider } from '@radix-ng/primitives/collection';
-import { getActiveElement } from '@radix-ng/primitives/core';
 import { injectSelectPopupContext } from './select-popup';
 
 @Directive({
@@ -22,15 +20,9 @@ export class RdxSelectScrollButtonBase {
 
     readonly autoScroll = output();
 
-    private readonly collection = inject(RdxCollectionProvider);
-
     constructor() {
         effect(() => {
-            const activeItem = this.collection
-                .items()
-                .map((i) => i.element)
-                .find((item) => item === getActiveElement());
-            activeItem?.scrollIntoView({ block: 'nearest' });
+            this.contentContext.highlightedItem()?.element.scrollIntoView({ block: 'nearest' });
         });
 
         inject(DestroyRef).onDestroy(() => {

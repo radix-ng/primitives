@@ -3,12 +3,13 @@ import {
     booleanAttribute,
     computed,
     Directive,
+    effect,
     ElementRef,
     inject,
     input,
     linkedSignal
 } from '@angular/core';
-import { RdxCollectionItem } from '@radix-ng/primitives/collection';
+import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { createContext, handleAndDispatchCustomEvent, injectId } from '@radix-ng/primitives/core';
 import { injectSelectPopupContext } from './select-popup';
 import { injectSelectRootContext } from './select-root';
@@ -41,12 +42,7 @@ export type SelectEvent = CustomEvent<{ originalEvent: PointerEvent | KeyboardEv
     selector: '[rdxSelectItem]',
     exportAs: 'rdxSelectItem',
     providers: [provideSelectItemContext(context)],
-    hostDirectives: [
-        {
-            directive: RdxCollectionItem,
-            inputs: ['value', 'disabled']
-        }
-    ],
+    hostDirectives: [RdxCompositeListItem],
     host: {
         role: 'option',
         '[attr.id]': 'id',
@@ -64,9 +60,9 @@ export type SelectEvent = CustomEvent<{ originalEvent: PointerEvent | KeyboardEv
 export class RdxSelectItem {
     private readonly rootContext = injectSelectRootContext();
     private readonly contentContext = injectSelectPopupContext();
-    private readonly collectionItem = inject(RdxCollectionItem);
+    private readonly listItem = inject(RdxCompositeListItem, { self: true });
 
-    private readonly currentElement = inject(ElementRef);
+    private readonly currentElement = inject<ElementRef<HTMLElement>>(ElementRef);
 
     readonly value = input<any>();
 
@@ -81,7 +77,7 @@ export class RdxSelectItem {
     );
 
     /** Highlighted via the highlight model (keyboard / hover), not DOM focus. */
-    readonly isHighlighted = computed(() => this.contentContext.isHighlighted(this.collectionItem));
+    readonly isHighlighted = computed(() => this.contentContext.isHighlighted(this.currentElement.nativeElement));
 
     /** Item id, referenced by the popup's `aria-activedescendant`. */
     readonly id = injectId('rdx-select-item-');
@@ -93,6 +89,16 @@ export class RdxSelectItem {
     });
 
     private SELECT_SELECT = 'select.select';
+
+    constructor() {
+        effect(() => {
+            this.listItem.setMetadata({
+                value: this.value(),
+                disabled: this.disabled(),
+                textValue: this.textValue$()
+            });
+        });
+    }
 
     onPointerUp(event: PointerEvent | KeyboardEvent) {
         if (event.defaultPrevented) return;
@@ -127,7 +133,7 @@ export class RdxSelectItem {
             return;
         }
         if (!this.disabled()) {
-            this.contentContext.highlightItem(this.collectionItem);
+            this.contentContext.highlightItem(this.currentElement.nativeElement);
         }
     }
 
