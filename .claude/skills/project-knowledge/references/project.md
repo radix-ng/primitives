@@ -16,7 +16,7 @@ A headless, signals-first UI primitive library for Angular. Primitives ship **no
 
 ## Audience
 
-Angular developers building their own design systems or adopting accessible headless components. Supports Angular 19–21, targets modern Angular signals API.
+Angular developers building their own design systems or adopting accessible headless components. Supports Angular 21+, targets modern Angular signals API.
 
 ## Core features
 
