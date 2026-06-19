@@ -1,3 +1,153 @@
+# 1.0.0 (2026-06-19)
+
+### 🚀 Features
+
+- added composite navigation for roving tabindex ([240a7521](https://github.com/radix-ng/primitives/commit/240a7521))
+- **drawer:** add virtual keyboard provider ([5caa55ad](https://github.com/radix-ng/primitives/commit/5caa55ad))
+- **slider:** align with Base UI event and thumb positioning ([fd3cac7c](https://github.com/radix-ng/primitives/commit/fd3cac7c))
+- **primitives:** add cancelable value change events ([e02f16b0](https://github.com/radix-ng/primitives/commit/e02f16b0))
+- **tooltip:** align nested trigger hover behavior ([e0b1298e](https://github.com/radix-ng/primitives/commit/e0b1298e))
+- **primitives:** add floating focus portal bridge and shared trigger interaction ([e4ef0fd6](https://github.com/radix-ng/primitives/commit/e4ef0fd6))
+- **direction-provider:** add RTL direction context and docs ([4972395c](https://github.com/radix-ng/primitives/commit/4972395c))
+- **combobox:** document cancellable open change flow ([03f4bd53](https://github.com/radix-ng/primitives/commit/03f4bd53))
+- **select:** add cancelable change details and interaction state ([2752dae7](https://github.com/radix-ng/primitives/commit/2752dae7))
+- **core:** add shared floating tree ([#420](https://github.com/radix-ng/primitives/pull/420))
+- **core:** dev-mode diagnostics helpers + tag-aware misuse checks (ADR 0013) ([5c9a5c79](https://github.com/radix-ng/primitives/commit/5c9a5c79))
+- ⚠️  **popper:** thin positioners — single-source inputs, unified CSS vars, z-index decoupling (ADR 0012) ([#419](https://github.com/radix-ng/primitives/pull/419))
+- **presence:** subtree-aware WAAPI exit detection (ADR 0011) ([#418](https://github.com/radix-ng/primitives/pull/418))
+- **select:** finish ADR 0010 §6 restructure — keyboard a11y + scroll fixes, object-values story ([b4030f54](https://github.com/radix-ng/primitives/commit/b4030f54))
+- **select:** finish §6 restructure — popup owns RdxPopperContent (ADR 0010) ([9ac4d430](https://github.com/radix-ng/primitives/commit/9ac4d430))
+- **portal:** structural *rdxXxxPortal merging portal + presence (ADR 0010) ([19dc851c](https://github.com/radix-ng/primitives/commit/19dc851c))
+- **autocomplete:** add Autocomplete primitive (modes, grid, virtualized, async, forms) ([f243c924](https://github.com/radix-ng/primitives/commit/f243c924))
+- **core:** link missing-context errors to the primitive docs page ([bd6ed1b2](https://github.com/radix-ng/primitives/commit/bd6ed1b2))
+- **ng-add:** write AI agent instructions to AGENTS.md/CLAUDE.md, add common-mistakes skill ref ([862bc13e](https://github.com/radix-ng/primitives/commit/862bc13e))
+- added Form top layer ([2cee1571](https://github.com/radix-ng/primitives/commit/2cee1571))
+- **combobox:** add external list virtualization (virtualized, items, filteredItems) ([cb9091fc](https://github.com/radix-ng/primitives/commit/cb9091fc))
+- ⚠️  **select:** migrate to Base UI (highlight nav, renamed parts, modal) ([2515f193](https://github.com/radix-ng/primitives/commit/2515f193))
+- added Combobox ([#414](https://github.com/radix-ng/primitives/pull/414))
+- **input:** upd Signal Forms FormUiControl surface ([47e4d608](https://github.com/radix-ng/primitives/commit/47e4d608))
+- **cropper:** disabled, SSR safety, keyboard zoom, and signals cleanup ([9c413fc9](https://github.com/radix-ng/primitives/commit/9c413fc9))
+- **menu:** keep submenu open across diagonal hover via safe polygon ([#413](https://github.com/radix-ng/primitives/pull/413))
+- **scroll-area:** add headless Scroll Area primitive ([b6864ac5](https://github.com/radix-ng/primitives/commit/b6864ac5))
+- **skills:** serve LLM docs (llms.txt) from Storybook on the main domain ([d633c9cb](https://github.com/radix-ng/primitives/commit/d633c9cb))
+- **toast:** add headless Toast primitive ported from Base UI ([b42be9e9](https://github.com/radix-ng/primitives/commit/b42be9e9))
+- ⚠️  **number-field:** rewrite over Base UI architecture ([8c386b84](https://github.com/radix-ng/primitives/commit/8c386b84))
+- ⚠️  **checkbox, switch:** add Signal Forms control interfaces and split indeterminate/value ([fcc4e139](https://github.com/radix-ng/primitives/commit/fcc4e139))
+- **slider:** rewrite over Base UI architecture ([#411](https://github.com/radix-ng/primitives/pull/411))
+- ⚠️  **switch:** rewrite over Base UI architecture ([#6](https://github.com/radix-ng/primitives/issues/6))
+- ⚠️  **toggle, toggle-group, toolbar:** rewrite over Base UI architecture ([a011a68a](https://github.com/radix-ng/primitives/commit/a011a68a))
+- ⚠️  **tabs:** rewrite over Base UI architecture ([18875d8a](https://github.com/radix-ng/primitives/commit/18875d8a))
+- ⚠️  **collapsible:** rewrite over Base UI architecture ([bd741efe](https://github.com/radix-ng/primitives/commit/bd741efe))
+- ⚠️  **navigation-menu:** rewrite over Base UI architecture ([419fdb7f](https://github.com/radix-ng/primitives/commit/419fdb7f))
+- **drawer:** add Drawer primitive over declarative Dialog ([35446a45](https://github.com/radix-ng/primitives/commit/35446a45))
+- **alert-dialog:** rewrite over Dialog with variant profile ([2db2e2db](https://github.com/radix-ng/primitives/commit/2db2e2db))
+- **dialog:** add handle, multiple triggers, viewport, nested ([4f05865f](https://github.com/radix-ng/primitives/commit/4f05865f))
+- **dialog:** rewrite off CDK to declarative Base UI compound on shared primitives ([aea5a7bf](https://github.com/radix-ng/primitives/commit/aea5a7bf))
+- **accordion:** align with Base UI, add keepMounted, fix single-mode flicker ([319f1c52](https://github.com/radix-ng/primitives/commit/319f1c52))
+- **accordion:** align with Base UI API, fix data-disabled bugs, refactor stories ([c2435c08](https://github.com/radix-ng/primitives/commit/c2435c08))
+- **checkbox:** add checkbox group with select-all parent and aria-controls ([ddbe5c84](https://github.com/radix-ng/primitives/commit/ddbe5c84))
+- ⚠️  **primitives:** rewrite Context Menu on the owned Menu/Floating UI ([26e73ecb](https://github.com/radix-ng/primitives/commit/26e73ecb))
+- **primitives:** rewrite Menu and Menubar on the owned Floating UI stack ([fc128e7b](https://github.com/radix-ng/primitives/commit/fc128e7b))
+- **primitives:** add Meter primitive ([2930d8a4](https://github.com/radix-ng/primitives/commit/2930d8a4))
+- **progress:** align primitive with Base UI API ([73071a25](https://github.com/radix-ng/primitives/commit/73071a25))
+- **primitives:** add fieldset primitive ([e365bbef](https://github.com/radix-ng/primitives/commit/e365bbef))
+- **input:** add primitive with field integration and stories ([79b72a02](https://github.com/radix-ng/primitives/commit/79b72a02))
+- **primitives:** improve install schematic and align radio with Base UI ([0fbcc706](https://github.com/radix-ng/primitives/commit/0fbcc706))
+- **primitives:** improve Angular CLI installation schematic ([b85f51fd](https://github.com/radix-ng/primitives/commit/b85f51fd))
+- add Field primitive ([7cbc0a7b](https://github.com/radix-ng/primitives/commit/7cbc0a7b))
+- **separator:** remove decorative input and upd docs ([aaee58bb](https://github.com/radix-ng/primitives/commit/aaee58bb))
+- **preview-card:** added new primitive and remove old hover-card ([819d5ac4](https://github.com/radix-ng/primitives/commit/819d5ac4))
+- **popover:** updated Lifecycle API, grace-area and Base UI parity ([877d5950](https://github.com/radix-ng/primitives/commit/877d5950))
+- **popover:** add controlled multiple-trigger API ([447e3ae7](https://github.com/radix-ng/primitives/commit/447e3ae7))
+- **popover:** add hover opening and animated viewport ([b391ddbe](https://github.com/radix-ng/primitives/commit/b391ddbe))
+- **tooltip:** per-trigger disabled and Base UI positioner defaults ([e6103539](https://github.com/radix-ng/primitives/commit/e6103539))
+- **tooltip:** added per-trigger delay/closeDelay and data-uncentered ([2a5770e6](https://github.com/radix-ng/primitives/commit/2a5770e6))
+- **checkbox:** review fixes, tests, form examples + Storybook full-source code panel ([4d416f0b](https://github.com/radix-ng/primitives/commit/4d416f0b))
+- **button:** add headless button primitive and centralized demo styles ([ed74fa38](https://github.com/radix-ng/primitives/commit/ed74fa38))
+- **arrow:** hide decorative svg from a11y tree, theme via currentColor ([325a26eb](https://github.com/radix-ng/primitives/commit/325a26eb))
+- **portal:** reactive container move with flexible container input ([19cfa48e](https://github.com/radix-ng/primitives/commit/19cfa48e))
+
+### 🩹 Fixes
+
+- **accordion:** remove roving focus behavior w3c 3434 ([8349ba40](https://github.com/radix-ng/primitives/commit/8349ba40))
+- **menubar:** restore arrow-down activation after composite focus moves ([46c9aaa3](https://github.com/radix-ng/primitives/commit/46c9aaa3))
+- **navigation-menu:** align nested submenu keyboard behavior ([26e3cf71](https://github.com/radix-ng/primitives/commit/26e3cf71))
+- focus navigation ([8dadcf96](https://github.com/radix-ng/primitives/commit/8dadcf96))
+- **popover:** align focus and accessibility ([7699f78e](https://github.com/radix-ng/primitives/commit/7699f78e))
+- **scroll-area:** support Angular CSP nonce for injected styles ([381780a9](https://github.com/radix-ng/primitives/commit/381780a9))
+- **toggle-group:** align toolbar disabled and grouped toggle diagnostics ([8fff2502](https://github.com/radix-ng/primitives/commit/8fff2502))
+- **primitives:** align group events and slider docs ([06c315fb](https://github.com/radix-ng/primitives/commit/06c315fb))
+- align floating focus and open-change contracts ([063b5ff9](https://github.com/radix-ng/primitives/commit/063b5ff9))
+- align select ids and trigger focus guards ([f9ba1a4e](https://github.com/radix-ng/primitives/commit/f9ba1a4e))
+- **menu:** safe polygon between trigger and popup ([386a1a49](https://github.com/radix-ng/primitives/commit/386a1a49))
+- **menu:** radioGroup API and GroupLabel disabled state ([c61d45e2](https://github.com/radix-ng/primitives/commit/c61d45e2))
+- **menu:** disabled state for Root ([5fb4b826](https://github.com/radix-ng/primitives/commit/5fb4b826))
+- **menu:** align modal behavior ([a02c3e0b](https://github.com/radix-ng/primitives/commit/a02c3e0b))
+- ⚠️  **combobox:** align autocomplete and combobox behavior with Base UI ([715cbbb4](https://github.com/radix-ng/primitives/commit/715cbbb4))
+- **combobox:** align async demos, chip nav, Clear & list ([2d607102](https://github.com/radix-ng/primitives/commit/2d607102))
+- **drawer:** refine swipe interactions and animations ([8b8ff311](https://github.com/radix-ng/primitives/commit/8b8ff311))
+- **drawer, dialog:** align scrollable and swipe animations ([2694a8c3](https://github.com/radix-ng/primitives/commit/2694a8c3))
+- **form,combobox:** cancel deferred reset on destroy; warn on unlabeled virtualized items ([db346b20](https://github.com/radix-ng/primitives/commit/db346b20))
+- form accessors and combobox docs virtualized ([9789cd25](https://github.com/radix-ng/primitives/commit/9789cd25))
+- **calendar:** correct getWeekNumber off-by-one at week boundaries ([b1ce5833](https://github.com/radix-ng/primitives/commit/b1ce5833))
+- **date-time:** repair time-field value binding, 12h/AM-PM editing, and locale-aware placeholder ([46d472e1](https://github.com/radix-ng/primitives/commit/46d472e1))
+- toast swipe-to-dismiss not working on mobile ([fde61f10](https://github.com/radix-ng/primitives/commit/fde61f10))
+- **popover:** property does not exist on type ([e189d9ee](https://github.com/radix-ng/primitives/commit/e189d9ee))
+- **tooltip:** prevent cursor-tracking flicker and premature close on moving anchors ([596a175c](https://github.com/radix-ng/primitives/commit/596a175c))
+- **calendar:** correct date matchers, focus skipping and prev-button; signals-first refactor ([a4c62172](https://github.com/radix-ng/primitives/commit/a4c62172))
+- **date-field:** correct segment a11y attributes and modernize stories ([55b618a8](https://github.com/radix-ng/primitives/commit/55b618a8))
+- **storybook:** make disabled accordion item visually distinct ([c949ee3e](https://github.com/radix-ng/primitives/commit/c949ee3e))
+- **dialog, popover, drawer:** play exit animations to fix close flicker ([42a6b9de](https://github.com/radix-ng/primitives/commit/42a6b9de))
+- **time-field, date-field:** make roots signals-first and reactive ([688f09ef](https://github.com/radix-ng/primitives/commit/688f09ef))
+- unit test for Menu ([c2b7baac](https://github.com/radix-ng/primitives/commit/c2b7baac))
+- **calendar:** dayOfWeek was never exported from @internationalized/date's public API ([cbf9c8bb](https://github.com/radix-ng/primitives/commit/cbf9c8bb))
+- typedoc type module ([cd861af8](https://github.com/radix-ng/primitives/commit/cd861af8))
+- **roving-focus:** shift+tab throw bubbling focusout, data-orientation, remove outline ([e1c42ca3](https://github.com/radix-ng/primitives/commit/e1c42ca3))
+- **avatar:** correctness/a11y fixes and migrate stories to shared styles ([cd96cd74](https://github.com/radix-ng/primitives/commit/cd96cd74))
+- **visually-hidden:** a11y correctness and single-source input ([5360f43b](https://github.com/radix-ng/primitives/commit/5360f43b))
+- **collapsible, accordion:** deterministic mount animation + accordion correctness fixes ([416a0340](https://github.com/radix-ng/primitives/commit/416a0340))
+- **popper:** improve positioning updates and Storybook examples ([802b8cd8](https://github.com/radix-ng/primitives/commit/802b8cd8))
+- **label:** skip text-selection prevention for nested control elements ([fae76e8a](https://github.com/radix-ng/primitives/commit/fae76e8a))
+- **roving-focus:** correct tab-stop restoration, dynamic focusable and DOM-order navigation ([de7c6a15](https://github.com/radix-ng/primitives/commit/de7c6a15))
+
+### ⚠️  Breaking Changes
+
+- **combobox:** align autocomplete and combobox behavior with Base UI  ([715cbbb4](https://github.com/radix-ng/primitives/commit/715cbbb4))
+- **popper:** thin positioners — single-source inputs, unified CSS vars, z-index decoupling (ADR 0012)  ([#419](https://github.com/radix-ng/primitives/pull/419))
+  combobox and autocomplete now default to `sideOffset: 4`, `align: 'start'`;
+  select now defaults to `align: 'start'` and `updatePositionStrategy: 'always'` — the values
+  already documented (bind these inputs explicitly to keep the old behaviour). Set the
+  stacking `z-index` on the popper positioner element, not the popup: consumers who set `z-*`
+  on the popup must move that class up one element to the positioner. The per-primitive
+  `--radix-<name>-content-*` / `--radix-<name>-trigger-*` CSS variables are deprecated aliases
+  of the unified `--anchor-*` / `--available-*` / `--transform-origin` set and will be removed
+  next minor.
+- **select:** migrate to Base UI (highlight nav, renamed parts, modal)  ([2515f193](https://github.com/radix-ng/primitives/commit/2515f193))
+- **number-field:** rewrite over Base UI architecture  ([8c386b84](https://github.com/radix-ng/primitives/commit/8c386b84))
+  renamed inputs (formatOptions→format, stepSnapping→
+  snapOnStep, disableWheelChange→allowWheelScrub, readOnly→readonly) and
+  directive classes (dropped the `Directive` suffix); Input/buttons must now
+  be wrapped in `[rdxNumberFieldGroup]`.
+- **checkbox, switch:** add Signal Forms control interfaces and split indeterminate/value  ([fcc4e139](https://github.com/radix-ng/primitives/commit/fcc4e139))
+- **switch:** rewrite over Base UI architecture  ([#6](https://github.com/radix-ng/primitives/issues/6))
+- **toggle, toggle-group, toolbar:** rewrite over Base UI architecture  ([a011a68a](https://github.com/radix-ng/primitives/commit/a011a68a))
+  toolbar parts renamed to Root/Button/Link/Input/Group/Separator
+  (no "Directive" suffix); toggle wrappers removed; RDX_TOOLBAR_ROOT_TOKEN replaced
+  with createContext. Adds @radix-ng/primitives/number-field to tsconfig paths.
+- **tabs:** rewrite over Base UI architecture  ([18875d8a](https://github.com/radix-ng/primitives/commit/18875d8a))
+- **collapsible:** rewrite over Base UI architecture  ([bd741efe](https://github.com/radix-ng/primitives/commit/bd741efe))
+  rdxCollapsibleContent is now rdxCollapsiblePanel,
+    RdxCollapsibleContentDirective -> RdxCollapsiblePanelDirective,
+    RdxCollapsibleContentPresenceDirective -> RdxCollapsiblePanelPresenceDirective,
+    data-state is removed in favor of data-open/data-closed, and the
+    --radix-collapsible-content-* CSS variables are now --collapsible-panel-*.
+- **navigation-menu:** rewrite over Base UI architecture  ([419fdb7f](https://github.com/radix-ng/primitives/commit/419fdb7f))
+- **primitives:** rewrite Context Menu on the owned Menu/Floating UI  ([26e73ecb](https://github.com/radix-ng/primitives/commit/26e73ecb))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 1.0.0-beta.5 (2026-06-18)
 
 ### 🚀 Features
