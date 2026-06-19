@@ -1,19 +1,21 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as Stories from './composite.stories';
 import { RdxCompositeItem } from '../src/composite-item';
+import { RdxCompositeList } from '../src/composite-list';
+import { RdxCompositeListItem } from '../src/composite-list-item';
 import { RdxCompositeRoot } from '../src/composite-root';
 
 <Meta title="Utilities/Composite" />
 
 # Composite
 
-Low-level Base UI-style composite navigation for roving `tabindex`, ordered item metadata, and delegated arrow-key
-focus movement.
+Low-level Base UI-style composite primitives. `CompositeList` owns DOM-order item registration and metadata;
+`CompositeRoot` composes it with roving `tabindex` and delegated arrow-key focus movement.
 
 ## Features
 
-- Keeps exactly one item in the tab order with `tabindex="0"`.
-- Registers items in DOM order and exposes an ordered metadata map.
+- `CompositeList` registers items in DOM order and exposes an ordered metadata map.
+- `CompositeRoot` keeps exactly one item in the tab order with `tabindex="0"`.
 - Supports horizontal, vertical, and both-axis arrow navigation.
 - Supports RTL horizontal navigation.
 - Supports `disabledIndices`, matching Base UI semantics.
@@ -24,12 +26,23 @@ focus movement.
 ## Import
 
 ```ts
-import { RdxCompositeRoot, RdxCompositeItem } from '@radix-ng/primitives/composite';
+import {
+  RdxCompositeList,
+  RdxCompositeListItem,
+  RdxCompositeRoot,
+  RdxCompositeItem,
+} from '@radix-ng/primitives/composite';
 ```
 
 ## Anatomy
 
 ```html
+<div rdxCompositeList>
+  <button rdxCompositeListItem>One</button>
+  <button rdxCompositeListItem>Two</button>
+  <button rdxCompositeListItem>Three</button>
+</div>
+
 <div rdxCompositeRoot orientation="horizontal">
   <button rdxCompositeItem>One</button>
   <button rdxCompositeItem>Two</button>
@@ -37,7 +50,8 @@ import { RdxCompositeRoot, RdxCompositeItem } from '@radix-ng/primitives/composi
 </div>
 ```
 
-Use `data-composite-item-active` on an item when it should provide the initial highlighted index.
+`CompositeRoot` composes `CompositeList`, so `rdxCompositeItem` also participates in ordered metadata
+registration. Use `data-composite-item-active` on an item when it should provide the initial highlighted index.
 
 ## Examples
 
@@ -45,7 +59,22 @@ Use `data-composite-item-active` on an item when it should provide the initial h
 
 <Canvas sourceState="hidden" of={Stories.Default} />
 
+### List only
+
+Use `CompositeList` when a primitive needs DOM-order registration and metadata without roving focus or
+keyboard navigation.
+
+<Canvas of={Stories.ListOnly} />
+
 ## API Reference
+
+### RdxCompositeList
+
+<ArgTypes of={RdxCompositeList} />
+
+### RdxCompositeListItem
+
+<ArgTypes of={RdxCompositeListItem} />
 
 ### RdxCompositeRoot
 

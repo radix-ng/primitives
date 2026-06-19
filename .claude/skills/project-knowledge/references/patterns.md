@@ -64,7 +64,7 @@ migrate over time; flip the rule to `error` once they are cleared.
 
 ## Zoneless — no `NgZone`
 
-The library is signals-first and **zoneless** — the Storybook app, the SSR-testing app, and the Vitest test suite all run with `provideZonelessChangeDetection` (zone.js is no longer loaded in any of those runtimes). Do **not** use `NgZone`, `runOutsideAngular`, or `zone.run` — change detection is scheduled by the signal scheduler when a signal changes, not by the zone, so the zone wrappers are unnecessary noise. The `zone.js` package is still a dependency, kept only for the deprecated `radix-docs` app.
+The library is signals-first and **zoneless** — the Storybook app, the SSR-testing app, and the Vitest test suite all run with `provideZonelessChangeDetection` (zone.js is no longer loaded in any of those runtimes). Do **not** use `NgZone`, `runOutsideAngular`, or `zone.run` — change detection is scheduled by the signal scheduler when a signal changes, not by the zone, so the zone wrappers are unnecessary noise.
 
 - Attach DOM event listeners directly; update signals directly inside the handlers. The scheduler reacts to the signal write.
 - This holds even for high-frequency events. `dismissable-layer` attaches its global pointer/key listeners with no `NgZone`; the drawer gesture engine (`usePointerDrag` / `useDrawerSwipe`) does the same.

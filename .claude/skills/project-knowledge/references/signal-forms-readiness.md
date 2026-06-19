@@ -86,7 +86,7 @@ type 'undefined'`.
    `[value]` templates are unchanged (Base UI parity — Base UI's Checkbox.Root
    keeps a public `value` prop); the context key stays `value`, so the hidden
    `*-input`/button parts are untouched. This is the established repo idiom
-   (`RdxControlValueAccessor.valueInput`/`value`, roving-focus `*Input` aliases).
+   (`RdxControlValueAccessor.valueInput`/`value`, composite `*Input` aliases).
    Verified: `nx build primitives` green, switch + checkbox suites pass (38),
    plus new switch specs asserting `[value]` still reaches the hidden input.
 2. ✅ **checkbox `indeterminate` — RESOLVED (clean break, Base UI parity).**

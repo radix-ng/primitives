@@ -64,7 +64,6 @@ Generated from `@radix-ng/primitives@1.0.1` — if the installed version differs
 - [Popper](https://radix-ng.com/utils/popper.md): Positions floating content relative to an anchor.
 - [Portal](https://radix-ng.com/utils/portal.md): Renders its host element into a different part of the DOM (`document.body` by default).
 - [Presence](https://radix-ng.com/utils/presence.md): Presence
-- [Roving Focus](https://radix-ng.com/utils/roving-focus.md): Usage
 - [Visually Hidden](https://radix-ng.com/utils/visually-hidden.md): Hides content visually while keeping it available to assistive technology.
 
 ## Guides

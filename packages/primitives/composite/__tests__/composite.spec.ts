@@ -1,6 +1,11 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RdxCompositeItem, RdxCompositeRoot } from '@radix-ng/primitives/composite';
+import {
+    RdxCompositeItem,
+    RdxCompositeList,
+    RdxCompositeListItem,
+    RdxCompositeRoot
+} from '@radix-ng/primitives/composite';
 import { Direction } from '@radix-ng/primitives/core';
 
 const flushMicrotasks = () => Promise.resolve();
@@ -62,13 +67,28 @@ class CompositeHostComponent {
 })
 class CompositeInputHostComponent {}
 
+@Component({
+    template: `
+        <div (onMapChange)="itemMap = $event" rdxCompositeList>
+            <button [metadata]="{ id: 'one' }" rdxCompositeListItem>One</button>
+            <button [metadata]="{ id: 'two' }" rdxCompositeListItem>Two</button>
+        </div>
+    `,
+    imports: [RdxCompositeList, RdxCompositeListItem]
+})
+class CompositeListHostComponent {
+    itemMap = new Map<HTMLElement, { index: number; id?: unknown }>();
+}
+
 describe('RdxCompositeRoot / RdxCompositeItem', () => {
     let fixture: ComponentFixture<CompositeHostComponent>;
     let root: HTMLElement;
     let items: HTMLElement[];
 
     beforeEach(() => {
-        TestBed.configureTestingModule({ imports: [CompositeHostComponent, CompositeInputHostComponent] });
+        TestBed.configureTestingModule({
+            imports: [CompositeHostComponent, CompositeInputHostComponent, CompositeListHostComponent]
+        });
         fixture = TestBed.createComponent(CompositeHostComponent);
         fixture.detectChanges();
         root = fixture.nativeElement.querySelector('[rdxCompositeRoot]');
@@ -251,5 +271,19 @@ describe('RdxCompositeRoot / RdxCompositeItem', () => {
 
         expect(moved.defaultPrevented).toBe(true);
         expect(document.activeElement).toBe(button);
+    });
+
+    it('can collect a composite list without roving focus behavior', () => {
+        const listFixture = TestBed.createComponent(CompositeListHostComponent);
+        listFixture.detectChanges();
+
+        const list: HTMLElement = listFixture.nativeElement.querySelector('[rdxCompositeList]');
+        const listItems = Array.from(list.querySelectorAll<HTMLElement>('[rdxCompositeListItem]'));
+
+        expect(listItems.map((item) => item.getAttribute('tabindex'))).toEqual([null, null]);
+        expect(Array.from(listFixture.componentInstance.itemMap.values())).toEqual([
+            { id: 'one', index: 0 },
+            { id: 'two', index: 1 }
+        ]);
     });
 });

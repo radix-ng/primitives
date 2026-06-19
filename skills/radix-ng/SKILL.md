@@ -100,7 +100,7 @@ slider, select (compound), number-field, date-field, time-field, calendar, edita
 **Display & layout:** avatar, aspect-ratio, separator, progress, meter, tabs (compound), toolbar,
 pagination, cropper, toast.
 
-**Headless utilities** (composition building blocks): roving-focus, focus-scope, dismissable-layer,
+**Headless utilities** (composition building blocks): composite, focus-scope, dismissable-layer,
 presence, portal, popper, collection, visually-hidden, injectId, live-announcer.
 
 ## Reference files

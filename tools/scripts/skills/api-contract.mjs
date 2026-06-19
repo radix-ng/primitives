@@ -17,6 +17,7 @@ const COMPODOC_TSCONFIG = 'apps/radix-storybook/.storybook/tsconfig.json';
 const COMPODOC_OUT_DIR = 'apps/radix-storybook/.storybook';
 
 const UTILS = new Set([
+    'composite',
     'dismissable-layer',
     'focus-scope',
     'inject-id',
@@ -24,7 +25,6 @@ const UTILS = new Set([
     'popper',
     'portal',
     'presence',
-    'roving-focus',
     'visually-hidden'
 ]);
 

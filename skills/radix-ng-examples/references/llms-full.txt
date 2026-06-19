@@ -16798,7 +16798,7 @@ Renders only when its radio item is checked and exposes the same state attribute
 ## Accessibility
 
 Adheres to the [Radio Group WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/radiobutton)
-and uses [roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.2/examples/radio/radio.html) to manage focus movement among radio items.
+and uses composite roving tabindex to manage focus movement among radio items.
 
 ### Keyboard Interactions
 
@@ -19664,7 +19664,7 @@ Adheres to the [`switch` role requirements](https://www.w3.org/WAI/ARIA/apg/patt
 - ✅ Can be controlled or uncontrolled.
 - ✅ Supports horizontal and vertical orientation.
 - ✅ Supports automatic (on focus) and manual activation.
-- ✅ Full keyboard navigation with roving focus.
+- ✅ Full keyboard navigation with composite focus.
 - ✅ Optional active-tab indicator driven by CSS variables.
 - ✅ Panels can stay mounted (and animate) or unmount when inactive.
 
@@ -20006,7 +20006,7 @@ export class TabsKeyframesExample {}
 
 ### TabsList
 
-`RdxTabsList` — groups the tab buttons and owns roving keyboard focus.
+`RdxTabsList` — groups the tab buttons and owns composite keyboard focus.
 
 | Data attribute                | Value                                           |
 | ----------------------------- | ----------------------------------------------- |
@@ -23598,13 +23598,13 @@ matches item text, and `Escape` closes the menu and returns focus to the trigger
 
 # Composite
 
-Low-level Base UI-style composite navigation for roving `tabindex`, ordered item metadata, and delegated arrow-key
-focus movement.
+Low-level Base UI-style composite primitives. `CompositeList` owns DOM-order item registration and metadata;
+`CompositeRoot` composes it with roving `tabindex` and delegated arrow-key focus movement.
 
 ## Features
 
-- Keeps exactly one item in the tab order with `tabindex="0"`.
-- Registers items in DOM order and exposes an ordered metadata map.
+- `CompositeList` registers items in DOM order and exposes an ordered metadata map.
+- `CompositeRoot` keeps exactly one item in the tab order with `tabindex="0"`.
 - Supports horizontal, vertical, and both-axis arrow navigation.
 - Supports RTL horizontal navigation.
 - Supports `disabledIndices`, matching Base UI semantics.
@@ -23615,12 +23615,23 @@ focus movement.
 ## Import
 
 ```ts
-import { RdxCompositeRoot, RdxCompositeItem } from '@radix-ng/primitives/composite';
+import {
+  RdxCompositeList,
+  RdxCompositeListItem,
+  RdxCompositeRoot,
+  RdxCompositeItem,
+} from '@radix-ng/primitives/composite';
 ```
 
 ## Anatomy
 
 ```html
+<div rdxCompositeList>
+  <button rdxCompositeListItem>One</button>
+  <button rdxCompositeListItem>Two</button>
+  <button rdxCompositeListItem>Three</button>
+</div>
+
 <div rdxCompositeRoot orientation="horizontal">
   <button rdxCompositeItem>One</button>
   <button rdxCompositeItem>Two</button>
@@ -23628,7 +23639,8 @@ import { RdxCompositeRoot, RdxCompositeItem } from '@radix-ng/primitives/composi
 </div>
 ```
 
-Use `data-composite-item-active` on an item when it should provide the initial highlighted index.
+`CompositeRoot` composes `CompositeList`, so `rdxCompositeItem` also participates in ordered metadata
+registration. Use `data-composite-item-active` on an item when it should provide the initial highlighted index.
 
 ## Examples
 
@@ -23683,7 +23695,69 @@ export class RdxCompositeDefaultComponent {
 }
 ```
 
+### List only
+
+Use `CompositeList` when a primitive needs DOM-order registration and metadata without roving focus or
+keyboard navigation.
+
+```typescript
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RdxCompositeList, RdxCompositeListItem, RdxCompositeMetadata } from '@radix-ng/primitives/composite';
+import { cn, demoButton, demoCard } from '../../storybook/styles';
+
+@Component({
+    selector: 'rdx-composite-list-only',
+    imports: [RdxCompositeList, RdxCompositeListItem],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
+        <div class="flex w-full max-w-xl flex-col gap-4">
+            <div class="flex flex-wrap items-center gap-2" (onMapChange)="onMapChange($event)" rdxCompositeList>
+                <button [class]="itemClass" [metadata]="{ id: 'overview', label: 'Overview' }" rdxCompositeListItem>
+                    Overview
+                </button>
+                <button [class]="itemClass" [metadata]="{ id: 'metrics', label: 'Metrics' }" rdxCompositeListItem>
+                    Metrics
+                </button>
+                <button [class]="itemClass" [metadata]="{ id: 'reports', label: 'Reports' }" rdxCompositeListItem>
+                    Reports
+                </button>
+            </div>
+
+            <div [class]="panelClass">
+                <div class="text-muted-foreground text-xs font-medium">Registered order</div>
+                <ol class="text-foreground mt-2 grid gap-1 text-sm">
+                    @for (item of orderedItems; track item.id) {
+                        <li class="flex items-center justify-between gap-3">
+                            <span>{{ item.label }}</span>
+                            <span class="text-muted-foreground font-mono text-xs">index {{ item.index }}</span>
+                        </li>
+                    }
+                </ol>
+            </div>
+        </div>
+    `
+})
+export class RdxCompositeListOnlyComponent {
+    protected orderedItems: Array<{ id: string; index: number; label: string }> = [];
+
+    protected readonly itemClass = cn(demoButton.base, demoButton.outline, demoButton.size.md);
+    protected readonly panelClass = cn(demoCard, 'p-4');
+
+    protected onMapChange(map: Map<HTMLElement, RdxCompositeMetadata>) {
+        this.orderedItems = Array.from(map.values()).map((item) => ({
+            id: String(item['id']),
+            index: item.index,
+            label: String(item['label'])
+        }));
+    }
+}
+```
+
 ## API Reference
+
+### RdxCompositeList
+
+### RdxCompositeListItem
 
 ### RdxCompositeRoot
 
@@ -24582,65 +24656,6 @@ type RdxPresenceContext = {
 DI helper that registers the `RdxPresenceContext` consumed by `RdxPresenceDirective`. The
 factory runs in an injection context, so it can `inject()` ancestor contexts to derive the
 `present` signal.
-
----
-
-# Roving Focus
-
-```html
-<section class="w-full max-w-2xl space-y-4">
-    <h2 class="text-foreground text-lg font-semibold">Horizontal Navigation with Looping</h2>
-    <p class="text-muted-foreground text-sm leading-6">
-        Use the ArrowLeft and ArrowRight keys to navigate between buttons. Ensure that when reaching the end
-        of the group, the focus cycles back to the first item (and vice versa).
-    </p>
-    <div class="flex gap-2" rdxRovingFocusGroup [orientation]="'horizontal'" [loop]="true">
-        <button
-            class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
-            rdxRovingFocusItem
-        >
-            Item 1
-        </button>
-        <button
-            class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
-            rdxRovingFocusItem
-        >
-            Item 2
-        </button>
-        <button
-            class="border-border bg-background text-foreground hover:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
-            rdxRovingFocusItem
-        >
-            Item 3
-        </button>
-    </div>
-</section>
-```
-
-## Anatomy
-
-```html
-<div rdxRovingFocusGroup>
-    <button rdxRovingFocusItem></button>
-    <button rdxRovingFocusItem></button>
-    <button rdxRovingFocusItem></button>
-</div>
-```
-
-## API Reference
-
-### Focus Group
-The `RdxRovingFocusGroupDirective` allows managing focus within a group of elements, such as buttons, links, or any interactive items. It provides an accessible navigation pattern for keyboard users and ensures intuitive interaction.
-
-#### Usage
-
-This directive can be added to a container element, and all its focusable children will be managed as a group.
-
-### Focus Item
-The `RdxRovingFocusItemDirective` is a companion directive to `RdxRovingFocusGroupDirective`. It manages individual items within the group, ensuring smooth keyboard navigation and intuitive focus behavior.
-
-#### Usage
-This directive should be used on individual elements (e.g., buttons or links) within a container that has the `RdxRovingFocusGroupDirective`.
 
 ---
 

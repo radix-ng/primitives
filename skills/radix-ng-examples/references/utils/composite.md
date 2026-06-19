@@ -1,12 +1,12 @@
 # Composite
 
-Low-level Base UI-style composite navigation for roving `tabindex`, ordered item metadata, and delegated arrow-key
-focus movement.
+Low-level Base UI-style composite primitives. `CompositeList` owns DOM-order item registration and metadata;
+`CompositeRoot` composes it with roving `tabindex` and delegated arrow-key focus movement.
 
 ## Features
 
-- Keeps exactly one item in the tab order with `tabindex="0"`.
-- Registers items in DOM order and exposes an ordered metadata map.
+- `CompositeList` registers items in DOM order and exposes an ordered metadata map.
+- `CompositeRoot` keeps exactly one item in the tab order with `tabindex="0"`.
 - Supports horizontal, vertical, and both-axis arrow navigation.
 - Supports RTL horizontal navigation.
 - Supports `disabledIndices`, matching Base UI semantics.
@@ -17,12 +17,23 @@ focus movement.
 ## Import
 
 ```ts
-import { RdxCompositeRoot, RdxCompositeItem } from '@radix-ng/primitives/composite';
+import {
+  RdxCompositeList,
+  RdxCompositeListItem,
+  RdxCompositeRoot,
+  RdxCompositeItem,
+} from '@radix-ng/primitives/composite';
 ```
 
 ## Anatomy
 
 ```html
+<div rdxCompositeList>
+  <button rdxCompositeListItem>One</button>
+  <button rdxCompositeListItem>Two</button>
+  <button rdxCompositeListItem>Three</button>
+</div>
+
 <div rdxCompositeRoot orientation="horizontal">
   <button rdxCompositeItem>One</button>
   <button rdxCompositeItem>Two</button>
@@ -30,7 +41,8 @@ import { RdxCompositeRoot, RdxCompositeItem } from '@radix-ng/primitives/composi
 </div>
 ```
 
-Use `data-composite-item-active` on an item when it should provide the initial highlighted index.
+`CompositeRoot` composes `CompositeList`, so `rdxCompositeItem` also participates in ordered metadata
+registration. Use `data-composite-item-active` on an item when it should provide the initial highlighted index.
 
 ## Examples
 
@@ -85,7 +97,69 @@ export class RdxCompositeDefaultComponent {
 }
 ```
 
+### List only
+
+Use `CompositeList` when a primitive needs DOM-order registration and metadata without roving focus or
+keyboard navigation.
+
+```typescript
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RdxCompositeList, RdxCompositeListItem, RdxCompositeMetadata } from '@radix-ng/primitives/composite';
+import { cn, demoButton, demoCard } from '../../storybook/styles';
+
+@Component({
+    selector: 'rdx-composite-list-only',
+    imports: [RdxCompositeList, RdxCompositeListItem],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
+        <div class="flex w-full max-w-xl flex-col gap-4">
+            <div class="flex flex-wrap items-center gap-2" (onMapChange)="onMapChange($event)" rdxCompositeList>
+                <button [class]="itemClass" [metadata]="{ id: 'overview', label: 'Overview' }" rdxCompositeListItem>
+                    Overview
+                </button>
+                <button [class]="itemClass" [metadata]="{ id: 'metrics', label: 'Metrics' }" rdxCompositeListItem>
+                    Metrics
+                </button>
+                <button [class]="itemClass" [metadata]="{ id: 'reports', label: 'Reports' }" rdxCompositeListItem>
+                    Reports
+                </button>
+            </div>
+
+            <div [class]="panelClass">
+                <div class="text-muted-foreground text-xs font-medium">Registered order</div>
+                <ol class="text-foreground mt-2 grid gap-1 text-sm">
+                    @for (item of orderedItems; track item.id) {
+                        <li class="flex items-center justify-between gap-3">
+                            <span>{{ item.label }}</span>
+                            <span class="text-muted-foreground font-mono text-xs">index {{ item.index }}</span>
+                        </li>
+                    }
+                </ol>
+            </div>
+        </div>
+    `
+})
+export class RdxCompositeListOnlyComponent {
+    protected orderedItems: Array<{ id: string; index: number; label: string }> = [];
+
+    protected readonly itemClass = cn(demoButton.base, demoButton.outline, demoButton.size.md);
+    protected readonly panelClass = cn(demoCard, 'p-4');
+
+    protected onMapChange(map: Map<HTMLElement, RdxCompositeMetadata>) {
+        this.orderedItems = Array.from(map.values()).map((item) => ({
+            id: String(item['id']),
+            index: item.index,
+            label: String(item['label'])
+        }));
+    }
+}
+```
+
 ## API Reference
+
+### RdxCompositeList
+
+### RdxCompositeListItem
 
 ### RdxCompositeRoot
 

@@ -66,6 +66,6 @@ state management in the primitive while your component adds the styling and a fr
 
 ## Headless utilities
 
-When no primitive fits, the building blocks under `@radix-ng/primitives/{roving-focus, focus-scope,
+When no primitive fits, the building blocks under `@radix-ng/primitives/{composite, focus-scope,
 dismissable-layer, presence, portal, popper, collection, visually-hidden}` (plus `injectId` and
 `live-announcer` from `core`) let you build new accessible behavior the same way the primitives do.

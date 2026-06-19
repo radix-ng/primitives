@@ -2,6 +2,8 @@ import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxCompositeDefaultComponent } from './composite-default';
 import defaultSource from './composite-default?raw';
+import { RdxCompositeListOnlyComponent } from './composite-list-only';
+import listOnlySource from './composite-list-only?raw';
 
 const html = String.raw;
 
@@ -15,7 +17,7 @@ export default {
     title: 'Utilities/Composite',
     decorators: [
         moduleMetadata({
-            imports: [RdxCompositeDefaultComponent]
+            imports: [RdxCompositeDefaultComponent, RdxCompositeListOnlyComponent]
         }),
         tailwindDemoDecorator()
     ]
@@ -28,6 +30,15 @@ export const Default: Story = {
     render: () => ({
         template: html`
             <rdx-composite-default />
+        `
+    })
+};
+
+export const ListOnly: Story = {
+    parameters: source(listOnlySource),
+    render: () => ({
+        template: html`
+            <rdx-composite-list-only />
         `
     })
 };

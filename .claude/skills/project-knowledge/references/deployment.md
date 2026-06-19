@@ -50,10 +50,6 @@ Storybook now serves the public documentation site on the main domain `https://r
 - **Output:** `dist/radix-storybook/`
 - **LLM endpoints:** the generated skills bundle is served as static files via `staticDirs` (`apps/radix-storybook/.storybook/main.ts`), so `/llms.txt`, `/llms-full.txt`, and `/<section>/<slug>.md` are available on the main domain. Source: `skills/radix-ng-examples/references/` (see LLM consumer skills below and architecture.md).
 
-## Docs site (`radix-docs`) — deprecated, not deployed
-
-The Astro docs app under `apps/radix-docs` is no longer deployed; Storybook took over the main domain. Its former `/llms.txt` and `/primitives/<section>/<slug>.md` routes are superseded by the Storybook-served bundle above. The app is kept in the repo pending a docs-site rework; `pnpm radix-docs:dev` / `pnpm radix-docs:build` still run locally.
-
 ## LLM consumer skills
 
 `pnpm skills:build` regenerates the Agent Skills bundle under `skills/` from the Storybook docs (generator in `tools/scripts/skills/`). Run it after changing any `*.docs.mdx`. The output is committed, CI-verified (the `skills` job above), and excluded from Prettier via `.prettierignore` so it isn't reformatted into drift. Contents and architecture: see architecture.md. Published via skills.sh: `npx skills add radix-ng/primitives/skills`.
@@ -64,6 +60,24 @@ The Astro docs app under `apps/radix-docs` is no longer deployed; Storybook took
 - **Build:** `pnpm primitives:ssr:build`
 - **Run built server:** `pnpm primitives:ssr:dist`
 - Used for smoke-testing that primitives work under Angular SSR
+
+## Playground app
+
+- **Serve:** `pnpm playground`
+- **Build:** `pnpm playground:build`
+- Used for manual Angular integration checks outside Storybook
+
+## Performance testing app
+
+- **Run:** `pnpm primitives:bench`
+- Used for focused Vitest-backed performance benchmarks
+
+## Visual regression app
+
+- **Run:** `pnpm test-visual`
+- **Update baselines:** `pnpm test-visual:update`
+- **Report:** `pnpm test-visual:report`
+- Playwright specs live under `apps/visual-regression/tests/` and run against the built Storybook.
 
 ## TypeDoc API reference
 

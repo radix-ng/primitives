@@ -15,16 +15,22 @@ export type RdxCompositeMetadata<Metadata extends RdxCompositeItemMetadata = Rdx
     index: number;
 } & Metadata;
 
+export interface RdxCompositeListContext {
+    listElement: HTMLElement;
+    items: Signal<RdxCompositeItemRegistration[]>;
+    itemMap: Signal<Map<HTMLElement, RdxCompositeMetadata>>;
+    registerItem: <Metadata extends RdxCompositeItemMetadata>(
+        item: RdxCompositeItemRegistration<Metadata>
+    ) => () => void;
+    indexOf: (element: HTMLElement) => number;
+}
+
 export interface RdxCompositeRootContext {
     rootElement: HTMLElement;
     highlightedIndex: Signal<number>;
     highlightItemOnHover: Signal<boolean>;
     orientation: Signal<RdxCompositeOrientation>;
     dir: Signal<Direction>;
-    registerItem: <Metadata extends RdxCompositeItemMetadata>(
-        item: RdxCompositeItemRegistration<Metadata>
-    ) => () => void;
-    indexOf: (element: HTMLElement) => number;
     isIndexDisabled: (index: number) => boolean;
     setHighlightedIndex: (index: number, shouldScrollIntoView?: boolean) => void;
     relayKeyboardEvent: (event: KeyboardEvent) => void;

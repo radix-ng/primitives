@@ -270,7 +270,7 @@ Home/End, group-label cleanup, backdrop `role="presentation"`, arrow `aria-hidde
 6. **`orderedItems` re-sorts the whole list on every `registerItem`** (O(n²) `compareDocumentPosition`
    at open for large lists). The source is already DOM-ordered (`contentChildren`) — sort once after the
    batch, or insert in order.
-7. **Duplication:** `domOrder` is a third copy of `sortByDocumentPosition` (also in roving-focus,
+7. **Duplication:** `domOrder` is another copy of `sortByDocumentPosition` (also in composite,
    menubar); plus dead pass-through methods and byte-identical `openForBrowse`/`labelFor`/
    `coerceAutoHighlight` across the two roots. Extract a shared comparator + move shared root plumbing
    into the engine.

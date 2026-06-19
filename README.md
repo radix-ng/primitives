@@ -122,9 +122,11 @@ Contributions are welcome! The repository is an Nx monorepo:
 ```
 .
 ├── apps
-│   ├── radix-docs         documentation (Astro)
-│   ├── radix-ssr-testing  SSR tests for unstyled primitives
-│   └── radix-storybook    Storybook for primitives
+│   ├── radix-storybook       Storybook docs and examples
+│   ├── radix-playground      Angular playground app
+│   ├── radix-ssr-testing     SSR smoke-test app
+│   ├── radix-perf-testing    performance benchmarks
+│   └── visual-regression     Playwright visual and behavior specs
 └── packages
     └── primitives         headless primitives (no styling)
 ```
@@ -133,6 +135,8 @@ Contributions are welcome! The repository is an Nx monorepo:
 pnpm primitives:test       # run tests
 pnpm primitives:build      # build the library
 pnpm storybook:primitives  # start Storybook
+pnpm playground            # start the playground app
+pnpm test-visual           # build Storybook and run Playwright visual checks
 ```
 
 ## Community

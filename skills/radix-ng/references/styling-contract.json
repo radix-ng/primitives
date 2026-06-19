@@ -521,7 +521,7 @@
       "description": "Composite",
       "doc": "radix-ng-examples/references/utils/composite.md",
       "storybook": "https://radix-ng.com/?path=/docs/primitives-composite--docs",
-      "anatomy": "<div rdxCompositeRoot orientation=\"horizontal\">\n  <button rdxCompositeItem>One</button>\n  <button rdxCompositeItem>Two</button>\n  <button rdxCompositeItem>Three</button>\n</div>",
+      "anatomy": "<div rdxCompositeList>\n  <button rdxCompositeListItem>One</button>\n  <button rdxCompositeListItem>Two</button>\n  <button rdxCompositeListItem>Three</button>\n</div>\n\n<div rdxCompositeRoot orientation=\"horizontal\">\n  <button rdxCompositeItem>One</button>\n  <button rdxCompositeItem>Two</button>\n  <button rdxCompositeItem>Three</button>\n</div>",
       "dataAttributes": []
     },
     {
@@ -602,16 +602,6 @@
       "doc": "radix-ng-examples/references/utils/presence.md",
       "storybook": "https://radix-ng.com/?path=/docs/primitives-presence--docs",
       "anatomy": "",
-      "dataAttributes": []
-    },
-    {
-      "name": "Roving Focus",
-      "slug": "roving-focus",
-      "section": "utils",
-      "description": "Usage",
-      "doc": "radix-ng-examples/references/utils/roving-focus.md",
-      "storybook": "https://radix-ng.com/?path=/docs/primitives-roving-focus--docs",
-      "anatomy": "<div rdxRovingFocusGroup>\n    <button rdxRovingFocusItem></button>\n    <button rdxRovingFocusItem></button>\n    <button rdxRovingFocusItem></button>\n</div>",
       "dataAttributes": []
     },
     {

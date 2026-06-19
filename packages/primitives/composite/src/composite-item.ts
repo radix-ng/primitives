@@ -1,4 +1,5 @@
-import { computed, Directive, effect, ElementRef, inject, input, linkedSignal, untracked } from '@angular/core';
+import { computed, Directive, ElementRef, inject } from '@angular/core';
+import { RdxCompositeListItem } from './composite-list-item';
 import { injectRdxCompositeRootContext } from './composite-root';
 import { RdxCompositeItemMetadata } from './types';
 
@@ -9,6 +10,12 @@ import { RdxCompositeItemMetadata } from './types';
 @Directive({
     selector: '[rdxCompositeItem]',
     exportAs: 'rdxCompositeItem',
+    hostDirectives: [
+        {
+            directive: RdxCompositeListItem,
+            inputs: ['metadata']
+        }
+    ],
     host: {
         '[attr.tabindex]': 'tabIndex()',
         '(focus)': 'handleFocus()',
@@ -17,13 +24,10 @@ import { RdxCompositeItemMetadata } from './types';
 })
 export class RdxCompositeItem {
     private readonly rootContext = injectRdxCompositeRootContext(true);
+    private readonly listItem = inject(RdxCompositeListItem, { self: true });
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
-    /** Arbitrary metadata included in the root's ordered item map. */
-    readonly metadataInput = input<RdxCompositeItemMetadata | null | undefined>(undefined, { alias: 'metadata' });
-    private readonly _metadata = linkedSignal(() => this.metadataInput());
-
-    readonly index = computed(() => this.rootContext?.indexOf(this.elementRef.nativeElement) ?? -1);
+    readonly index = this.listItem.index;
     private readonly inRootElement = computed(() => {
         const rootContext = this.rootContext;
         return !!rootContext && rootContext.rootElement.contains(this.elementRef.nativeElement);
@@ -40,24 +44,8 @@ export class RdxCompositeItem {
         return index !== -1 && rootContext.highlightedIndex() === index && !rootContext.isIndexDisabled(index) ? 0 : -1;
     });
 
-    constructor() {
-        effect((onCleanup) => {
-            const rootContext = this.rootContext;
-            if (!rootContext || !this.inRootElement()) {
-                return;
-            }
-
-            const element = this.elementRef.nativeElement;
-            const unregister = untracked(() =>
-                rootContext.registerItem({ element, metadata: this._metadata.asReadonly() })
-            );
-
-            onCleanup(unregister);
-        });
-    }
-
     setMetadata(value: RdxCompositeItemMetadata | null | undefined): void {
-        this._metadata.set(value);
+        this.listItem.setMetadata(value);
     }
 
     protected handleFocus(): void {

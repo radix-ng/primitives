@@ -1,3 +1,3 @@
 # @radix-ng/primitives/composite
 
-Base UI-style composite navigation primitives for internal roving-index focus management.
+Base UI-style composite list and navigation primitives for ordered item metadata and roving focus.

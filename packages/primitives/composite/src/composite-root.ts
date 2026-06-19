@@ -1,6 +1,5 @@
 import {
     booleanAttribute,
-    computed,
     Directive,
     effect,
     ElementRef,
@@ -8,14 +7,12 @@ import {
     input,
     linkedSignal,
     model,
-    output,
-    signal
+    output
 } from '@angular/core';
 import { BooleanInput, createContext, Direction } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
+import { RdxCompositeList } from './composite-list';
 import {
-    RdxCompositeItemMetadata,
-    RdxCompositeItemRegistration,
     RdxCompositeMetadata,
     RdxCompositeModifierKey,
     RdxCompositeOrientation,
@@ -35,8 +32,7 @@ import {
     isModifierKeySet,
     isNativeTextInput,
     scrollIntoViewIfNeeded,
-    shouldKeepNativeTextInputBehavior,
-    sortByDocumentPosition
+    shouldKeepNativeTextInputBehavior
 } from './utils';
 
 const rootContext = (): RdxCompositeRootContext => {
@@ -48,8 +44,6 @@ const rootContext = (): RdxCompositeRootContext => {
         highlightItemOnHover: root.highlightItemOnHover,
         orientation: root.orientation,
         dir: root.dir,
-        registerItem: (item) => root.registerItem(item),
-        indexOf: (element) => root.indexOf(element),
         isIndexDisabled: (index) => root.isIndexDisabled(index),
         setHighlightedIndex: (index, shouldScrollIntoView) => root.setHighlightedIndex(index, shouldScrollIntoView),
         relayKeyboardEvent: (event) => root.relayKeyboardEvent(event)
@@ -67,6 +61,7 @@ export const [injectRdxCompositeRootContext, provideRdxCompositeRootContext] = c
 @Directive({
     selector: '[rdxCompositeRoot]',
     exportAs: 'rdxCompositeRoot',
+    hostDirectives: [RdxCompositeList],
     providers: [provideRdxCompositeRootContext(rootContext)],
     host: {
         '(keydown)': 'handleKeydown($event)'
@@ -74,7 +69,7 @@ export const [injectRdxCompositeRootContext, provideRdxCompositeRootContext] = c
 })
 export class RdxCompositeRoot {
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
-    private readonly registeredItems = signal<RdxCompositeItemRegistration[]>([]);
+    private readonly compositeList = inject(RdxCompositeList, { self: true });
     private hasSetInitialIndex = false;
 
     /** The composite orientation. */
@@ -129,17 +124,9 @@ export class RdxCompositeRoot {
     /** Emits when the ordered item map changes. */
     readonly onMapChange = output<Map<HTMLElement, RdxCompositeMetadata>>();
 
-    readonly items = computed(() => sortByDocumentPosition(this.registeredItems()));
+    readonly items = this.compositeList.items;
 
-    readonly itemMap = computed(() => {
-        const map = new Map<HTMLElement, RdxCompositeMetadata>();
-
-        this.items().forEach((item, index) => {
-            map.set(item.element, { ...(item.metadata() ?? {}), index });
-        });
-
-        return map;
-    });
+    readonly itemMap = this.compositeList.itemMap;
 
     constructor() {
         effect(() => {
@@ -172,19 +159,8 @@ export class RdxCompositeRoot {
         });
     }
 
-    registerItem<Metadata extends RdxCompositeItemMetadata>(item: RdxCompositeItemRegistration<Metadata>): () => void {
-        this.registeredItems.update((items) => [
-            ...items.filter((registered) => registered.element !== item.element),
-            item
-        ]);
-
-        return () => {
-            this.registeredItems.update((items) => items.filter((registered) => registered.element !== item.element));
-        };
-    }
-
     indexOf(element: HTMLElement): number {
-        return this.items().findIndex((item) => item.element === element);
+        return this.compositeList.indexOf(element);
     }
 
     setOrientation(value: RdxCompositeOrientation): void {
@@ -328,6 +304,6 @@ export class RdxCompositeRoot {
     }
 
     private elements(): HTMLElement[] {
-        return this.items().map((item) => item.element);
+        return this.compositeList.elements();
     }
 }

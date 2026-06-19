@@ -1975,28 +1975,56 @@
     },
     {
       "slug": "composite",
-      "section": "components",
+      "section": "utils",
       "parts": [
         {
           "directive": "RdxCompositeItem",
           "selector": "[rdxCompositeItem]",
           "exportAs": "rdxCompositeItem",
           "description": "Internal Base UI-style composite item. Registers itself with the nearest composite root and\nreceives the roving `tabindex` from the root's highlighted index.",
+          "hostDirectives": [
+            "RdxCompositeListItem"
+          ],
+          "inputs": [],
+          "outputs": []
+        },
+        {
+          "directive": "RdxCompositeListItem",
+          "selector": "[rdxCompositeListItem]",
+          "exportAs": "rdxCompositeListItem",
+          "description": "Registers the host with the nearest composite list without changing focus behavior.",
           "inputs": [
             {
               "name": "metadata",
               "type": "RdxCompositeItemMetadata | null | undefined",
               "default": "undefined",
-              "description": "Arbitrary metadata included in the root's ordered item map."
+              "description": "Arbitrary metadata included in the list's ordered item map."
             }
           ],
           "outputs": []
+        },
+        {
+          "directive": "RdxCompositeList",
+          "selector": "[rdxCompositeList]",
+          "exportAs": "rdxCompositeList",
+          "description": "Base UI-style composite list. Owns item registration and DOM-order metadata without applying\nroving tabindex or keyboard navigation.",
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "onMapChange",
+              "type": "Map<HTMLElement, RdxCompositeMetadata>",
+              "description": "Emits when the ordered item map changes."
+            }
+          ]
         },
         {
           "directive": "RdxCompositeRoot",
           "selector": "[rdxCompositeRoot]",
           "exportAs": "rdxCompositeRoot",
           "description": "Internal Base UI-style composite root for roving index and arrow-key navigation.",
+          "hostDirectives": [
+            "RdxCompositeList"
+          ],
           "inputs": [
             {
               "name": "dir",
@@ -5744,100 +5772,6 @@
           "twoWay": [
             "value"
           ]
-        }
-      ]
-    },
-    {
-      "slug": "roving-focus",
-      "section": "utils",
-      "parts": [
-        {
-          "directive": "RdxRovingFocusGroupDirective",
-          "selector": "[rdxRovingFocusGroup]",
-          "inputs": [
-            {
-              "name": "currentTabStopId",
-              "type": "string | undefined",
-              "default": "undefined",
-              "description": "The controlled value of the current stop item. Can be binded as `model`."
-            },
-            {
-              "name": "defaultCurrentTabStopId",
-              "type": "string | undefined",
-              "default": "undefined",
-              "description": "The value of the current stop item.\n\nUse when you do not need to control the state of the stop item."
-            },
-            {
-              "name": "dir",
-              "type": "Direction | undefined",
-              "default": "undefined",
-              "description": "The direction of navigation between items."
-            },
-            {
-              "name": "enabled",
-              "type": "boolean",
-              "default": "true",
-              "description": "Whether roving focus behavior is active for the group."
-            },
-            {
-              "name": "loop",
-              "type": "boolean",
-              "default": "true",
-              "description": "Whether keyboard navigation should loop around"
-            },
-            {
-              "name": "orientation",
-              "type": "Orientation",
-              "default": "'horizontal'",
-              "description": "The orientation of the group. Mainly so arrow navigation is done accordingly (left & right vs. up & down)"
-            },
-            {
-              "name": "preventScrollOnEntryFocus",
-              "type": "boolean",
-              "default": "false",
-              "description": "When `true`, will prevent scrolling to the focus item when focused."
-            }
-          ],
-          "outputs": [
-            {
-              "name": "entryFocus",
-              "type": "Event",
-              "description": "Event handler called when container is being focused. Can be prevented."
-            }
-          ],
-          "twoWay": [
-            "currentTabStopId"
-          ]
-        },
-        {
-          "directive": "RdxRovingFocusItemDirective",
-          "selector": "[rdxRovingFocusItem]",
-          "inputs": [
-            {
-              "name": "active",
-              "type": "boolean",
-              "default": "false",
-              "description": "When `true`, marks the item as the active one, so it is preferred when focus enters the group."
-            },
-            {
-              "name": "allowShiftKey",
-              "type": "boolean",
-              "default": "false",
-              "description": "When true, shift + arrow key will allow focusing on next/previous item."
-            },
-            {
-              "name": "focusable",
-              "type": "boolean",
-              "default": "true",
-              "description": "When false, item will not be focusable."
-            },
-            {
-              "name": "tabStopId",
-              "type": "string",
-              "default": "undefined"
-            }
-          ],
-          "outputs": []
         }
       ]
     },

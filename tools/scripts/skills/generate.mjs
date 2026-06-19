@@ -150,6 +150,17 @@ const metaFor = (doc) => mdxMeta.get(`${doc.section}/${doc.slug}`) ?? {};
 
 // 1. bundled per-component docs + llms-full.txt (offline, no site dependency)
 const refsRoot = path.join(skillsRoot, 'radix-ng-examples/references');
+for (const section of ['components', 'utils', 'guides', 'recipes', 'examples']) {
+    const sectionRoot = path.join(refsRoot, section);
+    if (!fs.existsSync(sectionRoot)) continue;
+
+    for (const entry of fs.readdirSync(sectionRoot, { withFileTypes: true })) {
+        if (entry.isFile() && entry.name.endsWith('.md')) {
+            fs.rmSync(path.join(sectionRoot, entry.name));
+        }
+    }
+}
+
 for (const doc of docs) {
     write(path.join(refsRoot, doc.section, `${doc.slug}.md`), `${doc.body}\n`);
 }

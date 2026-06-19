@@ -22,7 +22,7 @@
 - ✅ Can be controlled or uncontrolled.
 - ✅ Supports horizontal and vertical orientation.
 - ✅ Supports automatic (on focus) and manual activation.
-- ✅ Full keyboard navigation with roving focus.
+- ✅ Full keyboard navigation with composite focus.
 - ✅ Optional active-tab indicator driven by CSS variables.
 - ✅ Panels can stay mounted (and animate) or unmount when inactive.
 
@@ -364,7 +364,7 @@ export class TabsKeyframesExample {}
 
 ### TabsList
 
-`RdxTabsList` — groups the tab buttons and owns roving keyboard focus.
+`RdxTabsList` — groups the tab buttons and owns composite keyboard focus.
 
 | Data attribute                | Value                                           |
 | ----------------------------- | ----------------------------------------------- |

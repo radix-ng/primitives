@@ -278,7 +278,7 @@ Renders only when its radio item is checked and exposes the same state attribute
 ## Accessibility
 
 Adheres to the [Radio Group WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/radiobutton)
-and uses [roving tabindex](https://www.w3.org/TR/wai-aria-practices-1.2/examples/radio/radio.html) to manage focus movement among radio items.
+and uses composite roving tabindex to manage focus movement among radio items.
 
 ### Keyboard Interactions
 
