@@ -5,6 +5,7 @@ import {
     computed,
     DestroyRef,
     Directive,
+    effect,
     ElementRef,
     inject,
     input,
@@ -15,7 +16,7 @@ import {
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
 import { injectSliderRootContext } from './slider-context';
-import { RdxSliderThumbRef } from './slider-root';
+import { RdxSliderThumbMetadata, RdxSliderThumbRef } from './slider-root';
 import { getInsetThumbPositionPercent, valueToPercent } from './slider.utils';
 
 /**
@@ -44,6 +45,7 @@ export class RdxSliderThumb implements RdxSliderThumbRef {
 
     /** The nested range input, set by `[rdxSliderThumbInput]`. */
     inputElement: HTMLInputElement | null = null;
+    private readonly inputId = signal<string | undefined>(undefined);
 
     /** Explicit index for this thumb (required for SSR range sliders). */
     readonly indexInput = input<number | undefined, NumberInput>(undefined, {
@@ -122,6 +124,12 @@ export class RdxSliderThumb implements RdxSliderThumbRef {
     });
 
     constructor() {
+        effect(() => {
+            this.listItem.setMetadata({
+                inputId: this.inputId()
+            } satisfies RdxSliderThumbMetadata);
+        });
+
         // Registration is DOM-order sorted on the root and reads no inputs, so the constructor
         // (where the host element already exists) is the right place; cleanup goes via DestroyRef.
         this.root.registerThumb(this);
@@ -192,5 +200,21 @@ export class RdxSliderThumb implements RdxSliderThumbRef {
         if (this.inputElement) {
             this.root.pressedInput = this.inputElement;
         }
+    }
+
+    /** @ignore */
+    setInputElement(input: HTMLInputElement, id: string): void {
+        this.inputElement = input;
+        this.inputId.set(id);
+    }
+
+    /** @ignore */
+    clearInputElement(input: HTMLInputElement): void {
+        if (this.inputElement !== input) {
+            return;
+        }
+
+        this.inputElement = null;
+        this.inputId.set(undefined);
     }
 }

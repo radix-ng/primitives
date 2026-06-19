@@ -14,6 +14,7 @@ import {
 import { RdxSliderThumb } from '../src/slider-thumb';
 import { RdxSliderThumbInput } from '../src/slider-thumb-input';
 import { RdxSliderTrack } from '../src/slider-track';
+import { RdxSliderValue } from '../src/slider-value';
 import {
     getPushedThumbValues,
     getSliderValue,
@@ -71,7 +72,15 @@ describe('slider utils', () => {
 });
 
 @Component({
-    imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
+    imports: [
+        RdxSliderRoot,
+        RdxSliderControl,
+        RdxSliderTrack,
+        RdxSliderIndicator,
+        RdxSliderThumb,
+        RdxSliderThumbInput,
+        RdxSliderValue
+    ],
     template: `
         <div
             [(value)]="value"
@@ -81,6 +90,7 @@ describe('slider utils', () => {
             (onValueChange)="onChange($event)"
             rdxSliderRoot
         >
+            <output rdxSliderValue></output>
             <div rdxSliderControl>
                 <div rdxSliderTrack>
                     <div rdxSliderIndicator></div>
@@ -312,6 +322,20 @@ describe('RdxSlider', () => {
         fixture.detectChanges();
         // second thumb cannot move below the first
         expect(component.value()).toEqual([20, 20]);
+    });
+
+    it('associates value output with thumb inputs in DOM order', async () => {
+        component.value.set([20, 60]);
+        component.thumbs.set([0, 1]);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+        refresh();
+
+        const output = fixture.debugElement.query(By.css('[rdxSliderValue]')).nativeElement as HTMLOutputElement;
+
+        expect(inputs.every((input) => input.id.startsWith('rdx-slider-thumb-input-'))).toBe(true);
+        expect(output.getAttribute('for')).toBe(inputs.map((input) => input.id).join(' '));
     });
 
     it('emits commit events with Base UI-like event details', () => {

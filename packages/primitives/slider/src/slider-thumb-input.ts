@@ -1,4 +1,5 @@
-import { computed, DestroyRef, Directive, ElementRef, inject, input } from '@angular/core';
+import { computed, DestroyRef, Directive, effect, ElementRef, inject, input } from '@angular/core';
+import { injectId } from '@radix-ng/primitives/core';
 import { injectSliderRootContext } from './slider-context';
 import { RdxSliderThumb } from './slider-thumb';
 import { ALL_KEYS, COMPOSITE_KEYS, getDefaultAriaValueText, getNewValue, roundValueToStep } from './slider.utils';
@@ -16,6 +17,7 @@ import { ALL_KEYS, COMPOSITE_KEYS, getDefaultAriaValueText, getNewValue, roundVa
     host: {
         type: 'range',
         style: 'position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; opacity: 0; cursor: inherit;',
+        '[id]': 'id()',
         '[style.writing-mode]': 'writingMode()',
         '[attr.min]': 'root.min()',
         '[attr.max]': 'root.max()',
@@ -41,6 +43,7 @@ export class RdxSliderThumbInput {
     protected readonly thumb = inject(RdxSliderThumb);
     private readonly element = inject<ElementRef<HTMLInputElement>>(ElementRef).nativeElement;
 
+    readonly id = input<string>(injectId('rdx-slider-thumb-input-'));
     readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
     readonly ariaValueTextInput = input<string | undefined>(undefined, { alias: 'aria-valuetext' });
 
@@ -59,13 +62,11 @@ export class RdxSliderThumbInput {
     );
 
     constructor() {
-        // Host element exists in the constructor and the registration has no input dependency.
-        this.thumb.inputElement = this.element;
+        // Host element exists in the constructor; the id may be user-provided and can update.
+        effect(() => this.thumb.setInputElement(this.element, this.id()));
 
         inject(DestroyRef).onDestroy(() => {
-            if (this.thumb.inputElement === this.element) {
-                this.thumb.inputElement = null;
-            }
+            this.thumb.clearInputElement(this.element);
         });
     }
 

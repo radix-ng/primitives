@@ -10,7 +10,7 @@ import {
     signal,
     Signal
 } from '@angular/core';
-import { RdxCompositeRoot } from '@radix-ng/primitives/composite';
+import { RdxCompositeList, RdxCompositeRoot } from '@radix-ng/primitives/composite';
 import { BooleanInput, createContext, provideFloatingTree } from '@radix-ng/primitives/core';
 import { RdxMenuRoot, RdxMenuTriggerInteraction } from '@radix-ng/primitives/menu';
 
@@ -94,6 +94,7 @@ let nextMenubarItemId = 0;
 export class RdxMenubarRoot {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly compositeRoot = inject(RdxCompositeRoot, { self: true });
+    private readonly compositeList = inject(RdxCompositeList, { self: true });
     private readonly menuRoots = contentChildren(RdxMenuRoot, { descendants: true });
     private readonly ids = new WeakMap<RdxMenuRoot, string>();
     private items: RdxMenubarItem[] = [];
@@ -121,6 +122,13 @@ export class RdxMenubarRoot {
         effect(() => {
             this.itemsVersion();
             this.syncDisabledIndices();
+            this.syncTabIndices();
+        });
+
+        effect(() => {
+            this.compositeRoot.highlightedIndex();
+            this.itemsVersion();
+            this.syncTabIndices();
         });
 
         effect((onCleanup) => {
@@ -228,10 +236,21 @@ export class RdxMenubarRoot {
         const unregisterTriggerInteraction = root.registerTriggerInteractionHandler((interaction) =>
             this.handleTriggerInteraction(id, root, trigger, interaction)
         );
+        const unregisterCompositeItem = this.compositeList.registerItem({
+            element: trigger,
+            metadata: computed(() => ({
+                disabled:
+                    this.disabled() ||
+                    root.disabled() ||
+                    trigger.hasAttribute('disabled') ||
+                    trigger.getAttribute('aria-disabled') === 'true'
+            }))
+        });
         const unregisterItem = this.registerResolvedItem(id, trigger, root);
 
         return () => {
             unregisterItem();
+            unregisterCompositeItem();
             unregisterTriggerInteraction();
             unregisterPopupArrowNavigation();
         };
@@ -438,5 +457,13 @@ export class RdxMenubarRoot {
             .filter((index) => index !== -1);
 
         this.compositeRoot.setDisabledIndices(disabledIndices.length ? disabledIndices : undefined);
+    }
+
+    private syncTabIndices(): void {
+        const highlightedIndex = this.compositeRoot.highlightedIndex();
+
+        this.items.forEach((item, index) => {
+            item.el.tabIndex = index === highlightedIndex && !item.disabled() ? 0 : -1;
+        });
     }
 }

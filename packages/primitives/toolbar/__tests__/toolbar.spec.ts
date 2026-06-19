@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { RdxToolbarButton } from '../src/toolbar-button';
 import { RdxToolbarGroup } from '../src/toolbar-group';
 import { RdxToolbarInput } from '../src/toolbar-input';
@@ -16,7 +17,7 @@ import { RdxToolbarSeparator } from '../src/toolbar-separator';
                 <button rdxToolbarButton>Bold</button>
                 <button [disabled]="boldDisabled()" rdxToolbarButton>Italic</button>
             </div>
-            <div rdxToolbarSeparator orientation="vertical"></div>
+            <div rdxToolbarSeparator></div>
             <a href="#" rdxToolbarLink>Link</a>
             <button rdxToolbarButton>Share</button>
         </div>
@@ -100,6 +101,9 @@ describe('Toolbar', () => {
         fixture.detectChanges();
         expect(root().getAttribute('aria-orientation')).toBe('vertical');
         expect(buttons()[0].getAttribute('data-orientation')).toBe('vertical');
+
+        const separator = fixture.debugElement.query(By.css('[rdxToolbarSeparator]')).nativeElement as HTMLElement;
+        expect(separator.getAttribute('data-orientation')).toBe('horizontal');
     });
 
     it('moves focus with arrow keys', () => {
@@ -111,6 +115,59 @@ describe('Toolbar', () => {
         return Promise.resolve().then(() => {
             expect(document.activeElement).toBe(items[1]);
         });
+    });
+});
+
+@Component({
+    imports: [RdxToolbarRoot, RdxToolbarSeparator],
+    template: `
+        <div orientation="vertical" rdxToolbarRoot>
+            <div rdxToolbarSeparator orientation="vertical"></div>
+        </div>
+    `
+})
+class ExplicitSeparatorHostComponent {}
+
+describe('Toolbar separator', () => {
+    it('allows explicit orientation to override the root-derived default', () => {
+        TestBed.configureTestingModule({ imports: [ExplicitSeparatorHostComponent] });
+        const fixture = TestBed.createComponent(ExplicitSeparatorHostComponent);
+        fixture.detectChanges();
+
+        const separator = fixture.debugElement.query(By.css('[rdxToolbarSeparator]')).nativeElement as HTMLElement;
+        expect(separator.getAttribute('data-orientation')).toBe('vertical');
+    });
+});
+
+@Component({
+    imports: [RdxToolbarRoot, RdxToolbarButton, RdxMenuModule],
+    template: `
+        <div rdxToolbarRoot aria-label="Toolbar with menu">
+            <ng-container #menu="rdxMenuRoot" rdxMenuRoot>
+                <button rdxToolbarButton rdxMenuTrigger>More</button>
+                @if (menu.open()) {
+                    <div rdxMenuPositioner>
+                        <div rdxMenuPopup>
+                            <button rdxMenuItem>Undo</button>
+                        </div>
+                    </div>
+                }
+            </ng-container>
+        </div>
+    `
+})
+class ToolbarMenuTriggerHostComponent {}
+
+describe('Toolbar with Menu', () => {
+    it('allows stacking toolbar button and menu trigger on the same element', () => {
+        TestBed.configureTestingModule({ imports: [ToolbarMenuTriggerHostComponent] });
+        const fixture = TestBed.createComponent(ToolbarMenuTriggerHostComponent);
+
+        expect(() => fixture.detectChanges()).not.toThrow();
+
+        const trigger = fixture.debugElement.query(By.css('[rdxMenuTrigger]')).nativeElement as HTMLButtonElement;
+        expect(trigger.getAttribute('tabindex')).toBe('0');
+        expect(trigger.getAttribute('aria-haspopup')).toBe('menu');
     });
 });
 

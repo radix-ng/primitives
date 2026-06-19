@@ -400,7 +400,8 @@ export class SliderVerticalExample {}
 ### Value
 
 Display the formatted value with `rdxSliderValue`. Formatting honours the root's
-`format` (`Intl.NumberFormatOptions`) and `locale`.
+`format` (`Intl.NumberFormatOptions`) and `locale`. The output automatically
+sets its `for` attribute to the registered thumb input ids, in DOM order.
 
 ```typescript
 import { Component } from '@angular/core';
@@ -598,7 +599,7 @@ export class SliderFormsExample {
 
 ### Value
 
-`RdxSliderValue` — displays the formatted value(s).
+`RdxSliderValue` — displays the formatted value(s) and links the output to thumb inputs.
 
 ## Accessibility
 

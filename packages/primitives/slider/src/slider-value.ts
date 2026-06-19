@@ -12,6 +12,7 @@ import { injectSliderRootContext } from './slider-context';
     exportAs: 'rdxSliderValue',
     host: {
         'aria-live': 'off',
+        '[attr.for]': 'forAttr()',
         '[textContent]': 'display()'
     }
 })
@@ -20,6 +21,11 @@ export class RdxSliderValue {
 
     /** The separator placed between values of a range slider. */
     readonly separator = input<string>(' – ');
+
+    protected readonly forAttr = computed(() => {
+        const inputIds = this.root.thumbInputIds();
+        return inputIds.length > 0 ? inputIds.join(' ') : undefined;
+    });
 
     protected readonly display = computed(() =>
         this.root

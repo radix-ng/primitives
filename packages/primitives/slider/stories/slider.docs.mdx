@@ -132,7 +132,8 @@ vertical axis; no other changes are required.
 ### Value
 
 Display the formatted value with `rdxSliderValue`. Formatting honours the root's
-`format` (`Intl.NumberFormatOptions`) and `locale`.
+`format` (`Intl.NumberFormatOptions`) and `locale`. The output automatically
+sets its `for` attribute to the registered thumb input ids, in DOM order.
 
 <Canvas of={SliderStories.Value} />
 
@@ -216,7 +217,7 @@ The root composes a `ControlValueAccessor`, so it binds directly to
 
 ### Value
 
-`RdxSliderValue` — displays the formatted value(s).
+`RdxSliderValue` — displays the formatted value(s) and links the output to thumb inputs.
 
 <ArgTypes of={RdxSliderValue} />
 

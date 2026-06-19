@@ -1385,39 +1385,6 @@
       ]
     },
     {
-      "slug": "collection",
-      "section": "components",
-      "parts": [
-        {
-          "directive": "RdxCollectionItem",
-          "selector": "[rdxCollectionItem]",
-          "exportAs": "rdxCollectionItem",
-          "description": "Marks an element as a member of a collection. Items are discovered by the\n{@link RdxCollectionProvider} via `contentChildren`, so registration is automatic — no manual\nbook-keeping or marker attributes are needed.",
-          "inputs": [
-            {
-              "name": "disabled",
-              "default": "false",
-              "description": "Whether the item is disabled. Disabled items are excluded from {@link RdxCollectionProvider.enabledItems}."
-            },
-            {
-              "name": "value",
-              "type": "T",
-              "description": "Arbitrary data associated with the item."
-            }
-          ],
-          "outputs": []
-        },
-        {
-          "directive": "RdxCollectionProvider",
-          "selector": "[rdxCollectionProvider]",
-          "exportAs": "rdxCollectionProvider",
-          "description": "Collects {@link RdxCollectionItem} descendants in DOM order, reactively, using Angular's\n`contentChildren`. Matches host directives too, so items composed via `hostDirectives` are found.",
-          "inputs": [],
-          "outputs": []
-        }
-      ]
-    },
-    {
       "slug": "combobox",
       "section": "components",
       "parts": [
@@ -4026,8 +3993,7 @@
           "exportAs": "rdxMenuTrigger",
           "description": "A button that opens the menu.",
           "hostDirectives": [
-            "RdxPopperAnchor",
-            "RdxCompositeItem"
+            "RdxPopperAnchor"
           ],
           "inputs": [
             {
@@ -6420,6 +6386,11 @@
               "name": "aria-valuetext",
               "type": "string | undefined",
               "default": "undefined"
+            },
+            {
+              "name": "id",
+              "type": "string",
+              "default": "injectId('rdx-slider-thumb-input-')"
             }
           ],
           "outputs": []
@@ -7407,7 +7378,14 @@
           "hostDirectives": [
             "RdxSeparatorRootDirective"
           ],
-          "inputs": [],
+          "inputs": [
+            {
+              "name": "orientation",
+              "type": "Orientation | undefined",
+              "default": "undefined",
+              "description": "The separator orientation. Defaults to the opposite of the toolbar orientation."
+            }
+          ],
           "outputs": []
         }
       ]

@@ -68,6 +68,10 @@ export interface RdxSliderThumbRef {
     readonly disabled: Signal<boolean>;
 }
 
+export interface RdxSliderThumbMetadata {
+    inputId?: string | undefined;
+}
+
 function sortByDomOrder(list: readonly RdxSliderThumbRef[]): RdxSliderThumbRef[] {
     return list.slice().sort((a, b) => {
         const position = a.element.compareDocumentPosition(b.element);
@@ -132,6 +136,7 @@ export class RdxSliderRoot {
     /** @ignore */
     protected readonly cva = injectControlValueAccessor<SliderValue>();
     private readonly document = injectDocument();
+    private readonly compositeList = inject(RdxCompositeList, { self: true });
 
     readonly id = input<string>(injectId('rdx-slider-'));
 
@@ -274,6 +279,13 @@ export class RdxSliderRoot {
     private readonly thumbs = signal<RdxSliderThumbRef[]>([]);
     /** Registered thumbs in DOM order. */
     readonly thumbList = this.thumbs.asReadonly();
+
+    /** Input ids registered by thumbs, in DOM order. */
+    readonly thumbInputIds = computed(() =>
+        Array.from(this.compositeList.itemMap().values())
+            .map((metadata) => metadata['inputId'])
+            .filter((inputId): inputId is string => typeof inputId === 'string' && inputId.length > 0)
+    );
 
     /** @ignore */
     registerThumb(thumb: RdxSliderThumbRef): void {

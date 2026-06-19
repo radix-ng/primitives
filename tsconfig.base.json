@@ -26,7 +26,6 @@
             "@radix-ng/primitives/button": ["packages/primitives/button/index.ts"],
             "@radix-ng/primitives/checkbox": ["packages/primitives/checkbox/index.ts"],
             "@radix-ng/primitives/collapsible": ["packages/primitives/collapsible/index.ts"],
-            "@radix-ng/primitives/collection": ["packages/primitives/collection/index.ts"],
             "@radix-ng/primitives/combobox": ["packages/primitives/combobox/index.ts"],
             "@radix-ng/primitives/composite": ["packages/primitives/composite/index.ts"],
             "@radix-ng/primitives/config": ["packages/primitives/config/index.ts"],

@@ -17,8 +17,7 @@ const TOOLBAR_LINK_METADATA = {
     exportAs: 'rdxToolbarLink',
     hostDirectives: [RdxCompositeItem],
     host: {
-        '[attr.data-orientation]': 'rootContext.orientation()',
-        '(keydown)': 'onKeyDown($event)'
+        '[attr.data-orientation]': 'rootContext.orientation()'
     }
 })
 export class RdxToolbarLink {
@@ -27,13 +26,5 @@ export class RdxToolbarLink {
 
     constructor() {
         this.compositeItem.setMetadata(TOOLBAR_LINK_METADATA);
-    }
-
-    /** @ignore Space activates a link, matching native button behavior in a toolbar. */
-    protected onKeyDown(event: KeyboardEvent): void {
-        if (event.key === ' ') {
-            event.preventDefault();
-            (event.currentTarget as HTMLElement)?.click();
-        }
     }
 }

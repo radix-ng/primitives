@@ -353,7 +353,8 @@ export class ToolbarWithNumberFieldExample {}
 
 ### ToolbarSeparator
 
-`RdxToolbarSeparator` — composes the Separator primitive; accepts `orientation`.
+`RdxToolbarSeparator` — composes the Separator primitive; defaults to the opposite of the toolbar
+orientation and accepts `orientation` to override it.
 
 ## Accessibility
 
