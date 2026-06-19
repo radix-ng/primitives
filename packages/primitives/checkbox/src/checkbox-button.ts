@@ -15,13 +15,15 @@ import { injectCheckboxRootContext } from './checkbox-root';
         role: 'checkbox',
         '[attr.aria-checked]': 'rootContext.indeterminate() ? "mixed" : rootContext.checked()',
         '[attr.aria-controls]': 'ariaControls()',
+        '[attr.aria-disabled]': 'rootContext.disabled() ? "true" : undefined',
         '[attr.aria-required]': 'rootContext.required() || undefined',
         '[attr.aria-readonly]': 'rootContext.readonly() || undefined',
-        '[attr.data-state]': 'rootContext.state()',
+        '[attr.data-checked]': 'rootContext.checked() && !rootContext.indeterminate() ? "" : undefined',
+        '[attr.data-unchecked]': '!rootContext.checked() && !rootContext.indeterminate() ? "" : undefined',
+        '[attr.data-indeterminate]': 'rootContext.indeterminate() ? "" : undefined',
         '[attr.data-disabled]': 'rootContext.disabled() ? "" : undefined',
         '[attr.data-readonly]': 'rootContext.readonly() ? "" : undefined',
-        '[attr.disabled]': 'rootContext.disabled() ? "" : undefined',
-        '[attr.value]': 'rootContext.value()',
+        '[attr.data-required]': 'rootContext.required() ? "" : undefined',
         '(click)': 'clicked($event)',
         // According to WAI ARIA, Checkboxes don't activate on enter keypress
         '(keydown.enter)': '$event.preventDefault()'
@@ -57,7 +59,7 @@ export class RdxCheckboxButtonDirective {
     }
 
     protected clicked(event: MouseEvent) {
-        if (event.defaultPrevented || this.rootContext.readonly()) {
+        if (event.defaultPrevented || this.rootContext.disabled() || this.rootContext.readonly()) {
             return;
         }
 

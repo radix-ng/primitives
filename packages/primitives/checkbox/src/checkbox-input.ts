@@ -7,14 +7,15 @@ import { injectCheckboxRootContext } from './checkbox-root';
         type: 'checkbox',
         tabindex: '-1',
         'aria-hidden': 'true',
-        '[attr.name]': 'rootContext.name() || undefined',
+        '[attr.name]': 'rootContext.parent() ? undefined : rootContext.name() || undefined',
         // Only a truly checked box is submitted; `indeterminate` is a property
         // (set below), never a submitted "checked" value.
         '[attr.checked]': 'rootContext.state() === "checked" ? "" : undefined',
+        '[checked]': 'rootContext.checked()',
         '[attr.form]': 'rootContext.form() || undefined',
         '[attr.value]': 'rootContext.value()',
-        '[required]': 'rootContext.required() || undefined',
-        '[attr.disabled]': 'rootContext.disabled() ? "" : undefined',
+        '[required]': 'rootContext.required()',
+        '[disabled]': 'rootContext.disabled()',
         '[style]': `{
           position: 'absolute',
           pointerEvents: 'none',

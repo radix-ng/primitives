@@ -20,7 +20,7 @@ import {
 } from '@radix-ng/primitives/core';
 import type { CheckedState } from './checkbox-root';
 
-export type RdxCheckboxGroupValueChangeReason = 'child-press' | 'parent-press' | 'none';
+export type RdxCheckboxGroupValueChangeReason = 'none';
 export type RdxCheckboxGroupValueChangeEventDetails =
     RdxCancelableChangeEventDetails<RdxCheckboxGroupValueChangeReason>;
 
@@ -200,7 +200,7 @@ export class RdxCheckboxGroupDirective implements ControlValueAccessor {
 
         const current = this.value();
         const next = current.includes(name) ? current.filter((v) => v !== name) : [...current, name];
-        if (!this.emit(next, 'child-press', event)) {
+        if (!this.emit(next, event)) {
             return;
         }
 
@@ -235,7 +235,7 @@ export class RdxCheckboxGroupDirective implements ControlValueAccessor {
 
         const rememberedIsAllOrNone = remembered.length === all.length || remembered.length === 0;
         if (rememberedIsAllOrNone) {
-            this.emit(this.value().length === all.length ? none : all, 'parent-press', event);
+            this.emit(this.value().length === all.length ? none : all, event);
             return;
         }
 
@@ -249,7 +249,7 @@ export class RdxCheckboxGroupDirective implements ControlValueAccessor {
             nextValue = none;
         }
 
-        if (!this.emit(nextValue, 'parent-press', event)) {
+        if (!this.emit(nextValue, event)) {
             return;
         }
         this.parentStatus = nextStatus;
@@ -267,10 +267,10 @@ export class RdxCheckboxGroupDirective implements ControlValueAccessor {
         }
     }
 
-    private emit(next: string[], reason: RdxCheckboxGroupValueChangeReason, event?: Event): boolean {
+    private emit(next: string[], event?: Event): boolean {
         const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
         const { eventDetails } = createCancelableChangeEventDetails(
-            reason,
+            'none',
             event ?? new Event('checkbox-group.value-change'),
             trigger
         );

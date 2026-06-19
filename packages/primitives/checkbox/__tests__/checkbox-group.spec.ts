@@ -69,7 +69,19 @@ describe('RdxCheckboxGroup', () => {
 
     const buttons = () =>
         fixture.debugElement.queryAll(By.css('button')).map((d) => d.nativeElement as HTMLButtonElement);
-    const state = (i: number) => buttons()[i].getAttribute('data-state');
+    const state = (i: number) => {
+        const button = buttons()[i];
+        if (button.hasAttribute('data-indeterminate')) {
+            return 'indeterminate';
+        }
+        if (button.hasAttribute('data-checked')) {
+            return 'checked';
+        }
+        if (button.hasAttribute('data-unchecked')) {
+            return 'unchecked';
+        }
+        return null;
+    };
 
     function setup(initial: Partial<Pick<GroupHost, 'value' | 'all' | 'disabled'>> = {}) {
         TestBed.configureTestingModule({ imports: [GroupHost] });
@@ -155,7 +167,8 @@ describe('RdxCheckboxGroup', () => {
         fixture.detectChanges();
 
         expect(host.value).toEqual([]);
-        expect(buttons()[1].hasAttribute('disabled')).toBe(true);
+        expect(buttons()[1].hasAttribute('disabled')).toBe(false);
+        expect(buttons()[1].getAttribute('aria-disabled')).toBe('true');
         expect(state(1)).toBe('unchecked');
     });
 

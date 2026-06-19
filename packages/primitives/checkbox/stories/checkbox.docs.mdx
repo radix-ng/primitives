@@ -18,6 +18,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 - ✅ Supports indeterminate state.
 - ✅ Can be controlled or uncontrolled.
 - ✅ Hidden native input for form submission and validation.
+- ✅ Base UI state hooks: `data-checked`, `data-unchecked`, and `data-indeterminate`.
 
 ## Import
 
@@ -73,11 +74,12 @@ The third "mixed" state. Clicking a checkbox in the indeterminate state resolves
 
 <Canvas of={CheckboxStories.Indeterminate} />
 
-### Presence
+### Keep mounted
 
-Mount/unmount the indicator with enter/leave animation support via `rdxCheckboxIndicatorPresence`.
+The indicator is removed from layout when unchecked. Add `keepMounted` to keep it in the DOM for
+CSS transitions or measurement, matching Base UI's `Checkbox.Indicator keepMounted` prop.
 
-<Canvas of={CheckboxStories.Presence} />
+<Canvas of={CheckboxStories.KeepMounted} />
 
 ### Template-driven forms
 
@@ -130,8 +132,8 @@ control, so `[(value)]`, `ngModel`, and reactive forms bind to the `string[]` va
 
 ## API Reference
 
-The `Button`, `Indicator` and `Input` parts take no inputs of their own — they read
-the checkbox state from the root context. All configuration lives on the root.
+The `Button` and `Input` parts take no inputs of their own — they read the checkbox state from the
+root context. The `Indicator` part supports `keepMounted`.
 
 ### Root
 

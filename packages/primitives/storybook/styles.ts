@@ -313,19 +313,16 @@ export const demoPopover = {
     close: cn(demoButton.base, demoButton.ghost, 'absolute top-2 right-2 size-7 p-0')
 } as const;
 
-/**
- * Checkbox parts: a small square button toggling a centered indicator.
- *
- * The indicator keeps `data-[state=unchecked]:hidden` because its `flex` display
- * would otherwise override the native `[hidden]` attribute set by the directive.
- */
+/** Checkbox parts: a small square button toggling a centered indicator. */
 export const demoCheckbox = {
     button: cn(
         'flex size-6 items-center justify-center rounded-md border border-border bg-background shadow-sm',
         'disabled:cursor-not-allowed disabled:opacity-50',
+        'data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',
+        'aria-disabled:cursor-not-allowed aria-disabled:opacity-50',
         demoFocusRing
     ),
-    indicator: 'flex items-center text-primary data-[state=unchecked]:hidden'
+    indicator: 'flex items-center text-primary'
 } as const;
 
 /**

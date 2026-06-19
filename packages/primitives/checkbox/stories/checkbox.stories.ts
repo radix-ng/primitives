@@ -12,7 +12,7 @@ import { CheckboxReactiveFormsExampleComponent } from './checkbox-forms';
 import { CheckboxGroupExample } from './checkbox-group';
 import { CheckboxIndeterminate } from './checkbox-indeterminate';
 import { CheckboxNgModelExample } from './checkbox-ngmodel';
-import { CheckboxPresence } from './checkbox-presence';
+import { CheckboxKeepMountedExample } from './checkbox-presence';
 import { CheckboxSelectAllExample } from './checkbox-select-all';
 import { CheckboxValidationExample } from './checkbox-validation';
 
@@ -50,7 +50,7 @@ export default {
                 LucideCheck,
                 CheckboxReactiveFormsExampleComponent,
                 CheckboxIndeterminate,
-                CheckboxPresence,
+                CheckboxKeepMountedExample,
                 CheckboxNgModelExample,
                 CheckboxValidationExample,
                 CheckboxSelectAllExample,
@@ -108,11 +108,11 @@ export const Indeterminate: Story = {
     })
 };
 
-export const Presence: Story = {
+export const KeepMounted: Story = {
     parameters: source(presenceSource),
     render: () => ({
         template: html`
-            <checkbox-presence-example />
+            <checkbox-keep-mounted-example />
         `
     })
 };

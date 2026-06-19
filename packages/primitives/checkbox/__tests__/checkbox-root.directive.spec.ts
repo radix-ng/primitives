@@ -36,16 +36,65 @@ class CheckboxHost {
     readonly = false;
     required = false;
 
-    changes: boolean[] = [];
+    changes: RdxCheckboxCheckedChangeEvent[] = [];
 
     // Controlled: reflect the change back into the bound value and clear the
     // mixed state, mirroring the recommended consumer pattern.
     onChange(change: RdxCheckboxCheckedChangeEvent): void {
-        this.changes.push(change.checked);
+        this.changes.push(change);
         this.checked = change.checked;
         this.indeterminate = false;
     }
 }
+
+@Component({
+    imports: [
+        RdxCheckboxRootDirective,
+        RdxCheckboxButtonDirective,
+        RdxCheckboxIndicatorDirective,
+        RdxCheckboxInputDirective
+    ],
+    template: `
+        <form>
+            <div
+                [checked]="checked"
+                (onCheckedChange)="checked = $event.checked"
+                name="terms"
+                value="yes"
+                uncheckedValue="no"
+                rdxCheckboxRoot
+            >
+                <button rdxCheckboxButton>
+                    <span rdxCheckboxIndicator></span>
+                </button>
+                <input rdxCheckboxInput />
+            </div>
+        </form>
+    `
+})
+class CheckboxUncheckedValueHost {
+    checked = false;
+}
+
+@Component({
+    imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective],
+    template: `
+        <div defaultChecked rdxCheckboxRoot>
+            <button rdxCheckboxButton>Default checked</button>
+        </div>
+    `
+})
+class CheckboxDefaultCheckedHost {}
+
+@Component({
+    imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective],
+    template: `
+        <div readOnly rdxCheckboxRoot>
+            <button rdxCheckboxButton>Read only</button>
+        </div>
+    `
+})
+class CheckboxReadOnlyAliasHost {}
 
 describe('RdxCheckbox', () => {
     let fixture: ComponentFixture<CheckboxHost>;
@@ -82,19 +131,31 @@ describe('RdxCheckbox', () => {
     });
 
     const root = () => fixture.debugElement.query(By.css('[rdxCheckboxRoot]')).nativeElement as HTMLElement;
+    const state = (element: HTMLElement) => {
+        if (element.hasAttribute('data-indeterminate')) {
+            return 'indeterminate';
+        }
+        if (element.hasAttribute('data-checked')) {
+            return 'checked';
+        }
+        if (element.hasAttribute('data-unchecked')) {
+            return 'unchecked';
+        }
+        return null;
+    };
 
     describe('aria / data attributes', () => {
         it('starts unchecked', () => {
             setup();
             expect(button().getAttribute('role')).toBe('checkbox');
             expect(button().getAttribute('aria-checked')).toBe('false');
-            expect(button().getAttribute('data-state')).toBe('unchecked');
-            expect(indicator().hasAttribute('hidden')).toBe(true);
+            expect(state(button())).toBe('unchecked');
+            expect(indicator().style.display).toBe('none');
         });
 
         it('exposes Base UI parity attributes on the root', () => {
             setup({ indeterminate: true, disabled: true, readonly: true });
-            expect(root().getAttribute('data-state')).toBe('indeterminate');
+            expect(state(root())).toBe('indeterminate');
             expect(root().getAttribute('data-disabled')).toBe('');
             expect(root().getAttribute('data-readonly')).toBe('');
             expect(root().hasAttribute('data-required')).toBe(false);
@@ -107,7 +168,7 @@ describe('RdxCheckbox', () => {
 
         it('omits root state attributes when inactive', () => {
             setup({ checked: true });
-            expect(root().getAttribute('data-state')).toBe('checked');
+            expect(state(root())).toBe('checked');
             expect(root().hasAttribute('data-disabled')).toBe(false);
             expect(root().hasAttribute('data-readonly')).toBe(false);
             expect(root().hasAttribute('data-required')).toBe(false);
@@ -116,32 +177,33 @@ describe('RdxCheckbox', () => {
         it('reflects the checked state', () => {
             setup({ checked: true });
             expect(button().getAttribute('aria-checked')).toBe('true');
-            expect(button().getAttribute('data-state')).toBe('checked');
-            expect(indicator().hasAttribute('hidden')).toBe(false);
+            expect(state(button())).toBe('checked');
+            expect(indicator().style.display).not.toBe('none');
         });
 
         it('reflects the indeterminate state as aria-checked="mixed"', () => {
             setup({ indeterminate: true });
             expect(button().getAttribute('aria-checked')).toBe('mixed');
-            expect(button().getAttribute('data-state')).toBe('indeterminate');
-            expect(indicator().hasAttribute('hidden')).toBe(false);
+            expect(state(button())).toBe('indeterminate');
+            expect(indicator().style.display).not.toBe('none');
         });
 
         it('treats indeterminate as orthogonal to checked, with the mixed state taking priority', () => {
             // Base UI shape: `checked` and `indeterminate` are independent booleans.
             setup({ checked: true, indeterminate: true });
             expect(button().getAttribute('aria-checked')).toBe('mixed');
-            expect(button().getAttribute('data-state')).toBe('indeterminate');
+            expect(state(button())).toBe('indeterminate');
             // Indicator is visible for either checked or indeterminate.
-            expect(indicator().hasAttribute('hidden')).toBe(false);
+            expect(indicator().style.display).not.toBe('none');
         });
 
-        it('exposes aria-required / aria-readonly / disabled', () => {
+        it('exposes aria-required / aria-readonly / aria-disabled', () => {
             setup({ readonly: true, disabled: true });
             expect(button().getAttribute('aria-readonly')).toBe('true');
+            expect(button().getAttribute('aria-disabled')).toBe('true');
             expect(button().getAttribute('data-readonly')).toBe('');
             expect(button().getAttribute('data-disabled')).toBe('');
-            expect(button().hasAttribute('disabled')).toBe(true);
+            expect(button().hasAttribute('disabled')).toBe(false);
         });
     });
 
@@ -151,7 +213,8 @@ describe('RdxCheckbox', () => {
             button().click();
             fixture.detectChanges();
             expect(host.checked).toBe(true);
-            expect(host.changes).toEqual([true]);
+            expect(host.changes.map((change) => change.checked)).toEqual([true]);
+            expect(host.changes[0].eventDetails.reason).toBe('none');
         });
 
         it('checked -> unchecked', () => {
@@ -159,7 +222,7 @@ describe('RdxCheckbox', () => {
             button().click();
             fixture.detectChanges();
             expect(host.checked).toBe(false);
-            expect(host.changes).toEqual([false]);
+            expect(host.changes.map((change) => change.checked)).toEqual([false]);
         });
 
         it('indeterminate -> checked (single emit)', () => {
@@ -169,7 +232,7 @@ describe('RdxCheckbox', () => {
             // The fix: indeterminate resolves to `true`, not `false`,
             // and onCheckedChange fires exactly once.
             expect(host.checked).toBe(true);
-            expect(host.changes).toEqual([true]);
+            expect(host.changes.map((change) => change.checked)).toEqual([true]);
         });
 
         it('emits once per click across a full cycle', () => {
@@ -178,7 +241,7 @@ describe('RdxCheckbox', () => {
             fixture.detectChanges();
             button().click();
             fixture.detectChanges();
-            expect(host.changes).toEqual([true, false]);
+            expect(host.changes.map((change) => change.checked)).toEqual([true, false]);
         });
 
         it('does not toggle when readonly', () => {
@@ -196,6 +259,31 @@ describe('RdxCheckbox', () => {
             expect(host.checked).toBe(false);
             expect(host.changes).toEqual([]);
         });
+    });
+
+    it('uses defaultChecked for uncontrolled initial state', () => {
+        TestBed.resetTestingModule();
+        TestBed.configureTestingModule({ imports: [CheckboxDefaultCheckedHost] });
+        const f = TestBed.createComponent(CheckboxDefaultCheckedHost);
+        f.detectChanges();
+        const defaultButton = f.debugElement.query(By.css('button')).nativeElement as HTMLButtonElement;
+
+        expect(defaultButton.getAttribute('aria-checked')).toBe('true');
+        expect(defaultButton.hasAttribute('data-checked')).toBe(true);
+    });
+
+    it('supports the Base UI readOnly input spelling', () => {
+        TestBed.resetTestingModule();
+        TestBed.configureTestingModule({ imports: [CheckboxReadOnlyAliasHost] });
+        const f = TestBed.createComponent(CheckboxReadOnlyAliasHost);
+        f.detectChanges();
+        const readOnlyButton = f.debugElement.query(By.css('button')).nativeElement as HTMLButtonElement;
+
+        readOnlyButton.click();
+        f.detectChanges();
+
+        expect(readOnlyButton.getAttribute('aria-readonly')).toBe('true');
+        expect(readOnlyButton.getAttribute('aria-checked')).toBe('false');
     });
 });
 
@@ -272,5 +360,30 @@ describe('RdxCheckboxInput (hidden native input)', () => {
         expect(changeCount).toBe(1);
         // No click dispatch -> the input is not toggled out of sync.
         expect(input().checked).toBe(true);
+    });
+});
+
+describe('RdxCheckboxRoot uncheckedValue', () => {
+    let fixture: ComponentFixture<CheckboxUncheckedValueHost>;
+    let host: CheckboxUncheckedValueHost;
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [CheckboxUncheckedValueHost] });
+        fixture = TestBed.createComponent(CheckboxUncheckedValueHost);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+    });
+
+    const form = () => fixture.debugElement.query(By.css('form')).nativeElement as HTMLFormElement;
+    const button = () => fixture.debugElement.query(By.css('button')).nativeElement as HTMLButtonElement;
+
+    it('submits uncheckedValue when unchecked and the checked value when checked', () => {
+        expect(new FormData(form()).get('terms')).toBe('no');
+
+        button().click();
+        fixture.detectChanges();
+
+        expect(host.checked).toBe(true);
+        expect(new FormData(form()).get('terms')).toBe('yes');
     });
 });

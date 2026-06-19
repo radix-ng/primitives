@@ -113,7 +113,7 @@ Full source (all examples): [`references/components/checkbox.md`](./references/c
 
 - **Change events**
 - **Indeterminate**
-- **Presence**
+- **Keep mounted**
 - **Template-driven forms**
 - **Reactive forms**
 - **Validation**

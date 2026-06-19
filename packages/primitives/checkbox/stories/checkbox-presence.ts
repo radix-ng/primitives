@@ -5,19 +5,17 @@ import { RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { demoCheckbox } from '../../storybook/styles';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
-import { RdxCheckboxIndicatorPresenceDirective } from '../src/checkbox-indicator-presence';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 @Component({
-    selector: 'checkbox-presence-example',
+    selector: 'checkbox-keep-mounted-example',
     imports: [
         RdxLabelDirective,
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
         RdxCheckboxInputDirective,
-        RdxCheckboxIndicatorPresenceDirective,
         LucideDynamicIcon,
         JsonPipe
     ],
@@ -25,9 +23,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
         <div class="flex items-center gap-3">
             <div [checked]="checked()" (onCheckedChange)="checked.set($event.checked)" rdxCheckboxRoot>
                 <button id="r1" [class]="c.button" rdxCheckboxButton>
-                    <ng-template rdxCheckboxIndicatorPresence>
-                        <svg [class]="c.indicator" [lucideIcon]="Check" rdxCheckboxIndicator size="16" />
-                    </ng-template>
+                    <svg [class]="c.indicator" [lucideIcon]="Check" keepMounted rdxCheckboxIndicator size="16" />
                 </button>
                 <input rdxCheckboxInput />
             </div>
@@ -41,7 +37,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
         </section>
     `
 })
-export class CheckboxPresence {
+export class CheckboxKeepMountedExample {
     readonly checked = model<boolean>(false);
     protected readonly Check = Check;
     protected readonly c = demoCheckbox;

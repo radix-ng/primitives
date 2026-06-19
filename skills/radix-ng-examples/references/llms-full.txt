@@ -4276,6 +4276,7 @@ export class CalendarNumberOfMonths {
 - ✅ Supports indeterminate state.
 - ✅ Can be controlled or uncontrolled.
 - ✅ Hidden native input for form submission and validation.
+- ✅ Base UI state hooks: `data-checked`, `data-unchecked`, and `data-indeterminate`.
 
 ## Import
 
@@ -4396,9 +4397,10 @@ export class CheckboxIndeterminate {
 }
 ```
 
-### Presence
+### Keep mounted
 
-Mount/unmount the indicator with enter/leave animation support via `rdxCheckboxIndicatorPresence`.
+The indicator is removed from layout when unchecked. Add `keepMounted` to keep it in the DOM for
+CSS transitions or measurement, matching Base UI's `Checkbox.Indicator keepMounted` prop.
 
 ```typescript
 import { JsonPipe } from '@angular/common';
@@ -4408,19 +4410,17 @@ import { RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { demoCheckbox } from '../../storybook/styles';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
-import { RdxCheckboxIndicatorPresenceDirective } from '../src/checkbox-indicator-presence';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 @Component({
-    selector: 'checkbox-presence-example',
+    selector: 'checkbox-keep-mounted-example',
     imports: [
         RdxLabelDirective,
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
         RdxCheckboxInputDirective,
-        RdxCheckboxIndicatorPresenceDirective,
         LucideDynamicIcon,
         JsonPipe
     ],
@@ -4428,9 +4428,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
         <div class="flex items-center gap-3">
             <div [checked]="checked()" (onCheckedChange)="checked.set($event.checked)" rdxCheckboxRoot>
                 <button id="r1" [class]="c.button" rdxCheckboxButton>
-                    <ng-template rdxCheckboxIndicatorPresence>
-                        <svg [class]="c.indicator" [lucideIcon]="Check" rdxCheckboxIndicator size="16" />
-                    </ng-template>
+                    <svg [class]="c.indicator" [lucideIcon]="Check" keepMounted rdxCheckboxIndicator size="16" />
                 </button>
                 <input rdxCheckboxInput />
             </div>
@@ -4444,7 +4442,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
         </section>
     `
 })
-export class CheckboxPresence {
+export class CheckboxKeepMountedExample {
     readonly checked = model<boolean>(false);
     protected readonly Check = Check;
     protected readonly c = demoCheckbox;
@@ -4886,8 +4884,8 @@ export class CheckboxGroupExample {
 
 ## API Reference
 
-The `Button`, `Indicator` and `Input` parts take no inputs of their own — they read
-the checkbox state from the root context. All configuration lives on the root.
+The `Button` and `Input` parts take no inputs of their own — they read the checkbox state from the
+root context. The `Indicator` part supports `keepMounted`.
 
 ### Root
 

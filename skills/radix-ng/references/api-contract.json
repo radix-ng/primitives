@@ -1200,18 +1200,16 @@
           ]
         },
         {
-          "directive": "RdxCheckboxIndicatorPresenceDirective",
-          "selector": "ng-template[rdxCheckboxIndicatorPresence]",
-          "hostDirectives": [
-            "RdxPresenceDirective"
-          ],
-          "inputs": [],
-          "outputs": []
-        },
-        {
           "directive": "RdxCheckboxIndicatorDirective",
           "selector": "[rdxCheckboxIndicator]",
-          "inputs": [],
+          "inputs": [
+            {
+              "name": "keepMounted",
+              "type": "boolean",
+              "default": "false",
+              "description": "Keep the indicator in the DOM when unchecked so CSS exit animations can play."
+            }
+          ],
           "outputs": []
         },
         {
@@ -1232,6 +1230,12 @@
               "type": "boolean",
               "default": "false",
               "description": "The controlled checked state of the checkbox. Must be used in conjunction with onCheckedChange.\n\nMixed state is no longer expressed through `checked` — use the separate\n`indeterminate` input (Base UI shape). This `boolean` model is what\n`RdxFormCheckboxControl` / Angular Signal Forms bind to."
+            },
+            {
+              "name": "defaultChecked",
+              "type": "boolean | undefined",
+              "default": "undefined",
+              "description": "The state of the checkbox when it is initially rendered."
             },
             {
               "name": "disabled",
@@ -1268,6 +1272,12 @@
               "description": "Whether the user should be unable to tick or untick the checkbox."
             },
             {
+              "name": "readOnly",
+              "type": "boolean",
+              "default": "false",
+              "description": "Alias matching Base UI's `readOnly` prop spelling."
+            },
+            {
               "name": "required",
               "type": "boolean",
               "default": "false",
@@ -1278,6 +1288,11 @@
               "type": "string",
               "default": "'on'",
               "description": "The value of the checkbox. This is what is submitted with the form when the checkbox is checked.\n\nBound publicly as `[value]`; the TS member is named `submitValue` so the\ndirective can satisfy `RdxFormCheckboxControl`, whose contract reserves a\n`value` member for `RdxFormValueControl` and forbids it on checkbox-style\ncontrols. (Checkbox is not yet marked `implements` — its `checked` is still\n`CheckedState`; see the `indeterminate` half of collision #1.)"
+            },
+            {
+              "name": "uncheckedValue",
+              "type": "string",
+              "description": "The value submitted with the form when the checkbox is unchecked.\nBy default, unchecked checkboxes do not submit any value, matching native checkbox behavior."
             }
           ],
           "outputs": [
