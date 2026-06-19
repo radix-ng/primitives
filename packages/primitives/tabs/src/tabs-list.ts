@@ -39,9 +39,19 @@ export class RdxTabsList {
      */
     readonly loopFocus = input(true, { transform: booleanAttribute });
 
-    private readonly tabMetadata = computed(() =>
-        Array.from(this.compositeRoot.itemMap().values()).filter(isTabsTabMetadata)
-    );
+    private readonly tabMap = computed(() => {
+        const map = new Map<HTMLElement, RdxCompositeMetadata<RdxTabsTabMetadata>>();
+
+        this.compositeRoot.itemMap().forEach((metadata, element) => {
+            if (isTabsTabMetadata(metadata)) {
+                map.set(element, metadata);
+            }
+        });
+
+        return map;
+    });
+
+    private readonly tabMetadata = computed(() => Array.from(this.tabMap().values()));
 
     private readonly disabledIndices = computed(() =>
         this.tabMetadata()
@@ -67,6 +77,10 @@ export class RdxTabsList {
 
         effect(() => {
             this.compositeRoot.setDisabledIndices(this.disabledIndices());
+        });
+
+        effect(() => {
+            this.rootContext.setTabMap(this.tabMap());
         });
 
         effect(() => {

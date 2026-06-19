@@ -89,6 +89,13 @@ describe('Tabs', () => {
         expect(panelTwo.getAttribute('data-hidden')).toBe('');
     });
 
+    it('exposes panel indexes from the composite list', async () => {
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        expect(panels().map((panel) => panel.getAttribute('data-index'))).toEqual(['0', '1', '2']);
+    });
+
     it('activates a tab on click and reveals its panel', () => {
         const [, two] = tabs();
         two.dispatchEvent(new MouseEvent('mousedown', { button: 0, bubbles: true }));

@@ -1,6 +1,7 @@
 import { Signal } from '@angular/core';
+import { RdxCompositeMetadata } from '@radix-ng/primitives/composite';
 import { createContext, DataOrientation } from '@radix-ng/primitives/core';
-import { RdxTabsActivationDirection, RdxTabsValue } from './utils';
+import { RdxTabsActivationDirection, RdxTabsTabMetadata, RdxTabsValue } from './utils';
 
 export interface RdxTabsRootContext {
     /** Stable id used to derive tab / panel ids. */
@@ -21,6 +22,9 @@ export interface RdxTabsRootContext {
     /** The `[rdxTabsList]` host element, used to resolve tab order and indicator geometry. */
     readonly tabListElement: Signal<HTMLElement | null>;
 
+    /** Registered tabs in DOM order. */
+    readonly tabMap: Signal<Map<HTMLElement, RdxCompositeMetadata<RdxTabsTabMetadata>>>;
+
     /** Select a tab by value. No-op when the value is unchanged. */
     setValue(value: RdxTabsValue, event?: Event, reason?: string): void;
 
@@ -29,6 +33,9 @@ export interface RdxTabsRootContext {
 
     /** Register the list host element. */
     setTabListElement(element: HTMLElement | null): void;
+
+    /** Register the tab composite map. */
+    setTabMap(map: Map<HTMLElement, RdxCompositeMetadata<RdxTabsTabMetadata>>): void;
 }
 
 export const [injectTabsRootContext, provideTabsRootContext] = createContext<RdxTabsRootContext>(

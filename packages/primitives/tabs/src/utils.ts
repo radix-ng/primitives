@@ -15,6 +15,13 @@ export interface RdxTabsTabMetadata {
     value: RdxTabsValue;
 }
 
+/** Metadata registered for each panel in the composite list. */
+export interface RdxTabsPanelMetadata {
+    [key: string]: unknown;
+    id: string;
+    value: RdxTabsValue;
+}
+
 export function makeTabId(baseId: string, value: RdxTabsValue): string {
     return `${baseId}-tab-${value}`;
 }

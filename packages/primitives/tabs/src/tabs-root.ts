@@ -1,4 +1,5 @@
 import { Directive, effect, inject, input, model, output, signal, untracked } from '@angular/core';
+import { RdxCompositeList, RdxCompositeMetadata } from '@radix-ng/primitives/composite';
 import {
     createCancelableChangeEventDetails,
     DataOrientation,
@@ -6,7 +7,7 @@ import {
     RdxCancelableChangeEventDetails
 } from '@radix-ng/primitives/core';
 import { provideTabsRootContext, RdxTabsRootContext } from './tabs-root-context';
-import { makeTabId, RdxTabsActivationDirection, RdxTabsValue } from './utils';
+import { RdxTabsActivationDirection, RdxTabsTabMetadata, RdxTabsValue } from './utils';
 
 export type RdxTabsValueChangeReason = 'trigger-press' | 'keyboard' | 'focus' | 'none';
 export type RdxTabsValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxTabsValueChangeReason>;
@@ -26,9 +27,11 @@ const rootContext = (): RdxTabsRootContext => {
         activationDirection: root.activationDirection.asReadonly(),
         activateOnFocus: root.activateOnFocus.asReadonly(),
         tabListElement: root.tabListElement.asReadonly(),
+        tabMap: root.tabMap.asReadonly(),
         setValue: (value, event, reason) => root.setValue(value, event, reason as RdxTabsValueChangeReason | undefined),
         setActivateOnFocus: (value) => root.activateOnFocus.set(value),
-        setTabListElement: (element) => root.tabListElement.set(element)
+        setTabListElement: (element) => root.tabListElement.set(element),
+        setTabMap: (map) => root.tabMap.set(map)
     };
 };
 
@@ -41,6 +44,7 @@ const rootContext = (): RdxTabsRootContext => {
     selector: '[rdxTabsRoot]',
     exportAs: 'rdxTabsRoot',
     providers: [provideTabsRootContext(rootContext)],
+    hostDirectives: [RdxCompositeList],
     host: {
         '[attr.data-orientation]': 'orientation()',
         '[attr.data-activation-direction]': 'activationDirection()'
@@ -79,6 +83,9 @@ export class RdxTabsRoot {
     /** @ignore Set by `[rdxTabsList]`. */
     readonly tabListElement = signal<HTMLElement | null>(null);
 
+    /** @ignore Set by `[rdxTabsList]`. */
+    readonly tabMap = signal(new Map<HTMLElement, RdxCompositeMetadata<RdxTabsTabMetadata>>());
+
     /** @ignore */
     readonly activationDirection = signal<RdxTabsActivationDirection>('none');
 
@@ -113,29 +120,86 @@ export class RdxTabsRoot {
             return;
         }
 
-        this.activationDirection.set(this.computeDirection(previous, value));
+        this.activationDirection.set(computeActivationDirection(previous, value, this.orientation(), this.tabMap()));
         this.value.set(value);
     }
+}
 
-    private computeDirection(previous: RdxTabsValue | undefined, next: RdxTabsValue): RdxTabsActivationDirection {
-        const list = this.tabListElement();
-        if (!list || previous === undefined || previous === null) {
-            return 'none';
-        }
-
-        const tabs = Array.from(list.querySelectorAll<HTMLElement>('[role="tab"]'));
-        const previousIndex = tabs.findIndex((tab) => tab.id === makeTabId(this.baseId, previous));
-        const nextIndex = tabs.findIndex((tab) => tab.id === makeTabId(this.baseId, next));
-
-        if (previousIndex === -1 || nextIndex === -1 || previousIndex === nextIndex) {
-            return 'none';
-        }
-
-        const horizontal = this.orientation() === 'horizontal';
-        if (nextIndex > previousIndex) {
-            return horizontal ? 'right' : 'down';
-        }
-
-        return horizontal ? 'left' : 'up';
+function computeActivationDirection(
+    previous: RdxTabsValue | undefined,
+    next: RdxTabsValue,
+    orientation: DataOrientation,
+    tabMap: Map<HTMLElement, RdxCompositeMetadata<RdxTabsTabMetadata>>
+): RdxTabsActivationDirection {
+    if (previous == null || next == null) {
+        return 'none';
     }
+
+    let previousTab: HTMLElement | null = null;
+    let nextTab: HTMLElement | null = null;
+    let previousIndex = -1;
+    let nextIndex = -1;
+
+    for (const [tabElement, tabMetadata] of tabMap.entries()) {
+        if (tabMetadata.value === previous) {
+            previousTab = tabElement;
+            previousIndex = tabMetadata.index;
+        }
+        if (tabMetadata.value === next) {
+            nextTab = tabElement;
+            nextIndex = tabMetadata.index;
+        }
+        if (previousTab && nextTab) {
+            break;
+        }
+    }
+
+    if (!previousTab || !nextTab || previousIndex === nextIndex) {
+        return inferActivationDirectionFromValues(previous, next, orientation);
+    }
+
+    const previousRect = previousTab.getBoundingClientRect();
+    const nextRect = nextTab.getBoundingClientRect();
+
+    if (orientation === 'horizontal') {
+        if (nextRect.left < previousRect.left) {
+            return 'left';
+        }
+        if (nextRect.left > previousRect.left) {
+            return 'right';
+        }
+        return nextIndex > previousIndex ? 'right' : 'left';
+    }
+
+    if (nextRect.top < previousRect.top) {
+        return 'up';
+    }
+    if (nextRect.top > previousRect.top) {
+        return 'down';
+    }
+    return nextIndex > previousIndex ? 'down' : 'up';
+}
+
+function inferActivationDirectionFromValues(
+    previous: RdxTabsValue,
+    next: RdxTabsValue,
+    orientation: DataOrientation
+): RdxTabsActivationDirection {
+    if (previous !== next && typeof previous === 'number' && typeof next === 'number') {
+        if (orientation === 'horizontal') {
+            return next > previous ? 'right' : 'left';
+        }
+
+        return next > previous ? 'down' : 'up';
+    }
+
+    if (previous !== next && typeof previous === 'string' && typeof next === 'string') {
+        if (orientation === 'horizontal') {
+            return next > previous ? 'right' : 'left';
+        }
+
+        return next > previous ? 'down' : 'up';
+    }
+
+    return 'none';
 }

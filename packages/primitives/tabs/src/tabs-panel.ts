@@ -10,6 +10,7 @@ import {
     signal,
     untracked
 } from '@angular/core';
+import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { useTransitionStatus } from '@radix-ng/primitives/core';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
 import { injectTabsRootContext } from './tabs-root-context';
@@ -30,6 +31,7 @@ const panelPresenceContext = () => ({ present: inject(RdxTabsPanel).present });
     selector: '[rdxTabsPanel]',
     exportAs: 'rdxTabsPanel',
     providers: [provideRdxPresenceContext(panelPresenceContext)],
+    hostDirectives: [RdxCompositeListItem],
     host: {
         role: 'tabpanel',
         '[attr.id]': 'panelId()',
@@ -46,6 +48,7 @@ const panelPresenceContext = () => ({ present: inject(RdxTabsPanel).present });
 })
 export class RdxTabsPanel {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    private readonly listItem = inject(RdxCompositeListItem, { self: true });
     protected readonly rootContext = injectTabsRootContext();
 
     /**
@@ -93,17 +96,8 @@ export class RdxTabsPanel {
         () => !this.active() && this.transitionStatus() !== 'ending' && (!this.hasPresence() || this.keepMounted())
     );
 
-    /** @ignore Index of the panel, derived from the order of its associated tab. */
-    protected readonly index = computed(() => {
-        const list = this.rootContext.tabListElement();
-        if (!list) {
-            return null;
-        }
-
-        const tabs = Array.from(list.querySelectorAll<HTMLElement>('[role="tab"]'));
-        const position = tabs.findIndex((tab) => tab.id === makeTabId(this.rootContext.baseId, this.value()));
-        return position === -1 ? null : position;
-    });
+    /** @ignore Index of the panel in DOM order. */
+    protected readonly index = this.listItem.index;
 
     private previousActive = false;
     private isFirstRun = true;
@@ -111,6 +105,13 @@ export class RdxTabsPanel {
     constructor() {
         const unregister = this.transition.registerElement(this.elementRef.nativeElement);
         inject(DestroyRef).onDestroy(unregister);
+
+        effect(() => {
+            this.listItem.setMetadata({
+                id: this.panelId(),
+                value: this.value()
+            });
+        });
 
         effect(() => {
             const active = this.active();

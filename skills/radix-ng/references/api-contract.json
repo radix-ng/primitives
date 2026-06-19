@@ -6719,6 +6719,9 @@
           "selector": "[rdxTabsPanel]",
           "exportAs": "rdxTabsPanel",
           "description": "A panel displayed when its corresponding tab is active.\n\nBy default the panel stays in the DOM and is toggled with the `hidden` attribute. To unmount the\ncontents while inactive (Base UI's default `keepMounted: false`), nest a `*rdxTabsPanelPresence`\nstructural directive inside it; set `keepMounted` to keep the contents mounted regardless.\n\nSee https://base-ui.com/react/components/tabs",
+          "hostDirectives": [
+            "RdxCompositeListItem"
+          ],
           "inputs": [
             {
               "name": "keepMounted",
@@ -6739,6 +6742,9 @@
           "selector": "[rdxTabsRoot]",
           "exportAs": "rdxTabsRoot",
           "description": "Groups the tabs and the corresponding panels.\n\nSee https://base-ui.com/react/components/tabs",
+          "hostDirectives": [
+            "RdxCompositeList"
+          ],
           "inputs": [
             {
               "name": "defaultValue",
