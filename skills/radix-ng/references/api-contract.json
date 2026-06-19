@@ -1246,16 +1246,10 @@
               "description": "When inside a `rdxCheckboxGroup`, marks this as the \"select all\" checkbox: its state is\nderived from the group's `allValues`, and toggling it checks or unchecks every child."
             },
             {
-              "name": "readonly",
-              "type": "boolean",
-              "default": "false",
-              "description": "Whether the user should be unable to tick or untick the checkbox."
-            },
-            {
               "name": "readOnly",
               "type": "boolean",
               "default": "false",
-              "description": "Alias matching Base UI's `readOnly` prop spelling."
+              "description": "Whether the user should be unable to tick or untick the checkbox. Bound in templates as\n`readOnly` (Base UI spelling); the TS member stays `readonly` to satisfy `RdxFormCheckboxControl`."
             },
             {
               "name": "required",

@@ -167,13 +167,11 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
-     * Whether the user should be unable to tick or untick the checkbox.
+     * Whether the user should be unable to tick or untick the checkbox. Bound in templates as
+     * `readOnly` (Base UI spelling); the TS member stays `readonly` to satisfy `RdxFormCheckboxControl`.
      * @group Props
      */
-    readonly readonly = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
-
-    /** Alias matching Base UI's `readOnly` prop spelling. */
-    readonly readOnly = input<boolean, BooleanInput>(false, { alias: 'readOnly', transform: booleanAttribute });
+    readonly readonly = input<boolean, BooleanInput>(false, { alias: 'readOnly', transform: booleanAttribute });
 
     /**
      * Whether or not the checkbox is required.
@@ -245,7 +243,7 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
 
     /** @ignore The effective disabled state, including the group. */
     readonly disabledState = computed(() => this.controlValueAccessor.disabled() || (this.group?.disabled() ?? false));
-    readonly readOnlyState = computed(() => this.readonly() || this.readOnly());
+    readonly readOnlyState = computed(() => this.readonly());
 
     readonly state = computed(() =>
         this.indeterminateState() ? 'indeterminate' : this.checkedState() ? 'checked' : 'unchecked'

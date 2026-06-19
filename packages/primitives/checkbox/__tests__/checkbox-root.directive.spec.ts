@@ -18,7 +18,7 @@ import {
             [checked]="checked"
             [indeterminate]="indeterminate"
             [disabled]="disabled"
-            [readonly]="readonly"
+            [readOnly]="readonly"
             [required]="required"
             (onCheckedChange)="onChange($event)"
             rdxCheckboxRoot
