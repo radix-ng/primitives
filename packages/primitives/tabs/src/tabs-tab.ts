@@ -16,7 +16,7 @@ import { makePanelId, makeTabId, RdxTabsValue } from './utils';
     host: {
         type: 'button',
         role: 'tab',
-        '[id]': 'tabId()',
+        '[attr.id]': 'tabId()',
         '[attr.aria-selected]': 'active()',
         '[attr.aria-controls]': 'panelId()',
         '[attr.aria-disabled]': 'disabled() ? "true" : undefined',

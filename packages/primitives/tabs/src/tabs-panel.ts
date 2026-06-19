@@ -32,7 +32,7 @@ const panelPresenceContext = () => ({ present: inject(RdxTabsPanel).present });
     providers: [provideRdxPresenceContext(panelPresenceContext)],
     host: {
         role: 'tabpanel',
-        '[id]': 'panelId()',
+        '[attr.id]': 'panelId()',
         '[attr.tabindex]': 'active() ? 0 : undefined',
         '[attr.aria-labelledby]': 'tabId()',
         '[attr.data-orientation]': 'rootContext.orientation()',

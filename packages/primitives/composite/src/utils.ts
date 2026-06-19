@@ -148,7 +148,17 @@ export function isElementVisible(element: HTMLElement | null): boolean {
         return false;
     }
 
-    const styles = getComputedStyle(element);
+    if (typeof Element !== 'undefined' && !(element instanceof Element)) {
+        return true;
+    }
+
+    let styles: CSSStyleDeclaration;
+    try {
+        styles = getComputedStyle(element);
+    } catch {
+        return true;
+    }
+
     return styles.visibility !== 'hidden' && styles.visibility !== 'collapse';
 }
 
