@@ -1,6 +1,6 @@
 {
     "name": "@radix-ng/primitives",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Headless, signals-first UI primitives for Angular.",
     "license": "MIT",
     "publishConfig": {

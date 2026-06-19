@@ -1,3 +1,22 @@
+## 1.0.2 (2026-06-19)
+
+### 🚀 Features
+
+- ⚠️  **checkbox:** align with Base UI state API ([e16a671b](https://github.com/radix-ng/primitives/commit/e16a671b))
+
+### 🩹 Fixes
+
+- **tabs:** align behavior ([4b024278](https://github.com/radix-ng/primitives/commit/4b024278))
+- **menu:** clear trigger mouseup grace timer ([7dc7d9f4](https://github.com/radix-ng/primitives/commit/7dc7d9f4))
+
+### ⚠️  Breaking Changes
+
+- **checkbox:** align with Base UI state API  ([e16a671b](https://github.com/radix-ng/primitives/commit/e16a671b))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 1.0.1 (2026-06-19)
 
 ### 🩹 Fixes
