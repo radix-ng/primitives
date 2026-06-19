@@ -10,7 +10,7 @@ import { RdxMenubarRoot } from '../src/menubar-root';
 
 Menubar coordinates a row of [Menu](?path=/docs/primitives-menu--docs) primitives. Each top-level
 menu is a `rdxMenuRoot` with a standard `rdxMenuTrigger`; the menubar manages which one is open and wires
-up arrow-key navigation and hover-to-switch behavior between them.
+up Base UI-style Composite focus, arrow-key navigation, and hover-to-switch behavior between them.
 
 <Canvas sourceState="hidden" of={Stories.Default} />
 
@@ -108,7 +108,7 @@ Click a trigger to open it, then hover the other triggers to switch, or use the 
 | `Escape`          | Closes the open menu and returns focus to its trigger.              |
 | `Enter` / `Space` | Activates the focused item (handled by the Menu primitive).         |
 
-Triggers move with a roving tabindex: only one trigger is in the tab order at a time, and
+Triggers move through the shared Composite focus model: only one trigger is in the tab order at a time, and
 arrow keys move focus between them without leaving the menubar. Disabled triggers are skipped.
 
 ## API Reference
@@ -123,12 +123,12 @@ Exposes `data-orientation`, `data-has-submenu-open`, and `role="menubar"`.
 ### Menu Trigger
 
 Use the standard `rdxMenuTrigger` inside each top-level `rdxMenuRoot`. When it is a direct child
-menu of `rdxMenubarRoot`, the menubar wires it for roving focus, hover switching, and ArrowLeft /
+menu of `rdxMenubarRoot`, the menubar wires it for Composite focus, hover switching, and ArrowLeft /
 ArrowRight navigation. There is no separate menubar trigger directive — the menu trigger reports its
 interactions to the menubar through context, mirroring [Base UI](https://base-ui.com/react/components/menubar).
 
 During hover-switching the trigger keeps focus (the popup opens without grabbing it), so the bar
-stays keyboard-navigable. It also reports `role="menuitem"`. The menubar owns roving tabindex:
+stays keyboard-navigable. It also reports `role="menuitem"`. The menubar's Composite root owns tabindex:
 the current trigger uses `tabindex="0"` and the other triggers use `tabindex="-1"`, so Tab enters
 the menubar on a trigger rather than focusing the container.
 

@@ -61,6 +61,24 @@ test('hovering a sibling trigger switches menus — only one open at a time', as
     await expect(triggers.first()).toHaveAttribute('data-state', 'closed');
 });
 
+test('ArrowDown after switching an open menubar moves focus into the current popup', async ({ page }) => {
+    await gotoStory(page, 'primitives-menubar--default');
+    const triggers = page.locator(trigger);
+
+    await triggers.first().click();
+    await expect(page.locator(openPopup)).toHaveCount(1);
+
+    await page.keyboard.press('ArrowRight');
+    await expect(triggers.nth(1)).toBeFocused();
+    await expect(triggers.nth(1)).toHaveAttribute('data-state', 'open');
+
+    await page.keyboard.press('ArrowDown');
+
+    const firstItem = page.locator(`${openPopup} [rdxMenuItem]`).first();
+    await expect(firstItem).toBeFocused();
+    await expect(firstItem).toContainText('Undo');
+});
+
 test('Escape closes the open menu', async ({ page }) => {
     await gotoStory(page, 'primitives-menubar--default');
     await page.locator(trigger).first().click();

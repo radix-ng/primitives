@@ -7,6 +7,8 @@ function keydown(target: Element, key: string) {
     target.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
 }
 
+const flushMicrotasks = () => Promise.resolve();
+
 @Component({
     imports: [RdxMenubarRoot, RdxMenuModule],
     template: `
@@ -289,16 +291,38 @@ describe('Menubar', () => {
         expect(mountedPopups[1].getAttribute('data-state')).toBe('open');
     });
 
-    it('ArrowRight moves focus to next trigger and opens it when a menu was open', () => {
+    it('ArrowRight moves focus to next trigger and opens it when a menu was open', async () => {
         triggers[0].click();
         fixture.detectChanges();
 
         keydown(triggers[0], 'ArrowRight');
+        await flushMicrotasks();
         fixture.detectChanges();
 
         expect(document.activeElement).toBe(triggers[1]);
         expect(triggers[1].getAttribute('data-state')).toBe('open');
         expect(triggers[0].getAttribute('data-state')).toBe('closed');
+    });
+
+    it('ArrowDown after switching an open menubar moves focus into the current popup', async () => {
+        triggers[0].click();
+        fixture.detectChanges();
+
+        keydown(triggers[0], 'ArrowRight');
+        await flushMicrotasks();
+        fixture.detectChanges();
+
+        expect(document.activeElement).toBe(triggers[1]);
+        expect(triggers[1].getAttribute('data-state')).toBe('open');
+
+        keydown(triggers[1], 'ArrowDown');
+        fixture.detectChanges();
+
+        const item: HTMLElement = fixture.nativeElement.querySelector(
+            '[rdxMenuPopup][data-state="open"] [rdxMenuItem]'
+        );
+        expect(document.activeElement).toBe(item);
+        expect(item.textContent?.trim()).toContain('Undo');
     });
 
     it('ArrowRight from an open menu item switches to the next trigger menu', async () => {
@@ -319,22 +343,24 @@ describe('Menubar', () => {
         expect(triggers[1].getAttribute('data-state')).toBe('open');
     });
 
-    it('ArrowRight wraps to the first trigger from the last', () => {
+    it('ArrowRight wraps to the first trigger from the last', async () => {
         triggers[2].click();
         fixture.detectChanges();
 
         keydown(triggers[2], 'ArrowRight');
+        await flushMicrotasks();
         fixture.detectChanges();
 
         expect(document.activeElement).toBe(triggers[0]);
         expect(triggers[0].getAttribute('data-state')).toBe('open');
     });
 
-    it('ArrowLeft moves to previous trigger', () => {
+    it('ArrowLeft moves to previous trigger', async () => {
         triggers[1].click();
         fixture.detectChanges();
 
         keydown(triggers[1], 'ArrowLeft');
+        await flushMicrotasks();
         fixture.detectChanges();
 
         expect(document.activeElement).toBe(triggers[0]);
@@ -367,9 +393,10 @@ describe('Menubar', () => {
         expect(triggers[0].getAttribute('data-state')).toBe('open');
     });
 
-    it('ArrowDown opens the menu after moving focus with ArrowRight', () => {
+    it('ArrowDown opens the menu after moving focus with ArrowRight', async () => {
         triggers[0].focus();
         keydown(triggers[0], 'ArrowRight');
+        await flushMicrotasks();
         fixture.detectChanges();
 
         expect(document.activeElement).toBe(triggers[1]);
@@ -422,14 +449,16 @@ describe('Menubar', () => {
         expect(document.activeElement).toBe(items[items.length - 1]);
     });
 
-    it('Home and End move focus to menubar boundaries', () => {
+    it('Home and End move focus to menubar boundaries', async () => {
         triggers[1].focus();
         keydown(triggers[1], 'Home');
+        await flushMicrotasks();
         fixture.detectChanges();
 
         expect(document.activeElement).toBe(triggers[0]);
 
         keydown(triggers[0], 'End');
+        await flushMicrotasks();
         fixture.detectChanges();
 
         expect(document.activeElement).toBe(triggers[2]);
@@ -446,7 +475,7 @@ describe('Menubar', () => {
         expect(document.activeElement).toBe(triggers[0]);
     });
 
-    it('skips disabled triggers when moving across an open menubar', () => {
+    it('skips disabled triggers when moving across an open menubar', async () => {
         TestBed.resetTestingModule();
         TestBed.configureTestingModule({ imports: [MenubarWithDisabledHost] });
         const disabledFixture = TestBed.createComponent(MenubarWithDisabledHost);
@@ -458,6 +487,7 @@ describe('Menubar', () => {
         disabledTriggers[0].click();
         disabledFixture.detectChanges();
         keydown(disabledTriggers[0], 'ArrowRight');
+        await flushMicrotasks();
         disabledFixture.detectChanges();
 
         expect(disabledTriggers[1].hasAttribute('data-disabled')).toBe(true);

@@ -10,6 +10,7 @@ import {
     signal,
     Signal
 } from '@angular/core';
+import { RdxCompositeRoot } from '@radix-ng/primitives/composite';
 import { BooleanInput, createContext, provideFloatingTree } from '@radix-ng/primitives/core';
 import { RdxMenuRoot, RdxMenuTriggerInteraction } from '@radix-ng/primitives/menu';
 
@@ -18,7 +19,7 @@ export type RdxMenubarOrientation = 'horizontal' | 'vertical';
 interface RdxMenubarItem {
     id: string;
     el: HTMLElement;
-    root: RdxMenuRoot;
+    root?: RdxMenuRoot;
     open: () => void;
     close: () => void;
     disabled: () => boolean;
@@ -86,18 +87,17 @@ let nextMenubarItemId = 0;
         '[attr.data-orientation]': 'orientation()',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
         '[attr.data-has-submenu-open]': 'isAnyOpen() ? "" : undefined',
-        '(focusin)': 'handleFocusIn($event)',
-        '(keydown.arrowdown)': 'handleArrowDown($event)',
-        '(keydown.arrowup)': 'handleArrowUp($event)',
-        '(keydown.arrowleft)': 'handleArrowLeft($event)',
-        '(keydown.arrowright)': 'handleArrowRight($event)'
-    }
+        '(focusin)': 'handleFocusIn($event)'
+    },
+    hostDirectives: [RdxCompositeRoot]
 })
 export class RdxMenubarRoot {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
-    private readonly menuRoots = contentChildren(RdxMenuRoot);
+    private readonly compositeRoot = inject(RdxCompositeRoot, { self: true });
+    private readonly menuRoots = contentChildren(RdxMenuRoot, { descendants: true });
     private readonly ids = new WeakMap<RdxMenuRoot, string>();
     private items: RdxMenubarItem[] = [];
+    private readonly itemsVersion = signal(0);
 
     /** Whether every menubar trigger is disabled. */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
@@ -112,6 +112,17 @@ export class RdxMenubarRoot {
     readonly isAnyOpen = computed(() => this.activeId() !== null);
 
     constructor() {
+        effect(() => {
+            this.compositeRoot.setOrientation(this.orientation());
+            this.compositeRoot.setLoopFocus(this.loopFocus());
+            this.compositeRoot.setEnableHomeAndEndKeys(true);
+        });
+
+        effect(() => {
+            this.itemsVersion();
+            this.syncDisabledIndices();
+        });
+
         effect((onCleanup) => {
             const roots = this.menuRoots();
             const registered: Array<() => void> = [];
@@ -159,12 +170,12 @@ export class RdxMenubarRoot {
         close: () => void,
         disabled: () => boolean
     ): () => void {
-        this.items.push({ id, el, root: undefined as never, open, close, disabled });
-        // Keep items in DOM order
-        this.items.sort((a, b) => (a.el.compareDocumentPosition(b.el) & 4 ? -1 : 1));
+        this.items.push({ id, el, open, close, disabled });
+        this.sortItems();
         return () => {
             this.items = this.items.filter((item) => item.id !== id);
             if (this.activeId() === id) this.activeId.set(null);
+            this.markItemsChanged();
         };
     }
 
@@ -233,15 +244,18 @@ export class RdxMenubarRoot {
             root,
             open: () => root.show(false),
             close: () => root.close(),
-            disabled: () => this.disabled() || root.disabled() || el.hasAttribute('disabled')
+            disabled: () =>
+                this.disabled() ||
+                root.disabled() ||
+                el.hasAttribute('disabled') ||
+                el.getAttribute('aria-disabled') === 'true'
         });
-        this.items.sort((a, b) => (a.el.compareDocumentPosition(b.el) & 4 ? -1 : 1));
-        this.updateTriggerTabStops();
+        this.sortItems();
 
         return () => {
             this.items = this.items.filter((item) => item.id !== id);
             if (this.activeId() === id) this.activeId.set(null);
-            this.updateTriggerTabStops();
+            this.markItemsChanged();
         };
     }
 
@@ -362,69 +376,11 @@ export class RdxMenubarRoot {
         this.focusItem(next, openOnMove);
     }
 
-    protected handleArrowLeft(event: Event): void {
-        this.handleOpenMenuNavigation(event, -1);
-    }
-
-    protected handleArrowRight(event: Event): void {
-        this.handleOpenMenuNavigation(event, 1);
-    }
-
-    protected handleArrowDown(event: Event): void {
-        this.handleVerticalOpen(event, 'first');
-    }
-
-    protected handleArrowUp(event: Event): void {
-        this.handleVerticalOpen(event, 'last');
-    }
-
-    private handleOpenMenuNavigation(event: Event, offset: 1 | -1): void {
-        const activeId = this.activeId();
-
-        if (!activeId || this.disabled() || !this.hasOpenMenu()) {
-            return;
-        }
-
-        event.preventDefault();
-        event.stopPropagation();
-        (event as KeyboardEvent).stopImmediatePropagation();
-        this.focusAdjacent(activeId, offset, true);
-    }
-
-    private handleVerticalOpen(event: Event, autoFocus: 'first' | 'last'): void {
-        if (event.defaultPrevented || this.disabled()) {
-            return;
-        }
-
-        const target = event.target as Element | null;
-        if (target?.closest('[rdxMenuPopup]')) {
-            return;
-        }
-
-        const item = this.resolveKeyboardTarget(target);
-        if (!item || item.disabled()) {
-            return;
-        }
-
-        event.preventDefault();
-        event.stopPropagation();
-        (event as KeyboardEvent).stopImmediatePropagation();
-
-        this.updateTriggerTabStops(item.id);
-        item.el.focus({ preventScroll: true });
-        if (item.root) {
-            item.root.show(autoFocus);
-        } else {
-            item.open();
-        }
-        this.activateItem(item.id);
-    }
-
     private focusItem(item: RdxMenubarItem | undefined, openOnMove: boolean): void {
         if (!item || this.disabled()) return;
 
-        this.updateTriggerTabStops(item.id);
-        item.el.focus();
+        this.highlightItem(item);
+        item.el.focus({ preventScroll: true });
         if (openOnMove) {
             item.open();
             this.activateItem(item.id);
@@ -439,38 +395,24 @@ export class RdxMenubarRoot {
             return;
         }
 
-        const focusedItem = this.items.find((item) => item.el === target);
-        if (focusedItem) {
-            this.updateTriggerTabStops(focusedItem.id);
+        const focusedItem = target instanceof HTMLElement ? this.items.find((item) => item.el === target) : undefined;
+        if (!focusedItem || focusedItem.disabled()) {
+            return;
+        }
+
+        this.highlightItem(focusedItem);
+
+        if (this.hasOpenMenu() && this.activeId() !== focusedItem.id) {
+            focusedItem.open();
+            this.activateItem(focusedItem.id);
         }
     }
 
-    private updateTriggerTabStops(preferredId?: string): void {
-        const enabled = this.enabledItems();
-        const focused = this.items.find((item) => item.el === item.el.ownerDocument.activeElement);
-        const tabbable =
-            enabled.find((item) => item.id === preferredId) ??
-            enabled.find((item) => item.id === this.activeId()) ??
-            (focused && !focused.disabled() ? focused : undefined) ??
-            enabled[0];
-
-        this.items.forEach((item) => item.el.setAttribute('tabindex', item === tabbable ? '0' : '-1'));
-    }
-
-    private resolveKeyboardTarget(target: Element | null): RdxMenubarItem | undefined {
-        const enabled = this.enabledItems();
-
-        if (target && target !== this.elementRef.nativeElement) {
-            const item = enabled.find((candidate) => candidate.el === target);
-            if (item) {
-                return item;
-            }
+    private highlightItem(item: RdxMenubarItem): void {
+        const index = this.items.findIndex((candidate) => candidate.id === item.id);
+        if (index !== -1) {
+            this.compositeRoot.setHighlightedIndex(index, true);
         }
-
-        const activeId = this.activeId();
-        return (
-            enabled.find((item) => item.id === activeId) ?? enabled.find((item) => item.el.tabIndex === 0) ?? enabled[0]
-        );
     }
 
     private enabledItems(): RdxMenubarItem[] {
@@ -479,5 +421,22 @@ export class RdxMenubarRoot {
 
     private hasOpenMenu(): boolean {
         return this.items.some((item) => item.root?.open());
+    }
+
+    private sortItems(): void {
+        this.items.sort((a, b) => (a.el.compareDocumentPosition(b.el) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
+        this.markItemsChanged();
+    }
+
+    private markItemsChanged(): void {
+        this.itemsVersion.update((value) => value + 1);
+    }
+
+    private syncDisabledIndices(): void {
+        const disabledIndices = this.items
+            .map((item, index) => (item.disabled() ? index : -1))
+            .filter((index) => index !== -1);
+
+        this.compositeRoot.setDisabledIndices(disabledIndices.length ? disabledIndices : undefined);
     }
 }

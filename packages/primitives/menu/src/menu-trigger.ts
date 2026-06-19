@@ -11,6 +11,7 @@ import {
     numberAttribute,
     PLATFORM_ID
 } from '@angular/core';
+import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
 import { createRdxTriggerInteraction, useTriggerFocusGuards } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
@@ -26,7 +27,7 @@ const numberOrUndefined = (value: NumberInput | undefined) => (value == null ? u
 @Directive({
     selector: '[rdxMenuTrigger]',
     exportAs: 'rdxMenuTrigger',
-    hostDirectives: [RdxPopperAnchor],
+    hostDirectives: [RdxPopperAnchor, RdxCompositeItem],
     host: {
         '[attr.type]': 'nativeButtonState() ? "button" : undefined',
         '[attr.role]':

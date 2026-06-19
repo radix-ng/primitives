@@ -27,6 +27,7 @@ import {
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopper } from '@radix-ng/primitives/popper';
+import { getFocusableMenuItems } from './menu-focus';
 
 export type RdxMenuTransitionStatus = 'starting' | 'ending' | undefined;
 /**
@@ -357,7 +358,14 @@ export class RdxMenuRoot {
             return;
         }
 
-        this.autoFocus.set(autoFocus === true ? 'first' : autoFocus);
+        const nextAutoFocus = autoFocus === true ? 'first' : autoFocus;
+        this.autoFocus.set(nextAutoFocus);
+
+        if (this.open()) {
+            this.focusOpenPopup(nextAutoFocus);
+            return;
+        }
+
         if (!this.open()) {
             const change = this.createOpenChangeEvent(true, reason, event);
             this.onOpenChange.emit(change.payload);
@@ -517,5 +525,25 @@ export class RdxMenuRoot {
                 eventDetails: change.eventDetails
             } satisfies RdxMenuOpenChange
         };
+    }
+
+    private focusOpenPopup(autoFocus: RdxMenuAutoFocus): void {
+        if (autoFocus === false) {
+            return;
+        }
+
+        const popup = this.popupElement();
+        if (!popup) {
+            return;
+        }
+
+        if (autoFocus === 'popup') {
+            popup.focus({ preventScroll: true });
+            return;
+        }
+
+        const items = getFocusableMenuItems(popup);
+        const item = autoFocus === 'last' ? items.at(-1) : items[0];
+        (item ?? popup).focus({ preventScroll: true });
     }
 }
