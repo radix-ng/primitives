@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { LucideMoon, LucideSun } from '@lucide/angular';
+import { PlaygroundMascot } from './playground-mascot';
 import { PRIMITIVES } from './shared/primitives';
 import { ThemeStore } from './shared/theme';
 
 @Component({
     selector: 'app-playground-shell',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [RouterOutlet, RouterLink, RouterLinkActive, LucideMoon, LucideSun],
+    imports: [RouterOutlet, RouterLink, RouterLinkActive, LucideMoon, LucideSun, PlaygroundMascot],
     template: `
         <div class="bg-muted/30 text-foreground flex min-h-screen">
             <aside class="border-border bg-background flex w-64 shrink-0 flex-col border-r">
@@ -52,6 +53,8 @@ import { ThemeStore } from './shared/theme';
             <main class="flex-1 overflow-y-auto p-8 lg:p-12">
                 <router-outlet />
             </main>
+
+            <app-playground-mascot />
         </div>
     `
 })

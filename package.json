@@ -28,6 +28,7 @@
         "skills:build": "node tools/scripts/skills/generate.mjs",
         "----Playground---": "-----------------------------------------------------------------------",
         "playground": "nx serve radix-playground",
+        "playground:docs-index": "node tools/scripts/playground/generate-mascot-docs.mjs",
         "playground:build": "nx build radix-playground",
         "build-site": "CI=1 NX_DAEMON=false nx build radix-playground && CI=1 NX_DAEMON=false nx run radix-storybook:build-storybook && node tools/scripts/build-site.mjs",
         "----Others-------": "-----------------------------------------------------------------------",

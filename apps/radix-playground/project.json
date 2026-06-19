@@ -8,6 +8,7 @@
     "targets": {
         "build": {
             "executor": "@angular/build:application",
+            "dependsOn": ["generate-mascot-docs"],
             "outputs": ["{options.outputPath}"],
             "options": {
                 "outputPath": "dist/apps/radix-playground",
@@ -45,6 +46,7 @@
         },
         "serve": {
             "executor": "@angular/build:dev-server",
+            "dependsOn": ["generate-mascot-docs"],
             "configurations": {
                 "production": {
                     "buildTarget": "radix-playground:build:production"
@@ -55,6 +57,13 @@
             },
             "defaultConfiguration": "development",
             "continuous": true
+        },
+        "generate-mascot-docs": {
+            "executor": "nx:run-commands",
+            "outputs": ["{workspaceRoot}/apps/radix-playground/src/app/playground-mascot-docs.generated.ts"],
+            "options": {
+                "command": "node tools/scripts/playground/generate-mascot-docs.mjs"
+            }
         },
         "lint": {
             "executor": "@nx/eslint:lint"
