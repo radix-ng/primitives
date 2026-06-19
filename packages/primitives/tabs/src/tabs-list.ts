@@ -14,7 +14,7 @@ import { RdxTabsTabMetadata } from './utils';
     hostDirectives: [RdxCompositeRoot],
     host: {
         role: 'tablist',
-        '[attr.aria-orientation]': 'rootContext.orientation()',
+        '[attr.aria-orientation]': 'rootContext.orientation() === "vertical" ? "vertical" : undefined',
         '[attr.data-orientation]': 'rootContext.orientation()',
         '[attr.data-activation-direction]': 'rootContext.activationDirection()'
     }
@@ -76,7 +76,7 @@ export class RdxTabsList {
         });
 
         effect(() => {
-            this.compositeRoot.setDisabledIndices(this.disabledIndices());
+            this.compositeRoot.setDisabledIndices([]);
         });
 
         effect(() => {
@@ -86,7 +86,7 @@ export class RdxTabsList {
         effect(() => {
             const activeIndex = this.activeIndex();
 
-            if (activeIndex === -1 || this.disabledIndices().includes(activeIndex)) {
+            if (activeIndex === -1) {
                 return;
             }
 
@@ -94,6 +94,15 @@ export class RdxTabsList {
             const activeElement = list.ownerDocument.activeElement;
 
             if (activeElement && list.contains(activeElement)) {
+                return;
+            }
+
+            if (this.disabledIndices().includes(activeIndex)) {
+                const firstEnabledIndex = this.tabMetadata().find((metadata) => !metadata.disabled)?.index;
+
+                if (firstEnabledIndex !== undefined) {
+                    this.compositeRoot.setHighlightedIndex(firstEnabledIndex);
+                }
                 return;
             }
 

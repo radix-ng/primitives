@@ -1,6 +1,7 @@
 import { Signal } from '@angular/core';
 import { RdxCompositeMetadata } from '@radix-ng/primitives/composite';
 import { createContext, DataOrientation } from '@radix-ng/primitives/core';
+import type { RdxTabsValueChangeReason } from './tabs-root';
 import { RdxTabsActivationDirection, RdxTabsTabMetadata, RdxTabsValue } from './utils';
 
 export interface RdxTabsRootContext {
@@ -26,7 +27,7 @@ export interface RdxTabsRootContext {
     readonly tabMap: Signal<Map<HTMLElement, RdxCompositeMetadata<RdxTabsTabMetadata>>>;
 
     /** Select a tab by value. No-op when the value is unchanged. */
-    setValue(value: RdxTabsValue, event?: Event, reason?: string): void;
+    setValue(value: RdxTabsValue, event?: Event, reason?: RdxTabsValueChangeReason): void;
 
     /** Mirror the list's `activateOnFocus` input onto the root context. */
     setActivateOnFocus(value: boolean): void;

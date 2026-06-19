@@ -58,8 +58,11 @@ plus a `Panel` per value and an optional `Indicator`.
 
 ## Change events
 
-`onValueChange` emits `{ value, eventDetails }`. Use `eventDetails.cancel()` to reject a tab
-activation before the selected value changes.
+`onValueChange` emits `{ value, eventDetails }`. User-initiated changes use
+`eventDetails.reason === 'none'` and can be rejected with `eventDetails.cancel()` before the selected value
+changes. Automatic uncontrolled fallbacks use `'initial'`, `'disabled'`, or `'missing'`; these mirror Base UI
+and are not cancelable. `eventDetails.activationDirection` reports `"left"`, `"right"`, `"up"`, `"down"`, or
+`"none"`.
 
 ```html
 <div [value]="value()" (onValueChange)="setValue($event)" rdxTabsRoot>
@@ -128,7 +131,7 @@ to `ArrowUp` / `ArrowDown`.
 
 ### Disabled
 
-A tab with the `disabled` attribute cannot be focused or activated.
+A disabled tab remains reachable by composite keyboard navigation, but it cannot be activated.
 
 ```html
 <div class="${rootClass}" rdxTabsRoot defaultValue="account">
@@ -138,7 +141,7 @@ A tab with the `disabled` attribute cannot be focused or activated.
         <button class="${tabClass}" rdxTabsTab value="team">Team</button>
     </div>
     <div class="${panelClass}" rdxTabsPanel value="account">
-        The Password tab is disabled and cannot be focused or activated.
+        The Password tab is disabled. Arrow keys can focus it, but it cannot be activated.
     </div>
     <div class="${panelClass}" rdxTabsPanel value="password">
         Change your password here. After saving, you'll be logged out.
@@ -209,7 +212,7 @@ export class TabsIndicatorExample {}
 
 ### Animated panels
 
-Panels stay mounted by default, so you can cross-fade them with the `data-starting-style`,
+Panels stay mounted by default in Angular, so you can cross-fade them with the `data-starting-style`,
 `data-ending-style` and `data-hidden` attributes — the panel keeps itself visible until the transition
 finishes.
 
@@ -428,6 +431,6 @@ Adheres to the [Tabs WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/pa
 | `ArrowRight` | (Horizontal) Moves focus to the next tab.                                                            |
 | `ArrowUp`    | (Vertical) Moves focus to the previous tab.                                                          |
 | `ArrowLeft`  | (Horizontal) Moves focus to the previous tab.                                                        |
-| `Home`       | Moves focus to the first tab.                                                                        |
-| `End`        | Moves focus to the last tab.                                                                         |
+| `Home`       | Moves focus to the first tab, including a disabled tab.                                              |
+| `End`        | Moves focus to the last tab, including a disabled tab.                                               |
 | `Enter` / `Space` | Activates the focused tab (always, and the only way to activate when `activateOnFocus` is off). |

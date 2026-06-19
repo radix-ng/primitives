@@ -14,19 +14,21 @@ import { makePanelId, makeTabId, RdxTabsValue } from './utils';
     exportAs: 'rdxTabsTab',
     hostDirectives: [RdxCompositeItem],
     host: {
-        type: 'button',
+        '[attr.type]': 'nativeButton() ? "button" : undefined',
         role: 'tab',
         '[attr.id]': 'tabId()',
         '[attr.aria-selected]': 'active()',
         '[attr.aria-controls]': 'panelId()',
         '[attr.aria-disabled]': 'disabled() ? "true" : undefined',
+        '[attr.disabled]': 'null',
         '[attr.data-composite-item-active]': 'active() ? "" : undefined',
         '[attr.data-orientation]': 'rootContext.orientation()',
         '[attr.data-activation-direction]': 'rootContext.activationDirection()',
         '[attr.data-active]': 'active() ? "" : undefined',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
-        '(mousedown)': 'onMouseDown($event)',
+        '(click)': 'onClick($event)',
         '(keydown)': 'onKeyDown($event)',
+        '(pointerdown)': 'onPointerDown($event)',
         '(focus)': 'onFocus($event)'
     }
 })
@@ -41,16 +43,32 @@ export class RdxTabsTab {
 
     /**
      * When `true`, prevents the user from interacting with the tab.
+     * Disabled tabs remain focusable during composite keyboard navigation, matching Base UI.
      */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /**
+     * Whether the host element is a native button. When `true`, `type="button"` is applied.
+     *
+     * @default true
+     */
+    readonly nativeButton = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
+
+    /**
+     * Optional id for the tab element. When omitted, an id is derived from the root id and tab value.
+     */
+    readonly id = input<string | undefined>(undefined);
+
     /** @ignore */
-    protected readonly tabId = computed(() => makeTabId(this.rootContext.baseId, this.value()));
+    protected readonly tabId = computed(() => this.id() ?? makeTabId(this.rootContext.baseId, this.value()));
     /** @ignore */
     protected readonly panelId = computed(() => makePanelId(this.rootContext.baseId, this.value()));
 
     /** @ignore */
     protected readonly active = computed(() => this.rootContext.value() === this.value());
+
+    private isPressing = false;
+    private isMainButton = false;
 
     constructor() {
         effect(() => {
@@ -63,27 +81,65 @@ export class RdxTabsTab {
     }
 
     /** @ignore */
-    protected onMouseDown(event: MouseEvent): void {
-        // Only the primary button selects; ignore Ctrl-click (macOS right-click emulation).
-        if (!this.disabled() && event.button === 0 && !event.ctrlKey) {
-            this.rootContext.setValue(this.value(), event, 'trigger-press');
-        } else {
-            // Prevent focus to avoid accidental activation.
-            event.preventDefault();
+    protected onClick(event: MouseEvent): void {
+        if (this.active() || this.disabled()) {
+            return;
         }
+
+        this.rootContext.setValue(this.value(), event, 'none');
     }
 
     /** @ignore */
     protected onKeyDown(event: KeyboardEvent): void {
         if (!this.disabled() && (event.key === ' ' || event.key === 'Enter')) {
-            this.rootContext.setValue(this.value(), event, 'keyboard');
+            this.rootContext.setValue(this.value(), event, 'none');
         }
     }
 
     /** @ignore */
+    protected onPointerDown(event: PointerEvent): void {
+        if (this.active() || this.disabled()) {
+            return;
+        }
+
+        this.isPressing = true;
+        this.isMainButton = event.button === 0;
+
+        const ownerDocument = event.currentTarget instanceof HTMLElement ? event.currentTarget.ownerDocument : document;
+        ownerDocument.addEventListener(
+            'pointerup',
+            () => {
+                this.isPressing = false;
+                this.isMainButton = false;
+            },
+            { once: true }
+        );
+        ownerDocument.addEventListener(
+            'pointercancel',
+            () => {
+                this.isPressing = false;
+                this.isMainButton = false;
+            },
+            { once: true }
+        );
+        ownerDocument.addEventListener(
+            'blur',
+            () => {
+                this.isPressing = false;
+                this.isMainButton = false;
+            },
+            { once: true }
+        );
+    }
+
+    /** @ignore */
     protected onFocus(event: FocusEvent): void {
-        if (!this.active() && !this.disabled() && this.rootContext.activateOnFocus()) {
-            this.rootContext.setValue(this.value(), event, 'focus');
+        if (this.active() || this.disabled()) {
+            return;
+        }
+
+        if (this.rootContext.activateOnFocus() && (!this.isPressing || this.isMainButton)) {
+            this.rootContext.setValue(this.value(), event, 'none');
         }
     }
 }

@@ -22,7 +22,7 @@ const source = (code: string) => ({ docs: { source: { code, language: 'typescrip
 const rootClass = 'border-border bg-background text-foreground w-[420px] overflow-hidden rounded-xl border shadow-sm';
 const listClass = 'border-border bg-muted/30 flex border-b';
 const tabClass =
-    'text-muted-foreground hover:text-foreground data-[active]:text-foreground data-[active]:bg-background focus-visible:ring-ring relative inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-colors outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 data-[active]:shadow-[inset_0_-2px_0_0_var(--primary)]';
+    'text-muted-foreground hover:text-foreground data-[active]:text-foreground data-[active]:bg-background focus-visible:ring-ring relative inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-colors outline-none focus-visible:ring-2 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 data-[active]:shadow-[inset_0_-2px_0_0_var(--primary)]';
 const panelClass = 'bg-background text-foreground p-6 text-sm leading-6 outline-none';
 
 export default {
@@ -120,7 +120,7 @@ export const Disabled: Story = {
                     <button class="${tabClass}" rdxTabsTab value="team">Team</button>
                 </div>
                 <div class="${panelClass}" rdxTabsPanel value="account">
-                    The Password tab is disabled and cannot be focused or activated.
+                    The Password tab is disabled. Arrow keys can focus it, but it cannot be activated.
                 </div>
                 <div class="${panelClass}" rdxTabsPanel value="password">
                     Change your password here. After saving, you'll be logged out.

@@ -6719,8 +6719,9 @@
           "inputs": [
             {
               "name": "defaultValue",
-              "type": "RdxTabsValue",
-              "description": "The value of the tab that should be initially selected when uncontrolled."
+              "type": "RdxTabsValue | undefined",
+              "default": "undefined",
+              "description": "The value of the tab that should be initially selected when uncontrolled.\nWhen omitted, Base UI parity uses `0` as the implicit default and falls back to the first enabled tab."
             },
             {
               "name": "orientation",
@@ -6738,7 +6739,7 @@
             {
               "name": "onValueChange",
               "type": "RdxTabsValueChangeEvent",
-              "description": "Event emitted when the selected tab changes."
+              "description": "Event emitted when the selected tab changes.\n\n`eventDetails.reason` is `'none'` for user-initiated changes, `'initial'` for the first automatic\nuncontrolled selection, `'disabled'` when an uncontrolled selection falls back from a disabled tab,\nand `'missing'` when it falls back from a removed tab. Automatic changes are not cancelable."
             }
           ],
           "twoWay": [
@@ -6758,7 +6759,19 @@
               "name": "disabled",
               "type": "boolean",
               "default": "false",
-              "description": "When `true`, prevents the user from interacting with the tab."
+              "description": "When `true`, prevents the user from interacting with the tab.\nDisabled tabs remain focusable during composite keyboard navigation, matching Base UI."
+            },
+            {
+              "name": "id",
+              "type": "string | undefined",
+              "default": "undefined",
+              "description": "Optional id for the tab element. When omitted, an id is derived from the root id and tab value."
+            },
+            {
+              "name": "nativeButton",
+              "type": "boolean",
+              "default": "true",
+              "description": "Whether the host element is a native button. When `true`, `type=\"button\"` is applied."
             },
             {
               "name": "value",

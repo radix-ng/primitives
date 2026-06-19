@@ -9,8 +9,10 @@ import {
 import { provideTabsRootContext, RdxTabsRootContext } from './tabs-root-context';
 import { RdxTabsActivationDirection, RdxTabsTabMetadata, RdxTabsValue } from './utils';
 
-export type RdxTabsValueChangeReason = 'trigger-press' | 'keyboard' | 'focus' | 'none';
-export type RdxTabsValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxTabsValueChangeReason>;
+export type RdxTabsValueChangeReason = 'none' | 'disabled' | 'missing' | 'initial';
+export type RdxTabsValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxTabsValueChangeReason> & {
+    activationDirection: RdxTabsActivationDirection;
+};
 
 export interface RdxTabsValueChangeEvent {
     value: RdxTabsValue;
@@ -61,8 +63,11 @@ export class RdxTabsRoot {
 
     /**
      * The value of the tab that should be initially selected when uncontrolled.
+     * When omitted, Base UI parity uses `0` as the implicit default and falls back to the first enabled tab.
+     *
+     * @default 0
      */
-    readonly defaultValue = input<RdxTabsValue>();
+    readonly defaultValue = input<RdxTabsValue | undefined>(undefined);
 
     /**
      * The orientation the tabs are laid out. Controls arrow-key navigation
@@ -74,6 +79,10 @@ export class RdxTabsRoot {
 
     /**
      * Event emitted when the selected tab changes.
+     *
+     * `eventDetails.reason` is `'none'` for user-initiated changes, `'initial'` for the first automatic
+     * uncontrolled selection, `'disabled'` when an uncontrolled selection falls back from a disabled tab,
+     * and `'missing'` when it falls back from a removed tab. Automatic changes are not cancelable.
      */
     readonly onValueChange = output<RdxTabsValueChangeEvent>();
 
@@ -89,40 +98,192 @@ export class RdxTabsRoot {
     /** @ignore */
     readonly activationDirection = signal<RdxTabsActivationDirection>('none');
 
+    private readonly externallyControlled = signal(false);
+    private hasObservedValue = false;
+    private previousObservedValue: RdxTabsValue | undefined;
+    private internalValueCommit = false;
+    private hasAppliedDefaultValue = false;
+    private initialDefaultValue: RdxTabsValue | undefined;
+    private shouldNotifyInitialValueChange = true;
+    private shouldHonorDisabledDefaultValue = false;
+    private didRegisterTabs = false;
+    private lastKnownTabElement: HTMLElement | undefined;
+
     constructor() {
         effect(() => {
-            const initial = this.defaultValue();
-            if (initial !== undefined && untracked(this.value) === undefined) {
-                this.value.set(initial);
+            const currentValue = this.value();
+
+            if (this.internalValueCommit) {
+                this.internalValueCommit = false;
+                this.hasObservedValue = true;
+                this.previousObservedValue = currentValue;
+                return;
+            }
+
+            if (!this.hasObservedValue) {
+                this.hasObservedValue = true;
+                this.previousObservedValue = currentValue;
+                if (currentValue !== undefined) {
+                    this.externallyControlled.set(true);
+                }
+                return;
+            }
+
+            if (currentValue !== this.previousObservedValue) {
+                this.externallyControlled.set(true);
+                this.previousObservedValue = currentValue;
+            }
+        });
+
+        effect(() => {
+            if (this.hasAppliedDefaultValue || untracked(this.value) !== undefined) {
+                return;
+            }
+
+            const defaultValue = this.defaultValue();
+            const hasExplicitDefaultValue = defaultValue !== undefined;
+            this.hasAppliedDefaultValue = true;
+            this.initialDefaultValue = defaultValue ?? 0;
+            this.shouldNotifyInitialValueChange = !hasExplicitDefaultValue;
+            this.shouldHonorDisabledDefaultValue = hasExplicitDefaultValue;
+            untracked(() => this.commitValue(this.initialDefaultValue!));
+        });
+
+        effect(() => {
+            const tabMap = this.tabMap();
+            const value = this.value();
+
+            if (this.externallyControlled()) {
+                return;
+            }
+
+            if (tabMap.size === 0) {
+                if (this.didRegisterTabs && value !== null && !this.lastKnownTabElement?.isConnected) {
+                    untracked(() => this.commitAutomaticValueChange(null, 'missing'));
+                }
+                return;
+            }
+
+            this.didRegisterTabs = true;
+            this.lastKnownTabElement = tabMap.keys().next().value;
+
+            const selectedTabMetadata = getTabMetadataByValue(tabMap, value);
+            const firstEnabledTabValue = getFirstEnabledTabValue(tabMap);
+            const selectionIsDisabled = selectedTabMetadata?.disabled;
+            const selectionIsMissing = selectedTabMetadata == null && value !== null;
+
+            if (!selectionIsDisabled && value === this.initialDefaultValue) {
+                this.shouldHonorDisabledDefaultValue = false;
+            }
+
+            if (this.shouldHonorDisabledDefaultValue && selectionIsDisabled && value === this.initialDefaultValue) {
+                return;
+            }
+
+            const shouldNotifyInitialValueChange = this.shouldNotifyInitialValueChange;
+
+            if (selectionIsDisabled || selectionIsMissing) {
+                const fallbackValue = firstEnabledTabValue ?? null;
+
+                if (value === fallbackValue) {
+                    this.shouldNotifyInitialValueChange = false;
+                    return;
+                }
+
+                let fallbackReason: RdxTabsValueChangeReason = 'missing';
+                if (shouldNotifyInitialValueChange) {
+                    fallbackReason = 'initial';
+                } else if (selectionIsDisabled) {
+                    fallbackReason = 'disabled';
+                }
+
+                untracked(() => this.commitAutomaticValueChange(fallbackValue, fallbackReason));
+                return;
+            }
+
+            if (shouldNotifyInitialValueChange && selectedTabMetadata != null) {
+                untracked(() => this.notifyAutomaticValueChange(value, 'initial'));
+                this.shouldNotifyInitialValueChange = false;
             }
         });
     }
 
     /** @ignore */
-    setValue(
-        value: RdxTabsValue,
-        event?: Event,
-        reason: RdxTabsValueChangeReason = event ? 'trigger-press' : 'none'
-    ): void {
+    setValue(value: RdxTabsValue, event?: Event, reason: RdxTabsValueChangeReason = 'none'): void {
         const previous = this.value();
         if (previous === value) {
             return;
         }
 
         const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
-        const { eventDetails } = createCancelableChangeEventDetails(
+        const { eventDetails: baseEventDetails } = createCancelableChangeEventDetails(
             reason,
             event ?? new Event('tabs.value-change'),
             trigger
         );
+        const eventDetails = baseEventDetails as RdxTabsValueChangeEventDetails;
+        const activationDirection = computeActivationDirection(previous, value, this.orientation(), this.tabMap());
+        eventDetails.activationDirection = activationDirection;
+
         this.onValueChange.emit({ value, eventDetails });
         if (eventDetails.isCanceled()) {
             return;
         }
 
-        this.activationDirection.set(computeActivationDirection(previous, value, this.orientation(), this.tabMap()));
+        this.activationDirection.set(activationDirection);
+        this.commitValue(value);
+    }
+
+    private commitValue(value: RdxTabsValue): void {
+        this.internalValueCommit = true;
         this.value.set(value);
     }
+
+    private commitAutomaticValueChange(value: RdxTabsValue, reason: RdxTabsValueChangeReason): void {
+        this.activationDirection.set('none');
+        this.commitValue(value);
+        this.notifyAutomaticValueChange(value, reason);
+        this.shouldNotifyInitialValueChange = false;
+    }
+
+    private notifyAutomaticValueChange(value: RdxTabsValue | undefined, reason: RdxTabsValueChangeReason): void {
+        if (value === undefined) {
+            return;
+        }
+
+        const { eventDetails: baseEventDetails } = createCancelableChangeEventDetails(
+            reason,
+            new Event('tabs.value-change')
+        );
+        const eventDetails = baseEventDetails as RdxTabsValueChangeEventDetails;
+        eventDetails.activationDirection = 'none';
+        this.onValueChange.emit({ value, eventDetails });
+    }
+}
+
+function getTabMetadataByValue(
+    tabMap: Map<HTMLElement, RdxCompositeMetadata<RdxTabsTabMetadata>>,
+    value: RdxTabsValue | undefined
+): RdxCompositeMetadata<RdxTabsTabMetadata> | undefined {
+    for (const tabMetadata of tabMap.values()) {
+        if (tabMetadata.value === value) {
+            return tabMetadata;
+        }
+    }
+
+    return undefined;
+}
+
+function getFirstEnabledTabValue(
+    tabMap: Map<HTMLElement, RdxCompositeMetadata<RdxTabsTabMetadata>>
+): RdxTabsValue | undefined {
+    for (const tabMetadata of tabMap.values()) {
+        if (!tabMetadata.disabled) {
+            return tabMetadata.value;
+        }
+    }
+
+    return undefined;
 }
 
 function computeActivationDirection(

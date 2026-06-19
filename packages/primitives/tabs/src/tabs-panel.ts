@@ -35,7 +35,7 @@ const panelPresenceContext = () => ({ present: inject(RdxTabsPanel).present });
     host: {
         role: 'tabpanel',
         '[attr.id]': 'panelId()',
-        '[attr.tabindex]': 'active() ? 0 : undefined',
+        '[attr.tabindex]': 'active() ? 0 : -1',
         '[attr.aria-labelledby]': 'tabId()',
         '[attr.data-orientation]': 'rootContext.orientation()',
         '[attr.data-activation-direction]': 'rootContext.activationDirection()',
@@ -72,7 +72,17 @@ export class RdxTabsPanel {
     /** @ignore */
     protected readonly panelId = computed(() => makePanelId(this.rootContext.baseId, this.value()));
     /** @ignore */
-    protected readonly tabId = computed(() => makeTabId(this.rootContext.baseId, this.value()));
+    protected readonly tabId = computed(() => {
+        const value = this.value();
+
+        for (const tabMetadata of this.rootContext.tabMap().values()) {
+            if (tabMetadata.value === value) {
+                return tabMetadata.id;
+            }
+        }
+
+        return makeTabId(this.rootContext.baseId, value);
+    });
 
     /** Whether this panel's tab is currently selected. */
     readonly active = computed(() => this.rootContext.value() === this.value());

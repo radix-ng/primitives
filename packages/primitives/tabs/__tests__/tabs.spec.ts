@@ -6,6 +6,7 @@ import { RdxTabsPanel } from '../src/tabs-panel';
 import { RdxTabsPanelPresence } from '../src/tabs-panel-presence';
 import { RdxTabsRoot, RdxTabsValueChangeEvent } from '../src/tabs-root';
 import { RdxTabsTab } from '../src/tabs-tab';
+import { RdxTabsValue } from '../src/utils';
 
 @Component({
     template: `
@@ -36,10 +37,12 @@ class TestHostComponent {
     readonly loopFocus = signal(true);
     readonly disabledTwo = signal(false);
     cancelNext = false;
-    changes: string[] = [];
+    changes: RdxTabsValue[] = [];
+    changeDetails: RdxTabsValueChangeEvent['eventDetails'][] = [];
 
     onValueChange(change: RdxTabsValueChangeEvent): void {
         this.changes.push(change.value);
+        this.changeDetails.push(change.eventDetails);
         if (this.cancelNext) {
             change.eventDetails.cancel();
             this.cancelNext = false;
@@ -98,20 +101,22 @@ describe('Tabs', () => {
 
     it('activates a tab on click and reveals its panel', () => {
         const [, two] = tabs();
-        two.dispatchEvent(new MouseEvent('mousedown', { button: 0, bubbles: true }));
+        two.dispatchEvent(new MouseEvent('click', { button: 0, bubbles: true }));
         fixture.detectChanges();
 
         expect(two.getAttribute('data-active')).toBe('');
         expect(panels()[1].hidden).toBe(false);
         expect(host.value()).toBe('two');
         expect(host.changes).toEqual(['two']);
+        expect(host.changeDetails[0].reason).toBe('none');
+        expect(host.changeDetails[0].activationDirection).toBe('right');
     });
 
     it('allows canceling selection before state updates', () => {
         host.cancelNext = true;
 
         const [, two] = tabs();
-        two.dispatchEvent(new MouseEvent('mousedown', { button: 0, bubbles: true }));
+        two.dispatchEvent(new MouseEvent('click', { button: 0, bubbles: true }));
         fixture.detectChanges();
 
         expect(host.value()).toBe('one');
@@ -125,7 +130,8 @@ describe('Tabs', () => {
 
         const [, two] = tabs();
         expect(two.getAttribute('data-disabled')).toBe('');
-        two.dispatchEvent(new MouseEvent('mousedown', { button: 0, bubbles: true }));
+        expect(two.disabled).toBe(false);
+        two.dispatchEvent(new MouseEvent('click', { button: 0, bubbles: true }));
         fixture.detectChanges();
 
         expect(two.getAttribute('data-active')).toBeNull();
@@ -216,7 +222,7 @@ describe('Tabs', () => {
         expect(one.getAttribute('tabindex')).toBe('0');
     });
 
-    it('skips disabled tabs during arrow navigation', async () => {
+    it('moves focus to disabled tabs during arrow navigation without activating them', async () => {
         host.disabledTwo.set(true);
         fixture.detectChanges();
 
@@ -228,9 +234,10 @@ describe('Tabs', () => {
         fixture.detectChanges();
 
         expect(two.getAttribute('aria-disabled')).toBe('true');
-        expect(document.activeElement).toBe(three);
-        expect(two.getAttribute('tabindex')).toBe('-1');
-        expect(three.getAttribute('tabindex')).toBe('0');
+        expect(document.activeElement).toBe(two);
+        expect(two.getAttribute('tabindex')).toBe('0');
+        expect(three.getAttribute('tabindex')).toBe('-1');
+        expect(host.value()).toBe('one');
     });
 
     it('does not give tabindex 0 to a disabled selected tab', async () => {
@@ -247,11 +254,14 @@ describe('Tabs', () => {
         expect(one.getAttribute('tabindex')).toBe('0');
     });
 
-    it('exposes data-orientation and aria-orientation', () => {
+    it('omits horizontal aria-orientation and exposes vertical aria-orientation', () => {
+        const list = fixture.nativeElement.querySelector('[role="tablist"]') as HTMLElement;
+        expect(list.getAttribute('data-orientation')).toBe('horizontal');
+        expect(list.hasAttribute('aria-orientation')).toBe(false);
+
         host.orientation.set('vertical');
         fixture.detectChanges();
 
-        const list = fixture.nativeElement.querySelector('[role="tablist"]') as HTMLElement;
         expect(list.getAttribute('data-orientation')).toBe('vertical');
         expect(list.getAttribute('aria-orientation')).toBe('vertical');
     });
@@ -259,13 +269,98 @@ describe('Tabs', () => {
     it('reports the activation direction on selection change', () => {
         const root = fixture.nativeElement.querySelector('[rdxTabsRoot]') as HTMLElement;
 
-        tabs()[2].dispatchEvent(new MouseEvent('mousedown', { button: 0, bubbles: true }));
+        tabs()[2].dispatchEvent(new MouseEvent('click', { button: 0, bubbles: true }));
         fixture.detectChanges();
         expect(root.getAttribute('data-activation-direction')).toBe('right');
 
-        tabs()[0].dispatchEvent(new MouseEvent('mousedown', { button: 0, bubbles: true }));
+        tabs()[0].dispatchEvent(new MouseEvent('click', { button: 0, bubbles: true }));
         fixture.detectChanges();
         expect(root.getAttribute('data-activation-direction')).toBe('left');
+    });
+});
+
+@Component({
+    template: `
+        <div (onValueChange)="onValueChange($event)" rdxTabsRoot>
+            <div rdxTabsList>
+                <button [disabled]="firstDisabled()" [value]="0" rdxTabsTab>Zero</button>
+                <button [value]="1" rdxTabsTab>One</button>
+            </div>
+            <div [value]="0" rdxTabsPanel>Panel zero</div>
+            <div [value]="1" rdxTabsPanel>Panel one</div>
+        </div>
+    `,
+    imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel]
+})
+class ImplicitDefaultHostComponent {
+    readonly firstDisabled = signal(false);
+    changes: RdxTabsValueChangeEvent[] = [];
+
+    onValueChange(change: RdxTabsValueChangeEvent): void {
+        this.changes.push(change);
+        change.eventDetails.cancel();
+    }
+}
+
+describe('Tabs implicit defaultValue', () => {
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [ImplicitDefaultHostComponent] });
+    });
+
+    it('selects value 0 and emits an uncancelable initial change when defaultValue is omitted', async () => {
+        const fixture = TestBed.createComponent(ImplicitDefaultHostComponent);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        const tabs = Array.from(fixture.nativeElement.querySelectorAll('[role="tab"]')) as HTMLButtonElement[];
+        const host = fixture.componentInstance;
+
+        expect(tabs[0].getAttribute('aria-selected')).toBe('true');
+        expect(host.changes.length).toBe(1);
+        expect(host.changes[0].value).toBe(0);
+        expect(host.changes[0].eventDetails.reason).toBe('initial');
+        expect(host.changes[0].eventDetails.activationDirection).toBe('none');
+    });
+
+    it('falls back to the first enabled tab when the implicit tab is disabled', async () => {
+        const fixture = TestBed.createComponent(ImplicitDefaultHostComponent);
+        const host = fixture.componentInstance;
+        host.firstDisabled.set(true);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        const tabs = Array.from(fixture.nativeElement.querySelectorAll('[role="tab"]')) as HTMLButtonElement[];
+
+        expect(tabs[0].getAttribute('aria-selected')).toBe('false');
+        expect(tabs[1].getAttribute('aria-selected')).toBe('true');
+        expect(host.changes.length).toBe(1);
+        expect(host.changes[0].value).toBe(1);
+        expect(host.changes[0].eventDetails.reason).toBe('initial');
+    });
+
+    it('falls back with reason disabled when the selected uncontrolled tab becomes disabled', async () => {
+        const fixture = TestBed.createComponent(ImplicitDefaultHostComponent);
+        const host = fixture.componentInstance;
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        host.changes = [];
+        host.firstDisabled.set(true);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        const tabs = Array.from(fixture.nativeElement.querySelectorAll('[role="tab"]')) as HTMLButtonElement[];
+
+        expect(tabs[0].getAttribute('aria-selected')).toBe('false');
+        expect(tabs[1].getAttribute('aria-selected')).toBe('true');
+        expect(host.changes.length).toBe(1);
+        expect(host.changes[0].value).toBe(1);
+        expect(host.changes[0].eventDetails.reason).toBe('disabled');
+        expect(host.changes[0].eventDetails.activationDirection).toBe('none');
     });
 });
 
