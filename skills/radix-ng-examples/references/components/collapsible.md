@@ -24,17 +24,11 @@
     </div>
 
     <div rdxCollapsiblePanel>
-        <div *rdxCollapsiblePanelPresence>
-            <div
-                class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm"
-            >
-                <span class="text-sm">&#64;radix-ui/colors</span>
-            </div>
-            <div
-                class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm"
-            >
-                <span class="text-sm">&#64;stitches/react</span>
-            </div>
+        <div class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm">
+            <span class="text-sm">&#64;radix-ui/colors</span>
+        </div>
+        <div class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm">
+            <span class="text-sm">&#64;stitches/react</span>
         </div>
     </div>
 </div>
@@ -47,7 +41,9 @@
 - ✅ Exposes open/close state via `data-open` / `data-closed` for styling.
 - ✅ Enter and exit transitions via `data-starting-style` / `data-ending-style`.
 - ✅ Exposes the panel size as `--collapsible-panel-height` / `--collapsible-panel-width` for height/width animations.
-- ✅ Optional `hiddenUntilFound` so the browser's find-in-page can reveal collapsed content.
+- ✅ Closed panels unmount by default, matching Base UI.
+- ✅ Optional `keepMounted` and `hiddenUntilFound` keep the closed panel in the DOM while hidden.
+- ✅ Cancelable `onOpenChange` events include the reason, source event, and trigger.
 
 ## Import
 
@@ -57,8 +53,7 @@ Get started with importing the directives:
 import {
   RdxCollapsibleRootDirective,
   RdxCollapsibleTriggerDirective,
-  RdxCollapsiblePanelDirective,
-  RdxCollapsiblePanelPresenceDirective
+  RdxCollapsiblePanelDirective
 } from '@radix-ng/primitives/collapsible';
 ```
 
@@ -73,24 +68,16 @@ Assemble the collapsible from its parts.
 </div>
 ```
 
-To unmount the panel contents while collapsed (instead of keeping them hidden in the DOM), wrap
-them in the presence directive:
-
-```html
-<div rdxCollapsibleRoot>
-  <button rdxCollapsibleTrigger>Trigger</button>
-  <div rdxCollapsiblePanel>
-    <div *rdxCollapsiblePanelPresence>Panel</div>
-  </div>
-</div>
-```
+By default, a closed panel is removed from the DOM. Add `keepMounted` when the element must remain
+mounted after the close transition, or `hiddenUntilFound` when collapsed content should remain
+discoverable by browser find-in-page.
 
 ## Examples
 
 ### Keep mounted
 
-With `keepMounted`, the closed panel stays in the DOM without a `hidden` attribute, so it can be
-collapsed with CSS using the `data-open` / `data-closed` attributes.
+With `keepMounted`, the closed panel stays in the DOM and receives `hidden` after the close
+transition. During enter and exit, `data-starting-style` / `data-ending-style` can drive CSS motion.
 
 ```html
 <div class="w-full max-w-sm" rdxCollapsibleRoot #collapsibleRoot="rdxCollapsibleRoot">
@@ -161,7 +148,8 @@ The open state can be controlled from outside the collapsible via the `open` mod
 `RdxCollapsibleTriggerDirective`
 
 A button that toggles the panel. Reads everything from the root context; it exposes
-`aria-expanded`, `aria-controls`, and a `data-panel-open` attribute while open.
+`aria-expanded`, `aria-controls` while open, and `data-panel-open` while open. Disabled triggers
+remain focusable and expose `aria-disabled`.
 
 ### Panel
 

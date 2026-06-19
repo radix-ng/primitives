@@ -131,10 +131,7 @@ export class RdxAccordionRootDirective {
 
     /**
      * Whether to keep the content of collapsed items mounted in the DOM.
-     * When `true`, closed panels keep their element in the DOM instead of
-     * receiving a `hidden` attribute. Applies to the always-mounted
-     * `rdxAccordionContent`; the `rdxAccordionContentPresence` variant always
-     * unmounts.
+     * When `true`, closed panels keep their element in the DOM while hidden.
      *
      * @defaultValue false
      * @group Props

@@ -21,7 +21,7 @@ import { RdxAccordionContentDirective } from '../src/accordion-content.directive
 - ✅ Expand a single item or multiple items at once.
 - ✅ Can be controlled or uncontrolled.
 - ✅ Emits an event per item when its panel opens or closes (`onOpenChange`).
-- ✅ Can keep collapsed panels mounted in the DOM (`keepMounted`).
+- ✅ Can keep collapsed panels mounted in the DOM while hidden (`keepMounted`).
 
 ## Import
 
@@ -84,8 +84,8 @@ Each item emits `onOpenChange` with its new open state whenever it expands or co
 
 ### Keep mounted
 
-With `keepMounted`, collapsed panels keep their element in the DOM instead of receiving a `hidden`
-attribute — useful to preserve form state and keep content reachable by the browser's find-in-page.
+With `keepMounted`, collapsed panels keep their element in the DOM while hidden — useful to
+preserve form state. Accordion content also stays discoverable by the browser's find-in-page.
 
 <Canvas of={AccordionStories.KeepMounted} />
 

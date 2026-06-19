@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxCollapsiblePanelDirective,
-    RdxCollapsiblePanelPresenceDirective,
     RdxCollapsibleRootDirective,
     RdxCollapsibleTriggerDirective
 } from '@radix-ng/primitives/collapsible';
@@ -9,18 +8,11 @@ import {
 @Component({
     selector: 'app-collapsible',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        RdxCollapsibleRootDirective,
-        RdxCollapsibleTriggerDirective,
-        RdxCollapsiblePanelDirective,
-        RdxCollapsiblePanelPresenceDirective
-    ],
+    imports: [RdxCollapsibleRootDirective, RdxCollapsibleTriggerDirective, RdxCollapsiblePanelDirective],
     template: `
         <div [open]="true" rdxCollapsibleRoot>
             <button rdxCollapsibleTrigger>Trigger</button>
-            <ng-template rdxCollapsiblePanelPresence>
-                <div rdxCollapsiblePanel>Content</div>
-            </ng-template>
+            <div rdxCollapsiblePanel>Content</div>
         </div>
     `
 })

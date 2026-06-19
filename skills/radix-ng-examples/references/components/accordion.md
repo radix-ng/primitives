@@ -40,7 +40,7 @@
 - ✅ Expand a single item or multiple items at once.
 - ✅ Can be controlled or uncontrolled.
 - ✅ Emits an event per item when its panel opens or closes (`onOpenChange`).
-- ✅ Can keep collapsed panels mounted in the DOM (`keepMounted`).
+- ✅ Can keep collapsed panels mounted in the DOM while hidden (`keepMounted`).
 
 ## Import
 
@@ -400,8 +400,8 @@ export class AccordionEventsExample {
 
 ### Keep mounted
 
-With `keepMounted`, collapsed panels keep their element in the DOM instead of receiving a `hidden`
-attribute — useful to preserve form state and keep content reachable by the browser's find-in-page.
+With `keepMounted`, collapsed panels keep their element in the DOM while hidden — useful to
+preserve form state. Accordion content also stays discoverable by the browser's find-in-page.
 
 ```typescript
 import { Component } from '@angular/core';
@@ -416,10 +416,8 @@ import {
 import { cn, demoAccordion, demoInput } from '../../storybook/styles';
 
 /**
- * With `keepMounted`, collapsed panels keep their element in the DOM (no `hidden`
- * attribute) instead of being hidden from assistive tech and find-in-page. Type
- * something below, collapse the panel, and reopen it — the value is retained and
- * the field stays reachable by the browser's Ctrl/Cmd+F search.
+ * With `keepMounted`, collapsed panels keep their element in the DOM while hidden.
+ * Type something below, collapse the panel, and reopen it — the value is retained.
  */
 @Component({
     selector: 'accordion-keep-mounted-example',

@@ -1,7 +1,6 @@
 import { LucideUnfoldVertical, LucideX } from '@lucide/angular';
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
-import { RdxCollapsiblePanelPresenceDirective } from '../src/collapsible-panel-presence.directive';
 import { RdxCollapsiblePanelDirective } from '../src/collapsible-panel.directive';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.directive';
@@ -18,7 +17,6 @@ export default {
                 RdxCollapsibleRootDirective,
                 RdxCollapsibleTriggerDirective,
                 RdxCollapsiblePanelDirective,
-                RdxCollapsiblePanelPresenceDirective,
                 RdxCollapsibleExternalTriggeringComponent,
                 RdxCollapsibleAnimationComponent,
                 LucideX,
@@ -55,17 +53,11 @@ export const Default: Story = {
                 </div>
 
                 <div rdxCollapsiblePanel>
-                    <div *rdxCollapsiblePanelPresence>
-                        <div
-                            class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm"
-                        >
-                            <span class="text-sm">&#64;radix-ui/colors</span>
-                        </div>
-                        <div
-                            class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm"
-                        >
-                            <span class="text-sm">&#64;stitches/react</span>
-                        </div>
+                    <div class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm">
+                        <span class="text-sm">&#64;radix-ui/colors</span>
+                    </div>
+                    <div class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm">
+                        <span class="text-sm">&#64;stitches/react</span>
                     </div>
                 </div>
             </div>
@@ -90,9 +82,8 @@ export const Animation: Story = {
 };
 
 /**
- * With `keepMounted`, the closed panel stays in the DOM (no `hidden` attribute) so it can be
- * collapsed with CSS. Here the `data-open` / `data-closed` attributes drive a Tailwind grid-rows
- * height animation — no measurement and no custom CSS required.
+ * With `keepMounted`, the closed panel stays in the DOM with the `hidden` attribute after the
+ * close transition. During transitions, the data attributes drive a Tailwind grid-rows animation.
  */
 export const KeepMounted: Story = {
     render: () => ({

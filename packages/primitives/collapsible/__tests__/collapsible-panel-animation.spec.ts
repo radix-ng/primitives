@@ -24,6 +24,7 @@ describe('RdxCollapsiblePanel — mount + transition', () => {
     let host: Host;
 
     const panel = () => fixture.debugElement.query(By.css('[rdxCollapsiblePanel]')).nativeElement as HTMLElement;
+    const renderedPanel = () => fixture.nativeElement.querySelector('[rdxCollapsiblePanel]') as HTMLElement | null;
 
     function create(open: boolean) {
         fixture = TestBed.createComponent(Host);
@@ -51,10 +52,10 @@ describe('RdxCollapsiblePanel — mount + transition', () => {
         expect(panel().style.animationName).toBe('');
     });
 
-    it('hides the closed panel with a plain hidden attribute by default', () => {
+    it('unmounts the closed panel by default', () => {
         create(false);
 
-        expect(panel().getAttribute('hidden')).toBe('');
+        expect(renderedPanel()).toBeNull();
         expect(panel().getAttribute('data-closed')).toBe('');
     });
 
@@ -63,15 +64,17 @@ describe('RdxCollapsiblePanel — mount + transition', () => {
         host.hiddenUntilFound.set(true);
         fixture.detectChanges();
 
+        expect(renderedPanel()).toBe(panel());
         expect(panel().getAttribute('hidden')).toBe('until-found');
     });
 
-    it('keeps the closed panel visible (no hidden) when keepMounted is set', () => {
+    it('keeps the closed panel mounted and hidden when keepMounted is set', () => {
         create(false);
         host.keepMounted.set(true);
         fixture.detectChanges();
 
-        expect(panel().getAttribute('hidden')).toBeNull();
+        expect(renderedPanel()).toBe(panel());
+        expect(panel().getAttribute('hidden')).toBe('');
     });
 
     it('keeps the panel visible during the exit transition, then hides it', async () => {
@@ -115,7 +118,7 @@ describe('RdxCollapsiblePanel — mount + transition', () => {
         await new Promise<void>((resolve) => setTimeout(resolve));
         await fixture.whenStable();
         fixture.detectChanges();
-        expect(panel().getAttribute('hidden')).toBe('');
+        expect(renderedPanel()).toBeNull();
         expect(panel().getAttribute('data-ending-style')).toBeNull();
     });
 

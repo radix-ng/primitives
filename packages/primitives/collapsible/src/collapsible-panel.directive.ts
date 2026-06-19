@@ -8,6 +8,7 @@ import {
     ElementRef,
     inject,
     input,
+    Renderer2,
     signal,
     untracked
 } from '@angular/core';
@@ -40,13 +41,26 @@ const optionalBoolean = (value: BooleanInput | undefined): boolean | undefined =
 })
 export class RdxCollapsiblePanelDirective {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    private readonly renderer = inject(Renderer2);
+    private readonly destroyRef = inject(DestroyRef);
+    private readonly marker = this.renderer.createComment('rdx-collapsible-panel');
+
+    private parentNode: Node | null = null;
+    private isAttached = true;
 
     protected readonly rootContext = injectCollapsibleRootContext();
 
     /**
+     * Optional explicit panel id. When set, the trigger's `aria-controls` points to this id.
+     *
+     * @group Props
+     */
+    readonly id = input<string | undefined>(undefined, { alias: 'id' });
+
+    /**
      * Whether to keep the element in the DOM while the panel is closed.
-     * When `true`, the closed panel keeps its element (no `hidden` attribute) so the consumer's
-     * `data-closed` CSS is responsible for visually collapsing it.
+     * When `true`, the closed panel keeps its element and receives the `hidden` attribute once the
+     * close transition finishes.
      *
      * @group Props
      * @defaultValue false
@@ -69,15 +83,23 @@ export class RdxCollapsiblePanelDirective {
     readonly height = signal<number | null>(null);
     readonly width = signal<number | null>(null);
 
+    /** Mirrors Base UI's `shouldRender`: hidden panels unmount unless kept for search/measurement. */
+    readonly shouldRender = computed(
+        () =>
+            this.rootContext.keepMounted() ||
+            this.rootContext.hiddenUntilFound() ||
+            this.rootContext.mounted() ||
+            this.rootContext.open()
+    );
+
     /**
-     * The `hidden` attribute value. The panel is shown while open or while its exit transition runs;
-     * a kept-mounted panel stays visible (the consumer collapses it via CSS); otherwise the closed
-     * panel is hidden — with `until-found` when find-in-page support is requested.
+     * The `hidden` attribute value. The panel is shown while open or while its exit transition runs.
+     * A kept-mounted panel remains in the DOM but is still hidden while closed.
      */
     readonly hidden = computed<'' | 'until-found' | undefined>(() => {
         const visible = this.rootContext.open() || this.rootContext.transitionStatus() === 'ending';
 
-        if (visible || this.rootContext.keepMounted()) {
+        if (visible) {
             return undefined;
         }
 
@@ -93,7 +115,34 @@ export class RdxCollapsiblePanelDirective {
 
     constructor() {
         const unregister = this.rootContext.registerTransitionElement(this.elementRef.nativeElement);
-        inject(DestroyRef).onDestroy(unregister);
+        this.destroyRef.onDestroy(unregister);
+
+        this.insertMarker();
+
+        const unlistenBeforeMatch = this.renderer.listen(
+            this.elementRef.nativeElement,
+            'beforematch',
+            (event: Event) => {
+                this.rootContext.setOpen(true, 'none', event);
+            }
+        );
+
+        this.destroyRef.onDestroy(() => {
+            unlistenBeforeMatch();
+            this.removeMarker();
+        });
+
+        effect(() => {
+            this.rootContext.setPanelIdState(this.id());
+        });
+
+        this.destroyRef.onDestroy(() => {
+            this.rootContext.setPanelIdState(undefined);
+        });
+
+        effect(() => {
+            this.syncRenderedState();
+        });
 
         // Forward the Panel inputs into the shared context, but only when the consumer actually
         // sets them — so Accordion's context writes are never clobbered by the Panel defaults.
@@ -119,6 +168,48 @@ export class RdxCollapsiblePanelDirective {
             this.rootContext.open();
             this.updateDimensions();
         });
+    }
+
+    private insertMarker(): void {
+        const host = this.elementRef.nativeElement;
+        const parent = this.renderer.parentNode(host) as Node | null;
+
+        if (!parent) {
+            return;
+        }
+
+        this.parentNode = parent;
+        this.renderer.insertBefore(parent, this.marker, host);
+    }
+
+    private removeMarker(): void {
+        const parent = this.renderer.parentNode(this.marker) as Node | null;
+
+        if (parent) {
+            this.renderer.removeChild(parent, this.marker);
+        }
+    }
+
+    private syncRenderedState(): void {
+        const parent = this.parentNode;
+
+        if (!parent) {
+            return;
+        }
+
+        const host = this.elementRef.nativeElement;
+        const shouldRender = this.shouldRender();
+
+        if (shouldRender && !this.isAttached) {
+            this.renderer.insertBefore(parent, host, this.renderer.nextSibling(this.marker));
+            this.isAttached = true;
+            return;
+        }
+
+        if (!shouldRender && this.isAttached) {
+            this.renderer.removeChild(parent, host);
+            this.isAttached = false;
+        }
     }
 
     private updateDimensions(): void {

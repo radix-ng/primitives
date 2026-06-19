@@ -10,10 +10,8 @@ import {
 import { cn, demoAccordion, demoInput } from '../../storybook/styles';
 
 /**
- * With `keepMounted`, collapsed panels keep their element in the DOM (no `hidden`
- * attribute) instead of being hidden from assistive tech and find-in-page. Type
- * something below, collapse the panel, and reopen it — the value is retained and
- * the field stays reachable by the browser's Ctrl/Cmd+F search.
+ * With `keepMounted`, collapsed panels keep their element in the DOM while hidden.
+ * Type something below, collapse the panel, and reopen it — the value is retained.
  */
 @Component({
     selector: 'accordion-keep-mounted-example',

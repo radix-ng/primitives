@@ -65,20 +65,19 @@ its exit transition before hiding (`data-ending-style` is present while it runs)
 
 ## CSS keyframe animations
 
-Use `@keyframes` when a primitive part is conditionally mounted through a Radix NG presence
-directive, such as `rdxCollapsiblePanelPresence`, or through a structural portal such as
-`*rdxPopoverPortal` / `*rdxTooltipPortal` (which merge portal + presence). The exit animation can go
-on the portal's root element (the positioner) **or any element inside it** (the popup) — see
-[Exit animations](#exit-animations-keyframes-or-transitions) below.
+Use `@keyframes` when a primitive part is conditionally mounted through a Radix NG presence directive
+or through a structural portal such as `*rdxPopoverPortal` / `*rdxTooltipPortal` (which merge portal +
+presence). The exit animation can go on the portal's root element (the positioner) **or any element
+inside it** (the popup) — see [Exit animations](#exit-animations-keyframes-or-transitions) below.
 
 ```html
-<ng-template rdxCollapsiblePanelPresence>
-    <div class="CollapsiblePanel" rdxCollapsiblePanel>...</div>
-</ng-template>
+<div *rdxPopoverPortal rdxPopoverPositioner>
+    <div class="PopoverPopup" rdxPopoverPopup>...</div>
+</div>
 ```
 
 ```css
-@keyframes collapsible-open {
+@keyframes popup-open {
     from {
         height: 0;
         opacity: 0;
@@ -89,7 +88,7 @@ on the portal's root element (the positioner) **or any element inside it** (the 
     }
 }
 
-@keyframes collapsible-close {
+@keyframes popup-close {
     from {
         height: var(--collapsible-panel-height);
         opacity: 1;
@@ -100,13 +99,13 @@ on the portal's root element (the positioner) **or any element inside it** (the 
     }
 }
 
-.CollapsiblePanel[data-open] {
-    animation: collapsible-open 200ms ease-out;
-}
+    .PopoverPopup[data-state='open'] {
+        animation: popup-open 200ms ease-out;
+    }
 
-.CollapsiblePanel[data-closed] {
-    animation: collapsible-close 200ms ease-in;
-}
+    .PopoverPopup[data-state='closed'] {
+        animation: popup-close 200ms ease-in;
+    }
 ```
 
 ### Exit animations: keyframes or transitions

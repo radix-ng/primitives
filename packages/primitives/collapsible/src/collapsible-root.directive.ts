@@ -15,13 +15,21 @@ import {
 } from '@angular/core';
 import {
     BooleanInput,
+    createCancelableChangeEventDetails,
     createContext,
     injectId,
+    RdxCancelableChangeEventDetails,
     RdxTransitionStatus,
     useTransitionStatus
 } from '@radix-ng/primitives/core';
 
 export type RdxCollapsibleState = 'open' | 'closed';
+export type RdxCollapsibleOpenChangeReason = 'trigger-press' | 'none';
+export type RdxCollapsibleOpenChangeEventDetails = RdxCancelableChangeEventDetails<RdxCollapsibleOpenChangeReason>;
+export interface RdxCollapsibleOpenChangeEvent {
+    open: boolean;
+    eventDetails: RdxCollapsibleOpenChangeEventDetails;
+}
 
 export interface CollapsibleRootContext {
     /** Stable id linking the trigger's `aria-controls` to the panel. */
@@ -39,7 +47,9 @@ export interface CollapsibleRootContext {
      */
     keepMounted: WritableSignal<boolean>;
     hiddenUntilFound: WritableSignal<boolean>;
-    toggle: () => void;
+    toggle: (event: Event, trigger?: HTMLElement) => void;
+    setOpen: (open: boolean, reason: RdxCollapsibleOpenChangeReason, event: Event, trigger?: HTMLElement) => boolean;
+    setPanelIdState: (id: string | undefined) => void;
     /** Registers the panel element whose transition duration gates the close completion. */
     registerTransitionElement: (element: HTMLElement) => () => void;
 }
@@ -53,24 +63,22 @@ const rootContext = (): CollapsibleRootContext => {
     const instance = inject(RdxCollapsibleRootDirective);
 
     return {
-        panelId: instance.panelId,
+        panelId: instance.resolvedPanelId,
         open: instance.open,
         disabled: instance.disabled,
         transitionStatus: instance.transitionStatus,
         mounted: instance.mounted,
         keepMounted: instance.keepMountedContext,
         hiddenUntilFound: instance.hiddenUntilFoundContext,
+        setOpen: (open, reason, event, trigger) => instance.setOpen(open, reason, event, trigger),
+        setPanelIdState: (id) => instance.setPanelIdState(id),
         registerTransitionElement: (element) => instance.registerTransitionElement(element),
-        toggle: () => {
+        toggle: (event, trigger) => {
             if (instance.disabled()) {
                 return;
             }
 
-            untracked(() => {
-                instance.open.set(!instance.open());
-            });
-
-            instance.onOpenChange.emit(instance.open());
+            instance.setOpen(!instance.open(), 'trigger-press', event, trigger);
         }
     };
 };
@@ -92,6 +100,9 @@ const rootContext = (): CollapsibleRootContext => {
 })
 export class RdxCollapsibleRootDirective {
     private readonly transition = useTransitionStatus((open) => this.onOpenChangeComplete.emit(open));
+
+    private readonly generatedPanelId = injectId('rdx-collapsible-panel-');
+    private readonly panelIdState = signal<string | undefined>(undefined);
 
     /** Reactive open/close transition phase (`'starting'` | `'ending'` | `undefined`). */
     readonly transitionStatus = this.transition.status;
@@ -126,7 +137,10 @@ export class RdxCollapsibleRootDirective {
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /** Stable id linking the trigger's `aria-controls` to the panel. */
-    readonly panelId = input<string>(injectId('rdx-collapsible-panel-'));
+    readonly panelId = input<string | undefined>(undefined);
+
+    /** Stable id linking the trigger's `aria-controls` to the panel. */
+    readonly resolvedPanelId = computed(() => this.panelIdState() ?? this.panelId() ?? this.generatedPanelId);
 
     /** Composition fallbacks (see {@link CollapsibleRootContext}). Default `false`. */
     readonly keepMountedContext = signal(false);
@@ -140,7 +154,7 @@ export class RdxCollapsibleRootDirective {
      *
      * @group Emits
      */
-    readonly onOpenChange = output<boolean>();
+    readonly onOpenChange = output<RdxCollapsibleOpenChangeEvent>();
 
     /**
      * Event handler called after the open/close transition has finished.
@@ -151,6 +165,30 @@ export class RdxCollapsibleRootDirective {
 
     private hasAppliedDefaultOpen = false;
     private previousOpen = this.open();
+
+    setPanelIdState(id: string | undefined): void {
+        this.panelIdState.set(id);
+    }
+
+    setOpen(nextOpen: boolean, reason: RdxCollapsibleOpenChangeReason, event: Event, trigger?: HTMLElement): boolean {
+        if (nextOpen === this.open()) {
+            return true;
+        }
+
+        const { eventDetails } = createCancelableChangeEventDetails(reason, event, trigger);
+
+        this.onOpenChange.emit({ open: nextOpen, eventDetails });
+
+        if (eventDetails.isCanceled()) {
+            return false;
+        }
+
+        untracked(() => {
+            this.open.set(nextOpen);
+        });
+
+        return true;
+    }
 
     constructor() {
         effect(() => {

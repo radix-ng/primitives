@@ -8,8 +8,8 @@ import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.direc
     standalone: true,
     imports: [RdxCollapsibleRootDirective, RdxCollapsibleTriggerDirective],
     template: `
-        <div CollapsibleRoot>
-            <button CollapsibleTrigger>Trigger</button>
+        <div rdxCollapsibleRoot>
+            <button rdxCollapsibleTrigger>Trigger</button>
         </div>
     `
 })

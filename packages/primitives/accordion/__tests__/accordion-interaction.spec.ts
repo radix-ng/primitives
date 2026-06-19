@@ -496,12 +496,11 @@ describe('RdxAccordion — keepMounted', () => {
         expect(content().getAttribute('hidden')).toBe('until-found');
     });
 
-    it('does not set hidden on closed content when keepMounted=true', () => {
+    it('keeps closed content mounted with hiddenUntilFound when keepMounted=true', () => {
         fixture.componentInstance.keep.set(true);
         fixture.detectChanges();
 
-        expect(content().getAttribute('hidden')).toBeNull();
-        // still reports closed state so consumer CSS can collapse it
+        expect(content().getAttribute('hidden')).toBe('until-found');
         expect(content().getAttribute('data-state')).toBe('closed');
     });
 
