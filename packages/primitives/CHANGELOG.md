@@ -1,3 +1,23 @@
+## 1.0.4 (2026-06-19)
+
+### 🚀 Features
+
+- ⚠️  **accordion:** align with Base UI part set ([5d922145](https://github.com/radix-ng/primitives/commit/5d922145))
+
+### ⚠️  Breaking Changes
+
+- **accordion:** align with Base UI part set  ([5d922145](https://github.com/radix-ng/primitives/commit/5d922145))
+  data-state replaced by data-open/data-panel-open;
+  RdxAccordionContentDirective →
+  RdxAccordionPanelDirective ([rdxAccordionContent] → [rdxAccordionPanel]);
+  onValueChange/onOpenChange now
+  emit { value|open, eventDetails }; CSS vars --radix-accordion-content-* → --accordion-panel-*; type,
+  collapsible and id inputs removed (use multiple).
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 1.0.3 (2026-06-19)
 
 ### 🚀 Features
