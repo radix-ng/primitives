@@ -389,7 +389,7 @@ describe('RdxAccordion — data-index', () => {
     });
 });
 
-// ─── loopFocus ───────────────────────────────────────────────────────────────
+// ─── keyboard focus ──────────────────────────────────────────────────────────
 
 @Component({
     imports: [
@@ -416,7 +416,7 @@ class LoopFocusHost {
     readonly loop = signal(true);
 }
 
-describe('RdxAccordion — loopFocus', () => {
+describe('RdxAccordion — keyboard focus', () => {
     let fixture: ComponentFixture<LoopFocusHost>;
 
     const triggers = () =>
@@ -427,24 +427,33 @@ describe('RdxAccordion — loopFocus', () => {
         fixture.detectChanges();
     });
 
-    it('wraps focus to first trigger when ArrowDown on last (loopFocus=true)', () => {
-        const last = triggers()[1];
-        last.focus();
-        last.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
-        fixture.detectChanges();
+    it.each(['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Home', 'End'])(
+        'does not manage focus on %s',
+        (key) => {
+            const first = triggers()[0];
+            const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true });
 
-        expect(document.activeElement).toBe(triggers()[0]);
-    });
+            first.focus();
+            first.dispatchEvent(event);
+            fixture.detectChanges();
 
-    it('does not wrap focus when ArrowDown on last (loopFocus=false)', () => {
+            expect(event.defaultPrevented).toBe(false);
+            expect(document.activeElement).toBe(first);
+        }
+    );
+
+    it('keeps loopFocus as a deprecated no-op', () => {
         fixture.componentInstance.loop.set(false);
         fixture.detectChanges();
 
         const last = triggers()[1];
+        const event = new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true });
+
         last.focus();
-        last.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+        last.dispatchEvent(event);
         fixture.detectChanges();
 
+        expect(event.defaultPrevented).toBe(false);
         expect(document.activeElement).toBe(last);
     });
 });

@@ -12,7 +12,7 @@ import {
     WritableSignal
 } from '@angular/core';
 import { injectCollapsibleRootContext, RdxCollapsibleRootDirective } from '@radix-ng/primitives/collapsible';
-import { BooleanInput, createContext, useArrowNavigation } from '@radix-ng/primitives/core';
+import { BooleanInput, createContext } from '@radix-ng/primitives/core';
 import { injectAccordionRootContext } from './accordion-root.directive';
 
 export type RdxAccordionItemState = 'open' | 'closed';
@@ -67,14 +67,7 @@ const itemContext = (): AccordionItemContext => {
         '[attr.data-orientation]': 'rootContext.orientation()',
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
         '[attr.data-state]': 'dataState()',
-        '[attr.data-index]': 'index()',
-
-        '(keydown.arrowDown)': 'handleArrowKey($event)',
-        '(keydown.arrowUp)': 'handleArrowKey($event)',
-        '(keydown.arrowLeft)': 'handleArrowKey($event)',
-        '(keydown.arrowRight)': 'handleArrowKey($event)',
-        '(keydown.home)': 'handleArrowKey($event)',
-        '(keydown.end)': 'handleArrowKey($event)'
+        '[attr.data-index]': 'index()'
     }
 })
 export class RdxAccordionItemDirective {
@@ -152,27 +145,4 @@ export class RdxAccordionItemDirective {
     updateOpen = () => {
         this.collapsibleContext.open.set(this.open());
     };
-
-    handleArrowKey(event: Event) {
-        const keyEvent = event as KeyboardEvent;
-        const target = event.target as HTMLElement;
-        const allCollectionItems: HTMLElement[] = Array.from(
-            this.rootContext.elementRef.nativeElement?.querySelectorAll('[data-rdx-collection-item]') ?? []
-        );
-
-        const collectionItemIndex = allCollectionItems.findIndex((item) => item === target);
-        if (collectionItemIndex === -1) return;
-
-        useArrowNavigation(
-            keyEvent,
-            this.elementRef.nativeElement.querySelector('[data-rdx-collection-item]')!,
-            this.rootContext.elementRef.nativeElement,
-            {
-                arrowKeyOptions: this.rootContext.orientation(),
-                dir: this.rootContext.direction(),
-                loop: this.rootContext.loopFocus(),
-                focus: true
-            }
-        );
-    }
 }

@@ -13,24 +13,14 @@ import {
     output,
     Signal
 } from '@angular/core';
-import {
-    AcceptableValue,
-    BooleanInput,
-    createContext,
-    DataOrientation,
-    Direction,
-    injectId
-} from '@radix-ng/primitives/core';
-import { injectDirection } from '@radix-ng/primitives/direction-provider';
+import { AcceptableValue, BooleanInput, createContext, DataOrientation, injectId } from '@radix-ng/primitives/core';
 
 export type AccordionRootContext = {
     disabled: InputSignalWithTransform<boolean, BooleanInput>;
-    direction: Signal<Direction>;
     orientation: InputSignal<DataOrientation>;
     value: ModelSignal<AcceptableValue | AcceptableValue[] | undefined>;
     collapsible: Signal<boolean>;
     isSingle: Signal<boolean>;
-    loopFocus: InputSignalWithTransform<boolean, BooleanInput>;
     keepMounted: InputSignalWithTransform<boolean, BooleanInput>;
     elementRef: ElementRef<HTMLElement>;
     changeModelValue: (value: string) => void;
@@ -46,13 +36,11 @@ const rootContext = (): AccordionRootContext => {
 
     return {
         disabled: instance.disabled,
-        direction: instance.dir,
         collapsible: instance.collapsible,
         orientation: instance.orientation,
         elementRef: instance.elementRef,
         value: instance.value,
         isSingle: instance.isSingle,
-        loopFocus: instance.loopFocus,
         keepMounted: instance.keepMounted,
         changeModelValue: instance.changeModelValue
     };
@@ -75,14 +63,6 @@ export class RdxAccordionRootDirective {
 
     readonly id = input<string>(injectId('rdx-accordion-'));
 
-    /**
-     * The reading direction of the accordion when applicable. If omitted, assumes LTR (left-to-right) reading mode.
-     *
-     * @group Props
-     */
-    readonly dirInput = input<Direction | undefined>(undefined, { alias: 'dir' });
-    readonly dir: Signal<Direction> = injectDirection(this.dirInput);
-
     /** Whether the Accordion is disabled.
      * @defaultValue false
      * @group Props
@@ -92,8 +72,12 @@ export class RdxAccordionRootDirective {
     /**
      * The orientation of the accordion.
      *
+     * Deprecated following the APG guidance update to remove roving focus.
+     * This prop no longer affects keyboard focus behavior.
+     *
      * @defaultValue 'vertical'
      * @group Props
+     * @deprecated
      */
     readonly orientation = input<DataOrientation>('vertical');
 
@@ -139,10 +123,12 @@ export class RdxAccordionRootDirective {
     readonly multiple = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
-     * Whether keyboard focus wraps from the last item to the first and vice versa.
+     * Deprecated following the APG guidance update to remove roving focus.
+     * This prop no longer affects keyboard focus behavior.
      *
      * @defaultValue true
      * @group Props
+     * @deprecated
      */
     readonly loopFocus = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
 
