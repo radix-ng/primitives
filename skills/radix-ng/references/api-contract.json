@@ -3515,6 +3515,9 @@
           "selector": "[rdxMenuCheckboxItem]",
           "exportAs": "rdxMenuCheckboxItem",
           "description": "A menu item that can be checked or unchecked.",
+          "hostDirectives": [
+            "RdxCompositeListItem"
+          ],
           "inputs": [
             {
               "name": "checked",
@@ -3573,6 +3576,9 @@
           "selector": "[rdxMenuItem]",
           "exportAs": "rdxMenuItem",
           "description": "An individual menu item.",
+          "hostDirectives": [
+            "RdxCompositeListItem"
+          ],
           "inputs": [
             {
               "name": "closeOnClick",
@@ -3606,6 +3612,9 @@
           "selector": "a[rdxMenuLinkItem]",
           "exportAs": "rdxMenuLinkItem",
           "description": "A menu item that renders as a link.",
+          "hostDirectives": [
+            "RdxCompositeListItem"
+          ],
           "inputs": [
             {
               "name": "closeOnClick",
@@ -3642,7 +3651,8 @@
           "hostDirectives": [
             "RdxPopperContent",
             "RdxFloatingNodeRegistration",
-            "RdxFloatingFocusManager"
+            "RdxFloatingFocusManager",
+            "RdxCompositeList"
           ],
           "inputs": [],
           "outputs": [
@@ -3833,6 +3843,9 @@
           "selector": "[rdxMenuRadioItem]",
           "exportAs": "rdxMenuRadioItem",
           "description": "A radio item within a menu radio group.",
+          "hostDirectives": [
+            "RdxCompositeListItem"
+          ],
           "inputs": [
             {
               "name": "closeOnClick",
@@ -3960,7 +3973,8 @@
           "exportAs": "rdxMenuSubTrigger",
           "description": "An item inside a parent menu that opens a nested submenu.\n\nPlace this inside `ng-container rdxMenuRoot` that wraps both the trigger\nand the submenu positioner. The inner root provides the submenu context;\nthe outer popup discovers this element via `[rdxMenuSubTrigger]` in its\nITEM_SELECTOR and includes it in keyboard navigation.",
           "hostDirectives": [
-            "RdxPopperAnchor"
+            "RdxPopperAnchor",
+            "RdxCompositeListItem"
           ],
           "inputs": [
             {

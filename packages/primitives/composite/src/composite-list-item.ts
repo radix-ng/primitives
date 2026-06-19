@@ -1,4 +1,15 @@
-import { computed, Directive, effect, ElementRef, inject, input, linkedSignal, untracked } from '@angular/core';
+import {
+    afterNextRender,
+    computed,
+    Directive,
+    effect,
+    ElementRef,
+    inject,
+    input,
+    linkedSignal,
+    signal,
+    untracked
+} from '@angular/core';
 import { injectRdxCompositeListContext } from './composite-list';
 import { RdxCompositeItemMetadata } from './types';
 
@@ -12,6 +23,7 @@ import { RdxCompositeItemMetadata } from './types';
 export class RdxCompositeListItem {
     private readonly listContext = injectRdxCompositeListContext(true);
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    private readonly hasRendered = signal(false);
 
     /** Arbitrary metadata included in the list's ordered item map. */
     readonly metadataInput = input<RdxCompositeItemMetadata | null | undefined>(undefined, { alias: 'metadata' });
@@ -24,9 +36,13 @@ export class RdxCompositeListItem {
     });
 
     constructor() {
+        afterNextRender(() => {
+            this.hasRendered.set(true);
+        });
+
         effect((onCleanup) => {
             const listContext = this.listContext;
-            if (!listContext || !this.inListElement()) {
+            if (!listContext || !this.hasRendered() || !this.inListElement()) {
                 return;
             }
 

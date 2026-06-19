@@ -69,6 +69,7 @@ export class RdxMenuTrigger {
     private openedByHover = false;
     private ignoreNextClick: 'mouse' | 'keyboard' | null = null;
     private readonly handleDocumentMouseUp = (event: MouseEvent): void => {
+        clearTimeout(this.allowMouseUpTriggerTimer);
         this.allowMouseUpTriggerTimer = undefined;
         this.rootContext.setAllowMouseUpTrigger(false);
 

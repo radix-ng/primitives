@@ -81,6 +81,7 @@ export interface RdxMenuOpenChange {
 export interface RdxMenuRootContext {
     isOpen: Signal<boolean>;
     present: Signal<boolean>;
+    activeIndex: Signal<number | null>;
     disabled: Signal<boolean>;
     modal: Signal<boolean>;
     loopFocus: Signal<boolean>;
@@ -108,6 +109,7 @@ export interface RdxMenuRootContext {
     beforeContentFocusGuard: Signal<HTMLElement | null>;
     transitionStatus: Signal<RdxMenuTransitionStatus>;
     close: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
+    setActiveIndex: (index: number | null) => void;
     /** Close this menu and every ancestor — used by item selection (the whole menu dismisses). */
     closeEntireMenu: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
     toggle: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
@@ -153,6 +155,7 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
     return {
         isOpen: instance.open,
         present: instance.present,
+        activeIndex: instance.activeIndex.asReadonly(),
         disabled: instance.effectiveDisabled,
         modal: instance.effectiveModal,
         loopFocus: instance.loopFocus,
@@ -174,6 +177,7 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         beforeContentFocusGuard: instance.beforeContentFocusGuard.asReadonly(),
         transitionStatus: instance.transitionStatus,
         close: (reason, event) => instance.close(reason, event),
+        setActiveIndex: (index) => instance.setActiveIndex(index),
         closeEntireMenu: (reason, event) => instance.closeEntireMenu(reason, event),
         toggle: (reason, event) => instance.toggle(reason, event),
         show: (autoFocus, reason, event) => instance.show(autoFocus, reason, event),
@@ -212,7 +216,7 @@ const contextFactory = () => buildContext(inject(RdxMenuRoot));
 })
 export class RdxMenuRoot {
     private readonly popper = inject(RdxPopper);
-    private readonly parentRoot = inject(RdxMenuRoot, { optional: true, skipSelf: true });
+    readonly parentRoot = inject(RdxMenuRoot, { optional: true, skipSelf: true });
     private readonly providedDirection = injectDirection();
 
     /**
@@ -273,6 +277,7 @@ export class RdxMenuRoot {
     readonly popupElement = signal<HTMLElement | undefined>(undefined);
     readonly beforeContentFocusGuard = signal<HTMLElement | null>(null);
     readonly transitionStatus = this.transition.status;
+    readonly activeIndex = signal<number | null>(null);
     /** Whether the popup grabs focus when it opens. Set false for menubar hover-switching. */
     readonly autoFocus = signal<RdxMenuAutoFocus>('first');
     readonly isSubmenu = signal(false);
@@ -340,6 +345,12 @@ export class RdxMenuRoot {
         effect(() => {
             if (this.open() && this.preventUnmountOnClose()) {
                 this.preventUnmountOnClose.set(false);
+            }
+        });
+
+        effect(() => {
+            if (!this.open()) {
+                this.activeIndex.set(null);
             }
         });
 
@@ -419,6 +430,16 @@ export class RdxMenuRoot {
 
     markAsContextMenu(): void {
         this.isContextMenu.set(true);
+    }
+
+    setActiveIndex(index: number | null): void {
+        if (this.effectiveDisabled() && index !== null) {
+            return;
+        }
+
+        if (this.activeIndex() !== index) {
+            this.activeIndex.set(index);
+        }
     }
 
     setAllowMouseUpTrigger(value: boolean): void {
@@ -538,6 +559,7 @@ export class RdxMenuRoot {
         }
 
         if (autoFocus === 'popup') {
+            this.setActiveIndex(null);
             popup.focus({ preventScroll: true });
             return;
         }

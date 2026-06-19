@@ -11576,7 +11576,7 @@ export class RdxMenuDefaultComponent {
 - ✅ Closes on Escape (restoring focus to the trigger), outside pointer interaction, and Tab.
 - ✅ Full keyboard navigation: ArrowDown, ArrowUp, Home, End, and character typeahead.
 - ✅ Focus loop at list boundaries, configurable with `loopFocus`.
-- ✅ Skips disabled items during keyboard navigation.
+- ✅ Includes disabled items in keyboard navigation while preventing activation.
 - ✅ `closeOnClick` per item — defaults to `true` for regular items, `false` for checkbox, radio, and link items.
 - ✅ Checkbox items toggle state independently; radio groups enforce single selection.
 - ✅ Grouped items with optional group labels and visual separators.
@@ -11753,7 +11753,7 @@ indeterminate state is supported when only some items in a related set are selec
 
 Group items visually and semantically with `rdxMenuGroup` and label them with `rdxMenuGroupLabel`.
 The label automatically supplies the group's `aria-labelledby` relationship.
-Disabled items are skipped by keyboard navigation and styled via `data-disabled`.
+Disabled items remain in keyboard navigation, expose `data-disabled` / `aria-disabled`, and cannot be activated.
 
 ```html
 <menu-with-labels-items-story />
@@ -12377,13 +12377,13 @@ context — no inputs.
 
 | Key | Description |
 | --- | --- |
-| `Enter` / `Space` | On the trigger: toggles the menu open/closed (non-native-button elements only). On a focused item or sub-trigger: activates the item. |
+| `Enter` / `Space` | On the trigger: toggles the menu open/closed. Native button triggers use the browser keyboard click; non-native triggers handle the keys directly. On a focused item or sub-trigger: activates the item. |
 | `ArrowDown` | On the trigger: opens the menu and moves focus to the first item. Inside the popup: moves focus to the next item, wrapping to the first when `loopFocus` is enabled. |
 | `ArrowUp` | On the trigger: opens the menu and moves focus to the last item. Inside the popup: moves focus to the previous item, wrapping to the last when `loopFocus` is enabled. |
 | `ArrowRight` | On a sub-trigger: opens the submenu and moves focus into it. Inside the popup (menubar context): delegates to the menubar for sibling menu navigation. |
 | `ArrowLeft` | Inside a submenu popup: closes the submenu and returns focus to the sub-trigger. In a menubar context: delegates to the menubar for sibling menu navigation. |
-| `Home` | Inside the popup: moves focus to the first enabled item. |
-| `End` | Inside the popup: moves focus to the last enabled item. |
+| `Home` | Inside the popup: moves focus to the first item. |
+| `End` | Inside the popup: moves focus to the last item. |
 | `Escape` | Inside the popup: closes the menu (and optionally its parent when `closeParentOnEsc` is set) and returns focus to the trigger. |
 | `Tab` | Inside the popup: closes the menu and allows natural tab navigation to continue. |
 | Character keys | Inside the popup: typeahead — jumps focus to the first item whose label starts with the typed character(s). |

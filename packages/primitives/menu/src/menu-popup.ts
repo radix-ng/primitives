@@ -1,5 +1,6 @@
 import { computed, DestroyRef, Directive, effect, ElementRef, inject, output } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
+import { RdxCompositeList } from '@radix-ng/primitives/composite';
 import {
     RDX_FLOATING_REGISTRATION,
     RDX_FLOATING_ROOT_CONTEXT,
@@ -13,7 +14,7 @@ import {
 } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
-import { getFocusableMenuItems } from './menu-focus';
+import { getCompositeMenuItems, getDomMenuItems, getFocusableMenuItems, RdxMenuCompositeItem } from './menu-focus';
 import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
 
 /**
@@ -22,7 +23,7 @@ import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
 @Directive({
     selector: '[rdxMenuPopup]',
     exportAs: 'rdxMenuPopup',
-    hostDirectives: [RdxPopperContent, RdxFloatingNodeRegistration, RdxFloatingFocusManager],
+    hostDirectives: [RdxPopperContent, RdxFloatingNodeRegistration, RdxFloatingFocusManager, RdxCompositeList],
     providers: [
         provideFloatingFocusManagerConfig(() => {
             const rootContext = injectRdxMenuRootContext();
@@ -103,6 +104,7 @@ export class RdxMenuPopup {
     private readonly registration = inject(RDX_FLOATING_REGISTRATION, { optional: true });
     private readonly focusManager = inject(RdxFloatingFocusManager);
     private readonly focusScope = inject(RdxFocusScope);
+    private readonly compositeList = inject(RdxCompositeList, { self: true });
     private readonly wrapper = inject(RdxPopperContentWrapper, { optional: true });
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private search = '';
@@ -241,10 +243,12 @@ export class RdxMenuPopup {
     }
 
     protected handleKeydown(event: KeyboardEvent): void {
-        const el = this.elementRef.nativeElement;
-        const items = getFocusableMenuItems(el);
-        const current = el.ownerDocument.activeElement as HTMLElement;
-        const currentIndex = items.indexOf(current);
+        if (this.rootContext.disabled()) {
+            return;
+        }
+
+        const items = this.menuItems();
+        const currentIndex = this.currentItemIndex(items);
 
         switch (event.key) {
             case 'ArrowDown': {
@@ -256,7 +260,7 @@ export class RdxMenuPopup {
                         ? items[0]
                         : items[items.length - 1]
                     : items[currentIndex + 1];
-                next?.focus({ preventScroll: true });
+                this.focusMenuItem(next);
                 break;
             }
             case 'ArrowUp': {
@@ -268,19 +272,19 @@ export class RdxMenuPopup {
                         ? items[items.length - 1]
                         : items[0]
                     : items[currentIndex - 1];
-                prev?.focus({ preventScroll: true });
+                this.focusMenuItem(prev);
                 break;
             }
             case 'Home': {
                 event.preventDefault();
                 event.stopPropagation();
-                items[0]?.focus({ preventScroll: true });
+                this.focusMenuItem(items[0]);
                 break;
             }
             case 'End': {
                 event.preventDefault();
                 event.stopPropagation();
-                items[items.length - 1]?.focus({ preventScroll: true });
+                this.focusMenuItem(items[items.length - 1]);
                 break;
             }
             case 'ArrowLeft': {
@@ -348,11 +352,8 @@ export class RdxMenuPopup {
                         this.search.length > 1 && [...this.search].every((c) => c === char) ? char : this.search;
                     const startIndex = currentIndex >= 0 ? currentIndex + 1 : 0;
                     const rotated = [...items.slice(startIndex), ...items.slice(0, startIndex)];
-                    const match = rotated.find((item) => {
-                        const text = (item.dataset['label'] ?? item.textContent?.trim() ?? '').toLowerCase();
-                        return text.startsWith(query);
-                    });
-                    match?.focus({ preventScroll: true });
+                    const match = rotated.find((item) => item.label.startsWith(query));
+                    this.focusMenuItem(match);
                 }
                 break;
             }
@@ -377,7 +378,7 @@ export class RdxMenuPopup {
             return;
         }
 
-        const items = getFocusableMenuItems(popup);
+        const items = this.menuItems();
         if (items.length === 0) {
             if (attempt < maxAttempts) {
                 this.scheduleSubmenuKeyboardFocus(attempt + 1);
@@ -385,6 +386,33 @@ export class RdxMenuPopup {
             return;
         }
 
-        items[0]?.focus({ preventScroll: true });
+        this.focusMenuItem(items[0]);
+    }
+
+    private menuItems(): RdxMenuCompositeItem[] {
+        const compositeItems = getCompositeMenuItems(this.compositeList);
+
+        return compositeItems.length > 0 ? compositeItems : getDomMenuItems(this.elementRef.nativeElement);
+    }
+
+    private currentItemIndex(items: readonly RdxMenuCompositeItem[]): number {
+        const current = this.elementRef.nativeElement.ownerDocument.activeElement as HTMLElement | null;
+        const focusedIndex = items.findIndex((item) => item.element === current);
+
+        if (focusedIndex !== -1) {
+            return focusedIndex;
+        }
+
+        const activeIndex = this.rootContext.activeIndex();
+        return items.findIndex((item) => item.index === activeIndex);
+    }
+
+    private focusMenuItem(item: RdxMenuCompositeItem | undefined): void {
+        if (!item) {
+            return;
+        }
+
+        this.rootContext.setActiveIndex(item.index);
+        item.element.focus({ preventScroll: true });
     }
 }

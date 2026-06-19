@@ -12,6 +12,7 @@ import {
     PLATFORM_ID,
     signal
 } from '@angular/core';
+import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { getFocusableMenuItems } from './menu-focus';
@@ -38,15 +39,14 @@ const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();
 @Directive({
     selector: '[rdxMenuSubTrigger]',
     exportAs: 'rdxMenuSubTrigger',
-    hostDirectives: [RdxPopperAnchor],
+    hostDirectives: [RdxPopperAnchor, RdxCompositeListItem],
     host: {
         '[attr.type]': 'nativeButtonState() ? "button" : undefined',
         role: 'menuitem',
-        tabindex: '-1',
+        '[attr.tabindex]': 'parentMenuRoot?.open() && highlighted() ? 0 : -1',
         '[attr.aria-haspopup]': '"menu"',
         '[attr.aria-expanded]': 'submenuContext.isOpen()',
         '[attr.aria-disabled]': 'effectiveDisabled() ? true : undefined',
-        '[attr.disabled]': 'nativeButtonState() && effectiveDisabled() ? "" : undefined',
         '[attr.data-state]': 'submenuContext.isOpen() ? "open" : "closed"',
         '[attr.data-popup-open]': 'submenuContext.isOpen() ? "" : undefined',
         '[attr.data-highlighted]': 'highlighted() ? "" : undefined',
@@ -56,6 +56,7 @@ const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();
         '(blur)': 'onBlur()',
         '(click)': 'onClick($event)',
         '(keydown.enter)': 'onEnter($event)',
+        '(keydown.space)': 'onEnter($event)',
         '(keydown.arrowleft)': 'onArrowLeft($event)',
         '(keydown.arrowright)': 'onArrowRight($event)',
         '(pointermove)': 'onPointerMove($event)',
@@ -66,6 +67,8 @@ const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();
 export class RdxMenuSubTrigger {
     protected readonly submenuContext = injectRdxMenuRootContext();
     private readonly submenuRoot = inject(RdxMenuRoot);
+    protected readonly parentMenuRoot = this.submenuRoot.parentRoot;
+    private readonly listItem = inject(RdxCompositeListItem, { self: true });
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly destroyRef = inject(DestroyRef);
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -96,8 +99,13 @@ export class RdxMenuSubTrigger {
     /** Explicit typeahead label. When set, overrides textContent for character search. */
     readonly label = input<string | undefined>(undefined);
 
-    /** Highlighted when focused OR while the submenu is open. */
-    protected readonly highlighted = computed(() => this.isFocused() || this.submenuContext.isOpen());
+    /** Highlighted when active in the parent menu or while the submenu is open. */
+    protected readonly highlighted = computed(
+        () =>
+            this.parentMenuRoot?.activeIndex() === this.listItem.index() ||
+            this.isFocused() ||
+            this.submenuContext.isOpen()
+    );
     protected readonly effectiveDisabled = computed(() => this.disabled() || this.submenuContext.disabled());
     protected readonly nativeButtonState = computed(
         () => this.nativeButton() || this.elementRef.nativeElement.tagName === 'BUTTON'
@@ -114,6 +122,14 @@ export class RdxMenuSubTrigger {
             onCleanup(() => {
                 unregister();
                 submenuRootsByTrigger.delete(el);
+            });
+        });
+
+        effect(() => {
+            this.listItem.setMetadata({
+                type: 'submenu-trigger',
+                disabled: this.effectiveDisabled(),
+                label: this.label()
             });
         });
 
@@ -185,14 +201,18 @@ export class RdxMenuSubTrigger {
     }
 
     protected onFocus(): void {
-        if (!this.effectiveDisabled()) {
-            this.clearSiblingHighlights();
-            this.isFocused.set(true);
+        if (this.submenuContext.disabled()) {
+            return;
         }
+
+        this.clearSiblingHighlights();
+        this.isFocused.set(true);
+        this.setParentActiveIndex();
     }
 
     protected onBlur(): void {
         this.isFocused.set(false);
+        this.clearParentActiveIndex();
     }
 
     protected onClick(event: MouseEvent): void {
@@ -287,6 +307,7 @@ export class RdxMenuSubTrigger {
 
         this.lastPointer = { x: event.clientX, y: event.clientY };
         this.clearSiblingHighlights();
+        this.setParentActiveIndex();
         const el = this.elementRef.nativeElement;
         if (this.submenuContext.highlightItemOnHover() && el.ownerDocument.activeElement !== el) {
             el.focus({ preventScroll: true });
@@ -308,6 +329,7 @@ export class RdxMenuSubTrigger {
 
     protected clearHighlight(): void {
         this.isFocused.set(false);
+        this.clearParentActiveIndex();
     }
 
     private closeSiblingSubmenus(): void {
@@ -376,6 +398,21 @@ export class RdxMenuSubTrigger {
             requestAnimationFrame(run);
         } else {
             setTimeout(run);
+        }
+    }
+
+    private setParentActiveIndex(): void {
+        const index = this.listItem.index();
+        if (index === -1 || !this.parentMenuRoot || this.parentMenuRoot.effectiveDisabled()) {
+            return;
+        }
+
+        this.parentMenuRoot.setActiveIndex(index);
+    }
+
+    private clearParentActiveIndex(): void {
+        if (this.parentMenuRoot?.activeIndex() === this.listItem.index()) {
+            this.parentMenuRoot.setActiveIndex(null);
         }
     }
 }

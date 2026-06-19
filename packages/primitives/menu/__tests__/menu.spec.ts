@@ -69,6 +69,49 @@ class BasicMenuComponent {
 @Component({
     imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
     template: `
+        <div #root="rdxMenuRoot" [(open)]="open" rdxMenuRoot>
+            <button rdxMenuTrigger>Open</button>
+
+            @if (root.open()) {
+                <div rdxMenuPositioner>
+                    <div rdxMenuPopup>
+                        <button [closeOnClick]="false" (onSelect)="selected.push('a')" rdxMenuItem>Alpha</button>
+                    </div>
+                </div>
+            }
+        </div>
+    `
+})
+class NonClosingItemMenuComponent {
+    open = false;
+    selected: string[] = [];
+}
+
+@Component({
+    imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuLinkItem],
+    template: `
+        <div #root="rdxMenuRoot" [(open)]="open" rdxMenuRoot>
+            <button rdxMenuTrigger>Open</button>
+
+            @if (root.open()) {
+                <div rdxMenuPositioner>
+                    <div rdxMenuPopup>
+                        <a (onSelect)="selected.push('alpha')" href="#alpha" rdxMenuLinkItem>Alpha</a>
+                        <a (onSelect)="selected.push('beta')" href="#beta" rdxMenuLinkItem>Beta</a>
+                    </div>
+                </div>
+            }
+        </div>
+    `
+})
+class LinkMenuComponent {
+    open = false;
+    selected: string[] = [];
+}
+
+@Component({
+    imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
+    template: `
         <button data-testid="previous">Previous</button>
         <div #root="rdxMenuRoot" [(open)]="open" rdxMenuRoot>
             <button rdxMenuTrigger>Open</button>
@@ -389,6 +432,18 @@ describe('Menu', () => {
             expect(document.activeElement).toBe(items[1]);
         });
 
+        it('focuses the first item after opening with Space', async () => {
+            trigger.focus();
+            keydown(trigger, ' ');
+            trigger.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, detail: 0 }));
+            fixture.detectChanges();
+            await nextFrame();
+            fixture.detectChanges();
+
+            const items: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('[rdxMenuItem]'));
+            expect(document.activeElement).toBe(items[0]);
+        });
+
         it('closes through trigger-side focus guards when focus leaves the popup', async () => {
             const focusFixture = TestBed.createComponent(FocusGuardMenuComponent);
             focusFixture.detectChanges();
@@ -613,12 +668,17 @@ describe('Menu', () => {
             disabledFixture.destroy();
         });
 
-        it('items have role="menuitem" and tabindex="-1"', () => {
+        it('items have role="menuitem" and expose roving tabindex from the active index', () => {
             const items: NodeListOf<HTMLElement> = fixture.nativeElement.querySelectorAll('[rdxMenuItem]');
+
+            items[0].focus();
+            fixture.detectChanges();
+
             items.forEach((item) => {
                 expect(item.getAttribute('role')).toBe('menuitem');
-                expect(item.getAttribute('tabindex')).toBe('-1');
             });
+            expect(items[0].getAttribute('tabindex')).toBe('0');
+            expect(items[1].getAttribute('tabindex')).toBe('-1');
         });
 
         it('activates an item on mouseup after a trigger mousedown grace window', () => {
@@ -642,6 +702,31 @@ describe('Menu', () => {
 
             expect(freshFixture.componentInstance.selected).toEqual(['a']);
             expect(freshFixture.componentInstance.open).toBe(false);
+        });
+
+        it('does not leave the mouseup grace window armed after a normal trigger click', () => {
+            vi.useFakeTimers();
+            fixture.destroy();
+            TestBed.resetTestingModule();
+            TestBed.configureTestingModule({ imports: [NonClosingItemMenuComponent] });
+            const freshFixture = TestBed.createComponent(NonClosingItemMenuComponent);
+            freshFixture.detectChanges();
+
+            const freshTrigger: HTMLButtonElement = freshFixture.nativeElement.querySelector('[rdxMenuTrigger]');
+            freshTrigger.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }));
+            freshTrigger.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }));
+            freshFixture.detectChanges();
+
+            vi.advanceTimersByTime(200);
+            freshFixture.detectChanges();
+
+            const firstItem: HTMLButtonElement = freshFixture.nativeElement.querySelector('[rdxMenuItem]');
+            firstItem.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }));
+            firstItem.dispatchEvent(new MouseEvent('click', { bubbles: true, button: 0 }));
+            freshFixture.detectChanges();
+
+            expect(freshFixture.componentInstance.selected).toEqual(['a']);
+            expect(freshFixture.componentInstance.open).toBe(true);
         });
     });
 
@@ -761,11 +846,15 @@ describe('Menu', () => {
             expect(enabledItem.hasAttribute('data-disabled')).toBe(false);
         });
 
-        it('skips disabled items during ArrowDown navigation', () => {
+        it('includes disabled items during ArrowDown navigation', () => {
             enabledItem.focus();
             keydown(popup, 'ArrowDown');
 
-            // disabled item at index 1 should be skipped → focus lands on index 2
+            expect(document.activeElement).toBe(disabledItem);
+            expect(disabledItem.getAttribute('aria-disabled')).toBe('true');
+
+            keydown(popup, 'ArrowDown');
+
             const lastItem: HTMLElement = fixture.nativeElement.querySelectorAll('[rdxMenuItem]')[2];
             expect(document.activeElement).toBe(lastItem);
         });
@@ -889,6 +978,38 @@ describe('Menu', () => {
 
             expect(fixture.componentInstance.selected).toContain('c');
             expect(fixture.componentInstance.open).toBe(false);
+        });
+    });
+
+    describe('link item activation', () => {
+        let fixture: ComponentFixture<LinkMenuComponent>;
+        let links: HTMLElement[];
+
+        beforeEach(() => {
+            TestBed.configureTestingModule({ imports: [LinkMenuComponent] });
+            fixture = TestBed.createComponent(LinkMenuComponent);
+            fixture.detectChanges();
+            fixture.nativeElement.querySelector('[rdxMenuTrigger]').click();
+            fixture.detectChanges();
+            links = Array.from(fixture.nativeElement.querySelectorAll('[rdxMenuLinkItem]'));
+        });
+
+        it('Enter activates the focused link item', () => {
+            links[0].focus();
+            keydown(links[0], 'Enter');
+            fixture.detectChanges();
+
+            expect(fixture.componentInstance.selected).toEqual(['alpha']);
+            expect(fixture.componentInstance.open).toBe(true);
+        });
+
+        it('Space activates the focused link item', () => {
+            links[1].focus();
+            keydown(links[1], ' ');
+            fixture.detectChanges();
+
+            expect(fixture.componentInstance.selected).toEqual(['beta']);
+            expect(fixture.componentInstance.open).toBe(true);
         });
     });
 
@@ -1652,6 +1773,18 @@ describe('Menu', () => {
         it('moves focus to the first submenu item after opening with Enter', async () => {
             subTrigger.focus();
             keydown(subTrigger, 'Enter');
+            fixture.detectChanges();
+            await nextFrame();
+            fixture.detectChanges();
+
+            const firstSubmenuItem = fixture.nativeElement.querySelectorAll<HTMLElement>('[rdxMenuItem]')[1];
+            expect(subTrigger.getAttribute('aria-expanded')).toBe('true');
+            expect(document.activeElement).toBe(firstSubmenuItem);
+        });
+
+        it('moves focus to the first submenu item after opening with Space', async () => {
+            subTrigger.focus();
+            keydown(subTrigger, ' ');
             fixture.detectChanges();
             await nextFrame();
             fixture.detectChanges();

@@ -2,6 +2,7 @@ import {
     booleanAttribute,
     computed,
     Directive,
+    effect,
     ElementRef,
     inject,
     input,
@@ -9,6 +10,7 @@ import {
     signal,
     Signal
 } from '@angular/core';
+import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, createContext } from '@radix-ng/primitives/core';
 import { injectRdxMenuRadioGroupContext } from './menu-radio-group';
 import { injectRdxMenuRootContext } from './menu-root';
@@ -37,9 +39,10 @@ const radioItemContextFactory = (): RdxMenuRadioItemContext => {
     selector: '[rdxMenuRadioItem]',
     exportAs: 'rdxMenuRadioItem',
     providers: [provideRdxMenuRadioItemContext(radioItemContextFactory)],
+    hostDirectives: [RdxCompositeListItem],
     host: {
         role: 'menuitemradio',
-        tabindex: '-1',
+        '[attr.tabindex]': 'rootContext?.isOpen() && highlighted() ? 0 : -1',
         '[attr.aria-checked]': 'checked()',
         '[attr.data-state]': 'getCheckedState(checked())',
         '[attr.data-disabled]': 'effectiveDisabled() ? "" : undefined',
@@ -57,8 +60,9 @@ const radioItemContextFactory = (): RdxMenuRadioItemContext => {
     }
 })
 export class RdxMenuRadioItem<T = unknown> {
-    private readonly rootContext = injectRdxMenuRootContext(true);
+    protected readonly rootContext = injectRdxMenuRootContext(true);
     private readonly radioGroupContext = injectRdxMenuRadioGroupContext();
+    private readonly listItem = inject(RdxCompositeListItem, { self: true });
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly isFocused = signal(false);
 
@@ -79,20 +83,34 @@ export class RdxMenuRadioItem<T = unknown> {
 
     readonly checked = computed(() => this.radioGroupContext.value() === this.value());
 
-    protected readonly highlighted = computed(() => this.isFocused());
+    protected readonly highlighted = computed(
+        () => this.rootContext?.activeIndex() === this.listItem.index() || this.isFocused()
+    );
     protected readonly effectiveDisabled = computed(
         () => this.disabled() || this.radioGroupContext.disabled() || (this.rootContext?.disabled() ?? false)
     );
     protected readonly getCheckedState = getCheckedState;
 
+    constructor() {
+        effect(() => {
+            this.listItem.setMetadata({
+                type: 'radio-item',
+                disabled: this.effectiveDisabled(),
+                label: this.label()
+            });
+        });
+    }
+
     onFocus(): void {
-        if (!this.effectiveDisabled()) {
+        if (!this.rootContext?.disabled()) {
             this.isFocused.set(true);
         }
+        this.setActiveIndex();
     }
 
     onBlur(): void {
         this.isFocused.set(false);
+        this.clearActiveIndex();
     }
 
     onPointerMove(event: PointerEvent): void {
@@ -102,6 +120,7 @@ export class RdxMenuRadioItem<T = unknown> {
         if (this.rootContext && !this.rootContext.highlightItemOnHover()) {
             return;
         }
+        this.setActiveIndex();
         if (this.elementRef.nativeElement.ownerDocument.activeElement !== this.elementRef.nativeElement) {
             this.elementRef.nativeElement.focus({ preventScroll: true });
         }
@@ -112,6 +131,8 @@ export class RdxMenuRadioItem<T = unknown> {
             return;
         }
         if (this.elementRef.nativeElement.ownerDocument.activeElement === this.elementRef.nativeElement) {
+            this.isFocused.set(false);
+            this.clearActiveIndex();
             this.elementRef.nativeElement.closest<HTMLElement>('[rdxMenuPopup]')?.focus({ preventScroll: true });
         }
     }
@@ -145,5 +166,22 @@ export class RdxMenuRadioItem<T = unknown> {
         this.radioGroupContext.selectValue(v);
         this.onSelect.emit(v);
         if (this.closeOnClick()) this.rootContext?.closeEntireMenu();
+    }
+
+    private setActiveIndex(): void {
+        if (!this.rootContext || this.rootContext.disabled()) {
+            return;
+        }
+
+        const index = this.listItem.index();
+        if (index !== -1) {
+            this.rootContext.setActiveIndex(index);
+        }
+    }
+
+    private clearActiveIndex(): void {
+        if (this.rootContext?.activeIndex() === this.listItem.index()) {
+            this.rootContext.setActiveIndex(null);
+        }
     }
 }
