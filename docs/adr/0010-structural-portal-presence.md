@@ -71,8 +71,9 @@ under their own selectors via `hostDirectives`. The recipes `confirmation-dialog
 `notification-dropdown.ts` (in `packages/primitives/recipes/`) use the old anatomy in their
 templates.
 
-Non-portal presences (`checkbox-indicator-presence`, `collapsible-panel-presence`,
-`tabs-panel-presence`) are inline — no teleport — and are **not** part of this change.
+Non-portal presences (`collapsible-panel-presence`, `tabs-panel-presence`) are inline — no teleport —
+and are **not** part of this change. Checkbox indicator presence was replaced by the indicator's
+`keepMounted` input during Base UI checkbox alignment.
 
 Known incidental bugs in select discovered during this analysis (fixed by Phase 5):
 

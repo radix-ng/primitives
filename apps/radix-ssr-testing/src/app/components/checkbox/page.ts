@@ -2,26 +2,18 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxCheckboxButtonDirective,
     RdxCheckboxIndicatorDirective,
-    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
 
 @Component({
     selector: 'app-checkbox',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        RdxCheckboxRootDirective,
-        RdxCheckboxButtonDirective,
-        RdxCheckboxIndicatorPresenceDirective,
-        RdxCheckboxIndicatorDirective
-    ],
+    imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective, RdxCheckboxIndicatorDirective],
     template: `
         <div [checked]="true" rdxCheckboxRoot>
             <button rdxCheckboxButton>
                 [
-                <ng-template rdxCheckboxIndicatorPresence>
-                    <span rdxCheckboxIndicator>✔</span>
-                </ng-template>
+                <span keepMounted rdxCheckboxIndicator>✔</span>
                 ]
             </button>
         </div>

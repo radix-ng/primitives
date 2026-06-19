@@ -43,7 +43,7 @@ interface SsrCase {
 const cases: readonly SsrCase[] = [
     { selector: 'app-accordion', component: AccordionPage, expects: ['One', 'Four'] },
     { selector: 'app-avatar', component: AvatarPage, expects: ['A'] },
-    { selector: 'app-checkbox', component: CheckboxPage, expects: ['data-state'] },
+    { selector: 'app-checkbox', component: CheckboxPage, expects: ['data-checked'] },
     // Combobox's popup is portal + presence gated, so on the server (closed) only the input/trigger
     // render — assert the input placeholder and the combobox role.
     { selector: 'app-combobox', component: ComboboxPage, expects: ['Pick a fruit', 'role="combobox"'] },
