@@ -118,12 +118,12 @@ Every keyboard-interactive primitive documents its keys the same way. Match this
   chords with `+` (e.g. `Shift` + `Tab`). Use a `Character keys` row for typeahead. Function keys like
   `F8` also go in backticks.
 - **Ground every key in source — never invent.** A key belongs in the table only if you can trace it to a
-  real handler: a `(keydown.*)` host listener, `useArrowNavigation`/roving-focus, a native `<button>`
+  real handler: a `(keydown.*)` host listener, `useArrowNavigation`/composite roving navigation, a native `<button>`
   trigger (Space/Enter activation counts), or a composed layer (`dismissable-layer` → `Escape`;
   `focus-scope` → `Tab` / `Shift` + `Tab`). If a primitive has no keyboard handling at all (purely
   pointer-driven, e.g. Toast), **omit the section** rather than fabricate one.
 - **User-facing language.** Describe behavior, not implementation — never name internal directives
-  (`RdxDismissableLayer`, `RdxEscapeKeyDown`, "roving-focus group") in the table.
+  (`RdxDismissableLayer`, `RdxEscapeKeyDown`, "composite group") in the table.
 - **Reference sections to copy:** Tabs, Menu (rich nav + typeahead), Dialog (Escape + focus trap),
   Time Field / Date Field (segmented input), Switch / Toggle (minimal Space/Enter).
 

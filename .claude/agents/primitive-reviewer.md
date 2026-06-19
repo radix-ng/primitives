@@ -64,7 +64,7 @@ You are a senior Angular accessibility engineer reviewing headless primitives fo
 ### 8. Composition
 
 - Could any directive reuse an existing primitive via `hostDirectives` (e.g. Accordion Item → Collapsible Root)?
-- Is there duplication of logic already provided by `@radix-ng/primitives/core` or the composition primitives (`collection`, `portal`, `presence`, `roving-focus`, `focus-scope`, `popper`, `dismissable-layer`, `menu`)?
+- Is there duplication of logic already provided by `@radix-ng/primitives/core` or the composition primitives (`collection`, `composite`, `portal`, `presence`, `focus-scope`, `popper`, `dismissable-layer`, `menu`)?
 
 ## Output format
 
@@ -98,7 +98,7 @@ Return a structured report:
 [INFO] 2 uses of `any` in select-item.ts:34,67 — consider typing
 
 ## Composition
-[SUGGESTION] RdxTabsTrigger could compose RdxRovingFocusItem via hostDirectives
+[SUGGESTION] RdxTabsTrigger could compose RdxCompositeItem via hostDirectives
 ```
 
 Severity levels:

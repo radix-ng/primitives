@@ -30,7 +30,7 @@ Implement a complete, production-quality headless Angular primitive. "Complete" 
    - Medium: `packages/primitives/accordion/`
    - Complex (overlay, portal, positioning): `packages/primitives/select/` or `packages/primitives/popover/`
    - Stories/docs reference: `packages/primitives/button/`
-3. **Reuse, don't reinvent.** Compose shared building blocks from `@radix-ng/primitives/core` and the composition primitives (`collection`, `portal`, `presence`, `roving-focus`, `focus-scope`, `popper`, `dismissable-layer`, `menu`). Prefer `hostDirectives` to re-use an existing primitive (e.g. Accordion Item composes Collapsible Root). **Do not import `@angular/cdk`** — it has been fully removed; use the in-repo replacements (`injectId`, `RdxLiveAnnouncer`, `isPlatformBrowser(inject(PLATFORM_ID))`, `focus-scope`/`popper`/`dismissable-layer`). See architecture.md.
+3. **Reuse, don't reinvent.** Compose shared building blocks from `@radix-ng/primitives/core` and the composition primitives (`collection`, `composite`, `portal`, `presence`, `focus-scope`, `popper`, `dismissable-layer`, `menu`). Prefer `hostDirectives` to re-use an existing primitive (e.g. Accordion Item composes Collapsible Root). **Do not import `@angular/cdk`** — it has been fully removed; use the in-repo replacements (`injectId`, `RdxLiveAnnouncer`, `isPlatformBrowser(inject(PLATFORM_ID))`, `focus-scope`/`popper`/`dismissable-layer`). See architecture.md.
 4. **Plan the parts** — list every directive/component before writing code.
 5. **Implement root directive first** (context, inputs, outputs, host attrs).
 6. **Implement child directives**, each injecting parent context.

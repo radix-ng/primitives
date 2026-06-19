@@ -52,7 +52,7 @@ These are the headless infrastructure layers that complex primitives compose:
 - **`collection`** — `RdxCollectionProvider` + `RdxCollectionItem`: collects child items in DOM order via `contentChildren`; only used by `select` currently
 - **`portal`** — `RdxPortal` teleports a host element into a container (default `document.body`); `RdxPortalPresence` (structural `ng-template`) merges portal + presence — it relocates **all** template root nodes into the container with **no wrapper element**, the basis of the flattened `*rdxXxxPortal` anatomy (ADR 0010)
 - **`presence`** — conditional mount/unmount with enter/leave animation support. Exit detection is Web-Animations-API-based and **subtree-aware** (ADR 0011): a closed-state `@keyframes` **or** transition on any watched root **or descendant** suspends the unmount, bounded by a duration safety net. The state machine (`presence-machine.ts`) is shared by `RdxPresenceDirective` (in place) and `RdxPortalPresence` (relocating)
-- **`composite`** — Base UI-style ordered item registration (`CompositeList`) and roving keyboard navigation (`CompositeRoot`) for composite widgets
+- **`composite`** — Base UI-style two-layer composite navigation (ADR 0001): `CompositeList` + `CompositeListItem` register items in DOM order; `CompositeRoot` + `CompositeItem` add roving tabindex and keyboard navigation. Replaced the old `roving-focus` entry point (removed), whose behavior now lives in the root/item layer
 - **`focus-scope`** — focus trap for dialogs and modals
 - **`focus-guards`** — sentinel elements for focus containment
 - **`popper`** — floating-ui wrapper for positioned overlays
