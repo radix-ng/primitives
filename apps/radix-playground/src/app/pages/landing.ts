@@ -35,6 +35,7 @@ import { ThemeStore } from '../shared/theme';
 
 const installCommand = 'ng add @radix-ng/primitives';
 const skillCommand = 'npx skills add radix-ng/primitives/skills';
+const telegramUrl = 'https://t.me/headless_angular';
 
 type CopyTarget = 'install' | 'skill';
 
@@ -155,6 +156,19 @@ type CopyTarget = 'install' | 'skill';
                                 </svg>
                                 <span>npm</span>
                                 <span class="text-muted-foreground font-mono">{{ packageVersion }}</span>
+                            </a>
+                            <a
+                                class="inline-flex size-11 items-center justify-center rounded-md border border-[color:var(--landing-accent-border)] text-[var(--landing-accent-text)] no-underline transition-colors hover:bg-[color:var(--landing-accent-tint)]"
+                                [href]="telegramUrl"
+                                target="_blank"
+                                rel="noreferrer"
+                                aria-label="Open Radix NG Telegram channel"
+                            >
+                                <svg class="size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                    <path
+                                        d="M11.94 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 11.94 0Zm4.97 7.22c.12 0 .38.03.55.17.14.11.18.27.2.38.02.11.04.33.02.5-.18 1.89-.96 6.5-1.36 8.62-.17.9-.5 1.2-.82 1.23-.7.06-1.22-.46-1.9-.9-1.06-.69-1.65-1.12-2.68-1.8-1.18-.78-.42-1.21.26-1.91.18-.18 3.25-2.98 3.31-3.23.01-.03.01-.15-.06-.21-.07-.06-.17-.04-.25-.02-.11.02-1.79 1.14-5.06 3.34-.48.33-.91.49-1.3.48-.43-.01-1.25-.24-1.87-.44-.75-.24-1.35-.37-1.3-.79.03-.22.33-.44.9-.66 3.5-1.53 5.83-2.53 7-3.02 3.33-1.38 4.02-1.62 4.36-1.64Z"
+                                    />
+                                </svg>
                             </a>
                         </div>
 
@@ -772,7 +786,7 @@ type CopyTarget = 'install' | 'skill';
                         </a>
                         <a
                             class="no-underline hover:text-[var(--landing-accent-text)]"
-                            href="https://t.me/pimenovoleg"
+                            [href]="telegramUrl"
                             target="_blank"
                             rel="noreferrer"
                         >
@@ -802,6 +816,7 @@ export default class LandingPage {
     protected readonly skillCommand = skillCommand;
     protected readonly packageVersion = primitivesPackage.version;
     protected readonly npmPackageUrl = `https://www.npmjs.com/package/@radix-ng/primitives/v/${primitivesPackage.version}`;
+    protected readonly telegramUrl = telegramUrl;
     protected readonly copied = signal<CopyTarget | null>(null);
     protected readonly emailEnabled = signal(false);
     protected readonly licenseAccepted = signal(false);

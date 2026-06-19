@@ -145,7 +145,7 @@ We're excited to see the community adopt Radix NG, raise issues, and provide fee
 whether it's a feature request, bug report, or a project to showcase.
 
 - [Join our Discord](https://discord.gg/NaJb2XRWX9)
-- [Follow development news and releases on Telegram](https://t.me/pimenovoleg)
+- [Follow development news and releases on Telegram](https://t.me/headless_angular)
 - [GitHub Discussions](https://github.com/radix-ng/primitives/discussions)
 
 ## Contributor analytics
