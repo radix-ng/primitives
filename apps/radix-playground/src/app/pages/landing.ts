@@ -30,6 +30,7 @@ import {
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
 import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
+import primitivesPackage from '../../../../../packages/primitives/package.json';
 import { ThemeStore } from '../shared/theme';
 
 const installCommand = 'ng add @radix-ng/primitives';
@@ -141,6 +142,19 @@ type CopyTarget = 'install' | 'skill';
                                 rdxButton
                             >
                                 View on GitHub
+                            </a>
+                            <a
+                                class="inline-flex h-11 items-center gap-2 rounded-md border border-[color:var(--landing-accent-border)] px-3 text-sm font-medium no-underline transition-colors hover:bg-[color:var(--landing-accent-tint)]"
+                                [href]="npmPackageUrl"
+                                target="_blank"
+                                rel="noreferrer"
+                                aria-label="View @radix-ng/primitives on npm"
+                            >
+                                <svg class="size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                    <path d="M3 3h18v18H3V3Zm3.5 14h3V8.5H12V17h3V8.5h2.5V17h3V6H6.5v11Z" />
+                                </svg>
+                                <span>npm</span>
+                                <span class="text-muted-foreground font-mono">{{ packageVersion }}</span>
                             </a>
                         </div>
 
@@ -711,19 +725,42 @@ type CopyTarget = 'install' | 'skill';
                             NG
                         </span>
                     </a>
+                    <div class="text-foreground flex flex-col gap-3 text-sm">
+                        <a
+                            class="inline-flex items-center gap-3 no-underline transition-colors hover:text-[var(--landing-accent-text)]"
+                            href="https://github.com/radix-ng/primitives"
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            <svg class="size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path
+                                    fill-rule="evenodd"
+                                    clip-rule="evenodd"
+                                    d="M12 2C6.48 2 2 6.58 2 12.22c0 4.52 2.87 8.34 6.84 9.69.5.09.68-.22.68-.49 0-.24-.01-.88-.01-1.73-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1 .07 1.53 1.05 1.53 1.05.9 1.57 2.35 1.12 2.92.85.09-.66.35-1.12.63-1.37-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.74-.1-.26-.45-1.3.1-2.71 0 0 .84-.27 2.75 1.05A9.3 9.3 0 0 1 12 6.93c.85 0 1.7.12 2.5.34 1.9-1.32 2.74-1.05 2.74-1.05.55 1.41.2 2.45.1 2.71.64.71 1.03 1.62 1.03 2.74 0 3.93-2.34 4.8-4.57 5.05.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.8 0 .27.18.59.69.49A10.11 10.11 0 0 0 22 12.22C22 6.58 17.52 2 12 2Z"
+                                />
+                            </svg>
+                            GitHub
+                        </a>
+                        <a
+                            class="inline-flex items-center gap-3 no-underline transition-colors hover:text-[var(--landing-accent-text)]"
+                            [href]="npmPackageUrl"
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            <svg class="size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path d="M3 3h18v18H3V3Zm3.5 14h3V8.5H12V17h3V8.5h2.5V17h3V6H6.5v11Z" />
+                            </svg>
+                            <span>
+                                npm
+                                <span class="text-muted-foreground font-mono">{{ packageVersion }}</span>
+                            </span>
+                        </a>
+                    </div>
                     <nav class="text-muted-foreground flex flex-wrap gap-5 text-sm">
                         <a class="hover:text-foreground no-underline" href="/docs/">Documentation</a>
                         <a class="hover:text-foreground no-underline" href="#primitives">Primitives</a>
                         <a class="hover:text-foreground no-underline" href="/docs/?path=/docs/guides-forms--docs">
                             Guides
-                        </a>
-                        <a
-                            class="hover:text-foreground no-underline"
-                            href="https://github.com/radix-ng/primitives"
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            GitHub
                         </a>
                         <a
                             class="no-underline hover:text-[var(--landing-accent-text)]"
@@ -763,6 +800,8 @@ export default class LandingPage {
 
     protected readonly installCommand = installCommand;
     protected readonly skillCommand = skillCommand;
+    protected readonly packageVersion = primitivesPackage.version;
+    protected readonly npmPackageUrl = `https://www.npmjs.com/package/@radix-ng/primitives/v/${primitivesPackage.version}`;
     protected readonly copied = signal<CopyTarget | null>(null);
     protected readonly emailEnabled = signal(false);
     protected readonly licenseAccepted = signal(false);
