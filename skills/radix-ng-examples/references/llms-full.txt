@@ -14740,7 +14740,7 @@ import {
         RdxNumberFieldDecrement
     ],
     template: `
-        <div class="flex flex-col gap-1.5" id="quantity" [defaultValue]="100" [min]="0" rdxNumberFieldRoot>
+        <div class="flex flex-col gap-1.5" [id]="'quantity'" [defaultValue]="100" [min]="0" rdxNumberFieldRoot>
             <label class="text-foreground text-sm font-medium" for="quantity">Quantity</label>
             <div
                 class="border-border bg-background focus-within:ring-ring flex h-9 w-fit items-center rounded-md border shadow-sm focus-within:ring-2"
@@ -14873,7 +14873,7 @@ import {
         RdxNumberFieldDecrement
     ],
     template: `
-        <div class="flex flex-col gap-1.5" id="quantity" [defaultValue]="100" [min]="0" rdxNumberFieldRoot>
+        <div class="flex flex-col gap-1.5" [id]="'quantity'" [defaultValue]="100" [min]="0" rdxNumberFieldRoot>
             <label class="text-foreground text-sm font-medium" for="quantity">Quantity</label>
             <div
                 class="border-border bg-background focus-within:ring-ring flex h-9 w-fit items-center rounded-md border shadow-sm focus-within:ring-2"
@@ -15074,7 +15074,7 @@ import {
         RdxNumberFieldDecrement
     ],
     template: `
-        <div class="flex flex-col gap-1.5" id="currency" [defaultValue]="5" [format]="format" rdxNumberFieldRoot>
+        <div class="flex flex-col gap-1.5" [id]="'currency'" [defaultValue]="5" [format]="format" rdxNumberFieldRoot>
             <label class="text-foreground text-sm font-medium" for="currency">Price</label>
             <div
                 class="border-border bg-background focus-within:ring-ring flex h-9 w-fit items-center rounded-md border shadow-sm focus-within:ring-2"
@@ -15148,7 +15148,7 @@ import {
         RdxNumberFieldScrubAreaCursor
     ],
     template: `
-        <div class="flex flex-col gap-1.5" id="scrub" [defaultValue]="0" rdxNumberFieldRoot>
+        <div class="flex flex-col gap-1.5" [id]="'scrub'" [defaultValue]="0" rdxNumberFieldRoot>
             <div
                 class="text-foreground flex w-fit cursor-ew-resize items-center gap-1.5 text-sm font-medium select-none"
                 rdxNumberFieldScrubArea
@@ -15285,20 +15285,34 @@ export class NumberFieldReactiveForms implements OnInit {
 
 ## API Reference
 
+The state attributes below are shared by most parts; each part's table lists the ones it exposes.
+
+| Attribute        | Present when                                  |
+| ---------------- | --------------------------------------------- |
+| `data-disabled`  | The field is disabled.                        |
+| `data-readonly`  | The field is read-only.                       |
+| `data-required`  | The field is required.                        |
+| `data-scrubbing` | A scrub gesture is in progress.               |
+
 ### Root
 
 `RdxNumberFieldRoot` groups all parts and owns the value, parsing/formatting and stepping logic.
-Exposes `data-disabled`, `data-readonly`, `data-required` and `data-scrubbing`.
+
+**Data attributes:** `data-disabled`, `data-readonly`, `data-required`, `data-scrubbing`.
 
 ### Group
 
 `RdxNumberFieldGroup` groups the input with the stepper buttons (`role="group"`). It reads its
 state from the root context and has no inputs.
 
+**Data attributes:** `data-disabled`, `data-readonly`, `data-required`, `data-scrubbing`.
+
 ### Input
 
 `RdxNumberFieldInput` the native text input that displays the formatted value and accepts typed
 input. It reads everything from the root context and has no inputs.
+
+**Data attributes:** `data-disabled`, `data-readonly`, `data-required`.
 
 ### Hidden Input
 
@@ -15309,11 +15323,16 @@ root. Not needed when using Angular reactive or template-driven forms.
 ### Increment / Decrement
 
 `RdxNumberFieldIncrement` and `RdxNumberFieldDecrement` step the value up and down. Each accepts an
-optional `disabled` input and is automatically disabled when the value reaches `max`/`min`.
+optional `disabled` input and is automatically disabled when the value reaches `max`/`min`. They are
+also natively disabled while the field is read-only.
+
+**Data attributes:** `data-disabled`, `data-readonly`, `data-pressed` (while held).
 
 ### Scrub Area
 
 `RdxNumberFieldScrubArea` an interactive area where the user clicks and drags to change the value.
+
+**Data attributes:** `data-disabled`, `data-readonly`, `data-scrubbing`.
 
 ### Scrub Area Cursor
 

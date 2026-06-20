@@ -123,22 +123,36 @@ The control integrates with `formControlName`, exposing the numeric value to the
 
 ## API Reference
 
+The state attributes below are shared by most parts; each part's table lists the ones it exposes.
+
+| Attribute        | Present when                                  |
+| ---------------- | --------------------------------------------- |
+| `data-disabled`  | The field is disabled.                        |
+| `data-readonly`  | The field is read-only.                       |
+| `data-required`  | The field is required.                        |
+| `data-scrubbing` | A scrub gesture is in progress.               |
+
 ### Root
 
 `RdxNumberFieldRoot` groups all parts and owns the value, parsing/formatting and stepping logic.
-Exposes `data-disabled`, `data-readonly`, `data-required` and `data-scrubbing`.
 
 <ArgTypes of={RdxNumberFieldRoot} />
+
+**Data attributes:** `data-disabled`, `data-readonly`, `data-required`, `data-scrubbing`.
 
 ### Group
 
 `RdxNumberFieldGroup` groups the input with the stepper buttons (`role="group"`). It reads its
 state from the root context and has no inputs.
 
+**Data attributes:** `data-disabled`, `data-readonly`, `data-required`, `data-scrubbing`.
+
 ### Input
 
 `RdxNumberFieldInput` the native text input that displays the formatted value and accepts typed
 input. It reads everything from the root context and has no inputs.
+
+**Data attributes:** `data-disabled`, `data-readonly`, `data-required`.
 
 ### Hidden Input
 
@@ -149,13 +163,18 @@ root. Not needed when using Angular reactive or template-driven forms.
 ### Increment / Decrement
 
 `RdxNumberFieldIncrement` and `RdxNumberFieldDecrement` step the value up and down. Each accepts an
-optional `disabled` input and is automatically disabled when the value reaches `max`/`min`.
+optional `disabled` input and is automatically disabled when the value reaches `max`/`min`. They are
+also natively disabled while the field is read-only.
+
+**Data attributes:** `data-disabled`, `data-readonly`, `data-pressed` (while held).
 
 ### Scrub Area
 
 `RdxNumberFieldScrubArea` an interactive area where the user clicks and drags to change the value.
 
 <ArgTypes of={RdxNumberFieldScrubArea} />
+
+**Data attributes:** `data-disabled`, `data-readonly`, `data-scrubbing`.
 
 ### Scrub Area Cursor
 

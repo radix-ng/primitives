@@ -27,9 +27,13 @@ function isTouchLikePointerType(pointerType: string): boolean {
         type: 'button',
         tabindex: '-1',
         '[attr.aria-controls]': 'rootContext.id()',
-        '[attr.aria-readonly]': 'rootContext.readonly() ? "true" : undefined',
-        '[attr.disabled]': 'buttonDisabled() ? "" : undefined',
+        // Read-only blocks interaction too, so the button is natively disabled (Base UI passes
+        // `disabled: disabled || readOnly` to useButton). `aria-readonly` is intentionally NOT set —
+        // it isn't a valid state for `role=button`. `data-disabled` stays tied to the true disabled
+        // state so styling can tell disabled apart from read-only (`data-readonly`).
+        '[attr.disabled]': 'interactionDisabled() ? "" : undefined',
         '[attr.data-disabled]': 'buttonDisabled() ? "" : undefined',
+        '[attr.data-readonly]': 'rootContext.readonly() ? "" : undefined',
         '[attr.data-pressed]': 'press.isPressing() ? "" : undefined',
         '[style.user-select]': '"none"',
         '[style.-webkit-user-select]': '"none"',
@@ -59,7 +63,7 @@ export abstract class RdxNumberFieldButton {
     );
 
     /** @ignore Disabled for interaction purposes (also blocked while read-only). */
-    private readonly interactionDisabled = computed(() => this.buttonDisabled() || this.rootContext.readonly());
+    readonly interactionDisabled = computed(() => this.buttonDisabled() || this.rootContext.readonly());
 
     private get direction(): Direction {
         return this.isIncrement ? 1 : -1;

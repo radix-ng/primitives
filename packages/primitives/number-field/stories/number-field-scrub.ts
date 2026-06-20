@@ -29,7 +29,7 @@ import {
         RdxNumberFieldScrubAreaCursor
     ],
     template: `
-        <div class="flex flex-col gap-1.5" id="scrub" [defaultValue]="0" rdxNumberFieldRoot>
+        <div class="flex flex-col gap-1.5" [id]="'scrub'" [defaultValue]="0" rdxNumberFieldRoot>
             <div
                 class="text-foreground flex w-fit cursor-ew-resize items-center gap-1.5 text-sm font-medium select-none"
                 rdxNumberFieldScrubArea

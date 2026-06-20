@@ -20,7 +20,7 @@ import {
         RdxNumberFieldDecrement
     ],
     template: `
-        <div class="flex flex-col gap-1.5" id="quantity" [defaultValue]="100" [min]="0" rdxNumberFieldRoot>
+        <div class="flex flex-col gap-1.5" [id]="'quantity'" [defaultValue]="100" [min]="0" rdxNumberFieldRoot>
             <label class="text-foreground text-sm font-medium" for="quantity">Quantity</label>
             <div
                 class="border-border bg-background focus-within:ring-ring flex h-9 w-fit items-center rounded-md border shadow-sm focus-within:ring-2"
