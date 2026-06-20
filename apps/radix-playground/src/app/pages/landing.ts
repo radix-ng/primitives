@@ -1,5 +1,6 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import {
     LucideArrowRight,
     LucideBox,
@@ -43,6 +44,7 @@ type CopyTarget = 'install' | 'skill';
     selector: 'app-landing',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
+        RouterLink,
         RdxButtonDirective,
         RdxSwitchRoot,
         RdxSwitchThumb,
@@ -133,6 +135,14 @@ type CopyTarget = 'install' | 'skill';
                                 rdxButton
                             >
                                 Get started
+                                <svg class="size-4" lucideArrowRight></svg>
+                            </a>
+                            <a
+                                class="inline-flex h-11 items-center gap-2 rounded-md border border-[color:var(--landing-accent-border)] px-4 text-sm font-medium text-[var(--landing-accent-text)] no-underline transition-colors hover:bg-[color:var(--landing-accent-tint)]"
+                                routerLink="/playground"
+                                rdxButton
+                            >
+                                Playground
                                 <svg class="size-4" lucideArrowRight></svg>
                             </a>
                             <a
@@ -771,6 +781,7 @@ type CopyTarget = 'install' | 'skill';
                     </div>
                     <nav class="text-muted-foreground flex flex-wrap gap-5 text-sm">
                         <a class="hover:text-foreground no-underline" href="/docs/">Documentation</a>
+                        <a class="hover:text-foreground no-underline" routerLink="/playground">Playground</a>
                         <a class="hover:text-foreground no-underline" href="#primitives">Primitives</a>
                         <a class="hover:text-foreground no-underline" href="/docs/?path=/docs/guides-forms--docs">
                             Guides
