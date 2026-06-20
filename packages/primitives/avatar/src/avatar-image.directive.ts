@@ -11,7 +11,9 @@ import { HTMLAttributeReferrerPolicy, RdxImageLoadingStatus } from './types';
     selector: 'img[rdxAvatarImage]',
     exportAs: 'rdxAvatarImage',
     host: {
-        role: 'img',
+        // The host is a native `<img>` (selector `img[rdxAvatarImage]`) — its implicit `img` role is
+        // already correct, and forcing `role="img"` here would override any consumer override (Base UI
+        // adds no role).
         '[attr.src]': 'src()',
         '[attr.referrerpolicy]': 'referrerPolicy()',
         '[style.display]': '(rootContext.imageLoadingStatus() === "loaded") ? null : "none"'
@@ -70,10 +72,12 @@ export class RdxAvatarImageDirective {
         });
 
         watch([this.loadingStatus], ([value]) => {
-            this.onLoadingStatusChange.emit(value);
-            if (value !== 'idle') {
-                this.rootContext.imageLoadingStatus.set(value);
+            // Base UI fires the callback only once loading actually starts — skip the initial `idle`.
+            if (value === 'idle') {
+                return;
             }
+            this.onLoadingStatusChange.emit(value);
+            this.rootContext.imageLoadingStatus.set(value);
         });
     }
 }

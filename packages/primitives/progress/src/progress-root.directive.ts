@@ -1,7 +1,5 @@
-import { computed, Directive, inject, input, numberAttribute } from '@angular/core';
-import { createContext } from '@radix-ng/primitives/core';
-
-let progressId = 0;
+import { computed, Directive, inject, input, numberAttribute, Signal } from '@angular/core';
+import { createContext, injectId } from '@radix-ng/primitives/core';
 
 const attr = (value: boolean) => (value ? '' : undefined);
 
@@ -23,7 +21,21 @@ const isValidNumber = (value: unknown): value is number => typeof value === 'num
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
-const progressRootContext = () => {
+export interface RdxProgressRootContext {
+    labelId: Signal<string>;
+    valueId: Signal<string>;
+    minState: Signal<number>;
+    maxState: Signal<number>;
+    valueState: Signal<number | null>;
+    percentageState: Signal<number | null>;
+    valueLabelState: Signal<string | undefined>;
+    progressState: Signal<ProgressState>;
+    completeState: Signal<boolean>;
+    progressingState: Signal<boolean>;
+    indeterminateState: Signal<boolean>;
+}
+
+const progressRootContext = (): RdxProgressRootContext => {
     const root = injectProgressRoot();
 
     return {
@@ -40,8 +52,6 @@ const progressRootContext = () => {
         indeterminateState: root.indeterminateState
     };
 };
-
-export type RdxProgressRootContext = ReturnType<typeof progressRootContext>;
 
 export const [injectProgressRootContext, provideProgressRootContext] = createContext<RdxProgressRootContext>(
     'RdxProgressRoot',
@@ -60,12 +70,11 @@ export const [injectProgressRootContext, provideProgressRootContext] = createCon
     host: {
         role: 'progressbar',
         '[attr.aria-labelledby]': 'labelId()',
-        '[attr.aria-describedby]': 'valueId()',
-        '[attr.aria-valuemin]': 'indeterminateState() ? undefined : minState()',
-        '[attr.aria-valuemax]': 'indeterminateState() ? undefined : maxState()',
+        // min/max are always present (Base UI + APG), only `aria-valuenow` is dropped when indeterminate.
+        '[attr.aria-valuemin]': 'minState()',
+        '[attr.aria-valuemax]': 'maxState()',
         '[attr.aria-valuenow]': 'valueState() ?? undefined',
-        '[attr.aria-valuetext]': 'valueLabelState()',
-        '[attr.data-state]': 'progressState()',
+        '[attr.aria-valuetext]': 'ariaValueText()',
         '[attr.data-value]': 'valueState() ?? undefined',
         '[attr.data-min]': 'minState()',
         '[attr.data-max]': 'maxState()',
@@ -106,8 +115,8 @@ export class RdxProgressRootDirective {
      */
     readonly valueLabel = input<ProgressValueFormatter>((value, min, max) => this.defaultValueLabel(value, min, max));
 
-    readonly labelId = input(`rdx-progress-label-${progressId++}`);
-    readonly valueId = input(`rdx-progress-value-${progressId++}`);
+    readonly labelId = input(injectId('rdx-progress-label-'));
+    readonly valueId = input(injectId('rdx-progress-value-'));
 
     readonly minState = computed(() => (isValidNumber(this.min()) ? this.min() : DEFAULT_MIN));
     readonly maxState = computed(() => {
@@ -145,6 +154,11 @@ export class RdxProgressRootDirective {
 
         return value === null ? undefined : this.valueLabel()(value, this.minState(), this.maxState());
     });
+
+    /** `aria-valuetext`: the formatted label, or an explicit "indeterminate progress" (Base UI parity). */
+    readonly ariaValueText = computed(
+        () => this.valueLabelState() ?? (this.indeterminateState() ? 'indeterminate progress' : undefined)
+    );
 
     readonly progressState = computed<ProgressState>(() => {
         const value = this.valueState();

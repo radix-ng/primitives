@@ -13,8 +13,10 @@ const attr = (value: boolean) => (value ? '' : undefined);
     exportAs: 'rdxProgressValue',
     host: {
         '[attr.id]': 'progress.valueId()',
+        // The value is already announced via the root's aria-valuenow/aria-valuetext, so hide the
+        // visual duplicate from assistive tech (Base UI parity).
+        'aria-hidden': 'true',
         '[textContent]': 'progress.valueLabelState() ?? ""',
-        '[attr.data-state]': 'progress.progressState()',
         '[attr.data-value]': 'progress.valueState() ?? undefined',
         '[attr.data-min]': 'progress.minState()',
         '[attr.data-max]': 'progress.maxState()',

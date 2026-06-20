@@ -9,7 +9,7 @@ import {
     signal,
     Signal
 } from '@angular/core';
-import { BooleanInput, createContext, Direction } from '@radix-ng/primitives/core';
+import { BooleanInput, createContext, Direction, injectId } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { SCROLL_TIMEOUT } from './constants';
 import { getOffset } from './utils';
@@ -114,8 +114,6 @@ const rootContext = (): ScrollAreaRootContext => {
     };
 };
 
-let idCounter = 0;
-
 /**
  * Groups all parts of the scroll area.
  * Renders a `<div>` element.
@@ -147,7 +145,7 @@ let idCounter = 0;
 export class RdxScrollAreaRoot {
     private readonly destroyRef = inject(DestroyRef);
 
-    readonly rootId = `rdx-scroll-area-${idCounter++}`;
+    readonly rootId = injectId('rdx-scroll-area-');
 
     /** Text direction of the scroll area. Affects horizontal (RTL) scroll math. */
     readonly dirInput = input<Direction | undefined>(undefined, { alias: 'dir' });

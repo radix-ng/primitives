@@ -1,1 +1,1 @@
-# @radix-ng/primitives/avatar
+# @radix-ng/primitives/aspect-ratio

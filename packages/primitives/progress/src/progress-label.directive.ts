@@ -13,7 +13,6 @@ const attr = (value: boolean) => (value ? '' : undefined);
     exportAs: 'rdxProgressLabel',
     host: {
         '[attr.id]': 'progress.labelId()',
-        '[attr.data-state]': 'progress.progressState()',
         '[attr.data-complete]': 'dataAttr(progress.completeState())',
         '[attr.data-progressing]': 'dataAttr(progress.progressingState())',
         '[attr.data-indeterminate]': 'dataAttr(progress.indeterminateState())'

@@ -13,6 +13,8 @@ import { injectScrollAreaScrollbarContext } from './scroll-area-scrollbar';
     exportAs: 'rdxScrollAreaThumb',
     host: {
         '[attr.data-orientation]': 'scrollbarContext.orientation()',
+        '[attr.data-scrolling]':
+            '(scrollbarContext.orientation() === "horizontal" ? rootContext.scrollingX() : rootContext.scrollingY()) ? "" : undefined',
         '[style.visibility]': 'rootContext.hasMeasuredScrollbar() ? null : "hidden"',
         '[style.height]': 'scrollbarContext.orientation() === "vertical" ? "var(--scroll-area-thumb-height)" : null',
         '[style.width]': 'scrollbarContext.orientation() === "horizontal" ? "var(--scroll-area-thumb-width)" : null',

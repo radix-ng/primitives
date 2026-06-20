@@ -268,13 +268,13 @@
           "directive": "RdxAspectRatioDirective",
           "selector": "[rdxAspectRatio]",
           "exportAs": "rdxAspectRatio",
-          "description": "Directive to maintain an aspect ratio for an element.\nThe element will have its `padding-bottom` dynamically calculated\nbased on the provided aspect ratio to maintain the desired ratio.\nThe content inside the element will be positioned absolutely.",
+          "description": "Maintains a fixed aspect ratio for its content using the native CSS `aspect-ratio` property.\nPlace the content inside (e.g. an `<img class=\"size-full object-cover\">`) and it fills the box.",
           "inputs": [
             {
               "name": "ratio",
               "type": "number",
               "default": "1",
-              "description": "The desired aspect ratio (e.g., 16/9).\nBy default, it is set to 1 (which results in a square, 1:1)."
+              "description": "The desired aspect ratio (e.g. `16 / 9`). Defaults to `1` (a square, 1:1)."
             }
           ],
           "outputs": []
@@ -5594,7 +5594,7 @@
           "inputs": [
             {
               "name": "labelId",
-              "default": "`rdx-progress-label-${progressId++}`"
+              "default": "injectId('rdx-progress-label-')"
             },
             {
               "name": "max",
@@ -5614,7 +5614,7 @@
             },
             {
               "name": "valueId",
-              "default": "`rdx-progress-value-${progressId++}`"
+              "default": "injectId('rdx-progress-value-')"
             },
             {
               "name": "valueLabel",

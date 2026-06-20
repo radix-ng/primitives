@@ -1,4 +1,4 @@
-import { computed, Directive, input, linkedSignal } from '@angular/core';
+import { Directive, input, linkedSignal } from '@angular/core';
 
 const DEFAULT_ORIENTATION = 'horizontal';
 
@@ -21,8 +21,9 @@ export interface SeparatorProps {
     selector: '[rdxSeparatorRoot]',
     host: {
         role: 'separator',
-        '[attr.aria-orientation]': 'computedAriaOrientation()',
-
+        // Base UI emits `aria-orientation` for both orientations (matching this repo's
+        // menu/combobox separators), not just the vertical override.
+        '[attr.aria-orientation]': 'orientationState()',
         '[attr.data-orientation]': 'orientationState()'
     }
 })
@@ -35,20 +36,7 @@ export class RdxSeparatorRootDirective {
      */
     readonly orientation = input<Orientation>(DEFAULT_ORIENTATION);
 
-    protected readonly orientationState = linkedSignal({
-        source: this.orientation,
-        computation: (value) => value
-    });
-
-    /**
-     * Computes the `aria-orientation` attribute. It is set to "vertical" only when
-     * the separator orientation is vertical. Horizontal is the implicit ARIA default.
-     *
-     * @ignore
-     */
-    protected readonly computedAriaOrientation = computed(() =>
-        this.orientationState() === 'vertical' ? 'vertical' : undefined
-    );
+    protected readonly orientationState = linkedSignal(this.orientation);
 
     updateOrientation(value: Orientation) {
         this.orientationState.set(value);

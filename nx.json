@@ -97,6 +97,15 @@
             "versionActions": "tools/scripts/release/skills-version-actions.cjs",
             "updateDependents": "auto"
         },
+        "conventionalCommits": {
+            "types": {
+                "refactor": {
+                    "changelog": {
+                        "title": "Refactors"
+                    }
+                }
+            }
+        },
         "changelog": {
             "projectChangelogs": {
                 "createRelease": "github",

@@ -12,7 +12,6 @@ const attr = (value: boolean) => (value ? '' : undefined);
     selector: '[rdxProgressIndicator]',
     exportAs: 'rdxProgressIndicator',
     host: {
-        '[attr.data-state]': 'progress.progressState()',
         '[attr.data-value]': 'progress.valueState() ?? undefined',
         '[attr.data-min]': 'progress.minState()',
         '[attr.data-max]': 'progress.maxState()',

@@ -1,21 +1,21 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RdxAspectRatioDirective } from '../src/aspect-ratio.directive';
 
 @Component({
-    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
-        <div [ratio]="ratio" rdxAspectRatio></div>
+        <div [ratio]="ratio()" rdxAspectRatio></div>
     `,
     imports: [RdxAspectRatioDirective]
 })
 class TestComponent {
-    ratio = 16 / 9;
+    readonly ratio = signal(16 / 9);
 }
 
 describe('AspectRatioDirective', () => {
     let fixture: ComponentFixture<TestComponent>;
     let component: TestComponent;
+    let div: HTMLElement;
 
     beforeEach(() => {
         fixture = TestBed.configureTestingModule({
@@ -24,51 +24,29 @@ describe('AspectRatioDirective', () => {
 
         component = fixture.componentInstance;
         fixture.detectChanges();
+        div = fixture.nativeElement.querySelector('div');
     });
 
-    it('should set paddingBottom correctly with rounded value', () => {
-        const div: HTMLElement = fixture.nativeElement.querySelector('div');
-
-        // 1 / (16/9) * 100 = 56.25%
-        expect(div.style.paddingBottom).toBe('56.25%');
-    });
-
-    it('should set position to relative and width to 100%', () => {
-        const div: HTMLElement = fixture.nativeElement.querySelector('div');
-
-        expect(div.style.position).toBe('relative');
+    it('sets the native aspect-ratio and full width', () => {
+        expect(div.style.aspectRatio).toBe(String(16 / 9));
         expect(div.style.width).toBe('100%');
     });
 
-    it('should update paddingBottom when ratio changes', () => {
-        const div: HTMLElement = fixture.nativeElement.querySelector('div');
-
-        component.ratio = 4 / 3;
-        fixture.changeDetectorRef.markForCheck();
+    it('updates aspect-ratio when the ratio changes', () => {
+        component.ratio.set(2);
         fixture.detectChanges();
-
-        // 1 / (4/3) * 100 = 75%
-        expect(div.style.paddingBottom).toBe('75%');
+        expect(div.style.aspectRatio).toBe('2');
     });
 
-    it('should set paddingBottom correctly for small ratios', () => {
-        const div: HTMLElement = fixture.nativeElement.querySelector('div');
-
-        component.ratio = 1 / 1;
-        fixture.changeDetectorRef.markForCheck();
+    it('defaults to a square (1) when ratio is 1', () => {
+        component.ratio.set(1);
         fixture.detectChanges();
-
-        // 1 / (1/1) * 100 = 100%
-        expect(div.style.paddingBottom).toBe('100%'); //
+        expect(div.style.aspectRatio).toBe('1');
     });
 
-    it('should set paddingBottom to 0% when ratio is 0 to avoid division by zero', () => {
-        const div: HTMLElement = fixture.nativeElement.querySelector('div');
-
-        component.ratio = 0;
-        fixture.changeDetectorRef.markForCheck();
+    it('omits aspect-ratio when ratio is 0', () => {
+        component.ratio.set(0);
         fixture.detectChanges();
-
-        expect(div.style.paddingBottom).toBe('0%');
+        expect(div.style.aspectRatio).toBe('');
     });
 });
