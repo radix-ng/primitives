@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-default',
     imports: [...drawerImports, LucideX],
     template: `

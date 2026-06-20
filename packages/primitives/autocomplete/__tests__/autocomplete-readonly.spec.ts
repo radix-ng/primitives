@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { _importsAutocomplete } from '../index';
@@ -11,6 +11,7 @@ import { AutocompleteValueChangeDetails } from '../src/autocomplete-root';
  * also rendered disabled so it doesn't merely look actionable.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsAutocomplete],
     template: `
         <div

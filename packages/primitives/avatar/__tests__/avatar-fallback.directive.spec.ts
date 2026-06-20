@@ -1,4 +1,4 @@
-import { Component, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectionStrategy, Component, PLATFORM_ID } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { afterEach, vi } from 'vitest';
@@ -6,6 +6,7 @@ import { RdxAvatarFallbackDirective } from '../src/avatar-fallback.directive';
 import { RdxAvatarRootDirective } from '../src/avatar-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-mock-component',
     standalone: true,
     imports: [RdxAvatarFallbackDirective, RdxAvatarRootDirective],

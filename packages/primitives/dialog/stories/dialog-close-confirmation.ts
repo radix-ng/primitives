@@ -1,10 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideX } from '@lucide/angular';
 import { dialogImports, RdxDialogOpenChange } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-close-confirmation',
     imports: [...dialogImports, FormsModule, LucideX],
     template: `

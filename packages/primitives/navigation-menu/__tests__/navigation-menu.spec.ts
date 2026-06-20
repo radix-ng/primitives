@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import {
@@ -8,6 +8,7 @@ import {
 } from '@radix-ng/primitives/navigation-menu';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [...navigationMenuImports],
     template: `
         <nav
@@ -65,6 +66,7 @@ class HostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [...navigationMenuImports],
     template: `
         <nav defaultValue="outer" rdxNavigationMenuRoot>
@@ -96,6 +98,7 @@ class HostComponent {
 class NestedHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [...navigationMenuImports],
     template: `
         <nav rdxNavigationMenuRoot>
@@ -681,6 +684,7 @@ describe('RdxNavigationMenu keepMounted behavior', () => {
 describe('NavigationMenu structural portal', () => {
     it('throws in dev mode when rdxNavigationMenuPortal is used as an attribute instead of structurally', () => {
         @Component({
+            changeDetection: ChangeDetectionStrategy.Eager,
             imports: [...navigationMenuImports],
             template: `
                 <nav rdxNavigationMenuRoot>

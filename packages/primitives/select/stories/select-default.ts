@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { Align } from '@radix-ng/primitives/popper';
 import { RdxSelectGroup } from '../src/select-group';
@@ -15,6 +15,7 @@ import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'select-default',
     imports: [
         RdxSelectRoot,

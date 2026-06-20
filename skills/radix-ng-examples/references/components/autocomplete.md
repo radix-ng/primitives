@@ -11,7 +11,7 @@ Use Autocomplete for free-form entry with suggestions (search boxes, command inp
 the value is a chosen item (or items) rather than the typed text.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
@@ -60,6 +60,7 @@ const TAGS = [
 ];
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-default',
     imports: [_importsAutocomplete],
     template: `
@@ -177,7 +178,7 @@ in place (non-matching items are hidden, not destroyed).
 Type to filter a list of suggestions; pick one to fill the input.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
@@ -226,6 +227,7 @@ const TAGS = [
 ];
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-default',
     imports: [_importsAutocomplete],
     template: `
@@ -267,7 +269,7 @@ suffix selected so the next keystroke replaces it. Inline modes highlight the fi
 so no `autoHighlight` is required.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
@@ -316,6 +318,7 @@ const TAGS = [
 ];
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-inline',
     imports: [_importsAutocomplete],
     template: `
@@ -349,7 +352,7 @@ export class AutocompleteInline {
 `autoHighlight` keeps the first match highlighted as you type, so Enter selects it immediately.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
@@ -398,6 +401,7 @@ const TAGS = [
 ];
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-auto-highlight',
     imports: [_importsAutocomplete],
     template: `
@@ -432,7 +436,7 @@ Group related suggestions with `rdxAutocompleteGroup` / `rdxAutocompleteGroupLab
 hides its heading automatically.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
@@ -442,6 +446,7 @@ interface Group {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-grouped',
     imports: [_importsAutocomplete],
     template: `
@@ -522,11 +527,12 @@ export class AutocompleteGrouped {
 `limit` caps how many matches are shown at once.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-limit',
     imports: [_importsAutocomplete],
     template: `
@@ -626,7 +632,7 @@ multiple fields. This example uses `match-sorter` over `title` / `description` /
 highlights the matched text.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { matchSorter, rankings } from 'match-sorter';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete, AutocompleteFilter } from '../index';
@@ -657,6 +663,7 @@ const fuzzyFilter: AutocompleteFilter = (value, query) => {
 };
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-fuzzy',
     imports: [_importsAutocomplete],
     template: `
@@ -819,7 +826,7 @@ export class AutocompleteFuzzy {
 a failure) and `RdxAutocompleteStatus` announces loading, result counts, and errors.
 
 ```typescript
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
@@ -940,6 +947,7 @@ const top100Movies: Movie[] = [
  * input never reveals the whole catalogue. `RdxAutocompleteStatus` announces loading / counts / errors.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-async',
     imports: [_importsAutocomplete],
     template: `
@@ -1046,7 +1054,7 @@ An always-open, inline autocomplete (no popup — the `List` is rendered directl
 (the autocomplete's `open` is shared with the dialog via `[(open)]`).
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoCard, demoDialog } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
@@ -1067,6 +1075,7 @@ interface Group {
  * `open` to `false`, which is shared with the dialog via `[(open)]`).
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-command-palette',
     imports: [...dialogImports, _importsAutocomplete],
     template: `
@@ -1202,7 +1211,7 @@ open; pressing an item inserts it into the message field, and `onValueChange` is
 `reason === 'item-press'` so the search box is not overwritten.
 
 ```typescript
-import { Component, ElementRef, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
 import { cn, demoCombobox, demoFocusRing } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
@@ -1233,6 +1242,7 @@ function chunk<T>(items: T[], size: number): T[][] {
  * field; `onValueChange` is ignored when `reason === 'item-press'` so the search box is not overwritten.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-grid',
     imports: [_importsAutocomplete],
     template: `
@@ -1501,7 +1511,7 @@ protected onOpenChange(change: { open: boolean; eventDetails: { cancel(): void }
 renders only the visible window.
 
 ```typescript
-import { Component, ElementRef, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
 import { injectVirtualizer } from '@tanstack/angular-virtual';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete, AutocompleteItemHighlightedDetails, RdxAutocompleteRoot } from '../index';
@@ -1513,6 +1523,7 @@ import { _importsAutocomplete, AutocompleteItemHighlightedDetails, RdxAutocomple
  * highlighted row mounts before `aria-activedescendant` references it.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-virtualized-example',
     imports: [_importsAutocomplete],
     template: `
@@ -1600,7 +1611,7 @@ export class AutocompleteVirtualizedExample {
 The form value is the input string. Bind `[formControl]` to the root.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
@@ -1610,6 +1621,7 @@ import { _importsAutocomplete } from '../index';
  * directly to the root.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-reactive-forms',
     imports: [_importsAutocomplete, ReactiveFormsModule],
     template: `
@@ -1647,7 +1659,7 @@ export class AutocompleteReactiveForms {
 `[(ngModel)]` binds the input string two-way.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
@@ -1656,6 +1668,7 @@ import { _importsAutocomplete } from '../index';
  * Template-driven forms: `[(ngModel)]` binds the input string two-way.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-template-forms',
     imports: [_importsAutocomplete, FormsModule],
     template: `
@@ -1691,11 +1704,12 @@ export class AutocompleteTemplateForms {
 ### Disabled
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-disabled',
     imports: [_importsAutocomplete],
     template: `

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxScrollAreaContent,
     RdxScrollAreaRoot,
@@ -16,6 +16,7 @@ const html = String.raw;
  * disappears once you reach an edge because the matching variable becomes `0px`.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'scroll-area-gradient-example',
     imports: [
         RdxScrollAreaRoot,

@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideArrowUpRight, LucideBookOpen, LucideChevronDown, LucideCode, LucideLifeBuoy } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
 import { cn, demoNavigationMenu } from '../../storybook/styles';
@@ -10,6 +10,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
  * The same directive would sit on a router link.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-custom-links',
     imports: [
         ...navigationMenuImports,

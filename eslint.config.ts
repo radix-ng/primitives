@@ -56,7 +56,13 @@ export default defineConfig([
             '@angular-eslint/no-input-rename': 'off',
             '@angular-eslint/no-output-rename': 'off',
             '@angular-eslint/no-async-lifecycle-method': 'warn',
-            '@angular-eslint/contextual-decorator': 'warn'
+            '@angular-eslint/contextual-decorator': 'warn',
+            // Angular 22 flipped the default change-detection strategy to OnPush; the upgrade preserves
+            // pre-v22 behavior by adding the explicit `ChangeDetectionStrategy.Eager` opt-out (the
+            // sanctioned @angular/core:change-detection-eager migration). angular-eslint 22 added this
+            // rule to its recommended set, which flags exactly that opt-out — disable it until the
+            // library deliberately adopts OnPush component-by-component.
+            '@angular-eslint/prefer-on-push-component-change-detection': 'off'
         }
     },
     {

@@ -1,7 +1,8 @@
-import { Component, effect, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, signal } from '@angular/core';
 import { popperImports } from '../index';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'popper-upd-position',
     imports: [...popperImports],
     template: `
@@ -50,6 +51,7 @@ export class PopperUpdPosition {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'popper-follow-pointer',
     imports: [...popperImports],
     template: `

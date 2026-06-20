@@ -7,12 +7,13 @@ primitives. It remains headless: styles and native CSS animations belong to the 
 follows Base UI.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucidePlus } from '@lucide/angular';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
 import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-tooltip-default',
     imports: [...tooltipImports, LucidePlus],
     template: `
@@ -95,12 +96,13 @@ exit keyframes on its root element finish. Use the `*` microsyntax on the positi
 A tooltip anchored to an icon button, with an arrow.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucidePlus } from '@lucide/angular';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
 import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-tooltip-default',
     imports: [...tooltipImports, LucidePlus],
     template: `
@@ -130,12 +132,13 @@ instant-open `timeout` window — once one tooltip opens, adjacent ones open ins
 ms after the last one closes.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideDynamicIcon } from '@lucide/angular';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
 import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-tooltip-provider',
     imports: [...tooltipImports, LucideDynamicIcon],
     template: `
@@ -177,11 +180,12 @@ Set `delay` (and `closeDelay`) on `rdxTooltipTrigger` to override the root, prov
 values for that trigger only.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
 import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-tooltip-delay',
     imports: [...tooltipImports],
     template: `
@@ -219,11 +223,12 @@ Set `disabled` on `rdxTooltipTrigger` (or `disabled` on `rdxTooltip` for all tri
 trigger never opens the tooltip and reflects `data-trigger-disabled`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
 import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-tooltip-disabled',
     imports: [...tooltipImports],
     template: `
@@ -260,11 +265,12 @@ Set `trackCursorAxis` on the root to `'x'`, `'y'`, or `'both'` to make the popup
 along that axis.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
 import { demoTooltip } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-tooltip-track-cursor',
     imports: [...tooltipImports],
     template: `
@@ -294,7 +300,7 @@ Tooltip uses `updatePositionStrategy="always"` so it can follow moving triggers 
 when the trigger moves continuously, such as a slider thumb being dragged.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
@@ -307,6 +313,7 @@ import { tooltipImports } from '@radix-ng/primitives/tooltip';
 import { demoTooltip } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-tooltip-slider',
     imports: [
         ...tooltipImports,

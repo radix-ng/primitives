@@ -44,6 +44,25 @@ test.describe('Storybook stories', () => {
             await page.goto(`/iframe.html?id=${encodeURIComponent(story.id)}&viewMode=story`);
             await page.waitForSelector('#storybook-root', { state: 'attached' });
             await page.evaluate(() => document.fonts.ready);
+            // Settle any in-flight images so a half-decoded frame can't be captured (an `<img>` is only
+            // safe to shoot once it has loaded). Bounded by an internal race so a never-resolving src
+            // can't hang the test.
+            await page
+                .evaluate(() => {
+                    const pending = Array.from(document.images)
+                        .filter((img) => !img.complete)
+                        .map(
+                            (img) =>
+                                new Promise<void>((resolve) => {
+                                    img.addEventListener('load', () => resolve(), { once: true });
+                                    img.addEventListener('error', () => resolve(), { once: true });
+                                })
+                        );
+                    const settled = Promise.all(pending).then(() => undefined);
+                    const cap = new Promise<void>((resolve) => setTimeout(resolve, 3000));
+                    return Promise.race([settled, cap]);
+                })
+                .catch(() => undefined);
 
             await expect(page).toHaveScreenshot(`${story.id}.png`, { fullPage: true });
         });

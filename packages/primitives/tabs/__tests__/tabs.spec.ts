@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DataOrientation } from '@radix-ng/primitives/core';
 import { RdxTabsList } from '../src/tabs-list';
@@ -9,6 +9,7 @@ import { RdxTabsTab } from '../src/tabs-tab';
 import { RdxTabsValue } from '../src/utils';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <div
             [(value)]="value"
@@ -280,6 +281,7 @@ describe('Tabs', () => {
 });
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <div (onValueChange)="onValueChange($event)" rdxTabsRoot>
             <div rdxTabsList>
@@ -365,6 +367,7 @@ describe('Tabs implicit defaultValue', () => {
 });
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <div [(value)]="value" defaultValue="one" rdxTabsRoot>
             <div rdxTabsList>

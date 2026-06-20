@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormErrors, RdxFormRoot, RdxFormSubmitEvent } from '../index';
 import { formError, formField, formInput, formLabel, formSubmit } from './form.shared';
@@ -9,6 +9,7 @@ import { formError, formField, formInput, formLabel, formSubmit } from './form.s
  * its error, and binding `(onClearErrors)` back into `errors` keeps the controlled map in sync.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'form-default-example',
     imports: [RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldError],
     template: `

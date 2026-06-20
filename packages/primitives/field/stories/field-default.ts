@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
 import { RdxFieldError } from '../src/field-error';
@@ -7,6 +7,7 @@ import { RdxFieldRoot } from '../src/field-root';
 import { fieldDescription, fieldError, fieldLabel } from './field.shared';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'field-default-example',
     imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
     template: `

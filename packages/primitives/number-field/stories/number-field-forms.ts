@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { LucideDynamicIcon, LucideMinus as Minus, LucidePlus as Plus } from '@lucide/angular';
 import {
@@ -11,6 +11,7 @@ import {
 } from '@radix-ng/primitives/number-field';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'number-field-reactive-forms',
     imports: [
         ReactiveFormsModule,

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { RdxToastDescription } from '../src/toast-description';
 import { RdxToastManager } from '../src/toast-provider';
@@ -7,6 +7,7 @@ import { RdxToastTitle } from '../src/toast-title';
 import { RdxToastViewport } from '../src/toast-viewport';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'test-toast-host',
     template: `
         <div rdxToastViewport>

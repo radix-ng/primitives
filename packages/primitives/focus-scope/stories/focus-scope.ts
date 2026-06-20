@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxFocusScope } from '../src/focus-scope';
 
 const demoClasses = 'flex w-xl flex-col gap-4';
@@ -9,6 +9,7 @@ const primaryButtonClasses =
     'bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:border-ring focus-visible:ring-ring/50 inline-flex h-10 items-center justify-center rounded-md border border-transparent px-4 text-sm font-medium shadow-xs outline-none transition-[color,box-shadow] focus-visible:ring-[3px]';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'focus-scope-trapped',
     imports: [RdxFocusScope],
     template: `
@@ -40,6 +41,7 @@ export class FocusScope {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'focus-scope-trapped-loop',
     imports: [RdxFocusScope],
     template: `
@@ -61,6 +63,7 @@ export class FocusScope {
 export class FocusScopeLoop {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'focus-scope-events',
     imports: [RdxFocusScope],
     template: `

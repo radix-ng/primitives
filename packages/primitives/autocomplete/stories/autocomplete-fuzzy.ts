@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { matchSorter, rankings } from 'match-sorter';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete, AutocompleteFilter } from '../index';
@@ -29,6 +29,7 @@ const fuzzyFilter: AutocompleteFilter = (value, query) => {
 };
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-fuzzy',
     imports: [_importsAutocomplete],
     template: `

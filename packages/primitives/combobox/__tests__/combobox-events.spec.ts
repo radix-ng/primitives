@@ -1,10 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { _importsCombobox } from '../index';
 import { RdxComboboxOpenChange } from '../src/combobox-root';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
         <form>
@@ -29,6 +30,7 @@ class SubmitHost {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
         <div [(open)]="open" (onOpenChangeComplete)="completed.set($event)" rdxComboboxRoot>
@@ -52,6 +54,7 @@ class CompleteHost {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
         <div [(open)]="open" (onOpenChange)="handleOpenChange($event)" rdxComboboxRoot>

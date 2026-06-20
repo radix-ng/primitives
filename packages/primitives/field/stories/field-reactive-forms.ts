@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
@@ -8,6 +8,7 @@ import { RdxFieldRoot } from '../src/field-root';
 import { fieldDescription, fieldError, fieldInputInvalid, fieldLabel, fieldSubmitButton } from './field.shared';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'field-reactive-forms-example',
     imports: [ReactiveFormsModule, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
     template: `

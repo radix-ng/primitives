@@ -7,7 +7,7 @@ styles — visual variants in the examples come from the centralized demo style 
 **Guides/Styling** page).
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
 
@@ -16,6 +16,7 @@ import { RdxButtonDirective } from '../src/button.directive';
  * style layer applied on top of the headless `rdxButton` directive.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-button-variants',
     imports: [RdxButtonDirective],
     template: `
@@ -67,7 +68,7 @@ Visual variants — `primary`, `secondary`, `outline`, `ghost`, and `destructive
 shared `demoButton` style layer, not the directive itself.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
 
@@ -76,6 +77,7 @@ import { RdxButtonDirective } from '../src/button.directive';
  * style layer applied on top of the headless `rdxButton` directive.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-button-variants',
     imports: [RdxButtonDirective],
     template: `
@@ -99,7 +101,7 @@ export class RdxButtonVariantsComponent {
 `sm`, `md`, `lg`, and a square `icon` size.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideDynamicIcon, LucidePlus } from '@lucide/angular';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
@@ -108,6 +110,7 @@ import { RdxButtonDirective } from '../src/button.directive';
  * Sizes, including a square icon button.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-button-sizes',
     imports: [RdxButtonDirective, LucideDynamicIcon, LucidePlus],
     template: `
@@ -133,7 +136,7 @@ The first button uses the native `disabled` attribute (removed from the tab orde
 `focusableWhenDisabled`, so it stays focusable via `aria-disabled` while its activation is suppressed.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
 
@@ -143,6 +146,7 @@ import { RdxButtonDirective } from '../src/button.directive';
  * stays focusable via `aria-disabled` while its activation is suppressed.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-button-disabled',
     imports: [RdxButtonDirective],
     template: `
@@ -166,7 +170,7 @@ The directive applies button semantics to any element. Here an `<a>` renders as 
 keeping native link behavior.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
 
@@ -175,6 +179,7 @@ import { RdxButtonDirective } from '../src/button.directive';
  * keeping native link behavior.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-button-as-link',
     imports: [RdxButtonDirective],
     template: `
@@ -196,7 +201,7 @@ with `focusableWhenDisabled` so focus stays on the button. Add `aria-busy` and r
 communicate the state.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideDynamicIcon, LucidePlus } from '@lucide/angular';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
@@ -207,6 +212,7 @@ import { RdxButtonDirective } from '../src/button.directive';
  * announces the pending state, and a spinner is rendered in place of the icon.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-button-loading',
     imports: [RdxButtonDirective, LucideDynamicIcon, LucidePlus],
     template: `

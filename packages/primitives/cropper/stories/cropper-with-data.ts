@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { demoCropper } from '../../storybook/styles';
 import { RdxCropperCropAreaDirective } from '../src/cropper-crop-area.directive';
 import { RdxCropperDescriptionDirective } from '../src/cropper-description.directive';
@@ -6,6 +6,7 @@ import { RdxCropperImageComponent } from '../src/cropper-image.component';
 import { Area, RdxCropperRootDirective } from '../src/cropper-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'cropper-with-data',
     imports: [
         RdxCropperRootDirective,

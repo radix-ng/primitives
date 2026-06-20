@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, expect, it } from 'vitest';
 import { _importsCombobox } from '../index';
@@ -9,6 +9,7 @@ import { _importsCombobox } from '../index';
  * inside the `onValueChange` callback, which must be respected (Base UI parity).
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
         <button id="external" type="button">external</button>
@@ -39,6 +40,7 @@ class OutsideHost {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
         <div [(value)]="value" [(open)]="open" rdxComboboxRoot>

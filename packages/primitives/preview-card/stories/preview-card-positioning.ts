@@ -1,9 +1,10 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { Side } from '@radix-ng/primitives/popper';
 import { previewCardImports } from '@radix-ng/primitives/preview-card';
 import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-preview-card-positioning',
     imports: [...previewCardImports],
     template: `

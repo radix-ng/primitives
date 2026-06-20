@@ -47,12 +47,13 @@ Disables the native input and exposes `data-disabled`.
 Connects the input to Field label, description, and validation state.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { demoInput } from '../../storybook/styles';
 import { RdxInputDirective } from '../src/input.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'input-field-example',
     imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldDescription, RdxFieldError, RdxInputDirective],
     template: `
@@ -74,13 +75,14 @@ export class InputFieldExample {
 Uses Angular reactive forms while Field reflects validation state.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { demoInput } from '../../storybook/styles';
 import { RdxInputDirective } from '../src/input.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'input-reactive-forms-example',
     imports: [ReactiveFormsModule, RdxFieldRoot, RdxFieldLabel, RdxFieldDescription, RdxFieldError, RdxInputDirective],
     template: `
@@ -110,7 +112,7 @@ export class InputReactiveFormsExample {
 Combines multiple inputs, Field state, a checkbox, and a submit button in a larger form.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LucideCheck } from '@lucide/angular';
 import { RdxButtonDirective } from '@radix-ng/primitives/button';
@@ -125,6 +127,7 @@ import { cn, demoButton, demoCheckbox, demoInput } from '../../storybook/styles'
 import { RdxInputDirective } from '../src/input.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'input-signup-form-example',
     imports: [
         ReactiveFormsModule,

@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
@@ -9,6 +9,7 @@ import { _importsCombobox } from '../index';
  * `role="grid"`.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-grid',
     imports: [_importsCombobox, LucideChevronDown],
     template: `

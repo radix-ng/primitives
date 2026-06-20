@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
@@ -7,6 +7,7 @@ import { _importsAutocomplete } from '../index';
  * Template-driven forms: `[(ngModel)]` binds the input string two-way.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-template-forms',
     imports: [_importsAutocomplete, FormsModule],
     template: `

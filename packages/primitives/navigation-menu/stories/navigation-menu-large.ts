@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
 import { cn, demoNavigationMenu } from '../../storybook/styles';
@@ -9,6 +9,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
  * popup stays a fixed size and the list scrolls inside it.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-large',
     imports: [...navigationMenuImports, LucideChevronDown],
     template: `

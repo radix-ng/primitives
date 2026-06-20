@@ -3,11 +3,12 @@
 #### A succinct, low-priority message that appears temporarily, stacks, and can be swiped away.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-default-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],
@@ -117,11 +118,12 @@ An anchored toast is wrapped in `rdxToastPositioner` instead of joining the stac
 Push a single toast; it auto-dismisses after the timeout.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-default-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],
@@ -171,7 +173,7 @@ Add several toasts to see the collapsed stack, then hover or focus it to expand.
 while the stack is hovered or focused.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
@@ -181,6 +183,7 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
  * while the stack is hovered or focused.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-stacking-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],
@@ -231,7 +234,7 @@ export class ToastStackingExample {
 Drag a toast toward an allowed `swipeDirection` to dismiss it; release early to snap back.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
@@ -241,6 +244,7 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
  * The live offset is exposed as `--toast-swipe-movement-x/y` and applied to the content.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-swipe-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],
@@ -283,7 +287,7 @@ export class ToastSwipeExample {
 Drive one toast through a promise: `loading`, then `success` or `error`.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
@@ -293,6 +297,7 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
  * auto-dismiss; the resolved one picks the timeout back up.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-promise-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],
@@ -351,7 +356,7 @@ export class ToastPromiseExample {
 Branch on a free-form `type` to render an icon, and raise `priority` to `high` for assertive errors.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { LucideCircleCheck, LucideCircleX, LucideInfo } from '@lucide/angular';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
@@ -362,6 +367,7 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
  * announcement role to `alert` (assertive) for errors.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-types-example',
     imports: [...toastImports, LucideCircleCheck, LucideCircleX, LucideInfo],
     providers: [provideRdxToastManager()],
@@ -430,7 +436,7 @@ export class ToastTypesExample {
 Placement is the consumer's CSS — here the viewport is anchored top-center and the stack grows down.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
@@ -440,6 +446,7 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
  * flipped signs and `origin-top`). Swipe up to dismiss.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-custom-position-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],
@@ -483,7 +490,7 @@ export class ToastCustomPositionExample {
 `rdxToastAction` adds an in-toast action button; this one undoes the change and dismisses the toast.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, RdxToastObject, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
@@ -492,6 +499,7 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
  * toast's `actionProps`; clicking runs the handler and dismisses the toast.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-undo-action-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],
@@ -550,7 +558,7 @@ export class ToastUndoActionExample {
 Attach a typed `data` payload and read it back in the template for rich, app-specific toasts.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
@@ -565,6 +573,7 @@ interface MentionData {
  * app-specific content beyond title/description. Here each toast renders an avatar and a mention.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-custom-data-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],
@@ -622,7 +631,7 @@ export class ToastCustomDataExample {
 Pass a fixed `id` to upsert a single toast in place instead of stacking duplicates.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
@@ -632,6 +641,7 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
  * second click visibly pulses the existing toast; its auto-dismiss timer restarts each time.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-deduplicated-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],
@@ -680,7 +690,7 @@ export class ToastDeduplicatedExample {
 Measured heights feed `--toast-offset-y`, so the expanded stack lines up even with differing heights.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
@@ -690,6 +700,7 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
  * expand and watch them stack without overlap.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-varying-heights-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],
@@ -743,7 +754,7 @@ export class ToastVaryingHeightsExample {
 Pin a toast to an element with `rdxToastPositioner` (powered by popper) instead of joining the stack.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
@@ -753,6 +764,7 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
  * through the toast's `positionerProps`.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-anchored-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],

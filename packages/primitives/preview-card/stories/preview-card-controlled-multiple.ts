@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { previewCardImports } from '@radix-ng/primitives/preview-card';
 import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-preview-card-controlled-multiple',
     imports: [...previewCardImports],
     template: `

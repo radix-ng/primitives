@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideMinus, LucidePlus } from '@lucide/angular';
 import { RdxNumberFieldModule } from '@radix-ng/primitives/number-field';
 import { toolbarImports } from '@radix-ng/primitives/toolbar';
@@ -7,6 +7,7 @@ const stepClass =
     'text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center rounded-md outline-none transition-colors focus-visible:ring-2 disabled:opacity-50';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toolbar-with-number-field',
     imports: [...toolbarImports, RdxNumberFieldModule, LucideMinus, LucidePlus],
     template: `

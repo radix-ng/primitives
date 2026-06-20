@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import {
     RdxSelectItem,
@@ -23,6 +23,7 @@ interface SelectEventLogEntry {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'select-events',
     imports: [
         RdxSelectRoot,

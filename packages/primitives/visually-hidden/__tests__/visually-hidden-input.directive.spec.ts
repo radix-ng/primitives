@@ -1,9 +1,10 @@
-import { Component, DebugElement } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RdxVisuallyHiddenInputDirective } from '../src/visually-hidden-input.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxVisuallyHiddenInputDirective],
     template: `
         <input [name]="name" [value]="value" [required]="required" rdxVisuallyHiddenInput />

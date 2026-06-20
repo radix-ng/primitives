@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxScrollAreaContent,
     RdxScrollAreaCorner,
@@ -15,6 +15,7 @@ const html = String.raw;
  * the vertical and horizontal scrollbars meet.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'scroll-area-both-example',
     imports: [
         RdxScrollAreaRoot,

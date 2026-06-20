@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { cn, demoAvatar } from '../../storybook/styles';
 import { RdxAvatarFallbackDirective } from '../src/avatar-fallback.directive';
 import { RdxAvatarImageDirective } from '../src/avatar-image.directive';
@@ -13,6 +13,7 @@ const AVATAR_DIRECTIVES = [RdxAvatarRootDirective, RdxAvatarImageDirective, RdxA
  * Image avatars with an initials fallback shown only if the image is slow to load.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-avatar-demo',
     imports: AVATAR_DIRECTIVES,
     template: `
@@ -40,6 +41,7 @@ export class RdxAvatarDemoComponent {
  * The same avatar at the three sizes from the style layer.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-avatar-sizes',
     imports: AVATAR_DIRECTIVES,
     template: `
@@ -69,6 +71,7 @@ export class RdxAvatarSizesComponent {
  * The fallback renders when there is no image or the image fails to load.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-avatar-fallback',
     imports: AVATAR_DIRECTIVES,
     template: `
@@ -96,6 +99,7 @@ export class RdxAvatarFallbackComponent {
  * connections (here the image never loads, so the fallback appears after 600ms).
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-avatar-delay',
     imports: AVATAR_DIRECTIVES,
     template: `

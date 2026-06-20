@@ -1,4 +1,4 @@
-import { Component, ElementRef, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
 import { LucideCheck } from '@lucide/angular';
 import { injectVirtualizer } from '@tanstack/angular-virtual';
 import { cn, demoCombobox } from '../../storybook/styles';
@@ -12,6 +12,7 @@ import { ComboboxItemHighlightedDetails, RdxComboboxRoot } from '../src/combobox
  * highlighted row mounts before `aria-activedescendant` references it.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-virtualized-example',
     imports: [_importsCombobox, LucideCheck],
     template: `

@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import {
     LucideChevronLeft as ChevronLeft,
     LucideChevronRight as ChevronRight,
@@ -7,6 +7,7 @@ import {
 import { RdxStepperModule } from '../index';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'StepperNavigation',
     imports: [RdxStepperModule, LucideDynamicIcon],
     host: {

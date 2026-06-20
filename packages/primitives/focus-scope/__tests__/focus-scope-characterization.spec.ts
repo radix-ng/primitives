@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { Component, ElementRef, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { RdxFocusScope } from '../src/focus-scope';
@@ -19,6 +19,7 @@ const flush = (): Promise<void> => new Promise((resolve) => requestAnimationFram
 // ─── Tab loop (handleKeyDown) ─────────────────────────────────────────────────
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxFocusScope],
     template: `
         <div #scope [loop]="loop()" rdxFocusScope>
@@ -223,6 +224,7 @@ describe('RdxFocusScope characterization', () => {
 
         it('mountAutoFocus is preventable (preventDefault skips the auto-focus)', async () => {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxFocusScope],
                 template: `
                     <div (mountAutoFocus)="$event.preventDefault()" rdxFocusScope>
@@ -274,6 +276,7 @@ describe('RdxFocusScope characterization', () => {
 
     describe('trapped containment', () => {
         @Component({
+            changeDetection: ChangeDetectionStrategy.Eager,
             imports: [RdxFocusScope],
             template: `
                 <div #scope rdxFocusScope trapped>

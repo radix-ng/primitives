@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
@@ -72,6 +72,7 @@ describe('slider utils', () => {
 });
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxSliderRoot,
         RdxSliderControl,
@@ -115,6 +116,7 @@ class TestComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
         <div
@@ -143,6 +145,7 @@ class EdgeComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
         <div [value]="value()" rdxSliderRoot>

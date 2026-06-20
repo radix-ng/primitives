@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { CalendarDate, CalendarDateTime, DateValue } from '@internationalized/date';
@@ -7,6 +7,7 @@ import { RdxDateFieldInputDirective } from '../src/date-field-input.directive';
 import { RdxDateFieldRootDirective } from '../src/date-field-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <div
             #root="rdxDateFieldRoot"

@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RdxComboboxOpenChange } from '@radix-ng/primitives/combobox';
@@ -8,6 +8,7 @@ import { _importsAutocomplete } from '../index';
 import { AutocompleteFilter, AutocompleteValueChangeDetails, RdxAutocompleteRoot } from '../src/autocomplete-root';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsAutocomplete],
     template: `
         <div
@@ -282,6 +283,7 @@ describe('Autocomplete', () => {
 describe('Autocomplete structural portal', () => {
     it('throws in dev mode when rdxAutocompletePortal is used as an attribute instead of structurally', () => {
         @Component({
+            changeDetection: ChangeDetectionStrategy.Eager,
             imports: [_importsAutocomplete],
             template: `
                 <div rdxAutocompleteRoot>

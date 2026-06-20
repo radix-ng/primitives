@@ -1,9 +1,10 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { cn, demoButton, demoDialog, demoMenu } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-alert-dialog-from-menu',
     imports: [...alertDialogImports, RdxMenuModule],
     template: `

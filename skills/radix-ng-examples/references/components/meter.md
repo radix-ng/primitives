@@ -3,7 +3,7 @@
 #### A graphical display of a numeric value within a range.
 
 ```typescript
-import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { cn } from '../../storybook/styles';
 import { RdxMeterIndicatorDirective } from '../src/meter-indicator.directive';
 import { RdxMeterLabelDirective } from '../src/meter-label.directive';
@@ -14,6 +14,7 @@ import { RdxMeterValueDirective } from '../src/meter-value.directive';
 const storageSteps = [24, 38, 52, 67, 81] as const;
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'meter-storage',
     imports: [
         RdxMeterRootDirective,
@@ -118,7 +119,7 @@ import {
 An animated labelled meter with formatted value text.
 
 ```typescript
-import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { cn } from '../../storybook/styles';
 import { RdxMeterIndicatorDirective } from '../src/meter-indicator.directive';
 import { RdxMeterLabelDirective } from '../src/meter-label.directive';
@@ -129,6 +130,7 @@ import { RdxMeterValueDirective } from '../src/meter-value.directive';
 const storageSteps = [24, 38, 52, 67, 81] as const;
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'meter-storage',
     imports: [
         RdxMeterRootDirective,

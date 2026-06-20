@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RdxAspectRatioDirective } from '../src/aspect-ratio.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <div [ratio]="ratio" rdxAspectRatio></div>
     `,

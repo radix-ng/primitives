@@ -1,7 +1,8 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { injectCropperRootContext } from './cropper-context.token';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: '[rdxCropperImage]',
     host: {
         '[style]': 'rootContext.imageWrapperStyle()'

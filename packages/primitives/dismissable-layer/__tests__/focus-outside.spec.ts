@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
 import { RdxFocusOutside } from '../src/utils';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxFocusOutside],
     template: `
         <div>

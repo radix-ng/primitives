@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { _importsCombobox } from '../index';
@@ -8,6 +8,7 @@ import { _importsCombobox } from '../index';
  * the column; ArrowLeft/Right move within a row; the list is `role="grid"`, rows are `role="row"`.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
         <div [(value)]="value" [(open)]="open" grid rdxComboboxRoot>
@@ -164,6 +165,7 @@ describe('Combobox grid', () => {
 });
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
         <div [(open)]="open" grid rdxComboboxRoot>

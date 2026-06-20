@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RdxValidationError } from '@radix-ng/primitives/core';
 import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxInputDirective, RdxInputValueChangeEvent } from '../src/input.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <input
             [value]="value"
@@ -52,6 +53,7 @@ class StandaloneHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <div rdxFieldRoot required>
             <label rdxFieldLabel>Email</label>

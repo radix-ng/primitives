@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { CalendarIdentifier, createCalendar, getLocalTimeZone, toCalendar, today } from '@internationalized/date';
 import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar, demoInput } from '../../storybook/styles';
@@ -15,6 +15,7 @@ import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-calendar-with-locale',
     imports: [
         RdxCalendarRootDirective,

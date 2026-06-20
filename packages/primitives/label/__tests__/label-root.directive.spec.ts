@@ -1,4 +1,4 @@
-import { Component, DebugElement } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
@@ -14,6 +14,7 @@ import { RdxLabelDirective } from '../src/label.directive';
 
     Interaction with Children: Checks that double-clicks on non-form elements like divs also trigger prevention of default actions.*/
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <label rdxLabel>
             Test Label
@@ -27,6 +28,7 @@ import { RdxLabelDirective } from '../src/label.directive';
 class TestComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <label rdxLabel>Plain</label>
         <label id="custom-id" rdxLabel htmlFor="ctrl">Wired</label>

@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { axe } from 'jest-axe';
@@ -17,6 +17,7 @@ import {
 import { RdxEditableSubmitTrigger } from '../src/editable-submit-trigger';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxEditableRoot,
         RdxEditableArea,

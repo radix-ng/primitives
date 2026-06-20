@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
@@ -12,6 +12,7 @@ import {
 } from '../src/checkbox-root';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective, RdxCheckboxIndicatorDirective],
     template: `
         <div
@@ -48,6 +49,7 @@ class CheckboxHost {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
@@ -77,6 +79,7 @@ class CheckboxUncheckedValueHost {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective],
     template: `
         <div defaultChecked rdxCheckboxRoot>
@@ -87,6 +90,7 @@ class CheckboxUncheckedValueHost {
 class CheckboxDefaultCheckedHost {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective],
     template: `
         <div readOnly rdxCheckboxRoot>
@@ -288,6 +292,7 @@ describe('RdxCheckbox', () => {
 });
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective, RdxCheckboxInputDirective],
     template: `
         <div

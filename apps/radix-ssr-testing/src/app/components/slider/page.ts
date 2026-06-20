@@ -1,7 +1,8 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
 import { RdxSliderModule } from '@radix-ng/primitives/slider';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-slider',
     imports: [RdxSliderModule],
     styles: `

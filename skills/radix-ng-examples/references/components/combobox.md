@@ -9,12 +9,13 @@ selection when closed. For free-form entry whose value is the typed text, reach 
 [Autocomplete](?path=/docs/primitives-autocomplete--docs).
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-default',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
@@ -151,12 +152,13 @@ the wrapping element so the popup aligns to the whole control instead of the inl
 Single selection with built-in substring filtering. Type to filter, ArrowDown / Enter to pick.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-default',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
@@ -198,12 +200,13 @@ export class ComboboxDefault {
 The whole control is disabled and won't open.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-disabled',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
@@ -245,7 +248,7 @@ Options organized into sections with `RdxComboboxGroup` / `RdxComboboxGroupLabel
 heading automatically once all of its items are filtered out.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
@@ -253,6 +256,7 @@ import { _importsCombobox } from '../index';
 /** Options organized into sections with `RdxComboboxGroup` / `RdxComboboxGroupLabel`. A group hides
  * its heading automatically when all of its items are filtered out. */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-grouped',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
@@ -310,7 +314,7 @@ A 2D grid (`grid`): wrap items in `RdxComboboxRow` and the list becomes `role="g
 `ArrowDown` move between rows keeping the column; `ArrowLeft` / `ArrowRight` move within a row.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
@@ -321,6 +325,7 @@ import { _importsCombobox } from '../index';
  * `role="grid"`.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-grid',
     imports: [_importsCombobox, LucideChevronDown],
     template: `
@@ -373,12 +378,13 @@ Multiple selection: picks become chips before the input, the popup stays open be
 and Backspace in an empty input removes the last chip.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown, LucideX } from '@lucide/angular';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-multiple',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck, LucideX],
     template: `
@@ -440,7 +446,7 @@ Nothing loads until the user types — `RdxComboboxStatus` shows the "start typi
 loading / counts, while the just-selected item is kept available so it survives new result streams.
 
 ```typescript
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown, LucideX } from '@lucide/angular';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
@@ -460,6 +466,7 @@ interface DirectoryUser {
  * `RdxComboboxEmpty` covers the "no matches" case — mirrors Base UI's async-single example.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-async',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck, LucideX],
     template: `
@@ -750,7 +757,7 @@ External filtering combined with `multiple` — nothing loads until the user typ
 chips, and already-selected people stay available as new results stream in.
 
 ```typescript
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { LucideCheck, LucideX } from '@lucide/angular';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
@@ -770,6 +777,7 @@ interface DirectoryUser {
  * loading / counts and `RdxComboboxEmpty` covers "no matches" — mirrors Base UI's async-multiple example.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-async-multiple',
     imports: [_importsCombobox, LucideCheck, LucideX],
     template: `
@@ -1083,7 +1091,7 @@ appears; choosing it opens a modal dialog (prefilled with the query) to confirm 
 is then added and selected — mirroring the Base UI pattern.
 
 ```typescript
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown, LucidePlus, LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoCombobox, demoDialog } from '../../storybook/styles';
@@ -1098,6 +1106,7 @@ const CREATE = '__rdx_create__';
  * Mirrors the Base UI Creatable example.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-creatable',
     imports: [_importsCombobox, ...dialogImports, LucideChevronDown, LucideCheck, LucidePlus, LucideX],
     template: `
@@ -1245,7 +1254,7 @@ popup. Put `rdxComboboxAnchor` on the trigger so the popup anchors to it; the in
 the popup opens.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
@@ -1256,6 +1265,7 @@ import { _importsCombobox } from '../index';
  * popup opens.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-input-in-popup',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
@@ -1303,7 +1313,7 @@ as an activation signal and (by default) fills the input. Paired with `autoHighl
 first match is always ready for `Enter`.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideArrowRight } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
@@ -1313,6 +1323,7 @@ import { _importsCombobox } from '../index';
  * action) with `autoHighlight="always"` (the first match is always highlighted, so Enter runs it).
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-command',
     imports: [_importsCombobox, LucideArrowRight],
     template: `
@@ -1368,7 +1379,7 @@ With `modal`, page scroll is locked and content outside the popup is inert while
 clicking it dismisses.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
@@ -1378,6 +1389,7 @@ import { _importsCombobox } from '../index';
  * backdrop sits behind the popup; clicking it dismisses.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-modal',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
@@ -1438,7 +1450,7 @@ protected onOpenChange(change: { open: boolean; eventDetails: { cancel(): void }
 Live demo:
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox, RdxComboboxOpenChange } from '../index';
@@ -1451,6 +1463,7 @@ interface ComboboxOpenChangeLogEntry {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-open-change',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
@@ -1612,13 +1625,14 @@ export class ComboboxOpenChange {
 The root is a `ControlValueAccessor`, so it binds to a `FormControl` like any other control.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-reactive-forms',
     imports: [_importsCombobox, ReactiveFormsModule, LucideChevronDown, LucideCheck],
     template: `
@@ -1667,7 +1681,7 @@ export class ComboboxReactiveForms {
 `RdxComboboxEmpty` shows only when no item matches the query.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
@@ -1677,6 +1691,7 @@ import { _importsCombobox } from '../index';
  * it. The input also gets `data-list-empty` so the control itself can react.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-empty',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
@@ -1735,7 +1750,7 @@ Then drive a scroll container with `injectVirtualizer`, render only `getVirtualI
 row's `[index]` to the virtual item's index — exactly as in the example's "Show code".
 
 ```typescript
-import { Component, ElementRef, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
 import { LucideCheck } from '@lucide/angular';
 import { injectVirtualizer } from '@tanstack/angular-virtual';
 import { cn, demoCombobox } from '../../storybook/styles';
@@ -1749,6 +1764,7 @@ import { ComboboxItemHighlightedDetails, RdxComboboxRoot } from '../src/combobox
  * highlighted row mounts before `aria-activedescendant` references it.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-virtualized-example',
     imports: [_importsCombobox, LucideCheck],
     template: `

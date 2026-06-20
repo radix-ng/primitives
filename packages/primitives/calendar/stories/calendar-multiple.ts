@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { CalendarDate } from '@internationalized/date';
 import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar } from '../../storybook/styles';
@@ -15,6 +15,7 @@ import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-calendar-multiple',
     imports: [
         RdxCalendarRootDirective,

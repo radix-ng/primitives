@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxEditableArea,
     RdxEditableCancelTrigger,
@@ -10,6 +10,7 @@ import {
 import { cn, demoButton, demoEditable } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'editable-double-click-example',
     imports: [
         RdxEditableRoot,

@@ -1,4 +1,4 @@
-import { Component, ElementRef, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
 import { injectVirtualizer } from '@tanstack/angular-virtual';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete, AutocompleteItemHighlightedDetails, RdxAutocompleteRoot } from '../index';
@@ -10,6 +10,7 @@ import { _importsAutocomplete, AutocompleteItemHighlightedDetails, RdxAutocomple
  * highlighted row mounts before `aria-activedescendant` references it.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-virtualized-example',
     imports: [_importsAutocomplete],
     template: `

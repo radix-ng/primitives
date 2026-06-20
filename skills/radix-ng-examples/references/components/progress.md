@@ -3,7 +3,7 @@
 #### Displays task completion with accessible label, value, track, and indicator parts.
 
 ```typescript
-import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { cn } from '../../storybook/styles';
 import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
 import { RdxProgressLabelDirective } from '../src/progress-label.directive';
@@ -14,6 +14,7 @@ import { RdxProgressValueDirective } from '../src/progress-value.directive';
 const progressSteps = [12, 28, 44, 60, 76, 92, 100] as const;
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'progress-linear',
     imports: [
         RdxProgressRootDirective,
@@ -117,7 +118,7 @@ import {
 An animated labelled progress bar with formatted value text.
 
 ```typescript
-import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { cn } from '../../storybook/styles';
 import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
 import { RdxProgressLabelDirective } from '../src/progress-label.directive';
@@ -128,6 +129,7 @@ import { RdxProgressValueDirective } from '../src/progress-value.directive';
 const progressSteps = [12, 28, 44, 60, 76, 92, 100] as const;
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'progress-linear',
     imports: [
         RdxProgressRootDirective,
@@ -232,7 +234,7 @@ Use `min`, `max`, and `valueLabel` when progress is not a simple 0-100 percentag
 The same primitive state can drive an SVG circular progress indicator.
 
 ```typescript
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
 import { RdxProgressLabelDirective } from '../src/progress-label.directive';
 import { RdxProgressRootDirective } from '../src/progress-root.directive';
@@ -240,6 +242,7 @@ import { RdxProgressTrackDirective } from '../src/progress-track.directive';
 import { RdxProgressValueDirective } from '../src/progress-value.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'progress-circular',
     imports: [
         RdxProgressRootDirective,

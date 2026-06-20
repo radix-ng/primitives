@@ -1,9 +1,10 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown, LucideX } from '@lucide/angular';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-multiple',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck, LucideX],
     template: `

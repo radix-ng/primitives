@@ -1,9 +1,10 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-controlled-multiple',
     imports: [...dialogImports, LucideX],
     template: `

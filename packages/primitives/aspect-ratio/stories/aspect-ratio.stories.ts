@@ -9,6 +9,11 @@ const IMG_ALT = 'Landscape photograph by Tobias Tullius';
 
 export default {
     title: 'Primitives/Aspect Ratio',
+    // Opt out of the `apps/visual-regression` screenshot sweep: both demos fill the ratio box with a
+    // remote Unsplash image and have no fallback, so the captured frame depends on network timing.
+    // Visual regression must stay hermetic. (Avatar keeps the sweep — it deterministically renders its
+    // initials fallback regardless of whether the remote image resolves.)
+    tags: ['!visual'],
     decorators: [
         moduleMetadata({
             imports: [RdxAspectRatioDirective]

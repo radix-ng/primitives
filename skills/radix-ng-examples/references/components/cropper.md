@@ -5,7 +5,7 @@
 Based on the React version [image-cropper](https://github.com/origin-space/image-cropper).
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { demoCropper } from '../../storybook/styles';
 import { RdxCropperCropAreaDirective } from '../src/cropper-crop-area.directive';
 import { RdxCropperDescriptionDirective } from '../src/cropper-description.directive';
@@ -13,6 +13,7 @@ import { RdxCropperImageComponent } from '../src/cropper-image.component';
 import { RdxCropperRootDirective } from '../src/cropper-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'cropper-default',
     imports: [
         RdxCropperRootDirective,
@@ -75,7 +76,7 @@ Set `disabled` to freeze the cropper — drag, wheel/pinch zoom, and keyboard ar
 leaves the tab order, and `data-disabled` is exposed for styling.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { demoCropper } from '../../storybook/styles';
 import { RdxCropperCropAreaDirective } from '../src/cropper-crop-area.directive';
 import { RdxCropperDescriptionDirective } from '../src/cropper-description.directive';
@@ -83,6 +84,7 @@ import { RdxCropperImageComponent } from '../src/cropper-image.component';
 import { RdxCropperRootDirective } from '../src/cropper-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'cropper-disabled',
     imports: [
         RdxCropperRootDirective,
@@ -115,7 +117,7 @@ export class CropperDisabled {
 Subscribe to `onCropChange` to read the crop rectangle (in the source image's natural pixels).
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { demoCropper } from '../../storybook/styles';
 import { RdxCropperCropAreaDirective } from '../src/cropper-crop-area.directive';
 import { RdxCropperDescriptionDirective } from '../src/cropper-description.directive';
@@ -123,6 +125,7 @@ import { RdxCropperImageComponent } from '../src/cropper-image.component';
 import { Area, RdxCropperRootDirective } from '../src/cropper-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'cropper-with-data',
     imports: [
         RdxCropperRootDirective,

@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
@@ -6,6 +6,7 @@ import { _importsCombobox } from '../index';
 /** Options organized into sections with `RdxComboboxGroup` / `RdxComboboxGroupLabel`. A group hides
  * its heading automatically when all of its items are filtered out. */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-grouped',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `

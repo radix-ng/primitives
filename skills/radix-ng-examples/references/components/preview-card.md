@@ -3,11 +3,12 @@
 #### A popup that appears when a link is hovered or focused, showing a visual preview.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { previewCardImports } from '@radix-ng/primitives/preview-card';
 import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-preview-card-default',
     imports: [...previewCardImports],
     template: `
@@ -116,11 +117,12 @@ to the positioner — use the explicit `<ng-template rdxPreviewCardPortal>` form
 Control both the open state and the active trigger id.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { previewCardImports } from '@radix-ng/primitives/preview-card';
 import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-preview-card-controlled-multiple',
     imports: [...previewCardImports],
     template: `
@@ -190,11 +192,12 @@ export class RdxPreviewCardControlledMultipleComponent {
 Associate triggers outside the root through a shared handle.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { createRdxPreviewCardHandle, previewCardImports } from '@radix-ng/primitives/preview-card';
 import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-preview-card-detached',
     imports: [...previewCardImports],
     template: `
@@ -251,12 +254,13 @@ export class RdxPreviewCardDetachedComponent {
 Configure side, offsets, collision behavior, and arrow padding on the positioner.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { Side } from '@radix-ng/primitives/popper';
 import { previewCardImports } from '@radix-ng/primitives/preview-card';
 import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-preview-card-positioning',
     imports: [...previewCardImports],
     template: `
@@ -309,11 +313,12 @@ export class RdxPreviewCardPositioningComponent {
 Animate content changes when different triggers render different payloads.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { previewCardImports } from '@radix-ng/primitives/preview-card';
 import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-preview-card-viewport',
     imports: [...previewCardImports],
     template: `

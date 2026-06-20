@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox, RdxComboboxOpenChange } from '../index';
@@ -11,6 +11,7 @@ interface ComboboxOpenChangeLogEntry {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-open-change',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `

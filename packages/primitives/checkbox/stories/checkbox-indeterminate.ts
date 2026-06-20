@@ -1,5 +1,5 @@
 import { JsonPipe } from '@angular/common';
-import { Component, computed, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, model } from '@angular/core';
 import { LucideDynamicIcon } from '@lucide/angular';
 import { RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
@@ -9,6 +9,7 @@ import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-indeterminate-example',
     imports: [
         RdxLabelDirective,

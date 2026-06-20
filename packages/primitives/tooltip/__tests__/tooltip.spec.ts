@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
@@ -17,6 +17,7 @@ import { vi } from 'vitest';
 import { defaultTooltipConfig, injectRdxTooltipConfig, provideRdxTooltipConfig } from '../src/tooltip.config';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxTooltip, RdxTooltipTrigger],
     template: `
         <ng-container
@@ -58,6 +59,7 @@ class TestHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxTooltip, RdxTooltipTrigger],
     providers: [provideRdxTooltipConfig({ delay: 1234, closeDelay: 50 })],
     template: `
@@ -69,6 +71,7 @@ class TestHostComponent {
 class ConfiguredHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxTooltip, RdxTooltipProvider, RdxTooltipTrigger],
     template: `
         <div [delay]="500" rdxTooltipProvider>
@@ -81,6 +84,7 @@ class ConfiguredHostComponent {}
 class ProviderHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxTooltip, RdxTooltipTrigger],
     template: `
         <div [delay]="0" rdxTooltip>
@@ -92,6 +96,7 @@ class ProviderHostComponent {}
 class MultipleTriggersHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxTooltip, RdxTooltipTrigger],
     template: `
         <div [delay]="600" rdxTooltip>
@@ -102,6 +107,7 @@ class MultipleTriggersHostComponent {}
 class TriggerDelayHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxTooltip, RdxTooltipTrigger],
     template: `
         <div [delay]="0" rdxTooltip>
@@ -112,6 +118,7 @@ class TriggerDelayHostComponent {}
 class DisabledTriggerHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxTooltip, RdxTooltipTrigger, RdxTooltipPositioner, RdxTooltipPopup],
     template: `
         <div [open]="true" rdxTooltip>
@@ -125,6 +132,7 @@ class DisabledTriggerHostComponent {}
 class PositionerDefaultsHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxTooltip, RdxTooltipTrigger, RdxTooltipPositioner, RdxTooltipPopup],
     template: `
         <div [open]="true" rdxTooltip>
@@ -138,6 +146,7 @@ class PositionerDefaultsHostComponent {}
 class PositionerOverrideHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxTooltip, RdxTooltipTrigger],
     template: `
         <button id="detached" [handle]="handle" payload="one" rdxTooltipTrigger>One</button>
@@ -149,6 +158,7 @@ class DetachedHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxTooltip, RdxTooltipTrigger],
     template: `
         <div rdxTooltip>
@@ -163,6 +173,7 @@ class RemovableTriggerHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxTooltip, RdxTooltipPopup, RdxTooltipPositioner, RdxTooltipTrigger],
     template: `
         <span id="outer-root" #outerRoot="rdxTooltip" [delay]="outerDelay" rdxTooltip>
@@ -191,6 +202,7 @@ class NestedTooltipHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxTooltip, RdxTooltipPopup, RdxTooltipPortal, RdxTooltipPositioner, RdxTooltipTrigger],
     template: `
         <div [(open)]="open" (onOpenChange)="handleOpenChange($event)" rdxTooltip>
@@ -752,6 +764,7 @@ describe('Tooltip config', () => {
 describe('Tooltip structural portal', () => {
     it('throws in dev mode when rdxTooltipPortal is used as an attribute instead of structurally', () => {
         @Component({
+            changeDetection: ChangeDetectionStrategy.Eager,
             imports: [RdxTooltip, RdxTooltipTrigger, RdxTooltipPortal, RdxTooltipPortalMisuseGuard, RdxTooltipPopup],
             template: `
                 <ng-container rdxTooltip>

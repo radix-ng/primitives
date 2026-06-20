@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
@@ -11,6 +11,7 @@ import {
 } from '@radix-ng/primitives/slider';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'slider-events-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `

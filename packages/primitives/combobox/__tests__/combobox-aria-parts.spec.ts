@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { _importsCombobox } from '../index';
@@ -9,6 +9,7 @@ import { _importsCombobox } from '../index';
  * `role="presentation"` (#6), and the arrow is `aria-hidden` (#7).
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
         <div [(value)]="value" [(open)]="open" [readOnly]="readOnly()" modal rdxComboboxRoot>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideCheck, LucideChevronDown, LucideChevronUp } from '@lucide/angular';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectGroupLabel } from '../src/select-group-label';
@@ -16,6 +16,7 @@ import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'select-with-scroll',
     imports: [
         RdxSelectRoot,

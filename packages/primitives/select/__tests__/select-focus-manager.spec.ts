@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { RdxReturnFocus } from '../../floating-focus-manager';
@@ -8,6 +8,7 @@ import { _importsSelect } from '../index';
 const flush = (): Promise<void> => new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsSelect],
     template: `
         <input data-testid="before" />

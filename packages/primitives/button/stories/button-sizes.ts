@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideDynamicIcon, LucidePlus } from '@lucide/angular';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
@@ -7,6 +7,7 @@ import { RdxButtonDirective } from '../src/button.directive';
  * Sizes, including a square icon button.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-button-sizes',
     imports: [RdxButtonDirective, LucideDynamicIcon, LucidePlus],
     template: `

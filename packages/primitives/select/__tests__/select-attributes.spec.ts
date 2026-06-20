@@ -1,10 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RdxFieldRoot } from '@radix-ng/primitives/field';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { _importsSelect } from '../index';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsSelect],
     template: `
         <div [(value)]="value" [(open)]="open" [modal]="modal()" rdxSelectRoot>
@@ -33,6 +34,7 @@ class Host {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsSelect, RdxFieldRoot],
     template: `
         <div [invalid]="invalid()" [required]="required()" rdxFieldRoot>
@@ -154,6 +156,7 @@ describe('Select Field integration on the trigger', () => {
 describe('Select structural portal', () => {
     it('throws in dev mode when rdxSelectPortal is used as an attribute instead of structurally', () => {
         @Component({
+            changeDetection: ChangeDetectionStrategy.Eager,
             imports: [_importsSelect],
             template: `
                 <div rdxSelectRoot>

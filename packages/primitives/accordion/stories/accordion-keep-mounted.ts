@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
     RdxAccordionHeaderDirective,
@@ -14,6 +14,7 @@ import { cn, demoAccordion, demoInput } from '../../storybook/styles';
  * Type something below, collapse the panel, and reopen it — the value is retained.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'accordion-keep-mounted-example',
     imports: [
         FormsModule,

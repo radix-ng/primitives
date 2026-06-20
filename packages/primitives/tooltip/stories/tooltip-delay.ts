@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
 import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-tooltip-delay',
     imports: [...tooltipImports],
     template: `

@@ -90,7 +90,7 @@ Disabled state is applied to the native fieldset and exposed to the legend for s
 A larger form groups account details and submits values from fields inside the fieldset.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFieldsetLegend, RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
@@ -98,6 +98,7 @@ import { RdxInputDirective } from '@radix-ng/primitives/input';
 import { cn, demoButton, demoInput } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'fieldset-signup-form-example',
     imports: [
         ReactiveFormsModule,

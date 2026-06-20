@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideCheck } from '@lucide/angular';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
@@ -12,6 +12,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
  * Template-driven forms: two-way bind the root with `[(ngModel)]`.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-ngmodel-example',
     imports: [
         FormsModule,

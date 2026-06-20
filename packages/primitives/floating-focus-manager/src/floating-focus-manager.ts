@@ -632,13 +632,19 @@ export class RdxFloatingFocusManager {
      * The marker keep-set is intentionally narrow: the popup/focus host only. Own sibling roots such as a
      * user backdrop are DOM-footprint bookkeeping, not marker keep-set members.
      */
+    /**
+     * The kept ("avoid") subtree for the `markOthers` background-isolation passes — the floating element
+     * and any primitive-declared inside elements (e.g. a combobox input that must stay interactive).
+     *
+     * It deliberately excludes `previous/nextFocusableElement`: those exist for focus-guard tabbability and
+     * return-focus (Base UI's `markOthers(insideElements)` aria-hidden pass keeps them, but its **marker**
+     * pass — `markOthers([floating, ...portalNodes])` — does not). A modal popover declares its trigger as
+     * `previousFocusableElement`; sparing it here used to leak the trigger's whole ancestor chain (the app
+     * root) out of the isolation, so a modal popover failed to inert/mark the dimmed background. Keeping the
+     * isolation tied to the floating subtree restores full modality.
+     */
     private avoidElements(): Element[] {
-        return [
-            this.host,
-            ...this.insideElements(),
-            resolveFocusTarget(this.effectivePreviousFocusableElement()) ?? null,
-            resolveFocusTarget(this.effectiveNextFocusableElement()) ?? null
-        ].filter((element): element is Element => element != null);
+        return [this.host, ...this.insideElements()].filter((element): element is Element => element != null);
     }
 
     private isFloatingOpen(): boolean {

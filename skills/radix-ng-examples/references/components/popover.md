@@ -6,12 +6,13 @@ Popover composes the shared Popper, structural Portal (portal + presence), Dismi
 Scope primitives. It remains headless: styles and native CSS animations belong to the consumer.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucidePlus, LucideX } from '@lucide/angular';
 import { popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-default',
     imports: [...popoverImports, LucidePlus, LucideX],
     template: `
@@ -146,12 +147,13 @@ the positioner — use the explicit `<ng-template rdxPopoverPortal>` form (and t
 A form-like popup with an arrow, accessible title and description, and a close button.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucidePlus, LucideX } from '@lucide/angular';
 import { popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-default',
     imports: [...popoverImports, LucidePlus, LucideX],
     template: `
@@ -200,12 +202,13 @@ Bind `[(open)]` when application state should open or close the popover programm
 example also includes the optional backdrop part.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-controlled',
     imports: [...popoverImports, LucideX],
     template: `
@@ -253,12 +256,13 @@ Bind both `[(open)]` and `[(triggerId)]` when application state should choose th
 `onOpenChange` reports the trigger element, trigger id, source event, and change reason.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { popoverImports, RdxPopoverOpenChange } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-controlled-multiple',
     imports: [...popoverImports, LucideX],
     template: `
@@ -341,13 +345,14 @@ Configure `side`, `sideOffset`, `align`, and collision behavior on `rdxPopoverPo
 shared Popper primitive updates `data-side` and `data-align` after collision handling.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { popoverImports } from '@radix-ng/primitives/popover';
 import { Side } from '@radix-ng/primitives/popper';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-positioning',
     imports: [...popoverImports, LucideX],
     template: `
@@ -404,12 +409,13 @@ fade — the closed-state keyframes keep the content mounted until `animationend
 zoom/slide belongs on the popup, so it never fights the positioner's placement transform.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-animated',
     imports: [...popoverImports, LucideX],
     template: `
@@ -444,12 +450,13 @@ Set `modal` on `rdxPopoverRoot` to block outside interaction, or use `"trap-focu
 inside while leaving document scrolling and outside pointer interactions available.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { popoverImports, RdxPopoverModal } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-modal',
     imports: [...popoverImports, LucideX],
     template: `
@@ -539,12 +546,13 @@ Pass `[anchor]` to `rdxPopoverPositioner` when the popup should open from a trig
 itself against a different element.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-custom-anchor',
     imports: [...popoverImports, LucideX],
     template: `
@@ -594,12 +602,13 @@ Create a shared handle when triggers live outside the root or multiple triggers 
 same popup. The handle also supports imperative `open(id)`, `toggle(id)`, and `close()` calls.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { createRdxPopoverHandle, popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-detached',
     imports: [...popoverImports, LucideX],
     template: `
@@ -656,12 +665,13 @@ Add `openOnHover` to a trigger when pointer users should be able to open its pop
 Use `delay` and `closeDelay` on the same trigger to configure the timing.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-hover',
     imports: [...popoverImports, LucideX],
     template: `
@@ -699,11 +709,12 @@ moves between triggers. The viewport exposes `data-activation-direction` and ret
 `data-previous` snapshot until its CSS transition or animation completes.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-viewport',
     imports: [...popoverImports],
     template: `

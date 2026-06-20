@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxComboboxEmpty,
     RdxComboboxIcon,
@@ -14,6 +14,7 @@ import {
 } from '@radix-ng/primitives/combobox';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-combobox',
     imports: [
         RdxComboboxRoot,

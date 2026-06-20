@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import {
@@ -18,6 +18,7 @@ import {
 import { axe } from 'jest-axe';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxDialogRoot,
         RdxDialogTrigger,
@@ -62,6 +63,7 @@ class TestHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPopup],
     template: `
         <div [defaultOpen]="true" rdxDialogRoot>
@@ -75,6 +77,7 @@ class TestHostComponent {
 class DefaultOpenHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPopup],
     template: `
         <div [(open)]="open" (onOpenChange)="changes.push($event)" rdxDialogRoot>
@@ -91,6 +94,7 @@ class NoBackdropHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPopup, RdxDialogClose],
     template: `
         <div [(open)]="open" (onOpenChange)="handleOpenChange($event)" rdxDialogRoot>
@@ -132,6 +136,7 @@ class DialogCancelableHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPopup],
     template: `
         <div #root="rdxDialogRoot" [(open)]="open" [(triggerId)]="triggerId" rdxDialogRoot>
@@ -149,6 +154,7 @@ class MultipleTriggersHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPopup],
     template: `
         <button id="detached-one" [handle]="handle" rdxDialogTrigger>One</button>
@@ -165,6 +171,7 @@ class DetachedTriggersHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPopup],
     template: `
         <div rdxDialogRoot>
@@ -265,6 +272,7 @@ describe('Dialog', () => {
 
     it('throws in dev mode when rdxDialogPortal is used as an attribute instead of structurally', () => {
         @Component({
+            changeDetection: ChangeDetectionStrategy.Eager,
             imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPortalMisuseGuard, RdxDialogPopup],
             template: `
                 <div rdxDialogRoot>

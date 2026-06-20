@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { LucideCircleCheck, LucideCircleX, LucideInfo } from '@lucide/angular';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
@@ -9,6 +9,7 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
  * announcement role to `alert` (assertive) for errors.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-types-example',
     imports: [...toastImports, LucideCircleCheck, LucideCircleX, LucideInfo],
     providers: [provideRdxToastManager()],

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideCheck, LucideChevronsUpDown } from '@lucide/angular';
 import { RdxSelectItem } from '../src/select-item';
 import { RdxSelectItemIndicator } from '../src/select-item-indicator';
@@ -24,6 +24,7 @@ interface ShippingMethod {
  * right item, and both the trigger and the items render rich, two-line content from the object.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'select-object-values',
     imports: [
         RdxSelectRoot,

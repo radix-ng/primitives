@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'switch-default-example',
     imports: [RdxLabelDirective, RdxSwitchRoot, RdxSwitchThumb],
     template: `

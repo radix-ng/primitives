@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTabsList, RdxTabsPanel, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'tabs-animated-example',
     imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel],
     // Panels stay mounted and cross-fade using the transition-status data attributes:

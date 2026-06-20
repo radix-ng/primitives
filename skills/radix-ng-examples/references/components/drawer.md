@@ -8,12 +8,13 @@ modal by default but, unlike Alert Dialog, leaves modality and dismissal fully c
 and native CSS animations belong to the consumer.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-default',
     imports: [...drawerImports, LucideX],
     template: `
@@ -171,12 +172,13 @@ and its slide-out keyframe should hold the closed position with `forwards`:
 A bottom sheet you can swipe down to dismiss, with an accessible title, description, and close buttons.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-default',
     imports: [...drawerImports, LucideX],
     template: `
@@ -228,11 +230,12 @@ Own the open state with `[(open)]` and drive it from anywhere — buttons outsid
 close it alongside the trigger.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-controlled',
     imports: [...drawerImports],
     template: `
@@ -284,7 +287,7 @@ Set `[swipeDirection]` and position the popup with CSS to anchor the drawer to a
 controls the dismiss gesture; the visual side is consumer CSS.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports, RdxDrawerSwipeDirection } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
@@ -298,6 +301,7 @@ const SIDES: { side: DrawerSide; swipeDirection: RdxDrawerSwipeDirection }[] = [
 ];
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-sides',
     imports: [...drawerImports],
     template: `
@@ -348,7 +352,7 @@ points, with a fixed drag header and independently scrollable content. Add `[sna
 to step one point per release instead of skipping.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports, RdxDrawerSnapPoint } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
@@ -360,6 +364,7 @@ function toViewportSnapPoint(heightRem: number): RdxDrawerSnapPoint {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-snap-points',
     imports: [...drawerImports],
     template: `
@@ -433,11 +438,12 @@ Base UI's right-edge swipe-area demo: the non-modal drawer portals back into a l
 `overflow-hidden` container and uses `rdxDrawerViewport` to position the popup inside it.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-swipe-to-open',
     imports: [...drawerImports],
     template: `
@@ -509,7 +515,7 @@ A taller sheet whose body scrolls. The swipe gesture yields to scrolling inside 
 until the scroll reaches its edge, so the drawer only swipes away from the top of the list.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import {
     RdxScrollAreaContent,
@@ -568,6 +574,7 @@ const LONG_LIST = [
 ] as const;
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-scrollable',
     imports: [
         ...drawerImports,
@@ -705,11 +712,12 @@ Set `[modal]="false"` to keep page scrolling and outside pointer interactions av
 drawer is open; there is no backdrop in this mode.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-non-modal',
     imports: [...drawerImports],
     template: `
@@ -760,7 +768,7 @@ An iOS-style action sheet: grouped actions with a separated destructive action a
 each closing the drawer.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
@@ -771,6 +779,7 @@ const action = cn(
 );
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-action-sheet',
     imports: [...drawerImports],
     template: `
@@ -830,11 +839,12 @@ handling the parent drawer while a nested drawer is open. Use the CSS variable i
 popup max-height.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer, demoInput } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-virtual-keyboard',
     imports: [...drawerImports],
     template: `
@@ -926,7 +936,7 @@ detected through the dialog hierarchy, so every parent gains `data-nested-drawer
 `--nested-drawers`) and recedes behind the one in front.
 
 ```typescript
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
@@ -936,6 +946,7 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
  * gains `data-nested-drawer-open` and recedes behind the one in front (see `demoDrawer.popup`).
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-nested',
     imports: [...drawerImports],
     template: `
@@ -993,11 +1004,12 @@ Both gain `[data-active]`, `--drawer-swipe-progress`, `--nested-drawers`, and
 gesture.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-page-scale',
     imports: [...drawerImports],
     template: `
@@ -1061,11 +1073,12 @@ Create a shared handle with `createRdxDrawerHandle()` when triggers live outside
 handle also supports imperative `open(id)`, `toggle(id)`, and `close()`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { createRdxDrawerHandle, drawerImports } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-detached',
     imports: [...drawerImports],
     template: `

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
@@ -13,6 +13,7 @@ import { cn, demoButton, demoDialog } from '../../storybook/styles';
  * dimmed area around the frame.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-uncontained',
     imports: [...dialogImports, LucideX],
     template: `

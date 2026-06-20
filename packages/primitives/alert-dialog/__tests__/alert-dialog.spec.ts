@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
     alertDialogImports,
@@ -16,6 +16,7 @@ import {
 import { axe } from 'jest-axe';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxAlertDialogRoot,
         RdxAlertDialogTrigger,
@@ -47,6 +48,7 @@ class TestHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxAlertDialogTrigger, RdxAlertDialogRoot, RdxAlertDialogPortal, RdxAlertDialogPopup],
     template: `
         <button id="detached" [handle]="handle" rdxAlertDialogTrigger>Open</button>
@@ -187,6 +189,7 @@ describe('AlertDialog', () => {
 describe('AlertDialog structural portal', () => {
     it('throws in dev mode when rdxAlertDialogPortal is used as an attribute instead of structurally', () => {
         @Component({
+            changeDetection: ChangeDetectionStrategy.Eager,
             imports: [
                 RdxAlertDialogRoot,
                 RdxAlertDialogTrigger,

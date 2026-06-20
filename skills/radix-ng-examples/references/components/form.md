@@ -8,7 +8,7 @@ systems (or Field inputs) stay the source of validity. It maps external/server e
 and resets field interaction state on native reset.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormErrors, RdxFormRoot, RdxFormSubmitEvent } from '../index';
 import { formError, formField, formInput, formLabel, formSubmit } from './form.shared';
@@ -19,6 +19,7 @@ import { formError, formField, formInput, formLabel, formSubmit } from './form.s
  * its error, and binding `(onClearErrors)` back into `errors` keeps the controlled map in sync.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'form-default-example',
     imports: [RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldError],
     template: `
@@ -115,7 +116,7 @@ error maps onto the field by `name` and clears when you edit it.
 > so an always-fresh reference would resurrect cleared errors on the next change-detection pass.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormErrors, RdxFormRoot, RdxFormSubmitEvent } from '../index';
 import { formError, formField, formInput, formLabel, formSubmit } from './form.shared';
@@ -126,6 +127,7 @@ import { formError, formField, formInput, formLabel, formSubmit } from './form.s
  * its error, and binding `(onClearErrors)` back into `errors` keeps the controlled map in sync.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'form-default-example',
     imports: [RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldError],
     template: `
@@ -179,7 +181,7 @@ Native `reset` clears external errors and every field's interaction state, and r
 reverted values.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormErrors, RdxFormRoot, RdxFormSubmitEvent } from '../index';
 import { formError, formField, formInput, formLabel, formReset, formSubmit } from './form.shared';
@@ -190,6 +192,7 @@ import { formError, formField, formInput, formLabel, formReset, formSubmit } fro
  * server error, then press Reset; submit `1234` to pass.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'form-reset-example',
     imports: [RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldError],
     template: `
@@ -246,7 +249,7 @@ Reactive Forms owns validity; Form adds the aggregate attributes and submit hand
 `<form>`. `(ngSubmit)` is the source of truth — Form never stops propagation.
 
 ```typescript
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormRoot } from '../index';
@@ -258,6 +261,7 @@ import { formError, formField, formInput, formLabel, formSubmit } from './form.s
  * stops propagation, so both fire — and map each `FormControl`'s validity into the Field's `invalid`.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'form-reactive-forms-example',
     imports: [ReactiveFormsModule, RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldError],
     template: `
@@ -317,7 +321,7 @@ No `@angular/forms` at all — a valid submit serializes the form's `FormData` i
 (repeated names collapse into arrays).
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxFieldControl, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormRoot, RdxFormSubmitEvent } from '../index';
 import { formField, formInput, formLabel, formSubmit } from './form.shared';
@@ -327,6 +331,7 @@ import { formField, formInput, formLabel, formSubmit } from './form.shared';
  * `FormData` into a plain values object (repeated `name`s collapse into arrays).
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'form-native-controls-example',
     imports: [RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl],
     template: `

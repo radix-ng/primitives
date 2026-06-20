@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
 import { demoNavigationMenu } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-links',
     imports: [...navigationMenuImports],
     template: `

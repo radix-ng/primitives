@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
@@ -119,6 +119,7 @@ const top100Movies: Movie[] = [
  * input never reveals the whole catalogue. `RdxAutocompleteStatus` announces loading / counts / errors.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-async',
     imports: [_importsAutocomplete],
     template: `

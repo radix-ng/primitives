@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
 import { RdxProgressLabelDirective } from '../src/progress-label.directive';
@@ -7,6 +7,7 @@ import { RdxProgressTrackDirective } from '../src/progress-track.directive';
 import { RdxProgressValueDirective } from '../src/progress-value.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <div
             [value]="value"

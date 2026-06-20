@@ -1,9 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RdxButtonDirective } from '../src/button.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxButtonDirective],
     template: `
         <button
@@ -28,6 +29,7 @@ class NativeButtonHost {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxButtonDirective],
     template: `
         <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events -->

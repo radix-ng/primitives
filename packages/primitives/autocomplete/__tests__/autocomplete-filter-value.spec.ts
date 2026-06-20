@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AcceptableValue } from '@radix-ng/primitives/core';
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -11,6 +11,7 @@ import { AutocompleteFilter } from '../src/autocomplete-root';
  * `null`) is preserved — not replaced by the text.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsAutocomplete],
     template: `
         <div [(value)]="value" [(open)]="open" [filter]="filter()" rdxAutocompleteRoot>

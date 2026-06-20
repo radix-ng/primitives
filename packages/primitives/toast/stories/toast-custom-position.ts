@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
@@ -8,6 +8,7 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
  * flipped signs and `origin-top`). Swipe up to dismiss.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-custom-position-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],

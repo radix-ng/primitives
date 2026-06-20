@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CalendarDate, DateValue } from '@internationalized/date';
 import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { getWeekNumber } from '@radix-ng/primitives/core';
@@ -16,6 +16,7 @@ import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-calendar-week',
     imports: [
         RdxCalendarRootDirective,

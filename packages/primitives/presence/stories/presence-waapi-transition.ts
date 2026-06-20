@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
 import { PresenceDemo } from './presence';
 
@@ -9,6 +9,7 @@ import { PresenceDemo } from './presence';
  * mounted until it finishes. Driven by `presence-waapi.behavior.spec.ts`.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'presence-waapi-transition',
     imports: [PresenceDemo],
     providers: [provideRdxPresenceContext(() => ({ present: inject(PresenceWaapiTransition).open }))],

@@ -1,10 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { cn, demoButton, demoDialog, demoMenu } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-from-menu',
     imports: [...dialogImports, RdxMenuModule, LucideX],
     template: `

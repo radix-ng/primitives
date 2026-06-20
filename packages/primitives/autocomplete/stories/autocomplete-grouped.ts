@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
@@ -8,6 +8,7 @@ interface Group {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-grouped',
     imports: [_importsAutocomplete],
     template: `

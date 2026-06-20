@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { describe, expect, it } from 'vitest';
@@ -7,6 +7,7 @@ import { ComboboxItemHighlightedDetails, RdxComboboxRoot } from '../src/combobox
 
 // --- #1: non-virtualized programmatic highlight reports reason 'none', not a stale 'keyboard' ---
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
         <div [(open)]="open" (onItemHighlighted)="events.push($event)" autoHighlight="input-change" rdxComboboxRoot>
@@ -31,6 +32,7 @@ class ReasonHost {
 
 // --- #2: virtualized autoHighlight='always' re-seeds when a filter shrinks the list past the index ---
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
         <div
@@ -66,6 +68,7 @@ class VirtualAlwaysHost {
 // autoHighlight, filtering the highlighted item out leaves nothing re-seeded — `useListHighlight`
 // clears `highlighted` without touching `highlightReason`, so the cleared emit must still be 'none'.
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
         <div [(open)]="open" (onItemHighlighted)="events.push($event)" rdxComboboxRoot>

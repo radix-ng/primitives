@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { By } from '@angular/platform-browser';
@@ -8,6 +8,7 @@ import { RdxSwitchCheckedChangeEvent, RdxSwitchRoot } from '../src/switch-root';
 import { RdxSwitchThumb } from '../src/switch-thumb';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxSwitchRoot, RdxSwitchThumb, RdxSwitchInput],
     template: `
         <button
@@ -33,6 +34,7 @@ class TestComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
     template: `
         <button rdxSwitchRoot defaultChecked>
@@ -150,6 +152,7 @@ describe('RdxSwitch', () => {
 });
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [ReactiveFormsModule, RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
     template: `
         <form [formGroup]="form">
@@ -222,6 +225,7 @@ describe('RdxSwitch with ReactiveForms', () => {
 });
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
     template: `
         <button [value]="'enabled'" name="airplane" rdxSwitchRoot>

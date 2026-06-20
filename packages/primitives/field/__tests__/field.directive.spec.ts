@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RdxFieldControl } from '../src/field-control';
@@ -8,6 +8,7 @@ import { RdxFieldLabel } from '../src/field-label';
 import { RdxFieldRoot } from '../src/field-root';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <div
             [invalid]="invalid"

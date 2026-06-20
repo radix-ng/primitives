@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Orientation, RdxSeparatorRootDirective } from '../src/separator.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: '<div rdxSeparatorRoot [orientation]="orientation"></div>',
     imports: [RdxSeparatorRootDirective]
 })
@@ -11,12 +12,14 @@ class TestHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: '<span rdxSeparatorRoot></span>',
     imports: [RdxSeparatorRootDirective]
 })
 class SpanHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: '<div rdxSeparatorRoot></div>',
     imports: [RdxSeparatorRootDirective]
 })

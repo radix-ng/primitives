@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormErrors, RdxFormRoot, RdxFormSubmitEvent } from '../index';
 import { formError, formField, formInput, formLabel, formReset, formSubmit } from './form.shared';
@@ -9,6 +9,7 @@ import { formError, formField, formInput, formLabel, formReset, formSubmit } fro
  * server error, then press Reset; submit `1234` to pass.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'form-reset-example',
     imports: [RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldError],
     template: `

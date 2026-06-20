@@ -6,12 +6,13 @@ Dialog composes the shared Portal, Presence, Dismissable Layer, and Focus Scope 
 It stays headless: styles and native CSS animations belong to the consumer.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-default',
     imports: [...dialogImports, LucideX],
     template: `
@@ -128,12 +129,13 @@ custom portal target).
 A modal dialog with an accessible title and description, form fields, and close buttons.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-default',
     imports: [...dialogImports, LucideX],
     template: `
@@ -184,12 +186,13 @@ export class RdxDialogDefaultComponent {
 Bind `[(open)]` when application state should open or close the dialog programmatically.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-controlled',
     imports: [...dialogImports, LucideX],
     template: `
@@ -243,12 +246,13 @@ Set `[modal]="false"` to keep document scrolling and outside pointer interaction
 no backdrop in this mode.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-non-modal',
     imports: [...dialogImports, LucideX],
     template: `
@@ -294,12 +298,13 @@ Use `modal="trap-focus"` to keep keyboard focus inside the dialog while leaving 
 outside pointer interactions enabled.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-trap-focus',
     imports: [...dialogImports, LucideX],
     template: `
@@ -360,12 +365,13 @@ Set `disablePointerDismissal` so clicking the backdrop no longer closes the dial
 close buttons still close it.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-without-dismiss',
     imports: [...dialogImports, LucideX],
     template: `
@@ -407,12 +413,13 @@ Several `rdxDialogTrigger` buttons can open the same dialog. The active trigger 
 exposed on the root so the content can adapt.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-multiple-triggers',
     imports: [...dialogImports, LucideX],
     template: `
@@ -455,12 +462,13 @@ export class RdxDialogMultipleTriggersComponent {
 Bind both `[(open)]` and `[(triggerId)]` to choose which trigger is active from component state.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-controlled-multiple',
     imports: [...dialogImports, LucideX],
     template: `
@@ -522,12 +530,13 @@ Create a shared handle with `createRdxDialogHandle()` when triggers live outside
 handle also supports imperative `open(id)`, `toggle(id)`, and `close()`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { createRdxDialogHandle, dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-detached',
     imports: [...dialogImports, LucideX],
     template: `
@@ -582,12 +591,13 @@ Dialogs can be nested. The parent popup gains `data-nested-dialog-open` and the 
 `data-nested`, which the demo uses to scale the parent back.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-nested',
     imports: [...dialogImports, LucideX],
     template: `
@@ -650,13 +660,14 @@ Drive the dialog with `[(open)]` and listen to `onOpenChange` to intercept a clo
 confirmation dialog when there are unsaved changes.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideX } from '@lucide/angular';
 import { dialogImports, RdxDialogOpenChange } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-close-confirmation',
     imports: [...dialogImports, FormsModule, LucideX],
     template: `
@@ -759,7 +770,7 @@ screen. Center the popup with the scroll-area content's `min-h-full items-center
 vertical margin so it can grow past the bottom edge.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import {
@@ -781,6 +792,7 @@ import { cn, demoButton, demoCard, demoDialog } from '../../storybook/styles';
  * edge while the whole page (not an inner region) scrolls.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-outside-scroll',
     imports: [
         ...dialogImports,
@@ -970,12 +982,13 @@ export class RdxDialogOutsideScrollComponent {
 Keep the popup fixed on screen and scroll an inner region instead.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-inside-scroll',
     imports: [...dialogImports, LucideX],
     template: `
@@ -1028,7 +1041,7 @@ individually, so elements such as a close button can sit outside the visible con
 around it stay dismissable.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
@@ -1043,6 +1056,7 @@ import { cn, demoButton, demoDialog } from '../../storybook/styles';
  * dimmed area around the frame.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-uncontained',
     imports: [...dialogImports, LucideX],
     template: `
@@ -1094,13 +1108,14 @@ export class RdxDialogUncontainedComponent {
 Control the dialog's `open` state from a menu item to launch it from a `Menu`.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { cn, demoButton, demoDialog, demoMenu } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-from-menu',
     imports: [...dialogImports, RdxMenuModule, LucideX],
     template: `

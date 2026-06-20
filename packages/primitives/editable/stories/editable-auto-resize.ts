@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxEditableArea, RdxEditableInput, RdxEditablePreview, RdxEditableRoot } from '@radix-ng/primitives/editable';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'editable-auto-resize-example',
     imports: [RdxEditableRoot, RdxEditableArea, RdxEditablePreview, RdxEditableInput],
     template: `

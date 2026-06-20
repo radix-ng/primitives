@@ -3,7 +3,7 @@
 #### A numeric input with stepper buttons, drag-to-scrub, locale-aware formatting and keyboard control.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideDynamicIcon, LucideMinus as Minus, LucidePlus as Plus } from '@lucide/angular';
 import {
     RdxNumberFieldDecrement,
@@ -14,6 +14,7 @@ import {
 } from '@radix-ng/primitives/number-field';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'number-field-default-example',
     imports: [
         LucideDynamicIcon,
@@ -135,7 +136,7 @@ setValue(change: RdxNumberFieldValueChangeEvent) {
 A basic field with a label, stepper buttons and a `min` of `0`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideDynamicIcon, LucideMinus as Minus, LucidePlus as Plus } from '@lucide/angular';
 import {
     RdxNumberFieldDecrement,
@@ -146,6 +147,7 @@ import {
 } from '@radix-ng/primitives/number-field';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'number-field-default-example',
     imports: [
         LucideDynamicIcon,
@@ -193,7 +195,7 @@ export class NumberFieldDefaultExample {
 Fractional steps with `signDisplay` and fraction-digit formatting.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideDynamicIcon, LucideMinus as Minus, LucidePlus as Plus } from '@lucide/angular';
 import {
     RdxNumberFieldDecrement,
@@ -204,6 +206,7 @@ import {
 } from '@radix-ng/primitives/number-field';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'number-field-decimal-example',
     imports: [
         LucideDynamicIcon,
@@ -264,7 +267,7 @@ export class NumberFieldDecimalExample {
 `format: { style: 'percent' }` displays and parses the value as a percentage.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideDynamicIcon, LucideMinus as Minus, LucidePlus as Plus } from '@lucide/angular';
 import {
     RdxNumberFieldDecrement,
@@ -275,6 +278,7 @@ import {
 } from '@radix-ng/primitives/number-field';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'number-field-percentage-example',
     imports: [
         LucideDynamicIcon,
@@ -333,7 +337,7 @@ export class NumberFieldPercentageExample {
 `format: { style: 'currency', currency: 'EUR' }` renders a currency value.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideDynamicIcon, LucideMinus as Minus, LucidePlus as Plus } from '@lucide/angular';
 import {
     RdxNumberFieldDecrement,
@@ -344,6 +348,7 @@ import {
 } from '@radix-ng/primitives/number-field';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'number-field-currency-example',
     imports: [
         LucideDynamicIcon,
@@ -397,7 +402,7 @@ export class NumberFieldCurrencyExample {
 Drag the label horizontally to change the value; a virtual cursor follows the pointer.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     LucideDynamicIcon,
     LucideMinus as Minus,
@@ -415,6 +420,7 @@ import {
 } from '@radix-ng/primitives/number-field';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'number-field-scrub-example',
     imports: [
         LucideDynamicIcon,
@@ -474,7 +480,7 @@ export class NumberFieldScrubExample {
 The control integrates with `formControlName`, exposing the numeric value to the form.
 
 ```typescript
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { LucideDynamicIcon, LucideMinus as Minus, LucidePlus as Plus } from '@lucide/angular';
 import {
@@ -487,6 +493,7 @@ import {
 } from '@radix-ng/primitives/number-field';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'number-field-reactive-forms',
     imports: [
         ReactiveFormsModule,

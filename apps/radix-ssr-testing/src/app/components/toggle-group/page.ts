@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxToggle } from '@radix-ng/primitives/toggle';
 import { RdxToggleGroup } from '@radix-ng/primitives/toggle-group';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-toggle-group',
     imports: [RdxToggleGroup, RdxToggle],
     template: `

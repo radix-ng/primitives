@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { axe } from 'jest-axe';
@@ -12,6 +12,7 @@ interface Fruit {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
         <div
@@ -468,6 +469,7 @@ describe('Combobox', () => {
 describe('Combobox structural portal', () => {
     it('throws in dev mode when rdxComboboxPortal is used as an attribute instead of structurally', () => {
         @Component({
+            changeDetection: ChangeDetectionStrategy.Eager,
             imports: [_importsCombobox],
             template: `
                 <div rdxComboboxRoot>

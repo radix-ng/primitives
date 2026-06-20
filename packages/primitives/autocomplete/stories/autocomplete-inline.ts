@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
@@ -47,6 +47,7 @@ const TAGS = [
 ];
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-inline',
     imports: [_importsAutocomplete],
     template: `

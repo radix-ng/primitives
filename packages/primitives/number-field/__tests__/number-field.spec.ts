@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
@@ -10,6 +10,7 @@ import { RdxNumberFieldInput } from '../src/number-field-input';
 import { RdxNumberFieldRoot, RdxNumberFieldValueChangeEvent } from '../src/number-field-root';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxNumberFieldRoot,
         RdxNumberFieldGroup,

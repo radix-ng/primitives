@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-collapsible-mock-trigger',
     standalone: true,
     imports: [RdxCollapsibleRootDirective, RdxCollapsibleTriggerDirective],

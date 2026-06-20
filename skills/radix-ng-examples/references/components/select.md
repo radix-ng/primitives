@@ -8,7 +8,7 @@ trigger) and **Item-aligned** (the popup overlaps the trigger, aligned to the se
 native `<select>` behavior).
 
 ```typescript
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { Align } from '@radix-ng/primitives/popper';
 import { RdxSelectGroup } from '../src/select-group';
@@ -25,6 +25,7 @@ import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'select-default',
     imports: [
         RdxSelectRoot,
@@ -222,7 +223,7 @@ the behavior of a native `<select>`. Use `rdxSelectItemAlignedPosition` and
 A grouped list (Fruits / Vegetables) with Popper positioning. Click the trigger to open the popup.
 
 ```typescript
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { Align } from '@radix-ng/primitives/popper';
 import { RdxSelectGroup } from '../src/select-group';
@@ -239,6 +240,7 @@ import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'select-default',
     imports: [
         RdxSelectRoot,
@@ -333,7 +335,7 @@ With `multiple`, picks accumulate in the value array, the trigger joins their la
 item keeps its indicator. Shows `RdxSelectIcon` and `RdxSelectSeparator`.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectGroupLabel } from '../src/select-group-label';
@@ -356,6 +358,7 @@ import { RdxSelectValue } from '../src/select-value';
  * and `RdxSelectSeparator` between groups.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'select-multiple',
     imports: [
         RdxSelectRoot,
@@ -441,7 +444,7 @@ export class SelectMultiple {
 `closeInteractionType`, so app logic can distinguish keyboard, mouse, and touch flows explicitly.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import {
     RdxSelectItem,
@@ -466,6 +469,7 @@ interface SelectEventLogEntry {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'select-events',
     imports: [
         RdxSelectRoot,
@@ -662,7 +666,7 @@ key (here `id`) instead of reference, and render rich, two-line content in both 
 items from the selected object.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideCheck, LucideChevronsUpDown } from '@lucide/angular';
 import { RdxSelectItem } from '../src/select-item';
 import { RdxSelectItemIndicator } from '../src/select-item-indicator';
@@ -688,6 +692,7 @@ interface ShippingMethod {
  * right item, and both the trigger and the items render rich, two-line content from the object.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'select-object-values',
     imports: [
         RdxSelectRoot,
@@ -785,7 +790,7 @@ When the list is taller than the available viewport, `rdxSelectScrollUpButton` a
 `rdxSelectScrollDownButton` appear automatically at the top and bottom of the popup.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideCheck, LucideChevronDown, LucideChevronUp } from '@lucide/angular';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectGroupLabel } from '../src/select-group-label';
@@ -803,6 +808,7 @@ import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'select-with-scroll',
     imports: [
         RdxSelectRoot,
@@ -920,7 +926,7 @@ The popup opens aligned to the selected item, mirroring native `<select>` behavi
 value is pre-selected so the alignment is immediately visible.
 
 ```typescript
-import { booleanAttribute, Component, input, signal } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectGroupLabel } from '../src/select-group-label';
@@ -937,6 +943,7 @@ import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'select-aligned-position',
     imports: [
         RdxSelectRoot,
@@ -1037,7 +1044,7 @@ export class SelectAlignedPosition {
 Item-aligned positioning combined with a long list that overflows, showing both scroll buttons.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown, LucideChevronUp } from '@lucide/angular';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectGroupLabel } from '../src/select-group-label';
@@ -1056,6 +1063,7 @@ import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'select-aligned-position-with-scroll',
     imports: [
         RdxSelectRoot,

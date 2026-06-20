@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown, LucideChevronRight } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
 import { cn, demoNavigationMenu } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-nested',
     imports: [...navigationMenuImports, LucideChevronDown, LucideChevronRight],
     template: `

@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -6,6 +6,7 @@ import { _importsCombobox } from '../index';
 import { RdxComboboxRoot } from '../src/combobox-root';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
         <div [(open)]="open" [highlightItemOnHover]="hover()" [keepHighlight]="keep()" rdxComboboxRoot>

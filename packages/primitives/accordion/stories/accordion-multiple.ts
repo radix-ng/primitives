@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
@@ -9,6 +9,7 @@ import {
 import { cn, demoAccordion } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'accordion-multiple-example',
     imports: [
         RdxAccordionRootDirective,

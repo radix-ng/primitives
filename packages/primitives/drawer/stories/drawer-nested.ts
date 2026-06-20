@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
@@ -8,6 +8,7 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
  * gains `data-nested-drawer-open` and recedes behind the one in front (see `demoDrawer.popup`).
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-nested',
     imports: [...drawerImports],
     template: `

@@ -270,8 +270,12 @@ for (const id of ['primitives-select--with-scroll', 'primitives-select--aligned-
         const list = page.locator('[rdxSelectList]');
 
         // Walk down well past the initial fold (12 < item count in both stories → no wrap-around).
+        // Settle between presses so the zoneless highlight update + its `afterRenderEffect`
+        // scroll-into-view commits each step; firing all 12 back-to-back can outpace change
+        // detection and leave the final scroll position non-deterministic.
         for (let i = 0; i < 12; i++) {
             await page.keyboard.press('ArrowDown');
+            await page.waitForTimeout(25);
         }
 
         // The highlighted item's center stays inside the viewport box — i.e. the list scrolled to

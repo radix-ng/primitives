@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideDynamicIcon, LucideMinus as Minus, LucidePlus as Plus } from '@lucide/angular';
 import {
     RdxNumberFieldDecrement,
@@ -9,6 +9,7 @@ import {
 } from '@radix-ng/primitives/number-field';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'number-field-percentage-example',
     imports: [
         LucideDynamicIcon,

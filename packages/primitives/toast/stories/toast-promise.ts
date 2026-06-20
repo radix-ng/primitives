@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
@@ -8,6 +8,7 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
  * auto-dismiss; the resolved one picks the timeout back up.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-promise-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],

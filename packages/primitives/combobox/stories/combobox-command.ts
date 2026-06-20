@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideArrowRight } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
@@ -8,6 +8,7 @@ import { _importsCombobox } from '../index';
  * action) with `autoHighlight="always"` (the first match is always highlighted, so Enter runs it).
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-command',
     imports: [_importsCombobox, LucideArrowRight],
     template: `

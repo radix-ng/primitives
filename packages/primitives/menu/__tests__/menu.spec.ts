@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FOCUS_GUARD_ATTR } from '@radix-ng/primitives/focus-scope';
 import {
@@ -44,6 +44,7 @@ afterEach(() => {
 // ─── Test host components ─────────────────────────────────────────────────────
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
     template: `
         <div #root="rdxMenuRoot" [(open)]="open" rdxMenuRoot>
@@ -67,6 +68,7 @@ class BasicMenuComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
     template: `
         <div #root="rdxMenuRoot" [(open)]="open" rdxMenuRoot>
@@ -88,6 +90,7 @@ class NonClosingItemMenuComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuLinkItem],
     template: `
         <div #root="rdxMenuRoot" [(open)]="open" rdxMenuRoot>
@@ -110,6 +113,7 @@ class LinkMenuComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
     template: `
         <button data-testid="previous">Previous</button>
@@ -132,6 +136,7 @@ class FocusGuardMenuComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
     template: `
         <div #root="rdxMenuRoot" rdxMenuRoot>
@@ -150,6 +155,7 @@ class FocusGuardMenuComponent {
 class HoverMenuComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
     template: `
         <div #root="rdxMenuRoot" [modal]="false" rdxMenuRoot>
@@ -168,6 +174,7 @@ class HoverMenuComponent {}
 class NonModalMenuComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
     template: `
         <div #root="rdxMenuRoot" [defaultOpen]="true" rdxMenuRoot>
@@ -186,6 +193,7 @@ class NonModalMenuComponent {}
 class DefaultOpenMenuComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
     template: `
         <div #root="rdxMenuRoot" [disabled]="disabled" rdxMenuRoot>
@@ -206,6 +214,7 @@ class DisabledRootMenuComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxMenuRoot,
         RdxMenuPositioner,
@@ -250,6 +259,7 @@ class DisabledRootItemsMenuComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
     template: `
         <div #root="rdxMenuRoot" rdxMenuRoot>
@@ -270,6 +280,7 @@ class DisabledRootItemsMenuComponent {
 class DisabledItemMenuComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxMenuRoot,
         RdxMenuTrigger,
@@ -302,6 +313,7 @@ class CheckboxMenuComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxMenuRoot,
         RdxMenuTrigger,
@@ -340,6 +352,7 @@ class RadioMenuComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxMenuRadioGroup, RdxMenuRadioItem, RdxMenuGroupLabel],
     template: `
         <div [defaultValue]="first" [disabled]="disabled" (onValueChange)="changes.push($event)" rdxMenuRadioGroup>
@@ -357,6 +370,7 @@ class RadioGroupApiComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxMenuRoot,
         RdxMenuTrigger,
@@ -1227,6 +1241,7 @@ describe('Menu', () => {
     describe('closeOnClick', () => {
         it('MenuItem closes menu by default (closeOnClick=true)', () => {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
                 template: `
                     <div #root="rdxMenuRoot" rdxMenuRoot>
@@ -1257,6 +1272,7 @@ describe('Menu', () => {
 
         it('MenuItem with closeOnClick=false keeps menu open', () => {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
                 template: `
                     <div #root="rdxMenuRoot" rdxMenuRoot>
@@ -1287,6 +1303,7 @@ describe('Menu', () => {
 
         it('RadioItem default closeOnClick=false keeps menu open', () => {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [
                     RdxMenuRoot,
                     RdxMenuTrigger,
@@ -1326,6 +1343,7 @@ describe('Menu', () => {
 
         it('RadioItem with closeOnClick=true closes menu', () => {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [
                     RdxMenuRoot,
                     RdxMenuTrigger,
@@ -1369,6 +1387,7 @@ describe('Menu', () => {
     describe('loopFocus', () => {
         function makeFixture(loop: boolean) {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
                 template: `
                     <div #root="rdxMenuRoot" [loopFocus]="loop" rdxMenuRoot>
@@ -1451,6 +1470,7 @@ describe('Menu', () => {
 
         beforeEach(() => {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
                 template: `
                     <div #root="rdxMenuRoot" rdxMenuRoot>
@@ -1513,6 +1533,7 @@ describe('Menu', () => {
     describe('keepMounted on indicators', () => {
         it('CheckboxItemIndicator is hidden by default when unchecked', () => {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [
                     RdxMenuRoot,
                     RdxMenuTrigger,
@@ -1550,6 +1571,7 @@ describe('Menu', () => {
 
         it('CheckboxItemIndicator stays in DOM with keepMounted and has data-state', () => {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [
                     RdxMenuRoot,
                     RdxMenuTrigger,
@@ -1589,6 +1611,7 @@ describe('Menu', () => {
 
         it('RadioItemIndicator stays in DOM with keepMounted', () => {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [
                     RdxMenuRoot,
                     RdxMenuTrigger,
@@ -1639,6 +1662,7 @@ describe('Menu', () => {
 
         beforeEach(() => {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem, RdxMenuSubTrigger],
                 template: `
                     <div #root="rdxMenuRoot" rdxMenuRoot>
@@ -1713,6 +1737,7 @@ describe('Menu', () => {
             fixture.destroy();
 
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem, RdxMenuSubTrigger],
                 template: `
                     <div #root="rdxMenuRoot" [modal]="false" rdxMenuRoot>
@@ -1824,6 +1849,7 @@ describe('Menu', () => {
             fixture.destroy();
 
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem, RdxMenuSubTrigger],
                 template: `
                     <div #root="rdxMenuRoot" dir="rtl" rdxMenuRoot>
@@ -1959,6 +1985,7 @@ describe('Menu', () => {
 
         it('supports the dedicated rdxMenuSubmenuRoot alias', () => {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem, RdxMenuSubTrigger],
                 template: `
                     <div #root="rdxMenuRoot" rdxMenuRoot>
@@ -2001,6 +2028,7 @@ describe('Menu', () => {
 
         it('respects highlightItemOnHover=false', () => {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
                 template: `
                     <div #root="rdxMenuRoot" [highlightItemOnHover]="false" rdxMenuRoot>
@@ -2035,6 +2063,7 @@ describe('Menu', () => {
 
         it('uses root orientation on the popup', () => {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
                 template: `
                     <div #root="rdxMenuRoot" orientation="horizontal" rdxMenuRoot>
@@ -2064,6 +2093,7 @@ describe('Menu', () => {
 
         it('closes the parent menu on Escape when closeParentOnEsc=true', () => {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem, RdxMenuSubTrigger],
                 template: `
                     <div #root="rdxMenuRoot" rdxMenuRoot>
@@ -2113,6 +2143,7 @@ describe('Menu', () => {
     describe('RdxMenuBackdrop', () => {
         it('exposes data-state and data-open/closed', () => {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem, RdxMenuBackdrop],
                 template: `
                     <div #root="rdxMenuRoot" rdxMenuRoot>
@@ -2149,6 +2180,7 @@ describe('Menu', () => {
     describe('RdxMenuArrow', () => {
         it('mounts inside the popup and reflects open state', () => {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem, RdxMenuArrow],
                 template: `
                     <div #root="rdxMenuRoot" rdxMenuRoot>
@@ -2183,6 +2215,7 @@ describe('Menu', () => {
     describe('transition lifecycle', () => {
         it('sets data-starting-style on popup when opening', () => {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
                 template: `
                     <div #root="rdxMenuRoot" rdxMenuRoot>
@@ -2211,6 +2244,7 @@ describe('Menu', () => {
 
         it('emits onOpenChangeComplete(false) after close', async () => {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
                 template: `
                     <div #root="rdxMenuRoot" [(open)]="open" (onOpenChangeComplete)="events.push($event)" rdxMenuRoot>
@@ -2248,6 +2282,7 @@ describe('Menu', () => {
 
         it('emits onOpenChangeComplete after open transition', async () => {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
                 template: `
                     <div #root="rdxMenuRoot" (onOpenChangeComplete)="events.push($event)" rdxMenuRoot>
@@ -2280,6 +2315,7 @@ describe('Menu', () => {
 
         it('emits onOpenChange details instead of a bare boolean', () => {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
                 template: `
                     <div #root="rdxMenuRoot" (onOpenChange)="events.push($event)" rdxMenuRoot>
@@ -2330,6 +2366,7 @@ describe('Menu', () => {
 
         it('lets onOpenChange cancel an opening request', () => {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
                 template: `
                     <div [(open)]="open" (onOpenChange)="handleOpenChange($event)" rdxMenuRoot>
@@ -2375,6 +2412,7 @@ describe('Menu', () => {
 
         it('lets onOpenChange cancel a close request', () => {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
                 template: `
                     <div #root="rdxMenuRoot" [(open)]="open" (onOpenChange)="handleOpenChange($event)" rdxMenuRoot>
@@ -2423,6 +2461,7 @@ describe('Menu', () => {
 
         it('keeps the portal mounted after close when preventUnmountOnClose is requested', () => {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPortal, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
                 template: `
                     <div #root="rdxMenuRoot" [(open)]="open" (onOpenChange)="handleOpenChange($event)" rdxMenuRoot>
@@ -2511,6 +2550,7 @@ describe('Menu', () => {
 
         function makeFixture() {
             @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuViewport, RdxMenuItem],
                 template: `
                     <div #root="rdxMenuRoot" rdxMenuRoot>
@@ -2569,6 +2609,7 @@ describe('Menu', () => {
 
 describe('Menu structural portal', () => {
     @Component({
+        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPortal, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
         template: `
             <ng-container #root="rdxMenuRoot" rdxMenuRoot>
@@ -2601,6 +2642,7 @@ describe('Menu structural portal', () => {
 
     it('throws in dev mode when rdxMenuPortal is used as an attribute instead of structurally', () => {
         @Component({
+            changeDetection: ChangeDetectionStrategy.Eager,
             imports: [
                 RdxMenuRoot,
                 RdxMenuTrigger,

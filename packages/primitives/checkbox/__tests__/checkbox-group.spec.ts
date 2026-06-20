@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RdxCheckboxModule } from '../index';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxCheckboxModule],
     template: `
         <div
@@ -42,6 +43,7 @@ class GroupHost {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxCheckboxModule],
     template: `
         <div [(value)]="value" [allValues]="all" rdxCheckboxGroup>

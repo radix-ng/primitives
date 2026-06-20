@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
 import { cn, demoInput } from '../../storybook/styles';
 
@@ -7,6 +7,7 @@ import { cn, demoInput } from '../../storybook/styles';
  * label/input pair is wired with a unique, SSR-stable id without hardcoding one.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'inject-id-field',
     imports: [],
     template: `
@@ -27,6 +28,7 @@ export class InjectIdField {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'inject-id-example',
     imports: [InjectIdField],
     template: `

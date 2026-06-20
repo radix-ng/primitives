@@ -1,4 +1,4 @@
-import { booleanAttribute, Component, input, signal } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectGroupLabel } from '../src/select-group-label';
@@ -15,6 +15,7 @@ import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'select-aligned-position',
     imports: [
         RdxSelectRoot,

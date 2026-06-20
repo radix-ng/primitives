@@ -78,7 +78,7 @@ import {
 Disable the whole accordion via `disabled` on the root, or a single item via `disabled` on the item.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
@@ -89,6 +89,7 @@ import {
 import { cn, demoAccordion } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'accordion-disabled-example',
     imports: [
         RdxAccordionRootDirective,
@@ -141,7 +142,7 @@ export class AccordionDisabledExample {
 Set `multiple` to let several items stay open at once.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
@@ -152,6 +153,7 @@ import {
 import { cn, demoAccordion } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'accordion-multiple-example',
     imports: [
         RdxAccordionRootDirective,
@@ -207,7 +209,7 @@ In single mode the open item can always be closed by clicking its trigger again 
 there is no separate `collapsible` input).
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
@@ -218,6 +220,7 @@ import {
 import { cn, demoAccordion } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'accordion-collapsible-example',
     imports: [
         RdxAccordionRootDirective,
@@ -270,7 +273,7 @@ export class AccordionCollapsibleExample {
 Set `orientation="horizontal"` to expose horizontal state for styling. Following the APG guidance update adopted by Base UI, orientation no longer changes keyboard focus behavior.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
@@ -281,6 +284,7 @@ import {
 import { cn, demoAccordion } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'accordion-horizontal-example',
     imports: [
         RdxAccordionRootDirective,
@@ -346,7 +350,7 @@ root emits `onValueChange` with `{ value, eventDetails }`. Call `eventDetails.ca
 change before it commits.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
@@ -357,6 +361,7 @@ import {
 import { cn, demoAccordion } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'accordion-events-example',
     imports: [
         RdxAccordionRootDirective,
@@ -410,7 +415,7 @@ form state. Use `hiddenUntilFound` instead to keep collapsed content discoverabl
 find-in-page (it renders `hidden="until-found"`).
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
     RdxAccordionHeaderDirective,
@@ -426,6 +431,7 @@ import { cn, demoAccordion, demoInput } from '../../storybook/styles';
  * Type something below, collapse the panel, and reopen it — the value is retained.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'accordion-keep-mounted-example',
     imports: [
         FormsModule,
