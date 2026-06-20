@@ -30,11 +30,30 @@ import {
 } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperContent } from '@radix-ng/primitives/popper';
 import { injectSelectRootContext } from './select-root';
+import { getNextMatch } from './useTypeahead';
 import { RdxSelectItemMetadata, SELECTION_KEYS, valueComparator } from './utils';
 
 type RdxSelectCompositeItem = RdxCompositeItemRegistration<RdxSelectItemMetadata>;
 
-const context = () => {
+export interface RdxSelectPopupContext {
+    content: Signal<HTMLElement | null>;
+    viewport: Signal<HTMLElement | undefined>;
+    isPositioned: Signal<boolean>;
+    selectedItem: Signal<HTMLElement | undefined>;
+    selectedItemText: Signal<HTMLElement | undefined>;
+    items: Signal<RdxSelectCompositeItem[]>;
+    highlightedItem: Signal<RdxSelectCompositeItem | null>;
+    isHighlighted: (element: HTMLElement) => boolean;
+    highlightItem: (element: HTMLElement) => void;
+    isKeyboardActive: () => boolean;
+    setKeyboardActive: (value: boolean) => void;
+    onViewportChange: (node: HTMLElement | undefined) => void;
+    onItemLeave: () => void;
+    itemRefCallback: (node: HTMLElement, value: AcceptableValue | undefined, disabled: boolean) => void;
+    itemTextRefCallback: (node: HTMLElement, value: AcceptableValue | undefined, disabled: boolean) => void;
+}
+
+const context = (): RdxSelectPopupContext => {
     const context = inject(RdxSelectPopup);
 
     return {
@@ -54,13 +73,13 @@ const context = () => {
         },
         isKeyboardActive: () => context.isKeyboardActive(),
         setKeyboardActive: (value: boolean) => context.setKeyboardActive(value),
-        onViewportChange: (node: any) => {
+        onViewportChange: (node: HTMLElement | undefined) => {
             context.viewport.set(node);
         },
         onItemLeave: () => {
             context.highlight.clear();
         },
-        itemRefCallback: (node: any, value: any, disabled: boolean) => {
+        itemRefCallback: (node: HTMLElement, value: AcceptableValue | undefined, disabled: boolean) => {
             const isFirstValidItem = !context.firstValidItemFoundRef() && !disabled;
             const isSelectedItem = valueComparator(
                 context.rootContext.value(),
@@ -76,7 +95,7 @@ const context = () => {
                 context.firstValidItemFoundRef.set(true);
             }
         },
-        itemTextRefCallback: (node: any, value: any, disabled: any) => {
+        itemTextRefCallback: (node: HTMLElement, value: AcceptableValue | undefined, disabled: boolean) => {
             const isFirstValidItem = !context.firstValidItemFoundRef() && !disabled;
             const isSelectedItem = valueComparator(
                 context.rootContext.value(),
@@ -91,15 +110,13 @@ const context = () => {
     };
 };
 
-export type RdxSelectPopupContext = ReturnType<typeof context>;
-
 export const [injectSelectPopupContext, provideSelectPopupContext] = createContext<RdxSelectPopupContext>(
     'RdxSelectPopup',
     'components/select'
 );
 
 export interface RdxPositionerImpl {
-    placed: OutputRef<any>;
+    placed: OutputRef<void>;
     /**
      * Whether **item-aligned** positioning is currently active (Base UI `alignItemWithTriggerActive`).
      * `true` only for the item-aligned positioner while open **and not touch-opened** — a touch open
@@ -156,7 +173,6 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
         '[id]': 'rootContext.contentId',
         '[attr.aria-activedescendant]': 'highlight.activeId()',
         '[attr.aria-multiselectable]': 'rootContext.multiple() ? "true" : undefined',
-        '[attr.data-state]': 'rootContext.open() ? "open" : "closed"',
         '[attr.data-open]': 'rootContext.open() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.open() ? undefined : ""',
         '[attr.data-starting-style]': 'rootContext.transitionStatus() === "starting" ? "" : undefined',
@@ -216,6 +232,11 @@ export class RdxSelectPopup {
     private keyboardActive = false;
     private hasHighlightedOpen = false;
 
+    // Typeahead buffer (APG listbox): printable characters accumulate for 1s and jump the highlight to
+    // the next item whose text matches.
+    private typeaheadSearch = '';
+    private typeaheadTimer?: ReturnType<typeof setTimeout>;
+
     /**
      * Event handler called when the escape key is down.
      * Can be prevented.
@@ -255,6 +276,9 @@ export class RdxSelectPopup {
         effect(() => {
             if (!this.rootContext.open()) {
                 this.hasHighlightedOpen = false;
+                // Reset the "first valid item" seed so the next open re-resolves it (otherwise the
+                // selected/first-item highlight seed is stale on reopen).
+                this.firstValidItemFoundRef.set(false);
                 return;
             }
 
@@ -294,6 +318,7 @@ export class RdxSelectPopup {
         // The popup's animation determines when the open/close transition (onOpenChangeComplete) is done.
         const unregisterTransition = this.rootContext.registerTransitionElement(this.currentElement.nativeElement);
         inject(DestroyRef).onDestroy(unregisterTransition);
+        inject(DestroyRef).onDestroy(() => clearTimeout(this.typeaheadTimer));
 
         // The popup (listbox) is this layer's floating element — the inside surface for containment.
         this.floatingContext.setFloatingElement(this.currentElement.nativeElement);
@@ -465,6 +490,38 @@ export class RdxSelectPopup {
                     this.highlight.last();
                     break;
             }
+            return;
         }
+
+        // Typeahead: a single printable character jumps the highlight to the next matching item.
+        if (keyEvent.key.length === 1 && !keyEvent.ctrlKey && !keyEvent.altKey && !keyEvent.metaKey) {
+            this.handleTypeahead(keyEvent.key);
+        }
+    }
+
+    /** Accumulates printable keys for 1s and moves the highlight to the next item whose text matches. */
+    private handleTypeahead(key: string) {
+        this.typeaheadSearch += key;
+        clearTimeout(this.typeaheadTimer);
+        this.typeaheadTimer = setTimeout(() => (this.typeaheadSearch = ''), 1000);
+
+        const navigableItems = this.items().filter((item) => !item.metadata()?.disabled);
+        const values = navigableItems.map((item) => this.itemText(item));
+        const current = this.highlight.highlightedItem();
+        const nextMatch = getNextMatch(values, this.typeaheadSearch, current ? this.itemText(current) : undefined);
+
+        if (nextMatch === undefined) {
+            return;
+        }
+
+        const match = navigableItems[values.indexOf(nextMatch)];
+        if (match) {
+            this.keyboardActive = true;
+            this.highlight.set(match);
+        }
+    }
+
+    private itemText(item: RdxSelectCompositeItem): string {
+        return (item.metadata()?.textValue || item.element.textContent || '').trim();
     }
 }

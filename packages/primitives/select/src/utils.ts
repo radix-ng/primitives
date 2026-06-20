@@ -6,14 +6,14 @@ export const CONTENT_MARGIN = 10;
 
 export interface RdxSelectItemMetadata {
     [key: string]: unknown;
-    value: any;
+    value: AcceptableValue | undefined;
     disabled: boolean;
     textValue?: string;
 }
 
 export function valueComparator<T>(
     value: T | T[] | undefined,
-    currentValue: T,
+    currentValue: T | undefined,
     comparator?: string | ((a: T, b: T) => boolean)
 ) {
     if (value === undefined) return false;

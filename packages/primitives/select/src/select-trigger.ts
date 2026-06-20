@@ -19,15 +19,16 @@ const attr = (value: boolean) => (value ? '' : undefined);
         '[attr.aria-controls]': 'triggerInteraction.ariaControls()',
         '[attr.aria-invalid]': 'invalidState() ? "true" : undefined',
         '[attr.aria-required]': 'requiredState() ? "true" : undefined',
+        '[attr.aria-readonly]': 'readOnlyState() ? "true" : undefined',
         '[attr.disabled]': 'isDisabled() ? "" : undefined',
         '[dir]': 'rootContext.dir()',
-        '[attr.data-state]': 'triggerInteraction.dataState()',
         '[attr.data-popup-open]': 'triggerInteraction.dataPopupOpen()',
         '[attr.data-placeholder]': 'dataAttr(rootContext.isEmptyModelValue())',
         '[attr.data-disabled]': 'dataAttr(isDisabled())',
         '[attr.data-invalid]': 'dataAttr(invalidState())',
         '[attr.data-valid]': 'dataAttr(!invalidState())',
         '[attr.data-required]': 'dataAttr(requiredState())',
+        '[attr.data-readonly]': 'dataAttr(readOnlyState())',
         '[attr.data-filled]': 'dataAttr(filledState())',
         '[attr.data-focused]': 'dataAttr(focusedState())',
         '(click)': 'onClickHandler($event)',
@@ -61,7 +62,10 @@ export class RdxSelectTrigger {
     });
 
     protected readonly invalidState = computed(() => Boolean(this.fieldRootContext?.invalidState()));
-    protected readonly requiredState = computed(() => Boolean(this.fieldRootContext?.requiredState()));
+    protected readonly requiredState = computed(
+        () => this.rootContext.required() || Boolean(this.fieldRootContext?.requiredState())
+    );
+    protected readonly readOnlyState = computed(() => this.rootContext.readOnly());
     protected readonly filledState = computed(
         () => !this.rootContext.isEmptyModelValue() || Boolean(this.fieldRootContext?.filledState())
     );

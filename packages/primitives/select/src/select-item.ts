@@ -7,15 +7,24 @@ import {
     ElementRef,
     inject,
     input,
-    linkedSignal
+    linkedSignal,
+    Signal
 } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
-import { createContext, handleAndDispatchCustomEvent, injectId } from '@radix-ng/primitives/core';
+import { AcceptableValue, createContext, handleAndDispatchCustomEvent, injectId } from '@radix-ng/primitives/core';
 import { injectSelectPopupContext } from './select-popup';
 import { injectSelectRootContext } from './select-root';
 import { SELECTION_KEYS, valueComparator } from './utils';
 
-const context = () => {
+export interface RdxSelectItemContext {
+    value: Signal<AcceptableValue | undefined>;
+    disabled: Signal<boolean>;
+    isSelected: Signal<boolean>;
+    textId: string;
+    onItemTextChange: (node: HTMLElement) => void;
+}
+
+const context = (): RdxSelectItemContext => {
     const context = inject(RdxSelectItem);
     return {
         value: context.value,
@@ -23,20 +32,18 @@ const context = () => {
         isSelected: context.isSelected,
         textId: context.textId,
 
-        onItemTextChange: (node: any) => {
+        onItemTextChange: (node: HTMLElement) => {
             context.textValue$.set(((context.textValue$() || node.textContent) ?? '').trim());
         }
     };
 };
-
-export type RdxSelectItemContext = ReturnType<typeof context>;
 
 export const [injectSelectItemContext, provideSelectItemContext] = createContext<RdxSelectItemContext>(
     'RdxSelectItemContext',
     'components/select'
 );
 
-export type SelectEvent = CustomEvent<{ originalEvent: PointerEvent | KeyboardEvent; value?: any }>;
+export type SelectEvent = CustomEvent<{ originalEvent: PointerEvent | KeyboardEvent; value?: AcceptableValue }>;
 
 @Directive({
     selector: '[rdxSelectItem]',
@@ -48,7 +55,6 @@ export type SelectEvent = CustomEvent<{ originalEvent: PointerEvent | KeyboardEv
         '[attr.id]': 'id',
         '[attr.aria-selected]': 'isSelected()',
         '[attr.aria-disabled]': 'disabled() ? "true" : undefined',
-        '[attr.data-state]': 'isSelected() ? "checked" : "unchecked"',
         '[attr.data-selected]': 'isSelected() ? "" : undefined',
         '[attr.data-highlighted]': 'isHighlighted() ? "" : undefined',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
@@ -64,7 +70,7 @@ export class RdxSelectItem {
 
     private readonly currentElement = inject<ElementRef<HTMLElement>>(ElementRef);
 
-    readonly value = input<any>();
+    readonly value = input<AcceptableValue>();
 
     readonly textValue = input<string>('');
 

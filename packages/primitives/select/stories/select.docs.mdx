@@ -21,7 +21,8 @@ native `<select>` behavior).
 
 ## Features
 
-- ✅ Controlled and uncontrolled value via `[(value)]`.
+- ✅ Controlled and uncontrolled value via `[(value)]`, with `defaultValue` / `defaultOpen` seeds.
+- ✅ `readOnly` and `required` state, reflected on the trigger as `aria-readonly` / `aria-required`.
 - ✅ Single and multiple selection with the `multiple` input.
 - ✅ Cancelable `onOpenChange` and `onValueChange` outputs with reason-aware `eventDetails`.
 - ✅ Two positioning modes: Popper (Floating UI) and Item-aligned (native-like).
@@ -208,6 +209,22 @@ The button that opens the popup. Must be a `<button>` element.
 
 <ArgTypes of={RdxSelectTrigger} />
 
+**Data attributes**
+
+| Attribute          | Present when                                                            |
+| ------------------ | ---------------------------------------------------------------------- |
+| `data-popup-open`  | The popup is open.                                                     |
+| `data-placeholder` | No value is selected (the placeholder is shown).                       |
+| `data-filled`      | A value is selected.                                                   |
+| `data-disabled`    | The select is disabled.                                                |
+| `data-readonly`    | The select is read-only.                                               |
+| `data-required`    | The select is required.                                                |
+| `data-invalid`     | The control is in an invalid state (via `Field`).                     |
+| `data-valid`       | The control is in a valid state.                                       |
+| `data-focused`     | The trigger is focused (via `Field`).                                 |
+
+`aria-controls` points at the popup's id only while the popup is open; `aria-readonly` / `aria-required` / `aria-invalid` reflect the corresponding states.
+
 ### RdxSelectValue
 
 Renders the current selection inside the trigger. Reads the selected item's text from context.
@@ -222,12 +239,40 @@ pointer focus) and `data-disabled`.
 
 <ArgTypes of={RdxSelectItem} />
 
+**Data attributes**
+
+| Attribute          | Present when                                              |
+| ------------------ | ------------------------------------------------------- |
+| `data-selected`    | This item is selected.                                  |
+| `data-highlighted` | This item is highlighted (keyboard or pointer).         |
+| `data-disabled`    | This item is disabled.                                  |
+
+The item also carries `role="option"`, `aria-selected`, and `aria-disabled`.
+
 ### RdxSelectPositioner
 
 Wraps the popup panel when using Popper positioning. Accepts the same positioning inputs as
 `rdxMenuPositioner` (`sideOffset`, `alignOffset`, `align`, `side`, `avoidCollisions`, …).
 
 <ArgTypes of={RdxSelectPositioner} />
+
+**Data attributes**
+
+| Attribute            | Present when / value                                                       |
+| -------------------- | ------------------------------------------------------------------------- |
+| `data-side`          | Resolved side after collision handling — `top` / `right` / `bottom` / `left`. |
+| `data-align`         | Resolved alignment — `start` / `center` / `end`.                          |
+| `data-anchor-hidden` | The anchor is clipped/off-screen and the popup is hidden.                 |
+
+**CSS variables**
+
+| Variable                                   | Description                                            |
+| ------------------------------------------ | ----------------------------------------------------- |
+| `--anchor-width` / `--anchor-height`       | Size of the trigger (anchor), for matching the popup width. |
+| `--available-width` / `--available-height` | Space available before the collision boundary.        |
+| `--transform-origin`                       | Origin to scale/zoom the popup from, based on side/align. |
+
+The deprecated `--radix-select-*` aliases of these variables are still emitted for one release.
 
 ### RdxSelectItemText
 
@@ -255,3 +300,31 @@ content overflows. No inputs.
 
 Renders at the bottom of the popup and scrolls the list down when hovered. Appears automatically
 when content overflows. No inputs.
+
+### RdxSelectPopup
+
+The popup listbox (`role="listbox"`). Holds DOM focus and navigates items via `aria-activedescendant`.
+
+**Data attributes**
+
+| Attribute             | Present when / value                                              |
+| --------------------- | ---------------------------------------------------------------- |
+| `data-open`           | The select is open.                                              |
+| `data-closed`         | The select is closed.                                            |
+| `data-starting-style` | The enter transition is about to run.                           |
+| `data-ending-style`   | The exit transition is running (kept mounted until it finishes).|
+| `data-side`           | Resolved side — `top` / `right` / `bottom` / `left`.            |
+| `data-align`          | Resolved alignment — `start` / `center` / `end`.               |
+
+### RdxSelectBackdrop
+
+An optional overlay rendered beneath the popup in `modal` mode (`aria-hidden`). No inputs.
+
+**Data attributes**
+
+| Attribute             | Present when                          |
+| --------------------- | ------------------------------------- |
+| `data-open`           | The select is open.                   |
+| `data-closed`         | The select is closed.                 |
+| `data-starting-style` | The enter transition is about to run. |
+| `data-ending-style`   | The exit transition is running.       |

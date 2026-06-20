@@ -12,9 +12,10 @@ import { injectSelectRootContext } from './select-root';
     exportAs: 'rdxSelectBackdrop',
     host: {
         'aria-hidden': 'true',
-        '[attr.data-state]': 'rootContext.open() ? "open" : "closed"',
         '[attr.data-open]': 'rootContext.open() ? "" : undefined',
-        '[attr.data-closed]': 'rootContext.open() ? undefined : ""'
+        '[attr.data-closed]': 'rootContext.open() ? undefined : ""',
+        '[attr.data-starting-style]': 'rootContext.transitionStatus() === "starting" ? "" : undefined',
+        '[attr.data-ending-style]': 'rootContext.transitionStatus() === "ending" ? "" : undefined'
     }
 })
 export class RdxSelectBackdrop {

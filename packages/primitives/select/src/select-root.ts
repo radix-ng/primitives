@@ -10,7 +10,8 @@ import {
     output,
     Signal,
     signal,
-    untracked
+    untracked,
+    WritableSignal
 } from '@angular/core';
 import {
     AcceptableValue,
@@ -25,6 +26,7 @@ import {
     provideFloatingTree,
     RdxCancelableChangeEventDetails,
     RdxFloatingRootContext,
+    RdxTransitionStatus,
     useTransitionStatus
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
@@ -33,7 +35,7 @@ import { RdxPopper } from '@radix-ng/primitives/popper';
 import { compare, valueComparator } from './utils';
 
 export interface SelectOption {
-    value: any;
+    value: AcceptableValue | undefined;
     disabled?: boolean;
     textContent: string;
 }
@@ -63,11 +65,42 @@ export interface RdxSelectOpenChangeEvent {
 export type RdxSelectValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxSelectValueChangeReason>;
 
 export interface RdxSelectValueChangeEvent {
-    value: AcceptableValue | AcceptableValue[];
+    value: AcceptableValue | AcceptableValue[] | undefined;
     eventDetails: RdxSelectValueChangeEventDetails;
 }
 
-const context = () => {
+export interface RdxSelectRootContext {
+    triggerElement: WritableSignal<HTMLElement | null>;
+    valueElement: WritableSignal<HTMLElement | null>;
+    triggerPointerDownPosRef: WritableSignal<{ x: number; y: number } | null>;
+    contentId: string;
+    dir: Signal<Direction>;
+    value: Signal<AcceptableValue | AcceptableValue[] | undefined>;
+    multiple: Signal<boolean>;
+    isItemEqualToValue: Signal<ItemValueComparator<AcceptableValue> | undefined>;
+    itemToStringLabel: Signal<((value: AcceptableValue) => string) | undefined>;
+    open: Signal<boolean>;
+    openedByTouch: Signal<boolean>;
+    openMethod: Signal<RdxSelectOpenMethod>;
+    openInteractionType: Signal<RdxInteractionType>;
+    closeInteractionType: Signal<RdxInteractionType>;
+    disabled: Signal<boolean>;
+    readOnly: Signal<boolean>;
+    required: Signal<boolean>;
+    modal: Signal<boolean>;
+    isEmptyModelValue: Signal<boolean>;
+    transitionStatus: Signal<RdxTransitionStatus>;
+    registerTransitionElement: (element: HTMLElement) => () => void;
+    optionsSet: Signal<Set<SelectOption>>;
+    onOptionAdd: (option: () => SelectOption) => void;
+    onOptionRemove: (option: () => SelectOption) => void;
+    onValueChange: (value: AcceptableValue | undefined, reason?: RdxSelectValueChangeReason, event?: Event) => boolean;
+    onTriggerChange: (node: ElementRef<HTMLElement>) => void;
+    onValueElementChange: (node: HTMLElement) => void;
+    onOpenChange: (value: boolean, reason?: RdxSelectOpenChangeReason, event?: Event) => boolean;
+}
+
+const context = (): RdxSelectRootContext => {
     const context = inject(RdxSelectRoot);
 
     return {
@@ -86,12 +119,14 @@ const context = () => {
         openInteractionType: context.openInteractionType,
         closeInteractionType: context.closeInteractionType,
         disabled: context.disabled,
+        readOnly: context.readOnly,
+        required: context.required,
         modal: context.modal,
         isEmptyModelValue: context.isEmptyModelValue,
         transitionStatus: context.transitionStatus,
         registerTransitionElement: context.registerTransitionElement,
         optionsSet: context.optionsSet,
-        onOptionAdd: (option: any) => {
+        onOptionAdd: (option: () => SelectOption) => {
             const existingOption = context.getOption(option());
             if (existingOption) {
                 context.optionsSet().delete(existingOption);
@@ -99,26 +134,24 @@ const context = () => {
 
             context.optionsSet().add(option());
         },
-        onOptionRemove: (option: any) => {
+        onOptionRemove: (option: () => SelectOption) => {
             const existingOption = context.getOption(option());
             if (existingOption) {
                 context.optionsSet().delete(existingOption);
             }
         },
-        onValueChange: (value: AcceptableValue, reason?: RdxSelectValueChangeReason, event?: Event) =>
+        onValueChange: (value: AcceptableValue | undefined, reason?: RdxSelectValueChangeReason, event?: Event) =>
             context.setValue(value, reason, event),
-        onTriggerChange: (node: any) => {
+        onTriggerChange: (node: ElementRef<HTMLElement>) => {
             context.triggerElement.set(node.nativeElement);
         },
-        onValueElementChange: (node: any) => {
+        onValueElementChange: (node: HTMLElement) => {
             context.valueElement.set(node);
         },
         onOpenChange: (value: boolean, reason?: RdxSelectOpenChangeReason, event?: Event) =>
             context.setOpen(value, reason, event)
     };
 };
-
-export type RdxSelectRootContext = ReturnType<typeof context>;
 
 export const [injectSelectRootContext, provideSelectRootContext] = createContext<RdxSelectRootContext>(
     'RdxSelectRootContext',
@@ -158,9 +191,21 @@ export class RdxSelectRoot {
 
     readonly value = model<AcceptableValue | AcceptableValue[]>();
 
+    /** Initial value for the uncontrolled case. Applied once on init; `value`/`[(value)]` take over after. */
+    readonly defaultValue = input<AcceptableValue | AcceptableValue[]>();
+
+    /** Whether the select is initially open (uncontrolled). Applied once on init. */
+    readonly defaultOpen = input(false, { transform: booleanAttribute });
+
     readonly multiple = input(false, { transform: booleanAttribute });
 
     readonly disabled = input(false, { transform: booleanAttribute });
+
+    /** When `true`, the value cannot be changed by the user (the popup can still be opened to view it). */
+    readonly readOnly = input(false, { transform: booleanAttribute });
+
+    /** Marks the control as required — reflected on the trigger as `aria-required` / `data-required`. */
+    readonly required = input(false, { transform: booleanAttribute });
 
     /** Whether the popup is modal: locks page scroll and makes outside content inert while open. */
     readonly modal = input(true, { transform: booleanAttribute });
@@ -199,7 +244,28 @@ export class RdxSelectRoot {
         return isNullish(value);
     });
 
+    private hasAppliedDefaultValue = false;
+    private hasAppliedDefaultOpen = false;
+
     constructor() {
+        // Seed the uncontrolled value/open exactly once, then hand off to the model (so a later user
+        // change is not snapped back by the still-set default input).
+        effect(() => {
+            const defaultValue = this.defaultValue();
+            if (!this.hasAppliedDefaultValue && defaultValue !== undefined) {
+                this.hasAppliedDefaultValue = true;
+                this.value.set(defaultValue);
+            }
+        });
+
+        effect(() => {
+            const defaultOpen = this.defaultOpen();
+            if (!this.hasAppliedDefaultOpen && defaultOpen) {
+                this.hasAppliedDefaultOpen = true;
+                this.open.set(defaultOpen);
+            }
+        });
+
         let previousOpen = untracked(this.open);
         effect(() => {
             const open = this.open();
@@ -256,14 +322,21 @@ export class RdxSelectRoot {
     }
 
     setValue(
-        value: AcceptableValue,
+        value: AcceptableValue | undefined,
         reason: RdxSelectValueChangeReason = 'none',
         event: Event = new Event('select.value-change')
     ): boolean {
+        if (this.readOnly()) {
+            return false;
+        }
+
         const nextValue = this.multiple()
             ? (() => {
                   const current = this.value();
                   const array = Array.isArray(current) ? [...current] : [];
+                  if (value === undefined) {
+                      return array;
+                  }
                   const index = array.findIndex((i) => compare(i, value, this.isItemEqualToValue()));
                   index === -1 ? array.push(value) : array.splice(index, 1);
                   return [...array];
@@ -277,11 +350,7 @@ export class RdxSelectRoot {
             return false;
         }
 
-        if (this.multiple()) {
-            this.value.set(nextValue);
-        } else {
-            this.value.set(nextValue);
-        }
+        this.value.set(nextValue);
 
         return true;
     }

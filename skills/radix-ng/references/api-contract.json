@@ -5912,7 +5912,7 @@
             },
             {
               "name": "value",
-              "type": "any"
+              "type": "AcceptableValue"
             }
           ],
           "outputs": []
@@ -6064,6 +6064,16 @@
           ],
           "inputs": [
             {
+              "name": "defaultOpen",
+              "default": "false",
+              "description": "Whether the select is initially open (uncontrolled). Applied once on init."
+            },
+            {
+              "name": "defaultValue",
+              "type": "AcceptableValue | AcceptableValue[]",
+              "description": "Initial value for the uncontrolled case. Applied once on init; `value`/`[(value)]` take over after."
+            },
+            {
               "name": "dir",
               "type": "Direction | undefined",
               "default": "undefined"
@@ -6095,6 +6105,16 @@
               "name": "open",
               "type": "boolean",
               "default": "false"
+            },
+            {
+              "name": "readOnly",
+              "default": "false",
+              "description": "When `true`, the value cannot be changed by the user (the popup can still be opened to view it)."
+            },
+            {
+              "name": "required",
+              "default": "false",
+              "description": "Marks the control as required — reflected on the trigger as `aria-required` / `data-required`."
             },
             {
               "name": "value",

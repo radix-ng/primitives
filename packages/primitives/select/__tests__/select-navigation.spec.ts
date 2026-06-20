@@ -100,4 +100,13 @@ describe('Select highlight navigation', () => {
         expect(apple.getAttribute('data-selected')).toBe('');
         expect(apple.getAttribute('aria-selected')).toBe('true');
     });
+
+    it('typeahead highlights the next enabled item whose text matches the typed character', async () => {
+        // Apple is highlighted on open; typing "g" jumps to Grape (skipping the disabled Banana).
+        key('g');
+        await settle();
+        expect(items()[2].hasAttribute('data-highlighted')).toBe(true);
+        expect(content().getAttribute('aria-activedescendant')).toBe(items()[2].id);
+        expect(items()[0].hasAttribute('data-highlighted')).toBe(false);
+    });
 });
