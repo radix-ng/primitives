@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { toolbarImports } from '@radix-ng/primitives/toolbar';
-import { cn, demoMenu } from '../../storybook/styles';
+import { demoMenu } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -54,6 +54,5 @@ import { cn, demoMenu } from '../../storybook/styles';
     `
 })
 export class ToolbarWithMenuExample {
-    protected readonly cn = cn;
     protected readonly m = demoMenu;
 }

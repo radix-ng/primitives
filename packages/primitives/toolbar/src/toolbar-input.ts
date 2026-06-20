@@ -29,8 +29,13 @@ import { injectToolbarGroupContext, injectToolbarRootContext } from './toolbar-c
         '[attr.data-orientation]': 'rootContext.orientation()',
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
         '[attr.data-focusable]': 'focusableWhenDisabled() ? "" : undefined',
+        // A non-native-button control conveys disabled via `aria-disabled` only (Base UI
+        // `useFocusableWhenDisabled` with `isNativeButton: false` never sets the native `disabled`
+        // attribute). Roving removal for non-focusable-when-disabled inputs goes through the composite
+        // root's `disabledIndices` (driven by the metadata below). Pointer interaction is blocked here.
         '[attr.aria-disabled]': 'isDisabled() ? "true" : undefined',
-        '[disabled]': 'isDisabled() && !focusableWhenDisabled()'
+        '(click)': 'onInteraction($event)',
+        '(pointerdown)': 'onInteraction($event)'
     }
 })
 export class RdxToolbarInput {
@@ -89,6 +94,14 @@ export class RdxToolbarInput {
             const handler = (event: KeyboardEvent) => this.handleCaretKeydown(event);
             element.addEventListener('keydown', handler, { capture: true });
             inject(DestroyRef).onDestroy(() => element.removeEventListener('keydown', handler, { capture: true }));
+        }
+    }
+
+    /** @ignore Block pointer interaction while disabled (Base UI input `defaultProps`). */
+    protected onInteraction(event: Event): void {
+        if (this.isDisabled()) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
         }
     }
 
