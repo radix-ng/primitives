@@ -29,7 +29,7 @@ Diff **each part** on four axes: rendered element, props, `data-*` attributes, C
 - **Cancelable events:** outputs emit `{ value|open, eventDetails }` (not a bare value/boolean), built with `createCancelableChangeEventDetails` from `core`; reasons are a string union ending in `'none'` (e.g. `'trigger-press' | 'none'`).
 - **Part naming:** match Base UI (e.g. `Content` → `Panel`).
 - **Mount:** `keepMounted` + `hiddenUntilFound` inputs; closed panels follow Base UI's `shouldRender`/`hidden="until-found"` model.
-- **Disabled stays focusable** via `aria-disabled`, not native `disabled`.
+- **Disabled stays focusable** via `aria-disabled`, not native `disabled` — **but only for non-native hosts.** This mirrors Base UI's `useFocusableWhenDisabled`: a control rendered on a **native `<button>`** (our `button[rdx…]` selectors, Base UI's `nativeButton: true`) correctly uses the **native `disabled`** attribute and is removed from the tab order; only non-native hosts (`<span role="…">`, Base UI's default `nativeButton: false`) use `aria-disabled` (+ `tabindex="-1"`). So do **not** flag native `disabled` on a `button[rdx…]` primitive (e.g. `switch`, `checkbox` root) as a divergence — it is the Base UI-faithful behavior for that element. Verify the host tag from the selector before flagging.
 - **CSS vars** are `--<name>-<part>-*` (e.g. `--accordion-panel-height`).
 - **Suppress extra attrs** a _composed_ directive adds that the parent's Base UI contract omits (e.g. accordion panel suppresses the collapsible's `data-closed`).
 - **Watch hostDirective forwarding races:** if a parent unconditionally forwards an input into a shared context, exposing the same input on a child part causes a last-writer-wins race — consolidate to one writer.
@@ -85,6 +85,29 @@ Diff **each part** on four axes: rendered element, props, `data-*` attributes, C
 - Could any directive reuse an existing primitive via `hostDirectives` (e.g. Accordion Item → Collapsible Root)?
 - Is there duplication of logic already provided by `@radix-ng/primitives/core` or the composition primitives (`collection`, `composite`, `portal`, `presence`, `focus-scope`, `popper`, `dismissable-layer`, `menu`)?
 
+### 9. Stories & docs (run the `storybook-story` skill — ALWAYS the final step)
+
+After finishing dimensions 1–8, **always** validate the primitive's stories and docs MDX against the
+project's Storybook conventions by applying the **`storybook-story`** skill — read
+`.claude/skills/storybook-story/SKILL.md` and check the primitive's `stories/*.stories.ts`,
+`stories/<variant>.ts`, and `stories/<name>.docs.mdx` against its checklist. This step is mandatory for
+every review, not optional. Verify at least:
+
+- One standalone component per file; a `?raw` import per story file; `tailwindDemoDecorator()` present; no
+  `styleUrl`/inline `<style>`; semantic tokens only (no raw `violet`/`white`/`black`).
+- Story order `Default` → state variants → advanced; export names describe behavior; file names follow
+  `<name>-<variant>.ts`.
+- Docs MDX follows the template: `# Name` → `####` summary → hero `<Canvas>` → Features → Import → Anatomy
+  (all parts) → Examples (each `### Title` + one-line caption + `<Canvas of={Stories.X} />`, never a bare
+  Canvas) → **per-part** API Reference (`###` per part, "Apply to a `<x>`" host note, `<ArgTypes>` only
+  where the part has inputs, `**Data attributes**` / `**CSS variables**` tables) → `## Accessibility`
+  **last** with a `### Keyboard Interactions` table.
+- **No global `## Data attributes` section** once per-part tables are used; every `data-*` / `--*` / keyboard
+  row is traceable to a real host binding or handler — never invented.
+
+Report findings under a `## Stories & Docs` heading with the same severity levels. If the review (or its
+fixes) touches any `*.docs.mdx`, note that `pnpm skills:build` must be run to regenerate the LLM bundle.
+
 ## Output format
 
 Return a structured report:
@@ -118,6 +141,10 @@ Return a structured report:
 
 ## Composition
 [SUGGESTION] RdxTabsTrigger could compose RdxCompositeItem via hostDirectives
+
+## Stories & Docs
+[WARN] docs use a global `## Data attributes` section — switch to per-part tables (storybook-story skill)
+[INFO] forms story file `radio-group.component.ts` should be `radio-<variant>.ts`
 ```
 
 Severity levels:

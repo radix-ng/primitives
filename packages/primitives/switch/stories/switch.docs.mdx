@@ -37,28 +37,6 @@ The API follows [Base UI Switch](https://base-ui.com/react/components/switch): a
 
 The `[rdxSwitchInput]` is optional — include it when the switch must submit a value with a native form.
 
-## Change events
-
-`onCheckedChange` emits `{ checked, eventDetails }`. Use `eventDetails.cancel()` to reject a
-state change before the switch updates.
-
-```html
-<button [checked]="checked()" (onCheckedChange)="setChecked($event)" rdxSwitchRoot>
-    <span rdxSwitchThumb></span>
-</button>
-```
-
-```ts
-setChecked(change: RdxSwitchCheckedChangeEvent) {
-    if (this.locked()) {
-        change.eventDetails.cancel();
-        return;
-    }
-
-    this.checked.set(change.checked);
-}
-```
-
 ## Examples
 
 ### Preselection
@@ -85,31 +63,66 @@ Bind the switch to a form control via `formControlName`.
 
 <Canvas of={SwitchStories.ReactiveForm} />
 
+## Change events
+
+`onCheckedChange` emits `{ checked, eventDetails }`. Use `eventDetails.cancel()` to reject a
+state change before the switch updates.
+
+```html
+<button [checked]="checked()" (onCheckedChange)="setChecked($event)" rdxSwitchRoot>
+    <span rdxSwitchThumb></span>
+</button>
+```
+
+```ts
+setChecked(change: RdxSwitchCheckedChangeEvent) {
+    if (this.locked()) {
+        change.eventDetails.cancel();
+        return;
+    }
+
+    this.checked.set(change.checked);
+}
+```
+
 ## API Reference
 
 ### Root
 
-`RdxSwitchRoot`
+`RdxSwitchRoot` — the switch itself. Apply to a native `<button>` element. Exposes `role="switch"`,
+`aria-checked`, and mirrors `aria-required` / `aria-readonly`.
 
 <ArgTypes of={RdxSwitchRoot} />
 
-| Data attribute     | Value                          |
-| ------------------ | ------------------------------ |
-| `[data-checked]`   | Present when the switch is on. |
-| `[data-unchecked]` | Present when the switch is off.|
-| `[data-disabled]`  | Present when disabled.         |
-| `[data-readonly]`  | Present when read-only.        |
-| `[data-required]`  | Present when required.         |
+**Data attributes**
+
+| Attribute        | Present when            |
+| ---------------- | ----------------------- |
+| `data-checked`   | the switch is on.       |
+| `data-unchecked` | the switch is off.      |
+| `data-disabled`  | the switch is disabled. |
+| `data-readonly`  | the switch is readonly. |
+| `data-required`  | the switch is required. |
 
 ### Thumb
 
-`RdxSwitchThumb` — reads everything from context; no inputs. Exposes `[data-checked]`,
-`[data-unchecked]`, `[data-disabled]`, `[data-readonly]`.
+`RdxSwitchThumb` — the moving indicator. Apply to a `<span>` element. Reads everything from context; it
+has no inputs.
+
+**Data attributes**
+
+| Attribute        | Present when            |
+| ---------------- | ----------------------- |
+| `data-checked`   | the switch is on.       |
+| `data-unchecked` | the switch is off.      |
+| `data-disabled`  | the switch is disabled. |
+| `data-readonly`  | the switch is readonly. |
+| `data-required`  | the switch is required. |
 
 ### Input
 
-`RdxSwitchInput` — the hidden native checkbox; reads everything from context. Carries `name`/`value`
-for form submission.
+`RdxSwitchInput` — the hidden native checkbox for form submission. Apply to an `<input>` element inside
+the root. Reads everything from context (carries `name` / `value`); it has no inputs or `data-*`.
 
 ## Accessibility
 

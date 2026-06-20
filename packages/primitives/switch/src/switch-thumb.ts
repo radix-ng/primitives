@@ -13,7 +13,8 @@ import { injectSwitchContext } from './switch-context';
         '[attr.data-checked]': 'rootContext.checked() ? "" : undefined',
         '[attr.data-unchecked]': 'rootContext.checked() ? undefined : ""',
         '[attr.data-disabled]': 'rootContext.disabled() ? "" : undefined',
-        '[attr.data-readonly]': 'rootContext.readonly() ? "" : undefined'
+        '[attr.data-readonly]': 'rootContext.readonly() ? "" : undefined',
+        '[attr.data-required]': 'rootContext.required() ? "" : undefined'
     }
 })
 export class RdxSwitchThumb {

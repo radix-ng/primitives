@@ -6564,13 +6564,13 @@
             {
               "name": "checked",
               "type": "boolean",
-              "default": "this.defaultChecked()",
+              "default": "false",
               "description": "The controlled checked state. Use with `(onCheckedChange)` or two-way `[(checked)]`."
             },
             {
               "name": "defaultChecked",
-              "type": "boolean",
-              "default": "false",
+              "type": "boolean | undefined",
+              "default": "undefined",
               "description": "The state of the switch when it is initially rendered. Use when you do not need to control its state."
             },
             {

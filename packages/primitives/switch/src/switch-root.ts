@@ -1,4 +1,4 @@
-import { booleanAttribute, computed, Directive, inject, input, model, output } from '@angular/core';
+import { booleanAttribute, computed, Directive, effect, inject, input, model, output } from '@angular/core';
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
@@ -10,7 +10,7 @@ import {
 } from '@radix-ng/primitives/core';
 import { provideSwitchContext, RdxSwitchContext } from './switch-context';
 
-export type RdxSwitchCheckedChangeReason = 'trigger-press' | 'none';
+export type RdxSwitchCheckedChangeReason = 'none';
 export type RdxSwitchCheckedChangeEventDetails = RdxCancelableChangeEventDetails<RdxSwitchCheckedChangeReason>;
 
 export interface RdxSwitchCheckedChangeEvent {
@@ -62,10 +62,11 @@ const context = (): RdxSwitchContext => {
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
         '[attr.data-readonly]': 'readonly() ? "" : undefined',
         '[attr.data-required]': 'required() ? "" : undefined',
+        // Native `<button rdxSwitchRoot>` → native `disabled` (Base UI's `nativeButton: true` path in
+        // `useFocusableWhenDisabled`). The hidden `[rdxSwitchInput]` is also disabled for form exclusion.
         '[attr.disabled]': 'isDisabled() ? "" : undefined',
         '(click)': 'toggle($event)',
-        '(blur)': 'cva.markAsTouched()',
-        '(keydown.enter)': '$event.preventDefault()'
+        '(blur)': 'cva.markAsTouched()'
     }
 })
 export class RdxSwitchRoot implements RdxFormCheckboxControl {
@@ -79,12 +80,14 @@ export class RdxSwitchRoot implements RdxFormCheckboxControl {
      *
      * @default false
      */
-    readonly defaultChecked = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+    readonly defaultChecked = input<boolean | undefined, BooleanInput | undefined>(undefined, {
+        transform: (value) => (value === undefined ? undefined : booleanAttribute(value))
+    });
 
     /**
      * The controlled checked state. Use with `(onCheckedChange)` or two-way `[(checked)]`.
      */
-    readonly checked = model<boolean>(this.defaultChecked());
+    readonly checked = model<boolean>(false);
 
     /**
      * When `true`, prevents the user from interacting with the switch.
@@ -133,6 +136,21 @@ export class RdxSwitchRoot implements RdxFormCheckboxControl {
     /** @ignore */
     protected readonly isDisabled = computed(() => !!this.cva.disabled());
 
+    constructor() {
+        // Apply the uncontrolled `defaultChecked` once. `input()` values are not bound at field-init,
+        // so the on state must be seeded here — into both the `checked` model and the CVA value, which
+        // is the source of truth for `checkedState`/`aria-checked`/`data-checked`.
+        let hasAppliedDefault = false;
+        effect(() => {
+            const defaultChecked = this.defaultChecked();
+            if (!hasAppliedDefault && defaultChecked !== undefined) {
+                hasAppliedDefault = true;
+                this.checked.set(defaultChecked);
+                this.cva.setValue(defaultChecked);
+            }
+        });
+    }
+
     /** @ignore Toggles the checked state unless disabled or read-only. */
     toggle(event?: Event): void {
         if (this.isDisabled() || this.readonly()) {
@@ -142,7 +160,7 @@ export class RdxSwitchRoot implements RdxFormCheckboxControl {
         const next = !this.cva.value();
         const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
         const { eventDetails } = createCancelableChangeEventDetails(
-            event ? 'trigger-press' : 'none',
+            'none',
             event ?? new Event('switch.checked-change'),
             trigger
         );

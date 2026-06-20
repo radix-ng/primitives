@@ -4,10 +4,10 @@ import { SwitchDefaultExample } from './switch-default';
 import defaultSource from './switch-default?raw';
 import { SwitchDisabledExample } from './switch-disabled';
 import disabledSource from './switch-disabled?raw';
-import { SwitchReactiveForms } from './switch-forms.component';
-import formsSource from './switch-forms.component?raw';
 import { SwitchPreselectionExample } from './switch-preselection';
 import preselectionSource from './switch-preselection?raw';
+import { SwitchReactiveForms } from './switch-reactive-forms';
+import formsSource from './switch-reactive-forms?raw';
 import { SwitchReadonlyExample } from './switch-readonly';
 import readonlySource from './switch-readonly?raw';
 

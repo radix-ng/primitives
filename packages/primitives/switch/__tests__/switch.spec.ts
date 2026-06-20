@@ -15,7 +15,6 @@ import { RdxSwitchThumb } from '../src/switch-thumb';
             [disabled]="disabled()"
             [readonly]="readonly()"
             [required]="required()"
-            [defaultChecked]="defaultChecked()"
             (onCheckedChange)="onChange($event)"
             rdxSwitchRoot
         >
@@ -29,10 +28,20 @@ class TestComponent {
     readonly disabled = signal(false);
     readonly readonly = signal(false);
     readonly required = signal(false);
-    readonly defaultChecked = signal(false);
 
     onChange = vi.fn<(change: RdxSwitchCheckedChangeEvent) => void>();
 }
+
+@Component({
+    imports: [RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
+    template: `
+        <button rdxSwitchRoot defaultChecked>
+            <input rdxSwitchInput />
+            <span rdxSwitchThumb></span>
+        </button>
+    `
+})
+class DefaultCheckedSwitch {}
 
 describe('RdxSwitch', () => {
     let fixture: ComponentFixture<TestComponent>;
@@ -60,13 +69,22 @@ describe('RdxSwitch', () => {
         expect(thumb.getAttribute('data-unchecked')).toBe('');
     });
 
-    it('honors defaultChecked', () => {
-        component.defaultChecked.set(true);
+    it('reflects a controlled checked binding', () => {
         component.checked.set(true);
         fixture.detectChanges();
         expect(root.getAttribute('data-checked')).toBe('');
         expect(root.getAttribute('aria-checked')).toBe('true');
         expect(input.checked).toBe(true);
+    });
+
+    it('starts on from uncontrolled defaultChecked (no checked binding)', () => {
+        const f = TestBed.createComponent(DefaultCheckedSwitch);
+        f.detectChanges();
+        const r = f.debugElement.query(By.css('[rdxSwitchRoot]')).nativeElement as HTMLElement;
+        const inp = f.debugElement.query(By.css('[rdxSwitchInput]')).nativeElement as HTMLInputElement;
+        expect(r.getAttribute('aria-checked')).toBe('true');
+        expect(r.getAttribute('data-checked')).toBe('');
+        expect(inp.checked).toBe(true);
     });
 
     it('toggles on click and emits onCheckedChange', () => {
@@ -78,7 +96,7 @@ describe('RdxSwitch', () => {
         expect(component.onChange).toHaveBeenLastCalledWith(
             expect.objectContaining({
                 checked: true,
-                eventDetails: expect.objectContaining({ reason: 'trigger-press', trigger: root })
+                eventDetails: expect.objectContaining({ reason: 'none', trigger: root })
             })
         );
 
@@ -102,6 +120,7 @@ describe('RdxSwitch', () => {
         component.disabled.set(true);
         fixture.detectChanges();
         expect(root.getAttribute('data-disabled')).toBe('');
+        // Native `<button>` → native `disabled` (Base UI nativeButton path).
         expect(root.hasAttribute('disabled')).toBe(true);
 
         root.click();
