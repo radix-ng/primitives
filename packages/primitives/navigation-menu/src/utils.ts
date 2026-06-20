@@ -1,11 +1,4 @@
 /**
- * Generate a short unique id segment.
- */
-export function generateId(): string {
-    return Math.random().toString(36).substring(2, 11);
-}
-
-/**
  * Collect the tabbable elements inside a container, in DOM order, skipping hidden ones.
  */
 export function getTabbableCandidates(container: HTMLElement): HTMLElement[] {

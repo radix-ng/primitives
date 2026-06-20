@@ -11,7 +11,9 @@ export type RdxNavigationMenuOpenChangeReason =
     | 'outside-press'
     | 'focus-out'
     | 'escape-key'
-    | 'link-select'
+    | 'link-press'
+    // `'list-leave'` is an Angular-specific close reason (the pointer left the list area); Base UI
+    // reports hover-driven closes as `'trigger-hover'`.
     | 'list-leave'
     | 'none';
 

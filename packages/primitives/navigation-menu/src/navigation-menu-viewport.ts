@@ -37,7 +37,6 @@ interface RenderedContent {
     host: {
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
-        '[attr.data-state]': 'rootContext.isOpen() ? "open" : "closed"',
         '[attr.data-orientation]': 'rootContext.orientation()',
         '[attr.data-activation-direction]': 'activationDirection()',
         '[attr.data-transitioning]': 'transitioning() ? "" : undefined'

@@ -9,7 +9,7 @@ import { RdxNavigationMenuItem } from './navigation-menu-item';
     selector: '[rdxNavigationMenuIcon]',
     host: {
         'aria-hidden': 'true',
-        '[attr.data-state]': 'open() ? "open" : "closed"'
+        '[attr.data-popup-open]': 'open() ? "" : undefined'
     }
 })
 export class RdxNavigationMenuIcon {

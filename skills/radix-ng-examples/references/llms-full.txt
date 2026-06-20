@@ -14331,7 +14331,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                                                         [class]="
                                                             cn(
                                                                 m.icon,
-                                                                'absolute top-1/2 right-2.5 -translate-y-1/2 data-[state=open]:rotate-0'
+                                                                'absolute top-1/2 right-2.5 -translate-y-1/2 data-[popup-open]:rotate-0'
                                                             )
                                                         "
                                                         rdxNavigationMenuIcon
@@ -14592,10 +14592,21 @@ export class RdxNavigationMenuNestedInlineComponent {
 
 `RdxNavigationMenuRoot` owns the open state. The menu is open whenever `value` is non-null.
 
+`onOpenChange` is the canonical **cancelable** event — it carries `{ value, open, reason, event, trigger, eventDetails }`; call `eventDetails.cancel()` to veto a change. `onValueChange` is a convenience emit of the new value (not cancelable). The root host exposes `data-orientation` and `data-nested`.
+
 ### Trigger
 
 `RdxNavigationMenuTrigger` opens its item's content and exposes state attributes. While open it points
-`aria-controls` at the shared popup id, matching Base UI's navigation semantics.
+`aria-controls` at the shared popup id, matching Base UI's navigation semantics. A disabled trigger
+stays focusable via `aria-disabled` (Base UI `focusableWhenDisabled`).
+
+**Data attributes**
+
+| Attribute         | Present when                      |
+| ----------------- | --------------------------------- |
+| `data-popup-open` | This trigger's content is open.   |
+| `data-pressed`    | The trigger is pressed.           |
+| `data-disabled`   | The trigger is disabled.          |
 
 ### Content
 
@@ -14625,12 +14636,26 @@ primitive and exposes anchor / `--positioner-width` / `--positioner-height` CSS 
 `RdxNavigationMenuViewport` renders the active item's content, animates the transition between items,
 and consumes the inherited `--popup-width` / `--popup-height` variables for the size morph.
 
+**Data attributes**
+
+| Attribute                   | Present when / value                                                  |
+| --------------------------- | -------------------------------------------------------------------- |
+| `data-open` / `data-closed` | The menu is open / closed.                                           |
+| `data-orientation`          | The root orientation — `horizontal` / `vertical`.                    |
+| `data-activation-direction` | Direction the active item moved — space-separated `left`/`right`/`up`/`down`. |
+| `data-transitioning`        | A content morph is in flight (an Angular-specific styling hook).     |
+
+The rendered content wrapper is marked `data-current`, and the outgoing snapshot `data-previous`,
+during the cross-item transition.
+
 ### List, Item, Icon, Popup, Arrow, and Backdrop
 
 These parts read their behavior and state from context. `List` groups the navigation items with
-composite focus, `Item` carries the `value`, `Icon` exposes the open state for a caret, and `Popup`,
-`Arrow`, and `Backdrop` reflect open / placement / transition state for styling. `Popup` owns
-`--popup-width` / `--popup-height`, and `Backdrop` is presentational.
+composite focus, `Item` carries the `value`, and `Icon` exposes `data-popup-open` for a caret.
+`Popup` reflects `data-open` / `data-closed` / `data-side` / `data-align` / `data-instant` /
+`data-starting-style` / `data-ending-style` and owns `--popup-width` / `--popup-height`. `Backdrop`
+is presentational and reflects `data-open` / `data-closed` / `data-starting-style` /
+`data-ending-style` / `data-instant`.
 
 ## Accessibility
 

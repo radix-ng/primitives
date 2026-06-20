@@ -4220,9 +4220,9 @@
           "inputs": [
             {
               "name": "value",
-              "type": "string, string | undefined",
-              "default": "''",
-              "description": "A unique value that identifies the item. Falls back to a generated id."
+              "type": "string | undefined",
+              "default": "undefined",
+              "description": "A unique value that identifies the item. Falls back to a stable generated id."
             }
           ],
           "outputs": []

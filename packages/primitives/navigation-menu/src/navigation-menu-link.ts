@@ -42,7 +42,7 @@ export class RdxNavigationMenuLink {
         this.onSelect.emit(event);
 
         if (this.closeOnClick() && !event.defaultPrevented) {
-            this.rootContext.close('link-select', event);
+            this.rootContext.close('link-press', event);
         }
     }
 

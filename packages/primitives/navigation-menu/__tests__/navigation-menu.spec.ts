@@ -157,7 +157,7 @@ describe('RdxNavigationMenu', () => {
         fixture.detectChanges();
         expect(root().value()).toBe('one');
         expect(one.getAttribute('aria-expanded')).toBe('true');
-        expect(one.getAttribute('data-state')).toBe('open');
+        expect(one.hasAttribute('data-popup-open')).toBe(true);
 
         one.click();
         fixture.detectChanges();

@@ -49,7 +49,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                                                         [class]="
                                                             cn(
                                                                 m.icon,
-                                                                'absolute top-1/2 right-2.5 -translate-y-1/2 data-[state=open]:rotate-0'
+                                                                'absolute top-1/2 right-2.5 -translate-y-1/2 data-[popup-open]:rotate-0'
                                                             )
                                                         "
                                                         rdxNavigationMenuIcon

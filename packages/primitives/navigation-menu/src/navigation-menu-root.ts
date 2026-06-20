@@ -15,6 +15,7 @@ import {
 import {
     createCancelableChangeEventDetails,
     createFloatingRootContext,
+    injectId,
     NumberInput,
     provideFloatingRootContext,
     provideFloatingTree,
@@ -35,7 +36,6 @@ import {
     RdxNavigationMenuOpenChangeReason,
     RdxNavigationMenuRootContext
 } from './navigation-menu-root-context';
-import { generateId } from './utils';
 
 const context = () => contextFor(inject(RdxNavigationMenuRoot));
 
@@ -80,7 +80,7 @@ export class RdxNavigationMenuRoot {
 
     /** Whether this root is nested inside another navigation menu's content. */
     readonly nested = !!this.parentRoot;
-    readonly baseId = `rdx-nav-menu-${generateId()}`;
+    readonly baseId = injectId('rdx-nav-menu-');
 
     /**
      * The value of the navigation menu item that should be currently open.
@@ -245,7 +245,7 @@ export class RdxNavigationMenuRoot {
         this.value.set(value);
         this.onValueChange.emit(value);
 
-        if (this.nested && value === null && reason === 'link-select') {
+        if (this.nested && value === null && reason === 'link-press') {
             this.parentRoot?.close(reason, event);
         }
     }

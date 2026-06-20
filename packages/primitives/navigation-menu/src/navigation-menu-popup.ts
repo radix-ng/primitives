@@ -29,7 +29,6 @@ import { focusFirst, getTabbableCandidates } from './utils';
         '[attr.data-starting-style]': 'rootContext.transitionStatus() === "starting" ? "" : undefined',
         '[attr.data-ending-style]': 'rootContext.transitionStatus() === "ending" ? "" : undefined',
         '[attr.data-instant]': 'rootContext.instant() ? "" : undefined',
-        '[attr.data-state]': 'rootContext.isOpen() ? "open" : "closed"',
         '[attr.data-side]': 'side()',
         '[attr.data-align]': 'align()',
         '[style.--popup-width.px]': 'rootContext.size()?.width',

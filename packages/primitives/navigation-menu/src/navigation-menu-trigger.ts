@@ -1,4 +1,14 @@
-import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input, untracked } from '@angular/core';
+import {
+    booleanAttribute,
+    computed,
+    Directive,
+    effect,
+    ElementRef,
+    inject,
+    input,
+    signal,
+    untracked
+} from '@angular/core';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ENTER, injectDocument, SPACE } from '@radix-ng/primitives/core';
 import { RdxNavigationMenuItem } from './navigation-menu-item';
@@ -16,11 +26,17 @@ import { focusFirst, getTabbableCandidates } from './utils';
         '[id]': 'item.triggerId()',
         '[attr.aria-controls]': 'open() ? rootContext.popup()?.id : undefined',
         '[attr.aria-expanded]': 'open()',
-        '[attr.data-state]': 'open() ? "open" : "closed"',
         '[attr.data-popup-open]': 'open() ? "" : undefined',
+        '[attr.data-pressed]': 'pressed() ? "" : undefined',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
-        '[attr.disabled]': 'disabled() ? "" : undefined',
+        // Base UI keeps a disabled nav-menu trigger focusable (`focusableWhenDisabled`): it uses
+        // `aria-disabled` (not the native `disabled` attribute) so the trigger stays in the tab order,
+        // while the click / keydown handlers below already no-op when disabled.
+        '[attr.aria-disabled]': 'disabled() ? "true" : undefined',
         '(click)': 'onClick($event)',
+        '(pointerdown)': 'pressed.set(true)',
+        '(pointerup)': 'pressed.set(false)',
+        '(pointercancel)': 'pressed.set(false)',
         '(pointerenter)': 'onPointerEnter($event)',
         '(pointerleave)': 'onPointerLeave($event)',
         '(keydown)': 'onKeydown($event)'
@@ -41,6 +57,9 @@ export class RdxNavigationMenuTrigger {
      * Whether the content should also open when the trigger is hovered.
      */
     readonly openOnHover = input(true, { transform: booleanAttribute });
+
+    /** Whether the trigger is currently pressed (pointer down), for Base UI's `data-pressed`. */
+    protected readonly pressed = signal(false);
 
     protected readonly open = computed(() => this.item.isOpen());
 
@@ -75,6 +94,8 @@ export class RdxNavigationMenuTrigger {
     }
 
     protected onPointerLeave(event: PointerEvent) {
+        this.pressed.set(false);
+
         if (event.pointerType === 'touch' || !this.openOnHover()) {
             return;
         }

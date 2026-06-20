@@ -1,6 +1,6 @@
 import { computed, Directive, input, signal } from '@angular/core';
+import { injectId } from '@radix-ng/primitives/core';
 import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
-import { generateId } from './utils';
 
 /**
  * A single navigation menu item. Holds a trigger + content pair, or a standalone link.
@@ -12,12 +12,10 @@ import { generateId } from './utils';
 export class RdxNavigationMenuItem {
     private readonly rootContext = injectNavigationMenuRootContext();
 
-    /**
-     * A unique value that identifies the item. Falls back to a generated id.
-     */
-    readonly value = input<string, string | undefined>('', {
-        transform: (value) => value || `item-${generateId()}`
-    });
+    /** A unique value that identifies the item. Falls back to a stable generated id. */
+    readonly valueInput = input<string | undefined>(undefined, { alias: 'value' });
+    private readonly generatedValue = injectId('rdx-nav-menu-item-');
+    readonly value = computed(() => this.valueInput() || this.generatedValue);
 
     /** The trigger element, set by the trigger directive. */
     readonly triggerRef = signal<HTMLElement | null>(null);
