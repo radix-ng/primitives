@@ -48,7 +48,8 @@ export interface RdxTogglePressedChangeEvent {
         '[attr.disabled]': 'nativeButton() && isDisabled() ? "" : undefined',
         '[attr.aria-disabled]': '!nativeButton() && isDisabled() ? "true" : undefined',
         '(click)': 'onClick($event)',
-        '(keydown)': 'onKeyDown($event)'
+        '(keydown)': 'onKeyDown($event)',
+        '(keyup)': 'onKeyUp($event)'
     }
 })
 export class RdxToggle {
@@ -144,7 +145,7 @@ export class RdxToggle {
                     return;
                 }
 
-                this.group.toggle(value, event, eventDetails);
+                this.group.toggle(value, next, event, eventDetails);
             }
             return;
         }
@@ -165,12 +166,29 @@ export class RdxToggle {
         this.pressed.set(next);
     }
 
-    /** @ignore */
+    /**
+     * @ignore
+     * Non-native hosts emulate a native `<button>` (Base UI `useButton`): Enter activates on keydown,
+     * Space is `preventDefault`-ed on keydown (to suppress page scroll) and activates on keyup.
+     */
     protected onKeyDown(event: KeyboardEvent): void {
         if (this.nativeButton()) {
             return;
         }
-        if (event.key === ' ' || event.key === 'Enter') {
+        if (event.key === 'Enter' && !event.repeat) {
+            event.preventDefault();
+            this.onClick(event);
+        } else if (event.key === ' ') {
+            event.preventDefault();
+        }
+    }
+
+    /** @ignore Space activates on keyup for non-native hosts (native-button semantics). */
+    protected onKeyUp(event: KeyboardEvent): void {
+        if (this.nativeButton()) {
+            return;
+        }
+        if (event.key === ' ') {
             event.preventDefault();
             this.onClick(event);
         }

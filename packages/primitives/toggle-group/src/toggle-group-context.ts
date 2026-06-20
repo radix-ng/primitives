@@ -19,9 +19,14 @@ export interface RdxToggleGroupContext {
     /** Whether the group value was initialized by `value` or `defaultValue`. */
     readonly isValueInitialized: Signal<boolean>;
 
-    /** Toggle the pressed state of `value` within the group. */
+    /**
+     * Set the pressed state of `value` within the group. The item computes the next pressed boolean
+     * (Base UI parity — the item is the source of truth), so the group applies it rather than
+     * re-deriving the toggle from its current value set.
+     */
     toggle(
         value: string,
+        nextPressed: boolean,
         event?: Event,
         eventDetails?: RdxCancelableChangeEventDetails<RdxToggleGroupContextChangeReason>
     ): void;

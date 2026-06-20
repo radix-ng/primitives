@@ -102,6 +102,52 @@ describe('RdxToggle (standalone)', () => {
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [RdxToggle],
+    template: `
+        <div [(pressed)]="pressed" [nativeButton]="false" rdxToggle>Toggle</div>
+    `
+})
+class NonNativeToggleComponent {
+    readonly pressed = signal<boolean | undefined>(undefined);
+}
+
+describe('RdxToggle (non-native host)', () => {
+    let fixture: ComponentFixture<NonNativeToggleComponent>;
+    let component: NonNativeToggleComponent;
+    let el: HTMLElement;
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [NonNativeToggleComponent] });
+        fixture = TestBed.createComponent(NonNativeToggleComponent);
+        component = fixture.componentInstance;
+        el = fixture.debugElement.query(By.css('[rdxToggle]')).nativeElement;
+        fixture.detectChanges();
+    });
+
+    it('renders role="button" and no type', () => {
+        expect(el.getAttribute('role')).toBe('button');
+        expect(el.hasAttribute('type')).toBe(false);
+    });
+
+    it('activates Space on keyup (not keydown), matching native-button semantics', () => {
+        el.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+        fixture.detectChanges();
+        expect(component.pressed()).toBeUndefined();
+
+        el.dispatchEvent(new KeyboardEvent('keyup', { key: ' ', bubbles: true }));
+        fixture.detectChanges();
+        expect(component.pressed()).toBe(true);
+    });
+
+    it('activates Enter on keydown', () => {
+        el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+        fixture.detectChanges();
+        expect(component.pressed()).toBe(true);
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxToggleGroup, RdxToggle],
     template: `
         <div [(value)]="value" [multiple]="multiple()" rdxToggleGroup aria-label="Text formatting">

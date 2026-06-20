@@ -23,7 +23,7 @@ export function toggleGroupContext(instance: RdxToggleGroupBase): RdxToggleGroup
         disabled: instance.isDisabled,
         orientation: instance.orientation,
         isValueInitialized: instance.isValueInitialized,
-        toggle: (value, event, eventDetails) => instance.toggle(value, event, eventDetails)
+        toggle: (value, nextPressed, event, eventDetails) => instance.toggle(value, nextPressed, event, eventDetails)
     };
 }
 
@@ -102,7 +102,12 @@ export abstract class RdxToggleGroupBase implements ControlValueAccessor {
     }
 
     /** @ignore */
-    toggle(value: string, event?: Event, eventDetails?: RdxToggleGroupValueChangeEventDetails): void {
+    toggle(
+        value: string,
+        nextPressed: boolean,
+        event?: Event,
+        eventDetails?: RdxToggleGroupValueChangeEventDetails
+    ): void {
         if (this.isDisabled()) {
             return;
         }
@@ -110,10 +115,16 @@ export abstract class RdxToggleGroupBase implements ControlValueAccessor {
         const current = this.pressedValues();
         let next: string[];
 
+        // The item supplies the next pressed boolean (source of truth); the group only maps it onto its
+        // value set — add `value` when pressed, remove it when not.
         if (this.multiple()) {
-            next = current.includes(value) ? current.filter((item) => item !== value) : [...current, value];
+            next = nextPressed
+                ? current.includes(value)
+                    ? current
+                    : [...current, value]
+                : current.filter((item) => item !== value);
         } else {
-            next = current.includes(value) ? [] : [value];
+            next = nextPressed ? [value] : [];
         }
 
         const resolvedEventDetails =
