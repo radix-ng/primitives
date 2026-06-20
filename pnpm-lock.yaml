@@ -4,19 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@angular/animations': 22.0.2
-  '@angular/common': 22.0.2
-  '@angular/compiler': 22.0.2
-  '@angular/compiler-cli': 22.0.2
-  '@angular/core': 22.0.2
-  '@angular/forms': 22.0.2
-  '@angular/platform-browser': 22.0.2
-  '@angular/platform-browser-dynamic': 22.0.2
-  '@angular/platform-server': 22.0.2
-  '@angular/router': 22.0.2
-  '@angular/ssr': 22.0.2
-
 importers:
 
   .:
@@ -392,7 +379,7 @@ importers:
   packages/primitives:
     dependencies:
       '@angular/core':
-        specifier: 22.0.2
+        specifier: ^21.0.0 || ^22.0.0
         version: 22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2)(zone.js@0.16.2)
       '@floating-ui/dom':
         specifier: ^1.7.6
@@ -518,13 +505,13 @@ packages:
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     deprecated: Angular's Webpack support is deprecated. Use the esbuild and Vite-based "@angular/build" package instead.
     peerDependencies:
-      '@angular/compiler-cli': 22.0.2
-      '@angular/core': 22.0.2
+      '@angular/compiler-cli': ^22.0.0
+      '@angular/core': ^22.0.0
       '@angular/localize': ^22.0.0
-      '@angular/platform-browser': 22.0.2
-      '@angular/platform-server': 22.0.2
+      '@angular/platform-browser': ^22.0.0
+      '@angular/platform-server': ^22.0.0
       '@angular/service-worker': ^22.0.0
-      '@angular/ssr': 22.0.2
+      '@angular/ssr': ^22.0.2
       browser-sync: ^3.0.2
       karma: ^6.3.0
       ng-packagr: ^22.0.0
@@ -662,14 +649,14 @@ packages:
     resolution: {integrity: sha512-EtVbjMfHhEkrf2YsECBPqqYKFuxNB3pGEebP3dFsSikoNdIn/dNCoT6ZraXwfCbt4EzJMyH740LLxsvIeoIqLg==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
-      '@angular/compiler': 22.0.2
-      '@angular/compiler-cli': 22.0.2
-      '@angular/core': 22.0.2
+      '@angular/compiler': ^22.0.0
+      '@angular/compiler-cli': ^22.0.0
+      '@angular/core': ^22.0.0
       '@angular/localize': ^22.0.0
-      '@angular/platform-browser': 22.0.2
-      '@angular/platform-server': 22.0.2
+      '@angular/platform-browser': ^22.0.0
+      '@angular/platform-server': ^22.0.0
       '@angular/service-worker': ^22.0.0
-      '@angular/ssr': 22.0.2
+      '@angular/ssr': ^22.0.2
       istanbul-lib-instrument: ^6.0.0
       karma: ^6.4.0
       less: ^4.2.0
@@ -803,10 +790,10 @@ packages:
   '@angular/ssr@22.0.2':
     resolution: {integrity: sha512-2ynMSsux7/MTEuFzFrDW7Jl1H/UbTUo1648okP5KHRLdFfRSn9QlvEFB+wntH2uh4kvejaONsgEJKiVtgi3DOw==}
     peerDependencies:
-      '@angular/common': 22.0.2
-      '@angular/core': 22.0.2
-      '@angular/platform-server': 22.0.2
-      '@angular/router': 22.0.2
+      '@angular/common': ^22.0.0
+      '@angular/core': ^22.0.0
+      '@angular/platform-server': ^22.0.0
+      '@angular/router': ^22.0.0
     peerDependenciesMeta:
       '@angular/platform-server':
         optional: true
@@ -2782,8 +2769,8 @@ packages:
   '@lucide/angular@1.17.0':
     resolution: {integrity: sha512-wakfICt3X8IBsNeHncu+n/3P36OvxcleOre6/D5rSUL/dEmvhVganlv7tEz2KHsTWeeGGtsTATEKYeuxmWQKWg==}
     peerDependencies:
-      '@angular/common': 22.0.2
-      '@angular/core': 22.0.2
+      '@angular/common': 17.x - 21.x
+      '@angular/core': 17.x - 21.x
 
   '@mdx-js/react@3.1.1':
     resolution: {integrity: sha512-f++rKLQgUVYDAtECQ6fn/is15GkEH9+nZPM3MS0RcxVqoTfawHvDlSCH7JbMhAM6uJ32v3eXLvLmLvjGu7PTQw==}
@@ -3071,7 +3058,7 @@ packages:
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     deprecated: Angular's Webpack support is deprecated. Use the esbuild and Vite-based "@angular/build" package instead.
     peerDependencies:
-      '@angular/compiler-cli': 22.0.2
+      '@angular/compiler-cli': ^22.0.0
       typescript: '>=6.0 <6.1'
       webpack: ^5.54.0
 
@@ -4545,14 +4532,14 @@ packages:
       '@angular-devkit/architect': '>=0.1800.0 < 0.2200.0'
       '@angular-devkit/build-angular': '>=18.0.0 < 22.0.0'
       '@angular-devkit/core': '>=18.0.0 < 22.0.0'
-      '@angular/animations': 22.0.2
+      '@angular/animations': '>=18.0.0 < 22.0.0'
       '@angular/cli': '>=18.0.0 < 22.0.0'
-      '@angular/common': 22.0.2
-      '@angular/compiler': 22.0.2
-      '@angular/compiler-cli': 22.0.2
-      '@angular/core': 22.0.2
-      '@angular/platform-browser': 22.0.2
-      '@angular/platform-browser-dynamic': 22.0.2
+      '@angular/common': '>=18.0.0 < 22.0.0'
+      '@angular/compiler': '>=18.0.0 < 22.0.0'
+      '@angular/compiler-cli': '>=18.0.0 < 22.0.0'
+      '@angular/core': '>=18.0.0 < 22.0.0'
+      '@angular/platform-browser': '>=18.0.0 < 22.0.0'
+      '@angular/platform-browser-dynamic': '>=18.0.0 < 22.0.0'
       rxjs: ^6.5.3 || ^7.4.0
       storybook: ^10.4.6
       typescript: ^4.9.0 || ^5.0.0
@@ -4852,7 +4839,7 @@ packages:
   '@tanstack/angular-virtual@5.0.4':
     resolution: {integrity: sha512-0EwmlJLMnrHEShLk8FBZ04YdM9kqDem97D1H6Le+BI8jFvJBo+0tlz3gPKAen7iM3L+EWV6wfopaGfAHniR0TA==}
     peerDependencies:
-      '@angular/core': 22.0.2
+      '@angular/core': '>=19.0.0'
 
   '@tanstack/virtual-core@3.17.0':
     resolution: {integrity: sha512-gOxY/hFkPh/XQYhnThBHzkbkX3Ed+z/iushyz+R+JAr213aXxUDgQoTgTdrDpBSRsjFM73P/KfUyWmaF9WHMkQ==}
@@ -4860,10 +4847,10 @@ packages:
   '@testing-library/angular@15.2.0':
     resolution: {integrity: sha512-FqLMyS8FYYR/6FOSZrmUW7NCFIYSYZyg2MFd8S5PZcUNdfoPRaNY6nEmeuyoiQn6IveKUKCH3vTfOIeI16nxHg==}
     peerDependencies:
-      '@angular/common': 22.0.2
-      '@angular/core': 22.0.2
-      '@angular/platform-browser': 22.0.2
-      '@angular/router': 22.0.2
+      '@angular/common': '>= 17.0.0'
+      '@angular/core': '>= 17.0.0'
+      '@angular/platform-browser': '>= 17.0.0'
+      '@angular/router': '>= 17.0.0'
 
   '@testing-library/dom@10.4.0':
     resolution: {integrity: sha512-pemlzrSESWbdAloYml3bAJMEfNh1Z7EduzqPKprCH5S341frlpYnUEW0H72dLxa6IsYr+mPno20GiSm+h9dEdQ==}
@@ -9355,7 +9342,7 @@ packages:
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0}
     hasBin: true
     peerDependencies:
-      '@angular/compiler-cli': 22.0.2
+      '@angular/compiler-cli': ^22.0.0 || ^22.1.0-next.0
       tailwindcss: ^2.0.0 || ^3.0.0 || ^4.0.0
       tslib: ^2.3.0
       typescript: '>=6.0 <6.1'

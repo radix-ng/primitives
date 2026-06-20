@@ -2,18 +2,6 @@ packages:
   - "apps/radix-docs/**"
   - "packages/**"
   - "!**/dist/**"
-overrides:
-  '@angular/animations': 22.0.2
-  '@angular/common': 22.0.2
-  '@angular/compiler': 22.0.2
-  '@angular/compiler-cli': 22.0.2
-  '@angular/core': 22.0.2
-  '@angular/forms': 22.0.2
-  '@angular/platform-browser': 22.0.2
-  '@angular/platform-browser-dynamic': 22.0.2
-  '@angular/platform-server': 22.0.2
-  '@angular/router': 22.0.2
-  '@angular/ssr': 22.0.2
 allowBuilds:
   '@compodoc/compodoc': true
   '@parcel/watcher': true
