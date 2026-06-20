@@ -21,6 +21,7 @@ import {
     LucideX
 } from '@lucide/angular';
 import { filter } from 'rxjs';
+import { PRIMITIVES } from '../shared/primitives';
 import { PlaygroundMascotAvatar } from './playground-mascot-avatar';
 import type { InspectedElement, LiveStateChange, PinGeometry } from './playground-mascot-data';
 import {
@@ -31,7 +32,6 @@ import {
     searchMascotDocs
 } from './playground-mascot-data';
 import { PlaygroundMascotPin } from './playground-mascot-pin';
-import { PRIMITIVES } from './shared/primitives';
 
 @Component({
     selector: 'app-playground-mascot',

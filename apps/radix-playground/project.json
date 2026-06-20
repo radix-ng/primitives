@@ -60,7 +60,9 @@
         },
         "generate-mascot-docs": {
             "executor": "nx:run-commands",
-            "outputs": ["{workspaceRoot}/apps/radix-playground/src/app/playground-mascot-docs.generated.ts"],
+            "outputs": [
+                "{workspaceRoot}/apps/radix-playground/src/app/playground-mascot/playground-mascot-docs.generated.ts"
+            ],
             "options": {
                 "command": "node tools/scripts/playground/generate-mascot-docs.mjs"
             }

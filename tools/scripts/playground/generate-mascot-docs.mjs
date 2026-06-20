@@ -5,7 +5,7 @@
  *   node tools/scripts/playground/generate-mascot-docs.mjs
  *
  * Output:
- *   apps/radix-playground/src/app/playground-mascot-docs.generated.ts
+ *   apps/radix-playground/src/app/playground-mascot/playground-mascot-docs.generated.ts
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -15,7 +15,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const workspaceRoot = path.resolve(__dirname, '../../..');
 const componentDocsRoot = path.join(workspaceRoot, 'skills/radix-ng-examples/references/components');
 const storybookDocsRoot = path.join(workspaceRoot, 'apps/radix-storybook/docs');
-const outputFile = path.join(workspaceRoot, 'apps/radix-playground/src/app/playground-mascot-docs.generated.ts');
+const outputFile = path.join(
+    workspaceRoot,
+    'apps/radix-playground/src/app/playground-mascot/playground-mascot-docs.generated.ts'
+);
 
 const playgroundPrimitives = new Set([
     'accordion',
