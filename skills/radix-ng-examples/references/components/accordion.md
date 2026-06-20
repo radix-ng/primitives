@@ -525,7 +525,7 @@ Focus moves through accordion triggers using the browser's normal tab order. `Ar
 
 ### Trigger
 
-`RdxAccordionTriggerDirective` — the button that toggles the panel. Reads everything from context, so it takes no inputs. Apply to a native `<button>` element. Disabled triggers stay focusable via `aria-disabled`.
+`RdxAccordionTriggerDirective` — the button that toggles the panel. Reads everything from context, so it takes no inputs. Apply to a native `<button>` element. It wires `aria-expanded` and (while open) `aria-controls` to its panel; disabled triggers stay focusable via `aria-disabled`.
 
 **Data attributes**
 

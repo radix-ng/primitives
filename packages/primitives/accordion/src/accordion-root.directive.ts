@@ -207,7 +207,7 @@ export class RdxAccordionRootDirective {
         return arr.some((item) => this.isEqual(item, value));
     }
 
-    private isEqual(a: any, b: any): boolean {
+    private isEqual(a: unknown, b: unknown): boolean {
         return JSON.stringify(a) === JSON.stringify(b);
     }
 }

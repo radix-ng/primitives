@@ -535,7 +535,7 @@ Focus moves through accordion triggers using the browser's normal tab order. `Ar
 
 ### Trigger
 
-`RdxAccordionTriggerDirective` — the button that toggles the panel. Reads everything from context, so it takes no inputs. Apply to a native `<button>` element. Disabled triggers stay focusable via `aria-disabled`.
+`RdxAccordionTriggerDirective` — the button that toggles the panel. Reads everything from context, so it takes no inputs. Apply to a native `<button>` element. It wires `aria-expanded` and (while open) `aria-controls` to its panel; disabled triggers stay focusable via `aria-disabled`.
 
 **Data attributes**
 
@@ -5257,8 +5257,10 @@ Disabled triggers remain focusable and expose `aria-disabled`.
 
 | Attribute         | Present when                  |
 | ----------------- | ----------------------------- |
-| `data-panel-open` | The panel is open.            |
-| `data-disabled`   | The collapsible is disabled.  |
+| `data-panel-open`     | The panel is open.            |
+| `data-disabled`       | The collapsible is disabled.  |
+| `data-starting-style` | The panel is in the enter transition. |
+| `data-ending-style`   | The panel is in the exit transition.  |
 
 ### Panel
 
@@ -5270,7 +5272,6 @@ Disabled triggers remain focusable and expose `aria-disabled`.
 | --------------------- | ----------------------------- |
 | `data-open`           | The panel is open.            |
 | `data-closed`         | The panel is closed.          |
-| `data-disabled`       | The collapsible is disabled.  |
 | `data-starting-style` | The panel is in the enter transition. |
 | `data-ending-style`   | The panel is in the exit transition.  |
 
@@ -20873,8 +20874,16 @@ read from the parent panel.
 
 ### TabsIndicator
 
-`RdxTabsIndicator` — reads everything from context; it has no inputs. It exposes the following CSS
-variables on its host element:
+`RdxTabsIndicator` — reads everything from context; it has no inputs.
+
+**Data attributes**
+
+| Attribute                   | Present when / value                                          |
+| --------------------------- | ------------------------------------------------------------ |
+| `data-orientation`          | The tabs orientation — `horizontal` / `vertical`.            |
+| `data-activation-direction` | Direction the selection last moved — `left`/`right`/`up`/`down`/`none`. |
+
+**CSS variables** (the active tab's geometry, so one element can animate between tabs):
 
 | CSS variable           | Description                          |
 | ---------------------- | ------------------------------------ |

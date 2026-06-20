@@ -203,8 +203,16 @@ read from the parent panel.
 
 ### TabsIndicator
 
-`RdxTabsIndicator` — reads everything from context; it has no inputs. It exposes the following CSS
-variables on its host element:
+`RdxTabsIndicator` — reads everything from context; it has no inputs.
+
+**Data attributes**
+
+| Attribute                   | Present when / value                                          |
+| --------------------------- | ------------------------------------------------------------ |
+| `data-orientation`          | The tabs orientation — `horizontal` / `vertical`.            |
+| `data-activation-direction` | Direction the selection last moved — `left`/`right`/`up`/`down`/`none`. |
+
+**CSS variables** (the active tab's geometry, so one element can animate between tabs):
 
 | CSS variable           | Description                          |
 | ---------------------- | ------------------------------------ |

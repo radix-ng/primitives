@@ -69,14 +69,14 @@ export class RdxTabsList {
     constructor() {
         this.rootContext.setTabListElement(this.elementRef.nativeElement);
 
+        // Constants — set once (not reactive). Disabled tabs stay in the roving sequence (APG: arrow
+        // keys can focus a disabled tab), so the composite has no disabled indices and Home/End are on.
+        this.compositeRoot.setEnableHomeAndEndKeys(true);
+        this.compositeRoot.setDisabledIndices([]);
+
         effect(() => {
             this.compositeRoot.setOrientation(this.rootContext.orientation());
             this.compositeRoot.setLoopFocus(this.loopFocus());
-            this.compositeRoot.setEnableHomeAndEndKeys(true);
-        });
-
-        effect(() => {
-            this.compositeRoot.setDisabledIndices([]);
         });
 
         effect(() => {

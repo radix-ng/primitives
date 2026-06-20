@@ -55,6 +55,21 @@ describe('RdxAccordion — interaction', () => {
         expect(content().getAttribute('data-open')).toBe('');
     });
 
+    // Trigger links `aria-controls` to its panel only while open (the panel id exists then).
+    it('wires aria-controls to the panel id only while open', () => {
+        expect(trigger().hasAttribute('aria-controls')).toBe(false);
+
+        trigger().click();
+        fixture.detectChanges();
+
+        expect(trigger().getAttribute('aria-controls')).toBe(content().getAttribute('id'));
+
+        trigger().click();
+        fixture.detectChanges();
+
+        expect(trigger().hasAttribute('aria-controls')).toBe(false);
+    });
+
     // A1 — disabled triggers stay focusable via `aria-disabled` (Base UI parity).
     it('does not open when the accordion root is disabled', () => {
         host.rootDisabled.set(true);

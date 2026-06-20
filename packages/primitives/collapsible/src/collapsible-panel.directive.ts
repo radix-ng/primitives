@@ -31,7 +31,6 @@ const optionalBoolean = (value: BooleanInput | undefined): boolean | undefined =
         '[id]': 'rootContext.panelId()',
         '[attr.data-open]': 'rootContext.open() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.open() ? undefined : ""',
-        '[attr.data-disabled]': 'rootContext.disabled() ? "" : undefined',
         '[attr.data-starting-style]': 'rootContext.transitionStatus() === "starting" ? "" : undefined',
         '[attr.data-ending-style]': 'rootContext.transitionStatus() === "ending" ? "" : undefined',
         '[attr.hidden]': 'hidden()',
