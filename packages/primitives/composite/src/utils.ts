@@ -37,7 +37,24 @@ export function isNativeTextInput(target: EventTarget | null): target is HTMLInp
         return false;
     }
 
-    return target.tagName === 'TEXTAREA' || target.tagName === 'INPUT';
+    if (target.tagName === 'TEXTAREA') {
+        return true;
+    }
+
+    if (target.tagName !== 'INPUT') {
+        return false;
+    }
+
+    // Only inputs that expose a text caret count: `selectionStart` is `null` for
+    // input types without text selection (checkbox, radio, number, email, …) and
+    // may even throw in older engines. Either way such controls are not text
+    // inputs and must not block arrow-key navigation when they are the focused
+    // composite item.
+    try {
+        return (target as HTMLInputElement).selectionStart != null;
+    } catch {
+        return false;
+    }
 }
 
 export function getCompositeNavigationKeys(orientation: RdxCompositeOrientation, dir: Direction) {

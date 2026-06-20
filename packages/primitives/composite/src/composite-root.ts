@@ -64,7 +64,8 @@ export const [injectRdxCompositeRootContext, provideRdxCompositeRootContext] = c
     hostDirectives: [RdxCompositeList],
     providers: [provideRdxCompositeRootContext(rootContext)],
     host: {
-        '(keydown)': 'handleKeydown($event)'
+        '(keydown)': 'handleKeydown($event)',
+        '(focusin)': 'handleFocusIn($event)'
     }
 })
 export class RdxCompositeRoot {
@@ -213,6 +214,15 @@ export class RdxCompositeRoot {
 
     protected handleKeydown(event: KeyboardEvent): void {
         this.handleCompositeKeydown(event, false);
+    }
+
+    /** Select the whole value when focus lands on a native text input item (Base UI parity). */
+    protected handleFocusIn(event: FocusEvent): void {
+        const target = event.target;
+
+        if (isNativeTextInput(target)) {
+            target.setSelectionRange(0, target.value.length);
+        }
     }
 
     private handleCompositeKeydown(event: KeyboardEvent, relayed: boolean): void {

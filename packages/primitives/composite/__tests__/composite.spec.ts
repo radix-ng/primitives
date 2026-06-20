@@ -69,6 +69,17 @@ class CompositeInputHostComponent {}
 
 @Component({
     template: `
+        <div orientation="horizontal" rdxCompositeRoot>
+            <input rdxCompositeItem type="checkbox" />
+            <button rdxCompositeItem>Next</button>
+        </div>
+    `,
+    imports: [RdxCompositeRoot, RdxCompositeItem]
+})
+class CompositeCheckboxHostComponent {}
+
+@Component({
+    template: `
         <div (onMapChange)="itemMap = $event" rdxCompositeList>
             <button [metadata]="{ id: 'one' }" rdxCompositeListItem>One</button>
             <button [metadata]="{ id: 'two' }" rdxCompositeListItem>Two</button>
@@ -87,7 +98,12 @@ describe('RdxCompositeRoot / RdxCompositeItem', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [CompositeHostComponent, CompositeInputHostComponent, CompositeListHostComponent]
+            imports: [
+                CompositeHostComponent,
+                CompositeInputHostComponent,
+                CompositeCheckboxHostComponent,
+                CompositeListHostComponent
+            ]
         });
         fixture = TestBed.createComponent(CompositeHostComponent);
         fixture.detectChanges();
@@ -271,6 +287,36 @@ describe('RdxCompositeRoot / RdxCompositeItem', () => {
 
         expect(moved.defaultPrevented).toBe(true);
         expect(document.activeElement).toBe(button);
+    });
+
+    it('navigates with arrow keys when a non-text input (checkbox) is the focused item', async () => {
+        const checkboxFixture = TestBed.createComponent(CompositeCheckboxHostComponent);
+        checkboxFixture.detectChanges();
+
+        const checkbox: HTMLInputElement = checkboxFixture.nativeElement.querySelector('input');
+        const button: HTMLButtonElement = checkboxFixture.nativeElement.querySelector('button');
+
+        checkbox.focus();
+        checkboxFixture.detectChanges();
+
+        const event = keydown(checkbox, 'ArrowRight');
+        await flushMicrotasks();
+
+        expect(event.defaultPrevented).toBe(true);
+        expect(document.activeElement).toBe(button);
+    });
+
+    it('selects the whole value when focus lands on a native text input item', () => {
+        const inputFixture = TestBed.createComponent(CompositeInputHostComponent);
+        inputFixture.detectChanges();
+
+        const input: HTMLInputElement = inputFixture.nativeElement.querySelector('input');
+
+        input.focus();
+        input.dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+
+        expect(input.selectionStart).toBe(0);
+        expect(input.selectionEnd).toBe(input.value.length);
     });
 
     it('can collect a composite list without roving focus behavior', () => {
