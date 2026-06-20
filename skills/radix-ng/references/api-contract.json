@@ -7595,7 +7595,7 @@
             },
             {
               "name": "handle",
-              "type": "RdxTooltipHandle<any>",
+              "type": "RdxTooltipHandle<unknown>",
               "description": "Associates this trigger with a detached tooltip root."
             },
             {
@@ -7656,7 +7656,7 @@
             },
             {
               "name": "handle",
-              "type": "RdxTooltipHandle<any>",
+              "type": "RdxTooltipHandle<unknown>",
               "description": "Associates this root with detached trigger elements."
             },
             {

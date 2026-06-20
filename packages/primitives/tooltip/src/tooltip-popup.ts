@@ -13,7 +13,7 @@ import { injectRdxTooltipContext } from './tooltip';
         '[id]': 'rootContext.contentId',
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
-        '[attr.data-instant]': 'rootContext.instant() ? "" : undefined',
+        '[attr.data-instant]': 'rootContext.instantType()',
         '[attr.data-side]': 'side()',
         '[attr.data-align]': 'align()'
     }

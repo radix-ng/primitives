@@ -40,6 +40,8 @@ export interface RdxTooltipContext {
     present: Signal<boolean>;
     /** Whether the tooltip opened/closed without waiting for the delay. */
     instant: Signal<boolean>;
+    /** Why the open/close was instant (Base UI `data-instant`), or `undefined` when it was animated. */
+    instantType: Signal<RdxTooltipInstantType | undefined>;
     disabled: Signal<boolean>;
     disableHoverablePopup: Signal<boolean>;
     trackCursorAxis: Signal<RdxTrackCursorAxis>;
@@ -62,6 +64,13 @@ export interface RdxTooltipContext {
     setCursorPosition: (position: { x: number; y: number } | undefined) => void;
     setDelays: (delay: number | undefined, closeDelay: number | undefined) => void;
 }
+
+/**
+ * Why the tooltip opened/closed instantly (no transition). Mirrors Base UI's tooltip `data-instant`
+ * value: `'delay'` (opened within the skip-delay instant window), `'focus'` (opened by focus),
+ * `'dismiss'` (closed by Escape / outside press), `'tracking-cursor'` (following the cursor).
+ */
+export type RdxTooltipInstantType = 'delay' | 'dismiss' | 'focus' | 'tracking-cursor';
 
 export type RdxTooltipOpenChangeReason =
     | 'trigger-hover'
@@ -160,7 +169,7 @@ export class RdxTooltip {
     /**
      * Associates this root with detached trigger elements.
      */
-    readonly handle = input<RdxTooltipHandle<any>>();
+    readonly handle = input<RdxTooltipHandle<unknown>>();
 
     /**
      * Event handler called when the open state changes.
@@ -176,6 +185,7 @@ export class RdxTooltip {
     private readonly preventUnmountOnClose = signal(false);
 
     private readonly openedInstant = signal(false);
+    private readonly openedInstantType = signal<RdxTooltipInstantType | undefined>(undefined);
     private suppressNextOpenChangeEmit = false;
 
     /** Local instant window used when this tooltip is not inside a provider. */
@@ -203,6 +213,13 @@ export class RdxTooltip {
 
     /** Whether the most recent open happened without the delay. */
     readonly instant = this.openedInstant.asReadonly();
+    /**
+     * Reason the open/close was instant (Base UI `data-instant`). Cursor tracking takes precedence
+     * while open — the popup follows the cursor, so its position updates can never be transitioned.
+     */
+    readonly instantType = computed<RdxTooltipInstantType | undefined>(() =>
+        this.open() && this.trackCursorAxis() !== 'none' ? 'tracking-cursor' : this.openedInstantType()
+    );
     readonly present = computed(() => this.open() || this.preventUnmountOnClose());
 
     private readonly virtualAnchor = computed<ReferenceElement | undefined>(() => {
@@ -294,6 +311,7 @@ export class RdxTooltip {
                 } else {
                     this.instantGroup.onClose();
                     this.openedInstant.set(false);
+                    this.openedInstantType.set(undefined);
                 }
             },
             { defer: true }
@@ -433,7 +451,11 @@ export class RdxTooltip {
             this.payload.set(payload);
         }
 
-        this.openedInstant.set(instant || this.instantGroup.isInstant());
+        const isInstant = instant || this.instantGroup.isInstant();
+        this.openedInstant.set(isInstant);
+        // `'focus'` for a focus/imperative open; `'delay'` for a hover open within the skip-delay
+        // instant window. A normal delayed open is animated, so no instant type.
+        this.openedInstantType.set(isInstant ? (reason === 'trigger-focus' ? 'focus' : 'delay') : undefined);
         this.preventUnmountOnClose.set(false);
         this.openChangeReason.set(reason);
         this.open.set(true);
@@ -456,7 +478,13 @@ export class RdxTooltip {
         }
         this.suppressNextOpenChangeEmit = true;
         this.preventUnmountOnClose.set(change.shouldPreventUnmountOnClose());
-        this.openedInstant.set(this.instantGroup.isInstant());
+        const isInstant = this.instantGroup.isInstant();
+        this.openedInstant.set(isInstant);
+        // Escape / outside-press close instantly as `'dismiss'`; a close within the instant window is
+        // `'delay'`; an ordinary close is animated.
+        this.openedInstantType.set(
+            reason === 'escape-key' || reason === 'outside-press' ? 'dismiss' : isInstant ? 'delay' : undefined
+        );
         this.openChangeReason.set(reason);
         this.open.set(false);
     }
@@ -468,6 +496,7 @@ function contextFor(root: RdxTooltip): RdxTooltipContext {
         isOpen: root.open,
         present: root.present,
         instant: root.instant,
+        instantType: root.instantType,
         disabled: root.disabled,
         disableHoverablePopup: root.disableHoverablePopup,
         trackCursorAxis: root.trackCursorAxis,

@@ -45,7 +45,7 @@ export class RdxTooltipDefaultComponent {
 - ✅ Supports multiple and detached triggers through a `Handle`.
 - ✅ Can follow the cursor with `trackCursorAxis`.
 - ✅ Positions content with the shared Floating UI-based Popper, with an optional custom `anchor`.
-- ✅ Exposes `data-open`, `data-closed`, `data-side`, `data-align`, and `data-instant` for styling.
+- ✅ Exposes `data-open`, `data-closed`, `data-side`, `data-align`, and a `data-instant` reason (`delay` / `dismiss` / `focus` / `tracking-cursor`) for styling.
 - ✅ Keeps portal content mounted while CSS exit keyframes finish.
 
 ## Import
@@ -391,6 +391,15 @@ export class RdxTooltipSliderComponent {
 
 `RdxTooltipTrigger` anchors the tooltip and exposes its open state through `data-popup-open`.
 
+**Data attributes**
+
+| Attribute                | Present when                              |
+| ------------------------ | ---------------------------------------- |
+| `data-popup-open`        | This trigger's tooltip is open.          |
+| `data-trigger-disabled`  | The trigger is disabled.                 |
+
+`aria-describedby` points at the popup's id only while the tooltip is open (the popup exists only then).
+
 ### Portal
 
 `RdxTooltipPortal` is a structural directive (`*rdxTooltipPortal` or `<ng-template rdxTooltipPortal>`)
@@ -402,11 +411,52 @@ that teleports content to `document.body` by default. Pass `[container]` on the 
 `RdxTooltipPositioner` delegates placement and collision handling to the shared Popper primitive. Its
 optional `anchor` input overrides the trigger only for positioning.
 
-### Popup and Arrow
+**Data attributes**
 
-`RdxTooltipPopup` and `RdxTooltipArrow` read their behavior and state from context and do not expose
-additional inputs or outputs. The arrow also reflects `data-uncentered` when it cannot be centered on
-the anchor (because the popup was shifted to avoid a collision).
+| Attribute            | Present when / value                                                       |
+| -------------------- | ------------------------------------------------------------------------- |
+| `data-open`          | The tooltip is open.                                                       |
+| `data-closed`        | The tooltip is closed.                                                     |
+| `data-side`          | Resolved side after collision handling — `top` / `right` / `bottom` / `left`. |
+| `data-align`         | Resolved alignment — `start` / `center` / `end`.                          |
+| `data-anchor-hidden` | The anchor is clipped/off-screen and the popup is hidden.                 |
+
+**CSS variables**
+
+| Variable                                   | Description                                            |
+| ------------------------------------------ | ----------------------------------------------------- |
+| `--anchor-width` / `--anchor-height`       | Size of the anchor (trigger).                         |
+| `--available-width` / `--available-height` | Space available before the collision boundary.        |
+| `--transform-origin`                       | Origin to scale/zoom the popup from, based on side/align. |
+
+### Popup
+
+`RdxTooltipPopup` carries `role="tooltip"` and reads its state from context.
+
+**Data attributes**
+
+| Attribute      | Present when / value                                                        |
+| -------------- | -------------------------------------------------------------------------- |
+| `data-open`    | The tooltip is open.                                                        |
+| `data-closed`  | The tooltip is closed.                                                      |
+| `data-side`    | Resolved side — `top` / `right` / `bottom` / `left`.                        |
+| `data-align`   | Resolved alignment — `start` / `center` / `end`.                            |
+| `data-instant` | The open/close was instant — `delay` / `dismiss` / `focus` / `tracking-cursor`. |
+
+### Arrow
+
+`RdxTooltipArrow` reads its placement from context and points the popup at the anchor.
+
+**Data attributes**
+
+| Attribute         | Present when / value                                                        |
+| ----------------- | -------------------------------------------------------------------------- |
+| `data-open`       | The tooltip is open.                                                        |
+| `data-closed`     | The tooltip is closed.                                                      |
+| `data-side`       | Resolved side — `top` / `right` / `bottom` / `left`.                        |
+| `data-align`      | Resolved alignment — `start` / `center` / `end`.                            |
+| `data-instant`    | The open/close was instant — `delay` / `dismiss` / `focus` / `tracking-cursor`. |
+| `data-uncentered` | The arrow was shifted from center to stay within the popup.                 |
 
 ## Accessibility
 

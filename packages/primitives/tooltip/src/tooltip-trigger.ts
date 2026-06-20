@@ -84,7 +84,7 @@ export class RdxTooltipTrigger {
     /**
      * Associates this trigger with a detached tooltip root.
      */
-    readonly handle = input<RdxTooltipHandle<any>>();
+    readonly handle = input<RdxTooltipHandle<unknown>>();
 
     /**
      * Data associated with this trigger while it is active.
