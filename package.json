@@ -112,7 +112,7 @@
         "@storybook/angular": "10.4.6",
         "@swc-node/register": "1.11.1",
         "@swc/cli": "0.8.1",
-        "@swc/core": "1.15.8",
+        "@swc/core": "1.15.41",
         "@swc/helpers": "0.5.23",
         "@tailwindcss/postcss": "^4.1.13",
         "@tanstack/angular-virtual": "5.0.4",
