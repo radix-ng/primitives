@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectGroupLabel } from '../src/select-group-label';
@@ -21,6 +21,7 @@ import { RdxSelectValue } from '../src/select-value';
  * and `RdxSelectSeparator` between groups.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'select-multiple',
     imports: [
         RdxSelectRoot,

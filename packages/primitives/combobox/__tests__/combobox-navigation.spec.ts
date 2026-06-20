@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -10,6 +10,7 @@ import { RdxComboboxRoot } from '../src/combobox-root';
  * shared-engine extraction moves this logic. These behaviors are correct today and must survive P1.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
         <div [(value)]="value" [(open)]="open" [loopFocus]="loop()" rdxComboboxRoot>

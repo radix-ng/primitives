@@ -3,7 +3,7 @@
 #### Displays dates and days of the week, facilitating date-related interactions.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CalendarDate, DateValue } from '@internationalized/date';
 import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar } from '../../storybook/styles';
@@ -20,6 +20,7 @@ import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-calendar-default',
     imports: [
         RdxCalendarRootDirective,
@@ -237,7 +238,7 @@ Import all parts and piece them together.
 This example showcases some of the available locales and how the calendar systems are displayed.
 
 ```typescript
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { CalendarIdentifier, createCalendar, getLocalTimeZone, toCalendar, today } from '@internationalized/date';
 import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar, demoInput } from '../../storybook/styles';
@@ -254,6 +255,7 @@ import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-calendar-with-locale',
     imports: [
         RdxCalendarRootDirective,
@@ -453,7 +455,7 @@ export class CalendarWithLocale {
 Set `multiple` to let the calendar hold an array of selected dates; clicking a selected date deselects it.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { CalendarDate } from '@internationalized/date';
 import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar } from '../../storybook/styles';
@@ -470,6 +472,7 @@ import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-calendar-multiple',
     imports: [
         RdxCalendarRootDirective,
@@ -544,7 +547,7 @@ export class CalendarMultiple {
 Render an extra leading column with the ISO week number via `getWeekNumber`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CalendarDate, DateValue } from '@internationalized/date';
 import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { getWeekNumber } from '@radix-ng/primitives/core';
@@ -562,6 +565,7 @@ import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-calendar-week',
     imports: [
         RdxCalendarRootDirective,
@@ -642,7 +646,7 @@ Pass an `isDateDisabled` matcher — a `(date) => boolean` callback run for ever
 dates are not focusable or selectable. This example disables weekends.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CalendarDate, DateValue, isWeekend } from '@internationalized/date';
 import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar } from '../../storybook/styles';
@@ -659,6 +663,7 @@ import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-calendar-disabled-dates',
     imports: [
         RdxCalendarRootDirective,
@@ -744,7 +749,7 @@ export class CalendarDisabledDates {
 (e.g. already booked). They render struck-through and ignore pointer interaction.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CalendarDate, DateValue } from '@internationalized/date';
 import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar } from '../../storybook/styles';
@@ -761,6 +766,7 @@ import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-calendar-unavailable-dates',
     imports: [
         RdxCalendarRootDirective,
@@ -846,7 +852,7 @@ Override how the previous/next buttons move the view with `propsPrevPage` / `pro
 `(placeholder) => DateValue` callback. This example jumps a whole year per click.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CalendarDate, DateValue } from '@internationalized/date';
 import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar } from '../../storybook/styles';
@@ -863,6 +869,7 @@ import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-calendar-custom-navigation',
     imports: [
         RdxCalendarRootDirective,
@@ -950,7 +957,7 @@ Set `numberOfMonths` to render several months at once. Arrow-key navigation flow
 boundary between months, and (without `pagedNavigation`) the prev/next buttons shift the view by one month.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CalendarDate, DateValue } from '@internationalized/date';
 import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar } from '../../storybook/styles';
@@ -967,6 +974,7 @@ import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-calendar-number-of-months',
     imports: [
         RdxCalendarRootDirective,

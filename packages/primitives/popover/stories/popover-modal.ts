@@ -1,9 +1,10 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { popoverImports, RdxPopoverModal } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-modal',
     imports: [...popoverImports, LucideX],
     template: `

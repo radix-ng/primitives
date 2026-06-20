@@ -8,11 +8,12 @@ its popup uses `role="alertdialog"`. Each `rdxAlertDialog*` part is a thin wrapp
 dialog part.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-alert-dialog-default',
     imports: [...alertDialogImports],
     template: `
@@ -104,11 +105,12 @@ import { RdxAlertDialogModule } from '@radix-ng/primitives/alert-dialog';
 A destructive confirmation with Cancel and an action button. Clicking the backdrop keeps it open.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-alert-dialog-default',
     imports: [...alertDialogImports],
     template: `
@@ -148,11 +150,12 @@ export class RdxAlertDialogDefaultComponent {
 Bind `[(open)]` to open or close the alert dialog from component state.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-alert-dialog-controlled',
     imports: [...alertDialogImports],
     template: `
@@ -203,11 +206,12 @@ Several triggers can open the same alert dialog. The active trigger's `payload` 
 so the content can adapt to what is being confirmed.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-alert-dialog-multiple-triggers',
     imports: [...alertDialogImports],
     template: `
@@ -254,11 +258,12 @@ export class RdxAlertDialogMultipleTriggersComponent {
 Bind both `[(open)]` and `[(triggerId)]` to choose which trigger is active from component state.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-alert-dialog-controlled-multiple',
     imports: [...alertDialogImports],
     template: `
@@ -325,11 +330,12 @@ Connect a trigger rendered outside the root with `createRdxAlertDialogHandle()`;
 imperative `open(id)` / `close()`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { alertDialogImports, createRdxAlertDialogHandle } from '@radix-ng/primitives/alert-dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-alert-dialog-detached',
     imports: [...alertDialogImports],
     template: `
@@ -377,13 +383,14 @@ A regular Dialog editor asks an Alert Dialog to confirm before discarding unsave
 reason to reach for an alert dialog.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { dialogImports, RdxDialogOpenChange } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-alert-dialog-close-confirmation',
     imports: [...dialogImports, ...alertDialogImports, FormsModule],
     template: `
@@ -478,12 +485,13 @@ export class RdxAlertDialogCloseConfirmationComponent {
 Control the alert dialog's `open` state from a menu item to launch a destructive confirmation from a `Menu`.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { cn, demoButton, demoDialog, demoMenu } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-alert-dialog-from-menu',
     imports: [...alertDialogImports, RdxMenuModule],
     template: `

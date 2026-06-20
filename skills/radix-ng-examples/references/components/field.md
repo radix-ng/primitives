@@ -6,7 +6,7 @@ Field is form-agnostic. It does not replace Angular Forms; pass validation state
 Forms, template-driven forms, or Signal Forms when using them.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
 import { RdxFieldError } from '../src/field-error';
@@ -15,6 +15,7 @@ import { RdxFieldRoot } from '../src/field-root';
 import { fieldDescription, fieldError, fieldLabel } from './field.shared';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'field-default-example',
     imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
     template: `
@@ -73,7 +74,7 @@ import {
 The root owns the relationships between the field parts.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
 import { RdxFieldError } from '../src/field-error';
@@ -82,6 +83,7 @@ import { RdxFieldRoot } from '../src/field-root';
 import { fieldDescription, fieldError, fieldLabel } from './field.shared';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'field-default-example',
     imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
     template: `
@@ -107,7 +109,7 @@ export class FieldDefaultExample {
 Pass invalid, dirty, and touched state from your form model.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
 import { RdxFieldError } from '../src/field-error';
@@ -116,6 +118,7 @@ import { RdxFieldRoot } from '../src/field-root';
 import { fieldDescription, fieldError, fieldInputInvalid, fieldLabel } from './field.shared';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'field-invalid-example',
     imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
     template: `
@@ -147,7 +150,7 @@ Angular Forms remains responsible for validation. Field reflects the resulting s
 relationships.
 
 ```typescript
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
@@ -157,6 +160,7 @@ import { RdxFieldRoot } from '../src/field-root';
 import { fieldDescription, fieldError, fieldInputInvalid, fieldLabel, fieldSubmitButton } from './field.shared';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'field-reactive-forms-example',
     imports: [ReactiveFormsModule, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
     template: `
@@ -217,7 +221,7 @@ For custom controls, pass `filled` and `focused` state to the root when the nati
 enough.
 
 ```typescript
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
 import { RdxFieldError } from '../src/field-error';
@@ -226,6 +230,7 @@ import { RdxFieldRoot } from '../src/field-root';
 import { fieldCustomTrigger, fieldDescription, fieldError, fieldLabel } from './field.shared';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'field-custom-control-example',
     imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
     template: `

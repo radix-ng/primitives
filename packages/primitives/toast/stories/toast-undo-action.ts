@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, RdxToastObject, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
@@ -7,6 +7,7 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
  * toast's `actionProps`; clicking runs the handler and dismisses the toast.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-undo-action-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],

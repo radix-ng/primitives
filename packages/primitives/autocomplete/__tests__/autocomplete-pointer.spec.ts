@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { _importsAutocomplete } from '../index';
@@ -9,6 +9,7 @@ import { _importsAutocomplete } from '../index';
  * without a primary pointerdown does not select; a drag-end mouseup over the highlighted item does.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsAutocomplete],
     template: `
         <div [(value)]="value" [(open)]="open" rdxAutocompleteRoot>

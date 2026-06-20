@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideDynamicIcon } from '@lucide/angular';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { demoCheckbox } from '../../storybook/styles';
@@ -16,6 +16,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
  * selection, instead of a flat all/none toggle.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-group-example',
     imports: [
         RdxLabelDirective,

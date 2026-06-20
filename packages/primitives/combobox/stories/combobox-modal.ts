@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
@@ -8,6 +8,7 @@ import { _importsCombobox } from '../index';
  * backdrop sits behind the popup; clicking it dismisses.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-modal',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `

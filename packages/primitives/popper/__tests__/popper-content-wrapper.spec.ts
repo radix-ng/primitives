@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { autoUpdate, computePosition } from '@floating-ui/dom';
@@ -25,6 +25,7 @@ vi.mock('@floating-ui/dom', async () => {
 });
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [popperImports],
     template: `
         <div rdxPopperRoot>
@@ -38,6 +39,7 @@ vi.mock('@floating-ui/dom', async () => {
 class DefaultPopperHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [popperImports],
     template: `
         <div rdxPopperRoot>
@@ -51,6 +53,7 @@ class DefaultPopperHostComponent {}
 class AlwaysPopperHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [popperImports],
     template: `
         <div rdxPopperRoot>
@@ -67,6 +70,7 @@ class ReactivePopperHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [popperImports],
     template: `
         <div rdxPopperRoot>

@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { expect, vi } from 'vitest';
@@ -9,6 +9,7 @@ import { RdxAccordionRootDirective } from '../src/accordion-root.directive';
 import { RdxAccordionTriggerDirective } from '../src/accordion-trigger.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxAccordionRootDirective,
         RdxAccordionItemDirective,
@@ -81,6 +82,7 @@ describe('RdxAccordion — interaction', () => {
 // ─── value-change cancellation ────────────────────────────────────────────────
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxAccordionRootDirective,
         RdxAccordionItemDirective,
@@ -130,6 +132,7 @@ describe('RdxAccordion — cancelable onValueChange', () => {
 // ─── disabled propagation ────────────────────────────────────────────────────
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxAccordionRootDirective,
         RdxAccordionItemDirective,
@@ -208,6 +211,7 @@ describe('RdxAccordion — disabled propagation', () => {
 // ─── multiple ────────────────────────────────────────────────────────────────
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxAccordionRootDirective,
         RdxAccordionItemDirective,
@@ -278,6 +282,7 @@ describe('RdxAccordion — multiple input', () => {
 // ─── onOpenChange ─────────────────────────────────────────────────────────────
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxAccordionRootDirective,
         RdxAccordionItemDirective,
@@ -332,6 +337,7 @@ describe('RdxAccordion — onOpenChange', () => {
 // ─── data-index ──────────────────────────────────────────────────────────────
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxAccordionRootDirective,
         RdxAccordionItemDirective,
@@ -402,6 +408,7 @@ describe('RdxAccordion — data-index', () => {
 // ─── keyboard focus ──────────────────────────────────────────────────────────
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxAccordionRootDirective,
         RdxAccordionItemDirective,
@@ -471,6 +478,7 @@ describe('RdxAccordion — keyboard focus', () => {
 // ─── mount behavior (keepMounted / hiddenUntilFound) ──────────────────────────
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxAccordionRootDirective,
         RdxAccordionItemDirective,
@@ -540,6 +548,7 @@ describe('RdxAccordion — mount behavior', () => {
 // ─── single mode (re-click closes; no flicker on the open item) ───────────────
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxAccordionRootDirective,
         RdxAccordionItemDirective,

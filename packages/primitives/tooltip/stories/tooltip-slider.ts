@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
@@ -11,6 +11,7 @@ import { tooltipImports } from '@radix-ng/primitives/tooltip';
 import { demoTooltip } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-tooltip-slider',
     imports: [
         ...tooltipImports,

@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
 import { cn, demoNavigationMenu } from '../../storybook/styles';
@@ -10,6 +10,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
  * kept non-null so the inline panel always shows a category (the idea behind Base UI's `defaultValue`).
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-nested-inline',
     imports: [...navigationMenuImports, LucideChevronDown],
     template: `

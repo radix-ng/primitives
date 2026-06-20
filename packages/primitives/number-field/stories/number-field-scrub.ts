@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     LucideDynamicIcon,
     LucideMinus as Minus,
@@ -16,6 +16,7 @@ import {
 } from '@radix-ng/primitives/number-field';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'number-field-scrub-example',
     imports: [
         LucideDynamicIcon,

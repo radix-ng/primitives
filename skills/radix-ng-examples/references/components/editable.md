@@ -3,7 +3,7 @@
 #### An inline text field that swaps a read-only preview for an editable input.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxEditableArea,
     RdxEditableCancelTrigger,
@@ -16,6 +16,7 @@ import {
 import { cn, demoButton, demoEditable } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'editable-default-example',
     imports: [
         RdxEditableRoot,
@@ -132,7 +133,7 @@ submitValue(change: RdxEditableValueChangeEvent) {
 Set `activationMode="dblclick"` so the preview only enters edit mode on double-click instead of on focus.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxEditableArea,
     RdxEditableCancelTrigger,
@@ -144,6 +145,7 @@ import {
 import { cn, demoButton, demoEditable } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'editable-double-click-example',
     imports: [
         RdxEditableRoot,
@@ -192,10 +194,11 @@ With `autoResize`, the preview and input overlay in a single grid cell, so the f
 content. The parts carry `[data-auto-resize]` for styling.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxEditableArea, RdxEditableInput, RdxEditablePreview, RdxEditableRoot } from '@radix-ng/primitives/editable';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'editable-auto-resize-example',
     imports: [RdxEditableRoot, RdxEditableArea, RdxEditablePreview, RdxEditableInput],
     template: `

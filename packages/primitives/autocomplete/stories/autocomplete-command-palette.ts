@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoCard, demoDialog } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
@@ -19,6 +19,7 @@ interface Group {
  * `open` to `false`, which is shared with the dialog via `[(open)]`).
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-command-palette',
     imports: [...dialogImports, _importsAutocomplete],
     template: `

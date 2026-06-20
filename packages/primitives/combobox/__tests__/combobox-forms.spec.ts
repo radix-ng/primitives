@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { RdxFieldRoot } from '@radix-ng/primitives/field';
@@ -17,6 +17,7 @@ const FRUITS: Fruit[] = [
 ];
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox, ReactiveFormsModule],
     template: `
         <div [(open)]="open" [formControl]="control" rdxComboboxRoot>
@@ -40,6 +41,7 @@ class ReactiveHost {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox, RdxFieldRoot, RdxLabelDirective],
     template: `
         <div [invalid]="invalid()" [required]="required()" rdxFieldRoot>

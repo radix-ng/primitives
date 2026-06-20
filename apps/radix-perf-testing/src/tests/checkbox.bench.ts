@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxCheckboxButtonDirective, RdxCheckboxRootDirective } from '@radix-ng/primitives/checkbox';
 import { afterAll, describe, expect, it } from 'vitest';
 import { benchmark, BenchmarkResult } from '../harness/benchmark';
@@ -10,6 +10,7 @@ const COUNT = 500;
 // Headless scenario: a row of N checkboxes. No styles — paint cost tracks DOM size, which is the
 // point. `allChecked` is one-way bound into every checkbox so toggling it forces all N to re-render.
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-list',
     standalone: true,
     imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective],

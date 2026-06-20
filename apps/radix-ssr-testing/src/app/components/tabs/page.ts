@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTabsList, RdxTabsPanel, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-tabs',
     imports: [RdxTabsList, RdxTabsPanel, RdxTabsRoot, RdxTabsTab],
     template: `

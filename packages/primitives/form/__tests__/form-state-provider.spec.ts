@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RdxFieldControl, RdxFieldError, RdxFieldRoot } from '@radix-ng/primitives/field';
@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { _importsForm, RdxFormErrors, RdxFormRoot, RdxFormState, RdxFormSubmitEvent } from '../index';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsForm, RdxFieldRoot, RdxFieldControl, RdxFieldError],
     template: `
         <form

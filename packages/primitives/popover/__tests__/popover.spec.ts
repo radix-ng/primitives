@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RdxFloatingFocusManager } from '@radix-ng/primitives/floating-focus-manager';
@@ -23,6 +23,7 @@ import { RdxPopper, RdxPopperContentWrapper } from '@radix-ng/primitives/popper'
 import { vi } from 'vitest';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxPopoverClose,
         RdxPopoverDescription,
@@ -54,6 +55,7 @@ class TestHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
     template: `
         <button data-testid="previous">Previous</button>
@@ -76,6 +78,7 @@ class FocusGuardHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPopoverRoot, RdxPopoverTrigger],
     template: `
         <div [defaultOpen]="true" rdxPopoverRoot>
@@ -86,6 +89,7 @@ class FocusGuardHostComponent {
 class DefaultOpenHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPopoverPortal, RdxPopoverRoot, RdxPopoverTrigger],
     template: `
         <div #root="rdxPopoverRoot" rdxPopoverRoot>
@@ -98,6 +102,7 @@ class DefaultOpenHostComponent {}
 class PortalHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPopoverPopup, RdxPopoverPortal, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
     template: `
         <div #root="rdxPopoverRoot" (onOpenChangeComplete)="complete.push($event)" rdxPopoverRoot>
@@ -114,6 +119,7 @@ class LifecycleHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPopoverPopup, RdxPopoverPortal, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
     template: `
         <div #parent="rdxPopoverRoot" rdxPopoverRoot>
@@ -138,6 +144,7 @@ class LifecycleHostComponent {
 class NestedHoverPopupHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPopoverArrow, RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
     template: `
         <div #root="rdxPopoverRoot" rdxPopoverRoot>
@@ -157,6 +164,7 @@ class NestedHoverPopupHostComponent {}
 class PositionerDefaultsHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPopoverClose, RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
     template: `
         <div #root="rdxPopoverRoot" [modal]="modal" rdxPopoverRoot>
@@ -180,6 +188,7 @@ class ModalHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
     template: `
         <div #root="rdxPopoverRoot" rdxPopoverRoot>
@@ -197,6 +206,7 @@ class ModalHostComponent {
 class MultipleTriggersHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
     template: `
         <button id="detached-one" [handle]="handle" payload="one" rdxPopoverTrigger>One</button>
@@ -216,6 +226,7 @@ class DetachedTriggersHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPopoverRoot, RdxPopoverTrigger],
     template: `
         <div #root="rdxPopoverRoot" rdxPopoverRoot>
@@ -230,6 +241,7 @@ class RemovableTriggerHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPopoverClose, RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
     template: `
         <div #root="rdxPopoverRoot" rdxPopoverRoot>
@@ -252,6 +264,7 @@ class HoverHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger, RdxPopoverViewport],
     template: `
         <div #root="rdxPopoverRoot" rdxPopoverRoot>
@@ -273,6 +286,7 @@ class HoverHostComponent {
 class ViewportHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPopoverClose, RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
     template: `
         <div
@@ -307,6 +321,7 @@ class ControlledMultipleTriggersHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
     template: `
         <div #root="rdxPopoverRoot" [open]="true" rdxPopoverRoot>
@@ -328,6 +343,7 @@ class PopupFocusPolicyHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxPopoverClose,
         RdxPopoverDescription,
@@ -356,6 +372,7 @@ class PopupFocusPolicyHostComponent {
 class CustomLabelIdsHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPopoverBackdrop, RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
     template: `
         <div #root="rdxPopoverRoot" rdxPopoverRoot>
@@ -373,6 +390,7 @@ class CustomLabelIdsHostComponent {}
 class HoverBackdropHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPopoverTrigger],
     template: `
         <button rdxPopoverTrigger>Open</button>
@@ -381,6 +399,7 @@ class HoverBackdropHostComponent {}
 class TriggerWithoutRootHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxPopoverClose,
         RdxPopoverPopup,
@@ -731,6 +750,7 @@ describe('Popover', () => {
 
     it('throws in dev mode when rdxPopoverPortal is used as an attribute instead of structurally', () => {
         @Component({
+            changeDetection: ChangeDetectionStrategy.Eager,
             imports: [RdxPopoverPortal, RdxPopoverPortalMisuseGuard, RdxPopoverRoot, RdxPopoverTrigger],
             template: `
                 <div rdxPopoverRoot>
@@ -816,6 +836,7 @@ describe('Popover', () => {
 
     it('positions against a custom anchor', () => {
         @Component({
+            changeDetection: ChangeDetectionStrategy.Eager,
             imports: [RdxPopoverPopup, RdxPopoverPositioner, RdxPopoverRoot, RdxPopoverTrigger],
             template: `
                 <div #root="rdxPopoverRoot" rdxPopoverRoot>

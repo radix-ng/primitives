@@ -1,10 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { _importsAutocomplete } from '../index';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsAutocomplete, ReactiveFormsModule],
     template: `
         <div [(open)]="open" [formControl]="control" rdxAutocompleteRoot>
@@ -28,6 +29,7 @@ class ReactiveHost {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsAutocomplete, FormsModule],
     template: `
         <div [(ngModel)]="value" [(open)]="open" rdxAutocompleteRoot>

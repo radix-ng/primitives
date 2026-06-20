@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports, RdxDrawerSwipeDirection } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
@@ -12,6 +12,7 @@ const SIDES: { side: DrawerSide; swipeDirection: RdxDrawerSwipeDirection }[] = [
 ];
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-sides',
     imports: [...drawerImports],
     template: `

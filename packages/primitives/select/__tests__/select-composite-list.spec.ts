@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RdxCompositeList, RdxCompositeMetadata } from '@radix-ng/primitives/composite';
@@ -14,6 +14,7 @@ interface Fruit {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsSelect],
     template: `
         <div [(value)]="value" rdxSelectRoot>

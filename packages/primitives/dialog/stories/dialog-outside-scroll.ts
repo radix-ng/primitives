@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import {
@@ -20,6 +20,7 @@ import { cn, demoButton, demoCard, demoDialog } from '../../storybook/styles';
  * edge while the whole page (not an inner region) scrolls.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-outside-scroll',
     imports: [
         ...dialogImports,

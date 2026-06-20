@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
@@ -9,6 +9,7 @@ import { _importsCombobox } from '../index';
  * popup opens.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-input-in-popup',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `

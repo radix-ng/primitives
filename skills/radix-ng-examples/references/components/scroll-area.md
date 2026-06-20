@@ -123,7 +123,7 @@ When content overflows on both axes, render two `Scrollbar` parts and a `Corner`
 they meet.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxScrollAreaContent,
     RdxScrollAreaCorner,
@@ -140,6 +140,7 @@ const html = String.raw;
  * the vertical and horizontal scrollbars meet.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'scroll-area-both-example',
     imports: [
         RdxScrollAreaRoot,
@@ -206,7 +207,7 @@ pixel distance to each edge) into a `mask-image` gradient. Each fade disappears 
 matching edge.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxScrollAreaContent,
     RdxScrollAreaRoot,
@@ -224,6 +225,7 @@ const html = String.raw;
  * disappears once you reach an edge because the matching variable becomes `0px`.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'scroll-area-gradient-example',
     imports: [
         RdxScrollAreaRoot,
@@ -273,7 +275,7 @@ viewport (the Angular equivalent of Base UI's `render` prop). Keeping the scroll
 lets a horizontal `mask-image` fade the tabs at whichever edge still has more to reveal.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxScrollAreaRoot, RdxScrollAreaViewport } from '@radix-ng/primitives/scroll-area';
 import { RdxTabsIndicator, RdxTabsList, RdxTabsPanel, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 
@@ -287,6 +289,7 @@ const html = String.raw;
  * whichever edge still has more tabs to reveal.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'scroll-area-tabs-example',
     imports: [
         RdxScrollAreaRoot,

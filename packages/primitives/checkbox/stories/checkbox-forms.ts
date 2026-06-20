@@ -1,5 +1,5 @@
 import { JsonPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LucideCheck } from '@lucide/angular';
 import { RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
@@ -10,6 +10,7 @@ import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-groups-forms-example',
     template: `
         <section [formGroup]="personality">

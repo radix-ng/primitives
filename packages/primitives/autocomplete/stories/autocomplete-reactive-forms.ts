@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
@@ -8,6 +8,7 @@ import { _importsAutocomplete } from '../index';
  * directly to the root.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-reactive-forms',
     imports: [_importsAutocomplete, ReactiveFormsModule],
     template: `

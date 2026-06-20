@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RdxCollapsiblePanelDirective } from '../src/collapsible-panel.directive';
@@ -6,6 +6,7 @@ import { RdxCollapsibleOpenChangeEvent, RdxCollapsibleRootDirective } from '../s
 import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxCollapsibleRootDirective, RdxCollapsibleTriggerDirective, RdxCollapsiblePanelDirective],
     template: `
         <div [disabled]="disabled()" [open]="open()" (onOpenChange)="handleOpenChange($event)" rdxCollapsibleRoot>
@@ -45,6 +46,7 @@ class CollapsibleHost {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxCollapsibleRootDirective, RdxCollapsibleTriggerDirective, RdxCollapsiblePanelDirective],
     template: `
         <div defaultOpen rdxCollapsibleRoot>

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
@@ -11,6 +11,7 @@ import { RdxToggleGroupValueChangeEvent } from '../src/toggle-group-base';
 import { RdxToggleGroupWithoutFocus } from '../src/toggle-group-without-focus';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxToggleGroup, RdxToggle],
     template: `
         <div
@@ -219,6 +220,7 @@ describe('RdxToggleGroup', () => {
 });
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxToggleGroup, RdxToggle],
     template: `
         <div [value]="['known']" rdxToggleGroup aria-label="Missing value">
@@ -248,6 +250,7 @@ describe('RdxToggleGroup diagnostics', () => {
 });
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxToolbarRoot, RdxToolbarGroup, RdxToggleGroupWithoutFocus, RdxToggle],
     template: `
         <div [disabled]="toolbarDisabled()" rdxToolbarRoot aria-label="Toolbar">
@@ -319,6 +322,7 @@ describe('RdxToggleGroupWithoutFocus inside Toolbar', () => {
 });
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxToggleGroup, RdxToggle, ReactiveFormsModule],
     template: `
         <form [formGroup]="form">

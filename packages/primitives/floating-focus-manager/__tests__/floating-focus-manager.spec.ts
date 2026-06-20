@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { Component, ElementRef, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { createFloatingRootContext, provideFloatingRootContext } from '@radix-ng/primitives/core';
 import { FOCUS_GUARD_ATTR } from '@radix-ng/primitives/focus-scope';
@@ -19,6 +19,7 @@ import { createRdxTriggerInteraction, RdxTriggerInteraction } from '../src/trigg
 const flush = (): Promise<void> => new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxFloatingFocusManager],
     template: `
         <div
@@ -48,6 +49,7 @@ class ManagerHost {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxFloatingFocusManager],
     template: `
         <button #previous>Previous</button>
@@ -163,6 +165,7 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
 
     it('a primitive config drives the gates when the matching input is unset', async () => {
         @Component({
+            changeDetection: ChangeDetectionStrategy.Eager,
             imports: [RdxFloatingFocusManager],
             providers: [provideFloatingFocusManagerConfig(() => ({ modal: () => true }))],
             template: `
@@ -200,6 +203,7 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
         appended.push(sibling, outside);
 
         @Component({
+            changeDetection: ChangeDetectionStrategy.Eager,
             imports: [RdxFloatingFocusManager],
             providers: [provideFloatingFocusManagerConfig(() => ({ modal: () => true, inert: () => false }))],
             template: `
@@ -267,6 +271,7 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
         context.addFloatingElement(backdrop);
 
         @Component({
+            changeDetection: ChangeDetectionStrategy.Eager,
             imports: [RdxFloatingFocusManager],
             providers: [provideFloatingRootContext(() => context)],
             template: `
@@ -295,6 +300,7 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
         const context = createFloatingRootContext({ ownerDocument: document, open: () => open() });
 
         @Component({
+            changeDetection: ChangeDetectionStrategy.Eager,
             imports: [RdxFloatingFocusManager],
             providers: [provideFloatingRootContext(() => context)],
             template: `

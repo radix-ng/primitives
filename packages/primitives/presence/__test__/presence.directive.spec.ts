@@ -1,4 +1,4 @@
-import { Component, Directive, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Directive, inject, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { vi, type MockInstance } from 'vitest';
 import { provideRdxPresenceContext, RdxPresenceDirective } from '../src/presence.directive';
@@ -13,6 +13,7 @@ import { provideRdxPresenceContext, RdxPresenceDirective } from '../src/presence
 class TestPresenceWrapper {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'test-presence-host',
     standalone: true,
     imports: [TestPresenceWrapper],
@@ -29,6 +30,7 @@ class PresenceHostComponent {
 
 // Host whose content carries a `data-state` driving a (mocked) exit `@keyframes`.
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'test-presence-anim-host',
     standalone: true,
     imports: [TestPresenceWrapper],

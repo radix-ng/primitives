@@ -138,13 +138,14 @@ screen-reader users can still reach it.
 Render a `[rdxMenuTrigger]` on a toolbar button to open a menu from the toolbar.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { toolbarImports } from '@radix-ng/primitives/toolbar';
 import { cn, demoMenu } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toolbar-with-menu',
     imports: [...toolbarImports, RdxMenuModule, LucideChevronDown],
     template: `
@@ -203,7 +204,7 @@ export class ToolbarWithMenuExample {
 Wrap toolbar buttons with a tooltip by stacking `[rdxTooltipTrigger]`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideBold, LucideItalic } from '@lucide/angular';
 import { toolbarImports } from '@radix-ng/primitives/toolbar';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
@@ -213,6 +214,7 @@ const itemClass =
     'text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center rounded-md outline-none transition-colors focus-visible:ring-2';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toolbar-with-tooltip',
     imports: [...toolbarImports, ...tooltipImports, LucideBold, LucideItalic],
     template: `
@@ -255,7 +257,7 @@ text editing — the arrow keys move the caret and only move toolbar focus once 
 matching edge.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideMinus, LucidePlus } from '@lucide/angular';
 import { RdxNumberFieldModule } from '@radix-ng/primitives/number-field';
 import { toolbarImports } from '@radix-ng/primitives/toolbar';
@@ -264,6 +266,7 @@ const stepClass =
     'text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center rounded-md outline-none transition-colors focus-visible:ring-2 disabled:opacity-50';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toolbar-with-number-field',
     imports: [...toolbarImports, RdxNumberFieldModule, LucideMinus, LucidePlus],
     template: `

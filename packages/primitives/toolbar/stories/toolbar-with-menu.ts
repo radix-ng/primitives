@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { toolbarImports } from '@radix-ng/primitives/toolbar';
 import { cn, demoMenu } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toolbar-with-menu',
     imports: [...toolbarImports, RdxMenuModule, LucideChevronDown],
     template: `

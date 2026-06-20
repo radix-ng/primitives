@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RdxLiveAnnouncer } from '@radix-ng/primitives/core';
 import { cn, demoButton } from '../../storybook/styles';
 
@@ -7,6 +7,7 @@ import { cn, demoButton } from '../../storybook/styles';
  * hidden, so the on-screen log below mirrors what was sent to assistive technology.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'live-announcer-example',
     imports: [],
     template: `

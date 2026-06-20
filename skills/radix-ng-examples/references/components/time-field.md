@@ -3,11 +3,12 @@
 #### A segmented time input that lets users enter a time hour-by-hour with full keyboard control and localization.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
 import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-default-example',
     imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
     template: `
@@ -105,11 +106,12 @@ optional visually-hidden input for native form participation.
 A basic field rendering hour and minute segments.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
 import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-default-example',
     imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
     template: `
@@ -149,11 +151,12 @@ export class TimeFieldDefaultExample {}
 `hourCycle` forces a 12-hour (with a day-period segment) or 24-hour clock regardless of the locale default.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
 import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-hour-cycle-example',
     imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
     template: `
@@ -224,12 +227,13 @@ export class TimeFieldHourCycleExample {}
 `granularity` controls the smallest editable segment — `hour`, `minute`, or `second`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Granularity } from '@radix-ng/primitives/core';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
 import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-granularity-example',
     imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
     template: `
@@ -278,12 +282,13 @@ export class TimeFieldGranularityExample {
 A disabled field is inert and exposes `data-disabled` for styling.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Time } from '@internationalized/date';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
 import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-disabled-example',
     imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
     template: `
@@ -327,12 +332,13 @@ export class TimeFieldDisabledExample {
 A readonly field can be focused and navigated but not edited.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Time } from '@internationalized/date';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
 import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-readonly-example',
     imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
     template: `
@@ -377,12 +383,13 @@ export class TimeFieldReadonlyExample {
 `minValue` / `maxValue` mark out-of-range values with `data-invalid` on the root and each segment.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Time } from '@internationalized/date';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
 import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-validation-example',
     imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
     template: `
@@ -434,7 +441,7 @@ export class TimeFieldValidationExample {
 `locale` drives segment order, separators, and the numbering system.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
 import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
@@ -445,6 +452,7 @@ interface LocaleExample {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-localization-example',
     imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
     template: `

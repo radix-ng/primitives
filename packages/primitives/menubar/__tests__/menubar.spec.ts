@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { RdxMenubarRoot } from '@radix-ng/primitives/menubar';
@@ -10,6 +10,7 @@ function keydown(target: Element, key: string) {
 const flushMicrotasks = () => Promise.resolve();
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxMenubarRoot, RdxMenuModule],
     template: `
         <div rdxMenubarRoot>
@@ -52,6 +53,7 @@ const flushMicrotasks = () => Promise.resolve();
 class MenubarHost {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxMenubarRoot, RdxMenuModule],
     template: `
         <div rdxMenubarRoot>
@@ -94,6 +96,7 @@ class MenubarHost {}
 class MenubarWithDisabledHost {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxMenubarRoot, RdxMenuModule],
     template: `
         <div rdxMenubarRoot>

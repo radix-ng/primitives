@@ -1,5 +1,5 @@
 import { JsonPipe } from '@angular/common';
-import { Component, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, model } from '@angular/core';
 import { LucideCheck as Check, LucideDynamicIcon } from '@lucide/angular';
 import { RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
@@ -9,6 +9,7 @@ import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-keep-mounted-example',
     imports: [
         RdxLabelDirective,

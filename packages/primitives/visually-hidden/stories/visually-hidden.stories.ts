@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxVisuallyHiddenInputBubbleDirective } from '../src/visually-hidden-input-bubble.directive';
@@ -13,6 +13,7 @@ const html = String.raw;
  * `fully-hidden` removes it from the tab order and the accessibility tree.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'visually-hidden-feature-demo',
     imports: [RdxVisuallyHiddenDirective],
     template: html`

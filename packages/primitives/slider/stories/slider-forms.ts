@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
     RdxSliderControl,
@@ -10,6 +10,7 @@ import {
 } from '@radix-ng/primitives/slider';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'slider-forms-example',
     imports: [
         ReactiveFormsModule,

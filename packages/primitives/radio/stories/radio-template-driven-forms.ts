@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import {
@@ -10,6 +10,7 @@ import {
 import { cn, demoButton, demoRadio } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'radio-template-driven-forms-example',
     template: `
         <form class="flex w-72 flex-col gap-4" (ngSubmit)="submit()">

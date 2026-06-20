@@ -95,7 +95,7 @@ The third "mixed" state. Clicking a checkbox in the indeterminate state resolves
 
 ```typescript
 import { JsonPipe } from '@angular/common';
-import { Component, computed, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, model } from '@angular/core';
 import { LucideDynamicIcon } from '@lucide/angular';
 import { RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
@@ -105,6 +105,7 @@ import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-indeterminate-example',
     imports: [
         RdxLabelDirective,
@@ -167,7 +168,7 @@ CSS transitions or measurement, matching Base UI's `Checkbox.Indicator keepMount
 
 ```typescript
 import { JsonPipe } from '@angular/common';
-import { Component, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, model } from '@angular/core';
 import { LucideCheck as Check, LucideDynamicIcon } from '@lucide/angular';
 import { RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
@@ -177,6 +178,7 @@ import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-keep-mounted-example',
     imports: [
         RdxLabelDirective,
@@ -217,7 +219,7 @@ export class CheckboxKeepMountedExample {
 Two-way bind the root with `[(ngModel)]`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideCheck } from '@lucide/angular';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
@@ -231,6 +233,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
  * Template-driven forms: two-way bind the root with `[(ngModel)]`.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-ngmodel-example',
     imports: [
         FormsModule,
@@ -270,7 +273,7 @@ Bind the root with `formControlName`; `disabled` reacts to the control's enable/
 
 ```typescript
 import { JsonPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LucideCheck } from '@lucide/angular';
 import { RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
@@ -281,6 +284,7 @@ import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-groups-forms-example',
     template: `
         <section [formGroup]="personality">
@@ -365,7 +369,7 @@ export class CheckboxReactiveFormsExampleComponent {
 `Validators.requiredTrue` enforces acceptance; the error shows once the field is touched and submit is guarded.
 
 ```typescript
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LucideCheck } from '@lucide/angular';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
@@ -380,6 +384,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
  * ticked, the error shows after the field is touched, and submit is guarded.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-validation-example',
     imports: [
         ReactiveFormsModule,
@@ -459,7 +464,7 @@ A parent checkbox derived from its children — `indeterminate` when only some a
 parent/child logic (and the flat all ↔ none toggle) is wired **by hand** in the component.
 
 ```typescript
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { LucideCheck, LucideDynamicIcon } from '@lucide/angular';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { demoCheckbox } from '../../storybook/styles';
@@ -479,6 +484,7 @@ interface Item {
  * all are ticked, `indeterminate` when only some are, unchecked otherwise.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-select-all-example',
     imports: [
         RdxLabelDirective,
@@ -569,7 +575,7 @@ back to the partial), disabled-but-checked children are preserved, and the group
 control, so `[(value)]`, `ngModel`, and reactive forms bind to the `string[]` value.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideDynamicIcon } from '@lucide/angular';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { demoCheckbox } from '../../storybook/styles';
@@ -587,6 +593,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
  * selection, instead of a flat all/none toggle.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-group-example',
     imports: [
         RdxLabelDirective,

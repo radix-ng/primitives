@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxFieldControl, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormRoot, RdxFormSubmitEvent } from '../index';
 import { formField, formInput, formLabel, formSubmit } from './form.shared';
@@ -8,6 +8,7 @@ import { formField, formInput, formLabel, formSubmit } from './form.shared';
  * `FormData` into a plain values object (repeated `name`s collapse into arrays).
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'form-native-controls-example',
     imports: [RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl],
     template: `

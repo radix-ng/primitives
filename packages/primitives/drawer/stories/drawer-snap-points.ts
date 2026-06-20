@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports, RdxDrawerSnapPoint } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
@@ -10,6 +10,7 @@ function toViewportSnapPoint(heightRem: number): RdxDrawerSnapPoint {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-snap-points',
     imports: [...drawerImports],
     template: `

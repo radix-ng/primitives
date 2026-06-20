@@ -1,4 +1,4 @@
-import { Component, ElementRef, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
 import { cn, demoCombobox, demoFocusRing } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
@@ -29,6 +29,7 @@ function chunk<T>(items: T[], size: number): T[][] {
  * field; `onValueChange` is ignored when `reason === 'item-press'` so the search box is not overwritten.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-grid',
     imports: [_importsAutocomplete],
     template: `

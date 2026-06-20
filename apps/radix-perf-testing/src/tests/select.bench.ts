@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import {
     RdxSelectGroup,
     RdxSelectItem,
@@ -25,6 +25,7 @@ const COUNTS = [50, 1000];
 // contentChildren), the portal, and the popper positioner at once. Mounted closed is cheap; the
 // measured interaction is the open. No styles — we track the machinery + DOM cost, not CSS.
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'select-open',
     standalone: true,
     imports: [

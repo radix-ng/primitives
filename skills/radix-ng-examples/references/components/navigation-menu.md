@@ -7,12 +7,13 @@ It composes the shared Popper, Portal, Presence, Dismissable Layer, and Composit
 remains headless: styles and native CSS animations belong to the consumer.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
 import { cn, demoNavigationMenu } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-default',
     imports: [...navigationMenuImports, LucideChevronDown],
     template: `
@@ -226,12 +227,13 @@ A horizontal navigation list with two content panels and a standalone link. Cont
 the active item changes.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
 import { cn, demoNavigationMenu } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-default',
     imports: [...navigationMenuImports, LucideChevronDown],
     template: `
@@ -361,12 +363,13 @@ export class RdxNavigationMenuDefaultComponent {
 Set `orientation="vertical"` on the root and position the popup to the side with `side="right"`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronRight } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
 import { cn, demoNavigationMenu } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-vertical',
     imports: [...navigationMenuImports, LucideChevronRight],
     template: `
@@ -429,12 +432,13 @@ Set `dir="rtl"` on the root. Placement, alignment, and arrow-key direction follo
 direction.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
 import { cn, demoNavigationMenu } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-rtl',
     imports: [...navigationMenuImports, LucideChevronDown],
     template: `
@@ -488,11 +492,12 @@ export class RdxNavigationMenuRtlComponent {
 A navigation list of links without any popup. Links are plain tabbable anchors and expose `data-active`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
 import { demoNavigationMenu } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-links',
     imports: [...navigationMenuImports],
     template: `
@@ -527,7 +532,7 @@ and an "action" link that runs a handler via `(onSelect)` without closing the me
 on a router link.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideArrowUpRight, LucideBookOpen, LucideChevronDown, LucideCode, LucideLifeBuoy } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
 import { cn, demoNavigationMenu } from '../../storybook/styles';
@@ -539,6 +544,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
  * The same directive would sit on a router link.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-custom-links',
     imports: [
         ...navigationMenuImports,
@@ -647,7 +653,7 @@ When the content exceeds the available space, constrain it with a `max-height` a
 viewport measures the capped height, so the popup stays a fixed size and the list scrolls inside it.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
 import { cn, demoNavigationMenu } from '../../storybook/styles';
@@ -658,6 +664,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
  * popup stays a fixed size and the list scrolls inside it.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-large',
     imports: [...navigationMenuImports, LucideChevronDown],
     template: `
@@ -724,12 +731,13 @@ Render a `rdxNavigationMenuRoot` inside content for a nested menu. The nested ro
 positions its own popup inline, and link selection closes both the nested and parent roots.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown, LucideChevronRight } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
 import { cn, demoNavigationMenu } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-nested',
     imports: [...navigationMenuImports, LucideChevronDown, LucideChevronRight],
     template: `
@@ -900,7 +908,7 @@ A second level that stays in the same panel: inside the outer content, render an
 keeps the inline panel persistent.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
 import { cn, demoNavigationMenu } from '../../storybook/styles';
@@ -912,6 +920,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
  * kept non-null so the inline panel always shows a category (the idea behind Base UI's `defaultValue`).
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-nested-inline',
     imports: [...navigationMenuImports, LucideChevronDown],
     template: `

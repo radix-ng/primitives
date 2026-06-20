@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxScrollAreaRoot, RdxScrollAreaViewport } from '@radix-ng/primitives/scroll-area';
 import { RdxTabsIndicator, RdxTabsList, RdxTabsPanel, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 
@@ -12,6 +12,7 @@ const html = String.raw;
  * whichever edge still has more tabs to reveal.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'scroll-area-tabs-example',
     imports: [
         RdxScrollAreaRoot,

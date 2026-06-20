@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
     RdxCompositeItem,
@@ -17,6 +17,7 @@ function keydown(element: HTMLElement, key: string, init: KeyboardEventInit = {}
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <div
             [dir]="dir"
@@ -57,6 +58,7 @@ class CompositeHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <div orientation="horizontal" rdxCompositeRoot>
             <input rdxCompositeItem value="abc" />
@@ -68,6 +70,7 @@ class CompositeHostComponent {
 class CompositeInputHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <div orientation="horizontal" rdxCompositeRoot>
             <input rdxCompositeItem type="checkbox" />
@@ -79,6 +82,7 @@ class CompositeInputHostComponent {}
 class CompositeCheckboxHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <div (onMapChange)="itemMap = $event" rdxCompositeList>
             <button [metadata]="{ id: 'one' }" rdxCompositeListItem>One</button>

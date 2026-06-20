@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { _importsCombobox } from '../index';
@@ -8,6 +8,7 @@ import { _importsCombobox } from '../index';
  * `openOnInputClick` is false the empty field also closes the popup. Multiple mode keeps its chips.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
         <div

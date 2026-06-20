@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
     createRdxDrawerHandle,
@@ -25,6 +25,7 @@ import { axe } from 'jest-axe';
 import { vi } from 'vitest';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxDrawerRoot,
         RdxDrawerTrigger,
@@ -68,6 +69,7 @@ class TestHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxDrawerTrigger, RdxDrawerRoot, RdxDrawerPortal, RdxDrawerPopup],
     template: `
         <button id="detached" [handle]="handle" rdxDrawerTrigger>Open</button>
@@ -83,6 +85,7 @@ class DetachedHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxDrawerRoot, RdxDrawerTrigger, RdxDrawerPortal, RdxDrawerPopup],
     template: `
         <div
@@ -109,6 +112,7 @@ class SnapHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxDrawerProviderDirective, RdxDrawerIndentBackground, RdxDrawerRoot, RdxDrawerPortal, RdxDrawerPopup],
     template: `
         <div rdxDrawerProvider>
@@ -141,6 +145,7 @@ class NestedHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxDrawerRoot, RdxDrawerSwipeArea, RdxDrawerPortal, RdxDrawerBackdrop, RdxDrawerViewport, RdxDrawerPopup],
     template: `
         <div #portalContainer data-testid="portal-container">
@@ -160,6 +165,7 @@ class NestedHostComponent {
 class LocalSwipeAreaHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxDrawerRoot, RdxDrawerPortal, RdxDrawerViewport, RdxDrawerVirtualKeyboardProvider, RdxDrawerPopup],
     template: `
         <div [(open)]="open" rdxDrawerRoot>
@@ -650,6 +656,7 @@ describe('Drawer structural portal', () => {
 
     it('throws in dev mode when rdxDrawerPortal is used as an attribute instead of structurally', () => {
         @Component({
+            changeDetection: ChangeDetectionStrategy.Eager,
             imports: [RdxDrawerRoot, RdxDrawerTrigger, RdxDrawerPortal, RdxDrawerPortalMisuseGuard, RdxDrawerPopup],
             template: `
                 <div rdxDrawerRoot>

@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown, LucidePlus, LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoCombobox, demoDialog } from '../../storybook/styles';
@@ -13,6 +13,7 @@ const CREATE = '__rdx_create__';
  * Mirrors the Base UI Creatable example.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-creatable',
     imports: [_importsCombobox, ...dialogImports, LucideChevronDown, LucideCheck, LucidePlus, LucideX],
     template: `

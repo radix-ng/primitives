@@ -1,4 +1,4 @@
-import { Component, Directive, ElementRef, inject, PLATFORM_ID, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Directive, ElementRef, inject, PLATFORM_ID, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
 import { type MockInstance, vi } from 'vitest';
@@ -15,6 +15,7 @@ import { RdxPortalContainer } from '../src/resolve-container';
 class TestPortalWrapper {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'test-portal-host',
     standalone: true,
     imports: [TestPortalWrapper],
@@ -34,6 +35,7 @@ class PortalHostComponent {
 
 // Two sibling root nodes (dialog-shaped: backdrop + popup), each with its own exit animation hook.
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'test-portal-multi-host',
     standalone: true,
     imports: [TestPortalWrapper],

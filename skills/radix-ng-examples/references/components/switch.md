@@ -3,11 +3,12 @@
 #### A control that allows the user to toggle between checked and not checked.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'switch-default-example',
     imports: [RdxLabelDirective, RdxSwitchRoot, RdxSwitchThumb],
     template: `
@@ -64,11 +65,12 @@ The `[rdxSwitchInput]` is optional — include it when the switch must submit a 
 Set `defaultChecked` (uncontrolled) or `[checked]` (controlled) to start in the on state.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { RdxSwitchInput, RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'switch-preselection-example',
     imports: [RdxLabelDirective, RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
     template: `
@@ -103,11 +105,12 @@ export class SwitchPreselectionExample {
 When `disabled` is present the switch cannot be focused or toggled.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { RdxSwitchInput, RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'switch-disabled-example',
     imports: [RdxLabelDirective, RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
     template: `
@@ -140,11 +143,12 @@ export class SwitchDisabledExample {}
 A `readonly` switch is focusable and announced, but cannot be toggled.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { RdxSwitchInput, RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'switch-readonly-example',
     imports: [RdxLabelDirective, RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
     template: `
@@ -178,12 +182,13 @@ export class SwitchReadonlyExample {}
 Bind the switch to a form control via `formControlName`.
 
 ```typescript
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { RdxSwitchInput, RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'switch-reactive-forms',
     imports: [ReactiveFormsModule, RdxLabelDirective, RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
     template: `

@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { Component, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { RdxFloatingNodeRegistration } from '../src/floating/floating-node-registration';
@@ -17,6 +17,7 @@ describe('RdxFloatingNodeRegistration', () => {
     // ─── inherit (the default) ───────────────────────────────────────────────
 
     @Component({
+        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [RdxFloatingNodeRegistration],
         providers: [provideFloatingTree()],
         template: `
@@ -42,6 +43,7 @@ describe('RdxFloatingNodeRegistration', () => {
     });
 
     @Component({
+        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [RdxFloatingNodeRegistration],
         providers: [provideFloatingTree()],
         template: `
@@ -70,6 +72,7 @@ describe('RdxFloatingNodeRegistration', () => {
     // ─── overrides ───────────────────────────────────────────────────────────
 
     @Component({
+        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [RdxFloatingNodeRegistration],
         providers: [provideFloatingTree()],
         template: `
@@ -98,6 +101,7 @@ describe('RdxFloatingNodeRegistration', () => {
     });
 
     @Component({
+        changeDetection: ChangeDetectionStrategy.Eager,
         // deliberately NO provideFloatingTree → no ambient tree
         imports: [RdxFloatingNodeRegistration],
         template: `
@@ -126,6 +130,7 @@ describe('RdxFloatingNodeRegistration', () => {
     // ─── node-optional ───────────────────────────────────────────────────────
 
     @Component({
+        changeDetection: ChangeDetectionStrategy.Eager,
         // no provideFloatingTree, no externalTree, inherit → no tree available
         imports: [RdxFloatingNodeRegistration],
         template: `
@@ -152,6 +157,7 @@ describe('RdxFloatingNodeRegistration', () => {
         const context = createFloatingRootContext({ ownerDocument: document, open: () => true });
 
         @Component({
+            changeDetection: ChangeDetectionStrategy.Eager,
             imports: [RdxFloatingNodeRegistration],
             providers: [provideFloatingTree(), provideFloatingRootContext(() => context)],
             template: `

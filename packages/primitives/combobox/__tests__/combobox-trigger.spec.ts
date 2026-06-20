@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { _importsCombobox } from '../index';
@@ -11,6 +11,7 @@ import { _importsCombobox } from '../index';
  * input (positioner ancestor) — never hard-coded in a story.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
         <div [(value)]="value" [(open)]="open" [required]="required()" rdxComboboxRoot>
@@ -36,6 +37,7 @@ class OutsideHost {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
         <div [(value)]="value" [(open)]="open" [required]="required()" rdxComboboxRoot>

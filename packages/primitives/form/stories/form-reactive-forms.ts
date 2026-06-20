@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormRoot } from '../index';
@@ -10,6 +10,7 @@ import { formError, formField, formInput, formLabel, formSubmit } from './form.s
  * stops propagation, so both fire — and map each `FormControl`'s validity into the Field's `invalid`.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'form-reactive-forms-example',
     imports: [ReactiveFormsModule, RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldError],
     template: `

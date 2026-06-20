@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { _importsAutocomplete } from '../index';
@@ -9,6 +9,7 @@ import { _importsAutocomplete } from '../index';
  * — even the one whose value equals the current input string must not be reported as selected.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsAutocomplete],
     template: `
         <div [(value)]="value" [(open)]="open" rdxAutocompleteRoot>

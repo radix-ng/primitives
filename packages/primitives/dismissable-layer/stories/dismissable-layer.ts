@@ -1,4 +1,13 @@
-import { Component, computed, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    computed,
+    effect,
+    ElementRef,
+    inject,
+    signal,
+    viewChild
+} from '@angular/core';
 import { createFloatingRootContext } from '@radix-ng/primitives/core';
 import { RdxDismiss, RdxDismissReason, RdxOutsidePressEvent } from '@radix-ng/primitives/dismissable-layer';
 
@@ -9,6 +18,7 @@ interface LogEntry {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dismissable-layer-demo',
     standalone: true,
     template: `

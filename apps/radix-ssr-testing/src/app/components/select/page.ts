@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxSelectGroup,
     RdxSelectGroupLabel,
@@ -15,6 +15,7 @@ import {
 } from '@radix-ng/primitives/select';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-select',
     imports: [
         RdxSelectRoot,

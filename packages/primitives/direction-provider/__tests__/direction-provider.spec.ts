@@ -1,4 +1,4 @@
-import { Component, Directive, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Directive, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Direction } from '@radix-ng/primitives/core';
@@ -15,6 +15,7 @@ class DirectionProbe {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: true,
     imports: [DirectionProbe],
     template: `
@@ -24,6 +25,7 @@ class DirectionProbe {
 class ProbeHost {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: true,
     imports: [DirectionProbe, RdxDirectionProvider],
     template: `

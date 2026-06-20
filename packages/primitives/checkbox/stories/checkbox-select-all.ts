@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { LucideCheck, LucideDynamicIcon } from '@lucide/angular';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { demoCheckbox } from '../../storybook/styles';
@@ -18,6 +18,7 @@ interface Item {
  * all are ticked, `indeterminate` when only some are, unchecked otherwise.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-select-all-example',
     imports: [
         RdxLabelDirective,

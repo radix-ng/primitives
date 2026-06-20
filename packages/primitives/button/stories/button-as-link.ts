@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
 
@@ -7,6 +7,7 @@ import { RdxButtonDirective } from '../src/button.directive';
  * keeping native link behavior.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-button-as-link',
     imports: [RdxButtonDirective],
     template: `

@@ -1,4 +1,4 @@
-import { Component, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { ChangeDetectionStrategy, Component, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
@@ -17,6 +17,7 @@ import {
 import { vi } from 'vitest';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxPreviewCardArrow,
         RdxPreviewCardPopup,
@@ -43,6 +44,7 @@ class TestHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxPreviewCardPopup,
         RdxPreviewCardPortal,
@@ -71,6 +73,7 @@ class DefaultOpenHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPreviewCardPopup, RdxPreviewCardPositioner, RdxPreviewCardRoot, RdxPreviewCardTrigger],
     template: `
         <ng-container #root="rdxPreviewCardRoot" rdxPreviewCardRoot>
@@ -91,6 +94,7 @@ class MultipleTriggersHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxPreviewCardPopup, RdxPreviewCardPositioner, RdxPreviewCardRoot, RdxPreviewCardTrigger],
     template: `
         <a id="detached-one" [handle]="handle" href="#" payload="one" rdxPreviewCardTrigger>One</a>
@@ -113,6 +117,7 @@ class DetachedTriggersHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxPreviewCardPopup,
         RdxPreviewCardPortal,
@@ -135,6 +140,7 @@ class LifecycleHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxPreviewCardPopup,
         RdxPreviewCardPositioner,
@@ -162,6 +168,7 @@ class LifecycleHostComponent {
 class ViewportHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxPreviewCardPopup,
         RdxPreviewCardPortal,
@@ -215,6 +222,7 @@ class PreviewCardCancelableHostComponent {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxPreviewCardArrow,
         RdxPreviewCardPopup,
@@ -240,6 +248,7 @@ class PreviewCardCancelableHostComponent {
 class PositionerDefaultsHostComponent {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         RdxPreviewCardPopup,
         RdxPreviewCardPortal,
@@ -532,6 +541,7 @@ describe('PreviewCard', () => {
 
     it('emits controlled open change details', () => {
         @Component({
+            changeDetection: ChangeDetectionStrategy.Eager,
             imports: [RdxPreviewCardPopup, RdxPreviewCardPositioner, RdxPreviewCardRoot, RdxPreviewCardTrigger],
             template: `
                 <ng-container
@@ -640,6 +650,7 @@ describe('PreviewCard', () => {
 
     it('throws in dev mode when rdxPreviewCardPortal is used as an attribute instead of structurally', () => {
         @Component({
+            changeDetection: ChangeDetectionStrategy.Eager,
             imports: [
                 RdxPreviewCardPopup,
                 RdxPreviewCardPortal,

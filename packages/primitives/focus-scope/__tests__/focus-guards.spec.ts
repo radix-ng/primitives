@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { Component, ElementRef, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, viewChild } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, describe, expect, it } from 'vitest';
 import {
@@ -101,6 +101,7 @@ describe('focus guards', () => {
 
     describe('useFocusGuardsTabbability', () => {
         @Component({
+            changeDetection: ChangeDetectionStrategy.Eager,
             template: `
                 <div #portal>
                     <button #inner>inner</button>

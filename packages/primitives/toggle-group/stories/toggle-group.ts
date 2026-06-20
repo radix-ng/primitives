@@ -1,9 +1,10 @@
-import { Component, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, model } from '@angular/core';
 import { LucideAlignCenter, LucideAlignLeft, LucideAlignRight } from '@lucide/angular';
 import { RdxToggle } from '@radix-ng/primitives/toggle';
 import { RdxToggleGroup } from '@radix-ng/primitives/toggle-group';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toggle-group',
     imports: [RdxToggleGroup, RdxToggle, LucideAlignLeft, LucideAlignCenter, LucideAlignRight],
     template: `

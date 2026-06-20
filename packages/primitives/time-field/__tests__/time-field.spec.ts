@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Time } from '@internationalized/date';
@@ -7,6 +7,7 @@ import { RdxTimeFieldInputDirective } from '../src/time-field-input.directive';
 import { RdxTimeFieldRootDirective } from '../src/time-field-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <div
             #root="rdxTimeFieldRoot"

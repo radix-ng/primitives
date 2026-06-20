@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { RdxSwitchInput, RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'switch-reactive-forms',
     imports: [ReactiveFormsModule, RdxLabelDirective, RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
     template: `

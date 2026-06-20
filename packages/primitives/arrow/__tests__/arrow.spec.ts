@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RdxArrow } from '../src/arrow';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxArrow],
     template: `
         <rdx-arrow [width]="width" [height]="height" />
@@ -15,6 +16,7 @@ class DefaultHost {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxArrow],
     template: `
         <rdx-arrow>

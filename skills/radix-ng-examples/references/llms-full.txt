@@ -88,7 +88,7 @@ import {
 Disable the whole accordion via `disabled` on the root, or a single item via `disabled` on the item.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
@@ -99,6 +99,7 @@ import {
 import { cn, demoAccordion } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'accordion-disabled-example',
     imports: [
         RdxAccordionRootDirective,
@@ -151,7 +152,7 @@ export class AccordionDisabledExample {
 Set `multiple` to let several items stay open at once.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
@@ -162,6 +163,7 @@ import {
 import { cn, demoAccordion } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'accordion-multiple-example',
     imports: [
         RdxAccordionRootDirective,
@@ -217,7 +219,7 @@ In single mode the open item can always be closed by clicking its trigger again 
 there is no separate `collapsible` input).
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
@@ -228,6 +230,7 @@ import {
 import { cn, demoAccordion } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'accordion-collapsible-example',
     imports: [
         RdxAccordionRootDirective,
@@ -280,7 +283,7 @@ export class AccordionCollapsibleExample {
 Set `orientation="horizontal"` to expose horizontal state for styling. Following the APG guidance update adopted by Base UI, orientation no longer changes keyboard focus behavior.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
@@ -291,6 +294,7 @@ import {
 import { cn, demoAccordion } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'accordion-horizontal-example',
     imports: [
         RdxAccordionRootDirective,
@@ -356,7 +360,7 @@ root emits `onValueChange` with `{ value, eventDetails }`. Call `eventDetails.ca
 change before it commits.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
@@ -367,6 +371,7 @@ import {
 import { cn, demoAccordion } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'accordion-events-example',
     imports: [
         RdxAccordionRootDirective,
@@ -420,7 +425,7 @@ form state. Use `hiddenUntilFound` instead to keep collapsed content discoverabl
 find-in-page (it renders `hidden="until-found"`).
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
     RdxAccordionHeaderDirective,
@@ -436,6 +441,7 @@ import { cn, demoAccordion, demoInput } from '../../storybook/styles';
  * Type something below, collapse the panel, and reopen it — the value is retained.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'accordion-keep-mounted-example',
     imports: [
         FormsModule,
@@ -572,11 +578,12 @@ its popup uses `role="alertdialog"`. Each `rdxAlertDialog*` part is a thin wrapp
 dialog part.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-alert-dialog-default',
     imports: [...alertDialogImports],
     template: `
@@ -668,11 +675,12 @@ import { RdxAlertDialogModule } from '@radix-ng/primitives/alert-dialog';
 A destructive confirmation with Cancel and an action button. Clicking the backdrop keeps it open.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-alert-dialog-default',
     imports: [...alertDialogImports],
     template: `
@@ -712,11 +720,12 @@ export class RdxAlertDialogDefaultComponent {
 Bind `[(open)]` to open or close the alert dialog from component state.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-alert-dialog-controlled',
     imports: [...alertDialogImports],
     template: `
@@ -767,11 +776,12 @@ Several triggers can open the same alert dialog. The active trigger's `payload` 
 so the content can adapt to what is being confirmed.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-alert-dialog-multiple-triggers',
     imports: [...alertDialogImports],
     template: `
@@ -818,11 +828,12 @@ export class RdxAlertDialogMultipleTriggersComponent {
 Bind both `[(open)]` and `[(triggerId)]` to choose which trigger is active from component state.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-alert-dialog-controlled-multiple',
     imports: [...alertDialogImports],
     template: `
@@ -889,11 +900,12 @@ Connect a trigger rendered outside the root with `createRdxAlertDialogHandle()`;
 imperative `open(id)` / `close()`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { alertDialogImports, createRdxAlertDialogHandle } from '@radix-ng/primitives/alert-dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-alert-dialog-detached',
     imports: [...alertDialogImports],
     template: `
@@ -941,13 +953,14 @@ A regular Dialog editor asks an Alert Dialog to confirm before discarding unsave
 reason to reach for an alert dialog.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { dialogImports, RdxDialogOpenChange } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-alert-dialog-close-confirmation',
     imports: [...dialogImports, ...alertDialogImports, FormsModule],
     template: `
@@ -1042,12 +1055,13 @@ export class RdxAlertDialogCloseConfirmationComponent {
 Control the alert dialog's `open` state from a menu item to launch a destructive confirmation from a `Menu`.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { cn, demoButton, demoDialog, demoMenu } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-alert-dialog-from-menu',
     imports: [...alertDialogImports, RdxMenuModule],
     template: `
@@ -1149,7 +1163,7 @@ Use Autocomplete for free-form entry with suggestions (search boxes, command inp
 the value is a chosen item (or items) rather than the typed text.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
@@ -1198,6 +1212,7 @@ const TAGS = [
 ];
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-default',
     imports: [_importsAutocomplete],
     template: `
@@ -1315,7 +1330,7 @@ in place (non-matching items are hidden, not destroyed).
 Type to filter a list of suggestions; pick one to fill the input.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
@@ -1364,6 +1379,7 @@ const TAGS = [
 ];
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-default',
     imports: [_importsAutocomplete],
     template: `
@@ -1405,7 +1421,7 @@ suffix selected so the next keystroke replaces it. Inline modes highlight the fi
 so no `autoHighlight` is required.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
@@ -1454,6 +1470,7 @@ const TAGS = [
 ];
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-inline',
     imports: [_importsAutocomplete],
     template: `
@@ -1487,7 +1504,7 @@ export class AutocompleteInline {
 `autoHighlight` keeps the first match highlighted as you type, so Enter selects it immediately.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
@@ -1536,6 +1553,7 @@ const TAGS = [
 ];
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-auto-highlight',
     imports: [_importsAutocomplete],
     template: `
@@ -1570,7 +1588,7 @@ Group related suggestions with `rdxAutocompleteGroup` / `rdxAutocompleteGroupLab
 hides its heading automatically.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
@@ -1580,6 +1598,7 @@ interface Group {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-grouped',
     imports: [_importsAutocomplete],
     template: `
@@ -1660,11 +1679,12 @@ export class AutocompleteGrouped {
 `limit` caps how many matches are shown at once.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-limit',
     imports: [_importsAutocomplete],
     template: `
@@ -1764,7 +1784,7 @@ multiple fields. This example uses `match-sorter` over `title` / `description` /
 highlights the matched text.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { matchSorter, rankings } from 'match-sorter';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete, AutocompleteFilter } from '../index';
@@ -1795,6 +1815,7 @@ const fuzzyFilter: AutocompleteFilter = (value, query) => {
 };
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-fuzzy',
     imports: [_importsAutocomplete],
     template: `
@@ -1957,7 +1978,7 @@ export class AutocompleteFuzzy {
 a failure) and `RdxAutocompleteStatus` announces loading, result counts, and errors.
 
 ```typescript
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
@@ -2078,6 +2099,7 @@ const top100Movies: Movie[] = [
  * input never reveals the whole catalogue. `RdxAutocompleteStatus` announces loading / counts / errors.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-async',
     imports: [_importsAutocomplete],
     template: `
@@ -2184,7 +2206,7 @@ An always-open, inline autocomplete (no popup — the `List` is rendered directl
 (the autocomplete's `open` is shared with the dialog via `[(open)]`).
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoCard, demoDialog } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
@@ -2205,6 +2227,7 @@ interface Group {
  * `open` to `false`, which is shared with the dialog via `[(open)]`).
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-command-palette',
     imports: [...dialogImports, _importsAutocomplete],
     template: `
@@ -2340,7 +2363,7 @@ open; pressing an item inserts it into the message field, and `onValueChange` is
 `reason === 'item-press'` so the search box is not overwritten.
 
 ```typescript
-import { Component, ElementRef, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
 import { cn, demoCombobox, demoFocusRing } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
@@ -2371,6 +2394,7 @@ function chunk<T>(items: T[], size: number): T[][] {
  * field; `onValueChange` is ignored when `reason === 'item-press'` so the search box is not overwritten.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-grid',
     imports: [_importsAutocomplete],
     template: `
@@ -2639,7 +2663,7 @@ protected onOpenChange(change: { open: boolean; eventDetails: { cancel(): void }
 renders only the visible window.
 
 ```typescript
-import { Component, ElementRef, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
 import { injectVirtualizer } from '@tanstack/angular-virtual';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete, AutocompleteItemHighlightedDetails, RdxAutocompleteRoot } from '../index';
@@ -2651,6 +2675,7 @@ import { _importsAutocomplete, AutocompleteItemHighlightedDetails, RdxAutocomple
  * highlighted row mounts before `aria-activedescendant` references it.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-virtualized-example',
     imports: [_importsAutocomplete],
     template: `
@@ -2738,7 +2763,7 @@ export class AutocompleteVirtualizedExample {
 The form value is the input string. Bind `[formControl]` to the root.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
@@ -2748,6 +2773,7 @@ import { _importsAutocomplete } from '../index';
  * directly to the root.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-reactive-forms',
     imports: [_importsAutocomplete, ReactiveFormsModule],
     template: `
@@ -2785,7 +2811,7 @@ export class AutocompleteReactiveForms {
 `[(ngModel)]` binds the input string two-way.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
@@ -2794,6 +2820,7 @@ import { _importsAutocomplete } from '../index';
  * Template-driven forms: `[(ngModel)]` binds the input string two-way.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-template-forms',
     imports: [_importsAutocomplete, FormsModule],
     template: `
@@ -2829,11 +2856,12 @@ export class AutocompleteTemplateForms {
 ### Disabled
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-disabled',
     imports: [_importsAutocomplete],
     template: `
@@ -2995,7 +3023,7 @@ styles — visual variants in the examples come from the centralized demo style 
 **Guides/Styling** page).
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
 
@@ -3004,6 +3032,7 @@ import { RdxButtonDirective } from '../src/button.directive';
  * style layer applied on top of the headless `rdxButton` directive.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-button-variants',
     imports: [RdxButtonDirective],
     template: `
@@ -3055,7 +3084,7 @@ Visual variants — `primary`, `secondary`, `outline`, `ghost`, and `destructive
 shared `demoButton` style layer, not the directive itself.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
 
@@ -3064,6 +3093,7 @@ import { RdxButtonDirective } from '../src/button.directive';
  * style layer applied on top of the headless `rdxButton` directive.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-button-variants',
     imports: [RdxButtonDirective],
     template: `
@@ -3087,7 +3117,7 @@ export class RdxButtonVariantsComponent {
 `sm`, `md`, `lg`, and a square `icon` size.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideDynamicIcon, LucidePlus } from '@lucide/angular';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
@@ -3096,6 +3126,7 @@ import { RdxButtonDirective } from '../src/button.directive';
  * Sizes, including a square icon button.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-button-sizes',
     imports: [RdxButtonDirective, LucideDynamicIcon, LucidePlus],
     template: `
@@ -3121,7 +3152,7 @@ The first button uses the native `disabled` attribute (removed from the tab orde
 `focusableWhenDisabled`, so it stays focusable via `aria-disabled` while its activation is suppressed.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
 
@@ -3131,6 +3162,7 @@ import { RdxButtonDirective } from '../src/button.directive';
  * stays focusable via `aria-disabled` while its activation is suppressed.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-button-disabled',
     imports: [RdxButtonDirective],
     template: `
@@ -3154,7 +3186,7 @@ The directive applies button semantics to any element. Here an `<a>` renders as 
 keeping native link behavior.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
 
@@ -3163,6 +3195,7 @@ import { RdxButtonDirective } from '../src/button.directive';
  * keeping native link behavior.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-button-as-link',
     imports: [RdxButtonDirective],
     template: `
@@ -3184,7 +3217,7 @@ with `focusableWhenDisabled` so focus stays on the button. Add `aria-busy` and r
 communicate the state.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideDynamicIcon, LucidePlus } from '@lucide/angular';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
@@ -3195,6 +3228,7 @@ import { RdxButtonDirective } from '../src/button.directive';
  * announces the pending state, and a spinner is rendered in place of the icon.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-button-loading',
     imports: [RdxButtonDirective, LucideDynamicIcon, LucidePlus],
     template: `
@@ -3258,7 +3292,7 @@ export class RdxButtonLoadingComponent {
 #### Displays dates and days of the week, facilitating date-related interactions.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CalendarDate, DateValue } from '@internationalized/date';
 import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar } from '../../storybook/styles';
@@ -3275,6 +3309,7 @@ import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-calendar-default',
     imports: [
         RdxCalendarRootDirective,
@@ -3492,7 +3527,7 @@ Import all parts and piece them together.
 This example showcases some of the available locales and how the calendar systems are displayed.
 
 ```typescript
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { CalendarIdentifier, createCalendar, getLocalTimeZone, toCalendar, today } from '@internationalized/date';
 import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar, demoInput } from '../../storybook/styles';
@@ -3509,6 +3544,7 @@ import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-calendar-with-locale',
     imports: [
         RdxCalendarRootDirective,
@@ -3708,7 +3744,7 @@ export class CalendarWithLocale {
 Set `multiple` to let the calendar hold an array of selected dates; clicking a selected date deselects it.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { CalendarDate } from '@internationalized/date';
 import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar } from '../../storybook/styles';
@@ -3725,6 +3761,7 @@ import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-calendar-multiple',
     imports: [
         RdxCalendarRootDirective,
@@ -3799,7 +3836,7 @@ export class CalendarMultiple {
 Render an extra leading column with the ISO week number via `getWeekNumber`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CalendarDate, DateValue } from '@internationalized/date';
 import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { getWeekNumber } from '@radix-ng/primitives/core';
@@ -3817,6 +3854,7 @@ import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-calendar-week',
     imports: [
         RdxCalendarRootDirective,
@@ -3897,7 +3935,7 @@ Pass an `isDateDisabled` matcher — a `(date) => boolean` callback run for ever
 dates are not focusable or selectable. This example disables weekends.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CalendarDate, DateValue, isWeekend } from '@internationalized/date';
 import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar } from '../../storybook/styles';
@@ -3914,6 +3952,7 @@ import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-calendar-disabled-dates',
     imports: [
         RdxCalendarRootDirective,
@@ -3999,7 +4038,7 @@ export class CalendarDisabledDates {
 (e.g. already booked). They render struck-through and ignore pointer interaction.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CalendarDate, DateValue } from '@internationalized/date';
 import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar } from '../../storybook/styles';
@@ -4016,6 +4055,7 @@ import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-calendar-unavailable-dates',
     imports: [
         RdxCalendarRootDirective,
@@ -4101,7 +4141,7 @@ Override how the previous/next buttons move the view with `propsPrevPage` / `pro
 `(placeholder) => DateValue` callback. This example jumps a whole year per click.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CalendarDate, DateValue } from '@internationalized/date';
 import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar } from '../../storybook/styles';
@@ -4118,6 +4158,7 @@ import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-calendar-custom-navigation',
     imports: [
         RdxCalendarRootDirective,
@@ -4205,7 +4246,7 @@ Set `numberOfMonths` to render several months at once. Arrow-key navigation flow
 boundary between months, and (without `pagedNavigation`) the prev/next buttons shift the view by one month.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CalendarDate, DateValue } from '@internationalized/date';
 import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar } from '../../storybook/styles';
@@ -4222,6 +4263,7 @@ import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-calendar-number-of-months',
     imports: [
         RdxCalendarRootDirective,
@@ -4409,7 +4451,7 @@ The third "mixed" state. Clicking a checkbox in the indeterminate state resolves
 
 ```typescript
 import { JsonPipe } from '@angular/common';
-import { Component, computed, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, model } from '@angular/core';
 import { LucideDynamicIcon } from '@lucide/angular';
 import { RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
@@ -4419,6 +4461,7 @@ import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-indeterminate-example',
     imports: [
         RdxLabelDirective,
@@ -4481,7 +4524,7 @@ CSS transitions or measurement, matching Base UI's `Checkbox.Indicator keepMount
 
 ```typescript
 import { JsonPipe } from '@angular/common';
-import { Component, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, model } from '@angular/core';
 import { LucideCheck as Check, LucideDynamicIcon } from '@lucide/angular';
 import { RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
@@ -4491,6 +4534,7 @@ import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-keep-mounted-example',
     imports: [
         RdxLabelDirective,
@@ -4531,7 +4575,7 @@ export class CheckboxKeepMountedExample {
 Two-way bind the root with `[(ngModel)]`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideCheck } from '@lucide/angular';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
@@ -4545,6 +4589,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
  * Template-driven forms: two-way bind the root with `[(ngModel)]`.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-ngmodel-example',
     imports: [
         FormsModule,
@@ -4584,7 +4629,7 @@ Bind the root with `formControlName`; `disabled` reacts to the control's enable/
 
 ```typescript
 import { JsonPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LucideCheck } from '@lucide/angular';
 import { RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
@@ -4595,6 +4640,7 @@ import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-groups-forms-example',
     template: `
         <section [formGroup]="personality">
@@ -4679,7 +4725,7 @@ export class CheckboxReactiveFormsExampleComponent {
 `Validators.requiredTrue` enforces acceptance; the error shows once the field is touched and submit is guarded.
 
 ```typescript
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LucideCheck } from '@lucide/angular';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
@@ -4694,6 +4740,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
  * ticked, the error shows after the field is touched, and submit is guarded.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-validation-example',
     imports: [
         ReactiveFormsModule,
@@ -4773,7 +4820,7 @@ A parent checkbox derived from its children — `indeterminate` when only some a
 parent/child logic (and the flat all ↔ none toggle) is wired **by hand** in the component.
 
 ```typescript
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { LucideCheck, LucideDynamicIcon } from '@lucide/angular';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { demoCheckbox } from '../../storybook/styles';
@@ -4793,6 +4840,7 @@ interface Item {
  * all are ticked, `indeterminate` when only some are, unchecked otherwise.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-select-all-example',
     imports: [
         RdxLabelDirective,
@@ -4883,7 +4931,7 @@ back to the partial), disabled-but-checked children are preserved, and the group
 control, so `[(value)]`, `ngModel`, and reactive forms bind to the `string[]` value.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideDynamicIcon } from '@lucide/angular';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { demoCheckbox } from '../../storybook/styles';
@@ -4901,6 +4949,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
  * selection, instead of a flat all/none toggle.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-group-example',
     imports: [
         RdxLabelDirective,
@@ -5244,12 +5293,13 @@ selection when closed. For free-form entry whose value is the typed text, reach 
 [Autocomplete](?path=/docs/primitives-autocomplete--docs).
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-default',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
@@ -5386,12 +5436,13 @@ the wrapping element so the popup aligns to the whole control instead of the inl
 Single selection with built-in substring filtering. Type to filter, ArrowDown / Enter to pick.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-default',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
@@ -5433,12 +5484,13 @@ export class ComboboxDefault {
 The whole control is disabled and won't open.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-disabled',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
@@ -5480,7 +5532,7 @@ Options organized into sections with `RdxComboboxGroup` / `RdxComboboxGroupLabel
 heading automatically once all of its items are filtered out.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
@@ -5488,6 +5540,7 @@ import { _importsCombobox } from '../index';
 /** Options organized into sections with `RdxComboboxGroup` / `RdxComboboxGroupLabel`. A group hides
  * its heading automatically when all of its items are filtered out. */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-grouped',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
@@ -5545,7 +5598,7 @@ A 2D grid (`grid`): wrap items in `RdxComboboxRow` and the list becomes `role="g
 `ArrowDown` move between rows keeping the column; `ArrowLeft` / `ArrowRight` move within a row.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
@@ -5556,6 +5609,7 @@ import { _importsCombobox } from '../index';
  * `role="grid"`.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-grid',
     imports: [_importsCombobox, LucideChevronDown],
     template: `
@@ -5608,12 +5662,13 @@ Multiple selection: picks become chips before the input, the popup stays open be
 and Backspace in an empty input removes the last chip.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown, LucideX } from '@lucide/angular';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-multiple',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck, LucideX],
     template: `
@@ -5675,7 +5730,7 @@ Nothing loads until the user types — `RdxComboboxStatus` shows the "start typi
 loading / counts, while the just-selected item is kept available so it survives new result streams.
 
 ```typescript
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown, LucideX } from '@lucide/angular';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
@@ -5695,6 +5750,7 @@ interface DirectoryUser {
  * `RdxComboboxEmpty` covers the "no matches" case — mirrors Base UI's async-single example.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-async',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck, LucideX],
     template: `
@@ -5985,7 +6041,7 @@ External filtering combined with `multiple` — nothing loads until the user typ
 chips, and already-selected people stay available as new results stream in.
 
 ```typescript
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { LucideCheck, LucideX } from '@lucide/angular';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
@@ -6005,6 +6061,7 @@ interface DirectoryUser {
  * loading / counts and `RdxComboboxEmpty` covers "no matches" — mirrors Base UI's async-multiple example.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-async-multiple',
     imports: [_importsCombobox, LucideCheck, LucideX],
     template: `
@@ -6318,7 +6375,7 @@ appears; choosing it opens a modal dialog (prefilled with the query) to confirm 
 is then added and selected — mirroring the Base UI pattern.
 
 ```typescript
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown, LucidePlus, LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoCombobox, demoDialog } from '../../storybook/styles';
@@ -6333,6 +6390,7 @@ const CREATE = '__rdx_create__';
  * Mirrors the Base UI Creatable example.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-creatable',
     imports: [_importsCombobox, ...dialogImports, LucideChevronDown, LucideCheck, LucidePlus, LucideX],
     template: `
@@ -6480,7 +6538,7 @@ popup. Put `rdxComboboxAnchor` on the trigger so the popup anchors to it; the in
 the popup opens.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
@@ -6491,6 +6549,7 @@ import { _importsCombobox } from '../index';
  * popup opens.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-input-in-popup',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
@@ -6538,7 +6597,7 @@ as an activation signal and (by default) fills the input. Paired with `autoHighl
 first match is always ready for `Enter`.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideArrowRight } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
@@ -6548,6 +6607,7 @@ import { _importsCombobox } from '../index';
  * action) with `autoHighlight="always"` (the first match is always highlighted, so Enter runs it).
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-command',
     imports: [_importsCombobox, LucideArrowRight],
     template: `
@@ -6603,7 +6663,7 @@ With `modal`, page scroll is locked and content outside the popup is inert while
 clicking it dismisses.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
@@ -6613,6 +6673,7 @@ import { _importsCombobox } from '../index';
  * backdrop sits behind the popup; clicking it dismisses.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-modal',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
@@ -6673,7 +6734,7 @@ protected onOpenChange(change: { open: boolean; eventDetails: { cancel(): void }
 Live demo:
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox, RdxComboboxOpenChange } from '../index';
@@ -6686,6 +6747,7 @@ interface ComboboxOpenChangeLogEntry {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-open-change',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
@@ -6847,13 +6909,14 @@ export class ComboboxOpenChange {
 The root is a `ControlValueAccessor`, so it binds to a `FormControl` like any other control.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-reactive-forms',
     imports: [_importsCombobox, ReactiveFormsModule, LucideChevronDown, LucideCheck],
     template: `
@@ -6902,7 +6965,7 @@ export class ComboboxReactiveForms {
 `RdxComboboxEmpty` shows only when no item matches the query.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
@@ -6912,6 +6975,7 @@ import { _importsCombobox } from '../index';
  * it. The input also gets `data-list-empty` so the control itself can react.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-empty',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
@@ -6970,7 +7034,7 @@ Then drive a scroll container with `injectVirtualizer`, render only `getVirtualI
 row's `[index]` to the virtual item's index — exactly as in the example's "Show code".
 
 ```typescript
-import { Component, ElementRef, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
 import { LucideCheck } from '@lucide/angular';
 import { injectVirtualizer } from '@tanstack/angular-virtual';
 import { cn, demoCombobox } from '../../storybook/styles';
@@ -6984,6 +7048,7 @@ import { ComboboxItemHighlightedDetails, RdxComboboxRoot } from '../src/combobox
  * highlighted row mounts before `aria-activedescendant` references it.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-virtualized-example',
     imports: [_importsCombobox, LucideCheck],
     template: `
@@ -7479,7 +7544,7 @@ All other parts — `rdxMenuPositioner`, `rdxMenuPopup`, `rdxMenuItem`, `rdxMenu
 Based on the React version [image-cropper](https://github.com/origin-space/image-cropper).
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { demoCropper } from '../../storybook/styles';
 import { RdxCropperCropAreaDirective } from '../src/cropper-crop-area.directive';
 import { RdxCropperDescriptionDirective } from '../src/cropper-description.directive';
@@ -7487,6 +7552,7 @@ import { RdxCropperImageComponent } from '../src/cropper-image.component';
 import { RdxCropperRootDirective } from '../src/cropper-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'cropper-default',
     imports: [
         RdxCropperRootDirective,
@@ -7549,7 +7615,7 @@ Set `disabled` to freeze the cropper — drag, wheel/pinch zoom, and keyboard ar
 leaves the tab order, and `data-disabled` is exposed for styling.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { demoCropper } from '../../storybook/styles';
 import { RdxCropperCropAreaDirective } from '../src/cropper-crop-area.directive';
 import { RdxCropperDescriptionDirective } from '../src/cropper-description.directive';
@@ -7557,6 +7623,7 @@ import { RdxCropperImageComponent } from '../src/cropper-image.component';
 import { RdxCropperRootDirective } from '../src/cropper-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'cropper-disabled',
     imports: [
         RdxCropperRootDirective,
@@ -7589,7 +7656,7 @@ export class CropperDisabled {
 Subscribe to `onCropChange` to read the crop rectangle (in the source image's natural pixels).
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { demoCropper } from '../../storybook/styles';
 import { RdxCropperCropAreaDirective } from '../src/cropper-crop-area.directive';
 import { RdxCropperDescriptionDirective } from '../src/cropper-description.directive';
@@ -7597,6 +7664,7 @@ import { RdxCropperImageComponent } from '../src/cropper-image.component';
 import { Area, RdxCropperRootDirective } from '../src/cropper-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'cropper-with-data',
     imports: [
         RdxCropperRootDirective,
@@ -7686,7 +7754,7 @@ via `aria-describedby` on the _Root_ element.
 ####  Enables users to input specific dates within a designated field.
 
 ```typescript
-import { Component, input, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
 import { DateValue } from '@internationalized/date';
 import { Granularity } from '@radix-ng/primitives/core';
 import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
@@ -7694,6 +7762,7 @@ import { RdxDateFieldInputDirective } from '../src/date-field-input.directive';
 import { RdxDateFieldRootDirective } from '../src/date-field-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-date-field',
     imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective, RdxVisuallyHiddenInputDirective],
     template: `
@@ -7831,13 +7900,14 @@ Import all parts and piece them together.
 ### Invalid
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DateValue } from '@internationalized/date';
 import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 import { RdxDateFieldInputDirective } from '../src/date-field-input.directive';
 import { RdxDateFieldRootDirective } from '../src/date-field-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-date-field-invalid',
     imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective, RdxVisuallyHiddenInputDirective],
     template: `
@@ -7905,12 +7975,13 @@ Dialog composes the shared Portal, Presence, Dismissable Layer, and Focus Scope 
 It stays headless: styles and native CSS animations belong to the consumer.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-default',
     imports: [...dialogImports, LucideX],
     template: `
@@ -8027,12 +8098,13 @@ custom portal target).
 A modal dialog with an accessible title and description, form fields, and close buttons.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-default',
     imports: [...dialogImports, LucideX],
     template: `
@@ -8083,12 +8155,13 @@ export class RdxDialogDefaultComponent {
 Bind `[(open)]` when application state should open or close the dialog programmatically.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-controlled',
     imports: [...dialogImports, LucideX],
     template: `
@@ -8142,12 +8215,13 @@ Set `[modal]="false"` to keep document scrolling and outside pointer interaction
 no backdrop in this mode.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-non-modal',
     imports: [...dialogImports, LucideX],
     template: `
@@ -8193,12 +8267,13 @@ Use `modal="trap-focus"` to keep keyboard focus inside the dialog while leaving 
 outside pointer interactions enabled.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-trap-focus',
     imports: [...dialogImports, LucideX],
     template: `
@@ -8259,12 +8334,13 @@ Set `disablePointerDismissal` so clicking the backdrop no longer closes the dial
 close buttons still close it.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-without-dismiss',
     imports: [...dialogImports, LucideX],
     template: `
@@ -8306,12 +8382,13 @@ Several `rdxDialogTrigger` buttons can open the same dialog. The active trigger 
 exposed on the root so the content can adapt.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-multiple-triggers',
     imports: [...dialogImports, LucideX],
     template: `
@@ -8354,12 +8431,13 @@ export class RdxDialogMultipleTriggersComponent {
 Bind both `[(open)]` and `[(triggerId)]` to choose which trigger is active from component state.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-controlled-multiple',
     imports: [...dialogImports, LucideX],
     template: `
@@ -8421,12 +8499,13 @@ Create a shared handle with `createRdxDialogHandle()` when triggers live outside
 handle also supports imperative `open(id)`, `toggle(id)`, and `close()`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { createRdxDialogHandle, dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-detached',
     imports: [...dialogImports, LucideX],
     template: `
@@ -8481,12 +8560,13 @@ Dialogs can be nested. The parent popup gains `data-nested-dialog-open` and the 
 `data-nested`, which the demo uses to scale the parent back.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-nested',
     imports: [...dialogImports, LucideX],
     template: `
@@ -8549,13 +8629,14 @@ Drive the dialog with `[(open)]` and listen to `onOpenChange` to intercept a clo
 confirmation dialog when there are unsaved changes.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideX } from '@lucide/angular';
 import { dialogImports, RdxDialogOpenChange } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-close-confirmation',
     imports: [...dialogImports, FormsModule, LucideX],
     template: `
@@ -8658,7 +8739,7 @@ screen. Center the popup with the scroll-area content's `min-h-full items-center
 vertical margin so it can grow past the bottom edge.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import {
@@ -8680,6 +8761,7 @@ import { cn, demoButton, demoCard, demoDialog } from '../../storybook/styles';
  * edge while the whole page (not an inner region) scrolls.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-outside-scroll',
     imports: [
         ...dialogImports,
@@ -8869,12 +8951,13 @@ export class RdxDialogOutsideScrollComponent {
 Keep the popup fixed on screen and scroll an inner region instead.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-inside-scroll',
     imports: [...dialogImports, LucideX],
     template: `
@@ -8927,7 +9010,7 @@ individually, so elements such as a close button can sit outside the visible con
 around it stay dismissable.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoDialog } from '../../storybook/styles';
@@ -8942,6 +9025,7 @@ import { cn, demoButton, demoDialog } from '../../storybook/styles';
  * dimmed area around the frame.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-uncontained',
     imports: [...dialogImports, LucideX],
     template: `
@@ -8993,13 +9077,14 @@ export class RdxDialogUncontainedComponent {
 Control the dialog's `open` state from a menu item to launch it from a `Menu`.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { cn, demoButton, demoDialog, demoMenu } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-from-menu',
     imports: [...dialogImports, RdxMenuModule, LucideX],
     template: `
@@ -9100,12 +9185,13 @@ modal by default but, unlike Alert Dialog, leaves modality and dismissal fully c
 and native CSS animations belong to the consumer.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-default',
     imports: [...drawerImports, LucideX],
     template: `
@@ -9263,12 +9349,13 @@ and its slide-out keyframe should hold the closed position with `forwards`:
 A bottom sheet you can swipe down to dismiss, with an accessible title, description, and close buttons.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-default',
     imports: [...drawerImports, LucideX],
     template: `
@@ -9320,11 +9407,12 @@ Own the open state with `[(open)]` and drive it from anywhere — buttons outsid
 close it alongside the trigger.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-controlled',
     imports: [...drawerImports],
     template: `
@@ -9376,7 +9464,7 @@ Set `[swipeDirection]` and position the popup with CSS to anchor the drawer to a
 controls the dismiss gesture; the visual side is consumer CSS.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports, RdxDrawerSwipeDirection } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
@@ -9390,6 +9478,7 @@ const SIDES: { side: DrawerSide; swipeDirection: RdxDrawerSwipeDirection }[] = [
 ];
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-sides',
     imports: [...drawerImports],
     template: `
@@ -9440,7 +9529,7 @@ points, with a fixed drag header and independently scrollable content. Add `[sna
 to step one point per release instead of skipping.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports, RdxDrawerSnapPoint } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
@@ -9452,6 +9541,7 @@ function toViewportSnapPoint(heightRem: number): RdxDrawerSnapPoint {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-snap-points',
     imports: [...drawerImports],
     template: `
@@ -9525,11 +9615,12 @@ Base UI's right-edge swipe-area demo: the non-modal drawer portals back into a l
 `overflow-hidden` container and uses `rdxDrawerViewport` to position the popup inside it.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-swipe-to-open',
     imports: [...drawerImports],
     template: `
@@ -9601,7 +9692,7 @@ A taller sheet whose body scrolls. The swipe gesture yields to scrolling inside 
 until the scroll reaches its edge, so the drawer only swipes away from the top of the list.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import {
     RdxScrollAreaContent,
@@ -9660,6 +9751,7 @@ const LONG_LIST = [
 ] as const;
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-scrollable',
     imports: [
         ...drawerImports,
@@ -9797,11 +9889,12 @@ Set `[modal]="false"` to keep page scrolling and outside pointer interactions av
 drawer is open; there is no backdrop in this mode.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-non-modal',
     imports: [...drawerImports],
     template: `
@@ -9852,7 +9945,7 @@ An iOS-style action sheet: grouped actions with a separated destructive action a
 each closing the drawer.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
@@ -9863,6 +9956,7 @@ const action = cn(
 );
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-action-sheet',
     imports: [...drawerImports],
     template: `
@@ -9922,11 +10016,12 @@ handling the parent drawer while a nested drawer is open. Use the CSS variable i
 popup max-height.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer, demoInput } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-virtual-keyboard',
     imports: [...drawerImports],
     template: `
@@ -10018,7 +10113,7 @@ detected through the dialog hierarchy, so every parent gains `data-nested-drawer
 `--nested-drawers`) and recedes behind the one in front.
 
 ```typescript
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
@@ -10028,6 +10123,7 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
  * gains `data-nested-drawer-open` and recedes behind the one in front (see `demoDrawer.popup`).
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-nested',
     imports: [...drawerImports],
     template: `
@@ -10085,11 +10181,12 @@ Both gain `[data-active]`, `--drawer-swipe-progress`, `--nested-drawers`, and
 gesture.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-page-scale',
     imports: [...drawerImports],
     template: `
@@ -10153,11 +10250,12 @@ Create a shared handle with `createRdxDrawerHandle()` when triggers live outside
 handle also supports imperative `open(id)`, `toggle(id)`, and `close()`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { createRdxDrawerHandle, drawerImports } from '@radix-ng/primitives/drawer';
 import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-detached',
     imports: [...drawerImports],
     template: `
@@ -10251,7 +10349,7 @@ from context. See the Dialog docs for the trigger and portal inputs.
 #### An inline text field that swaps a read-only preview for an editable input.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxEditableArea,
     RdxEditableCancelTrigger,
@@ -10264,6 +10362,7 @@ import {
 import { cn, demoButton, demoEditable } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'editable-default-example',
     imports: [
         RdxEditableRoot,
@@ -10380,7 +10479,7 @@ submitValue(change: RdxEditableValueChangeEvent) {
 Set `activationMode="dblclick"` so the preview only enters edit mode on double-click instead of on focus.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxEditableArea,
     RdxEditableCancelTrigger,
@@ -10392,6 +10491,7 @@ import {
 import { cn, demoButton, demoEditable } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'editable-double-click-example',
     imports: [
         RdxEditableRoot,
@@ -10440,10 +10540,11 @@ With `autoResize`, the preview and input overlay in a single grid cell, so the f
 content. The parts carry `[data-auto-resize]` for styling.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxEditableArea, RdxEditableInput, RdxEditablePreview, RdxEditableRoot } from '@radix-ng/primitives/editable';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'editable-auto-resize-example',
     imports: [RdxEditableRoot, RdxEditableArea, RdxEditablePreview, RdxEditableInput],
     template: `
@@ -10523,7 +10624,7 @@ Field is form-agnostic. It does not replace Angular Forms; pass validation state
 Forms, template-driven forms, or Signal Forms when using them.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
 import { RdxFieldError } from '../src/field-error';
@@ -10532,6 +10633,7 @@ import { RdxFieldRoot } from '../src/field-root';
 import { fieldDescription, fieldError, fieldLabel } from './field.shared';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'field-default-example',
     imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
     template: `
@@ -10590,7 +10692,7 @@ import {
 The root owns the relationships between the field parts.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
 import { RdxFieldError } from '../src/field-error';
@@ -10599,6 +10701,7 @@ import { RdxFieldRoot } from '../src/field-root';
 import { fieldDescription, fieldError, fieldLabel } from './field.shared';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'field-default-example',
     imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
     template: `
@@ -10624,7 +10727,7 @@ export class FieldDefaultExample {
 Pass invalid, dirty, and touched state from your form model.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
 import { RdxFieldError } from '../src/field-error';
@@ -10633,6 +10736,7 @@ import { RdxFieldRoot } from '../src/field-root';
 import { fieldDescription, fieldError, fieldInputInvalid, fieldLabel } from './field.shared';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'field-invalid-example',
     imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
     template: `
@@ -10664,7 +10768,7 @@ Angular Forms remains responsible for validation. Field reflects the resulting s
 relationships.
 
 ```typescript
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
@@ -10674,6 +10778,7 @@ import { RdxFieldRoot } from '../src/field-root';
 import { fieldDescription, fieldError, fieldInputInvalid, fieldLabel, fieldSubmitButton } from './field.shared';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'field-reactive-forms-example',
     imports: [ReactiveFormsModule, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
     template: `
@@ -10734,7 +10839,7 @@ For custom controls, pass `filled` and `focused` state to the root when the nati
 enough.
 
 ```typescript
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
 import { RdxFieldError } from '../src/field-error';
@@ -10743,6 +10848,7 @@ import { RdxFieldRoot } from '../src/field-root';
 import { fieldCustomTrigger, fieldDescription, fieldError, fieldLabel } from './field.shared';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'field-custom-control-example',
     imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
     template: `
@@ -10863,7 +10969,7 @@ Disabled state is applied to the native fieldset and exposed to the legend for s
 A larger form groups account details and submits values from fields inside the fieldset.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFieldsetLegend, RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
@@ -10871,6 +10977,7 @@ import { RdxInputDirective } from '@radix-ng/primitives/input';
 import { cn, demoButton, demoInput } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'fieldset-signup-form-example',
     imports: [
         ReactiveFormsModule,
@@ -10993,7 +11100,7 @@ systems (or Field inputs) stay the source of validity. It maps external/server e
 and resets field interaction state on native reset.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormErrors, RdxFormRoot, RdxFormSubmitEvent } from '../index';
 import { formError, formField, formInput, formLabel, formSubmit } from './form.shared';
@@ -11004,6 +11111,7 @@ import { formError, formField, formInput, formLabel, formSubmit } from './form.s
  * its error, and binding `(onClearErrors)` back into `errors` keeps the controlled map in sync.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'form-default-example',
     imports: [RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldError],
     template: `
@@ -11100,7 +11208,7 @@ error maps onto the field by `name` and clears when you edit it.
 > so an always-fresh reference would resurrect cleared errors on the next change-detection pass.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormErrors, RdxFormRoot, RdxFormSubmitEvent } from '../index';
 import { formError, formField, formInput, formLabel, formSubmit } from './form.shared';
@@ -11111,6 +11219,7 @@ import { formError, formField, formInput, formLabel, formSubmit } from './form.s
  * its error, and binding `(onClearErrors)` back into `errors` keeps the controlled map in sync.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'form-default-example',
     imports: [RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldError],
     template: `
@@ -11164,7 +11273,7 @@ Native `reset` clears external errors and every field's interaction state, and r
 reverted values.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormErrors, RdxFormRoot, RdxFormSubmitEvent } from '../index';
 import { formError, formField, formInput, formLabel, formReset, formSubmit } from './form.shared';
@@ -11175,6 +11284,7 @@ import { formError, formField, formInput, formLabel, formReset, formSubmit } fro
  * server error, then press Reset; submit `1234` to pass.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'form-reset-example',
     imports: [RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldError],
     template: `
@@ -11231,7 +11341,7 @@ Reactive Forms owns validity; Form adds the aggregate attributes and submit hand
 `<form>`. `(ngSubmit)` is the source of truth — Form never stops propagation.
 
 ```typescript
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormRoot } from '../index';
@@ -11243,6 +11353,7 @@ import { formError, formField, formInput, formLabel, formSubmit } from './form.s
  * stops propagation, so both fire — and map each `FormControl`'s validity into the Field's `invalid`.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'form-reactive-forms-example',
     imports: [ReactiveFormsModule, RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldError],
     template: `
@@ -11302,7 +11413,7 @@ No `@angular/forms` at all — a valid submit serializes the form's `FormData` i
 (repeated names collapse into arrays).
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxFieldControl, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormRoot, RdxFormSubmitEvent } from '../index';
 import { formField, formInput, formLabel, formSubmit } from './form.shared';
@@ -11312,6 +11423,7 @@ import { formField, formInput, formLabel, formSubmit } from './form.shared';
  * `FormData` into a plain values object (repeated `name`s collapse into arrays).
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'form-native-controls-example',
     imports: [RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl],
     template: `
@@ -11401,12 +11513,13 @@ Disables the native input and exposes `data-disabled`.
 Connects the input to Field label, description, and validation state.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { demoInput } from '../../storybook/styles';
 import { RdxInputDirective } from '../src/input.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'input-field-example',
     imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldDescription, RdxFieldError, RdxInputDirective],
     template: `
@@ -11428,13 +11541,14 @@ export class InputFieldExample {
 Uses Angular reactive forms while Field reflects validation state.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { demoInput } from '../../storybook/styles';
 import { RdxInputDirective } from '../src/input.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'input-reactive-forms-example',
     imports: [ReactiveFormsModule, RdxFieldRoot, RdxFieldLabel, RdxFieldDescription, RdxFieldError, RdxInputDirective],
     template: `
@@ -11464,7 +11578,7 @@ export class InputReactiveFormsExample {
 Combines multiple inputs, Field state, a checkbox, and a submit button in a larger form.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LucideCheck } from '@lucide/angular';
 import { RdxButtonDirective } from '@radix-ng/primitives/button';
@@ -11479,6 +11593,7 @@ import { cn, demoButton, demoCheckbox, demoInput } from '../../storybook/styles'
 import { RdxInputDirective } from '../src/input.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'input-signup-form-example',
     imports: [
         ReactiveFormsModule,
@@ -12994,7 +13109,7 @@ All other parts — `rdxMenuPositioner`, `rdxMenuPopup`, `rdxMenuItem`, `rdxMenu
 #### A graphical display of a numeric value within a range.
 
 ```typescript
-import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { cn } from '../../storybook/styles';
 import { RdxMeterIndicatorDirective } from '../src/meter-indicator.directive';
 import { RdxMeterLabelDirective } from '../src/meter-label.directive';
@@ -13005,6 +13120,7 @@ import { RdxMeterValueDirective } from '../src/meter-value.directive';
 const storageSteps = [24, 38, 52, 67, 81] as const;
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'meter-storage',
     imports: [
         RdxMeterRootDirective,
@@ -13109,7 +13225,7 @@ import {
 An animated labelled meter with formatted value text.
 
 ```typescript
-import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { cn } from '../../storybook/styles';
 import { RdxMeterIndicatorDirective } from '../src/meter-indicator.directive';
 import { RdxMeterLabelDirective } from '../src/meter-label.directive';
@@ -13120,6 +13236,7 @@ import { RdxMeterValueDirective } from '../src/meter-value.directive';
 const storageSteps = [24, 38, 52, 67, 81] as const;
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'meter-storage',
     imports: [
         RdxMeterRootDirective,
@@ -13268,12 +13385,13 @@ It composes the shared Popper, Portal, Presence, Dismissable Layer, and Composit
 remains headless: styles and native CSS animations belong to the consumer.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
 import { cn, demoNavigationMenu } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-default',
     imports: [...navigationMenuImports, LucideChevronDown],
     template: `
@@ -13487,12 +13605,13 @@ A horizontal navigation list with two content panels and a standalone link. Cont
 the active item changes.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
 import { cn, demoNavigationMenu } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-default',
     imports: [...navigationMenuImports, LucideChevronDown],
     template: `
@@ -13622,12 +13741,13 @@ export class RdxNavigationMenuDefaultComponent {
 Set `orientation="vertical"` on the root and position the popup to the side with `side="right"`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronRight } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
 import { cn, demoNavigationMenu } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-vertical',
     imports: [...navigationMenuImports, LucideChevronRight],
     template: `
@@ -13690,12 +13810,13 @@ Set `dir="rtl"` on the root. Placement, alignment, and arrow-key direction follo
 direction.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
 import { cn, demoNavigationMenu } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-rtl',
     imports: [...navigationMenuImports, LucideChevronDown],
     template: `
@@ -13749,11 +13870,12 @@ export class RdxNavigationMenuRtlComponent {
 A navigation list of links without any popup. Links are plain tabbable anchors and expose `data-active`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
 import { demoNavigationMenu } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-links',
     imports: [...navigationMenuImports],
     template: `
@@ -13788,7 +13910,7 @@ and an "action" link that runs a handler via `(onSelect)` without closing the me
 on a router link.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideArrowUpRight, LucideBookOpen, LucideChevronDown, LucideCode, LucideLifeBuoy } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
 import { cn, demoNavigationMenu } from '../../storybook/styles';
@@ -13800,6 +13922,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
  * The same directive would sit on a router link.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-custom-links',
     imports: [
         ...navigationMenuImports,
@@ -13908,7 +14031,7 @@ When the content exceeds the available space, constrain it with a `max-height` a
 viewport measures the capped height, so the popup stays a fixed size and the list scrolls inside it.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
 import { cn, demoNavigationMenu } from '../../storybook/styles';
@@ -13919,6 +14042,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
  * popup stays a fixed size and the list scrolls inside it.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-large',
     imports: [...navigationMenuImports, LucideChevronDown],
     template: `
@@ -13985,12 +14109,13 @@ Render a `rdxNavigationMenuRoot` inside content for a nested menu. The nested ro
 positions its own popup inline, and link selection closes both the nested and parent roots.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown, LucideChevronRight } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
 import { cn, demoNavigationMenu } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-nested',
     imports: [...navigationMenuImports, LucideChevronDown, LucideChevronRight],
     template: `
@@ -14161,7 +14286,7 @@ A second level that stays in the same panel: inside the outer content, render an
 keeps the inline panel persistent.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
 import { cn, demoNavigationMenu } from '../../storybook/styles';
@@ -14173,6 +14298,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
  * kept non-null so the inline panel always shows a category (the idea behind Base UI's `defaultValue`).
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-nested-inline',
     imports: [...navigationMenuImports, LucideChevronDown],
     template: `
@@ -14359,7 +14485,7 @@ composite focus, `Item` carries the `value`, `Icon` exposes the open state for a
 #### A numeric input with stepper buttons, drag-to-scrub, locale-aware formatting and keyboard control.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideDynamicIcon, LucideMinus as Minus, LucidePlus as Plus } from '@lucide/angular';
 import {
     RdxNumberFieldDecrement,
@@ -14370,6 +14496,7 @@ import {
 } from '@radix-ng/primitives/number-field';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'number-field-default-example',
     imports: [
         LucideDynamicIcon,
@@ -14491,7 +14618,7 @@ setValue(change: RdxNumberFieldValueChangeEvent) {
 A basic field with a label, stepper buttons and a `min` of `0`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideDynamicIcon, LucideMinus as Minus, LucidePlus as Plus } from '@lucide/angular';
 import {
     RdxNumberFieldDecrement,
@@ -14502,6 +14629,7 @@ import {
 } from '@radix-ng/primitives/number-field';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'number-field-default-example',
     imports: [
         LucideDynamicIcon,
@@ -14549,7 +14677,7 @@ export class NumberFieldDefaultExample {
 Fractional steps with `signDisplay` and fraction-digit formatting.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideDynamicIcon, LucideMinus as Minus, LucidePlus as Plus } from '@lucide/angular';
 import {
     RdxNumberFieldDecrement,
@@ -14560,6 +14688,7 @@ import {
 } from '@radix-ng/primitives/number-field';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'number-field-decimal-example',
     imports: [
         LucideDynamicIcon,
@@ -14620,7 +14749,7 @@ export class NumberFieldDecimalExample {
 `format: { style: 'percent' }` displays and parses the value as a percentage.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideDynamicIcon, LucideMinus as Minus, LucidePlus as Plus } from '@lucide/angular';
 import {
     RdxNumberFieldDecrement,
@@ -14631,6 +14760,7 @@ import {
 } from '@radix-ng/primitives/number-field';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'number-field-percentage-example',
     imports: [
         LucideDynamicIcon,
@@ -14689,7 +14819,7 @@ export class NumberFieldPercentageExample {
 `format: { style: 'currency', currency: 'EUR' }` renders a currency value.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideDynamicIcon, LucideMinus as Minus, LucidePlus as Plus } from '@lucide/angular';
 import {
     RdxNumberFieldDecrement,
@@ -14700,6 +14830,7 @@ import {
 } from '@radix-ng/primitives/number-field';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'number-field-currency-example',
     imports: [
         LucideDynamicIcon,
@@ -14753,7 +14884,7 @@ export class NumberFieldCurrencyExample {
 Drag the label horizontally to change the value; a virtual cursor follows the pointer.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     LucideDynamicIcon,
     LucideMinus as Minus,
@@ -14771,6 +14902,7 @@ import {
 } from '@radix-ng/primitives/number-field';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'number-field-scrub-example',
     imports: [
         LucideDynamicIcon,
@@ -14830,7 +14962,7 @@ export class NumberFieldScrubExample {
 The control integrates with `formControlName`, exposing the numeric value to the form.
 
 ```typescript
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { LucideDynamicIcon, LucideMinus as Minus, LucidePlus as Plus } from '@lucide/angular';
 import {
@@ -14843,6 +14975,7 @@ import {
 } from '@radix-ng/primitives/number-field';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'number-field-reactive-forms',
     imports: [
         ReactiveFormsModule,
@@ -15141,12 +15274,13 @@ Popover composes the shared Popper, structural Portal (portal + presence), Dismi
 Scope primitives. It remains headless: styles and native CSS animations belong to the consumer.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucidePlus, LucideX } from '@lucide/angular';
 import { popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-default',
     imports: [...popoverImports, LucidePlus, LucideX],
     template: `
@@ -15281,12 +15415,13 @@ the positioner — use the explicit `<ng-template rdxPopoverPortal>` form (and t
 A form-like popup with an arrow, accessible title and description, and a close button.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucidePlus, LucideX } from '@lucide/angular';
 import { popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-default',
     imports: [...popoverImports, LucidePlus, LucideX],
     template: `
@@ -15335,12 +15470,13 @@ Bind `[(open)]` when application state should open or close the popover programm
 example also includes the optional backdrop part.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-controlled',
     imports: [...popoverImports, LucideX],
     template: `
@@ -15388,12 +15524,13 @@ Bind both `[(open)]` and `[(triggerId)]` when application state should choose th
 `onOpenChange` reports the trigger element, trigger id, source event, and change reason.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { popoverImports, RdxPopoverOpenChange } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-controlled-multiple',
     imports: [...popoverImports, LucideX],
     template: `
@@ -15476,13 +15613,14 @@ Configure `side`, `sideOffset`, `align`, and collision behavior on `rdxPopoverPo
 shared Popper primitive updates `data-side` and `data-align` after collision handling.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { popoverImports } from '@radix-ng/primitives/popover';
 import { Side } from '@radix-ng/primitives/popper';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-positioning',
     imports: [...popoverImports, LucideX],
     template: `
@@ -15539,12 +15677,13 @@ fade — the closed-state keyframes keep the content mounted until `animationend
 zoom/slide belongs on the popup, so it never fights the positioner's placement transform.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-animated',
     imports: [...popoverImports, LucideX],
     template: `
@@ -15579,12 +15718,13 @@ Set `modal` on `rdxPopoverRoot` to block outside interaction, or use `"trap-focu
 inside while leaving document scrolling and outside pointer interactions available.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { popoverImports, RdxPopoverModal } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-modal',
     imports: [...popoverImports, LucideX],
     template: `
@@ -15674,12 +15814,13 @@ Pass `[anchor]` to `rdxPopoverPositioner` when the popup should open from a trig
 itself against a different element.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-custom-anchor',
     imports: [...popoverImports, LucideX],
     template: `
@@ -15729,12 +15870,13 @@ Create a shared handle when triggers live outside the root or multiple triggers 
 same popup. The handle also supports imperative `open(id)`, `toggle(id)`, and `close()` calls.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { createRdxPopoverHandle, popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-detached',
     imports: [...popoverImports, LucideX],
     template: `
@@ -15791,12 +15933,13 @@ Add `openOnHover` to a trigger when pointer users should be able to open its pop
 Use `delay` and `closeDelay` on the same trigger to configure the timing.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-hover',
     imports: [...popoverImports, LucideX],
     template: `
@@ -15834,11 +15977,12 @@ moves between triggers. The viewport exposes `data-activation-direction` and ret
 `data-previous` snapshot until its CSS transition or animation completes.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-viewport',
     imports: [...popoverImports],
     template: `
@@ -15945,11 +16089,12 @@ interrupt the hover grace area.
 #### A popup that appears when a link is hovered or focused, showing a visual preview.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { previewCardImports } from '@radix-ng/primitives/preview-card';
 import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-preview-card-default',
     imports: [...previewCardImports],
     template: `
@@ -16058,11 +16203,12 @@ to the positioner — use the explicit `<ng-template rdxPreviewCardPortal>` form
 Control both the open state and the active trigger id.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { previewCardImports } from '@radix-ng/primitives/preview-card';
 import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-preview-card-controlled-multiple',
     imports: [...previewCardImports],
     template: `
@@ -16132,11 +16278,12 @@ export class RdxPreviewCardControlledMultipleComponent {
 Associate triggers outside the root through a shared handle.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { createRdxPreviewCardHandle, previewCardImports } from '@radix-ng/primitives/preview-card';
 import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-preview-card-detached',
     imports: [...previewCardImports],
     template: `
@@ -16193,12 +16340,13 @@ export class RdxPreviewCardDetachedComponent {
 Configure side, offsets, collision behavior, and arrow padding on the positioner.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { Side } from '@radix-ng/primitives/popper';
 import { previewCardImports } from '@radix-ng/primitives/preview-card';
 import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-preview-card-positioning',
     imports: [...previewCardImports],
     template: `
@@ -16251,11 +16399,12 @@ export class RdxPreviewCardPositioningComponent {
 Animate content changes when different triggers render different payloads.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { previewCardImports } from '@radix-ng/primitives/preview-card';
 import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-preview-card-viewport',
     imports: [...previewCardImports],
     template: `
@@ -16347,7 +16496,7 @@ The floating preview surface. It exposes dismiss events and transition attribute
 #### Displays task completion with accessible label, value, track, and indicator parts.
 
 ```typescript
-import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { cn } from '../../storybook/styles';
 import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
 import { RdxProgressLabelDirective } from '../src/progress-label.directive';
@@ -16358,6 +16507,7 @@ import { RdxProgressValueDirective } from '../src/progress-value.directive';
 const progressSteps = [12, 28, 44, 60, 76, 92, 100] as const;
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'progress-linear',
     imports: [
         RdxProgressRootDirective,
@@ -16461,7 +16611,7 @@ import {
 An animated labelled progress bar with formatted value text.
 
 ```typescript
-import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { cn } from '../../storybook/styles';
 import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
 import { RdxProgressLabelDirective } from '../src/progress-label.directive';
@@ -16472,6 +16622,7 @@ import { RdxProgressValueDirective } from '../src/progress-value.directive';
 const progressSteps = [12, 28, 44, 60, 76, 92, 100] as const;
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'progress-linear',
     imports: [
         RdxProgressRootDirective,
@@ -16576,7 +16727,7 @@ Use `min`, `max`, and `valueLabel` when progress is not a simple 0-100 percentag
 The same primitive state can drive an SVG circular progress indicator.
 
 ```typescript
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
 import { RdxProgressLabelDirective } from '../src/progress-label.directive';
 import { RdxProgressRootDirective } from '../src/progress-root.directive';
@@ -16584,6 +16735,7 @@ import { RdxProgressTrackDirective } from '../src/progress-track.directive';
 import { RdxProgressValueDirective } from '../src/progress-value.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'progress-circular',
     imports: [
         RdxProgressRootDirective,
@@ -16668,7 +16820,7 @@ The root uses `role="progressbar"`, is labelled by `rdxProgressLabel`, and is de
 #### A set of checkable buttons—known as radio buttons—where no more than one of the buttons can be checked at a time.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import {
     RdxRadioGroupDirective,
@@ -16679,6 +16831,7 @@ import {
 import { demoRadio } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'radio-default-example',
     template: `
         <form>
@@ -16790,7 +16943,7 @@ setValue(change: RdxRadioValueChangeEvent) {
 A radio group with sibling labels and hidden native inputs.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import {
     RdxRadioGroupDirective,
@@ -16801,6 +16954,7 @@ import {
 import { demoRadio } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'radio-default-example',
     template: `
         <form>
@@ -16847,7 +17001,7 @@ export class RadioDefaultComponent {
 A disabled radio group ignores user interaction and exposes disabled state attributes to all items.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import {
     RdxRadioGroupDirective,
@@ -16858,6 +17012,7 @@ import {
 import { demoRadio } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'radio-disabled-example',
     template: `
         <div
@@ -16909,7 +17064,7 @@ export class RadioDisabledComponent {
 Radio group works with `ngModel`, native form submission, and a submit button via the hidden `rdxRadioItemInput`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import {
@@ -16921,6 +17076,7 @@ import {
 import { cn, demoButton, demoRadio } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'radio-template-driven-forms-example',
     template: `
         <form class="flex w-72 flex-col gap-4" (ngSubmit)="submit()">
@@ -17178,7 +17334,7 @@ When content overflows on both axes, render two `Scrollbar` parts and a `Corner`
 they meet.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxScrollAreaContent,
     RdxScrollAreaCorner,
@@ -17195,6 +17351,7 @@ const html = String.raw;
  * the vertical and horizontal scrollbars meet.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'scroll-area-both-example',
     imports: [
         RdxScrollAreaRoot,
@@ -17261,7 +17418,7 @@ pixel distance to each edge) into a `mask-image` gradient. Each fade disappears 
 matching edge.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxScrollAreaContent,
     RdxScrollAreaRoot,
@@ -17279,6 +17436,7 @@ const html = String.raw;
  * disappears once you reach an edge because the matching variable becomes `0px`.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'scroll-area-gradient-example',
     imports: [
         RdxScrollAreaRoot,
@@ -17328,7 +17486,7 @@ viewport (the Angular equivalent of Base UI's `render` prop). Keeping the scroll
 lets a horizontal `mask-image` fade the tabs at whichever edge still has more to reveal.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxScrollAreaRoot, RdxScrollAreaViewport } from '@radix-ng/primitives/scroll-area';
 import { RdxTabsIndicator, RdxTabsList, RdxTabsPanel, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 
@@ -17342,6 +17500,7 @@ const html = String.raw;
  * whichever edge still has more tabs to reveal.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'scroll-area-tabs-example',
     imports: [
         RdxScrollAreaRoot,
@@ -17453,7 +17612,7 @@ trigger) and **Item-aligned** (the popup overlaps the trigger, aligned to the se
 native `<select>` behavior).
 
 ```typescript
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { Align } from '@radix-ng/primitives/popper';
 import { RdxSelectGroup } from '../src/select-group';
@@ -17470,6 +17629,7 @@ import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'select-default',
     imports: [
         RdxSelectRoot,
@@ -17667,7 +17827,7 @@ the behavior of a native `<select>`. Use `rdxSelectItemAlignedPosition` and
 A grouped list (Fruits / Vegetables) with Popper positioning. Click the trigger to open the popup.
 
 ```typescript
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { Align } from '@radix-ng/primitives/popper';
 import { RdxSelectGroup } from '../src/select-group';
@@ -17684,6 +17844,7 @@ import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'select-default',
     imports: [
         RdxSelectRoot,
@@ -17778,7 +17939,7 @@ With `multiple`, picks accumulate in the value array, the trigger joins their la
 item keeps its indicator. Shows `RdxSelectIcon` and `RdxSelectSeparator`.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectGroupLabel } from '../src/select-group-label';
@@ -17801,6 +17962,7 @@ import { RdxSelectValue } from '../src/select-value';
  * and `RdxSelectSeparator` between groups.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'select-multiple',
     imports: [
         RdxSelectRoot,
@@ -17886,7 +18048,7 @@ export class SelectMultiple {
 `closeInteractionType`, so app logic can distinguish keyboard, mouse, and touch flows explicitly.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import {
     RdxSelectItem,
@@ -17911,6 +18073,7 @@ interface SelectEventLogEntry {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'select-events',
     imports: [
         RdxSelectRoot,
@@ -18107,7 +18270,7 @@ key (here `id`) instead of reference, and render rich, two-line content in both 
 items from the selected object.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideCheck, LucideChevronsUpDown } from '@lucide/angular';
 import { RdxSelectItem } from '../src/select-item';
 import { RdxSelectItemIndicator } from '../src/select-item-indicator';
@@ -18133,6 +18296,7 @@ interface ShippingMethod {
  * right item, and both the trigger and the items render rich, two-line content from the object.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'select-object-values',
     imports: [
         RdxSelectRoot,
@@ -18230,7 +18394,7 @@ When the list is taller than the available viewport, `rdxSelectScrollUpButton` a
 `rdxSelectScrollDownButton` appear automatically at the top and bottom of the popup.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideCheck, LucideChevronDown, LucideChevronUp } from '@lucide/angular';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectGroupLabel } from '../src/select-group-label';
@@ -18248,6 +18412,7 @@ import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'select-with-scroll',
     imports: [
         RdxSelectRoot,
@@ -18365,7 +18530,7 @@ The popup opens aligned to the selected item, mirroring native `<select>` behavi
 value is pre-selected so the alignment is immediately visible.
 
 ```typescript
-import { booleanAttribute, Component, input, signal } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectGroupLabel } from '../src/select-group-label';
@@ -18382,6 +18547,7 @@ import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'select-aligned-position',
     imports: [
         RdxSelectRoot,
@@ -18482,7 +18648,7 @@ export class SelectAlignedPosition {
 Item-aligned positioning combined with a long list that overflows, showing both scroll buttons.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown, LucideChevronUp } from '@lucide/angular';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectGroupLabel } from '../src/select-group-label';
@@ -18501,6 +18667,7 @@ import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'select-aligned-position-with-scroll',
     imports: [
         RdxSelectRoot,
@@ -18798,7 +18965,7 @@ The default orientation is horizontal.
 #### An input where the user selects a value, or a range of values, from within a given range.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
@@ -18809,6 +18976,7 @@ import {
 } from '@radix-ng/primitives/slider';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'slider-default-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
@@ -18917,7 +19085,7 @@ setValue(change: RdxSliderValueChangeEvent) {
 ```
 
 ```typescript
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
@@ -18930,6 +19098,7 @@ import {
 } from '@radix-ng/primitives/slider';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'slider-events-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
@@ -19034,7 +19203,7 @@ centers. Both edge modes currently share the same Angular runtime positioning pa
 `edge-client-only` value is accepted for Base UI API parity.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
@@ -19045,6 +19214,7 @@ import {
 } from '@radix-ng/primitives/slider';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'slider-thumb-alignment-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
@@ -19114,7 +19284,7 @@ Pass an array value and render one `rdxSliderThumb` per value, each with an expl
 `thumbCollisionBehavior` to control what happens when they meet.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
@@ -19125,6 +19295,7 @@ import {
 } from '@radix-ng/primitives/slider';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'slider-range-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
@@ -19160,7 +19331,7 @@ Set `orientation="vertical"` on the root. The control and track lay out along th
 vertical axis; no other changes are required.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
@@ -19171,6 +19342,7 @@ import {
 } from '@radix-ng/primitives/slider';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'slider-vertical-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
@@ -19199,7 +19371,7 @@ Display the formatted value with `rdxSliderValue`. Formatting honours the root's
 sets its `for` attribute to the registered thumb input ids, in DOM order.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
@@ -19211,6 +19383,7 @@ import {
 } from '@radix-ng/primitives/slider';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'slider-value-example',
     imports: [
         RdxSliderRoot,
@@ -19249,7 +19422,7 @@ export class SliderValueExample {
 ### Disabled
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
@@ -19260,6 +19433,7 @@ import {
 } from '@radix-ng/primitives/slider';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'slider-disabled-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
@@ -19284,7 +19458,7 @@ The root composes a `ControlValueAccessor`, so it binds directly to
 `formControl` / `formControlName` and `[(ngModel)]`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
     RdxSliderControl,
@@ -19296,6 +19470,7 @@ import {
 } from '@radix-ng/primitives/slider';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'slider-forms-example',
     imports: [
         ReactiveFormsModule,
@@ -19581,11 +19756,12 @@ The step item component.
 #### A control that allows the user to toggle between checked and not checked.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'switch-default-example',
     imports: [RdxLabelDirective, RdxSwitchRoot, RdxSwitchThumb],
     template: `
@@ -19642,11 +19818,12 @@ The `[rdxSwitchInput]` is optional — include it when the switch must submit a 
 Set `defaultChecked` (uncontrolled) or `[checked]` (controlled) to start in the on state.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { RdxSwitchInput, RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'switch-preselection-example',
     imports: [RdxLabelDirective, RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
     template: `
@@ -19681,11 +19858,12 @@ export class SwitchPreselectionExample {
 When `disabled` is present the switch cannot be focused or toggled.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { RdxSwitchInput, RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'switch-disabled-example',
     imports: [RdxLabelDirective, RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
     template: `
@@ -19718,11 +19896,12 @@ export class SwitchDisabledExample {}
 A `readonly` switch is focusable and announced, but cannot be toggled.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { RdxSwitchInput, RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'switch-readonly-example',
     imports: [RdxLabelDirective, RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
     template: `
@@ -19756,12 +19935,13 @@ export class SwitchReadonlyExample {}
 Bind the switch to a form control via `formControlName`.
 
 ```typescript
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { RdxSwitchInput, RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'switch-reactive-forms',
     imports: [ReactiveFormsModule, RdxLabelDirective, RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
     template: `
@@ -20052,10 +20232,11 @@ A disabled tab remains reachable by composite keyboard navigation, but it cannot
 follow the selected tab.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTabsIndicator, RdxTabsList, RdxTabsPanel, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'tabs-indicator-example',
     imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel, RdxTabsIndicator],
     template: `
@@ -20113,10 +20294,11 @@ Panels stay mounted by default in Angular, so you can cross-fade them with the `
 finishes.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTabsList, RdxTabsPanel, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'tabs-animated-example',
     imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel],
     // Panels stay mounted and cross-fade using the transition-status data attributes:
@@ -20194,10 +20376,11 @@ inner element can react to the parent's `data-hidden` and run the exit keyframes
 the DOM once the animation finishes.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'tabs-keyframes-example',
     imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel, RdxTabsPanelPresence],
     // The panel contents are mounted only while the tab is active (`*rdxTabsPanelPresence`).
@@ -20338,11 +20521,12 @@ Adheres to the [Tabs WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/pa
 #### A segmented time input that lets users enter a time hour-by-hour with full keyboard control and localization.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
 import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-default-example',
     imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
     template: `
@@ -20440,11 +20624,12 @@ optional visually-hidden input for native form participation.
 A basic field rendering hour and minute segments.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
 import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-default-example',
     imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
     template: `
@@ -20484,11 +20669,12 @@ export class TimeFieldDefaultExample {}
 `hourCycle` forces a 12-hour (with a day-period segment) or 24-hour clock regardless of the locale default.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
 import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-hour-cycle-example',
     imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
     template: `
@@ -20559,12 +20745,13 @@ export class TimeFieldHourCycleExample {}
 `granularity` controls the smallest editable segment — `hour`, `minute`, or `second`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Granularity } from '@radix-ng/primitives/core';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
 import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-granularity-example',
     imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
     template: `
@@ -20613,12 +20800,13 @@ export class TimeFieldGranularityExample {
 A disabled field is inert and exposes `data-disabled` for styling.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Time } from '@internationalized/date';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
 import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-disabled-example',
     imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
     template: `
@@ -20662,12 +20850,13 @@ export class TimeFieldDisabledExample {
 A readonly field can be focused and navigated but not edited.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Time } from '@internationalized/date';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
 import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-readonly-example',
     imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
     template: `
@@ -20712,12 +20901,13 @@ export class TimeFieldReadonlyExample {
 `minValue` / `maxValue` mark out-of-range values with `data-invalid` on the root and each segment.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Time } from '@internationalized/date';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
 import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-validation-example',
     imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
     template: `
@@ -20769,7 +20959,7 @@ export class TimeFieldValidationExample {
 `locale` drives segment order, separators, and the numbering system.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
 import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
@@ -20780,6 +20970,7 @@ interface LocaleExample {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-localization-example',
     imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
     template: `
@@ -20861,11 +21052,12 @@ granularity, and validation state. Exposes `data-disabled`, `data-readonly`, and
 #### A succinct, low-priority message that appears temporarily, stacks, and can be swiped away.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-default-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],
@@ -20975,11 +21167,12 @@ An anchored toast is wrapped in `rdxToastPositioner` instead of joining the stac
 Push a single toast; it auto-dismisses after the timeout.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-default-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],
@@ -21029,7 +21222,7 @@ Add several toasts to see the collapsed stack, then hover or focus it to expand.
 while the stack is hovered or focused.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
@@ -21039,6 +21232,7 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
  * while the stack is hovered or focused.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-stacking-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],
@@ -21089,7 +21283,7 @@ export class ToastStackingExample {
 Drag a toast toward an allowed `swipeDirection` to dismiss it; release early to snap back.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
@@ -21099,6 +21293,7 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
  * The live offset is exposed as `--toast-swipe-movement-x/y` and applied to the content.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-swipe-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],
@@ -21141,7 +21336,7 @@ export class ToastSwipeExample {
 Drive one toast through a promise: `loading`, then `success` or `error`.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
@@ -21151,6 +21346,7 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
  * auto-dismiss; the resolved one picks the timeout back up.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-promise-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],
@@ -21209,7 +21405,7 @@ export class ToastPromiseExample {
 Branch on a free-form `type` to render an icon, and raise `priority` to `high` for assertive errors.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { LucideCircleCheck, LucideCircleX, LucideInfo } from '@lucide/angular';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
@@ -21220,6 +21416,7 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
  * announcement role to `alert` (assertive) for errors.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-types-example',
     imports: [...toastImports, LucideCircleCheck, LucideCircleX, LucideInfo],
     providers: [provideRdxToastManager()],
@@ -21288,7 +21485,7 @@ export class ToastTypesExample {
 Placement is the consumer's CSS — here the viewport is anchored top-center and the stack grows down.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
@@ -21298,6 +21495,7 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
  * flipped signs and `origin-top`). Swipe up to dismiss.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-custom-position-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],
@@ -21341,7 +21539,7 @@ export class ToastCustomPositionExample {
 `rdxToastAction` adds an in-toast action button; this one undoes the change and dismisses the toast.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, RdxToastObject, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
@@ -21350,6 +21548,7 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
  * toast's `actionProps`; clicking runs the handler and dismisses the toast.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-undo-action-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],
@@ -21408,7 +21607,7 @@ export class ToastUndoActionExample {
 Attach a typed `data` payload and read it back in the template for rich, app-specific toasts.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
@@ -21423,6 +21622,7 @@ interface MentionData {
  * app-specific content beyond title/description. Here each toast renders an avatar and a mention.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-custom-data-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],
@@ -21480,7 +21680,7 @@ export class ToastCustomDataExample {
 Pass a fixed `id` to upsert a single toast in place instead of stacking duplicates.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
@@ -21490,6 +21690,7 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
  * second click visibly pulses the existing toast; its auto-dismiss timer restarts each time.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-deduplicated-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],
@@ -21538,7 +21739,7 @@ export class ToastDeduplicatedExample {
 Measured heights feed `--toast-offset-y`, so the expanded stack lines up even with differing heights.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
@@ -21548,6 +21749,7 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
  * expand and watch them stack without overlap.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-varying-heights-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],
@@ -21601,7 +21803,7 @@ export class ToastVaryingHeightsExample {
 Pin a toast to an element with `rdxToastPositioner` (powered by popper) instead of joining the stack.
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
 import { cn, demoButton, demoToast } from '../../storybook/styles';
 
@@ -21611,6 +21813,7 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
  * through the toast's `positionerProps`.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-anchored-example',
     imports: [...toastImports],
     providers: [provideRdxToastManager()],
@@ -22124,13 +22327,14 @@ screen-reader users can still reach it.
 Render a `[rdxMenuTrigger]` on a toolbar button to open a menu from the toolbar.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { toolbarImports } from '@radix-ng/primitives/toolbar';
 import { cn, demoMenu } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toolbar-with-menu',
     imports: [...toolbarImports, RdxMenuModule, LucideChevronDown],
     template: `
@@ -22189,7 +22393,7 @@ export class ToolbarWithMenuExample {
 Wrap toolbar buttons with a tooltip by stacking `[rdxTooltipTrigger]`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideBold, LucideItalic } from '@lucide/angular';
 import { toolbarImports } from '@radix-ng/primitives/toolbar';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
@@ -22199,6 +22403,7 @@ const itemClass =
     'text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center rounded-md outline-none transition-colors focus-visible:ring-2';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toolbar-with-tooltip',
     imports: [...toolbarImports, ...tooltipImports, LucideBold, LucideItalic],
     template: `
@@ -22241,7 +22446,7 @@ text editing — the arrow keys move the caret and only move toolbar focus once 
 matching edge.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideMinus, LucidePlus } from '@lucide/angular';
 import { RdxNumberFieldModule } from '@radix-ng/primitives/number-field';
 import { toolbarImports } from '@radix-ng/primitives/toolbar';
@@ -22250,6 +22455,7 @@ const stepClass =
     'text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center rounded-md outline-none transition-colors focus-visible:ring-2 disabled:opacity-50';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toolbar-with-number-field',
     imports: [...toolbarImports, RdxNumberFieldModule, LucideMinus, LucidePlus],
     template: `
@@ -22369,12 +22575,13 @@ primitives. It remains headless: styles and native CSS animations belong to the 
 follows Base UI.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucidePlus } from '@lucide/angular';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
 import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-tooltip-default',
     imports: [...tooltipImports, LucidePlus],
     template: `
@@ -22457,12 +22664,13 @@ exit keyframes on its root element finish. Use the `*` microsyntax on the positi
 A tooltip anchored to an icon button, with an arrow.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucidePlus } from '@lucide/angular';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
 import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-tooltip-default',
     imports: [...tooltipImports, LucidePlus],
     template: `
@@ -22492,12 +22700,13 @@ instant-open `timeout` window — once one tooltip opens, adjacent ones open ins
 ms after the last one closes.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideDynamicIcon } from '@lucide/angular';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
 import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-tooltip-provider',
     imports: [...tooltipImports, LucideDynamicIcon],
     template: `
@@ -22539,11 +22748,12 @@ Set `delay` (and `closeDelay`) on `rdxTooltipTrigger` to override the root, prov
 values for that trigger only.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
 import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-tooltip-delay',
     imports: [...tooltipImports],
     template: `
@@ -22581,11 +22791,12 @@ Set `disabled` on `rdxTooltipTrigger` (or `disabled` on `rdxTooltip` for all tri
 trigger never opens the tooltip and reflects `data-trigger-disabled`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
 import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-tooltip-disabled',
     imports: [...tooltipImports],
     template: `
@@ -22622,11 +22833,12 @@ Set `trackCursorAxis` on the root to `'x'`, `'y'`, or `'both'` to make the popup
 along that axis.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
 import { demoTooltip } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-tooltip-track-cursor',
     imports: [...tooltipImports],
     template: `
@@ -22656,7 +22868,7 @@ Tooltip uses `updatePositionStrategy="always"` so it can follow moving triggers 
 when the trigger moves continuously, such as a slider thumb being dragged.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
@@ -22669,6 +22881,7 @@ import { tooltipImports } from '@radix-ng/primitives/tooltip';
 import { demoTooltip } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-tooltip-slider',
     imports: [
         ...tooltipImports,
@@ -24028,7 +24241,7 @@ export class RdxCompositeListOnlyComponent {
 #### Provides reading direction to descendant primitives through Angular DI.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { Direction } from '@radix-ng/primitives/core';
 import { RdxDirectionProvider } from '@radix-ng/primitives/direction-provider';
 import {
@@ -24041,6 +24254,7 @@ import {
 } from '@radix-ng/primitives/slider';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'direction-provider-slider-example',
     imports: [
         RdxDirectionProvider,
@@ -24321,7 +24535,7 @@ Each field below calls `injectId('rdx-field-')` in its own injection context, wi
 to the matching `<input id>` without hardcoding an id or risking a collision.
 
 ```typescript
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
 import { cn, demoInput } from '../../storybook/styles';
 
@@ -24330,6 +24544,7 @@ import { cn, demoInput } from '../../storybook/styles';
  * label/input pair is wired with a unique, SSR-stable id without hardcoding one.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'inject-id-field',
     imports: [],
     template: `
@@ -24350,6 +24565,7 @@ export class InjectIdField {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'inject-id-example',
     imports: [InjectIdField],
     template: `
@@ -24427,7 +24643,7 @@ The buttons below send messages to the live region. It is visually hidden, so th
 mirrors what assistive technology reads aloud.
 
 ```typescript
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RdxLiveAnnouncer } from '@radix-ng/primitives/core';
 import { cn, demoButton } from '../../storybook/styles';
 
@@ -24436,6 +24652,7 @@ import { cn, demoButton } from '../../storybook/styles';
  * hidden, so the on-screen log below mirrors what was sent to assistive technology.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'live-announcer-example',
     imports: [],
     template: `

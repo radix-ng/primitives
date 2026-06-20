@@ -1,4 +1,4 @@
-import { Component, input, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
 import { DateValue } from '@internationalized/date';
 import { Granularity } from '@radix-ng/primitives/core';
 import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
@@ -6,6 +6,7 @@ import { RdxDateFieldInputDirective } from '../src/date-field-input.directive';
 import { RdxDateFieldRootDirective } from '../src/date-field-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-date-field',
     imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective, RdxVisuallyHiddenInputDirective],
     template: `

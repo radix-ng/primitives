@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import {
     RdxScrollAreaContent,
@@ -57,6 +57,7 @@ const LONG_LIST = [
 ] as const;
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-scrollable',
     imports: [
         ...drawerImports,

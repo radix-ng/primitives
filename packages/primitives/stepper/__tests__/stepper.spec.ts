@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
@@ -7,6 +7,7 @@ import { RdxStepperRootDirective, RdxStepperValueChangeEvent } from '../src/step
 import { RdxStepperTriggerDirective } from '../src/stepper-trigger.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxStepperRootDirective, RdxStepperItemDirective, RdxStepperTriggerDirective],
     template: `
         <div [(value)]="value" (onValueChange)="onValueChange($event)" rdxStepperRoot>

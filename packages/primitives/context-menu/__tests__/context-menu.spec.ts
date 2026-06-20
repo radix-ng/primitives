@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RdxContextMenuModule } from '@radix-ng/primitives/context-menu';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
@@ -25,6 +25,7 @@ afterEach(() => {
 });
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxContextMenuModule, RdxMenuModule],
     template: `
         <ng-container #root="rdxContextMenuRoot" rdxContextMenuRoot>
@@ -46,6 +47,7 @@ class ContextMenuHost {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxContextMenuModule, RdxMenuModule],
     template: `
         <ng-container #root="rdxContextMenuRoot" rdxContextMenuRoot>

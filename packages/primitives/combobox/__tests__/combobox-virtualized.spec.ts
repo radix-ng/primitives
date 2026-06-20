@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -8,6 +8,7 @@ import { ComboboxItemHighlightedDetails, RdxComboboxRoot } from '../src/combobox
 // Only a 5-item window is ever rendered, so any assertion about navigation past index 4 proves the
 // root drives highlight/selection from `items` data by index rather than from mounted DOM elements.
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
         <div

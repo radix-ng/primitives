@@ -3,7 +3,7 @@
 #### An input where the user selects a value, or a range of values, from within a given range.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
@@ -14,6 +14,7 @@ import {
 } from '@radix-ng/primitives/slider';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'slider-default-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
@@ -122,7 +123,7 @@ setValue(change: RdxSliderValueChangeEvent) {
 ```
 
 ```typescript
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
@@ -135,6 +136,7 @@ import {
 } from '@radix-ng/primitives/slider';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'slider-events-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
@@ -239,7 +241,7 @@ centers. Both edge modes currently share the same Angular runtime positioning pa
 `edge-client-only` value is accepted for Base UI API parity.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
@@ -250,6 +252,7 @@ import {
 } from '@radix-ng/primitives/slider';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'slider-thumb-alignment-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
@@ -319,7 +322,7 @@ Pass an array value and render one `rdxSliderThumb` per value, each with an expl
 `thumbCollisionBehavior` to control what happens when they meet.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
@@ -330,6 +333,7 @@ import {
 } from '@radix-ng/primitives/slider';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'slider-range-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
@@ -365,7 +369,7 @@ Set `orientation="vertical"` on the root. The control and track lay out along th
 vertical axis; no other changes are required.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
@@ -376,6 +380,7 @@ import {
 } from '@radix-ng/primitives/slider';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'slider-vertical-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
@@ -404,7 +409,7 @@ Display the formatted value with `rdxSliderValue`. Formatting honours the root's
 sets its `for` attribute to the registered thumb input ids, in DOM order.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
@@ -416,6 +421,7 @@ import {
 } from '@radix-ng/primitives/slider';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'slider-value-example',
     imports: [
         RdxSliderRoot,
@@ -454,7 +460,7 @@ export class SliderValueExample {
 ### Disabled
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
@@ -465,6 +471,7 @@ import {
 } from '@radix-ng/primitives/slider';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'slider-disabled-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
@@ -489,7 +496,7 @@ The root composes a `ControlValueAccessor`, so it binds directly to
 `formControl` / `formControlName` and `[(ngModel)]`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
     RdxSliderControl,
@@ -501,6 +508,7 @@ import {
 } from '@radix-ng/primitives/slider';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'slider-forms-example',
     imports: [
         ReactiveFormsModule,

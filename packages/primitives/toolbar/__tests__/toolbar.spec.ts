@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
@@ -10,6 +10,7 @@ import { RdxToolbarRoot } from '../src/toolbar-root';
 import { RdxToolbarSeparator } from '../src/toolbar-separator';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxToolbarRoot, RdxToolbarButton, RdxToolbarLink, RdxToolbarSeparator, RdxToolbarGroup],
     template: `
         <div [orientation]="orientation()" [disabled]="rootDisabled()" rdxToolbarRoot aria-label="Formatting">
@@ -119,6 +120,7 @@ describe('Toolbar', () => {
 });
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxToolbarRoot, RdxToolbarSeparator],
     template: `
         <div orientation="vertical" rdxToolbarRoot>
@@ -140,6 +142,7 @@ describe('Toolbar separator', () => {
 });
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxToolbarRoot, RdxToolbarButton, RdxMenuModule],
     template: `
         <div rdxToolbarRoot aria-label="Toolbar with menu">
@@ -172,6 +175,7 @@ describe('Toolbar with Menu', () => {
 });
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxToolbarRoot, RdxToolbarButton, RdxToolbarInput],
     template: `
         <div rdxToolbarRoot aria-label="Toolbar">

@@ -23,6 +23,10 @@ const html = String.raw;
 
 export default {
     title: 'Primitives/Cropper',
+    // Opt out of the `apps/visual-regression` screenshot sweep: every cropper demo loads a remote
+    // Unsplash image, so the rendered frame depends on network timing (spinner → placeholder → image)
+    // and is not deterministic for pixel diffing. Visual regression must stay hermetic.
+    tags: ['!visual'],
     decorators: [
         moduleMetadata({
             imports: [CropperDefault, CropperDisabled, CropperWithData]

@@ -1,4 +1,4 @@
-import { Component, Directive, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Directive, inject, signal } from '@angular/core';
 import { provideRdxPresenceContext, RdxPresenceDirective } from '@radix-ng/primitives/presence';
 
 /**
@@ -13,6 +13,7 @@ import { provideRdxPresenceContext, RdxPresenceDirective } from '@radix-ng/primi
 export class PresenceDemo {}
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'presence-example',
     imports: [PresenceDemo],
     providers: [provideRdxPresenceContext(() => ({ present: inject(PresenceExample).open }))],

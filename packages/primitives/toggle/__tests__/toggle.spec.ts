@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RdxToggleGroup } from '@radix-ng/primitives/toggle-group';
@@ -6,6 +6,7 @@ import { vi } from 'vitest';
 import { RdxToggle, RdxTogglePressedChangeEvent } from '../src/toggle';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxToggle],
     template: `
         <button
@@ -100,6 +101,7 @@ describe('RdxToggle (standalone)', () => {
 });
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxToggleGroup, RdxToggle],
     template: `
         <div [(value)]="value" [multiple]="multiple()" rdxToggleGroup aria-label="Text formatting">

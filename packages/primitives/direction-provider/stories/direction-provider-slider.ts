@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { Direction } from '@radix-ng/primitives/core';
 import { RdxDirectionProvider } from '@radix-ng/primitives/direction-provider';
 import {
@@ -11,6 +11,7 @@ import {
 } from '@radix-ng/primitives/slider';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'direction-provider-slider-example',
     imports: [
         RdxDirectionProvider,

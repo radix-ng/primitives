@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown, LucideX } from '@lucide/angular';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
@@ -18,6 +18,7 @@ interface DirectoryUser {
  * `RdxComboboxEmpty` covers the "no matches" case — mirrors Base UI's async-single example.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-async',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck, LucideX],
     template: `

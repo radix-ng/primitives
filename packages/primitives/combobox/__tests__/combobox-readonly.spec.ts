@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { _importsCombobox } from '../index';
@@ -9,6 +9,7 @@ import { _importsCombobox } from '../index';
  * change the value. Base UI blocks these the same way.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
         <div [(value)]="value" [readOnly]="readOnly()" [disabled]="disabled()" multiple rdxComboboxRoot>

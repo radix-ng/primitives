@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideBold, LucideItalic } from '@lucide/angular';
 import { toolbarImports } from '@radix-ng/primitives/toolbar';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
@@ -8,6 +8,7 @@ const itemClass =
     'text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center rounded-md outline-none transition-colors focus-visible:ring-2';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toolbar-with-tooltip',
     imports: [...toolbarImports, ...tooltipImports, LucideBold, LucideItalic],
     template: `

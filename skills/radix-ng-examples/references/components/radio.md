@@ -3,7 +3,7 @@
 #### A set of checkable buttons—known as radio buttons—where no more than one of the buttons can be checked at a time.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import {
     RdxRadioGroupDirective,
@@ -14,6 +14,7 @@ import {
 import { demoRadio } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'radio-default-example',
     template: `
         <form>
@@ -125,7 +126,7 @@ setValue(change: RdxRadioValueChangeEvent) {
 A radio group with sibling labels and hidden native inputs.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import {
     RdxRadioGroupDirective,
@@ -136,6 +137,7 @@ import {
 import { demoRadio } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'radio-default-example',
     template: `
         <form>
@@ -182,7 +184,7 @@ export class RadioDefaultComponent {
 A disabled radio group ignores user interaction and exposes disabled state attributes to all items.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import {
     RdxRadioGroupDirective,
@@ -193,6 +195,7 @@ import {
 import { demoRadio } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'radio-disabled-example',
     template: `
         <div
@@ -244,7 +247,7 @@ export class RadioDisabledComponent {
 Radio group works with `ngModel`, native form submission, and a submit button via the hidden `rdxRadioItemInput`.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import {
@@ -256,6 +259,7 @@ import {
 import { cn, demoButton, demoRadio } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'radio-template-driven-forms-example',
     template: `
         <form class="flex w-72 flex-col gap-4" (ngSubmit)="submit()">

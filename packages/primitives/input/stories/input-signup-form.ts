@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LucideCheck } from '@lucide/angular';
 import { RdxButtonDirective } from '@radix-ng/primitives/button';
@@ -13,6 +13,7 @@ import { cn, demoButton, demoCheckbox, demoInput } from '../../storybook/styles'
 import { RdxInputDirective } from '../src/input.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'input-signup-form-example',
     imports: [
         ReactiveFormsModule,

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import {
@@ -10,6 +10,7 @@ import {
 } from '../index';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioItemInputDirective, RdxRadioIndicatorDirective],
     template: `
         <form>
@@ -56,6 +57,7 @@ class RadioHost {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioItemInputDirective, RdxRadioIndicatorDirective],
     template: `
         <form>

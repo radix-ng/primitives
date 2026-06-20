@@ -1,9 +1,10 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
 import { RdxCollapsiblePanelDirective } from '../src/collapsible-panel.directive';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-collapsible-external-triggering',
     imports: [RdxCollapsibleRootDirective, RdxCollapsiblePanelDirective],
     template: `

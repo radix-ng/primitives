@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucidePlus } from '@lucide/angular';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
 import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-tooltip-default',
     imports: [...tooltipImports, LucidePlus],
     template: `

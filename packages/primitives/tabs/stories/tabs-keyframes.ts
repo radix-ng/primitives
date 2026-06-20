@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'tabs-keyframes-example',
     imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel, RdxTabsPanelPresence],
     // The panel contents are mounted only while the tab is active (`*rdxTabsPanelPresence`).

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RdxMeterIndicatorDirective } from '../src/meter-indicator.directive';
 import { RdxMeterLabelDirective } from '../src/meter-label.directive';
@@ -7,6 +7,7 @@ import { RdxMeterTrackDirective } from '../src/meter-track.directive';
 import { RdxMeterValueDirective } from '../src/meter-value.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <div
             [value]="value"

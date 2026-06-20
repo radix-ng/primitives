@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { popoverImports } from '@radix-ng/primitives/popover';
 import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-viewport',
     imports: [...popoverImports],
     template: `

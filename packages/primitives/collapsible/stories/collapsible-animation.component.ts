@@ -1,10 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideUnfoldVertical, LucideX } from '@lucide/angular';
 import { RdxCollapsiblePanelDirective } from '../src/collapsible-panel.directive';
 import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
 import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.directive';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-collapsible-animation',
     imports: [
         RdxCollapsibleRootDirective,

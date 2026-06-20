@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
 
@@ -8,6 +8,7 @@ import { RdxButtonDirective } from '../src/button.directive';
  * stays focusable via `aria-disabled` while its activation is suppressed.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-button-disabled',
     imports: [RdxButtonDirective],
     template: `

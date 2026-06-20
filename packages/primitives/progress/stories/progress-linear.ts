@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { cn } from '../../storybook/styles';
 import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
 import { RdxProgressLabelDirective } from '../src/progress-label.directive';
@@ -9,6 +9,7 @@ import { RdxProgressValueDirective } from '../src/progress-value.directive';
 const progressSteps = [12, 28, 44, 60, 76, 92, 100] as const;
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'progress-linear',
     imports: [
         RdxProgressRootDirective,

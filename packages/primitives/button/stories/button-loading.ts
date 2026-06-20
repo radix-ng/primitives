@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideDynamicIcon, LucidePlus } from '@lucide/angular';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
@@ -9,6 +9,7 @@ import { RdxButtonDirective } from '../src/button.directive';
  * announces the pending state, and a spinner is rendered in place of the icon.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-button-loading',
     imports: [RdxButtonDirective, LucideDynamicIcon, LucidePlus],
     template: `

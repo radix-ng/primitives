@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LucideCheck } from '@lucide/angular';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
@@ -13,6 +13,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
  * ticked, the error shows after the field is touched, and submit is guarded.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-validation-example',
     imports: [
         ReactiveFormsModule,

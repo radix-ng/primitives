@@ -156,10 +156,11 @@ A disabled tab remains reachable by composite keyboard navigation, but it cannot
 follow the selected tab.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTabsIndicator, RdxTabsList, RdxTabsPanel, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'tabs-indicator-example',
     imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel, RdxTabsIndicator],
     template: `
@@ -217,10 +218,11 @@ Panels stay mounted by default in Angular, so you can cross-fade them with the `
 finishes.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTabsList, RdxTabsPanel, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'tabs-animated-example',
     imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel],
     // Panels stay mounted and cross-fade using the transition-status data attributes:
@@ -298,10 +300,11 @@ inner element can react to the parent's `data-hidden` and run the exit keyframes
 the DOM once the animation finishes.
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'tabs-keyframes-example',
     imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel, RdxTabsPanelPresence],
     // The panel contents are mounted only while the tab is active (`*rdxTabsPanelPresence`).

@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -8,6 +8,7 @@ import { RdxSelectItemAlignedPositionContent } from '../src/select-item-aligned-
 import { RdxSelectOpenChangeEvent, RdxSelectRoot, RdxSelectValueChangeEvent } from '../src/select-root';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsSelect],
     template: `
         <div
@@ -62,6 +63,7 @@ class OpenChangeHost {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsSelect, RdxSelectItemAlignedPosition, RdxSelectItemAlignedPositionContent],
     template: `
         <div [(open)]="open" (onOpenChange)="events.push($event)" rdxSelectRoot>
