@@ -9,7 +9,8 @@ import {
     input,
     model,
     output,
-    Renderer2
+    Renderer2,
+    Signal
 } from '@angular/core';
 import {
     BooleanInput,
@@ -45,7 +46,22 @@ export interface RdxCheckboxCheckedChangeEvent {
     eventDetails: RdxCheckboxCheckedChangeEventDetails;
 }
 
-const rootContext = () => {
+export interface CheckboxRootContext {
+    checked: Signal<boolean>;
+    indeterminate: Signal<boolean>;
+    disabled: Signal<boolean>;
+    required: Signal<boolean>;
+    value: Signal<string>;
+    name: Signal<string | undefined>;
+    parent: Signal<boolean>;
+    form: Signal<string | undefined>;
+    readonly: Signal<boolean>;
+    state: Signal<'indeterminate' | 'checked' | 'unchecked'>;
+    uncheckedValue: Signal<string | undefined>;
+    toggle: (event?: Event) => void;
+}
+
+const rootContext = (): CheckboxRootContext => {
     const checkbox = inject(RdxCheckboxRootDirective);
 
     // `checked`/`disabled` come from the directive so they reflect group membership when the
@@ -68,8 +84,6 @@ const rootContext = () => {
     };
 };
 
-export type CheckboxRootContext = ReturnType<typeof rootContext>;
-
 export const [injectCheckboxRootContext, provideCheckboxRootContext] = createContext<CheckboxRootContext>(
     'CheckboxRootContext',
     'components/checkbox'
@@ -91,7 +105,7 @@ export const [injectCheckboxRootContext, provideCheckboxRootContext] = createCon
         '[attr.data-checked]': 'checkedState() && !indeterminateState() ? "" : undefined',
         '[attr.data-unchecked]': '!checkedState() && !indeterminateState() ? "" : undefined',
         '[attr.data-indeterminate]': 'indeterminateState() ? "" : undefined',
-        '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
+        '[attr.data-disabled]': 'disabledState() ? "" : undefined',
         '[attr.data-readonly]': 'readOnlyState() ? "" : undefined',
         '[attr.data-required]': 'required() ? "" : undefined'
     }
@@ -104,13 +118,6 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
 
     /** The group this checkbox belongs to, if it is rendered inside a `rdxCheckboxGroup`. */
     private readonly group = injectCheckboxGroupContext(true);
-
-    /**
-     * @ignore
-     * Reflects the effective disabled state (CVA, covering reactive-forms `.disable()`, plus the
-     * group's disabled state), used for the `data-disabled` host attribute.
-     */
-    protected readonly isDisabled = computed(() => this.disabledState());
 
     /**
      * The controlled checked state of the checkbox. Must be used in conjunction with onCheckedChange.
@@ -317,6 +324,9 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
         this.indeterminate.set(false);
         this.checked.set(next);
         this.controlValueAccessor.setValue(next);
+        // Mark the form control touched on user interaction so `touched`-gated validation shows
+        // (the visible control is the button, not the hidden input, so blur alone is unreliable).
+        this.controlValueAccessor.markAsTouched();
     }
 
     private syncUncheckedInput(): void {

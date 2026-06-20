@@ -600,10 +600,7 @@ export class SliderFormsExample {
 ### Thumb Input
 
 `RdxSliderThumbInput` — the nested native `input[type=range]` that drives keyboard, a11y and forms.
-
-| Data attribute | Value                       |
-| -------------- | --------------------------- |
-| `[data-index]` | Numeric index of the thumb. |
+It carries the ARIA value attributes but no `data-*` (those live on the Thumb).
 
 ### Value
 

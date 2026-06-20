@@ -77,7 +77,6 @@ export const [injectRadioRootContext, provideRadioRootContext] = createContext<R
         '[attr.aria-disabled]': 'disabledState() ? "true" : undefined',
         '[attr.aria-readonly]': 'readonly() ? "true" : undefined',
         '[attr.data-disabled]': 'disabledState() ? "" : undefined',
-        '(keydown)': 'onKeydown()',
         '(focusout)': 'onFocusOut($event)'
     }
 })
@@ -253,10 +252,6 @@ export class RdxRadioGroupDirective implements ControlValueAccessor, RdxFormValu
 
     isArrowNavigation(): boolean {
         return this.arrowNavigation();
-    }
-
-    protected onKeydown(): void {
-        if (this.disabledState()) return;
     }
 
     /**

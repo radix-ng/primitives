@@ -31,7 +31,6 @@ import { ALL_KEYS, COMPOSITE_KEYS, getDefaultAriaValueText, getNewValue, roundVa
         '[attr.aria-valuetext]': 'valueText()',
         '[attr.aria-label]': 'ariaLabel()',
         '[attr.aria-labelledby]': 'ariaLabelledBy()',
-        '[attr.data-index]': 'thumb.index()',
         '(keydown)': 'onKeyDown($event)',
         '(change)': 'onChange($event)',
         '(focus)': 'onFocus()',

@@ -283,9 +283,13 @@ export class RdxSliderControl {
         }
     }
 
-    private setValueFromPointer(finger: ResolveThumbCollisionResult, reason: string, event?: Event): boolean {
+    private setValueFromPointer(
+        finger: ResolveThumbCollisionResult,
+        reason: 'track-press' | 'drag',
+        event?: Event
+    ): boolean {
         const nextValues = Array.isArray(finger.value) ? finger.value : [finger.value];
-        const applied = this.root.setValue(nextValues, reason as 'track-press' | 'drag', event, finger.thumbIndex);
+        const applied = this.root.setValue(nextValues, reason, event, finger.thumbIndex);
         if (applied) {
             this.currentInteractionValue = finger.value;
             if (finger.didSwap) {

@@ -349,6 +349,7 @@ Exposes `role="radio"` and `aria-checked`.
 | `data-disabled`  | the radio or its group is disabled.   |
 | `data-readonly`  | the radio or its group is read-only.  |
 | `data-required`  | the radio or its group is required.   |
+| `data-composite-item-active` | the radio is the active (selected) composite item. |
 
 ### RadioGroupItemInput
 
@@ -387,5 +388,5 @@ and uses composite roving tabindex to manage focus movement among radio items.
 | `Space`      | When focus is on an unchecked radio item, checks it.                               |
 | `ArrowDown`  | Moves focus and checks the next radio item in the group.                           |
 | `ArrowRight` | Moves focus and checks the next radio item in the group.                           |
-| `ArrowUp`    | Moves focus to the previous radio item in the group.                               |
-| `ArrowLeft`  | Moves focus to the previous radio item in the group.                               |
+| `ArrowUp`    | Moves focus and checks the previous radio item in the group.                       |
+| `ArrowLeft`  | Moves focus and checks the previous radio item in the group.                       |

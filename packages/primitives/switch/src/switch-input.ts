@@ -20,8 +20,8 @@ import { injectSwitchContext } from './switch-context';
         '[attr.required]': 'rootContext.required() ? "" : undefined',
         '[attr.aria-label]': 'rootContext.ariaLabel()',
         '[attr.aria-labelledby]': 'rootContext.ariaLabelledBy()',
-        '[attr.data-checked]': 'rootContext.checked() ? "" : undefined',
-        '[attr.data-unchecked]': 'rootContext.checked() ? undefined : ""',
+        // The hidden form input carries no `data-*` (Base UI parity) — state attributes live on the
+        // root button and thumb.
         style: 'transform: translateX(-100%); position: absolute; overflow: hidden; pointer-events: none; opacity: 0; margin: 0;',
         '(blur)': 'rootContext.markAsTouched()'
     }
