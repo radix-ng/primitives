@@ -46,7 +46,7 @@ Controlled from the Storybook toolbar (not OS `prefers-color-scheme`). The previ
 
 | Scenario                                 | API to use                                                                                                   |
 | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Always-mounted parts                     | CSS transitions driven by `data-state`                                                                       |
+| Always-mounted parts                     | CSS transitions driven by the boolean state attributes (`data-open`/`data-closed`, `data-checked`, …)        |
 | App-owned `@if` DOM                      | Angular 21+ `animate.enter` / `animate.leave`                                                                |
 | Presence / `*rdxXxxPortal`-mounted parts | Exit `@keyframes` (`data-closed`) **or** transition (`data-ending-style`), on the root **or any descendant** |
 

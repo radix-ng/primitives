@@ -30,6 +30,8 @@ metadata:
 
 All state is exposed via `host` bindings using `data-*` attributes. Never use inline styles for state. Use CSS custom properties only for animation dimensions (e.g., collapsible height). Use `undefined` (not `null`/`false`) to remove an attribute.
 
+**Base UI shape: boolean per-part attributes, not a `data-state` enum.** Match Base UI's contract — expose each state as its own present/absent boolean attribute rather than a single enum string. Use `data-open`/`data-closed` (not `data-state="open|closed"`), `data-popup-open` on the trigger, `data-checked`/`data-unchecked`/`data-indeterminate`, `data-pressed`, `data-selected`/`data-highlighted`, the validity set `data-valid`/`data-invalid`/`data-dirty`/`data-touched`/`data-filled`/`data-focused`, etc. `data-instant` is a string enum where Base UI uses one. `data-starting-style`/`data-ending-style` must be **transient** (driven by transition status), not static mirrors of the visible/hidden state. Every `data-*` documented in a primitive's `.docs.mdx` must trace to a real host binding. ARIA must be scoped to the pattern — supplementary-content primitives (tooltip/preview-card) must NOT use disclosure ARIA (`aria-haspopup`/`aria-expanded`/`aria-controls`); `aria-readonly` is invalid on `role="button"`; `aria-required`/`aria-disabled` go only on non-native controls (native attributes convey it on native ones).
+
 ## Inputs and outputs
 
 - Two-way binding: `model<T>()` for controlled values; `input<T>()` for `defaultValue`
@@ -81,6 +83,7 @@ Every primitive family uses `createContext` from `@radix-ng/primitives/core`. Ro
 - `createContext<FooContext>('FooRootContext', 'components/foo')` — always pass the docs path (`'components/<name>'` or `'utils/<name>'`) as the second argument; the missing-context error appends it as a link (`https://radix-ng.com/<path>.md`) so consumers (and their AI agents) can self-correct the part hierarchy
 - `injectFooContext()` — throws if absent (required child)
 - `injectFooContext(true)` — returns null if absent (optional composition)
+- **Type the context as an explicit `interface`, not `ReturnType<typeof factory>`.** Declare `export interface RdxFooRootContext { … }` with `Signal<T>`-typed members and annotate the factory `const fooRootContext = (): RdxFooRootContext => …`. The explicit interface is the documented contract; the inferred shape leaks the directive's internals and drifts. No `any` in context callbacks. New families use `createContext`; the legacy `InjectionToken` + `provideToken` form (e.g. old avatar) is being migrated away.
 
 ## Testing
 

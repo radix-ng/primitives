@@ -122,8 +122,10 @@ RdxFormCheckboxControl` and compiles. Effective state is split into
      child → `group.value().includes(name)`; standalone → `!!cva.value()`.
    - `indeterminateState: Signal<boolean>` — parent → `group.parentState() ===
 'indeterminate'`; else → `this.indeterminate()`.
-   - `state` (`data-state`) → `indeterminateState() ? 'indeterminate' :
-checkedState() ? 'checked' : 'unchecked'`.
+   - `state` → `indeterminateState() ? 'indeterminate' :
+checkedState() ? 'checked' : 'unchecked'` (a `state` computed kept as an internal
+     helper; the **shipped** checkbox exposes boolean `data-checked`/`data-unchecked`/
+     `data-indeterminate` host attributes, not a `data-state` enum — see `architecture.md`).
    - `CheckedState`/`getState`/`isIndeterminate` stay as **internal** helpers for
      `group.parentState()` — only the public `checked` member changes type.
 
