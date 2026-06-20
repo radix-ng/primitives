@@ -5637,16 +5637,21 @@
           "directive": "RdxRadioIndicatorDirective",
           "selector": "[rdxRadioIndicator]",
           "exportAs": "rdxRadioIndicator",
-          "inputs": [],
+          "inputs": [
+            {
+              "name": "keepMounted",
+              "type": "boolean",
+              "default": "false",
+              "description": "Keep the indicator in the DOM when unchecked so CSS exit animations can play."
+            }
+          ],
           "outputs": []
         },
         {
           "directive": "RdxRadioItemInputDirective",
           "selector": "input[rdxRadioItemInput]",
           "exportAs": "rdxRadioItemInput",
-          "hostDirectives": [
-            "RdxVisuallyHiddenDirective"
-          ],
+          "description": "The hidden native radio input that mirrors the item state for form submission, native validation,\nand `<label>` activation. Place it inside an `rdxRadioItem`.\n\nSee https://base-ui.com/react/components/radio",
           "inputs": [],
           "outputs": []
         },
@@ -5668,14 +5673,10 @@
               "type": "string"
             },
             {
-              "name": "nativeButton",
+              "name": "readOnly",
               "type": "boolean",
-              "default": "false"
-            },
-            {
-              "name": "readonly",
-              "type": "boolean",
-              "default": "false"
+              "default": "false",
+              "description": "Whether the user should be unable to select this radio button. Bound in templates as\n`readOnly` (Base UI spelling); the TS member stays `readonly` for cross-primitive consistency."
             },
             {
               "name": "required",
@@ -5716,9 +5717,10 @@
               "type": "string"
             },
             {
-              "name": "readonly",
+              "name": "readOnly",
               "type": "boolean",
-              "default": "false"
+              "default": "false",
+              "description": "Whether the user should be unable to select a different radio button. Bound in templates as\n`readOnly` (Base UI spelling); the TS member stays `readonly` for cross-primitive consistency."
             },
             {
               "name": "required",
@@ -5728,7 +5730,8 @@
             {
               "name": "value",
               "type": "string | null",
-              "default": "null"
+              "default": "null",
+              "description": "The selected value. Deliberately typed as `string` (not Base UI's generic `Value`):\na radio group maps onto native radio inputs whose form value is a string, so values are\nthe option identifiers. Use the string key of your option as the value."
             }
           ],
           "outputs": [

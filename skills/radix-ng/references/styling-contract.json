@@ -319,7 +319,7 @@
       "description": "A set of checkable buttons—known as radio buttons—where no more than one of the buttons can be checked at a time.",
       "doc": "radix-ng-examples/references/components/radio.md",
       "storybook": "https://radix-ng.com/?path=/docs/primitives-radio--docs",
-      "anatomy": "<div rdxRadioRoot name=\"density\">\n  <label>\n    <span rdxRadioItem value=\"default\">\n      <span rdxRadioIndicator></span>\n    </span>\n    Default\n  </label>\n</div>",
+      "anatomy": "<div rdxRadioRoot name=\"density\">\n  <label>\n    <span rdxRadioItem value=\"default\">\n      <span rdxRadioIndicator></span>\n      <input rdxRadioItemInput />\n    </span>\n    Default\n  </label>\n</div>",
       "dataAttributes": []
     },
     {

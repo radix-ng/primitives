@@ -8,18 +8,21 @@ import {
     input,
     model,
     output,
-    signal
+    signal,
+    Signal,
+    untracked
 } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 import { RdxCompositeMetadata, RdxCompositeRoot } from '@radix-ng/primitives/composite';
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
+    createContext,
     provideValueAccessor,
     RdxCancelableChangeEventDetails,
     RdxFormValueControl
 } from '@radix-ng/primitives/core';
-import { RadioGroupDirective, RadioGroupProps, RDX_RADIO_GROUP, RdxRadioValueChangeReason } from './radio-tokens';
+import { RdxRadioValueChangeReason } from './radio-tokens';
 
 export type { RdxRadioValueChangeReason } from './radio-tokens';
 
@@ -30,13 +33,43 @@ export interface RdxRadioValueChangeEvent {
     eventDetails: RdxRadioValueChangeEventDetails;
 }
 
+export interface RadioRootContext {
+    value: Signal<string | null>;
+    disabledState: Signal<boolean>;
+    readonly: Signal<boolean>;
+    required: Signal<boolean>;
+    name: Signal<string | undefined>;
+    form: Signal<string | undefined>;
+    select(value: string | null, event?: Event, reason?: RdxRadioValueChangeReason): void;
+    setArrowNavigation(value: boolean): void;
+    isArrowNavigation(): boolean;
+}
+
+const rootContext = (): RadioRootContext => {
+    const root = inject(RdxRadioGroupDirective);
+
+    return {
+        value: root.value,
+        disabledState: root.disabledState,
+        readonly: root.readonly,
+        required: root.required,
+        name: root.name,
+        form: root.form,
+        select: (value, event, reason) => root.select(value, event, reason),
+        setArrowNavigation: (value) => root.setArrowNavigation(value),
+        isArrowNavigation: () => root.isArrowNavigation()
+    };
+};
+
+export const [injectRadioRootContext, provideRadioRootContext] = createContext<RadioRootContext>(
+    'RadioRootContext',
+    'components/radio'
+);
+
 @Directive({
     selector: '[rdxRadioRoot]',
     exportAs: 'rdxRadioRoot',
-    providers: [
-        provideValueAccessor(RdxRadioGroupDirective),
-        { provide: RDX_RADIO_GROUP, useExisting: RdxRadioGroupDirective }
-    ],
+    providers: [provideValueAccessor(RdxRadioGroupDirective), provideRadioRootContext(rootContext)],
     hostDirectives: [RdxCompositeRoot],
     host: {
         role: 'radiogroup',
@@ -44,17 +77,19 @@ export interface RdxRadioValueChangeEvent {
         '[attr.aria-disabled]': 'disabledState() ? "true" : undefined',
         '[attr.aria-readonly]': 'readonly() ? "true" : undefined',
         '[attr.data-disabled]': 'disabledState() ? "" : undefined',
-        '[attr.data-readonly]': 'readonly() ? "" : undefined',
-        '[attr.data-required]': 'required() ? "" : undefined',
-        '(keydown)': 'onKeydown()'
+        '(keydown)': 'onKeydown()',
+        '(focusout)': 'onFocusOut($event)'
     }
 })
-export class RdxRadioGroupDirective
-    implements RadioGroupProps, RadioGroupDirective, ControlValueAccessor, RdxFormValueControl<string | null>
-{
+export class RdxRadioGroupDirective implements ControlValueAccessor, RdxFormValueControl<string | null> {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly compositeRoot = inject(RdxCompositeRoot, { self: true });
 
+    /**
+     * The selected value. Deliberately typed as `string` (not Base UI's generic `Value`):
+     * a radio group maps onto native radio inputs whose form value is a string, so values are
+     * the option identifiers. Use the string key of your option as the value.
+     */
     readonly value = model<string | null>(null);
 
     readonly defaultValue = input<string>();
@@ -65,7 +100,11 @@ export class RdxRadioGroupDirective
 
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    readonly readonly = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+    /**
+     * Whether the user should be unable to select a different radio button. Bound in templates as
+     * `readOnly` (Base UI spelling); the TS member stays `readonly` for cross-primitive consistency.
+     */
+    readonly readonly = input<boolean, BooleanInput>(false, { alias: 'readOnly', transform: booleanAttribute });
 
     readonly required = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
@@ -74,7 +113,7 @@ export class RdxRadioGroupDirective
      */
     readonly onValueChange = output<RdxRadioValueChangeEvent>();
 
-    private readonly disable = signal<boolean>(this.disabled());
+    private readonly disable = signal<boolean>(false);
     readonly disabledState = computed(() => this.disable() || this.disabled());
     private readonly arrowNavigation = signal(false);
     private readonly itemMetadata = computed(() =>
@@ -110,9 +149,16 @@ export class RdxRadioGroupDirective
     };
 
     constructor() {
+        let hasAppliedDefault = false;
         effect(() => {
-            if (this.value() === null && this.defaultValue() !== undefined) {
-                this.value.set(this.defaultValue()!);
+            const defaultValue = this.defaultValue();
+            if (hasAppliedDefault || defaultValue === undefined) {
+                return;
+            }
+
+            hasAppliedDefault = true;
+            if (untracked(this.value) === null) {
+                this.value.set(defaultValue);
             }
         });
 
@@ -211,6 +257,17 @@ export class RdxRadioGroupDirective
 
     protected onKeydown(): void {
         if (this.disabledState()) return;
+    }
+
+    /**
+     * Marks the control touched when focus leaves the whole group (Base UI `RadioGroup` parity and the
+     * ADR 0004 CVA strategy) — moving focus between items stays inside, so `relatedTarget` is checked.
+     */
+    protected onFocusOut(event: FocusEvent): void {
+        const next = event.relatedTarget as Node | null;
+        if (!this.elementRef.nativeElement.contains(next)) {
+            this.onTouched();
+        }
     }
 }
 

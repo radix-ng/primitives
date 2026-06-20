@@ -1,11 +1,16 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { RdxRadioGroupDirective, RdxRadioIndicatorDirective, RdxRadioItemDirective } from '@radix-ng/primitives/radio';
+import {
+    RdxRadioGroupDirective,
+    RdxRadioIndicatorDirective,
+    RdxRadioItemDirective,
+    RdxRadioItemInputDirective
+} from '@radix-ng/primitives/radio';
 import { cn, demoButton, demoRadio } from '../../storybook/styles';
 
 @Component({
-    selector: 'radio-groups-forms-example',
+    selector: 'radio-template-driven-forms-example',
     template: `
         <form class="flex w-72 flex-col gap-4" (ngSubmit)="submit()">
             <div
@@ -20,6 +25,7 @@ import { cn, demoButton, demoRadio } from '../../storybook/styles';
                     <label [class]="r.row" rdxLabel>
                         <span [class]="r.item" [value]="room" rdxRadioItem>
                             <span [class]="r.indicator" rdxRadioIndicator></span>
+                            <input rdxRadioItemInput />
                         </span>
                         <span [class]="r.label">
                             {{ room }}
@@ -40,9 +46,16 @@ import { cn, demoButton, demoRadio } from '../../storybook/styles';
             }
         </form>
     `,
-    imports: [FormsModule, RdxLabelDirective, RdxRadioItemDirective, RdxRadioIndicatorDirective, RdxRadioGroupDirective]
+    imports: [
+        FormsModule,
+        RdxLabelDirective,
+        RdxRadioItemDirective,
+        RdxRadioItemInputDirective,
+        RdxRadioIndicatorDirective,
+        RdxRadioGroupDirective
+    ]
 })
-export class RadioGroupComponent {
+export class RadioTemplateDrivenFormsComponent {
     protected readonly cn = cn;
     protected readonly b = demoButton;
     protected readonly r = demoRadio;

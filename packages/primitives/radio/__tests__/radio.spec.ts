@@ -5,27 +5,30 @@ import {
     RdxRadioGroupDirective,
     RdxRadioIndicatorDirective,
     RdxRadioItemDirective,
+    RdxRadioItemInputDirective,
     RdxRadioValueChangeEvent
 } from '../index';
 
 @Component({
-    imports: [RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioIndicatorDirective],
+    imports: [RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioItemInputDirective, RdxRadioIndicatorDirective],
     template: `
         <form>
             <div
                 [value]="value"
                 [disabled]="disabled"
                 [required]="required"
-                [readonly]="readonly"
+                [readOnly]="readonly"
                 (onValueChange)="onValueChange($event)"
                 rdxRadioRoot
                 name="density"
             >
-                <button id="default" nativeButton rdxRadioItem value="default">
+                <button id="default" rdxRadioItem value="default">
                     <span rdxRadioIndicator></span>
+                    <input rdxRadioItemInput />
                 </button>
-                <button id="comfortable" nativeButton rdxRadioItem value="comfortable">
+                <button id="comfortable" rdxRadioItem value="comfortable">
                     <span rdxRadioIndicator></span>
+                    <input rdxRadioItemInput />
                 </button>
             </div>
         </form>
@@ -53,19 +56,21 @@ class RadioHost {
 }
 
 @Component({
-    imports: [RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioIndicatorDirective],
+    imports: [RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioItemInputDirective, RdxRadioIndicatorDirective],
     template: `
         <form>
             <div [value]="value" (onValueChange)="onValueChange($event)" rdxRadioRoot name="storage">
                 <label>
                     <span rdxRadioItem value="ssd">
                         <span rdxRadioIndicator></span>
+                        <input rdxRadioItemInput />
                     </span>
                     SSD
                 </label>
                 <label>
                     <span rdxRadioItem value="hdd">
                         <span rdxRadioIndicator></span>
+                        <input rdxRadioItemInput />
                     </span>
                     HDD
                 </label>
@@ -221,7 +226,6 @@ describe('RdxRadio', () => {
         fixture.detectChanges();
 
         expect(group().getAttribute('data-disabled')).toBe('');
-        expect(group().getAttribute('data-required')).toBe('');
         expect(buttons()[0].hasAttribute('disabled')).toBe(true);
         expect(buttons()[0].getAttribute('data-required')).toBe('');
         expect(indicators()[0].getAttribute('data-disabled')).toBe('');
@@ -240,6 +244,20 @@ describe('RdxRadio', () => {
         expect(host.value).toBe('default');
         expect(host.changes).toEqual([]);
         expect(buttons()[0].getAttribute('data-readonly')).toBe('');
+    });
+
+    it('marks the control touched only when focus leaves the group', () => {
+        const groupDir = fixture.debugElement.query(By.css('[rdxRadioRoot]')).injector.get(RdxRadioGroupDirective);
+        const touched = vi.fn();
+        groupDir.registerOnTouched(touched);
+
+        // Moving focus to a sibling item stays inside the group → not touched.
+        buttons()[0].dispatchEvent(new FocusEvent('focusout', { relatedTarget: buttons()[1], bubbles: true }));
+        expect(touched).not.toHaveBeenCalled();
+
+        // Focus leaving the group → touched.
+        buttons()[0].dispatchEvent(new FocusEvent('focusout', { relatedTarget: document.body, bubbles: true }));
+        expect(touched).toHaveBeenCalledTimes(1);
     });
 
     it('supports label-wrapped non-button radio items', () => {

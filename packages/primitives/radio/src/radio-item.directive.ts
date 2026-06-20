@@ -1,33 +1,41 @@
-import {
-    booleanAttribute,
-    computed,
-    DestroyRef,
-    Directive,
-    effect,
-    ElementRef,
-    inject,
-    InjectionToken,
-    input,
-    Renderer2
-} from '@angular/core';
+import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input, Signal } from '@angular/core';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
-import { BooleanInput, provideToken } from '@radix-ng/primitives/core';
-import { RDX_RADIO_GROUP } from './radio-tokens';
+import { BooleanInput, createContext } from '@radix-ng/primitives/core';
+import { injectRadioRootContext } from './radio-root.directive';
 
-export const RdxRadioItemToken = new InjectionToken<RdxRadioItemDirective>('RadioItemToken');
-
-export function injectRadioItem(): RdxRadioItemDirective {
-    return inject(RdxRadioItemToken);
+export interface RadioItemContext {
+    value: Signal<string>;
+    checkedState: Signal<boolean>;
+    disabledState: Signal<boolean>;
+    readonlyState: Signal<boolean>;
+    requiredState: Signal<boolean>;
 }
+
+const itemContext = (): RadioItemContext => {
+    const item = inject(RdxRadioItemDirective);
+
+    return {
+        value: item.value,
+        checkedState: item.checkedState,
+        disabledState: item.disabledState,
+        readonlyState: item.readonlyState,
+        requiredState: item.requiredState
+    };
+};
+
+export const [injectRadioItemContext, provideRadioItemContext] = createContext<RadioItemContext>(
+    'RadioItemContext',
+    'components/radio'
+);
 
 @Directive({
     selector: '[rdxRadioItem]',
     exportAs: 'rdxRadioItem',
-    providers: [provideToken(RdxRadioItemToken, RdxRadioItemDirective)],
+    providers: [provideRadioItemContext(itemContext)],
     hostDirectives: [RdxCompositeItem],
 
     host: {
-        '[attr.type]': 'nativeButtonState() ? "button" : undefined',
+        '[attr.type]': 'isNativeButton ? "button" : undefined',
         role: 'radio',
         '[attr.aria-checked]': 'checkedState()',
         '[attr.aria-disabled]': 'disabledState() ? "true" : undefined',
@@ -39,8 +47,7 @@ export function injectRadioItem(): RdxRadioItemDirective {
         '[attr.data-disabled]': 'disabledState() ? "" : undefined',
         '[attr.data-readonly]': 'readonlyState() ? "" : undefined',
         '[attr.data-required]': 'requiredState() ? "" : undefined',
-        '[attr.data-state]': 'checkedState() ? "checked" : "unchecked"',
-        '[attr.disabled]': 'nativeButtonState() && disabledState() ? "" : undefined',
+        '[attr.disabled]': 'isNativeButton && disabledState() ? "" : undefined',
         '(click)': 'onClick($event)',
         '(keydown)': 'onKeyDown($event)',
         '(keyup)': 'onKeyUp()',
@@ -48,13 +55,9 @@ export function injectRadioItem(): RdxRadioItemDirective {
     }
 })
 export class RdxRadioItemDirective {
-    private readonly radioGroup = inject(RDX_RADIO_GROUP);
-    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
-    private readonly renderer = inject(Renderer2);
+    private readonly rootContext = injectRadioRootContext();
     private readonly compositeItem = inject(RdxCompositeItem, { self: true });
-    private readonly destroyRef = inject(DestroyRef);
-    private readonly inputElement = this.renderer.createElement('input') as HTMLInputElement;
-    private previousCheckedState: boolean | undefined;
+    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
     readonly value = input.required<string>();
 
@@ -64,52 +67,42 @@ export class RdxRadioItemDirective {
 
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    readonly readonly = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+    /**
+     * Whether the user should be unable to select this radio button. Bound in templates as
+     * `readOnly` (Base UI spelling); the TS member stays `readonly` for cross-primitive consistency.
+     */
+    readonly readonly = input<boolean, BooleanInput>(false, { alias: 'readOnly', transform: booleanAttribute });
 
-    readonly nativeButton = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+    /**
+     * Whether the host is a native `<button>`. Detected from the host tag (unlike Base UI's explicit
+     * `nativeButton` prop, the rendered element is statically known in Angular templates), and used to
+     * apply `type="button"` and the native `disabled` attribute.
+     */
+    protected readonly isNativeButton = this.elementRef.nativeElement.tagName === 'BUTTON';
 
-    readonly nativeButtonState = computed(() => this.nativeButton());
+    readonly disabledState = computed(() => this.rootContext.disabledState() || this.disabled());
 
-    readonly disabledState = computed(() => this.radioGroup.disabledState() || this.disabled());
+    readonly readonlyState = computed(() => this.rootContext.readonly() || this.readonly());
 
-    readonly readonlyState = computed(() => this.radioGroup.readonly() || this.readonly());
+    readonly requiredState = computed(() => this.rootContext.required() || this.required());
 
-    readonly requiredState = computed(() => this.radioGroup.required() || this.required());
-
-    readonly checkedState = computed(() => this.radioGroup.value() === this.value());
+    readonly checkedState = computed(() => this.rootContext.value() === this.value());
 
     private readonly ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'] as const;
 
     constructor() {
-        this.createHiddenInput();
-        const unlistenInputChange = this.renderer.listen(this.inputElement, 'change', (event: Event) => {
-            if (this.inputElement.checked) {
-                this.radioGroup.select(this.value(), event);
-            }
-        });
-
-        this.destroyRef.onDestroy(() => {
-            unlistenInputChange();
-            const parent = this.inputElement.parentNode;
-
-            if (parent) {
-                this.renderer.removeChild(parent, this.inputElement);
-            }
-        });
-
         effect(() => {
             this.compositeItem.setMetadata({
                 disabled: this.disabledState(),
                 value: this.value()
             });
-            this.syncHiddenInput();
         });
     }
 
     /** @ignore */
     onClick(event?: Event) {
         if (!this.disabledState() && !this.readonlyState()) {
-            this.radioGroup.select(this.value(), event);
+            this.rootContext.select(this.value(), event);
         }
     }
 
@@ -127,89 +120,26 @@ export class RdxRadioItemDirective {
         }
 
         if (this.isAllowedArrowKey(keyEvent.key)) {
-            this.radioGroup.setArrowNavigation(true);
+            this.rootContext.setArrowNavigation(true);
         }
     }
 
     /** @ignore */
     onKeyUp() {
-        this.radioGroup.setArrowNavigation(false);
+        this.rootContext.setArrowNavigation(false);
     }
 
     /** @ignore */
     onFocus(event?: FocusEvent) {
         queueMicrotask(() => {
-            if (this.radioGroup.isArrowNavigation()) {
-                this.radioGroup.select(this.value(), event);
-                this.radioGroup.setArrowNavigation(false);
+            if (this.rootContext.isArrowNavigation()) {
+                this.rootContext.select(this.value(), event);
+                this.rootContext.setArrowNavigation(false);
             }
         });
     }
 
     private isAllowedArrowKey(key: string): boolean {
-        if (!(this.ARROW_KEYS as readonly string[]).includes(key)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private createHiddenInput(): void {
-        const host = this.elementRef.nativeElement;
-        const parent = host.parentNode;
-
-        this.renderer.setAttribute(this.inputElement, 'type', 'radio');
-        this.renderer.setAttribute(this.inputElement, 'tabindex', '-1');
-        this.renderer.setAttribute(this.inputElement, 'aria-hidden', 'true');
-        this.renderer.setStyle(this.inputElement, 'position', 'absolute');
-        this.renderer.setStyle(this.inputElement, 'pointer-events', 'none');
-        this.renderer.setStyle(this.inputElement, 'opacity', '0');
-        this.renderer.setStyle(this.inputElement, 'margin', '0');
-        this.renderer.setStyle(this.inputElement, 'inset', '0');
-        this.renderer.setStyle(this.inputElement, 'transform', 'translateX(-100%)');
-
-        if (parent) {
-            this.renderer.insertBefore(parent, this.inputElement, host.nextSibling);
-        }
-    }
-
-    private syncHiddenInput(): void {
-        const checked = this.checkedState();
-
-        this.inputElement.name = this.radioGroup.name() ?? '';
-        this.inputElement.value = this.value();
-        this.inputElement.checked = checked;
-        this.inputElement.required = this.requiredState();
-        this.inputElement.disabled = this.disabledState();
-
-        this.setOptionalAttribute('name', this.radioGroup.name());
-        this.setOptionalAttribute('form', this.radioGroup.form());
-        this.setBooleanAttribute('checked', checked);
-        this.setBooleanAttribute('required', this.requiredState());
-        this.setBooleanAttribute('disabled', this.disabledState());
-        this.renderer.setAttribute(this.inputElement, 'value', this.value());
-
-        if (this.previousCheckedState === false && checked) {
-            this.inputElement.dispatchEvent(new Event('input', { bubbles: true }));
-            this.inputElement.dispatchEvent(new Event('change', { bubbles: true }));
-        }
-
-        this.previousCheckedState = checked;
-    }
-
-    private setOptionalAttribute(name: string, value: string | undefined): void {
-        if (value) {
-            this.renderer.setAttribute(this.inputElement, name, value);
-        } else {
-            this.renderer.removeAttribute(this.inputElement, name);
-        }
-    }
-
-    private setBooleanAttribute(name: string, value: boolean): void {
-        if (value) {
-            this.renderer.setAttribute(this.inputElement, name, '');
-        } else {
-            this.renderer.removeAttribute(this.inputElement, name);
-        }
+        return (this.ARROW_KEYS as readonly string[]).includes(key);
     }
 }

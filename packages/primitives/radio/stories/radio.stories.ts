@@ -2,11 +2,11 @@ import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RadioDefaultComponent } from './radio-default';
 import { RadioDisabledComponent } from './radio-disabled';
-import { RadioGroupComponent } from './radio-group.component';
+import { RadioTemplateDrivenFormsComponent } from './radio-template-driven-forms';
 
 import defaultSource from './radio-default?raw';
 import disabledSource from './radio-disabled?raw';
-import templateDrivenFormsSource from './radio-group.component?raw';
+import templateDrivenFormsSource from './radio-template-driven-forms?raw';
 
 const source = (code: string) => ({ docs: { source: { code, language: 'typescript' } } });
 
@@ -16,7 +16,7 @@ export default {
     title: 'Primitives/Radio Group',
     decorators: [
         moduleMetadata({
-            imports: [RadioDefaultComponent, RadioDisabledComponent, RadioGroupComponent]
+            imports: [RadioDefaultComponent, RadioDisabledComponent, RadioTemplateDrivenFormsComponent]
         }),
         tailwindDemoDecorator()
     ]
@@ -46,7 +46,7 @@ export const TemplateDrivenForms: Story = {
     parameters: source(templateDrivenFormsSource),
     render: () => ({
         template: html`
-            <radio-groups-forms-example />
+            <radio-template-driven-forms-example />
         `
     })
 };

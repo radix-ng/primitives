@@ -2,6 +2,7 @@ import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as RadioDirectiveStories from './radio.stories';
 import { RdxRadioGroupDirective } from '../src/radio-root.directive';
 import { RdxRadioItemDirective } from '../src/radio-item.directive';
+import { RdxRadioIndicatorDirective } from '../src/radio-indicator.directive';
 
 <Meta title="Primitives/Radio Group" />
 
@@ -24,7 +25,8 @@ Get started with importing the directives:
 import {
     RdxRadioGroupDirective,
     RdxRadioIndicatorDirective,
-    RdxRadioItemDirective
+    RdxRadioItemDirective,
+    RdxRadioItemInputDirective
 } from '@radix-ng/primitives/radio';
 ```
 
@@ -35,17 +37,21 @@ import {
   <label>
     <span rdxRadioItem value="default">
       <span rdxRadioIndicator></span>
+      <input rdxRadioItemInput />
     </span>
     Default
   </label>
 </div>
 ```
 
-`RdxRadioItemDirective` creates the hidden native radio input next to the item, so form
-submission, native validation, and labels work without rendering an `<input>` inside the button.
+Add the optional `input[rdxRadioItemInput]` part inside each item to render the hidden native radio
+input, so native form submission, validation, and `<label>` activation work. Selection through the
+group (click, keyboard, `ngModel`/reactive forms) works without it — include it only when you need
+native `<form>` integration.
 
-Use `nativeButton` only when you render the item as a standalone `<button>` and handle the label
-outside of native label activation.
+The item can attach to any element. When the host is a native `<button>` it is detected automatically:
+`type="button"` and the native `disabled` attribute are applied for you — there is no `nativeButton`
+input to set.
 
 ## Change events
 
@@ -85,7 +91,7 @@ A disabled radio group ignores user interaction and exposes disabled state attri
 
 ### Template-driven forms
 
-Radio group works with `ngModel`, native form submission, and a submit button while still creating native inputs.
+Radio group works with `ngModel`, native form submission, and a submit button via the hidden `rdxRadioItemInput`.
 
 <Canvas of={RadioDirectiveStories.TemplateDrivenForms} />
 
@@ -93,24 +99,61 @@ Radio group works with `ngModel`, native form submission, and a submit button wh
 
 ### RadioGroup
 
-`RdxRadioGroupDirective`
-
-Owns the shared radio state and form metadata (`name`, `form`, `required`, `disabled`, and
-`readonly`).
+`RdxRadioGroupDirective` — owns the shared radio state and form metadata. Apply to a container element
+(typically a `<div>`). Exposes `role="radiogroup"` and mirrors `aria-required` / `aria-disabled` /
+`aria-readonly`.
 
 <ArgTypes of={RdxRadioGroupDirective} />
 
+**Data attributes**
+
+| Attribute       | Present when           |
+| --------------- | ---------------------- |
+| `data-disabled` | the group is disabled. |
+
 ### RadioGroupItem
 
-`RdxRadioItemDirective`
+`RdxRadioItemDirective` — one radio button. Apply to an element that represents the button: a `<span>`,
+or a native `<button>` (detected automatically, which applies `type="button"` and native `disabled`).
+Exposes `role="radio"` and `aria-checked`.
 
 <ArgTypes of={RdxRadioItemDirective} />
 
+**Data attributes**
+
+| Attribute        | Present when                          |
+| ---------------- | ------------------------------------- |
+| `data-checked`   | the radio is selected.                |
+| `data-unchecked` | the radio is not selected.            |
+| `data-disabled`  | the radio or its group is disabled.   |
+| `data-readonly`  | the radio or its group is read-only.  |
+| `data-required`  | the radio or its group is required.   |
+
+### RadioGroupItemInput
+
+`RdxRadioItemInputDirective` — optional hidden native radio input for native form submission,
+validation, and `<label>` activation. Apply to an `<input>` element placed inside an item. Reads
+everything from the item and group — it has no public inputs and sets no `data-*` attributes.
+
 ### RadioIndicator
 
-`RdxRadioIndicatorDirective`
+`RdxRadioIndicatorDirective` — visual marker shown when the radio is selected. Apply to an element
+inside an item (typically a `<span>`). By default it is hidden while unchecked; set `keepMounted` to
+keep it in the DOM so CSS enter/exit animations can play.
 
-Renders only when its radio item is checked and exposes the same state attributes for styling. It has no public inputs.
+<ArgTypes of={RdxRadioIndicatorDirective} />
+
+**Data attributes**
+
+| Attribute             | Present when                                            |
+| --------------------- | ------------------------------------------------------ |
+| `data-checked`        | the radio is selected.                                 |
+| `data-unchecked`      | the radio is not selected.                             |
+| `data-disabled`       | the radio or its group is disabled.                    |
+| `data-readonly`       | the radio or its group is read-only.                   |
+| `data-required`       | the radio or its group is required.                    |
+| `data-starting-style` | the indicator just mounted (use to animate it in).     |
+| `data-ending-style`   | the indicator is unchecked (use to animate it out).    |
 
 ## Accessibility
 

@@ -1,12 +1,16 @@
 import { computed, Directive, effect, ElementRef, inject } from '@angular/core';
-import { RdxVisuallyHiddenDirective } from '@radix-ng/primitives/visually-hidden';
-import { injectRadioItem } from './radio-item.directive';
-import { RDX_RADIO_GROUP } from './radio-tokens';
+import { injectRadioItemContext } from './radio-item.directive';
+import { injectRadioRootContext } from './radio-root.directive';
 
+/**
+ * The hidden native radio input that mirrors the item state for form submission, native validation,
+ * and `<label>` activation. Place it inside an `rdxRadioItem`.
+ *
+ * @see https://base-ui.com/react/components/radio
+ */
 @Directive({
     selector: 'input[rdxRadioItemInput]',
     exportAs: 'rdxRadioItemInput',
-    hostDirectives: [{ directive: RdxVisuallyHiddenDirective, inputs: ['feature'] }],
     host: {
         type: 'radio',
         tabindex: '-1',
@@ -18,27 +22,21 @@ import { RDX_RADIO_GROUP } from './radio-tokens';
         '[attr.checked]': 'checked() ? "" : undefined',
         '[checked]': 'checked()',
         '[attr.value]': 'value()',
-        '[style]': `{
-          position: 'absolute',
-          pointerEvents: 'none',
-          opacity: 0,
-          margin: 0,
-          inset: 0,
-          transform: 'translateX(-100%)',
-        }`
+        '(change)': 'onInputChange($event)',
+        style: 'transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0; inset: 0;'
     }
 })
 export class RdxRadioItemInputDirective {
-    private readonly radioItem = injectRadioItem();
-    private readonly radioGroup = inject(RDX_RADIO_GROUP);
+    private readonly rootContext = injectRadioRootContext();
+    private readonly itemContext = injectRadioItemContext();
     private readonly input = inject<ElementRef<HTMLInputElement>>(ElementRef).nativeElement;
 
-    readonly name = computed(() => this.radioGroup.name());
-    readonly form = computed(() => this.radioGroup.form());
-    readonly value = computed(() => this.radioItem.value() || undefined);
-    readonly checked = computed(() => this.radioItem.checkedState());
-    readonly required = computed(() => this.radioItem.requiredState());
-    readonly disabled = computed(() => this.radioItem.disabledState());
+    readonly name = computed(() => this.rootContext.name());
+    readonly form = computed(() => this.rootContext.form());
+    readonly value = computed(() => this.itemContext.value() || undefined);
+    readonly checked = computed(() => this.itemContext.checkedState());
+    readonly required = computed(() => this.itemContext.requiredState());
+    readonly disabled = computed(() => this.itemContext.disabledState());
 
     constructor() {
         let isInitial = true;
@@ -56,5 +54,18 @@ export class RdxRadioItemInputDirective {
                 this.input.dispatchEvent(new Event('change', { bubbles: true }));
             }
         });
+    }
+
+    /**
+     * Selects this item when the native input is checked — covers `<label>` activation,
+     * where clicking the label toggles the hidden radio input rather than the visible item.
+     * `select()` is a no-op when the value is already current, so the programmatic
+     * `change` dispatched above does not re-trigger selection.
+     * @ignore
+     */
+    protected onInputChange(event: Event): void {
+        if (this.input.checked) {
+            this.rootContext.select(this.itemContext.value(), event);
+        }
     }
 }

@@ -1,22 +1,27 @@
-import { Directive, inject } from '@angular/core';
-import { RdxRadioItemDirective } from './radio-item.directive';
-import { RDX_RADIO_GROUP, RadioGroupDirective } from './radio-tokens';
+import { booleanAttribute, computed, Directive, input } from '@angular/core';
+import { BooleanInput } from '@radix-ng/primitives/core';
+import { injectRadioItemContext } from './radio-item.directive';
 
 @Directive({
     selector: '[rdxRadioIndicator]',
     exportAs: 'rdxRadioIndicator',
     host: {
-        '[attr.data-checked]': 'radioItem.checkedState() ? "" : undefined',
-        '[attr.data-unchecked]': '!radioItem.checkedState() ? "" : undefined',
-        '[attr.data-state]': 'radioItem.checkedState() ? "checked" : "unchecked"',
-        '[attr.data-disabled]': 'radioItem.disabledState() ? "" : undefined',
-        '[attr.data-readonly]': 'radioItem.readonlyState() ? "" : undefined',
-        '[attr.data-required]': 'radioItem.requiredState() ? "" : undefined',
-        '[hidden]': '!radioItem.checkedState()',
+        '[attr.data-checked]': 'itemContext.checkedState() ? "" : undefined',
+        '[attr.data-unchecked]': '!itemContext.checkedState() ? "" : undefined',
+        '[attr.data-disabled]': 'itemContext.disabledState() ? "" : undefined',
+        '[attr.data-readonly]': 'itemContext.readonlyState() ? "" : undefined',
+        '[attr.data-required]': 'itemContext.requiredState() ? "" : undefined',
+        '[attr.data-starting-style]': 'isVisible() ? "" : undefined',
+        '[attr.data-ending-style]': '!isVisible() ? "" : undefined',
+        '[style.display]': '!keepMounted() && !isVisible() ? "none" : null',
         '[style.pointer-events]': '"none"'
     }
 })
 export class RdxRadioIndicatorDirective {
-    protected readonly radioGroup: RadioGroupDirective = inject(RDX_RADIO_GROUP);
-    protected readonly radioItem: RdxRadioItemDirective = inject(RdxRadioItemDirective);
+    protected readonly itemContext = injectRadioItemContext();
+
+    /** Keep the indicator in the DOM when unchecked so CSS exit animations can play. */
+    readonly keepMounted = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    protected readonly isVisible = computed(() => this.itemContext.checkedState());
 }
