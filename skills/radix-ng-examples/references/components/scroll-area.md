@@ -352,37 +352,75 @@ export class ScrollAreaTabsExample {
 
 ## API Reference
 
+The overflow attributes below are shared by Root, Viewport, Content, and Scrollbar; the per-part
+tables list the extras each one adds.
+
+| Attribute                                                       | Present when                                      |
+| -------------------------------------------------------------- | ------------------------------------------------- |
+| `data-has-overflow-x` / `data-has-overflow-y`                  | Content overflows on that axis.                   |
+| `data-overflow-x-start` / `-x-end` / `-y-start` / `-y-end`     | There is hidden content past that edge.           |
+| `data-scrolling`                                               | A scroll is currently in progress.                |
+
 ### Root
 
-Groups all parts of the scroll area and owns the shared scroll/overflow state. Exposes `data-scrolling`,
-`data-has-overflow-x/y`, and `data-overflow-x/y-start/end`, plus the `--scroll-area-corner-width/height`
-CSS variables.
+Groups all parts of the scroll area and owns the shared scroll/overflow state.
+
+**Data attributes:** the shared overflow set above, plus `data-orientation`.
+
+**CSS variables**
+
+| Variable                       | Description                          |
+| ------------------------------ | ------------------------------------ |
+| `--scroll-area-corner-width`   | Width of the corner between scrollbars.  |
+| `--scroll-area-corner-height`  | Height of the corner between scrollbars. |
 
 ### Viewport
 
 The actual scrollable container (`overflow: scroll` with the native scrollbar hidden). Wrap your
-`Content` in it. Sets the `--scroll-area-overflow-*` edge-distance variables. Reads everything from
-context — no inputs.
+`Content` in it. Reads everything from context — no inputs.
 
 The viewport injects a small stylesheet to hide native scrollbars in browsers that cannot express
 that rule inline. If your app provides Angular's `CSP_NONCE` token, that nonce is applied to the
 style element. Set `disableStyleElements` on `Root` when you want to ship the scrollbar-hiding CSS
 yourself.
 
+**Data attributes:** the shared overflow set, plus `tabindex` (`0` while it overflows, `-1` otherwise)
+and `data-id`.
+
+**CSS variables**
+
+| Variable                                                       | Description                                  |
+| -------------------------------------------------------------- | -------------------------------------------- |
+| `--scroll-area-overflow-x-start` / `-x-end` / `-y-start` / `-y-end` | Distance of hidden content past each edge. |
+
 ### Content
 
 A wrapper around the scrollable content that observes size changes to keep the thumb in sync. Reads
-everything from context — no inputs.
+everything from context — no inputs. Exposes the shared overflow attributes.
 
 ### Scrollbar
 
-A vertical or horizontal scrollbar track. Hosts the `Thumb` and exposes `data-orientation`,
-`data-hovering`, `data-scrolling`, and the overflow attributes, plus `--scroll-area-thumb-width/height`.
+A vertical or horizontal scrollbar track. Hosts the `Thumb`.
+
+**Data attributes:** the shared overflow set, plus `data-orientation`, `data-hovering`, and `data-id`.
+
+**CSS variables**
+
+| Variable                       | Description           |
+| ------------------------------ | --------------------- |
+| `--scroll-area-thumb-width`    | Computed thumb width.  |
+| `--scroll-area-thumb-height`   | Computed thumb height. |
 
 ### Thumb
 
-The draggable indicator inside a `Scrollbar`. Exposes `data-orientation`. Reads everything from
-context — no inputs.
+The draggable indicator inside a `Scrollbar`. Reads everything from context — no inputs.
+
+**Data attributes**
+
+| Attribute          | Value                                                  |
+| ------------------ | ------------------------------------------------------ |
+| `data-orientation` | `"horizontal"` \| `"vertical"`.                        |
+| `data-scrolling`   | Present while a scroll is in progress on its axis.     |
 
 ### Corner
 

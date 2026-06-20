@@ -822,12 +822,27 @@
           "exportAs": "rdxAvatarImage",
           "inputs": [
             {
+              "name": "crossOrigin",
+              "type": "'anonymous' | 'use-credentials' | ''",
+              "description": "The CORS mode used when fetching the image."
+            },
+            {
               "name": "referrerPolicy",
               "type": "HTMLAttributeReferrerPolicy"
             },
             {
+              "name": "sizes",
+              "type": "string",
+              "description": "The `sizes` attribute paired with `srcSet`."
+            },
+            {
               "name": "src",
               "type": "string"
+            },
+            {
+              "name": "srcSet",
+              "type": "string",
+              "description": "A responsive `srcset` for the image. When set without `src`, an empty `src` no longer counts as\nan error."
             }
           ],
           "outputs": [

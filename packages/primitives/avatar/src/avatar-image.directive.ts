@@ -15,6 +15,9 @@ import { HTMLAttributeReferrerPolicy, RdxImageLoadingStatus } from './types';
         // already correct, and forcing `role="img"` here would override any consumer override (Base UI
         // adds no role).
         '[attr.src]': 'src()',
+        '[attr.srcset]': 'srcSet()',
+        '[attr.sizes]': 'sizes()',
+        '[attr.crossorigin]': 'crossOrigin()',
         '[attr.referrerpolicy]': 'referrerPolicy()',
         '[style.display]': '(rootContext.imageLoadingStatus() === "loaded") ? null : "none"'
     }
@@ -28,6 +31,28 @@ export class RdxAvatarImageDirective {
      * @group Props
      */
     readonly src = input<string>();
+
+    /**
+     * A responsive `srcset` for the image. When set without `src`, an empty `src` no longer counts as
+     * an error.
+     *
+     * @group Props
+     */
+    readonly srcSet = input<string>();
+
+    /**
+     * The `sizes` attribute paired with `srcSet`.
+     *
+     * @group Props
+     */
+    readonly sizes = input<string>();
+
+    /**
+     * The CORS mode used when fetching the image.
+     *
+     * @group Props
+     */
+    readonly crossOrigin = input<'anonymous' | 'use-credentials' | ''>();
 
     readonly referrerPolicy = input<HTMLAttributeReferrerPolicy>();
 
@@ -47,29 +72,49 @@ export class RdxAvatarImageDirective {
             return;
         }
 
-        watch([this.src, this.referrerPolicy], ([src, referrer], onCleanup) => {
-            if (!src) {
-                this.loadingStatus.set('error');
-                return;
-            }
+        watch(
+            [this.src, this.srcSet, this.sizes, this.crossOrigin, this.referrerPolicy],
+            ([src, srcSet, sizes, crossOrigin, referrer], onCleanup) => {
+                if (!src && !srcSet) {
+                    this.loadingStatus.set('error');
+                    return;
+                }
 
-            const image = new window.Image();
-            this.loadingStatus.set('loading');
-            image.onload = () => this.loadingStatus.set('loaded');
-            image.onerror = () => this.loadingStatus.set('error');
-            // Set referrerPolicy before src so it applies to the fetch.
-            if (referrer) {
-                image.referrerPolicy = referrer;
-            }
-            image.src = src;
+                const image = new window.Image();
+                this.loadingStatus.set('loading');
+                image.onload = () => this.loadingStatus.set('loaded');
+                image.onerror = () => this.loadingStatus.set('error');
+                // Set the fetch-affecting attributes before `src`/`srcset` so they apply to the request.
+                if (referrer) {
+                    image.referrerPolicy = referrer;
+                }
+                if (crossOrigin !== undefined) {
+                    image.crossOrigin = crossOrigin;
+                }
+                if (srcSet) {
+                    image.srcset = srcSet;
+                }
+                if (sizes) {
+                    image.sizes = sizes;
+                }
+                if (src) {
+                    image.src = src;
+                }
 
-            // Drop handlers for a stale src (or on destroy) so a late load/error
-            // can't overwrite the status for the current one.
-            onCleanup(() => {
-                image.onload = null;
-                image.onerror = null;
-            });
-        });
+                // A cached/already-decoded image is ready synchronously — resolve immediately so the
+                // fallback delay isn't started for an image that is already available.
+                if (image.complete && image.naturalWidth > 0) {
+                    this.loadingStatus.set('loaded');
+                }
+
+                // Drop handlers for a stale src (or on destroy) so a late load/error
+                // can't overwrite the status for the current one.
+                onCleanup(() => {
+                    image.onload = null;
+                    image.onerror = null;
+                });
+            }
+        );
 
         watch([this.loadingStatus], ([value]) => {
             // Base UI fires the callback only once loading actually starts — skip the initial `idle`.

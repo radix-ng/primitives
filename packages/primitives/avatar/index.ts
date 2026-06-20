@@ -3,11 +3,12 @@ import { RdxAvatarFallbackDirective } from './src/avatar-fallback.directive';
 import { RdxAvatarImageDirective } from './src/avatar-image.directive';
 import { RdxAvatarRootDirective } from './src/avatar-root.directive';
 
+export * from './src/avatar-context.token';
 export * from './src/avatar-fallback.directive';
 export * from './src/avatar-image.directive';
 export * from './src/avatar-root.directive';
 export * from './src/avatar.config';
-export type { RdxImageLoadingStatus } from './src/types';
+export type { HTMLAttributeReferrerPolicy, RdxImageLoadingStatus } from './src/types';
 
 const _imports = [RdxAvatarRootDirective, RdxAvatarFallbackDirective, RdxAvatarImageDirective];
 

@@ -29,7 +29,7 @@
 
 - ✅ Supports horizontal and vertical orientations.
 - ✅ Exposes orientation state via the `data-orientation` attribute.
-- ✅ Uses the `separator` role and sets `aria-orientation` for vertical separators.
+- ✅ Uses the `separator` role and sets `aria-orientation` for both orientations.
 
 ## Import
 
@@ -94,3 +94,11 @@ The default orientation is horizontal.
 ```
 
 ## API Reference
+
+`RdxSeparatorRootDirective` — applies `role="separator"` and `aria-orientation`. Apply to any element.
+
+**Data attributes**
+
+| Attribute          | Value                          |
+| ------------------ | ------------------------------ |
+| `data-orientation` | `"horizontal"` \| `"vertical"` |

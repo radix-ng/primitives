@@ -1,13 +1,22 @@
-import { Directive, signal } from '@angular/core';
-import { provideToken } from '@radix-ng/primitives/core';
-import { AVATAR_ROOT_CONTEXT, AvatarContextToken } from './avatar-context.token';
+import { Directive, inject, signal } from '@angular/core';
+import { AvatarRootContext, provideAvatarRootContext } from './avatar-context.token';
 import { RdxImageLoadingStatus } from './types';
 
+const rootContext = (): AvatarRootContext => {
+    const root = inject(RdxAvatarRootDirective);
+    return {
+        imageLoadingStatus: root.imageLoadingStatus
+    };
+};
+
+/**
+ * @group Components
+ */
 @Directive({
     selector: 'span[rdxAvatarRoot]',
     exportAs: 'rdxAvatarRoot',
-    providers: [provideToken(AVATAR_ROOT_CONTEXT, RdxAvatarRootDirective)]
+    providers: [provideAvatarRootContext(rootContext)]
 })
-export class RdxAvatarRootDirective implements AvatarContextToken {
+export class RdxAvatarRootDirective {
     readonly imageLoadingStatus = signal<RdxImageLoadingStatus>('idle');
 }

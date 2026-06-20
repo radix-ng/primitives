@@ -286,36 +286,74 @@ export class ProgressCircularComponent {
 
 ## API Reference
 
+The three status attributes below are shared by every part; the per-part tables list the additional
+attributes each one exposes.
+
+| Attribute            | Present when                                  |
+| -------------------- | --------------------------------------------- |
+| `data-complete`      | The value has reached `max`.                  |
+| `data-progressing`   | The value is between `min` and `max`.         |
+| `data-indeterminate` | The value is `null` (unknown).                |
+
 ### Root
 
-`RdxProgressRootDirective`
+`RdxProgressRootDirective` — applies `role="progressbar"` and the ARIA value attributes. Apply to a
+container element (typically a `<div>`).
+
+**Data attributes**
+
+| Attribute   | Value                                          |
+| ----------- | ---------------------------------------------- |
+| `data-value`| The current value (absent when indeterminate). |
+| `data-min`  | The minimum value.                             |
+| `data-max`  | The maximum value.                             |
 
 ### Label
 
-`RdxProgressLabelDirective`
-
-Gives the progressbar its accessible name through `aria-labelledby`.
+`RdxProgressLabelDirective` — gives the progressbar its accessible name through `aria-labelledby`.
+Reads everything from context. Exposes only the three shared status attributes.
 
 ### Value
 
-`RdxProgressValueDirective`
+`RdxProgressValueDirective` — displays the formatted value text. It is `aria-hidden` because the value
+is already announced via the root's `aria-valuenow` / `aria-valuetext`.
 
-Displays the formatted value text and provides `aria-describedby` text for the progressbar.
+**Data attributes**
+
+| Attribute   | Value                                          |
+| ----------- | ---------------------------------------------- |
+| `data-value`| The current value (absent when indeterminate). |
+| `data-min`  | The minimum value.                             |
+| `data-max`  | The maximum value.                             |
 
 ### Track
 
-`RdxProgressTrackDirective`
+`RdxProgressTrackDirective` — contains the visual indicator and mirrors the root state attributes.
 
-Contains the visual indicator and mirrors root state attributes.
+**Data attributes**
+
+| Attribute   | Value                                          |
+| ----------- | ---------------------------------------------- |
+| `data-value`| The current value (absent when indeterminate). |
+| `data-min`  | The minimum value.                             |
+| `data-max`  | The maximum value.                             |
 
 ### Indicator
 
-`RdxProgressIndicatorDirective`
+`RdxProgressIndicatorDirective` — displays the visual progress fill.
 
-Displays the visual progress fill and exposes `data-percent` for styling determinate progress.
+**Data attributes**
+
+| Attribute     | Value                                                       |
+| ------------- | ----------------------------------------------------------- |
+| `data-value`  | The current value (absent when indeterminate).              |
+| `data-min`    | The minimum value.                                          |
+| `data-max`    | The maximum value.                                          |
+| `data-percent`| The completion percentage (absent when indeterminate).      |
 
 ## Accessibility
 
-The root uses `role="progressbar"`, is labelled by `rdxProgressLabel`, and is described by
-`rdxProgressValue`. In indeterminate state, `aria-valuemin`, `aria-valuemax`, `aria-valuenow`, and
-`aria-valuetext` are omitted because the current value is unknown.
+The root uses `role="progressbar"` and is labelled by `rdxProgressLabel` (via `aria-labelledby`, set
+only while a label is mounted). The value is conveyed through `aria-valuenow` / `aria-valuetext`, so
+`rdxProgressValue` is `aria-hidden`. In the indeterminate state `aria-valuenow` is omitted while
+`aria-valuemin` / `aria-valuemax` remain and `aria-valuetext` announces `"indeterminate progress"`.

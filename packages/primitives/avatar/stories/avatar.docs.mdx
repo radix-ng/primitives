@@ -72,10 +72,28 @@ The fallback renders when there is no image or the image fails to load.
 
 ## API Reference
 
+### Root
+
+`RdxAvatarRootDirective` — provides the shared image loading status. Apply to a `<span>`. It takes no
+inputs and exposes no data attributes (matching Base UI, which surfaces the loading status through the
+context, not the DOM).
+
 ### Image
+
+`RdxAvatarImageDirective` — apply to an `<img>`. It loads the image off-DOM and reveals it only once
+loaded; it carries no role (the native `<img>` role is used) and no data attributes.
 
 <ArgTypes of={RdxAvatarImageDirective} />
 
 ### Fallback
 
+`RdxAvatarFallbackDirective` — apply to a `<span>`. Shown until the image loads (optionally after
+`delayMs`). It exposes no data attributes.
+
 <ArgTypes of={RdxAvatarFallbackDirective} />
+
+## Accessibility
+
+Give the `<img rdxAvatarImage>` a meaningful `alt`, and put a meaningful label in the fallback (e.g.
+the person's name rather than bare initials) so it remains understandable to assistive technology when
+the image fails to load.

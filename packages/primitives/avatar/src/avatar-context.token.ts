@@ -1,12 +1,12 @@
-import { inject, InjectionToken, WritableSignal } from '@angular/core';
+import { WritableSignal } from '@angular/core';
+import { createContext } from '@radix-ng/primitives/core';
 import { RdxImageLoadingStatus } from './types';
 
-export interface AvatarContextToken {
+export interface AvatarRootContext {
     imageLoadingStatus: WritableSignal<RdxImageLoadingStatus>;
 }
 
-export const AVATAR_ROOT_CONTEXT = new InjectionToken<AvatarContextToken>('AVATAR_ROOT_CONTEXT');
-
-export function injectAvatarRootContext(): AvatarContextToken {
-    return inject(AVATAR_ROOT_CONTEXT);
-}
+export const [injectAvatarRootContext, provideAvatarRootContext] = createContext<AvatarRootContext>(
+    'AvatarRootContext',
+    'components/avatar'
+);

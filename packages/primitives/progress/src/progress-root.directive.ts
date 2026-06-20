@@ -1,4 +1,4 @@
-import { computed, Directive, inject, input, numberAttribute, Signal } from '@angular/core';
+import { computed, Directive, inject, input, numberAttribute, signal, Signal } from '@angular/core';
 import { createContext, injectId } from '@radix-ng/primitives/core';
 
 const attr = (value: boolean) => (value ? '' : undefined);
@@ -33,6 +33,8 @@ export interface RdxProgressRootContext {
     completeState: Signal<boolean>;
     progressingState: Signal<boolean>;
     indeterminateState: Signal<boolean>;
+    /** A Label part registers its presence; returns its unregister callback. */
+    registerLabel: () => () => void;
 }
 
 const progressRootContext = (): RdxProgressRootContext => {
@@ -49,7 +51,8 @@ const progressRootContext = (): RdxProgressRootContext => {
         progressState: root.progressState,
         completeState: root.completeState,
         progressingState: root.progressingState,
-        indeterminateState: root.indeterminateState
+        indeterminateState: root.indeterminateState,
+        registerLabel: () => root.registerLabel()
     };
 };
 
@@ -69,7 +72,9 @@ export const [injectProgressRootContext, provideProgressRootContext] = createCon
     providers: [provideProgressRootContext(progressRootContext)],
     host: {
         role: 'progressbar',
-        '[attr.aria-labelledby]': 'labelId()',
+        // Only reference the label id once a `rdxProgressLabel` is actually mounted, otherwise
+        // `aria-labelledby` would point at a non-existent element.
+        '[attr.aria-labelledby]': 'hasLabel() ? labelId() : undefined',
         // min/max are always present (Base UI + APG), only `aria-valuenow` is dropped when indeterminate.
         '[attr.aria-valuemin]': 'minState()',
         '[attr.aria-valuemax]': 'maxState()',
@@ -179,6 +184,16 @@ export class RdxProgressRootDirective {
     readonly indeterminateState = computed(() => this.progressState() === 'indeterminate');
 
     protected readonly dataAttr = attr;
+
+    private readonly labelCount = signal(0);
+    /** Whether at least one `rdxProgressLabel` is currently mounted. */
+    readonly hasLabel = computed(() => this.labelCount() > 0);
+
+    /** @ignore Called by `rdxProgressLabel` on mount; returns its unregister callback. */
+    registerLabel(): () => void {
+        this.labelCount.update((count) => count + 1);
+        return () => this.labelCount.update((count) => count - 1);
+    }
 
     private valueTransform(value: number | null): number | null {
         return value === null ? null : numberAttribute(value);

@@ -3018,9 +3018,27 @@ The fallback renders when there is no image or the image fails to load.
 
 ## API Reference
 
+### Root
+
+`RdxAvatarRootDirective` — provides the shared image loading status. Apply to a `<span>`. It takes no
+inputs and exposes no data attributes (matching Base UI, which surfaces the loading status through the
+context, not the DOM).
+
 ### Image
 
+`RdxAvatarImageDirective` — apply to an `<img>`. It loads the image off-DOM and reveals it only once
+loaded; it carries no role (the native `<img>` role is used) and no data attributes.
+
 ### Fallback
+
+`RdxAvatarFallbackDirective` — apply to a `<span>`. Shown until the image loads (optionally after
+`delayMs`). It exposes no data attributes.
+
+## Accessibility
+
+Give the `<img rdxAvatarImage>` a meaningful `alt`, and put a meaningful label in the fallback (e.g.
+the person's name rather than bare initials) so it remains understandable to assistive technology when
+the image fails to load.
 
 ---
 
@@ -17113,39 +17131,77 @@ export class ProgressCircularComponent {
 
 ## API Reference
 
+The three status attributes below are shared by every part; the per-part tables list the additional
+attributes each one exposes.
+
+| Attribute            | Present when                                  |
+| -------------------- | --------------------------------------------- |
+| `data-complete`      | The value has reached `max`.                  |
+| `data-progressing`   | The value is between `min` and `max`.         |
+| `data-indeterminate` | The value is `null` (unknown).                |
+
 ### Root
 
-`RdxProgressRootDirective`
+`RdxProgressRootDirective` — applies `role="progressbar"` and the ARIA value attributes. Apply to a
+container element (typically a `<div>`).
+
+**Data attributes**
+
+| Attribute   | Value                                          |
+| ----------- | ---------------------------------------------- |
+| `data-value`| The current value (absent when indeterminate). |
+| `data-min`  | The minimum value.                             |
+| `data-max`  | The maximum value.                             |
 
 ### Label
 
-`RdxProgressLabelDirective`
-
-Gives the progressbar its accessible name through `aria-labelledby`.
+`RdxProgressLabelDirective` — gives the progressbar its accessible name through `aria-labelledby`.
+Reads everything from context. Exposes only the three shared status attributes.
 
 ### Value
 
-`RdxProgressValueDirective`
+`RdxProgressValueDirective` — displays the formatted value text. It is `aria-hidden` because the value
+is already announced via the root's `aria-valuenow` / `aria-valuetext`.
 
-Displays the formatted value text and provides `aria-describedby` text for the progressbar.
+**Data attributes**
+
+| Attribute   | Value                                          |
+| ----------- | ---------------------------------------------- |
+| `data-value`| The current value (absent when indeterminate). |
+| `data-min`  | The minimum value.                             |
+| `data-max`  | The maximum value.                             |
 
 ### Track
 
-`RdxProgressTrackDirective`
+`RdxProgressTrackDirective` — contains the visual indicator and mirrors the root state attributes.
 
-Contains the visual indicator and mirrors root state attributes.
+**Data attributes**
+
+| Attribute   | Value                                          |
+| ----------- | ---------------------------------------------- |
+| `data-value`| The current value (absent when indeterminate). |
+| `data-min`  | The minimum value.                             |
+| `data-max`  | The maximum value.                             |
 
 ### Indicator
 
-`RdxProgressIndicatorDirective`
+`RdxProgressIndicatorDirective` — displays the visual progress fill.
 
-Displays the visual progress fill and exposes `data-percent` for styling determinate progress.
+**Data attributes**
+
+| Attribute     | Value                                                       |
+| ------------- | ----------------------------------------------------------- |
+| `data-value`  | The current value (absent when indeterminate).              |
+| `data-min`    | The minimum value.                                          |
+| `data-max`    | The maximum value.                                          |
+| `data-percent`| The completion percentage (absent when indeterminate).      |
 
 ## Accessibility
 
-The root uses `role="progressbar"`, is labelled by `rdxProgressLabel`, and is described by
-`rdxProgressValue`. In indeterminate state, `aria-valuemin`, `aria-valuemax`, `aria-valuenow`, and
-`aria-valuetext` are omitted because the current value is unknown.
+The root uses `role="progressbar"` and is labelled by `rdxProgressLabel` (via `aria-labelledby`, set
+only while a label is mounted). The value is conveyed through `aria-valuenow` / `aria-valuetext`, so
+`rdxProgressValue` is `aria-hidden`. In the indeterminate state `aria-valuenow` is omitted while
+`aria-valuemin` / `aria-valuemax` remain and `aria-valuetext` announces `"indeterminate progress"`.
 
 ---
 
@@ -17898,37 +17954,75 @@ export class ScrollAreaTabsExample {
 
 ## API Reference
 
+The overflow attributes below are shared by Root, Viewport, Content, and Scrollbar; the per-part
+tables list the extras each one adds.
+
+| Attribute                                                       | Present when                                      |
+| -------------------------------------------------------------- | ------------------------------------------------- |
+| `data-has-overflow-x` / `data-has-overflow-y`                  | Content overflows on that axis.                   |
+| `data-overflow-x-start` / `-x-end` / `-y-start` / `-y-end`     | There is hidden content past that edge.           |
+| `data-scrolling`                                               | A scroll is currently in progress.                |
+
 ### Root
 
-Groups all parts of the scroll area and owns the shared scroll/overflow state. Exposes `data-scrolling`,
-`data-has-overflow-x/y`, and `data-overflow-x/y-start/end`, plus the `--scroll-area-corner-width/height`
-CSS variables.
+Groups all parts of the scroll area and owns the shared scroll/overflow state.
+
+**Data attributes:** the shared overflow set above, plus `data-orientation`.
+
+**CSS variables**
+
+| Variable                       | Description                          |
+| ------------------------------ | ------------------------------------ |
+| `--scroll-area-corner-width`   | Width of the corner between scrollbars.  |
+| `--scroll-area-corner-height`  | Height of the corner between scrollbars. |
 
 ### Viewport
 
 The actual scrollable container (`overflow: scroll` with the native scrollbar hidden). Wrap your
-`Content` in it. Sets the `--scroll-area-overflow-*` edge-distance variables. Reads everything from
-context — no inputs.
+`Content` in it. Reads everything from context — no inputs.
 
 The viewport injects a small stylesheet to hide native scrollbars in browsers that cannot express
 that rule inline. If your app provides Angular's `CSP_NONCE` token, that nonce is applied to the
 style element. Set `disableStyleElements` on `Root` when you want to ship the scrollbar-hiding CSS
 yourself.
 
+**Data attributes:** the shared overflow set, plus `tabindex` (`0` while it overflows, `-1` otherwise)
+and `data-id`.
+
+**CSS variables**
+
+| Variable                                                       | Description                                  |
+| -------------------------------------------------------------- | -------------------------------------------- |
+| `--scroll-area-overflow-x-start` / `-x-end` / `-y-start` / `-y-end` | Distance of hidden content past each edge. |
+
 ### Content
 
 A wrapper around the scrollable content that observes size changes to keep the thumb in sync. Reads
-everything from context — no inputs.
+everything from context — no inputs. Exposes the shared overflow attributes.
 
 ### Scrollbar
 
-A vertical or horizontal scrollbar track. Hosts the `Thumb` and exposes `data-orientation`,
-`data-hovering`, `data-scrolling`, and the overflow attributes, plus `--scroll-area-thumb-width/height`.
+A vertical or horizontal scrollbar track. Hosts the `Thumb`.
+
+**Data attributes:** the shared overflow set, plus `data-orientation`, `data-hovering`, and `data-id`.
+
+**CSS variables**
+
+| Variable                       | Description           |
+| ------------------------------ | --------------------- |
+| `--scroll-area-thumb-width`    | Computed thumb width.  |
+| `--scroll-area-thumb-height`   | Computed thumb height. |
 
 ### Thumb
 
-The draggable indicator inside a `Scrollbar`. Exposes `data-orientation`. Reads everything from
-context — no inputs.
+The draggable indicator inside a `Scrollbar`. Reads everything from context — no inputs.
+
+**Data attributes**
+
+| Attribute          | Value                                                  |
+| ------------------ | ------------------------------------------------------ |
+| `data-orientation` | `"horizontal"` \| `"vertical"`.                        |
+| `data-scrolling`   | Present while a scroll is in progress on its axis.     |
 
 ### Corner
 
@@ -19300,7 +19394,7 @@ An optional overlay rendered beneath the popup in `modal` mode (`aria-hidden`). 
 
 - ✅ Supports horizontal and vertical orientations.
 - ✅ Exposes orientation state via the `data-orientation` attribute.
-- ✅ Uses the `separator` role and sets `aria-orientation` for vertical separators.
+- ✅ Uses the `separator` role and sets `aria-orientation` for both orientations.
 
 ## Import
 
@@ -19365,6 +19459,14 @@ The default orientation is horizontal.
 ```
 
 ## API Reference
+
+`RdxSeparatorRootDirective` — applies `role="separator"` and `aria-orientation`. Apply to any element.
+
+**Data attributes**
+
+| Attribute          | Value                          |
+| ------------------ | ------------------------------ |
+| `data-orientation` | `"horizontal"` \| `"vertical"` |
 
 ---
 
