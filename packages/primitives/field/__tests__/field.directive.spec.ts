@@ -90,8 +90,10 @@ describe('Field', () => {
         expect(root.getAttribute('data-touched')).toBe('');
         expect(input.getAttribute('required')).toBe('');
         expect(input.getAttribute('disabled')).toBe('');
-        expect(input.getAttribute('aria-required')).toBe('true');
-        expect(input.getAttribute('aria-disabled')).toBe('true');
+        // A native control conveys these via the native attributes above; the redundant
+        // `aria-required`/`aria-disabled` are only emitted on non-native (custom) controls.
+        expect(input.getAttribute('aria-required')).toBeNull();
+        expect(input.getAttribute('aria-disabled')).toBeNull();
     });
 
     it('tracks focused and filled states from the control', () => {

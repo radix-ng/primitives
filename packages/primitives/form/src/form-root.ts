@@ -7,17 +7,20 @@ import {
     input,
     linkedSignal,
     output,
-    signal
+    signal,
+    Signal
 } from '@angular/core';
 import { createContext } from '@radix-ng/primitives/core';
 
 /** A normalized external-error map: each field name maps to its message(s) in display order. */
 export type RdxFormErrors = Record<string, string | string[]>;
 
-/** Payload of {@link RdxFormRoot.onFormSubmit}. */
+/** Payload of {@link RdxFormRoot.onFormSubmit}. Mirrors Base UI's `(values, eventDetails)` shape. */
 export interface RdxFormSubmitEvent {
     /** The form's values serialized from `FormData` (repeated names collapse into arrays). */
     values: Record<string, FormDataEntryValue | FormDataEntryValue[]>;
+    /** Why the submit happened (Base UI `SubmitEventDetails.reason`). Always `'none'` for a user submit. */
+    reason: 'none';
     /** The original native submit event (already `preventDefault`-ed). */
     event: SubmitEvent;
 }
@@ -56,7 +59,16 @@ export interface RdxFormState {
     errorsFor?: (name: string) => string[];
 }
 
-const formRootContext = () => {
+export interface RdxFormRootContext {
+    errorsFor: (name: string | undefined) => string[];
+    notifyEdited: (name: string | undefined) => void;
+    /** Registers a field; returns its unregister callback. */
+    register: (field: RdxFormFieldRegistration) => () => void;
+    setStateProvider: (provider: RdxFormState | null) => RdxFormState | null;
+    hasStateProvider: Signal<boolean>;
+}
+
+const formRootContext = (): RdxFormRootContext => {
     const root = inject(RdxFormRoot);
     return {
         errorsFor: (name: string | undefined) => root.errorsFor(name),
@@ -66,8 +78,6 @@ const formRootContext = () => {
         hasStateProvider: root.hasStateProvider
     };
 };
-
-export type RdxFormRootContext = ReturnType<typeof formRootContext>;
 
 export const [injectFormRootContext, provideFormRootContext] = createContext<RdxFormRootContext>(
     'RdxFormRoot',
@@ -220,7 +230,7 @@ export class RdxFormRoot {
         }
 
         const values = serializeFormData(new FormData(this.form));
-        this.onFormSubmit.emit({ values, event });
+        this.onFormSubmit.emit({ values, reason: 'none', event });
     }
 
     onReset(): void {

@@ -11587,6 +11587,24 @@ export class FormNativeControlsExample {
 
 ### RdxFormRoot
 
+`onFormSubmit` emits `{ values, reason, event }` (`reason` is always `'none'` for a user submit,
+mirroring Base UI's submit `eventDetails`).
+
+**Data attributes**
+
+| Attribute         | Present when                                                              |
+| ----------------- | ------------------------------------------------------------------------ |
+| `data-invalid`    | Any registered field is invalid.                                         |
+| `data-dirty`      | Any registered field has been edited.                                    |
+| `data-touched`    | Any registered field has been touched.                                   |
+| `data-submitting` | A registered `RdxFormState` provider reports the form is submitting.     |
+
+## Accessibility
+
+The form uses native submit/reset semantics (`novalidate`, so the directive owns validation
+messaging). On submit it focuses the first invalid field in DOM order. Per-field error association
+(`aria-describedby`) and the polite live region live on `rdxFieldError`, not on the form.
+
 ---
 
 # Input

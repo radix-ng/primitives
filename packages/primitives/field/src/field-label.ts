@@ -1,8 +1,6 @@
 import { Directive, input } from '@angular/core';
-import { rdxCheckLabelElement } from '@radix-ng/primitives/core';
+import { injectId, rdxCheckLabelElement } from '@radix-ng/primitives/core';
 import { injectFieldRootContext } from './field-root';
-
-let labelId = 0;
 
 const attr = (value: boolean) => (value ? '' : undefined);
 
@@ -30,7 +28,7 @@ export class RdxFieldLabel {
      *
      * @group Props
      */
-    readonly id = input(`rdx-field-label-${labelId++}`);
+    readonly id = input(injectId('rdx-field-label-'));
 
     readonly htmlFor = () => this.rootContext.controlId();
 

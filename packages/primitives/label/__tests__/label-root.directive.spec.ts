@@ -139,7 +139,7 @@ describe('RdxLabelDirective attributes', () => {
     it('assigns a generated id by default and no "for" attribute', () => {
         const plain = labels[0].nativeElement as HTMLLabelElement;
 
-        expect(plain.getAttribute('id')).toMatch(/^rdx-label-\d+$/);
+        expect(plain.getAttribute('id')).toMatch(/^rdx-label-/);
         expect(plain.hasAttribute('for')).toBe(false);
     });
 

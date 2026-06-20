@@ -2993,7 +2993,7 @@
           "inputs": [
             {
               "name": "id",
-              "default": "`rdx-field-control-${controlId++}`",
+              "default": "injectId('rdx-field-control-')",
               "description": "Control id. Labels and descriptions use this value for accessible relationships."
             }
           ],
@@ -3007,7 +3007,7 @@
           "inputs": [
             {
               "name": "id",
-              "default": "`rdx-field-description-${descriptionId++}`",
+              "default": "injectId('rdx-field-description-')",
               "description": "Description id."
             }
           ],
@@ -3021,7 +3021,7 @@
           "inputs": [
             {
               "name": "id",
-              "default": "`rdx-field-error-${errorId++}`",
+              "default": "injectId('rdx-field-error-')",
               "description": "Error message id."
             }
           ],
@@ -3035,7 +3035,7 @@
           "inputs": [
             {
               "name": "id",
-              "default": "`rdx-field-label-${labelId++}`",
+              "default": "injectId('rdx-field-label-')",
               "description": "Label id."
             }
           ],
@@ -3421,7 +3421,8 @@
             {
               "name": "id",
               "type": "string",
-              "default": "`rdx-label-${idIterator++}`"
+              "default": "injectId('rdx-label-')",
+              "description": "The label id. Defaults to a stable generated id."
             }
           ],
           "outputs": []

@@ -1,6 +1,5 @@
 import { Directive, ElementRef, inject, input } from '@angular/core';
-
-let idIterator = 0;
+import { injectId } from '@radix-ng/primitives/core';
 
 /**
  * @group Components
@@ -18,14 +17,15 @@ export class RdxLabelDirective {
     private readonly elementRef = inject(ElementRef<HTMLElement>);
 
     /**
-     * @default 'rdx-label-{idIterator}'
+     * The label id. Defaults to a stable generated id.
+     * @group Props
      */
-    readonly id = input<string>(`rdx-label-${idIterator++}`);
+    readonly id = input<string>(injectId('rdx-label-'));
 
     /**
      * The id of the element the label is associated with.
      * @group Props
-     * @defaultValue false
+     * @default undefined
      */
     readonly htmlFor = input<string>();
 

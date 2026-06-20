@@ -1,7 +1,6 @@
 import { Directive, effect, input } from '@angular/core';
+import { injectId } from '@radix-ng/primitives/core';
 import { injectFieldRootContext } from './field-root';
-
-let descriptionId = 0;
 
 const attr = (value: boolean) => (value ? '' : undefined);
 
@@ -27,7 +26,7 @@ export class RdxFieldDescription {
      *
      * @group Props
      */
-    readonly id = input(`rdx-field-description-${descriptionId++}`);
+    readonly id = input(injectId('rdx-field-description-'));
 
     constructor() {
         effect((onCleanup) => {

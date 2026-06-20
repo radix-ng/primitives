@@ -1,7 +1,6 @@
 import { afterNextRender, computed, Directive, effect, ElementRef, inject, input } from '@angular/core';
+import { injectId } from '@radix-ng/primitives/core';
 import { injectFieldRootContext } from './field-root';
-
-let controlId = 0;
 
 const attr = (value: boolean) => (value ? '' : undefined);
 
@@ -17,14 +16,18 @@ const attr = (value: boolean) => (value ? '' : undefined);
         '[attr.id]': 'id()',
         '[attr.aria-describedby]': 'describedBy()',
         '[attr.aria-invalid]': 'rootContext.invalidState() ? "true" : undefined',
-        '[attr.aria-required]': 'rootContext.requiredState() ? "true" : undefined',
-        '[attr.aria-disabled]': 'rootContext.disabledState() ? "true" : undefined',
+        // On a native control the native `required`/`disabled` attributes already convey the state, so
+        // `aria-required`/`aria-disabled` are only emitted on non-native (custom) controls.
+        '[attr.aria-required]': '!isNativeFormControl() && rootContext.requiredState() ? "true" : undefined',
+        '[attr.aria-disabled]': '!isNativeFormControl() && rootContext.disabledState() ? "true" : undefined',
         '[attr.disabled]': 'isNativeFormControl() && rootContext.disabledState() ? "" : undefined',
         '[attr.required]': 'isNativeFormControl() && rootContext.requiredState() ? "" : undefined',
         '[attr.data-invalid]': 'dataAttr(rootContext.invalidState())',
         '[attr.data-valid]': 'dataAttr(!rootContext.invalidState())',
         '[attr.data-disabled]': 'dataAttr(rootContext.disabledState())',
         '[attr.data-required]': 'dataAttr(rootContext.requiredState())',
+        '[attr.data-dirty]': 'dataAttr(rootContext.dirtyState())',
+        '[attr.data-touched]': 'dataAttr(rootContext.touchedState())',
         '[attr.data-filled]': 'dataAttr(rootContext.filledState())',
         '[attr.data-focused]': 'dataAttr(rootContext.focusedState())',
         '(focus)': 'onFocus()',
@@ -43,7 +46,7 @@ export class RdxFieldControl {
      *
      * @group Props
      */
-    readonly id = input(`rdx-field-control-${controlId++}`);
+    readonly id = input(injectId('rdx-field-control-'));
 
     protected readonly describedBy = computed(() => {
         const ids = [

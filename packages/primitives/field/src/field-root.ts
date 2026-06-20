@@ -1,8 +1,16 @@
-import { booleanAttribute, computed, DestroyRef, Directive, ElementRef, inject, input, signal } from '@angular/core';
-import { BooleanInput, createContext, RdxValidationError } from '@radix-ng/primitives/core';
+import {
+    booleanAttribute,
+    computed,
+    DestroyRef,
+    Directive,
+    ElementRef,
+    inject,
+    input,
+    signal,
+    Signal
+} from '@angular/core';
+import { BooleanInput, createContext, injectId, RdxValidationError } from '@radix-ng/primitives/core';
 import { injectFormRootContext, RdxFormFieldRegistration } from '@radix-ng/primitives/form';
-
-let fieldId = 0;
 
 const attr = (value: boolean) => (value ? '' : undefined);
 
@@ -38,7 +46,34 @@ export interface RdxFieldState {
 const addId = (ids: string[], id: string) => (ids.includes(id) ? ids : [...ids, id]);
 const removeId = (ids: string[], id: string) => ids.filter((item) => item !== id);
 
-const fieldRootContext = () => {
+export interface RdxFieldRootContext {
+    controlId: Signal<string>;
+    name: Signal<string | undefined>;
+    descriptionIds: Signal<string[]>;
+    errorIds: Signal<string[]>;
+    messages: Signal<string[]>;
+    notifyEdited: () => void;
+    invalidState: Signal<boolean>;
+    disabledState: Signal<boolean>;
+    requiredState: Signal<boolean>;
+    dirtyState: Signal<boolean>;
+    touchedState: Signal<boolean>;
+    filledState: Signal<boolean>;
+    focusedState: Signal<boolean>;
+    setControlId: (id: string) => void;
+    addDescriptionId: (id: string) => void;
+    removeDescriptionId: (id: string) => void;
+    addErrorId: (id: string) => void;
+    removeErrorId: (id: string) => void;
+    setFocused: (value: boolean) => void;
+    setFilled: (value: boolean) => void;
+    setDirty: (value: boolean) => void;
+    setTouched: (value: boolean) => void;
+    setStateProvider: (provider: RdxFieldState | null) => RdxFieldState | null;
+    hasStateProvider: Signal<boolean>;
+}
+
+const fieldRootContext = (): RdxFieldRootContext => {
     const root = injectFieldRoot();
 
     return {
@@ -76,8 +111,6 @@ const fieldRootContext = () => {
         hasStateProvider: root.hasStateProvider
     };
 };
-
-export type RdxFieldRootContext = ReturnType<typeof fieldRootContext>;
 
 export const [injectFieldRootContext, provideFieldRootContext] = createContext<RdxFieldRootContext>(
     'RdxFieldRoot',
@@ -172,7 +205,7 @@ export class RdxFieldRoot {
     /** The enclosing Form, if any. All Form-related behavior is a no-op when this is `null`. */
     private readonly formContext = injectFormRootContext(true);
 
-    readonly controlId = signal(`rdx-field-control-${fieldId++}`);
+    readonly controlId = signal(injectId('rdx-field-control-'));
     readonly descriptionIds = signal<string[]>([]);
     readonly errorIds = signal<string[]>([]);
 

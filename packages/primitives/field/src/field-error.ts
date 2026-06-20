@@ -1,7 +1,6 @@
 import { Directive, effect, input } from '@angular/core';
+import { injectId } from '@radix-ng/primitives/core';
 import { injectFieldRootContext } from './field-root';
-
-let errorId = 0;
 
 const attr = (value: boolean) => (value ? '' : undefined);
 
@@ -29,7 +28,7 @@ export class RdxFieldError {
      *
      * @group Props
      */
-    readonly id = input(`rdx-field-error-${errorId++}`);
+    readonly id = input(injectId('rdx-field-error-'));
 
     /**
      * The field's external messages (state provider's, then enclosing Form's), `[]` when none. Render
