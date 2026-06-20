@@ -7106,16 +7106,6 @@
       "section": "components",
       "parts": [
         {
-          "directive": "RdxToggleVisuallyHiddenInputDirective",
-          "selector": "input[rdxToggleVisuallyHiddenInput]",
-          "exportAs": "rdxToggleVisuallyHiddenInput",
-          "hostDirectives": [
-            "RdxVisuallyHiddenInputBubbleDirective"
-          ],
-          "inputs": [],
-          "outputs": []
-        },
-        {
           "directive": "RdxToggle",
           "selector": "[rdxToggle]",
           "exportAs": "rdxToggle",
