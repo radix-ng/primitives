@@ -31,6 +31,12 @@ import { RdxPopper } from '@radix-ng/primitives/popper';
 import { RdxPopoverHandle } from './popover-handle';
 
 export type RdxPopoverModal = boolean | 'trap-focus';
+/**
+ * Why the open/close happened instantly (no transition). Mirrors Base UI's `data-instant` value
+ * (`'click' | 'dismiss' | 'focus' | 'trigger-change'`) so consumers can disable transitions
+ * per-reason instead of only knowing that *some* instant change occurred.
+ */
+export type RdxPopoverInstantType = 'click' | 'dismiss' | 'focus' | 'trigger-change';
 export type RdxPopoverOpenChangeReason =
     | 'trigger-hover'
     | 'trigger-focus'
@@ -75,6 +81,7 @@ export interface RdxPopoverRootContext {
     hasPopupClose: Signal<boolean>;
     isHoverActive: Signal<boolean>;
     instant: Signal<boolean>;
+    instantType: Signal<RdxPopoverInstantType | undefined>;
     openChangeReason: Signal<RdxPopoverOpenChangeReason>;
     isPointerDownOnTrigger: Signal<boolean>;
     /** Whether the current open was initiated by touch (ADR 0016 §3 — gates the anchored scroll lock). */
@@ -150,10 +157,12 @@ export class RdxPopoverRoot {
     private instantFrame: number | undefined;
     private readonly transition = useTransitionStatus((open) => {
         this.instant.set(false);
+        this.instantType.set(undefined);
         this.onOpenChangeComplete.emit(open);
     });
     readonly isHoverActive = signal(false);
     readonly instant = signal(false);
+    readonly instantType = signal<RdxPopoverInstantType | undefined>(undefined);
     readonly openChangeReason = signal<RdxPopoverOpenChangeReason>('none');
     readonly transitionStatus = this.transition.status;
 
@@ -185,7 +194,7 @@ export class RdxPopoverRoot {
     /**
      * Associates this root with detached trigger elements.
      */
-    readonly handle = input<RdxPopoverHandle<any>>();
+    readonly handle = input<RdxPopoverHandle<unknown>>();
 
     readonly contentId = injectId('rdx-popover-content-');
     readonly beforeContentFocusGuard = signal<HTMLElement | null>(null);
@@ -228,6 +237,12 @@ export class RdxPopoverRoot {
             { debugName: 'RdxPopoverRoot.clearPreventUnmountOnOpen' }
         );
 
+        // `defaultOpen` / `defaultTriggerId` seed the controllable model exactly once. Unlike the
+        // house `if (defaultValue() !== undefined) value.set(...)` guard, these must NOT re-assert the
+        // default on every change: once seeded, the user is free to close the popover (or switch the
+        // active trigger) and a later read of the still-truthy default input must not snap it back. The
+        // one-shot `hasApplied…` latch encodes that "apply once, then hands off to the model" intent —
+        // do not "simplify" it into the re-asserting guard.
         effect(
             () => {
                 const defaultOpen = this.defaultOpen();
@@ -332,7 +347,9 @@ export class RdxPopoverRoot {
         this.openedByTouch.set(interactionType === 'touch');
         this.isHoverActive.set(fromHover);
         this.openChangeReason.set(reason);
-        this.instant.set(changedTriggerWhileOpen || reason === 'trigger-focus');
+        const openInstant = changedTriggerWhileOpen || reason === 'trigger-focus';
+        this.instant.set(openInstant);
+        this.instantType.set(!openInstant ? undefined : changedTriggerWhileOpen ? 'trigger-change' : 'focus');
 
         if (changedTriggerWhileOpen) {
             this.scheduleInstantReset();
@@ -375,7 +392,11 @@ export class RdxPopoverRoot {
         this.closeInteractionType.set(getInteractionTypeFromEvent(event));
         this.isHoverActive.set(false);
         this.openedByTouch.set(false);
-        this.instant.set(reason !== 'none' && reason !== 'trigger-hover');
+        const closeInstant = reason !== 'none' && reason !== 'trigger-hover';
+        this.instant.set(closeInstant);
+        // Closing by pressing the trigger again is a `'click'`; every other instant close
+        // (escape, outside press, focus-out, close button, imperative) reads as a `'dismiss'`.
+        this.instantType.set(!closeInstant ? undefined : reason === 'trigger-press' ? 'click' : 'dismiss');
         this.openChangeReason.set(reason);
         this.preventUnmountOnClose.set(change.shouldPreventUnmountOnClose());
         this.open.set(false);
@@ -575,6 +596,7 @@ export class RdxPopoverRoot {
 
             if (!this.destroyRef.destroyed && this.open()) {
                 this.instant.set(false);
+                this.instantType.set(undefined);
             }
         });
     }
@@ -600,6 +622,7 @@ function contextFor(root: RdxPopoverRoot): RdxPopoverRootContext {
         hasPopupClose: computed(() => root.popupCloseCount() > 0),
         isHoverActive: root.isHoverActive.asReadonly(),
         instant: root.instant.asReadonly(),
+        instantType: root.instantType.asReadonly(),
         openChangeReason: root.openChangeReason.asReadonly(),
         isPointerDownOnTrigger: root.isPointerDownOnTrigger.asReadonly(),
         openedByTouch: root.openedByTouch.asReadonly(),

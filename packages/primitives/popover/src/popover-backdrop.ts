@@ -11,11 +11,15 @@ import { injectRdxPopoverRootContext } from './popover-root';
         role: 'presentation',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
         '[attr.data-ending-style]': 'rootContext.transitionStatus() === "ending" ? "" : undefined',
-        '[attr.data-instant]': 'rootContext.instant() ? "" : undefined',
+        '[attr.data-instant]': 'rootContext.instantType()',
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
         '[attr.data-starting-style]': 'rootContext.transitionStatus() === "starting" ? "" : undefined',
         '[attr.data-state]': 'rootContext.isOpen() ? "open" : "closed"',
         '[style.pointer-events]': 'rootContext.openChangeReason() === "trigger-hover" ? "none" : null',
+        // Inline `user-select: none` is a deliberate exception to the headless "no inline styles"
+        // rule (it carries no themeable state): it mirrors Base UI's backdrop, preventing the page
+        // text behind the popup from being accidentally selected during a drag-dismiss. The
+        // `-webkit-` prefix is applied imperatively below for older Safari.
         '[style.user-select]': '"none"'
     }
 })

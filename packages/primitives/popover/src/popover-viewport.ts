@@ -1,4 +1,5 @@
 import { afterNextRender, DestroyRef, Directive, ElementRef, inject, signal } from '@angular/core';
+import { getMaxTransitionDuration } from '@radix-ng/primitives/core';
 import { injectRdxPopoverRootContext } from './popover-root';
 
 /**
@@ -12,11 +13,12 @@ import { injectRdxPopoverRootContext } from './popover-root';
     selector: '[rdxPopoverViewport]',
     host: {
         '[attr.data-activation-direction]': 'activationDirection()',
+        '[attr.data-instant]': 'rootContext.instantType()',
         '[attr.data-transitioning]': 'transitioning() ? "" : undefined'
     }
 })
 export class RdxPopoverViewport {
-    private readonly rootContext = injectRdxPopoverRootContext();
+    protected readonly rootContext = injectRdxPopoverRootContext();
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly destroyRef = inject(DestroyRef);
     private previous: HTMLElement | undefined;
@@ -95,11 +97,7 @@ export class RdxPopoverViewport {
             return;
         }
 
-        const style = getComputedStyle(previous);
-        const duration = Math.max(
-            getMaxDuration(style.animationDuration, style.animationDelay),
-            getMaxDuration(style.transitionDuration, style.transitionDelay)
-        );
+        const duration = getMaxTransitionDuration(previous);
 
         this.cleanupTimer = setTimeout(() => this.cleanupPrevious(), duration > 0 ? duration + 50 : 0);
     }
@@ -145,24 +143,4 @@ function removeIds(element: HTMLElement) {
 
 function getCenter(rect: DOMRect) {
     return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
-}
-
-function getMaxDuration(durations: string, delays: string) {
-    const durationValues = durations.split(',').map(parseDuration);
-    const delayValues = delays.split(',').map(parseDuration);
-
-    return durationValues.reduce((max, duration, index) => {
-        const delay = delayValues[index % delayValues.length] ?? 0;
-        return Math.max(max, duration + delay);
-    }, 0);
-}
-
-function parseDuration(value: string) {
-    const duration = Number.parseFloat(value);
-
-    if (Number.isNaN(duration)) {
-        return 0;
-    }
-
-    return value.trim().endsWith('ms') ? duration : duration * 1000;
 }

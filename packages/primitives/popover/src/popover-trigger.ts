@@ -23,7 +23,7 @@ import { injectRdxPopoverRootContext } from './popover-root';
     hostDirectives: [RdxPopperAnchor],
     host: {
         type: 'button',
-        '[attr.aria-controls]': 'rootContext()?.contentId',
+        '[attr.aria-controls]': 'triggerInteraction.ariaControls()',
         '[attr.aria-expanded]': 'triggerInteraction.ariaExpanded()',
         '[attr.aria-haspopup]': '"dialog"',
         '[attr.data-state]': 'triggerInteraction.dataState()',
@@ -46,7 +46,7 @@ export class RdxPopoverTrigger {
     /**
      * Associates this trigger with a detached popover root.
      */
-    readonly handle = input<RdxPopoverHandle<any>>();
+    readonly handle = input<RdxPopoverHandle<unknown>>();
 
     /**
      * Data associated with this trigger while it is active.

@@ -530,6 +530,22 @@ describe('Popover', () => {
         expect(popup.hasAttribute('data-open')).toBe(true);
     });
 
+    it('exposes aria-controls only while this trigger owns the open popup', () => {
+        // Closed: the popup is not in the DOM, so pointing at its id would be an invalid ARIA reference.
+        expect(trigger.hasAttribute('aria-controls')).toBe(false);
+
+        trigger.click();
+        fixture.detectChanges();
+
+        const popup: HTMLElement = fixture.nativeElement.querySelector('[rdxPopoverPopup]');
+        expect(trigger.getAttribute('aria-controls')).toBe(popup.id);
+
+        trigger.click();
+        fixture.detectChanges();
+
+        expect(trigger.hasAttribute('aria-controls')).toBe(false);
+    });
+
     it('passes initialFocus and finalFocus through to the floating focus manager', () => {
         const focusPolicyFixture = TestBed.createComponent(PopupFocusPolicyHostComponent);
         focusPolicyFixture.detectChanges();

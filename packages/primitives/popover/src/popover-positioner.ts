@@ -25,7 +25,7 @@ import { injectRdxPopoverRootContext } from './popover-root';
     host: {
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
-        '[attr.data-instant]': 'rootContext.instant() ? "" : undefined',
+        '[attr.data-instant]': 'rootContext.instantType()',
         // `data-side`/`data-align`/`data-anchor-hidden` and the unified `--anchor-*`/`--available-*`/
         // `--transform-origin` vars come from the inherited wrapper (ADR 0012); only the deprecated
         // `--radix-popover-*` aliases remain, for one release of back-compat.

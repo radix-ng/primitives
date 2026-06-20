@@ -774,6 +774,16 @@ export class RdxPopoverViewportComponent {
 
 `RdxPopoverTrigger` toggles the popover and exposes ARIA attributes.
 
+**Data attributes**
+
+| Attribute         | Present when                                                                |
+| ----------------- | -------------------------------------------------------------------------- |
+| `data-popup-open` | This trigger owns the currently open popup.                                |
+| `data-pressed`    | The popup is open from a press interaction on this trigger.                |
+| `data-state`      | Always — `"open"` / `"closed"`. _Deliberate legacy alias of `data-popup-open`; not part of the Base UI contract and kept for back-compat._ |
+
+`aria-controls` is set only while this trigger owns the open popup (it points at the popup's id, which exists only then); `aria-expanded` reflects the same ownership; `aria-haspopup` is `"dialog"`.
+
 ### Portal
 
 `RdxPopoverPortal` is a structural directive (`*rdxPopoverPortal` or `<ng-template rdxPopoverPortal>`)
@@ -785,6 +795,28 @@ that teleports content to `document.body` by default. Pass `[container]` on the 
 `RdxPopoverPositioner` delegates placement and collision handling to the shared Popper primitive. Its
 optional `anchor` input overrides the trigger only for positioning.
 
+**Data attributes**
+
+| Attribute            | Present when / value                                                       |
+| -------------------- | ------------------------------------------------------------------------- |
+| `data-open`          | The popover is open.                                                       |
+| `data-closed`        | The popover is closed.                                                     |
+| `data-side`          | Resolved side after collision handling — `top` / `right` / `bottom` / `left`. |
+| `data-align`         | Resolved alignment — `start` / `center` / `end`.                          |
+| `data-anchor-hidden` | The anchor is clipped/off-screen and the popup is hidden.                 |
+| `data-instant`       | An open/close happened with no transition — `click` / `dismiss` / `focus` / `trigger-change`. |
+
+**CSS variables**
+
+| Variable                                  | Description                                              |
+| ----------------------------------------- | ------------------------------------------------------- |
+| `--anchor-width` / `--anchor-height`      | Size of the anchor (trigger), for matching the popup width. |
+| `--available-width` / `--available-height`| Space available before the collision boundary.          |
+| `--positioner-width` / `--positioner-height` | Size of the positioner element.                      |
+| `--transform-origin`                      | Origin to scale/zoom the popup from, based on side/align. |
+
+The deprecated `--radix-popover-*` aliases of these variables are still emitted for one release.
+
 ### Popup
 
 `RdxPopoverPopup` owns dialog semantics, dismissal events, and focus lifecycle events. Bind
@@ -792,16 +824,70 @@ optional `anchor` input overrides the trigger only for positioning.
 returns on close. Both inputs accept the same policy values as `RdxFloatingFocusManager`: `false`,
 `true`, an element, or a callback that receives the interaction type.
 
+**Data attributes**
+
+| Attribute             | Present when / value                                                       |
+| --------------------- | ------------------------------------------------------------------------- |
+| `data-open`           | The popover is open.                                                       |
+| `data-closed`         | The popover is closed.                                                     |
+| `data-starting-style` | The enter transition is about to run (first mounted frame).               |
+| `data-ending-style`   | The exit transition is running (kept mounted until it finishes).          |
+| `data-side`           | Resolved side — `top` / `right` / `bottom` / `left`.                       |
+| `data-align`          | Resolved alignment — `start` / `center` / `end`.                           |
+| `data-instant`        | An open/close happened with no transition — `click` / `dismiss` / `focus` / `trigger-change`. |
+| `data-state`          | Always — `"open"` / `"closed"`. _Deliberate legacy alias of `data-open` / `data-closed`; not part of the Base UI contract._ |
+
+The popup carries `role="dialog"`; `aria-labelledby` / `aria-describedby` are wired automatically when `rdxPopoverTitle` / `rdxPopoverDescription` are present.
+
 ### Viewport
 
 `RdxPopoverViewport` coordinates direction-aware content transitions between multiple triggers.
 
-### Arrow, Backdrop, Title, Description, and Close
+**Data attributes**
+
+| Attribute                   | Present when / value                                                        |
+| --------------------------- | -------------------------------------------------------------------------- |
+| `data-activation-direction` | Direction the active trigger moved — space-separated `left`/`right`/`up`/`down`. |
+| `data-transitioning`        | A previous-trigger snapshot is still animating out.                        |
+| `data-instant`              | The content change happened with no transition (see Popup values).        |
+
+Its direct child is marked `data-current`; a retained snapshot of the outgoing child is marked `data-previous` (and `inert` / `aria-hidden`) until its CSS animation or transition completes.
+
+### Arrow
+
+`RdxPopoverArrow` reads its placement from context and points the popup at the anchor.
+
+**Data attributes**
+
+| Attribute         | Present when / value                                        |
+| ----------------- | ---------------------------------------------------------- |
+| `data-open`       | The popover is open.                                       |
+| `data-closed`     | The popover is closed.                                     |
+| `data-side`       | Resolved side — `top` / `right` / `bottom` / `left`.       |
+| `data-align`      | Resolved alignment — `start` / `center` / `end`.           |
+| `data-uncentered` | The arrow was shifted from center to stay within the popup. |
+
+### Backdrop
+
+`RdxPopoverBackdrop` is presentational (`role="presentation"`) and becomes pointer-transparent for
+hover-opened popovers so it does not interrupt the hover grace area.
+
+**Data attributes**
+
+| Attribute             | Present when / value                                                       |
+| --------------------- | ------------------------------------------------------------------------- |
+| `data-open`           | The popover is open.                                                       |
+| `data-closed`         | The popover is closed.                                                     |
+| `data-starting-style` | The enter transition is about to run.                                      |
+| `data-ending-style`   | The exit transition is running.                                            |
+| `data-instant`        | An open/close happened with no transition — `click` / `dismiss` / `focus` / `trigger-change`. |
+| `data-state`          | Always — `"open"` / `"closed"`. _Deliberate legacy alias of `data-open` / `data-closed`._ |
+
+### Title, Description, and Close
 
 These parts read their behavior and state from context. `Title` and `Description` preserve a custom
-`id` when provided and otherwise generate one for `aria-labelledby` / `aria-describedby`.
-`Backdrop` is presentational and becomes pointer-transparent for hover-opened popovers so it does not
-interrupt the hover grace area.
+`id` when provided and otherwise generate one for `aria-labelledby` / `aria-describedby`. `Close` is a
+native `button` that closes the popover on click.
 
 ## Accessibility
 

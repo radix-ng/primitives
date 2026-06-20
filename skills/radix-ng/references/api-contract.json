@@ -5033,7 +5033,7 @@
             },
             {
               "name": "handle",
-              "type": "RdxPopoverHandle<any>",
+              "type": "RdxPopoverHandle<unknown>",
               "description": "Associates this root with detached trigger elements."
             },
             {
@@ -5109,7 +5109,7 @@
             },
             {
               "name": "handle",
-              "type": "RdxPopoverHandle<any>",
+              "type": "RdxPopoverHandle<unknown>",
               "description": "Associates this trigger with a detached popover root."
             },
             {
