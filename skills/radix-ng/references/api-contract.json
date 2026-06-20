@@ -5483,7 +5483,7 @@
             },
             {
               "name": "handle",
-              "type": "RdxPreviewCardHandle<any>",
+              "type": "RdxPreviewCardHandle<unknown>",
               "description": "Associates this root with detached trigger elements."
             },
             {
@@ -5540,7 +5540,7 @@
             },
             {
               "name": "handle",
-              "type": "RdxPreviewCardHandle<any>",
+              "type": "RdxPreviewCardHandle<unknown>",
               "description": "Associates this trigger with a detached preview-card root."
             },
             {

@@ -21,12 +21,11 @@ import { injectRdxPreviewCardRootContext } from './preview-card-root';
     selector: '[rdxPreviewCardTrigger]',
     hostDirectives: [RdxPopperAnchor],
     host: {
-        '[attr.aria-controls]': 'rootContext()?.contentId',
+        // A preview card is supplementary content reached from a link, NOT a dialog — Base UI's trigger
+        // emits no `aria-haspopup`/`aria-expanded`/`aria-controls` (announcing a dialog would mis-describe
+        // it to AT). Only the disabled state is surfaced.
         '[attr.aria-disabled]': 'disabled() ? "true" : undefined',
-        '[attr.aria-expanded]': 'isOpen()',
-        '[attr.aria-haspopup]': '"dialog"',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
-        '[attr.data-state]': 'isOpen() ? "open" : "closed"',
         '[attr.data-popup-open]': 'isOpen() ? "" : undefined',
         '[attr.data-pressed]': 'isPressed() ? "" : undefined',
         '[id]': 'triggerId()',
@@ -47,7 +46,7 @@ export class RdxPreviewCardTrigger {
     /**
      * Associates this trigger with a detached preview-card root.
      */
-    readonly handle = input<RdxPreviewCardHandle<any>>();
+    readonly handle = input<RdxPreviewCardHandle<unknown>>();
 
     /**
      * Data associated with this trigger while it is active.

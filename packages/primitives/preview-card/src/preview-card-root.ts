@@ -28,6 +28,13 @@ import {
 import { RdxPopper } from '@radix-ng/primitives/popper';
 import { RdxPreviewCardHandle } from './preview-card-handle';
 
+/**
+ * Why an open/close happened instantly (no transition). Mirrors Base UI's preview-card `data-instant`:
+ * `'focus'` (opened by focus) or `'dismiss'` (closed by pressing the trigger or Escape). Hover
+ * opens/closes and outside-press closes are animated (`undefined`).
+ */
+export type RdxPreviewCardInstantType = 'dismiss' | 'focus';
+
 export type RdxPreviewCardOpenChangeReason =
     | 'trigger-hover'
     | 'trigger-focus'
@@ -63,6 +70,8 @@ export interface RdxPreviewCardRootContext {
     triggers: Signal<HTMLElement[]>;
     isHoverActive: Signal<boolean>;
     instant: Signal<boolean>;
+    /** Why the open/close was instant (Base UI `data-instant`), or `undefined` when it animates. */
+    instantType: Signal<RdxPreviewCardInstantType | undefined>;
     openChangeReason: Signal<RdxPreviewCardOpenChangeReason>;
     isPointerDownOnTrigger: Signal<boolean>;
     close: (reason?: RdxPreviewCardOpenChangeReason, event?: Event) => void;
@@ -166,7 +175,7 @@ export class RdxPreviewCardRoot {
     /**
      * Associates this root with detached trigger elements.
      */
-    readonly handle = input<RdxPreviewCardHandle<any>>();
+    readonly handle = input<RdxPreviewCardHandle<unknown>>();
 
     readonly contentId = injectId('rdx-preview-card-content-');
     readonly trigger = signal<HTMLElement | undefined>(undefined);
@@ -179,8 +188,23 @@ export class RdxPreviewCardRoot {
     private readonly registeredTriggers = new Map<string, RdxPreviewCardRegisteredTrigger>();
     private readonly viewportTriggerChange = new Set<(previous: HTMLElement, next: HTMLElement) => void>();
 
-    readonly state = computed(() => (this.open() ? 'open' : 'closed'));
     readonly present = computed(() => this.open() || this.preventUnmountOnClose());
+
+    /**
+     * Base UI `data-instant` enum, derived from the instant flag + reason: `'focus'` for a focus open,
+     * `'dismiss'` for a trigger-press / Escape close, `undefined` otherwise — including an outside-press
+     * close and a trigger switch, which Base UI animates rather than marking instant.
+     */
+    readonly instantType = computed<RdxPreviewCardInstantType | undefined>(() => {
+        if (!this.instant()) {
+            return undefined;
+        }
+        const reason = this.openChangeReason();
+        if (this.open()) {
+            return reason === 'trigger-focus' ? 'focus' : undefined;
+        }
+        return reason === 'trigger-press' || reason === 'escape-key' ? 'dismiss' : undefined;
+    });
 
     constructor() {
         let previousOpen = this.open();
@@ -526,6 +550,7 @@ function contextFor(root: RdxPreviewCardRoot): RdxPreviewCardRootContext {
         payload: root.payload.asReadonly(),
         isHoverActive: root.isHoverActive.asReadonly(),
         instant: root.instant.asReadonly(),
+        instantType: root.instantType,
         openChangeReason: root.openChangeReason.asReadonly(),
         isPointerDownOnTrigger: root.isPointerDownOnTrigger.asReadonly(),
         close: (reason?: RdxPreviewCardOpenChangeReason, event?: Event) => root.close(reason, event),

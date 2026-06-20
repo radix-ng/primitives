@@ -12,11 +12,12 @@ import { injectRdxPreviewCardRootContext } from './preview-card-root';
     selector: '[rdxPreviewCardViewport]',
     host: {
         '[attr.data-activation-direction]': 'activationDirection()',
+        '[attr.data-instant]': 'rootContext.instantType()',
         '[attr.data-transitioning]': 'transitioning() ? "" : undefined'
     }
 })
 export class RdxPreviewCardViewport {
-    private readonly rootContext = injectRdxPreviewCardRootContext();
+    protected readonly rootContext = injectRdxPreviewCardRootContext();
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly destroyRef = inject(DestroyRef);
     private previous: HTMLElement | undefined;

@@ -110,9 +110,19 @@ Groups all parts of the preview card. Does not render its own HTML element.
 
 ### Trigger
 
-A link or element that opens the preview card.
+A link (or element) that opens the preview card on hover / focus. Because the preview is supplementary
+content reached from a link — not a dialog — the trigger carries **no** `aria-haspopup` / `aria-expanded`
+/ `aria-controls` (matching Base UI); only state hooks.
 
 <ArgTypes of={RdxPreviewCardTrigger} />
+
+**Data attributes**
+
+| Attribute         | Present when                          |
+| ----------------- | ------------------------------------- |
+| `data-popup-open` | The preview card is open.             |
+| `data-pressed`    | The trigger is pressed.               |
+| `data-disabled`   | The trigger is disabled.              |
 
 ### Positioner
 
@@ -120,11 +130,37 @@ Positions the popup against the active trigger or a custom anchor.
 
 <ArgTypes of={RdxPreviewCardPositioner} />
 
+**Data attributes**: `data-open`, `data-closed`, `data-side`, `data-align`, `data-anchor-hidden`,
+`data-instant` (`delay`-free: `'focus'` / `'dismiss'`).
+
+**CSS variables**: `--anchor-width` / `--anchor-height`, `--available-width` / `--available-height`,
+`--transform-origin`.
+
 ### Popup
 
 The floating preview surface. It exposes dismiss events and transition attributes.
 
 <ArgTypes of={RdxPreviewCardPopup} />
+
+**Data attributes**
+
+| Attribute             | Present when / value                                                       |
+| --------------------- | ------------------------------------------------------------------------- |
+| `data-open`           | The preview card is open.                                                  |
+| `data-closed`         | The preview card is closed.                                               |
+| `data-side`           | Resolved side — `top` / `right` / `bottom` / `left`.                       |
+| `data-align`          | Resolved alignment — `start` / `center` / `end`.                          |
+| `data-starting-style` | The enter transition is about to run.                                     |
+| `data-ending-style`   | The exit transition is running.                                           |
+| `data-instant`        | An instant open/close — `focus` (focus open) / `dismiss` (trigger-press or Escape close). |
+
+### Arrow, Backdrop, and Viewport
+
+`Arrow` reflects `data-open` / `data-closed` / `data-side` / `data-align` / `data-uncentered`.
+`Backdrop` reflects `data-open` / `data-closed` / `data-starting-style` / `data-ending-style` /
+`data-instant`. `Viewport` (for content morphing between triggers) reflects `data-activation-direction`,
+`data-transitioning`, and `data-instant`, and marks its current/previous children with
+`data-current` / `data-previous`.
 
 ## Accessibility
 

@@ -365,7 +365,11 @@ describe('PreviewCard', () => {
 
         expect(root.open()).toBe(true);
         expect(root.trigger()).toBe(defaultTrigger);
-        expect(defaultTrigger.getAttribute('aria-expanded')).toBe('true');
+        // Preview-card is supplementary content (not a dialog) — the trigger carries no dialog ARIA,
+        // only the boolean open-state hook.
+        expect(defaultTrigger.hasAttribute('data-popup-open')).toBe(true);
+        expect(defaultTrigger.hasAttribute('aria-expanded')).toBe(false);
+        expect(defaultTrigger.hasAttribute('aria-haspopup')).toBe(false);
     });
 
     it('switches active anchors between triggers inside one root', () => {
