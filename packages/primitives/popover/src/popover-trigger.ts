@@ -26,7 +26,6 @@ import { injectRdxPopoverRootContext } from './popover-root';
         '[attr.aria-controls]': 'triggerInteraction.ariaControls()',
         '[attr.aria-expanded]': 'triggerInteraction.ariaExpanded()',
         '[attr.aria-haspopup]': '"dialog"',
-        '[attr.data-state]': 'triggerInteraction.dataState()',
         '[attr.data-popup-open]': 'triggerInteraction.dataPopupOpen()',
         '[attr.data-pressed]': 'isPressed() ? "" : undefined',
         '[attr.disabled]': 'triggerInteraction.disabled() ? "" : undefined',

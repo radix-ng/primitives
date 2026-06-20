@@ -198,7 +198,6 @@ moves between triggers. The viewport exposes `data-activation-direction` and ret
 | ----------------- | -------------------------------------------------------------------------- |
 | `data-popup-open` | This trigger owns the currently open popup.                                |
 | `data-pressed`    | The popup is open from a press interaction on this trigger.                |
-| `data-state`      | Always — `"open"` / `"closed"`. _Deliberate legacy alias of `data-popup-open`; not part of the Base UI contract and kept for back-compat._ |
 
 `aria-controls` is set only while this trigger owns the open popup (it points at the popup's id, which exists only then); `aria-expanded` reflects the same ownership; `aria-haspopup` is `"dialog"`.
 
@@ -257,7 +256,6 @@ returns on close. Both inputs accept the same policy values as `RdxFloatingFocus
 | `data-side`           | Resolved side — `top` / `right` / `bottom` / `left`.                       |
 | `data-align`          | Resolved alignment — `start` / `center` / `end`.                           |
 | `data-instant`        | An open/close happened with no transition — `click` / `dismiss` / `focus` / `trigger-change`. |
-| `data-state`          | Always — `"open"` / `"closed"`. _Deliberate legacy alias of `data-open` / `data-closed`; not part of the Base UI contract._ |
 
 The popup carries `role="dialog"`; `aria-labelledby` / `aria-describedby` are wired automatically when `rdxPopoverTitle` / `rdxPopoverDescription` are present.
 
@@ -303,7 +301,6 @@ hover-opened popovers so it does not interrupt the hover grace area.
 | `data-starting-style` | The enter transition is about to run.                                      |
 | `data-ending-style`   | The exit transition is running.                                            |
 | `data-instant`        | An open/close happened with no transition — `click` / `dismiss` / `focus` / `trigger-change`. |
-| `data-state`          | Always — `"open"` / `"closed"`. _Deliberate legacy alias of `data-open` / `data-closed`._ |
 
 ### Title, Description, and Close
 

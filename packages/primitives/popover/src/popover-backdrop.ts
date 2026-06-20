@@ -14,7 +14,6 @@ import { injectRdxPopoverRootContext } from './popover-root';
         '[attr.data-instant]': 'rootContext.instantType()',
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
         '[attr.data-starting-style]': 'rootContext.transitionStatus() === "starting" ? "" : undefined',
-        '[attr.data-state]': 'rootContext.isOpen() ? "open" : "closed"',
         '[style.pointer-events]': 'rootContext.openChangeReason() === "trigger-hover" ? "none" : null',
         // Inline `user-select: none` is a deliberate exception to the headless "no inline styles"
         // rule (it carries no themeable state): it mirrors Base UI's backdrop, preventing the page

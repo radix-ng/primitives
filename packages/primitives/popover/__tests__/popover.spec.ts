@@ -469,14 +469,14 @@ describe('Popover', () => {
 
     it('opens and closes from the trigger', () => {
         expect(trigger.getAttribute('aria-expanded')).toBe('false');
-        expect(trigger.getAttribute('data-state')).toBe('closed');
+        expect(trigger.hasAttribute('data-popup-open')).toBe(false);
 
         trigger.click();
         fixture.detectChanges();
 
         expect(fixture.componentInstance.open).toBe(true);
         expect(trigger.getAttribute('aria-expanded')).toBe('true');
-        expect(trigger.getAttribute('data-state')).toBe('open');
+        expect(trigger.hasAttribute('data-popup-open')).toBe(true);
 
         trigger.click();
         fixture.detectChanges();
