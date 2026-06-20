@@ -1,3 +1,13 @@
+## 1.0.6 (2026-06-20)
+
+### 🩹 Fixes
+
+- **popover:** scope aria-controls to active trigger, align data-instant ([11fbde4b](https://github.com/radix-ng/primitives/commit/11fbde4b))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 1.0.5 (2026-06-20)
 
 ### 🩹 Fixes
