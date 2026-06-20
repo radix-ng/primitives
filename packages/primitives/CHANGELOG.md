@@ -1,3 +1,38 @@
+## 1.0.7 (2026-06-20)
+
+### 🩹 Fixes
+
+- **number-field:** read-only disables steppers; drop invalid aria-readonly ([bf076fe3](https://github.com/radix-ng/primitives/commit/bf076fe3))
+- **progress:** only set aria-labelledby while a label is mounted ([498cf5bb](https://github.com/radix-ng/primitives/commit/498cf5bb))
+- **field:** gate aria-required/disabled to non-native controls; explicit context interface; SSR ids ([733c791b](https://github.com/radix-ng/primitives/commit/733c791b))
+- **checkbox:** mark form control touched on toggle; explicit root context interface ([7caa27a5](https://github.com/radix-ng/primitives/commit/7caa27a5))
+- **accordion:** wire trigger aria-controls to its panel; type equality helper as unknown ([b881f7b0](https://github.com/radix-ng/primitives/commit/b881f7b0))
+
+### Refactors
+
+- **toolbar:** input conveys disabled via aria-disabled only; guard pointer while disabled ([544eecfc](https://github.com/radix-ng/primitives/commit/544eecfc))
+- ⚠️  **progress:** drop data-state; keep min/max; aria-hidden value; SSR ids ([190fce46](https://github.com/radix-ng/primitives/commit/190fce46))
+- **toggle:** item supplies nextPressed to the group; Space activates on keyup ([8a3dab8b](https://github.com/radix-ng/primitives/commit/8a3dab8b))
+- ⚠️  **toggle:** remove unused RdxToggleVisuallyHiddenInputDirective ([1a2a91c1](https://github.com/radix-ng/primitives/commit/1a2a91c1))
+
+### ⚠️  Breaking Changes
+
+- **progress:** drop data-state; keep min/max; aria-hidden value; SSR ids  ([190fce46](https://github.com/radix-ng/primitives/commit/190fce46))
+  `data-state` removed from all Progress parts — style with the boolean
+  data-complete / data-progressing / data-indeterminate attributes instead. The root no longer
+  sets aria-describedby (the value part is now aria-hidden).
+- **toggle:** remove unused RdxToggleVisuallyHiddenInputDirective  ([1a2a91c1](https://github.com/radix-ng/primitives/commit/1a2a91c1))
+  `RdxToggleVisuallyHiddenInputDirective`
+  (selector `input[rdxToggleVisuallyHiddenInput]`)
+  is removed. It had no consumers and contradicted Base UI's Toggle,
+  which never participates in form
+  validation. For a form-submitting toggle,
+  use Checkbox or Switch (both ship hidden form inputs).
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 1.0.6 (2026-06-20)
 
 ### 🩹 Fixes
