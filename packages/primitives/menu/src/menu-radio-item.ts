@@ -14,7 +14,6 @@ import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, createContext } from '@radix-ng/primitives/core';
 import { injectRdxMenuRadioGroupContext } from './menu-radio-group';
 import { injectRdxMenuRootContext } from './menu-root';
-import { getCheckedState } from './menu-utils';
 
 export interface RdxMenuRadioItemContext {
     checked: Signal<boolean>;
@@ -44,7 +43,8 @@ const radioItemContextFactory = (): RdxMenuRadioItemContext => {
         role: 'menuitemradio',
         '[attr.tabindex]': 'rootContext?.isOpen() && highlighted() ? 0 : -1',
         '[attr.aria-checked]': 'checked()',
-        '[attr.data-state]': 'getCheckedState(checked())',
+        '[attr.data-checked]': 'checked() ? "" : undefined',
+        '[attr.data-unchecked]': 'checked() ? undefined : ""',
         '[attr.data-disabled]': 'effectiveDisabled() ? "" : undefined',
         '[attr.aria-disabled]': 'effectiveDisabled() ? true : undefined',
         '[attr.data-highlighted]': 'highlighted() ? "" : undefined',
@@ -89,7 +89,6 @@ export class RdxMenuRadioItem<T = unknown> {
     protected readonly effectiveDisabled = computed(
         () => this.disabled() || this.radioGroupContext.disabled() || (this.rootContext?.disabled() ?? false)
     );
-    protected readonly getCheckedState = getCheckedState;
 
     constructor() {
         effect(() => {

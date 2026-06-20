@@ -14,7 +14,7 @@ import { cn, demoMenu } from '../../storybook/styles';
                 [class]="
                     cn(
                         'border-border text-muted-foreground flex h-[150px] w-[300px] items-center justify-center rounded-md border-2 border-dashed text-sm select-none',
-                        'data-[state=open]:bg-muted data-[state=open]:border-solid'
+                        'data-[popup-open]:bg-muted data-[popup-open]:border-solid'
                     )
                 "
                 rdxContextMenuTrigger

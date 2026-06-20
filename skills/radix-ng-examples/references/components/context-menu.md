@@ -24,7 +24,7 @@ import { cn, demoMenu } from '../../storybook/styles';
                 [class]="
                     cn(
                         'border-border text-muted-foreground flex h-[150px] w-[300px] items-center justify-center rounded-md border-2 border-dashed text-sm select-none',
-                        'data-[state=open]:bg-muted data-[state=open]:border-solid'
+                        'data-[popup-open]:bg-muted data-[popup-open]:border-solid'
                     )
                 "
                 rdxContextMenuTrigger
@@ -126,7 +126,7 @@ export class RdxContextMenuDefaultComponent {
 - ✅ Opened by pointer, the popup is focused with no item highlighted; opened by keyboard, the first item is highlighted.
 - ✅ Full keyboard navigation once open (ArrowDown / ArrowUp / Home / End / typeahead).
 - ✅ Closes on Escape, outside pointer interaction, and item selection — restoring focus.
-- ✅ Headless — state is exposed via `data-state`; styling is up to the consumer.
+- ✅ Headless — state is exposed via `data-popup-open` / `data-pressed`; styling is up to the consumer.
 
 ## Import
 
@@ -195,7 +195,7 @@ import { cn, demoMenu } from '../../storybook/styles';
                 [class]="
                     cn(
                         'border-border text-muted-foreground flex h-[150px] w-[300px] items-center justify-center rounded-md border-2 border-dashed text-sm select-none',
-                        'data-[state=open]:bg-muted data-[state=open]:border-solid'
+                        'data-[popup-open]:bg-muted data-[popup-open]:border-solid'
                     )
                 "
                 rdxContextMenuTrigger
@@ -311,8 +311,15 @@ the Menu primitive, so it forwards the `open` (two-way), `modal`, `loopFocus`, a
 
 ### RdxContextMenuTrigger
 
-The area that opens the menu on right click or touch long-press. Exposes `data-state`
-(`"open"` / `"closed"`) and `data-disabled`.
+The area that opens the menu on right click or touch long-press.
+
+**Data attributes**
+
+| Attribute           | Present when                          |
+| ------------------- | ------------------------------------- |
+| `data-popup-open`   | The context menu is open.             |
+| `data-pressed`      | The trigger is pressed.               |
+| `data-disabled`     | The trigger is disabled.              |
 
 ### Menu parts
 

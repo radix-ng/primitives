@@ -47,7 +47,6 @@ const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();
         '[attr.aria-haspopup]': '"menu"',
         '[attr.aria-expanded]': 'submenuContext.isOpen()',
         '[attr.aria-disabled]': 'effectiveDisabled() ? true : undefined',
-        '[attr.data-state]': 'submenuContext.isOpen() ? "open" : "closed"',
         '[attr.data-popup-open]': 'submenuContext.isOpen() ? "" : undefined',
         '[attr.data-highlighted]': 'highlighted() ? "" : undefined',
         '[attr.data-disabled]': 'effectiveDisabled() ? "" : undefined',

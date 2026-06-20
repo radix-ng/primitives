@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { RdxCompositeList, RdxCompositeRoot } from '@radix-ng/primitives/composite';
 import { BooleanInput, createContext, provideFloatingTree } from '@radix-ng/primitives/core';
-import { RdxMenuRoot, RdxMenuTriggerInteraction } from '@radix-ng/primitives/menu';
+import { RDX_MENU_AMBIENT_MODAL, RdxMenuRoot, RdxMenuTriggerInteraction } from '@radix-ng/primitives/menu';
 
 export type RdxMenubarOrientation = 'horizontal' | 'vertical';
 
@@ -29,6 +29,7 @@ export interface RdxMenubarContext {
     activeId: Signal<string | null>;
     isAnyOpen: Signal<boolean>;
     disabled: Signal<boolean>;
+    modal: Signal<boolean>;
     orientation: Signal<RdxMenubarOrientation>;
     registerItem: (
         id: string,
@@ -55,6 +56,7 @@ function buildContext(root: RdxMenubarRoot): RdxMenubarContext {
         activeId: root.activeId.asReadonly(),
         isAnyOpen: root.isAnyOpen,
         disabled: root.disabled,
+        modal: root.modal,
         orientation: root.orientation,
         registerItem: (id, el, open, close, disabled) => root.registerItem(id, el, open, close, disabled),
         activateItem: (id) => root.activateItem(id),
@@ -79,14 +81,17 @@ let nextMenubarItemId = 0;
         // `FloatingTree`). Each `RdxMenuRoot`'s own `provideFloatingTree()` inherits this via skipSelf, so
         // sibling menubar menus live in the same tree — the dismissal / focus engine can see their
         // relationships instead of each menu owning an isolated tree.
-        provideFloatingTree()
+        provideFloatingTree(),
+        // Thread the menubar's `modal` to every child menu (Base UI `Menubar` passes `modal` into each
+        // `Menu.Root`). Child `RdxMenuRoot`s inherit it via the ambient token instead of each defaulting.
+        { provide: RDX_MENU_AMBIENT_MODAL, useFactory: () => inject(RdxMenubarRoot).modal }
     ],
     host: {
         role: 'menubar',
         '[attr.aria-orientation]': 'orientation()',
         '[attr.data-orientation]': 'orientation()',
-        '[attr.data-disabled]': 'disabled() ? "" : undefined',
-        '[attr.data-has-submenu-open]': 'isAnyOpen() ? "" : undefined',
+        '[attr.data-modal]': 'modal() ? "" : undefined',
+        '[attr.data-has-submenu-open]': 'hasSubmenuOpen() ? "" : undefined',
         '(focusin)': 'handleFocusIn($event)'
     },
     hostDirectives: [RdxCompositeRoot]
@@ -103,6 +108,9 @@ export class RdxMenubarRoot {
     /** Whether every menubar trigger is disabled. */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /** Whether the child menus block outside interaction and lock scroll while open (Base UI default `true`). */
+    readonly modal = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
+
     /** Whether arrow-key navigation wraps at the first/last trigger. */
     readonly loopFocus = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
 
@@ -111,6 +119,8 @@ export class RdxMenubarRoot {
 
     readonly activeId = signal<string | null>(null);
     readonly isAnyOpen = computed(() => this.activeId() !== null);
+    /** Whether a **nested submenu** is currently open (Base UI `data-has-submenu-open` — not top-level menus). */
+    readonly hasSubmenuOpen = computed(() => this.menuRoots().some((root) => root.isSubmenu() && root.open()));
 
     constructor() {
         effect(() => {
@@ -364,6 +374,8 @@ export class RdxMenubarRoot {
                 trigger.focus({ preventScroll: true });
                 return true;
             }
+            default:
+                return false;
         }
     }
 

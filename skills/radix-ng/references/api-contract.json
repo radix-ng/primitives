@@ -3503,8 +3503,8 @@
           "outputs": [
             {
               "name": "onCheckedChange",
-              "type": "CheckedState",
-              "description": "Emits when the checked state changes."
+              "type": "RdxMenuCheckboxChangeEvent",
+              "description": "Emits before the checked state changes; call `eventDetails.cancel()` to veto it."
             }
           ],
           "twoWay": [
@@ -3771,8 +3771,8 @@
           "outputs": [
             {
               "name": "onValueChange",
-              "type": "T",
-              "description": "Emits when the selected value changes."
+              "type": "RdxMenuRadioGroupValueChangeEvent<T>",
+              "description": "Emits before the selected value changes; call `eventDetails.cancel()` to veto it."
             }
           ],
           "twoWay": [
@@ -3920,7 +3920,14 @@
           "selector": "[rdxMenuSeparator]",
           "exportAs": "rdxMenuSeparator",
           "description": "A visual separator between groups of menu items.",
-          "inputs": [],
+          "inputs": [
+            {
+              "name": "orientation",
+              "type": "DataOrientation",
+              "default": "'horizontal'",
+              "description": "The orientation of the separator. Matches Base UI's `Separator.orientation`."
+            }
+          ],
           "outputs": []
         },
         {
@@ -4048,6 +4055,12 @@
               "type": "boolean",
               "default": "true",
               "description": "Whether arrow-key navigation wraps at the first/last trigger."
+            },
+            {
+              "name": "modal",
+              "type": "boolean",
+              "default": "true",
+              "description": "Whether the child menus block outside interaction and lock scroll while open (Base UI default `true`)."
             },
             {
               "name": "orientation",

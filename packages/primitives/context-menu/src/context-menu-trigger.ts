@@ -1,4 +1,13 @@
-import { booleanAttribute, DestroyRef, Directive, ElementRef, inject, input, numberAttribute } from '@angular/core';
+import {
+    booleanAttribute,
+    DestroyRef,
+    Directive,
+    ElementRef,
+    inject,
+    input,
+    numberAttribute,
+    signal
+} from '@angular/core';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
 import { RdxMenuRoot } from '@radix-ng/primitives/menu';
 import { injectRdxContextMenuRootContext } from './context-menu-root';
@@ -13,7 +22,8 @@ import { injectRdxContextMenuRootContext } from './context-menu-root';
     selector: '[rdxContextMenuTrigger]',
     exportAs: 'rdxContextMenuTrigger',
     host: {
-        '[attr.data-state]': 'rootContext.isOpen() ? "open" : "closed"',
+        '[attr.data-popup-open]': 'rootContext.isOpen() ? "" : undefined',
+        '[attr.data-pressed]': 'pressed() ? "" : undefined',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
         '(contextmenu)': 'onContextMenu($event)',
         '(pointerdown)': 'onPointerDown($event)',
@@ -33,6 +43,9 @@ export class RdxContextMenuTrigger {
 
     /** How long (ms) a touch must be held before the menu opens. */
     readonly longPressDelay = input<number, NumberInput>(500, { transform: numberAttribute });
+
+    /** Whether the trigger is mid-press (Base UI `data-pressed`). */
+    protected readonly pressed = signal(false);
 
     private longPressTimer: ReturnType<typeof setTimeout> | undefined;
     private allowMouseUpTimer: ReturnType<typeof setTimeout> | undefined;
@@ -58,7 +71,24 @@ export class RdxContextMenuTrigger {
     };
 
     constructor() {
+        const ownerDocument = this.elementRef.nativeElement.ownerDocument;
+
+        // While the menu is open, a second right-click over the trigger or the popup must not surface the
+        // native browser context menu (Base UI registers the same document-level suppressor).
+        const suppressNativeContextMenu = (event: MouseEvent): void => {
+            if (!this.rootContext.isOpen()) {
+                return;
+            }
+            const target = event.target as Node | null;
+            const popup = this.menuRoot.popupElement();
+            if (target && (this.elementRef.nativeElement.contains(target) || popup?.contains(target))) {
+                event.preventDefault();
+            }
+        };
+        ownerDocument.addEventListener('contextmenu', suppressNativeContextMenu);
+
         inject(DestroyRef).onDestroy(() => {
+            ownerDocument.removeEventListener('contextmenu', suppressNativeContextMenu);
             this.cancelLongPress();
             this.clearContextMenuMouseUpGuard();
         });
@@ -72,20 +102,22 @@ export class RdxContextMenuTrigger {
         // Suppress the native context menu and open ours at the pointer.
         event.preventDefault();
         this.cancelLongPress();
+        this.pressed.set(true);
 
-        // A keyboard-initiated context menu (e.g. the Menu key / Shift+F10) is not preceded by a
-        // pointerdown, so it opens with the first item highlighted; a pointer opens the popup
-        // without highlighting an item.
+        // A keyboard-initiated context menu (the Menu key / Shift+F10) is not preceded by a pointerdown,
+        // so it opens with the first item highlighted; a pointer opens the popup without highlighting.
         const fromKeyboard = event.timeStamp - this.lastPointerDownTime > 300;
         // A right-click `contextmenu` event has no `pointerType`, so this records a non-touch open.
         this.rootContext.openAt(event.clientX, event.clientY, fromKeyboard ? 'first' : 'popup', event);
-        this.armContextMenuMouseUpGuard(event.currentTarget as HTMLElement);
+        this.armContextMenuMouseUpGuard(this.elementRef.nativeElement);
     }
 
     protected onPointerDown(event: PointerEvent): void {
         this.lastPointerDownTime = event.timeStamp;
+        this.pressed.set(true);
 
-        if (this.disabled() || event.pointerType !== 'touch') {
+        // Ignore non-primary pointers (a second finger in a multi-touch gesture must not arm long-press).
+        if (this.disabled() || event.pointerType !== 'touch' || event.isPrimary === false) {
             return;
         }
 
@@ -113,6 +145,7 @@ export class RdxContextMenuTrigger {
     }
 
     protected cancelLongPress(): void {
+        this.pressed.set(false);
         clearTimeout(this.longPressTimer);
         this.longPressTimer = undefined;
         this.longPressOrigin = undefined;
@@ -132,6 +165,6 @@ export class RdxContextMenuTrigger {
     private clearContextMenuMouseUpGuard(): void {
         clearTimeout(this.allowMouseUpTimer);
         this.allowMouseUpTimer = undefined;
-        this.elementRef?.nativeElement?.ownerDocument?.removeEventListener('mouseup', this.handleDocumentMouseUp);
+        this.elementRef.nativeElement.ownerDocument.removeEventListener('mouseup', this.handleDocumentMouseUp);
     }
 }

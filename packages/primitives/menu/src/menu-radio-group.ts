@@ -1,11 +1,22 @@
 import { booleanAttribute, Directive, effect, inject, input, model, output, signal, Signal } from '@angular/core';
-import { BooleanInput, createContext } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    createCancelableChangeEventDetails,
+    createContext,
+    RdxCancelableChangeEventDetails
+} from '@radix-ng/primitives/core';
 import { provideRdxMenuGroupContext, RdxMenuGroupContext } from './menu-group-context';
 
 export interface RdxMenuRadioGroupContext<T = unknown> {
     value: Signal<T | undefined>;
     disabled: Signal<boolean>;
-    selectValue: (value: T) => void;
+    selectValue: (value: T, event?: Event) => void;
+}
+
+/** Payload of {@link RdxMenuRadioGroup.onValueChange} — cancelable via `eventDetails.cancel()`. */
+export interface RdxMenuRadioGroupValueChangeEvent<T = unknown> {
+    value: T;
+    eventDetails: RdxCancelableChangeEventDetails<'none'>;
 }
 
 export const [injectRdxMenuRadioGroupContext, provideRdxMenuRadioGroupContext] =
@@ -56,9 +67,9 @@ export class RdxMenuRadioGroup<T = unknown> {
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
-     * Emits when the selected value changes.
+     * Emits before the selected value changes; call `eventDetails.cancel()` to veto it.
      */
-    readonly onValueChange = output<T>();
+    readonly onValueChange = output<RdxMenuRadioGroupValueChangeEvent<T>>();
 
     readonly labelId = signal<string | undefined>(undefined);
 
@@ -72,11 +83,17 @@ export class RdxMenuRadioGroup<T = unknown> {
         });
     }
 
-    selectValue(newValue: T): void {
+    selectValue(newValue: T, event?: Event): void {
         if (this.disabled()) {
             return;
         }
+        const { eventDetails } = createCancelableChangeEventDetails('none', event ?? new Event('menu.value-change'));
+        this.onValueChange.emit({ value: newValue, eventDetails });
+
+        if (eventDetails.isCanceled()) {
+            return;
+        }
+
         this.value.set(newValue);
-        this.onValueChange.emit(newValue);
     }
 }

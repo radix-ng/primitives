@@ -89,7 +89,7 @@ import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
         '[attr.aria-orientation]': 'rootContext.orientation()',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
-        '[attr.data-state]': 'rootContext.isOpen() ? "open" : "closed"',
+        '[attr.data-instant]': 'rootContext.instantType()',
         '[attr.data-starting-style]': 'rootContext.transitionStatus() === "starting" ? "" : undefined',
         '[attr.data-ending-style]': 'rootContext.transitionStatus() === "ending" ? "" : undefined',
         '[attr.data-align]': 'align()',

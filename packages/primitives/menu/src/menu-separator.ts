@@ -1,4 +1,5 @@
-import { Directive } from '@angular/core';
+import { Directive, input } from '@angular/core';
+import { DataOrientation } from '@radix-ng/primitives/core';
 
 /**
  * A visual separator between groups of menu items.
@@ -8,7 +9,11 @@ import { Directive } from '@angular/core';
     exportAs: 'rdxMenuSeparator',
     host: {
         role: 'separator',
-        '[attr.aria-orientation]': '"horizontal"'
+        '[attr.aria-orientation]': 'orientation()',
+        '[attr.data-orientation]': 'orientation()'
     }
 })
-export class RdxMenuSeparator {}
+export class RdxMenuSeparator {
+    /** The orientation of the separator. Matches Base UI's `Separator.orientation`. */
+    readonly orientation = input<DataOrientation>('horizontal');
+}

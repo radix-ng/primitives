@@ -12,12 +12,23 @@ import {
     Signal
 } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
-import { BooleanInput, createContext } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    createCancelableChangeEventDetails,
+    createContext,
+    RdxCancelableChangeEventDetails
+} from '@radix-ng/primitives/core';
 import { injectRdxMenuRootContext } from './menu-root';
-import { CheckedState, getCheckedState, isIndeterminate } from './menu-utils';
+import { CheckedState, isIndeterminate } from './menu-utils';
 
 export interface RdxMenuCheckboxItemContext {
     checked: Signal<CheckedState>;
+}
+
+/** Payload of {@link RdxMenuCheckboxItem.onCheckedChange} — cancelable via `eventDetails.cancel()`. */
+export interface RdxMenuCheckboxChangeEvent {
+    checked: CheckedState;
+    eventDetails: RdxCancelableChangeEventDetails<'none'>;
 }
 
 export const [injectRdxMenuCheckboxItemContext, provideRdxMenuCheckboxItemContext] =
@@ -42,7 +53,9 @@ const checkboxItemContextFactory = (): RdxMenuCheckboxItemContext => {
         role: 'menuitemcheckbox',
         '[attr.tabindex]': 'rootContext?.isOpen() && highlighted() ? 0 : -1',
         '[attr.aria-checked]': 'isIndeterminate(checked()) ? "mixed" : checked()',
-        '[attr.data-state]': 'getCheckedState(checked())',
+        '[attr.data-checked]': 'checked() === true ? "" : undefined',
+        '[attr.data-unchecked]': 'checked() === false ? "" : undefined',
+        '[attr.data-indeterminate]': 'isIndeterminate(checked()) ? "" : undefined',
         '[attr.data-disabled]': 'effectiveDisabled() ? "" : undefined',
         '[attr.aria-disabled]': 'effectiveDisabled() ? true : undefined',
         '[attr.data-highlighted]': 'highlighted() ? "" : undefined',
@@ -75,8 +88,8 @@ export class RdxMenuCheckboxItem {
     /** The checked state of the item. */
     readonly checked = model<CheckedState>(false);
 
-    /** Emits when the checked state changes. */
-    readonly onCheckedChange = output<CheckedState>();
+    /** Emits before the checked state changes; call `eventDetails.cancel()` to veto it. */
+    readonly onCheckedChange = output<RdxMenuCheckboxChangeEvent>();
 
     protected readonly highlighted = computed(
         () => this.rootContext?.activeIndex() === this.listItem.index() || this.isFocused()
@@ -85,7 +98,6 @@ export class RdxMenuCheckboxItem {
 
     // Expose helpers for host bindings
     protected readonly isIndeterminate = isIndeterminate;
-    protected readonly getCheckedState = getCheckedState;
 
     constructor() {
         effect(() => {
@@ -135,8 +147,9 @@ export class RdxMenuCheckboxItem {
 
     onItemClick(): void {
         if (this.effectiveDisabled()) return;
-        this.toggleChecked();
-        if (this.closeOnClick()) this.rootContext?.closeEntireMenu();
+        if (this.toggleChecked() && this.closeOnClick()) {
+            this.rootContext?.closeEntireMenu();
+        }
     }
 
     onMouseUp(event: MouseEvent): void {
@@ -151,14 +164,23 @@ export class RdxMenuCheckboxItem {
     protected onActivate(event: Event): void {
         if (this.effectiveDisabled()) return;
         event.preventDefault();
-        this.toggleChecked();
-        if (this.closeOnClick()) this.rootContext?.closeEntireMenu();
+        if (this.toggleChecked(event) && this.closeOnClick()) {
+            this.rootContext?.closeEntireMenu();
+        }
     }
 
-    private toggleChecked(): void {
+    /** Emits the cancelable change, applies it unless vetoed, and reports whether it was applied. */
+    private toggleChecked(event?: Event): boolean {
         const next = isIndeterminate(this.checked()) ? true : !this.checked();
+        const { eventDetails } = createCancelableChangeEventDetails('none', event ?? new Event('menu.checked-change'));
+        this.onCheckedChange.emit({ checked: next, eventDetails });
+
+        if (eventDetails.isCanceled()) {
+            return false;
+        }
+
         this.checked.set(next);
-        this.onCheckedChange.emit(next);
+        return true;
     }
 
     private setActiveIndex(): void {

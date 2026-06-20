@@ -23,7 +23,7 @@ position on a right click or long-press.
 - ✅ Opened by pointer, the popup is focused with no item highlighted; opened by keyboard, the first item is highlighted.
 - ✅ Full keyboard navigation once open (ArrowDown / ArrowUp / Home / End / typeahead).
 - ✅ Closes on Escape, outside pointer interaction, and item selection — restoring focus.
-- ✅ Headless — state is exposed via `data-state`; styling is up to the consumer.
+- ✅ Headless — state is exposed via `data-popup-open` / `data-pressed`; styling is up to the consumer.
 
 ## Import
 
@@ -99,10 +99,17 @@ the Menu primitive, so it forwards the `open` (two-way), `modal`, `loopFocus`, a
 
 ### RdxContextMenuTrigger
 
-The area that opens the menu on right click or touch long-press. Exposes `data-state`
-(`"open"` / `"closed"`) and `data-disabled`.
+The area that opens the menu on right click or touch long-press.
 
 <ArgTypes of={RdxContextMenuTrigger} />
+
+**Data attributes**
+
+| Attribute           | Present when                          |
+| ------------------- | ------------------------------------- |
+| `data-popup-open`   | The context menu is open.             |
+| `data-pressed`      | The trigger is pressed.               |
+| `data-disabled`     | The trigger is disabled.              |
 
 ### Menu parts
 

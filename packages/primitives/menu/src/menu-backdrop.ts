@@ -12,7 +12,6 @@ import { injectRdxMenuRootContext } from './menu-root';
     host: {
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
-        '[attr.data-state]': 'rootContext.isOpen() ? "open" : "closed"',
         '[attr.data-starting-style]': 'rootContext.transitionStatus() === "starting" ? "" : undefined',
         '[attr.data-ending-style]': 'rootContext.transitionStatus() === "ending" ? "" : undefined'
     }

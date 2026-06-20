@@ -183,7 +183,7 @@ describe('Menubar', () => {
         triggers[0].click();
         fixture.detectChanges();
 
-        expect(triggers[0].getAttribute('data-state')).toBe('open');
+        expect(triggers[0].hasAttribute('data-popup-open')).toBe(true);
         expect(fixture.nativeElement.querySelectorAll('[rdxMenuPopup]').length).toBe(1);
     });
 
@@ -193,7 +193,7 @@ describe('Menubar', () => {
         triggers[0].click();
         fixture.detectChanges();
 
-        expect(triggers[0].getAttribute('data-state')).toBe('closed');
+        expect(triggers[0].hasAttribute('data-popup-open')).toBe(false);
         expect(fixture.nativeElement.querySelectorAll('[rdxMenuPopup]').length).toBe(0);
     });
 
@@ -208,14 +208,14 @@ describe('Menubar', () => {
         // Open File first
         triggers[0].click();
         fixture.detectChanges();
-        expect(triggers[0].getAttribute('data-state')).toBe('open');
+        expect(triggers[0].hasAttribute('data-popup-open')).toBe(true);
 
         // Hover Edit — should close File and open Edit
         pointerEnter(triggers[1]);
         fixture.detectChanges();
 
-        expect(triggers[0].getAttribute('data-state')).toBe('closed');
-        expect(triggers[1].getAttribute('data-state')).toBe('open');
+        expect(triggers[0].hasAttribute('data-popup-open')).toBe(false);
+        expect(triggers[1].hasAttribute('data-popup-open')).toBe(true);
         // exactly one popup open at a time
         expect(fixture.nativeElement.querySelectorAll('[rdxMenuPopup]').length).toBe(1);
     });
@@ -242,7 +242,7 @@ describe('Menubar', () => {
         mountedTriggers[0].click();
         mountedFixture.detectChanges();
         await settle();
-        expect(mountedTriggers[0].getAttribute('data-state')).toBe('open');
+        expect(mountedTriggers[0].hasAttribute('data-popup-open')).toBe(true);
 
         // Hover Edit — focuses the trigger and opens Edit without pulling focus into the popup.
         // With always-mounted popups, every dismissable layer (and its focus listener) already
@@ -250,14 +250,14 @@ describe('Menubar', () => {
         pointerEnter(mountedTriggers[1]);
         mountedTriggers[1].focus();
         mountedFixture.detectChanges();
-        expect(mountedTriggers[1].getAttribute('data-state')).toBe('open');
+        expect(mountedTriggers[1].hasAttribute('data-popup-open')).toBe(true);
 
         // The focus-outside check resolves after a couple of microtasks; the trigger must be a
         // dismissable-layer branch so the freshly opened popup is not dismissed.
         await settle();
 
-        expect(mountedTriggers[0].getAttribute('data-state')).toBe('closed');
-        expect(mountedTriggers[1].getAttribute('data-state')).toBe('open');
+        expect(mountedTriggers[0].hasAttribute('data-popup-open')).toBe(false);
+        expect(mountedTriggers[1].hasAttribute('data-popup-open')).toBe(true);
     });
 
     it('hovering a sibling trigger switches always-mounted top-level popups', () => {
@@ -277,21 +277,21 @@ describe('Menubar', () => {
         pointerEnter(mountedTriggers[1]);
         mountedFixture.detectChanges();
 
-        expect(mountedTriggers[1].getAttribute('data-state')).toBe('closed');
+        expect(mountedTriggers[1].hasAttribute('data-popup-open')).toBe(false);
 
         mountedTriggers[0].click();
         mountedFixture.detectChanges();
 
-        expect(mountedTriggers[0].getAttribute('data-state')).toBe('open');
-        expect(mountedPopups[0].getAttribute('data-state')).toBe('open');
+        expect(mountedTriggers[0].hasAttribute('data-popup-open')).toBe(true);
+        expect(mountedPopups[0].hasAttribute('data-open')).toBe(true);
 
         pointerEnter(mountedTriggers[1]);
         mountedFixture.detectChanges();
 
-        expect(mountedTriggers[0].getAttribute('data-state')).toBe('closed');
-        expect(mountedTriggers[1].getAttribute('data-state')).toBe('open');
-        expect(mountedPopups[0].getAttribute('data-state')).toBe('closed');
-        expect(mountedPopups[1].getAttribute('data-state')).toBe('open');
+        expect(mountedTriggers[0].hasAttribute('data-popup-open')).toBe(false);
+        expect(mountedTriggers[1].hasAttribute('data-popup-open')).toBe(true);
+        expect(mountedPopups[0].hasAttribute('data-open')).toBe(false);
+        expect(mountedPopups[1].hasAttribute('data-open')).toBe(true);
     });
 
     it('ArrowRight moves focus to next trigger and opens it when a menu was open', async () => {
@@ -303,8 +303,8 @@ describe('Menubar', () => {
         fixture.detectChanges();
 
         expect(document.activeElement).toBe(triggers[1]);
-        expect(triggers[1].getAttribute('data-state')).toBe('open');
-        expect(triggers[0].getAttribute('data-state')).toBe('closed');
+        expect(triggers[1].hasAttribute('data-popup-open')).toBe(true);
+        expect(triggers[0].hasAttribute('data-popup-open')).toBe(false);
     });
 
     it('ArrowDown after switching an open menubar moves focus into the current popup', async () => {
@@ -316,14 +316,12 @@ describe('Menubar', () => {
         fixture.detectChanges();
 
         expect(document.activeElement).toBe(triggers[1]);
-        expect(triggers[1].getAttribute('data-state')).toBe('open');
+        expect(triggers[1].hasAttribute('data-popup-open')).toBe(true);
 
         keydown(triggers[1], 'ArrowDown');
         fixture.detectChanges();
 
-        const item: HTMLElement = fixture.nativeElement.querySelector(
-            '[rdxMenuPopup][data-state="open"] [rdxMenuItem]'
-        );
+        const item: HTMLElement = fixture.nativeElement.querySelector('[rdxMenuPopup][data-open] [rdxMenuItem]');
         expect(document.activeElement).toBe(item);
         expect(item.textContent?.trim()).toContain('Undo');
     });
@@ -342,8 +340,8 @@ describe('Menubar', () => {
         fixture.detectChanges();
 
         expect(document.activeElement).toBe(triggers[1]);
-        expect(triggers[0].getAttribute('data-state')).toBe('closed');
-        expect(triggers[1].getAttribute('data-state')).toBe('open');
+        expect(triggers[0].hasAttribute('data-popup-open')).toBe(false);
+        expect(triggers[1].hasAttribute('data-popup-open')).toBe(true);
     });
 
     it('ArrowRight wraps to the first trigger from the last', async () => {
@@ -355,7 +353,7 @@ describe('Menubar', () => {
         fixture.detectChanges();
 
         expect(document.activeElement).toBe(triggers[0]);
-        expect(triggers[0].getAttribute('data-state')).toBe('open');
+        expect(triggers[0].hasAttribute('data-popup-open')).toBe(true);
     });
 
     it('ArrowLeft moves to previous trigger', async () => {
@@ -367,7 +365,7 @@ describe('Menubar', () => {
         fixture.detectChanges();
 
         expect(document.activeElement).toBe(triggers[0]);
-        expect(triggers[0].getAttribute('data-state')).toBe('open');
+        expect(triggers[0].hasAttribute('data-popup-open')).toBe(true);
     });
 
     it('ArrowLeft from an open menu item switches to the previous trigger menu', async () => {
@@ -384,8 +382,8 @@ describe('Menubar', () => {
         fixture.detectChanges();
 
         expect(document.activeElement).toBe(triggers[0]);
-        expect(triggers[0].getAttribute('data-state')).toBe('open');
-        expect(triggers[1].getAttribute('data-state')).toBe('closed');
+        expect(triggers[0].hasAttribute('data-popup-open')).toBe(true);
+        expect(triggers[1].hasAttribute('data-popup-open')).toBe(false);
     });
 
     it('ArrowDown opens the focused menu without a prior open menu', () => {
@@ -393,7 +391,7 @@ describe('Menubar', () => {
         keydown(triggers[0], 'ArrowDown');
         fixture.detectChanges();
 
-        expect(triggers[0].getAttribute('data-state')).toBe('open');
+        expect(triggers[0].hasAttribute('data-popup-open')).toBe(true);
     });
 
     it('ArrowDown opens the menu after moving focus with ArrowRight', async () => {
@@ -407,7 +405,7 @@ describe('Menubar', () => {
         keydown(triggers[1], 'ArrowDown');
         fixture.detectChanges();
 
-        expect(triggers[1].getAttribute('data-state')).toBe('open');
+        expect(triggers[1].hasAttribute('data-popup-open')).toBe(true);
     });
 
     it('Enter opens the focused menu, focuses the first item, and ArrowDown advances highlight', async () => {
@@ -418,7 +416,7 @@ describe('Menubar', () => {
         fixture.detectChanges();
 
         const items: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('[rdxMenuItem]'));
-        expect(triggers[0].getAttribute('data-state')).toBe('open');
+        expect(triggers[0].hasAttribute('data-popup-open')).toBe(true);
         expect(document.activeElement).toBe(items[0]);
         expect(items[0].hasAttribute('data-highlighted')).toBe(true);
 
@@ -448,7 +446,7 @@ describe('Menubar', () => {
         await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 
         const items: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('[rdxMenuItem]'));
-        expect(triggers[0].getAttribute('data-state')).toBe('open');
+        expect(triggers[0].hasAttribute('data-popup-open')).toBe(true);
         expect(document.activeElement).toBe(items[items.length - 1]);
     });
 
@@ -474,7 +472,7 @@ describe('Menubar', () => {
         keydown(triggers[0], 'Escape');
         fixture.detectChanges();
 
-        expect(triggers[0].getAttribute('data-state')).toBe('closed');
+        expect(triggers[0].hasAttribute('data-popup-open')).toBe(false);
         expect(document.activeElement).toBe(triggers[0]);
     });
 
@@ -495,6 +493,6 @@ describe('Menubar', () => {
 
         expect(disabledTriggers[1].hasAttribute('data-disabled')).toBe(true);
         expect(document.activeElement).toBe(disabledTriggers[2]);
-        expect(disabledTriggers[2].getAttribute('data-state')).toBe('open');
+        expect(disabledTriggers[2].hasAttribute('data-popup-open')).toBe(true);
     });
 });

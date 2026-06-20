@@ -5,6 +5,7 @@ import {
     effect,
     ElementRef,
     inject,
+    InjectionToken,
     input,
     model,
     output,
@@ -30,6 +31,12 @@ import { RdxPopper } from '@radix-ng/primitives/popper';
 import { getFocusableMenuItems } from './menu-focus';
 
 export type RdxMenuTransitionStatus = 'starting' | 'ending' | undefined;
+/**
+ * Why an open/close happened instantly (no transition). Mirrors Base UI's menu `data-instant`:
+ * `'click'` (opened by click/keyboard), `'dismiss'` (closed by Escape / outside-press / focus-out),
+ * `'group'`, or `'trigger-change'` (menubar switching between sibling menus).
+ */
+export type RdxMenuInstantType = 'click' | 'dismiss' | 'group' | 'trigger-change';
 /**
  * How focus moves into the popup when it opens.
  * - `'first'` / `'last'` — focus and highlight the first / last item (keyboard opening).
@@ -96,6 +103,8 @@ export interface RdxMenuRootContext {
     parentType: Signal<RdxMenuParentType>;
     /** The reason for the most recent open-change (Base UI open-change `reason`). */
     lastOpenChangeReason: Signal<RdxMenuOpenChangeReason>;
+    /** Why the open/close was instant (Base UI `data-instant`), or `undefined` when it animates. */
+    instantType: Signal<RdxMenuInstantType | undefined>;
     /** Whether a trigger-originated press may activate an item on the following mouseup. */
     allowMouseUpTrigger: Signal<boolean>;
     /** Whether the current open was initiated by touch (ADR 0016 §3 — gates the anchored scroll lock). */
@@ -151,6 +160,13 @@ export const [injectRdxMenuRootContext, provideRdxMenuRootContext] = createConte
     'components/menu'
 );
 
+/**
+ * Ambient modality for a menu, provided by a coordinator (e.g. `Menubar`) so its child menus inherit
+ * the coordinator's `modal` setting instead of each defaulting independently. A top-level menu prefers
+ * this over its own `modal` input when present; submenus stay non-modal regardless.
+ */
+export const RDX_MENU_AMBIENT_MODAL = new InjectionToken<Signal<boolean>>('RdxMenuAmbientModal');
+
 function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
     return {
         isOpen: instance.open,
@@ -167,6 +183,7 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         isSubmenu: instance.isSubmenu.asReadonly(),
         parentType: instance.parentType,
         lastOpenChangeReason: instance.lastOpenChangeReason.asReadonly(),
+        instantType: instance.instantType,
         allowMouseUpTrigger: instance.allowMouseUpTrigger,
         openedByTouch: instance.openedByTouch.asReadonly(),
         openInteractionType: instance.openInteractionType.asReadonly(),
@@ -218,6 +235,8 @@ export class RdxMenuRoot {
     private readonly popper = inject(RdxPopper);
     readonly parentRoot = inject(RdxMenuRoot, { optional: true, skipSelf: true });
     private readonly providedDirection = injectDirection();
+    /** Ambient modality from an enclosing coordinator (e.g. Menubar). Overrides own `modal` for top-level menus. */
+    private readonly ambientModal = inject(RDX_MENU_AMBIENT_MODAL, { optional: true });
 
     /**
      * The shared per-popup floating context (ADR 0015 §1) — `open` mirrors this menu's open state, the
@@ -322,9 +341,30 @@ export class RdxMenuRoot {
     readonly dir: Signal<Direction> = computed(() => {
         return this.dirInput() ?? this.parentRoot?.dir() ?? this.providedDirection();
     });
-    readonly effectiveModal = computed(() => this.modal() && !this.isSubmenu());
+    readonly effectiveModal = computed(() => (this.ambientModal?.() ?? this.modal()) && !this.isSubmenu());
     readonly state = computed(() => (this.open() ? 'open' : 'closed'));
     readonly present = computed(() => this.open() || this.preventUnmountOnClose());
+
+    /** Base UI `data-instant`: the open/close reason classified into the instant-suppression bucket. */
+    readonly instantType = computed<RdxMenuInstantType | undefined>(() => {
+        const reason = this.lastOpenChangeReason();
+        if (this.open()) {
+            if (reason === 'sibling-open') return 'trigger-change';
+            if (reason === 'trigger-press' || reason === 'trigger-focus' || reason === 'list-navigation') {
+                return 'click';
+            }
+            return undefined;
+        }
+        if (
+            reason === 'escape-key' ||
+            reason === 'outside-press' ||
+            reason === 'focus-out' ||
+            reason === 'cancel-open'
+        ) {
+            return 'dismiss';
+        }
+        return undefined;
+    });
 
     constructor() {
         effect(() => {

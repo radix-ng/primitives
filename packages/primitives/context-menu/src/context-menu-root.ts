@@ -71,17 +71,21 @@ export class RdxContextMenuRoot {
             return;
         }
 
+        // A touch long-press gets a small 10×10 anchor box (Base UI) so the popup is offset from the
+        // finger; a mouse/keyboard open uses a 0×0 point at the cursor. (`PointerEvent` is not a global in
+        // jsdom, so duck-type the pointer type instead of `instanceof`.)
+        const size = event && 'pointerType' in event && (event as PointerEvent).pointerType === 'touch' ? 10 : 0;
         const anchor: VirtualElement = {
             getBoundingClientRect: () =>
                 ({
-                    width: 0,
-                    height: 0,
+                    width: size,
+                    height: size,
                     x: clientX,
                     y: clientY,
                     top: clientY,
                     left: clientX,
-                    right: clientX,
-                    bottom: clientY,
+                    right: clientX + size,
+                    bottom: clientY + size,
                     toJSON: () => ({})
                 }) as DOMRect
         };

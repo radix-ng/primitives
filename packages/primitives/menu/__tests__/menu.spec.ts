@@ -296,7 +296,11 @@ class DisabledItemMenuComponent {}
             @if (root.open()) {
                 <div rdxMenuPositioner>
                     <div rdxMenuPopup>
-                        <label [(checked)]="bookmarks" (onCheckedChange)="changes.push($event)" rdxMenuCheckboxItem>
+                        <label
+                            [(checked)]="bookmarks"
+                            (onCheckedChange)="changes.push($event.checked)"
+                            rdxMenuCheckboxItem
+                        >
                             <span rdxMenuCheckboxItemIndicator></span>
                             Bookmarks
                         </label>
@@ -330,7 +334,7 @@ class CheckboxMenuComponent {
             @if (root.open()) {
                 <div rdxMenuPositioner>
                     <div rdxMenuPopup>
-                        <div [(value)]="selected" (onValueChange)="changes.push($event)" rdxMenuRadioGroup>
+                        <div [(value)]="selected" (onValueChange)="changes.push($event.value)" rdxMenuRadioGroup>
                             <label value="a" rdxMenuRadioItem>
                                 <span rdxMenuRadioItemIndicator></span>
                                 A
@@ -355,7 +359,12 @@ class RadioMenuComponent {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxMenuRadioGroup, RdxMenuRadioItem, RdxMenuGroupLabel],
     template: `
-        <div [defaultValue]="first" [disabled]="disabled" (onValueChange)="changes.push($event)" rdxMenuRadioGroup>
+        <div
+            [defaultValue]="first"
+            [disabled]="disabled"
+            (onValueChange)="changes.push($event.value)"
+            rdxMenuRadioGroup
+        >
             <div rdxMenuGroupLabel>Choices</div>
             <button [value]="first" rdxMenuRadioItem>First</button>
             <button [value]="second" rdxMenuRadioItem>Second</button>
@@ -416,14 +425,14 @@ describe('Menu', () => {
 
         it('opens on click', () => {
             expect(fixture.componentInstance.open).toBe(false);
-            expect(trigger.getAttribute('data-state')).toBe('closed');
+            expect(trigger.hasAttribute('data-popup-open')).toBe(false);
             expect(trigger.getAttribute('aria-expanded')).toBe('false');
 
             trigger.click();
             fixture.detectChanges();
 
             expect(fixture.componentInstance.open).toBe(true);
-            expect(trigger.getAttribute('data-state')).toBe('open');
+            expect(trigger.hasAttribute('data-popup-open')).toBe(true);
             expect(trigger.getAttribute('aria-expanded')).toBe('true');
         });
 
@@ -499,7 +508,7 @@ describe('Menu', () => {
             fixture.detectChanges();
 
             expect(fixture.componentInstance.open).toBe(false);
-            expect(trigger.getAttribute('data-state')).toBe('closed');
+            expect(trigger.hasAttribute('data-popup-open')).toBe(false);
         });
 
         it('has aria-haspopup="menu"', () => {
@@ -597,9 +606,9 @@ describe('Menu', () => {
             expect(popup.getAttribute('role')).toBe('menu');
         });
 
-        it('has data-state="open"', () => {
+        it('has data-open', () => {
             const popup: HTMLElement = fixture.nativeElement.querySelector('[rdxMenuPopup]');
-            expect(popup.getAttribute('data-state')).toBe('open');
+            expect(popup.hasAttribute('data-open')).toBe(true);
         });
 
         it('has aria-orientation="vertical"', () => {
@@ -1066,8 +1075,9 @@ describe('Menu', () => {
             expect(checkboxItem.getAttribute('role')).toBe('menuitemcheckbox');
         });
 
-        it('starts unchecked with data-state="unchecked"', () => {
-            expect(checkboxItem.getAttribute('data-state')).toBe('unchecked');
+        it('starts unchecked with data-unchecked', () => {
+            expect(checkboxItem.hasAttribute('data-unchecked')).toBe(true);
+            expect(checkboxItem.hasAttribute('data-checked')).toBe(false);
             expect(checkboxItem.getAttribute('aria-checked')).toBe('false');
         });
 
@@ -1077,7 +1087,7 @@ describe('Menu', () => {
 
             // Menu stays open — checkbox items do not close the menu
             expect(fixture.componentInstance.bookmarks).toBe(true);
-            expect(checkboxItem.getAttribute('data-state')).toBe('checked');
+            expect(checkboxItem.hasAttribute('data-checked')).toBe(true);
             expect(checkboxItem.getAttribute('aria-checked')).toBe('true');
             expect(fixture.componentInstance.changes).toEqual([true]);
             expect(fixture.nativeElement.querySelector('[rdxMenuPopup]')).not.toBeNull();
@@ -1096,7 +1106,7 @@ describe('Menu', () => {
 
         it('shows indeterminate state via aria-checked="mixed"', () => {
             expect(indetermItem.getAttribute('aria-checked')).toBe('mixed');
-            expect(indetermItem.getAttribute('data-state')).toBe('indeterminate');
+            expect(indetermItem.hasAttribute('data-indeterminate')).toBe(true);
         });
 
         it('checkbox indicator is visible when checked', () => {
@@ -1130,8 +1140,8 @@ describe('Menu', () => {
             radioItems.forEach((item) => expect(item.getAttribute('role')).toBe('menuitemradio'));
         });
 
-        it('items start with data-state="unchecked"', () => {
-            radioItems.forEach((item) => expect(item.getAttribute('data-state')).toBe('unchecked'));
+        it('items start with data-unchecked', () => {
+            radioItems.forEach((item) => expect(item.hasAttribute('data-unchecked')).toBe(true));
         });
 
         it('clicking an item checks it and emits onValueChange', () => {
@@ -1150,8 +1160,8 @@ describe('Menu', () => {
             fixture.detectChanges();
 
             const all: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('[rdxMenuRadioItem]'));
-            expect(all[0].getAttribute('data-state')).toBe('unchecked');
-            expect(all[1].getAttribute('data-state')).toBe('checked');
+            expect(all[0].hasAttribute('data-unchecked')).toBe(true);
+            expect(all[1].hasAttribute('data-checked')).toBe(true);
             expect(fixture.componentInstance.selected).toBe('b');
             expect(fixture.nativeElement.querySelector('[rdxMenuPopup]')).not.toBeNull();
         });
@@ -1569,7 +1579,7 @@ describe('Menu', () => {
             expect(indicator.style.display).toBe('none');
         });
 
-        it('CheckboxItemIndicator stays in DOM with keepMounted and has data-state', () => {
+        it('CheckboxItemIndicator stays in DOM with keepMounted and has state attrs', () => {
             @Component({
                 changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [
@@ -1605,7 +1615,7 @@ describe('Menu', () => {
 
             const indicator: HTMLElement = f.nativeElement.querySelector('[rdxMenuCheckboxItemIndicator]');
             expect(indicator.style.display).not.toBe('none');
-            expect(indicator.getAttribute('data-state')).toBe('unchecked');
+            expect(indicator.hasAttribute('data-unchecked')).toBe(true);
             expect(indicator.hasAttribute('data-ending-style')).toBe(true);
         });
 
@@ -1648,7 +1658,7 @@ describe('Menu', () => {
 
             const indicator: HTMLElement = f.nativeElement.querySelector('[rdxMenuRadioItemIndicator]');
             expect(indicator.style.display).not.toBe('none');
-            expect(indicator.getAttribute('data-state')).toBe('unchecked');
+            expect(indicator.hasAttribute('data-unchecked')).toBe(true);
         });
     });
 
@@ -2141,7 +2151,7 @@ describe('Menu', () => {
     // ─── RdxMenuBackdrop ──────────────────────────────────────────────────────
 
     describe('RdxMenuBackdrop', () => {
-        it('exposes data-state and data-open/closed', () => {
+        it('exposes data-open/closed', () => {
             @Component({
                 changeDetection: ChangeDetectionStrategy.Eager,
                 imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem, RdxMenuBackdrop],
@@ -2169,7 +2179,6 @@ describe('Menu', () => {
 
             const backdrop: HTMLElement = f.nativeElement.querySelector('[rdxMenuBackdrop]');
             expect(backdrop).not.toBeNull();
-            expect(backdrop.getAttribute('data-state')).toBe('open');
             expect(backdrop.hasAttribute('data-open')).toBe(true);
             expect(backdrop.hasAttribute('data-closed')).toBe(false);
         });

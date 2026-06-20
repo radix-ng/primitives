@@ -77,7 +77,7 @@ describe('ContextMenu', () => {
     });
 
     it('is closed by default', () => {
-        expect(trigger.getAttribute('data-state')).toBe('closed');
+        expect(trigger.hasAttribute('data-popup-open')).toBe(false);
         expect(fixture.nativeElement.querySelectorAll('[rdxMenuPopup]').length).toBe(0);
     });
 
@@ -85,7 +85,7 @@ describe('ContextMenu', () => {
         rightClick(trigger);
         fixture.detectChanges();
 
-        expect(trigger.getAttribute('data-state')).toBe('open');
+        expect(trigger.hasAttribute('data-popup-open')).toBe(true);
         expect(fixture.nativeElement.querySelectorAll('[rdxMenuPopup]').length).toBe(1);
     });
 
@@ -133,7 +133,7 @@ describe('ContextMenu', () => {
         document.body.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
         fixture.detectChanges();
 
-        expect(trigger.getAttribute('data-state')).toBe('open');
+        expect(trigger.hasAttribute('data-popup-open')).toBe(true);
         expect(fixture.nativeElement.querySelector('[rdxMenuPopup]')).not.toBeNull();
     });
 
@@ -148,20 +148,20 @@ describe('ContextMenu', () => {
         document.body.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
         fixture.detectChanges();
 
-        expect(trigger.getAttribute('data-state')).toBe('closed');
+        expect(trigger.hasAttribute('data-popup-open')).toBe(false);
         expect(fixture.nativeElement.querySelector('[rdxMenuPopup]')).toBeNull();
     });
 
     it('closes on Escape and stays closed', () => {
         rightClick(trigger);
         fixture.detectChanges();
-        expect(trigger.getAttribute('data-state')).toBe('open');
+        expect(trigger.hasAttribute('data-popup-open')).toBe(true);
 
         const popup: HTMLElement = fixture.nativeElement.querySelector('[rdxMenuPopup]');
         keydown(popup, 'Escape');
         fixture.detectChanges();
 
-        expect(trigger.getAttribute('data-state')).toBe('closed');
+        expect(trigger.hasAttribute('data-popup-open')).toBe(false);
         expect(fixture.nativeElement.querySelectorAll('[rdxMenuPopup]').length).toBe(0);
     });
 
@@ -175,7 +175,7 @@ describe('ContextMenu', () => {
         rightClick(disabledTrigger);
         disabledFixture.detectChanges();
 
-        expect(disabledTrigger.getAttribute('data-state')).toBe('closed');
+        expect(disabledTrigger.hasAttribute('data-popup-open')).toBe(false);
         expect(disabledFixture.nativeElement.querySelectorAll('[rdxMenuPopup]').length).toBe(0);
     });
 });

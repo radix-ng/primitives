@@ -79,7 +79,8 @@ import {
     RdxMenuRoot,
     RdxMenuSeparator,
     RdxMenuSubTrigger,
-    RdxMenuTrigger
+    RdxMenuTrigger,
+    RdxMenuViewport
 } from '@radix-ng/primitives/menu';
 ```
 
@@ -756,6 +757,14 @@ to the popup. When the menu is part of a
 [Menubar](?path=/docs/primitives-menubar--docs), the trigger reports `role="menuitem"`, joins the
 menubar Composite focus order, and the menubar coordinates hover-switching between sibling menus.
 
+**Data attributes**
+
+| Attribute         | Present when                       |
+| ----------------- | ---------------------------------- |
+| `data-popup-open` | The menu is open.                  |
+| `data-pressed`    | The trigger is pressed.            |
+| `data-disabled`   | The trigger is disabled.           |
+
 ### RdxMenuPositioner
 
 Positions the popup against the trigger using the shared Floating UI Popper primitive. Exposes
@@ -765,8 +774,19 @@ Positions the popup against the trigger using the shared Floating UI Popper prim
 ### RdxMenuPopup
 
 Owns keyboard navigation (ArrowDown / ArrowUp with optional `loopFocus` wrap, Home, End, typeahead,
-Escape, ArrowLeft, Tab) and wires up Dismissable Layer and Focus Scope. Exposes
-`data-starting-style` and `data-ending-style` for CSS transitions.
+Escape, ArrowLeft, Tab) and wires up Dismissable Layer and Focus Scope.
+
+**Data attributes**
+
+| Attribute             | Present when / value                                                       |
+| --------------------- | ------------------------------------------------------------------------- |
+| `data-open`           | The menu is open.                                                          |
+| `data-closed`         | The menu is closed.                                                        |
+| `data-side`           | Resolved side — `top` / `right` / `bottom` / `left`.                       |
+| `data-align`          | Resolved alignment — `start` / `center` / `end`.                           |
+| `data-starting-style` | The enter transition is about to run.                                      |
+| `data-ending-style`   | The exit transition is running.                                            |
+| `data-instant`        | An open/close happened with no transition — `click` / `dismiss` / `group` / `trigger-change`. |
 
 ### RdxMenuViewport
 
@@ -797,12 +817,34 @@ the menu unmounts.
 ### RdxMenuCheckboxItem
 
 Toggles between `checked` / `unchecked` / `indeterminate`. `closeOnClick` defaults to `false`.
+`onCheckedChange` emits `{ checked, eventDetails }` and is cancelable via `eventDetails.cancel()`.
+
+**Data attributes**
+
+| Attribute            | Present when                       |
+| -------------------- | ---------------------------------- |
+| `data-checked`       | The item is checked.               |
+| `data-unchecked`     | The item is unchecked.             |
+| `data-indeterminate` | The item is indeterminate.         |
+| `data-highlighted`   | The item is highlighted.           |
+| `data-disabled`      | The item is disabled.              |
 
 ### RdxMenuRadioGroup
+
+`onValueChange` emits `{ value, eventDetails }` and is cancelable via `eventDetails.cancel()`.
 
 ### RdxMenuRadioItem
 
 `closeOnClick` defaults to `false` — the group stays open after selection.
+
+**Data attributes**
+
+| Attribute          | Present when               |
+| ------------------ | -------------------------- |
+| `data-checked`     | The item is selected.      |
+| `data-unchecked`   | The item is not selected.  |
+| `data-highlighted` | The item is highlighted.   |
+| `data-disabled`    | The item is disabled.      |
 
 ### RdxMenuSubTrigger
 
@@ -813,7 +855,7 @@ automatically.
 
 ### RdxMenuBackdrop
 
-An optional overlay rendered behind the popup. Exposes `data-open`, `data-closed`, `data-state`,
+An optional overlay rendered behind the popup. Exposes `data-open`, `data-closed`,
 `data-starting-style`, and `data-ending-style` for CSS animations. No inputs.
 
 ### RdxMenuArrow
