@@ -85,9 +85,9 @@ const DIALOG_INTERNAL_BACKDROP_ATTR = 'data-rdx-dialog-internal-backdrop';
         '[attr.data-ending-style]': 'rootContext.transitionStatus() === "ending" ? "" : undefined',
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
         '[attr.data-starting-style]': 'rootContext.transitionStatus() === "starting" ? "" : undefined',
-        '[attr.data-state]': 'rootContext.isOpen() ? "open" : "closed"',
         '[attr.data-nested]': 'rootContext.nested ? "" : undefined',
         '[attr.data-nested-dialog-open]': 'rootContext.nestedDialogOpen() ? "" : undefined',
+        '[style.--nested-dialogs]': 'rootContext.nestedOpenCount()',
         '[id]': 'rootContext.contentId',
         '(keydown)': 'onKeyDown($event)'
     }

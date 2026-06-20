@@ -84,6 +84,8 @@ export interface RdxDialogRootContext {
     /** Whether this dialog is nested in another; constant, fixed at construction. */
     nested: boolean;
     nestedDialogOpen: Signal<boolean>;
+    /** Number of currently-open dialogs nested directly inside this one (Base UI `--nested-dialogs`). */
+    nestedOpenCount: Signal<number>;
     setTitleId: (id: string | undefined) => void;
     setDescriptionId: (id: string | undefined) => void;
     registerTransitionElement: (element: HTMLElement) => () => void;
@@ -160,14 +162,15 @@ export class RdxDialogRoot {
     readonly modal = input<RdxDialogModal, BooleanInput | 'trap-focus'>(true, { transform: transformModal });
 
     /**
-     * Determines whether the dialog should close on outside clicks.
+     * Determines whether the dialog should close on outside clicks. For a non-modal dialog this also
+     * prevents the dialog from closing when focus moves outside of it.
      */
     readonly disablePointerDismissal = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
      * Associates this root with detached trigger elements rendered outside of it.
      */
-    readonly handle = input<RdxDialogHandle<any>>();
+    readonly handle = input<RdxDialogHandle<unknown>>();
 
     /**
      * Event handler called when the dialog is opened or closed.
@@ -478,6 +481,7 @@ function contextFor(root: RdxDialogRoot): RdxDialogRootContext {
         closeInteractionType: root.closeInteractionType.asReadonly(),
         nested: root.nested,
         nestedDialogOpen: root.nestedDialogOpen,
+        nestedOpenCount: root.nestedOpenCount.asReadonly(),
         setTitleId: (id: string | undefined) => root.titleId.set(id),
         setDescriptionId: (id: string | undefined) => root.descriptionId.set(id),
         registerTransitionElement: (element) => root.registerTransitionElement(element),

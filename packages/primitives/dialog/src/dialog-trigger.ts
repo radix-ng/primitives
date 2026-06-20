@@ -13,9 +13,8 @@ import { injectRdxDialogRootContext } from './dialog-root';
     host: {
         type: 'button',
         '[attr.aria-haspopup]': '"dialog"',
-        '[attr.aria-controls]': 'rootContext()?.contentId',
+        '[attr.aria-controls]': 'triggerInteraction.ariaControls()',
         '[attr.aria-expanded]': 'triggerInteraction.ariaExpanded()',
-        '[attr.data-state]': 'triggerInteraction.dataState()',
         '[attr.data-popup-open]': 'triggerInteraction.dataPopupOpen()',
         '[attr.disabled]': 'triggerInteraction.disabled() ? "" : undefined',
         '[id]': 'triggerId()',
@@ -30,7 +29,7 @@ export class RdxDialogTrigger {
     /**
      * Associates this trigger with a detached dialog root.
      */
-    readonly handle = input<RdxDialogHandle<any>>();
+    readonly handle = input<RdxDialogHandle<unknown>>();
 
     /**
      * Data associated with this trigger while it is active.

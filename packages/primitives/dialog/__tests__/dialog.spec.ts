@@ -226,14 +226,14 @@ describe('Dialog', () => {
     it('opens and closes from the trigger', () => {
         expect(trigger.getAttribute('aria-haspopup')).toBe('dialog');
         expect(trigger.getAttribute('aria-expanded')).toBe('false');
-        expect(trigger.getAttribute('data-state')).toBe('closed');
+        expect(trigger.hasAttribute('data-popup-open')).toBe(false);
 
         trigger.click();
         fixture.detectChanges();
 
         expect(fixture.componentInstance.open).toBe(true);
         expect(trigger.getAttribute('aria-expanded')).toBe('true');
-        expect(trigger.getAttribute('data-state')).toBe('open');
+        expect(trigger.hasAttribute('data-popup-open')).toBe(true);
 
         trigger.click();
         fixture.detectChanges();
@@ -306,6 +306,21 @@ describe('Dialog', () => {
         expect(dialog.getAttribute('aria-labelledby')).toBe(title.id);
         expect(dialog.getAttribute('aria-describedby')).toBe(description.id);
         expect(dialog.hasAttribute('data-open')).toBe(true);
+    });
+
+    it('exposes aria-controls only while the trigger owns the open dialog', () => {
+        // Closed: the popup is not in the DOM, so pointing at its id would be an invalid ARIA reference.
+        expect(trigger.hasAttribute('aria-controls')).toBe(false);
+
+        trigger.click();
+        fixture.detectChanges();
+
+        expect(trigger.getAttribute('aria-controls')).toBe(popup()!.id);
+
+        trigger.click();
+        fixture.detectChanges();
+
+        expect(trigger.hasAttribute('aria-controls')).toBe(false);
     });
 
     it('closes from the close button', () => {

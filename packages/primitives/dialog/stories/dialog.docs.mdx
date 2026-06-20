@@ -1,6 +1,6 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as Stories from './dialog.stories';
-import { RdxDialogPopup, RdxDialogPortal, RdxDialogRoot, RdxDialogTrigger } from '../index';
+import { RdxDialogBackdrop, RdxDialogPopup, RdxDialogPortal, RdxDialogRoot, RdxDialogTrigger } from '../index';
 
 <Meta title="Primitives/Dialog" />
 
@@ -22,7 +22,7 @@ It stays headless: styles and native CSS animations belong to the consumer.
 - ✅ Closes on Escape, outside pointer interaction, or an explicit close button.
 - ✅ Keeps the dialog open on outside clicks with `disablePointerDismissal`.
 - ✅ Traps and restores focus through the shared Focus Scope behavior.
-- ✅ Exposes state and transition attributes (`data-state`, `data-starting-style`, `data-ending-style`) for styling.
+- ✅ Exposes state and transition attributes (`data-open`, `data-closed`, `data-starting-style`, `data-ending-style`) for styling.
 - ✅ Keeps portal content mounted while CSS exit keyframes finish.
 - ✅ Links the popup to optional title and description parts for accessible labeling.
 - ✅ Supports multiple triggers, controlled `triggerId`, and detached triggers through a shared handle.
@@ -190,6 +190,15 @@ Control the dialog's `open` state from a menu item to launch it from a `Menu`.
 
 <ArgTypes of={RdxDialogTrigger} />
 
+**Data attributes**
+
+| Attribute         | Present when                                                |
+| ----------------- | ---------------------------------------------------------- |
+| `data-popup-open` | This trigger owns the currently open dialog.               |
+| `disabled`        | The trigger is disabled.                                   |
+
+`aria-controls` is set only while this trigger owns the open dialog (it points at the popup's id, which exists only then); `aria-expanded` reflects the same ownership; `aria-haspopup` is `"dialog"`.
+
 ### Portal
 
 `RdxDialogPortal` is a structural directive (`<ng-template rdxDialogPortal>`) that teleports the
@@ -202,15 +211,64 @@ backdrop and popup into `document.body` by default, or into the `container` elem
 `RdxDialogViewport` is an optional scrollable container placed inside the portal, around the popup.
 It reads everything from context and exposes no inputs.
 
+**Data attributes**
+
+| Attribute                 | Present when                                                       |
+| ------------------------- | ----------------------------------------------------------------- |
+| `data-open`               | The dialog is open.                                               |
+| `data-closed`             | The dialog is closed.                                             |
+| `data-starting-style`     | The enter transition is about to run.                            |
+| `data-ending-style`       | The exit transition is running.                                  |
+| `data-nested`             | This dialog is nested inside another dialog.                     |
+| `data-nested-dialog-open` | A dialog nested inside this one is open.                         |
+
 ### Popup
 
 `RdxDialogPopup` owns dialog semantics, dismissal events, scroll locking, and focus lifecycle events.
 
 <ArgTypes of={RdxDialogPopup} />
 
-### Backdrop, Title, Description, and Close
+**Data attributes**
+
+| Attribute                 | Present when                                                       |
+| ------------------------- | ----------------------------------------------------------------- |
+| `data-open`               | The dialog is open.                                               |
+| `data-closed`             | The dialog is closed.                                             |
+| `data-starting-style`     | The enter transition is about to run (first mounted frame).      |
+| `data-ending-style`       | The exit transition is running (kept mounted until it finishes). |
+| `data-nested`             | This dialog is nested inside another dialog.                     |
+| `data-nested-dialog-open` | A dialog nested inside this one is open.                         |
+
+The popup carries `role="dialog"` (`alertdialog` for the alert-dialog variant); `aria-modal="true"` is set only for a fully modal dialog; `aria-labelledby` / `aria-describedby` are wired automatically when `rdxDialogTitle` / `rdxDialogDescription` are present.
+
+**CSS variables**
+
+| Variable           | Description                                                  |
+| ------------------ | ----------------------------------------------------------- |
+| `--nested-dialogs` | Number of open dialogs nested directly inside this one, for depth-based stacking effects. |
+
+### Backdrop
+
+`RdxDialogBackdrop` is a decorative overlay (`role="presentation"`). A nested dialog renders no backdrop
+by default — set `forceRender` to opt back in.
+
+<ArgTypes of={RdxDialogBackdrop} />
+
+**Data attributes**
+
+| Attribute                 | Present when                                                       |
+| ------------------------- | ----------------------------------------------------------------- |
+| `data-open`               | The dialog is open.                                               |
+| `data-closed`             | The dialog is closed.                                             |
+| `data-starting-style`     | The enter transition is about to run.                            |
+| `data-ending-style`       | The exit transition is running.                                  |
+| `data-nested`             | This dialog is nested inside another dialog.                     |
+| `data-nested-dialog-open` | A dialog nested inside this one is open.                         |
+
+### Title, Description, and Close
 
 These parts read their behavior and state from context and do not expose additional inputs or outputs.
+`Close` is a native `button` that closes the dialog on click.
 
 ## Accessibility
 

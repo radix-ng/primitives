@@ -2439,11 +2439,11 @@
               "name": "disablePointerDismissal",
               "type": "boolean",
               "default": "false",
-              "description": "Determines whether the dialog should close on outside clicks."
+              "description": "Determines whether the dialog should close on outside clicks. For a non-modal dialog this also\nprevents the dialog from closing when focus moves outside of it."
             },
             {
               "name": "handle",
-              "type": "RdxDialogHandle<any>",
+              "type": "RdxDialogHandle<unknown>",
               "description": "Associates this root with detached trigger elements rendered outside of it."
             },
             {
@@ -2502,7 +2502,7 @@
             },
             {
               "name": "handle",
-              "type": "RdxDialogHandle<any>",
+              "type": "RdxDialogHandle<unknown>",
               "description": "Associates this trigger with a detached dialog root."
             },
             {
