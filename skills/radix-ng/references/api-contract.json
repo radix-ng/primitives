@@ -1848,8 +1848,8 @@
           "outputs": [
             {
               "name": "onInputValueChange",
-              "type": "string",
-              "description": "Emits when the input text changes."
+              "type": "RdxComboboxInputValueChange",
+              "description": "Emits before the input text changes; call `eventDetails.cancel()` to veto it."
             },
             {
               "name": "onItemHighlighted",
@@ -1868,8 +1868,8 @@
             },
             {
               "name": "onValueChange",
-              "type": "ComboboxValue | null",
-              "description": "Emits when the selection changes."
+              "type": "RdxComboboxValueChange",
+              "description": "Emits before the selection changes; call `eventDetails.cancel()` to veto it."
             }
           ],
           "twoWay": [

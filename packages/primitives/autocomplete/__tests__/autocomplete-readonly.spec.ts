@@ -92,6 +92,6 @@ describe('Autocomplete read-only value guard', () => {
         clearButton().click();
         await settle();
         expect(host.value()).toBe('');
-        expect(host.changes.at(-1)).toEqual({ value: '', reason: 'input-clear' });
+        expect(host.changes.at(-1)).toMatchObject({ value: '', reason: 'input-clear' });
     });
 });

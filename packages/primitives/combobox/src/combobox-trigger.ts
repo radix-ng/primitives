@@ -1,4 +1,4 @@
-import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
+import { DestroyRef, Directive, ElementRef, inject, signal } from '@angular/core';
 import { RdxFloatingInsideElement } from '@radix-ng/primitives/dismissable-layer';
 import { injectComboboxRootContext } from './combobox-root';
 
@@ -33,8 +33,12 @@ import { injectComboboxRootContext } from './combobox-root';
             'rootContext.inputLayout() === "inside" && rootContext.requiredState() ? "true" : undefined',
         '[attr.disabled]': 'rootContext.disabledState() ? "" : undefined',
         '[attr.data-popup-open]': 'rootContext.open() ? "" : undefined',
+        '[attr.data-pressed]': 'pressed() ? "" : undefined',
         '[attr.data-disabled]': 'rootContext.disabledState() ? "" : undefined',
         '(pointerdown)': 'onPointerDown($event)',
+        '(pointerup)': 'pressed.set(false)',
+        '(pointercancel)': 'pressed.set(false)',
+        '(pointerleave)': 'pressed.set(false)',
         '(click)': 'onClick($event)',
         '(keydown)': 'onKeydown($event)'
     }
@@ -42,6 +46,9 @@ import { injectComboboxRootContext } from './combobox-root';
 export class RdxComboboxTrigger {
     protected readonly rootContext = injectComboboxRootContext();
     private readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+
+    /** Whether the trigger is currently pressed (pointer down), for Base UI's `data-pressed`. */
+    protected readonly pressed = signal(false);
 
     constructor() {
         this.rootContext.registerTrigger(this.element);
@@ -51,6 +58,9 @@ export class RdxComboboxTrigger {
     // Record whether the opening interaction is touch, so the popup can keep focus off the inner input
     // (and Android's virtual keyboard closed) when the input lives inside the popup.
     onPointerDown(event: PointerEvent): void {
+        if (!this.rootContext.disabledState()) {
+            this.pressed.set(true);
+        }
         this.rootContext.setOpenedByTouch(event.pointerType === 'touch');
     }
 

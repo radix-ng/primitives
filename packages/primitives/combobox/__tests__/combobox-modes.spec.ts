@@ -76,7 +76,7 @@ describe('Combobox selectionMode / autoHighlight', () => {
 
         it('does not commit a value, fills the input, closes, and emits an activation', async () => {
             const activations: unknown[] = [];
-            root().onValueChange.subscribe((v) => activations.push(v));
+            root().onValueChange.subscribe((v) => activations.push(v.value));
             host.open.set(true);
             await settle();
             items()[1].click();

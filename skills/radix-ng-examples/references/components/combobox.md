@@ -476,7 +476,7 @@ interface DirectoryUser {
             [itemToStringLabel]="labelOf"
             [filter]="null"
             (onValueChange)="onValueChange()"
-            (onInputValueChange)="search($event)"
+            (onInputValueChange)="search($event.value)"
             (onOpenChangeComplete)="onOpenChangeComplete($event)"
             isItemEqualToValue="id"
             rdxComboboxRoot
@@ -786,8 +786,8 @@ interface DirectoryUser {
             [items]="items()"
             [itemToStringLabel]="labelOf"
             [filter]="null"
-            (onValueChange)="onValueChange($event)"
-            (onInputValueChange)="search($event)"
+            (onValueChange)="onValueChange($event.value)"
+            (onInputValueChange)="search($event.value)"
             (onOpenChangeComplete)="onOpenChangeComplete($event)"
             multiple
             rdxComboboxRoot
@@ -1113,8 +1113,8 @@ const CREATE = '__rdx_create__';
         <div
             [(value)]="value"
             [(open)]="open"
-            (onInputValueChange)="query.set($event)"
-            (onValueChange)="onValueChange($event)"
+            (onInputValueChange)="query.set($event.value)"
+            (onValueChange)="onValueChange($event.value)"
             multiple
             rdxComboboxRoot
         >
@@ -1329,7 +1329,7 @@ import { _importsCombobox } from '../index';
     template: `
         <div
             class="flex w-64 flex-col gap-2"
-            (onValueChange)="run($event)"
+            (onValueChange)="run($event.value)"
             selectionMode="none"
             autoHighlight="always"
             rdxComboboxRoot
@@ -1888,21 +1888,72 @@ via `aria-activedescendant` and `data-highlighted`.
 The context provider. Owns selection, input text, open state, filtering, and navigation, and
 implements `ControlValueAccessor`.
 
+`onValueChange` emits `{ value, reason, eventDetails }` and `onInputValueChange` emits
+`{ value, eventDetails }`; both are cancelable via `eventDetails.cancel()`. The root host exposes
+`data-disabled`.
+
 ### RdxComboboxInput
 
 The text input. Carries `role="combobox"`, `aria-expanded`, `aria-controls`, `aria-autocomplete`,
-and `aria-activedescendant`, and inherits Field state. Exposes `data-popup-open`, `data-list-empty`,
-and `data-placeholder`.
+and `aria-activedescendant`, and inherits Field state.
+
+**Data attributes**
+
+| Attribute          | Present when                          |
+| ------------------ | ------------------------------------- |
+| `data-popup-open`  | The popup is open.                    |
+| `data-list-empty`  | No options match the query.           |
+| `data-placeholder` | No value is selected.                 |
+| `data-filled`      | A value is selected.                  |
+| `data-disabled`    | The input is disabled.                |
+| `data-invalid` / `data-valid` | Validity state (via `Field`). |
+| `data-required`    | The control is required.              |
+| `data-focused`     | The input is focused (via `Field`).   |
 
 ### RdxComboboxItem
 
 A selectable option. Receives a `value`, an optional `textValue` (defaults to its text content,
-excluding the indicator), and `disabled`. Exposes `data-selected`, `data-highlighted`, `data-disabled`.
+excluding the indicator), and `disabled`.
+
+**Data attributes**
+
+| Attribute          | Present when                                         |
+| ------------------ | --------------------------------------------------- |
+| `data-selected`    | The item is selected.                               |
+| `data-highlighted` | The item is highlighted (keyboard / hover).         |
+| `data-disabled`    | The item is disabled.                               |
+| `data-hidden`      | The item is filtered out (a deliberate Radix extra).|
 
 ### RdxComboboxPositioner
 
 Positions the popup relative to the input. Accepts the popper positioning inputs (`side`,
 `sideOffset`, `align`, `avoidCollisions`, …).
+
+**Data attributes**: `data-side`, `data-align`, `data-anchor-hidden`.
+
+**CSS variables**
+
+| Variable                                   | Description                                          |
+| ------------------------------------------ | --------------------------------------------------- |
+| `--anchor-width` / `--anchor-height`       | Size of the anchor (input), for matching popup width. |
+| `--available-width` / `--available-height` | Space before the collision boundary.                |
+| `--transform-origin`                       | Origin to scale/zoom the popup from.                |
+
+### RdxComboboxPopup
+
+The popup surface (composes the popper content + dismissable layer). Does not trap focus.
+
+**Data attributes**
+
+| Attribute             | Present when                                          |
+| --------------------- | ---------------------------------------------------- |
+| `data-open`           | The popup is open.                                   |
+| `data-closed`         | The popup is closed.                                 |
+| `data-empty`          | No options match the query.                          |
+| `data-side`           | Resolved side — `top` / `right` / `bottom` / `left`. |
+| `data-align`          | Resolved alignment — `start` / `center` / `end`.     |
+| `data-starting-style` | The enter transition is about to run.               |
+| `data-ending-style`   | The exit transition is running.                     |
 
 ### RdxComboboxValue
 
@@ -1919,7 +1970,7 @@ A selected-value chip in `multiple` mode. Provide its `value`.
 `RdxComboboxAnchor`, `RdxComboboxInputGroup` (optional wrapper mirroring state via `data-*`),
 `RdxComboboxLabel` (registers an `aria-labelledby` target), `RdxComboboxTrigger`, `RdxComboboxClear`
 (also takes a `disabled` input), `RdxComboboxIcon`, `RdxComboboxPortal` (structural; re-exposes
-`container`), `RdxComboboxBackdrop` (modal overlay), `RdxComboboxPopup`,
+`container`), `RdxComboboxBackdrop` (modal overlay; `data-open` / `data-closed`),
 `RdxComboboxArrow` (re-exposes `width` / `height`), `RdxComboboxList` (exposes `data-empty` while no
 options match, `role="grid"` when the root has `grid`), `RdxComboboxRow` (`role="row"` for grid lists),
 `RdxComboboxItemIndicator`,

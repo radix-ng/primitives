@@ -14,7 +14,7 @@ import { _importsCombobox } from '../index';
     template: `
         <div
             class="flex w-64 flex-col gap-2"
-            (onValueChange)="run($event)"
+            (onValueChange)="run($event.value)"
             selectionMode="none"
             autoHighlight="always"
             rdxComboboxRoot

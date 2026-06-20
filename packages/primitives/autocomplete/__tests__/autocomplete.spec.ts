@@ -196,15 +196,15 @@ describe('Autocomplete', () => {
         it('reports the change reason for typing, selection, and clear', async () => {
             type('ap');
             await settle();
-            expect(host.changes.at(-1)).toEqual({ value: 'ap', reason: 'input-change' });
+            expect(host.changes.at(-1)).toMatchObject({ value: 'ap', reason: 'input-change' });
 
             visibleItems()[0].click();
             await settle();
-            expect(host.changes.at(-1)).toEqual({ value: 'Apple', reason: 'item-press' });
+            expect(host.changes.at(-1)).toMatchObject({ value: 'Apple', reason: 'item-press' });
 
             fixture.nativeElement.querySelector('[rdxAutocompleteClear]').click();
             await settle();
-            expect(host.changes.at(-1)).toEqual({ value: '', reason: 'input-clear' });
+            expect(host.changes.at(-1)).toMatchObject({ value: '', reason: 'input-clear' });
         });
     });
 

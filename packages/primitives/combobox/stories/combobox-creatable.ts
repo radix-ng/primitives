@@ -20,8 +20,8 @@ const CREATE = '__rdx_create__';
         <div
             [(value)]="value"
             [(open)]="open"
-            (onInputValueChange)="query.set($event)"
-            (onValueChange)="onValueChange($event)"
+            (onInputValueChange)="query.set($event.value)"
+            (onValueChange)="onValueChange($event.value)"
             multiple
             rdxComboboxRoot
         >

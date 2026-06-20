@@ -28,7 +28,7 @@ interface DirectoryUser {
             [itemToStringLabel]="labelOf"
             [filter]="null"
             (onValueChange)="onValueChange()"
-            (onInputValueChange)="search($event)"
+            (onInputValueChange)="search($event.value)"
             (onOpenChangeComplete)="onOpenChangeComplete($event)"
             isItemEqualToValue="id"
             rdxComboboxRoot

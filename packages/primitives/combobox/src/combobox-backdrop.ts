@@ -14,7 +14,6 @@ import { injectComboboxRootContext } from './combobox-root';
     host: {
         // A decorative overlay — Base UI marks it `role="presentation"` (excluded from the a11y tree).
         role: 'presentation',
-        '[attr.data-state]': 'rootContext.open() ? "open" : "closed"',
         '[attr.data-open]': 'rootContext.open() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.open() ? undefined : ""'
     }

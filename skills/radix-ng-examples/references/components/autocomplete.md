@@ -112,7 +112,7 @@ export class AutocompleteDefault {
 - ✅ `limit` caps how many matches show; arrow-key navigation never fights a resting mouse cursor.
 - ✅ External virtualization: `virtualized` + `[items]` drives index navigation and exposes `filteredItems()`.
 - ✅ Forms: `ControlValueAccessor` on the root (value = input string), plus Field integration on the input.
-- ✅ Headless — state via `data-popup-open`, `data-list-empty`, `data-highlighted`, `data-selected`, `data-disabled`.
+- ✅ Headless — state via `data-popup-open`, `data-list-empty`, `data-highlighted`, `data-disabled` (no `data-selected` — autocomplete does not commit a selection).
 
 ## Import
 
@@ -1749,6 +1749,7 @@ focus stays on the input; the active option is referenced with `aria-activedesce
 | `ArrowDown`          | Open the popup (highlighting the first item), or move the highlight to the next item. |
 | `ArrowUp`            | Open the popup (highlighting the last item), or move the highlight to the previous item. |
 | `ArrowLeft` / `ArrowRight` | In `grid` mode, move within / across cells. Otherwise move the text caret.       |
+| `Home` / `End`       | In `grid` mode, jump the highlight to the first / last cell.                          |
 | `Enter`              | Select the highlighted item, or close the popup and submit the form.                  |
 | `Escape`            | Close the popup.                                                                       |
 | `Tab`                | Close the popup and move focus to the next element.                                   |
@@ -1759,13 +1760,22 @@ focus stays on the input; the active option is referenced with `aria-activedesce
 
 The root. Owns the value (the input string), open state, filtering, inline completion, and navigation.
 
+`onValueChange` emits `{ value, reason, eventDetails }` and is cancelable via `eventDetails.cancel()`.
+
 ### RdxAutocompleteInput
 
 The text input. Holds focus; in `both` / `inline` modes it shows the inline completion.
 
+**Data attributes**: `data-popup-open`, `data-list-empty`, `data-placeholder`, `data-filled`,
+`data-disabled`, `data-invalid` / `data-valid`, `data-required`, `data-focused`.
+
 ### RdxAutocompleteItem
 
 A selectable suggestion. `value` is optional and defaults to the option's text.
+
+**Data attributes**: `data-highlighted`, `data-disabled` (no `data-selected` — autocomplete does not
+commit a selection). The popup exposes `data-open` / `data-closed` / `data-empty` / `data-side` /
+`data-align` / `data-starting-style` / `data-ending-style`.
 
 ### RdxAutocompletePositioner
 

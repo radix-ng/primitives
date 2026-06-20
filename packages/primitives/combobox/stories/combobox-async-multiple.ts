@@ -27,8 +27,8 @@ interface DirectoryUser {
             [items]="items()"
             [itemToStringLabel]="labelOf"
             [filter]="null"
-            (onValueChange)="onValueChange($event)"
-            (onInputValueChange)="search($event)"
+            (onValueChange)="onValueChange($event.value)"
+            (onInputValueChange)="search($event.value)"
             (onOpenChangeComplete)="onOpenChangeComplete($event)"
             multiple
             rdxComboboxRoot

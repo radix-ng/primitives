@@ -76,6 +76,24 @@ interface RdxComboboxOpenChangeTransaction {
     shouldPreventUnmountOnClose: () => boolean;
 }
 
+/** Why the selected value changed (Base UI value-change `reason`). */
+export type RdxComboboxValueChangeReason = 'item-press' | 'clear-press' | 'chip-remove-press' | 'input-clear' | 'none';
+
+export type RdxComboboxValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxComboboxValueChangeReason>;
+
+/** Payload of {@link RdxComboboxRoot.onValueChange} — cancelable via `eventDetails.cancel()`. */
+export interface RdxComboboxValueChange {
+    value: ComboboxValue | null;
+    reason: RdxComboboxValueChangeReason;
+    eventDetails: RdxComboboxValueChangeEventDetails;
+}
+
+/** Payload of {@link RdxComboboxRoot.onInputValueChange} — cancelable via `eventDetails.cancel()`. */
+export interface RdxComboboxInputValueChange {
+    value: string;
+    eventDetails: RdxComboboxValueChangeEventDetails;
+}
+
 // Re-exported so consumers (and the autocomplete engine bridge) keep importing these from the
 // combobox entry point; the definitions now live with the shared engine.
 export type {
@@ -352,11 +370,11 @@ export class RdxComboboxRoot implements ControlValueAccessor {
     /** Converts a value to its display label. Defaults to the matching item's text. */
     readonly itemToStringLabel = input<(value: AcceptableValue) => string>();
 
-    /** Emits when the selection changes. */
-    readonly onValueChange = output<ComboboxValue | null>();
+    /** Emits before the selection changes; call `eventDetails.cancel()` to veto it. */
+    readonly onValueChange = output<RdxComboboxValueChange>();
 
-    /** Emits when the input text changes. */
-    readonly onInputValueChange = output<string>();
+    /** Emits before the input text changes; call `eventDetails.cancel()` to veto it. */
+    readonly onInputValueChange = output<RdxComboboxInputValueChange>();
 
     /** Emits when the popup opens or closes. */
     readonly onOpenChange = output<RdxComboboxOpenChange>();
@@ -589,11 +607,19 @@ export class RdxComboboxRoot implements ControlValueAccessor {
         this.markAsTouched();
     }
 
-    /** Updates the input text from user typing (marks the query as a fresh user query). */
-    setInputValue(value: string): void {
+    /** Updates the input text from user typing (marks the query as a fresh user query). Cancelable. */
+    setInputValue(value: string, event: Event = new Event('combobox.input-value-change')): void {
+        const { eventDetails } = createCancelableChangeEventDetails(
+            'none',
+            event,
+            this.resolveOpenChangeTrigger(event)
+        );
+        this.onInputValueChange.emit({ value, eventDetails });
+        if (eventDetails.isCanceled()) {
+            return;
+        }
         this.inputValue.set(value);
         this.typed.set(true);
-        this.onInputValueChange.emit(value);
         // Base UI: emptying the field clears a single selection — but only when the input is OUTSIDE the
         // popup. With the input inside the popup, the search box and the committed value are independent,
         // so clearing the search must not deselect. (multiple keeps its chips; `none` has no committed
@@ -604,7 +630,7 @@ export class RdxComboboxRoot implements ControlValueAccessor {
             !isNullish(this.value()) &&
             this.engine.inputLayout() !== 'inside'
         ) {
-            this.commitValue(null);
+            this.commitValue(null, 'input-clear', event);
         }
         // Auto-highlight the first match as the query changes (deferred so it lands after items mount).
         if (this.autoHighlightMode() !== 'off') {
@@ -612,11 +638,15 @@ export class RdxComboboxRoot implements ControlValueAccessor {
         }
     }
 
-    /** Sets the input text programmatically (a selection label / revert) — not a user query. */
+    /**
+     * Sets the input text programmatically (a selection label / revert) — not a user query. Emits
+     * `onInputValueChange` for observability but is not vetoable (it is a derived sync, not a user edit).
+     */
     private setLabel(value: string): void {
         this.inputValue.set(value);
         this.typed.set(false);
-        this.onInputValueChange.emit(value);
+        const { eventDetails } = createCancelableChangeEventDetails('none', new Event('combobox.input-value-change'));
+        this.onInputValueChange.emit({ value, eventDetails });
     }
 
     /** Resets the input text to the current selection's label (single mode) or empty. */
@@ -669,8 +699,16 @@ export class RdxComboboxRoot implements ControlValueAccessor {
 
         if (this.mode() === 'none') {
             // No value is committed; `onValueChange` fires as a pointer/keyboard activation signal so
-            // command-palette consumers can react. Optionally fill the input, then close.
-            this.onValueChange.emit(value);
+            // command-palette consumers can react (cancelable). Optionally fill the input, then close.
+            const { eventDetails } = createCancelableChangeEventDetails(
+                'item-press',
+                event,
+                this.resolveOpenChangeTrigger(event)
+            );
+            this.onValueChange.emit({ value, reason: 'item-press', eventDetails });
+            if (eventDetails.isCanceled()) {
+                return;
+            }
             if (this.fillInputOnItemPress()) {
                 this.setLabel(textValue);
             }
@@ -688,14 +726,18 @@ export class RdxComboboxRoot implements ControlValueAccessor {
             } else {
                 current.splice(index, 1);
             }
-            this.commitValue(current);
+            if (!this.commitValue(current, 'item-press', event)) {
+                return;
+            }
             this.setLabel('');
             // Keep the input focused for adding more values — unless the consumer moved focus.
             if (typeof document === 'undefined' || document.activeElement === activeBefore) {
                 this.engine.focusInput();
             }
         } else {
-            this.commitValue(value);
+            if (!this.commitValue(value, 'item-press', event)) {
+                return;
+            }
             this.setLabel(textValue);
             this.closePopup(false, 'item-press', event);
             this.engine.restoreFocusAfterSelect(activeBefore);
@@ -733,7 +775,7 @@ export class RdxComboboxRoot implements ControlValueAccessor {
         // In `none` mode there is no committed value to clear — only the input text. Otherwise reset
         // the selection. Also drop any highlight (Base UI resets the active/selected indices here).
         if (this.mode() !== 'none') {
-            this.commitValue(this.multiple() ? [] : null);
+            this.commitValue(this.multiple() ? [] : null, 'clear-press');
         }
         this.setLabel('');
         this.engine.clearHighlightState();
@@ -747,7 +789,7 @@ export class RdxComboboxRoot implements ControlValueAccessor {
         const next = (this.value() as AcceptableValue[]).filter(
             (v) => !itemsEqual(v, value, this.isItemEqualToValue())
         );
-        this.commitValue(next);
+        this.commitValue(next, 'chip-remove-press');
     }
 
     removeLastValue(): void {
@@ -756,7 +798,7 @@ export class RdxComboboxRoot implements ControlValueAccessor {
         }
         const current = this.value() as AcceptableValue[];
         if (current.length > 0) {
-            this.commitValue(current.slice(0, -1));
+            this.commitValue(current.slice(0, -1), 'chip-remove-press');
         }
     }
 
@@ -785,13 +827,26 @@ export class RdxComboboxRoot implements ControlValueAccessor {
      * chip removal, Backspace). Read-only / disabled comboboxes never mutate here — programmatic form
      * writes go through {@link writeValue}, which is intentionally not guarded. (ADR 0014, Finding 1.)
      */
-    private commitValue(value: ComboboxValue | null): void {
+    private commitValue(
+        value: ComboboxValue | null,
+        reason: RdxComboboxValueChangeReason = 'none',
+        event: Event = new Event('combobox.value-change')
+    ): boolean {
         if (this.disabledState() || this.readOnly()) {
-            return;
+            return false;
+        }
+        const { eventDetails } = createCancelableChangeEventDetails(
+            reason,
+            event,
+            this.resolveOpenChangeTrigger(event)
+        );
+        this.onValueChange.emit({ value, reason, eventDetails });
+        if (eventDetails.isCanceled()) {
+            return false;
         }
         this.value.set(value);
-        this.onValueChange.emit(value);
         this.onChange?.(value);
+        return true;
     }
 
     private createOpenChangeEvent(

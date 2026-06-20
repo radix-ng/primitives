@@ -24,9 +24,9 @@ import { injectComboboxRootContext } from './combobox-root';
         // a presentational wrapper around the `listbox` (the List part owns the listbox role).
         tabindex: '-1',
         '[attr.role]': 'rootContext.inputLayout() === "inside" ? "dialog" : "presentation"',
-        '[attr.data-state]': 'rootContext.open() ? "open" : "closed"',
         '[attr.data-open]': 'rootContext.open() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.open() ? undefined : ""',
+        '[attr.data-empty]': 'rootContext.visibleCount() === 0 ? "" : undefined',
         '[attr.data-starting-style]': 'rootContext.transitionStatus() === "starting" ? "" : undefined',
         '[attr.data-ending-style]': 'rootContext.transitionStatus() === "ending" ? "" : undefined',
         '(focusin)': 'onFocusIn($event)'

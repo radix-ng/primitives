@@ -76,6 +76,8 @@ export interface AutocompleteValueChangeDetails {
     value: string;
     /** What caused the change (e.g. skip `'item-press'` to avoid overwriting an external value). */
     reason: AutocompleteChangeReason;
+    /** Cancelable details — call `eventDetails.cancel()` to veto the change. */
+    eventDetails: RdxCancelableChangeEventDetails<AutocompleteChangeReason>;
 }
 
 /** Re-exported for consumers: the highlight reason and payload shape are shared with the combobox engine. */
@@ -720,14 +722,26 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
         this.onTouched?.();
     }
 
-    private commitValue(value: string, reason: AutocompleteChangeReason): void {
+    private commitValue(
+        value: string,
+        reason: AutocompleteChangeReason,
+        event: Event = new Event('autocomplete.value-change')
+    ): void {
         // Mirror combobox's guarded commit: never mutate the value while disabled or read-only
         // (the input is the form value here, so Clear / item-press / typing must all be inert).
         if (this.disabledState() || this.readOnly()) {
             return;
         }
+        const { eventDetails } = createCancelableChangeEventDetails(
+            reason,
+            event,
+            this.resolveOpenChangeTrigger(event)
+        );
+        this.onValueChange.emit({ value, reason, eventDetails });
+        if (eventDetails.isCanceled()) {
+            return;
+        }
         this.value.set(value);
-        this.onValueChange.emit({ value, reason });
         this.onChange?.(value);
     }
 

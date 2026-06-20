@@ -26,9 +26,9 @@ import { RdxAutocompleteRoot } from './autocomplete-root';
         // a presentational wrapper around the `listbox` (the List part owns the listbox role).
         tabindex: '-1',
         '[attr.role]': 'root.inputLayout() === "inside" ? "dialog" : "presentation"',
-        '[attr.data-state]': 'root.open() ? "open" : "closed"',
         '[attr.data-open]': 'root.open() ? "" : undefined',
         '[attr.data-closed]': 'root.open() ? undefined : ""',
+        '[attr.data-empty]': 'root.visibleCount() === 0 ? "" : undefined',
         '[attr.data-starting-style]': 'root.transitionStatus() === "starting" ? "" : undefined',
         '[attr.data-ending-style]': 'root.transitionStatus() === "ending" ? "" : undefined',
         '(focusin)': 'onFocusIn($event)'
