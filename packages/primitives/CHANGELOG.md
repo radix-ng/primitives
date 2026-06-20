@@ -1,3 +1,13 @@
+## 1.0.5 (2026-06-20)
+
+### 🩹 Fixes
+
+- **composite:** match Base UI native-input handling in composite root ([f3aa7690](https://github.com/radix-ng/primitives/commit/f3aa7690))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 1.0.4 (2026-06-19)
 
 ### 🚀 Features
