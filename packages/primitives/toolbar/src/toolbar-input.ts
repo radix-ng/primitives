@@ -29,10 +29,11 @@ import { injectToolbarGroupContext, injectToolbarRootContext } from './toolbar-c
         '[attr.data-orientation]': 'rootContext.orientation()',
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
         '[attr.data-focusable]': 'focusableWhenDisabled() ? "" : undefined',
-        // A non-native-button control conveys disabled via `aria-disabled` only (Base UI
-        // `useFocusableWhenDisabled` with `isNativeButton: false` never sets the native `disabled`
-        // attribute). Roving removal for non-focusable-when-disabled inputs goes through the composite
-        // root's `disabledIndices` (driven by the metadata below). Pointer interaction is blocked here.
+        // The host is always a native `<input>` (selector-pinned), i.e. not a native button, so it
+        // conveys disabled via `aria-disabled` only — never the native `disabled` attribute, which would
+        // drop a disabled-but-focusable item out of the roving tab order. Roving removal for
+        // non-focusable-when-disabled inputs goes through the composite root's `disabledIndices` (driven
+        // by the metadata below); pointer interaction is blocked in `onInteraction`.
         '[attr.aria-disabled]': 'isDisabled() ? "true" : undefined',
         '(click)': 'onInteraction($event)',
         '(pointerdown)': 'onInteraction($event)'
