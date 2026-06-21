@@ -1,4 +1,4 @@
-import { booleanAttribute, computed, Directive, effect, inject, input, model, output } from '@angular/core';
+import { booleanAttribute, computed, Directive, effect, inject, input, model, output, signal } from '@angular/core';
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
@@ -6,7 +6,8 @@ import {
     injectId,
     RdxCancelableChangeEventDetails,
     RdxControlValueAccessor,
-    RdxFormCheckboxControl
+    RdxFormCheckboxControl,
+    RdxValidationError
 } from '@radix-ng/primitives/core';
 import { provideSwitchContext, RdxSwitchContext } from './switch-context';
 
@@ -31,7 +32,7 @@ const context = (): RdxSwitchContext => {
         value: root.submitValue,
         ariaLabel: root.ariaLabel,
         ariaLabelledBy: root.ariaLabelledBy,
-        markAsTouched: () => cva.markAsTouched()
+        markAsTouched: () => root.markAsTouched()
     };
 };
 
@@ -57,16 +58,21 @@ const context = (): RdxSwitchContext => {
         '[attr.aria-checked]': 'checkedState()',
         '[attr.aria-required]': 'required() ? "true" : undefined',
         '[attr.aria-readonly]': 'readonly() ? "true" : undefined',
+        '[attr.aria-invalid]': 'invalidState() ? "true" : undefined',
         '[attr.data-checked]': 'checkedState() ? "" : undefined',
         '[attr.data-unchecked]': 'checkedState() ? undefined : ""',
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
         '[attr.data-readonly]': 'readonly() ? "" : undefined',
         '[attr.data-required]': 'required() ? "" : undefined',
+        '[attr.data-invalid]': 'invalidState() ? "" : undefined',
+        '[attr.data-valid]': 'invalidState() ? undefined : ""',
+        '[attr.data-touched]': 'touchedState() ? "" : undefined',
+        '[attr.data-dirty]': 'dirtyState() ? "" : undefined',
         // Native `<button rdxSwitchRoot>` → native `disabled` (Base UI's `nativeButton: true` path in
         // `useFocusableWhenDisabled`). The hidden `[rdxSwitchInput]` is also disabled for form exclusion.
         '[attr.disabled]': 'isDisabled() ? "" : undefined',
         '(click)': 'toggle($event)',
-        '(blur)': 'cva.markAsTouched()'
+        '(blur)': 'markAsTouched()'
     }
 })
 export class RdxSwitchRoot implements RdxFormCheckboxControl {
@@ -110,6 +116,18 @@ export class RdxSwitchRoot implements RdxFormCheckboxControl {
      */
     readonly required = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /** Whether the switch is invalid. A non-empty {@link errors} list also marks it invalid. */
+    readonly invalid = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /** Whether the switch has been touched. A `model()` so Signal Forms can write it; set on blur. */
+    readonly touched = model<boolean>(false);
+
+    /** Whether the checked state changed from its initial value. Merged with internal tracking. */
+    readonly dirty = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /** Validation errors for the switch. A non-empty list marks it invalid. */
+    readonly errors = input<readonly RdxValidationError[]>([]);
+
     /** Name of the hidden form input rendered by `[rdxSwitchInput]`. */
     readonly name = input<string>();
 
@@ -131,10 +149,21 @@ export class RdxSwitchRoot implements RdxFormCheckboxControl {
     /** Event handler called when the checked state of the switch changes. */
     readonly onCheckedChange = output<RdxSwitchCheckedChangeEvent>();
 
+    /** Emits on blur, notifying Signal Forms the switch was touched. */
+    readonly touch = output<void>();
+
     /** @ignore */
     readonly checkedState = computed(() => !!this.cva.value());
     /** @ignore */
     protected readonly isDisabled = computed(() => !!this.cva.disabled());
+
+    private readonly dirtyValue = signal(false);
+    /** @ignore Invalid when the `invalid` input is set or the `errors` list is non-empty. */
+    readonly invalidState = computed(() => this.invalid() || (this.errors()?.length ?? 0) > 0);
+    /** @ignore */
+    readonly touchedState = computed(() => this.touched());
+    /** @ignore */
+    readonly dirtyState = computed(() => this.dirty() || this.dirtyValue());
 
     constructor() {
         // Apply the uncontrolled `defaultChecked` once. `input()` values are not bound at field-init,
@@ -149,6 +178,16 @@ export class RdxSwitchRoot implements RdxFormCheckboxControl {
                 this.cva.setValue(defaultChecked);
             }
         });
+    }
+
+    /**
+     * Mark the switch touched — CVA for Reactive forms, plus the `touched` model + `touch` output for
+     * Signal Forms. Called on blur of the root button or the hidden input.
+     */
+    markAsTouched(): void {
+        this.cva.markAsTouched();
+        this.touched.set(true);
+        this.touch.emit();
     }
 
     /** @ignore Toggles the checked state unless disabled or read-only. */
@@ -171,5 +210,6 @@ export class RdxSwitchRoot implements RdxFormCheckboxControl {
 
         this.checked.set(next);
         this.cva.setValue(next);
+        this.dirtyValue.set(true);
     }
 }

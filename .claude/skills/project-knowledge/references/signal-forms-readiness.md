@@ -14,7 +14,7 @@ Angular 21 today.
 ## Background
 
 Signal Forms is a **parallel mechanism to `ControlValueAccessor`**, not a
-replacement that we plug into. The `[field]` directive discovers the control on
+replacement that we plug into. The `[formField]` directive discovers the control on
 its host, detects which interface it structurally implements, and binds form
 state through signals:
 
@@ -41,10 +41,13 @@ Both extend `FormUiControl`, which adds optional state as plain signals:
 > (`ModelSignal` extends `InputSignalWithTransform`, so it type-checks as the 22
 > input; each runtime listens to its own notification). 22 also adds an optional
 > **`reset(): void`** method, `markAsTouched()` now marks **descendants** by
-> default, and — strategically big — **`FormValueControl` now interops with
-> Reactive and template-driven forms without CVA**. The two interfaces remain
-> mutually exclusive at the type level (`checked?: undefined` /
-> `value?: undefined`).
+> default. **Correction (2026-06-21):** an earlier note here claimed `FormValueControl`
+> interops with Reactive / template-driven forms _without_ CVA — that is **wrong**
+> (verified against angular.dev/guide/forms/signals/custom-controls): a control
+> implementing only `FormValueControl` / `FormCheckboxControl` still needs
+> `ControlValueAccessor` for Reactive / template-driven binding. This is exactly why
+> controls stay **dual** (CVA + Signal Forms) — see ADR 0018. The two interfaces remain
+> mutually exclusive at the type level (`checked?: undefined` / `value?: undefined`).
 
 CVA stays for Reactive/Template forms; a control can implement **both** CVA and
 `FormValueControl`/`FormCheckboxControl` at once, enabling additive migration.
@@ -170,13 +173,25 @@ checkedState() ? 'checked' : 'unchecked'` (a `state` computed kept as an interna
 
 ## Readiness ranking
 
-- 🟢 **input — fully conformant and runtime-verified** (batch #4 pilot complete:
-  entire optional `FormUiControl` surface, `touched` as model; bound end-to-end
-  by the spike spec).
-- 🟢 **radio, number-field, switch, checkbox** — `implements` applied and
-  compiles. radio/number-field via prep #3; **switch** via the `value`
-  split (#1); **checkbox** via the `value` split (#1) + `indeterminate` split (#2).
-  Still missing the batch-#4 optional members — copy the input pilot pattern.
+- 🟢 **input, radio, checkbox, switch, number-field — fully conformant** (batch #4
+  complete: optional `FormUiControl` surface — `invalid` / `errors` / `touched`
+  model + `touch` output / `dirty`, reflected as `data-*` + `aria-invalid`; Signal
+  Forms value binding verified in specs). Per-control notes:
+  - **input** — runtime-verified by the spike; native-input archetype.
+  - **radio** — group root; `touched` set + `touch` emitted on `focusout`, `dirty`
+    tracked on select.
+  - **checkbox** — state on both the root and `rdxCheckboxButton` (`aria-invalid` on
+    the button); `touched` + `touch` and `dirty` set on toggle (visible control is the
+    button, so blur is unreliable — interaction-based, matching the CVA `markAsTouched`).
+  - **switch** — root **is** the button (role=switch), so `aria-invalid` sits there;
+    unified `markAsTouched()` fires the CVA + `touched` model + `touch` output on blur
+    (root button and the hidden input), `dirty` tracked on toggle.
+  - **number-field** — `div` root (role=group); `data-*` on the root and input,
+    `aria-invalid` on the input (combined with the existing required+empty heuristic);
+    `markAsTouched()` on input blur, `dirty` tracked in `applyValue`.
+
+All five keep CVA (dual: Reactive/template-driven **and** Signal Forms).
+
 - 🟡 **select, combobox, autocomplete, toggle-group, checkbox-group, date/time-field, editable, slider** — need `invalid/errors/touched/dirty` (+ `required/name` where missing; slider may also add optional `required`/`readonly`). Copy the input pilot pattern. **combobox**/**autocomplete** already ship CVA and the `value` model (autocomplete's value is the input string; combobox keeps a separate `inputValue`), so they are a clean `FormValueControl` target — only the batch-#4 optional surface is missing.
 - 🔴 none of the structural blockers remain — what's left is the homogeneous
   `invalid/errors/touched/dirty` batch (collisions #4) across the 🟡 controls.

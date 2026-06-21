@@ -19,7 +19,8 @@ import {
     NumberInput,
     RdxCancelableChangeEventDetails,
     RdxControlValueAccessor,
-    RdxFormValueControl
+    RdxFormValueControl,
+    RdxValidationError
 } from '@radix-ng/primitives/core';
 import { provideNumberFieldRootContext } from './number-field-context';
 import { numberOrUndefined, toValidatedNumber, useNumberFormatter, useNumberParser } from './number-field.utils';
@@ -62,6 +63,10 @@ export interface RdxNumberFieldValueChangeEvent {
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
         '[attr.data-readonly]': 'readonly() ? "" : undefined',
         '[attr.data-required]': 'required() ? "" : undefined',
+        '[attr.data-invalid]': 'invalidState() ? "" : undefined',
+        '[attr.data-valid]': 'invalidState() ? undefined : ""',
+        '[attr.data-touched]': 'touchedState() ? "" : undefined',
+        '[attr.data-dirty]': 'dirtyState() ? "" : undefined',
         '[attr.data-scrubbing]': 'isScrubbing() ? "" : undefined'
     }
 })
@@ -139,6 +144,18 @@ export class RdxNumberFieldRoot implements RdxFormValueControl<number | null> {
      */
     readonly required = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /** Whether the field is invalid. A non-empty {@link errors} list also marks it invalid. */
+    readonly invalid = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /** Whether the field has been touched. A `model()` so Signal Forms can write it; set on blur. */
+    readonly touched = model<boolean>(false);
+
+    /** Whether the value changed from its initial value. Merged with internal tracking. */
+    readonly dirty = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /** Validation errors for the field. A non-empty list marks it invalid. */
+    readonly errors = input<readonly RdxValidationError[]>([]);
+
     /** Name of the hidden input rendered by `[rdxNumberFieldHiddenInput]`, for form submission. */
     readonly name = input<string>();
 
@@ -159,6 +176,9 @@ export class RdxNumberFieldRoot implements RdxFormValueControl<number | null> {
      * after scrubbing or pressing a button. Fires together with `onValueChange` for keyboard input.
      */
     readonly onValueCommitted = output<number | null>();
+
+    /** Emits on blur, notifying Signal Forms the field was touched. */
+    readonly touch = output<void>();
 
     /** @ignore The formatted text shown in the input element. */
     readonly inputValue = signal('');
@@ -181,6 +201,14 @@ export class RdxNumberFieldRoot implements RdxFormValueControl<number | null> {
 
     /** @ignore */
     readonly isDisabled = computed(() => !!this.cva.disabled());
+
+    private readonly dirtyValue = signal(false);
+    /** @ignore Invalid when the `invalid` input is set or the `errors` list is non-empty. */
+    readonly invalidState = computed(() => this.invalid() || (this.errors()?.length ?? 0) > 0);
+    /** @ignore */
+    readonly touchedState = computed(() => this.touched());
+    /** @ignore */
+    readonly dirtyState = computed(() => this.dirty() || this.dirtyValue());
 
     private readonly formatter = useNumberFormatter(this.locale, this.format);
     private readonly parser = useNumberParser(this.locale, this.format);
@@ -276,9 +304,14 @@ export class RdxNumberFieldRoot implements RdxFormValueControl<number | null> {
         this.inputValue.set(text);
     }
 
-    /** @ignore */
+    /**
+     * @ignore Mark the field touched — CVA for Reactive forms, plus the `touched` model + `touch`
+     * output for Signal Forms.
+     */
     markAsTouched(): void {
         this.cva.markAsTouched();
+        this.touched.set(true);
+        this.touch.emit();
     }
 
     /**
@@ -362,5 +395,6 @@ export class RdxNumberFieldRoot implements RdxFormValueControl<number | null> {
     private applyValue(value: number | null): void {
         this.value.set(value);
         this.cva.setValue(value);
+        this.dirtyValue.set(true);
     }
 }

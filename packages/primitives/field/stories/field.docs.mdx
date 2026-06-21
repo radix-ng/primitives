@@ -2,6 +2,7 @@ import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
 import { RdxFieldError } from '../src/field-error';
+import { RdxFieldItem } from '../src/field-item';
 import { RdxFieldLabel } from '../src/field-label';
 import { RdxFieldRoot } from '../src/field-root';
 import * as FieldStories from './field.stories';
@@ -48,6 +49,25 @@ import {
 </div>
 ```
 
+For a checkbox or radio group where each control needs its own label and description, wrap each one in a
+`rdxFieldItem`. The item scopes the label / description / control association to its control while
+reflecting the field's validation state; its `disabled` is OR'd with the root's.
+
+```html
+<div rdxFieldRoot>
+    <div rdxFieldItem>
+        <label rdxFieldLabel>Option A</label>
+        <input rdxFieldControl type="radio" />
+        <p rdxFieldDescription>Description A</p>
+    </div>
+    <div rdxFieldItem>
+        <label rdxFieldLabel>Option B</label>
+        <input rdxFieldControl type="radio" />
+    </div>
+    <p rdxFieldError>Error</p>
+</div>
+```
+
 ## Examples
 
 ### Default
@@ -79,6 +99,7 @@ enough.
 ## API Reference
 
 <ArgTypes of={RdxFieldRoot} />
+<ArgTypes of={RdxFieldItem} />
 <ArgTypes of={RdxFieldLabel} />
 <ArgTypes of={RdxFieldControl} />
 <ArgTypes of={RdxFieldDescription} />

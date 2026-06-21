@@ -20,9 +20,15 @@
     ],
     "peerDependencies": {
         "@angular/core": "^21.0.0 || ^22.0.0",
+        "@angular/forms": "^21.0.0 || ^22.0.0",
         "@floating-ui/dom": "^1.7.6",
         "@internationalized/date": "^3.12.2",
         "@internationalized/number": "^3.6.7"
+    },
+    "peerDependenciesMeta": {
+        "@angular/forms": {
+            "optional": true
+        }
     },
     "devDependencies": {
         "@angular-devkit/schematics": "^21.0.0 || ^22.0.0",

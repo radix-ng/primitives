@@ -1233,10 +1233,22 @@
               "description": "The state of the checkbox when it is initially rendered."
             },
             {
+              "name": "dirty",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the checked state changed from its initial value. Merged with internal tracking."
+            },
+            {
               "name": "disabled",
               "type": "boolean",
               "default": "false",
               "description": "Whether or not the checkbox button is disabled. This prevents the user from interacting with it."
+            },
+            {
+              "name": "errors",
+              "type": "readonly RdxValidationError[]",
+              "default": "[]",
+              "description": "Validation errors for the checkbox. A non-empty list marks it invalid."
             },
             {
               "name": "form",
@@ -1248,6 +1260,12 @@
               "type": "boolean",
               "default": "false",
               "description": "Whether the checkbox is in a mixed state: neither ticked nor unticked.\nOrthogonal to `checked` and not part of the submitted form value. A user\nclick resolves the checkbox to `checked` and clears `indeterminate`."
+            },
+            {
+              "name": "invalid",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the checkbox is invalid. A non-empty {@link errors} list also marks it invalid."
             },
             {
               "name": "name",
@@ -1279,6 +1297,12 @@
               "description": "The value of the checkbox. This is what is submitted with the form when the checkbox is checked.\n\nBound publicly as `[value]`; the TS member is named `submitValue` so the\ndirective can satisfy `RdxFormCheckboxControl`, whose contract reserves a\n`value` member for `RdxFormValueControl` and forbids it on checkbox-style\ncontrols. (Checkbox is not yet marked `implements` — its `checked` is still\n`CheckedState`; see the `indeterminate` half of collision #1.)"
             },
             {
+              "name": "touched",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the checkbox has been touched. A `model()` so Signal Forms can write it; the checkbox\nalso sets it on toggle (and emits {@link touch})."
+            },
+            {
               "name": "uncheckedValue",
               "type": "string",
               "description": "The value submitted with the form when the checkbox is unchecked.\nBy default, unchecked checkboxes do not submit any value, matching native checkbox behavior."
@@ -1289,11 +1313,17 @@
               "name": "onCheckedChange",
               "type": "RdxCheckboxCheckedChangeEvent",
               "description": "Event emitted when the checkbox checked state changes."
+            },
+            {
+              "name": "touch",
+              "type": "void",
+              "description": "Emits on interaction, notifying Signal Forms the checkbox was touched."
             }
           ],
           "twoWay": [
             "checked",
-            "indeterminate"
+            "indeterminate",
+            "touched"
           ]
         }
       ]
@@ -3043,6 +3073,21 @@
           "outputs": []
         },
         {
+          "directive": "RdxFieldItem",
+          "selector": "[rdxFieldItem]",
+          "exportAs": "rdxFieldItem",
+          "description": "Groups an individual item in a checkbox group or radio group with its own label and description.\n\nUse inside a `rdxFieldRoot` (typically wrapping a group) when each control needs its own label /\ndescription: the item scopes those associations to its control while reflecting the field's validation\nstate. Mirrors Base UI's `Field.Item`.",
+          "inputs": [
+            {
+              "name": "disabled",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the wrapped control should ignore user interaction. The `disabled` on `rdxFieldRoot` takes\nprecedence (it is OR'd in)."
+            }
+          ],
+          "outputs": []
+        },
+        {
           "directive": "RdxFieldLabel",
           "selector": "[rdxFieldLabel]",
           "exportAs": "rdxFieldLabel",
@@ -4609,10 +4654,22 @@
               "description": "The uncontrolled value of the field when it is initially rendered."
             },
             {
+              "name": "dirty",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the value changed from its initial value. Merged with internal tracking."
+            },
+            {
               "name": "disabled",
               "type": "boolean",
               "default": "false",
               "description": "When `true`, the user cannot interact with the field."
+            },
+            {
+              "name": "errors",
+              "type": "readonly RdxValidationError[]",
+              "default": "[]",
+              "description": "Validation errors for the field. A non-empty list marks it invalid."
             },
             {
               "name": "form",
@@ -4629,6 +4686,12 @@
               "type": "string",
               "default": "injectId('rdx-number-field-')",
               "description": "The id of the input element."
+            },
+            {
+              "name": "invalid",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the field is invalid. A non-empty {@link errors} list also marks it invalid."
             },
             {
               "name": "largeStep",
@@ -4690,6 +4753,12 @@
               "description": "Amount to increment and decrement with the buttons, arrow keys and scrub area."
             },
             {
+              "name": "touched",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the field has been touched. A `model()` so Signal Forms can write it; set on blur."
+            },
+            {
               "name": "value",
               "type": "number | null",
               "default": "null",
@@ -4706,9 +4775,15 @@
               "name": "onValueCommitted",
               "type": "number | null",
               "description": "Emitted when the value is committed: on blur after typing, or when a pointer is released\nafter scrubbing or pressing a button. Fires together with `onValueChange` for keyboard input."
+            },
+            {
+              "name": "touch",
+              "type": "void",
+              "description": "Emits on blur, notifying Signal Forms the field was touched."
             }
           ],
           "twoWay": [
+            "touched",
             "value"
           ]
         },
@@ -5733,13 +5808,31 @@
               "type": "string"
             },
             {
+              "name": "dirty",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the selection changed from its initial value. Merged with internal tracking."
+            },
+            {
               "name": "disabled",
               "type": "boolean",
               "default": "false"
             },
             {
+              "name": "errors",
+              "type": "readonly RdxValidationError[]",
+              "default": "[]",
+              "description": "Validation errors for the group. A non-empty list marks it invalid."
+            },
+            {
               "name": "form",
               "type": "string"
+            },
+            {
+              "name": "invalid",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the radio group is invalid. A non-empty {@link errors} list also marks it invalid."
             },
             {
               "name": "name",
@@ -5757,6 +5850,12 @@
               "default": "false"
             },
             {
+              "name": "touched",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the group has been touched. A `model()` so Signal Forms can write it; the group also sets\nit on focus-out (and emits {@link touch})."
+            },
+            {
               "name": "value",
               "type": "string | null",
               "default": "null",
@@ -5768,9 +5867,15 @@
               "name": "onValueChange",
               "type": "RdxRadioValueChangeEvent",
               "description": "Event handler called when the value changes."
+            },
+            {
+              "name": "touch",
+              "type": "void",
+              "description": "Emits on focus-out, notifying Signal Forms the group was touched."
             }
           ],
           "twoWay": [
+            "touched",
             "value"
           ]
         }
@@ -6262,6 +6367,36 @@
       ]
     },
     {
+      "slug": "signal-forms",
+      "section": "components",
+      "parts": [
+        {
+          "directive": "RdxSignalField",
+          "selector": "[formField][rdxSignalField]",
+          "exportAs": "rdxSignalField",
+          "description": "Bridges an Angular **Signal Forms** field into an enclosing `rdxFieldRoot` — with **no duplicate\nbinding**. Place it on the control that already carries `[formField]`; it reads the bound field's\nstate from that directive, so the field expression is written exactly once:\n\n```html\n<div rdxFieldRoot>\n  <label rdxFieldLabel>Email</label>\n  <input rdxInput [formField]=\"loginForm.email\" rdxSignalField />\n  <p rdxFieldError>Email is required.</p>\n</div>\n```\n\nIt owns no model and runs no validation — Signal Forms remains the source of truth. It only registers\nan {@link RdxFieldState} provider on the ancestor Field context so the field's `invalid` / `disabled` /\n`required` / `dirty` / `touched` data-attributes and the error *content* (`rdxFieldError.messages()`)\nread authoritative Signal Forms state. `filled` / `focused` stay on Field's DOM heuristic (partial\nownership — the seam supports it).\n\nSee ADR 0018.",
+          "inputs": [],
+          "outputs": []
+        },
+        {
+          "directive": "RdxSignalForm",
+          "selector": "form[rdxFormRoot][rdxSignalForm]",
+          "exportAs": "rdxSignalForm",
+          "description": "Bridges an Angular **Signal Forms** form into an enclosing `form[rdxFormRoot]`.\n\n```html\n<form rdxFormRoot [rdxSignalForm]=\"loginForm\">\n  <!-- fields bound with [formField] (+ rdxSignalField) -->\n</form>\n```\n\nRegisters an {@link RdxFormState} provider so the Form's aggregate `data-invalid` / `data-dirty` /\n`data-touched` / `data-submitting` attributes and the submit guard read authoritative Signal Forms\nstate. Signal Forms' own `submit()` owns the submit lifecycle and server-error application.\n\n`errorsFor(name)` routes a field's errors to a `rdxFieldRoot` by its `name` (top-level fields), so a\nfield can surface messages from the form alone — no per-field `rdxSignalField` needed for errors. If a\nfield *also* carries `rdxSignalField`, its errors already come from there; don't rely on both for the\nsame field or messages duplicate.\n\nSee ADR 0018.",
+          "inputs": [
+            {
+              "name": "rdxSignalForm",
+              "type": "FieldTree<unknown>",
+              "default": "{ alias: 'rdxSignalForm' }",
+              "required": true,
+              "description": "The Signal Forms root field (from `form(...)`) whose aggregate state drives the enclosing Form."
+            }
+          ],
+          "outputs": []
+        }
+      ]
+    },
+    {
       "slug": "slider",
       "section": "components",
       "parts": [
@@ -6623,15 +6758,33 @@
               "description": "The state of the switch when it is initially rendered. Use when you do not need to control its state."
             },
             {
+              "name": "dirty",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the checked state changed from its initial value. Merged with internal tracking."
+            },
+            {
               "name": "disabled",
               "type": "boolean",
               "default": "false",
               "description": "When `true`, prevents the user from interacting with the switch."
             },
             {
+              "name": "errors",
+              "type": "readonly RdxValidationError[]",
+              "default": "[]",
+              "description": "Validation errors for the switch. A non-empty list marks it invalid."
+            },
+            {
               "name": "id",
               "type": "string",
               "default": "injectId('rdx-switch-')"
+            },
+            {
+              "name": "invalid",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the switch is invalid. A non-empty {@link errors} list also marks it invalid."
             },
             {
               "name": "name",
@@ -6655,6 +6808,12 @@
               "type": "string",
               "default": "'on'",
               "description": "Value submitted with the form when the switch is on.\n\nBound publicly as `[value]`; the TS member is named `submitValue` so the\ndirective can satisfy `RdxFormCheckboxControl`, whose contract reserves a\n`value` member for `RdxFormValueControl` and forbids it on checkbox-style\ncontrols."
+            },
+            {
+              "name": "touched",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the switch has been touched. A `model()` so Signal Forms can write it; set on blur."
             }
           ],
           "outputs": [
@@ -6662,10 +6821,16 @@
               "name": "onCheckedChange",
               "type": "RdxSwitchCheckedChangeEvent",
               "description": "Event handler called when the checked state of the switch changes."
+            },
+            {
+              "name": "touch",
+              "type": "void",
+              "description": "Emits on blur, notifying Signal Forms the switch was touched."
             }
           ],
           "twoWay": [
-            "checked"
+            "checked",
+            "touched"
           ]
         },
         {

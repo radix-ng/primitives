@@ -141,6 +141,12 @@ Controls without a `ControlValueAccessor` (Select, Date Field, Time Field, Edita
 `Field` reflects form state as `data-*` attributes for styling and wires accessibility relationships.
 Because it is form-agnostic, you map state from your form model onto its inputs explicitly:
 
+> **Validation is owned by Angular's form systems, not by `Field`.** Unlike Base UI's Field — which
+> ships its own validation (`validate`, `validationMode`, a `Validity` part over the native
+> `ValidityState`) — Radix NG deliberately does **not** port that surface. Reactive, template-driven, and
+> Signal Forms already own validation in Angular; `Field` only reflects the result and wires ARIA. This
+> divergence from Base UI is intentional — see [ADR 0004](https://github.com/radix-ng/primitives/blob/main/docs/adr/0004-field-signal-forms-adapter.md).
+
 ```html
 <div
   rdxFieldRoot
@@ -199,13 +205,8 @@ accessors already handle it, as `rdxInput` relies on.
 
 ## Signal Forms
 
-> ⚠️ **Experimental.** [Signal
-> Forms](https://angular.dev/guide/forms/signals/overview) (`@angular/forms/signals`) is experimental
-> in Angular 21 and targeted to stabilize in Angular 22. Radix NG does not yet ship a Signal Forms
-> story or adapter, and the exact directive / property names below will be confirmed against the stable
-> API. This section describes the intended shape so you can see how today's code carries over.
-
-Signal Forms is a **parallel** mechanism to `ControlValueAccessor`, not a replacement. A control can
+[Signal Forms](https://angular.dev/guide/forms/signals) (`@angular/forms/signals`) is **stable since
+Angular 22**. It is a **parallel** mechanism to `ControlValueAccessor`, not a replacement: a control can
 satisfy both at once, so adopting Signal Forms is additive — Reactive and template-driven forms keep
 working unchanged.
 
@@ -217,37 +218,51 @@ Radix NG controls already expose the structural contract Signal Forms binds to:
   Switch).
 
 Checkbox, Input, Number Field, Radio, and Switch already declare these interfaces today; the remaining
-value controls expose the required `value` model and are contract-ready. That means when Signal Forms
-lands, you bind the control directly — the control itself needs no change:
+value controls expose the required `value` model and are contract-ready. You bind the control directly
+with Angular's `[formField]` directive — the control itself needs no change:
 
 ```html
-<input rdxInput [field]="form.email" />
+<input rdxInput [formField]="form.email" />
 ```
 
-And `Field` keeps the same role: you map Signal Forms field state onto the same `rdxFieldRoot` inputs.
+### The Signal Forms adapter
+
+Surfacing field state in `Field` is handled by the **optional** `@radix-ng/primitives/signal-forms`
+entry — the only entry that imports `@angular/forms/signals`, so Reactive-only consumers never pull it
+in. It ships two directives:
+
+- **`rdxSignalField`** — sits on the control next to `[formField]` and maps the field's
+  `invalid` / `disabled` / `required` / `dirty` / `touched` and error messages onto the enclosing
+  `Field`. The field expression is bound **once** (on `[formField]`); no manual
+  `[invalid]` / `[touched]` / `[dirty]` on `rdxFieldRoot`.
+- **`rdxSignalForm`** — sits on `form[rdxFormRoot]`, aggregates the form-level `data-*` attributes and
+  routes field errors to a `Field` by its `name`.
+
+```ts
+import { form, FormField, required } from '@angular/forms/signals';
+import { RdxSignalField, RdxSignalForm } from '@radix-ng/primitives/signal-forms';
+```
 
 ```html
-<div rdxFieldRoot [invalid]="!email().valid()" [touched]="email().touched()" [disabled]="email().disabled()">
-  <label rdxFieldLabel>Email</label>
-  <input rdxFieldControl [field]="form.email" />
-  <p rdxFieldError>Email is required.</p>
-</div>
+<form rdxFormRoot [rdxSignalForm]="loginForm">
+  <div rdxFieldRoot>
+    <label rdxFieldLabel>Email</label>
+    <input rdxFieldControl [formField]="loginForm.email" rdxSignalField />
+    <p rdxFieldError #err="rdxFieldError">{{ err.messages().join(' ') }}</p>
+  </div>
+</form>
 ```
 
-If this state-mapping repeats across a codebase, Radix NG may add an optional, tree-shakeable
-`[rdxSignalField]` adapter directive that reads Signal Forms state and mirrors it onto `Field` — without
-owning the model, running validation, or wrapping `[field]`. See ADR 0004 for the boundaries of that
-adapter.
+See the [Signal Forms](?path=/docs/primitives-signal-forms--docs) page for a live example. Without the
+adapter you can still map Signal Forms state onto `Field` inputs by hand
+(`[invalid]="!email().valid()"`, etc.) — the adapter just removes that boilerplate.
 
-`Form` is built for the same migration. Signal Forms will own at form level what `Form` does today —
-validity, the `submit(form, action)` lifecycle with a `submitting()` signal, and applying server errors
-returned by the submit action onto fields. `RdxFormRoot` already exposes an `RdxFormState` provider seam
-(`setStateProvider`) mirroring Field's: a future `[rdxSignalForm]` adapter registers one to own
-`invalid` / `dirty` / `touched` / `submitting` and the per-name error source, at which point the
-`errors` input and clear-on-edit go inert (Signal Forms reapplies server errors itself). The migration is
-adapter-only — `RdxFormRoot`'s inputs/outputs, the `data-*` contract, and your Field anatomy do not
-change. Provide an explicit `Field.name` for server-error keys, since Signal Forms' path-derived names
-may not match your backend's.
+Signal Forms owns validity, the `submit(form, action)` lifecycle with a `submitting()` signal, and
+applying server errors onto fields. `rdxSignalForm` registers an `RdxFormState` provider so `RdxFormRoot`
+reads that state; while it owns errors, `RdxFormRoot`'s own `errors` input and clear-on-edit go inert
+(Signal Forms reapplies server errors itself). Provide an explicit `Field.name` for server-error keys,
+since Signal Forms' path-derived names may not match your backend's. See ADR 0018 for the adapter's
+boundaries.
 
 ## Why this is forward-compatible
 
@@ -261,6 +276,6 @@ The two-layer split is what keeps your form code stable as Angular's form APIs e
   system produced that state, so the presentation and accessibility layer is untouched by a migration.
 
 In practice, moving a form to Signal Forms changes only the **binding expression** on the control
-(`formControlName="email"` → `[field]="form.email"`) and the **source** of the state you pass into
-`Field` (a `FormControl` → a Signal Forms field). The control inventory, the `Field` anatomy, the
-`data-*` styling contract, and your accessibility wiring all carry over unchanged.
+(`formControlName="email"` → `[formField]="form.email"`) and the **source** of the state `Field` reads
+(a `FormControl` → a Signal Forms field, via `rdxSignalField`). The control inventory, the `Field`
+anatomy, the `data-*` styling contract, and your accessibility wiring all carry over unchanged.

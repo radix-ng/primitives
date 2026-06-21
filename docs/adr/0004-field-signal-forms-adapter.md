@@ -1,6 +1,12 @@
 # ADR 0004: Keep Field Form-Agnostic and Defer Signal Forms Adapter
 
-- Status: Proposed
+> **Superseded by [ADR 0018](0018-signal-forms-adapter.md) (2026-06-20).** Its revisit triggers fired
+> (Signal Forms stable in Angular 22, workspace baseline on 22.0.2): ADR 0018 records the decision to
+> **build** the optional `[rdxSignalField]` + `[rdxSignalForm]` adapter pair while **keeping** this ADR's
+> form-agnostic-core principle and dual CVA + Signal Forms controls. (The full-transition alternative —
+> ADR 0019 — was explored and rejected; see its banner.) Only the "defer" stance here is closed.
+
+- Status: Superseded by ADR 0018
 - Date: 2026-06-03
 - Amended: 2026-06-10 — adapter mechanism corrected to the implemented `RdxFieldState` provider seam
   (prep #4); `[formField]` discovery risk and the CVA fallback (Plan B) documented; the runtime spike

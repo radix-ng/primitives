@@ -1,0 +1,64 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import { RdxSignalForm } from '../src/signal-form';
+import * as SignalFormsStories from './signal-forms.stories';
+
+<Meta title="Primitives/Signal Forms" />
+
+# Signal Forms
+
+#### Bridge Angular [Signal Forms](https://angular.dev/guide/forms/signals) into headless `Field` and `Form`.
+
+<Canvas sourceState="hidden" of={SignalFormsStories.Field} />
+
+`@radix-ng/primitives/signal-forms` is the **optional** integration entry: it imports
+`@angular/forms/signals` so the headless `field` / `form` primitives don't have to. Controls stay dual
+(they also work with Reactive / template-driven forms via `ControlValueAccessor`) — this entry only
+feeds authoritative Signal Forms state into the accessibility layer.
+
+## Features
+
+- ✅ Reads state from the **same `[formField]` binding** — the field is written once, not twice.
+- ✅ Drives `Field`'s `data-invalid` / `data-disabled` / `data-required` / `data-dirty` / `data-touched`
+  and the error _content_ (`rdxFieldError.messages()`) from the bound Signal Forms field.
+- ✅ Aggregates form-level `data-invalid` / `data-dirty` / `data-touched` / `data-submitting` and routes
+  field errors by `name`.
+- ✅ Leaves `@angular/forms` out of every other entry — install it only when you use this one.
+
+## Import
+
+```ts
+import { RdxSignalField, RdxSignalForm } from '@radix-ng/primitives/signal-forms';
+```
+
+## Anatomy
+
+`rdxSignalField` sits on the control next to `[formField]`; `rdxSignalForm` sits on the form root next to
+`rdxFormRoot`. No state is bound by hand — both read it from Signal Forms.
+
+```html
+<form rdxFormRoot [rdxSignalForm]="loginForm">
+    <div rdxFieldRoot>
+        <label rdxFieldLabel>Email</label>
+        <input rdxFieldControl [formField]="loginForm.email" rdxSignalField />
+        <p rdxFieldDescription>Use your account email.</p>
+        <p rdxFieldError #err="rdxFieldError">{{ err.messages().join(' ') }}</p>
+    </div>
+</form>
+```
+
+## Examples
+
+### Field driven by Signal Forms
+
+The `rdxFieldRoot` carries no manual `[invalid]`/`[touched]`/`[dirty]` — `rdxSignalField` maps them from
+the field, including the validation message shown by `rdxFieldError`.
+
+<Canvas of={SignalFormsStories.Field} />
+
+## API Reference
+
+`rdxSignalField` has no inputs — it reads the field from the co-located `[formField]` directive.
+
+`rdxSignalForm` takes the root field:
+
+<ArgTypes of={RdxSignalForm} />

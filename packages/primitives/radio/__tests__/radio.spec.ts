@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { form, FormField, required } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import {
     RdxRadioGroupDirective,
@@ -281,5 +282,114 @@ describe('RdxRadio', () => {
 
         expect(labelHost.value).toBe('hdd');
         expect(labelHost.changes).toEqual(['hdd']);
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioItemInputDirective],
+    template: `
+        <div [invalid]="invalid()" [errors]="errors()" rdxRadioRoot name="plan">
+            <button id="free" rdxRadioItem value="free"><input rdxRadioItemInput /></button>
+            <button id="pro" rdxRadioItem value="pro"><input rdxRadioItemInput /></button>
+        </div>
+    `
+})
+class RadioValidationHost {
+    readonly invalid = signal(false);
+    readonly errors = signal<{ kind: string; message?: string }[]>([]);
+}
+
+describe('RdxRadioGroup validation state (batch #4)', () => {
+    let fixture: ComponentFixture<RadioValidationHost>;
+    let host: RadioValidationHost;
+    let group: HTMLElement;
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [RadioValidationHost] });
+        fixture = TestBed.createComponent(RadioValidationHost);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+        group = fixture.debugElement.query(By.css('[rdxRadioRoot]')).nativeElement;
+    });
+
+    it('is valid by default', () => {
+        expect(group.getAttribute('data-valid')).toBe('');
+        expect(group.getAttribute('data-invalid')).toBeNull();
+        expect(group.getAttribute('aria-invalid')).toBeNull();
+    });
+
+    it('reflects the invalid input', () => {
+        host.invalid.set(true);
+        fixture.detectChanges();
+        expect(group.getAttribute('data-invalid')).toBe('');
+        expect(group.getAttribute('aria-invalid')).toBe('true');
+        expect(group.getAttribute('data-valid')).toBeNull();
+    });
+
+    it('is invalid when the errors list is non-empty', () => {
+        host.errors.set([{ kind: 'required', message: 'Pick a plan.' }]);
+        fixture.detectChanges();
+        expect(group.getAttribute('data-invalid')).toBe('');
+        expect(group.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('marks dirty after a selection', () => {
+        expect(group.getAttribute('data-dirty')).toBeNull();
+        (fixture.debugElement.query(By.css('#free')).nativeElement as HTMLElement).click();
+        fixture.detectChanges();
+        expect(group.getAttribute('data-dirty')).toBe('');
+    });
+
+    it('marks touched when focus leaves the group', () => {
+        expect(group.getAttribute('data-touched')).toBeNull();
+        group.dispatchEvent(new FocusEvent('focusout', { relatedTarget: null }));
+        fixture.detectChanges();
+        expect(group.getAttribute('data-touched')).toBe('');
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [FormField, RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioItemInputDirective],
+    template: `
+        <div [formField]="plan" rdxRadioRoot name="plan">
+            <button id="free" rdxRadioItem value="free"><input rdxRadioItemInput /></button>
+            <button id="pro" rdxRadioItem value="pro"><input rdxRadioItemInput /></button>
+        </div>
+    `
+})
+class RadioSignalFormHost {
+    readonly model = signal<{ plan: string | null }>({ plan: null });
+    readonly formTree = form(this.model, (path) => {
+        required(path.plan);
+    });
+
+    get plan() {
+        return this.formTree.plan;
+    }
+}
+
+describe('RdxRadioGroup with Signal Forms', () => {
+    let fixture: ComponentFixture<RadioSignalFormHost>;
+    let host: RadioSignalFormHost;
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [RadioSignalFormHost] });
+        fixture = TestBed.createComponent(RadioSignalFormHost);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+    });
+
+    it('updates the bound field on selection', () => {
+        (fixture.debugElement.query(By.css('#pro')).nativeElement as HTMLElement).click();
+        fixture.detectChanges();
+        expect(host.model().plan).toBe('pro');
+    });
+
+    it('reflects a programmatic field change', () => {
+        host.model.update((value) => ({ ...value, plan: 'free' }));
+        fixture.detectChanges();
+        expect(host.plan().value()).toBe('free');
     });
 });

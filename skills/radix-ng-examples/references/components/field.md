@@ -67,6 +67,25 @@ import {
 </div>
 ```
 
+For a checkbox or radio group where each control needs its own label and description, wrap each one in a
+`rdxFieldItem`. The item scopes the label / description / control association to its control while
+reflecting the field's validation state; its `disabled` is OR'd with the root's.
+
+```html
+<div rdxFieldRoot>
+    <div rdxFieldItem>
+        <label rdxFieldLabel>Option A</label>
+        <input rdxFieldControl type="radio" />
+        <p rdxFieldDescription>Description A</p>
+    </div>
+    <div rdxFieldItem>
+        <label rdxFieldLabel>Option B</label>
+        <input rdxFieldControl type="radio" />
+    </div>
+    <p rdxFieldError>Error</p>
+</div>
+```
+
 ## Examples
 
 ### Default

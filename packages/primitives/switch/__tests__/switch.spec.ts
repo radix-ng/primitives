@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
 import { RdxSwitchInput } from '../src/switch-input';
@@ -255,5 +256,120 @@ describe('RdxSwitch submit value (`value` alias)', () => {
         const input = fixture.debugElement.query(By.css('[rdxSwitchInput]')).nativeElement as HTMLInputElement;
 
         expect(input.getAttribute('value')).toBe('enabled');
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
+    template: `
+        <button [invalid]="invalid()" [errors]="errors()" rdxSwitchRoot>
+            <input rdxSwitchInput />
+            <span rdxSwitchThumb></span>
+        </button>
+    `
+})
+class SwitchValidationHost {
+    readonly invalid = signal(false);
+    readonly errors = signal<{ kind: string; message?: string }[]>([]);
+}
+
+describe('RdxSwitch validation state (batch #4)', () => {
+    let fixture: ComponentFixture<SwitchValidationHost>;
+    let host: SwitchValidationHost;
+    let root: HTMLButtonElement;
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [SwitchValidationHost] });
+        fixture = TestBed.createComponent(SwitchValidationHost);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+        root = fixture.debugElement.query(By.css('[rdxSwitchRoot]')).nativeElement;
+    });
+
+    it('is valid by default', () => {
+        expect(root.getAttribute('data-valid')).toBe('');
+        expect(root.getAttribute('data-invalid')).toBeNull();
+        expect(root.getAttribute('aria-invalid')).toBeNull();
+    });
+
+    it('reflects the invalid input', () => {
+        host.invalid.set(true);
+        fixture.detectChanges();
+        expect(root.getAttribute('data-invalid')).toBe('');
+        expect(root.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('is invalid when the errors list is non-empty', () => {
+        host.errors.set([{ kind: 'required', message: 'Required.' }]);
+        fixture.detectChanges();
+        expect(root.getAttribute('data-invalid')).toBe('');
+        expect(root.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('marks dirty after a toggle', () => {
+        expect(root.getAttribute('data-dirty')).toBeNull();
+        root.click();
+        fixture.detectChanges();
+        expect(root.getAttribute('data-dirty')).toBe('');
+    });
+
+    it('marks touched on blur', () => {
+        expect(root.getAttribute('data-touched')).toBeNull();
+        root.dispatchEvent(new FocusEvent('blur'));
+        fixture.detectChanges();
+        expect(root.getAttribute('data-touched')).toBe('');
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [FormField, RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
+    template: `
+        <button [formField]="enabled" rdxSwitchRoot>
+            <input rdxSwitchInput />
+            <span rdxSwitchThumb></span>
+        </button>
+    `
+})
+class SwitchSignalFormHost {
+    readonly model = signal({ enabled: false });
+    readonly formTree = form(this.model);
+
+    get enabled() {
+        return this.formTree.enabled;
+    }
+}
+
+describe('RdxSwitch with Signal Forms', () => {
+    let fixture: ComponentFixture<SwitchSignalFormHost>;
+    let host: SwitchSignalFormHost;
+    let root: HTMLButtonElement;
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [SwitchSignalFormHost] });
+        fixture = TestBed.createComponent(SwitchSignalFormHost);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+        root = fixture.debugElement.query(By.css('[rdxSwitchRoot]')).nativeElement;
+    });
+
+    it('updates the bound field on click (FormCheckboxControl)', () => {
+        root.click();
+        fixture.detectChanges();
+        expect(host.model().enabled).toBe(true);
+        expect(root.getAttribute('aria-checked')).toBe('true');
+    });
+
+    it('reflects a programmatic field change', () => {
+        host.model.update((value) => ({ ...value, enabled: true }));
+        fixture.detectChanges();
+        expect(root.getAttribute('data-checked')).toBe('');
+    });
+
+    it('marks the field touched on blur', () => {
+        root.dispatchEvent(new FocusEvent('blur'));
+        fixture.detectChanges();
+        expect(host.enabled().touched()).toBe(true);
     });
 });

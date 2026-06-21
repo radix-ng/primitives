@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
 import { RdxNumberFieldDecrement } from '../src/number-field-decrement';
@@ -272,5 +273,120 @@ describe('RdxNumberField', () => {
         fixture.detectChanges();
         expect(component.value()).toBe(8);
         expect(input.value).toBe('8');
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [RdxNumberFieldRoot, RdxNumberFieldInput, RdxNumberFieldIncrement],
+    template: `
+        <div [invalid]="invalid()" [errors]="errors()" rdxNumberFieldRoot>
+            <input rdxNumberFieldInput />
+            <button rdxNumberFieldIncrement>+</button>
+        </div>
+    `
+})
+class NumberFieldValidationHost {
+    readonly invalid = signal(false);
+    readonly errors = signal<{ kind: string; message?: string }[]>([]);
+}
+
+describe('RdxNumberField validation state (batch #4)', () => {
+    let fixture: ComponentFixture<NumberFieldValidationHost>;
+    let host: NumberFieldValidationHost;
+    let root: HTMLElement;
+    let input: HTMLInputElement;
+    let increment: HTMLButtonElement;
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [NumberFieldValidationHost] });
+        fixture = TestBed.createComponent(NumberFieldValidationHost);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+        root = fixture.debugElement.query(By.css('[rdxNumberFieldRoot]')).nativeElement;
+        input = fixture.debugElement.query(By.css('[rdxNumberFieldInput]')).nativeElement;
+        increment = fixture.debugElement.query(By.css('[rdxNumberFieldIncrement]')).nativeElement;
+    });
+
+    it('is valid by default', () => {
+        expect(root.getAttribute('data-valid')).toBe('');
+        expect(root.getAttribute('data-invalid')).toBeNull();
+        expect(input.getAttribute('aria-invalid')).toBeNull();
+    });
+
+    it('reflects the invalid input on root and input', () => {
+        host.invalid.set(true);
+        fixture.detectChanges();
+        expect(root.getAttribute('data-invalid')).toBe('');
+        expect(input.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('is invalid when the errors list is non-empty', () => {
+        host.errors.set([{ kind: 'required', message: 'Required.' }]);
+        fixture.detectChanges();
+        expect(root.getAttribute('data-invalid')).toBe('');
+        expect(input.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('marks dirty after a value change', () => {
+        expect(root.getAttribute('data-dirty')).toBeNull();
+        increment.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        fixture.detectChanges();
+        expect(root.getAttribute('data-dirty')).toBe('');
+    });
+
+    it('marks touched on input blur', () => {
+        expect(root.getAttribute('data-touched')).toBeNull();
+        input.dispatchEvent(new FocusEvent('blur'));
+        fixture.detectChanges();
+        expect(root.getAttribute('data-touched')).toBe('');
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [FormField, RdxNumberFieldRoot, RdxNumberFieldInput, RdxNumberFieldIncrement],
+    template: `
+        <div [formField]="amount" rdxNumberFieldRoot>
+            <input rdxNumberFieldInput />
+            <button rdxNumberFieldIncrement>+</button>
+        </div>
+    `
+})
+class NumberFieldSignalFormHost {
+    readonly model = signal<{ amount: number | null }>({ amount: 5 });
+    readonly formTree = form(this.model);
+
+    get amount() {
+        return this.formTree.amount;
+    }
+}
+
+describe('RdxNumberField with Signal Forms', () => {
+    let fixture: ComponentFixture<NumberFieldSignalFormHost>;
+    let host: NumberFieldSignalFormHost;
+    let input: HTMLInputElement;
+    let increment: HTMLButtonElement;
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [NumberFieldSignalFormHost] });
+        fixture = TestBed.createComponent(NumberFieldSignalFormHost);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+        input = fixture.debugElement.query(By.css('[rdxNumberFieldInput]')).nativeElement;
+        increment = fixture.debugElement.query(By.css('[rdxNumberFieldIncrement]')).nativeElement;
+    });
+
+    it('reflects the bound field value (FormValueControl)', () => {
+        expect(input.value).toBe('5');
+        host.model.update((value) => ({ ...value, amount: 12 }));
+        fixture.detectChanges();
+        expect(input.value).toBe('12');
+    });
+
+    it('updates the bound field on interaction', () => {
+        increment.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        fixture.detectChanges();
+        expect(host.model().amount).toBe(6);
     });
 });

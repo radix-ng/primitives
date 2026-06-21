@@ -60,6 +60,7 @@
             "@radix-ng/primitives/scroll-area": ["packages/primitives/scroll-area/index.ts"],
             "@radix-ng/primitives/select": ["packages/primitives/select/index.ts"],
             "@radix-ng/primitives/separator": ["packages/primitives/separator/index.ts"],
+            "@radix-ng/primitives/signal-forms": ["packages/primitives/signal-forms/index.ts"],
             "@radix-ng/primitives/slider": ["packages/primitives/slider/index.ts"],
             "@radix-ng/primitives/stepper": ["packages/primitives/stepper/index.ts"],
             "@radix-ng/primitives/switch": ["packages/primitives/switch/index.ts"],

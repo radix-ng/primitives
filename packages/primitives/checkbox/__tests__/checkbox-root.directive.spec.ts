@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
@@ -390,5 +391,116 @@ describe('RdxCheckboxRoot uncheckedValue', () => {
 
         expect(host.checked).toBe(true);
         expect(new FormData(form()).get('terms')).toBe('yes');
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective, RdxCheckboxIndicatorDirective],
+    template: `
+        <div [invalid]="invalid()" [errors]="errors()" rdxCheckboxRoot>
+            <button rdxCheckboxButton>
+                <span rdxCheckboxIndicator></span>
+            </button>
+        </div>
+    `
+})
+class CheckboxValidationHost {
+    readonly invalid = signal(false);
+    readonly errors = signal<{ kind: string; message?: string }[]>([]);
+}
+
+describe('RdxCheckboxRoot validation state (batch #4)', () => {
+    let fixture: ComponentFixture<CheckboxValidationHost>;
+    let host: CheckboxValidationHost;
+    let root: HTMLElement;
+    let button: HTMLButtonElement;
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [CheckboxValidationHost] });
+        fixture = TestBed.createComponent(CheckboxValidationHost);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+        root = fixture.debugElement.query(By.css('[rdxCheckboxRoot]')).nativeElement;
+        button = fixture.debugElement.query(By.css('[rdxCheckboxButton]')).nativeElement;
+    });
+
+    it('is valid by default on root and button', () => {
+        expect(root.getAttribute('data-valid')).toBe('');
+        expect(root.getAttribute('data-invalid')).toBeNull();
+        expect(button.getAttribute('aria-invalid')).toBeNull();
+    });
+
+    it('reflects the invalid input on root and button', () => {
+        host.invalid.set(true);
+        fixture.detectChanges();
+        expect(root.getAttribute('data-invalid')).toBe('');
+        expect(button.getAttribute('data-invalid')).toBe('');
+        expect(button.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('is invalid when the errors list is non-empty', () => {
+        host.errors.set([{ kind: 'required', message: 'Required.' }]);
+        fixture.detectChanges();
+        expect(root.getAttribute('data-invalid')).toBe('');
+        expect(button.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('marks dirty and touched after a toggle', () => {
+        expect(root.getAttribute('data-dirty')).toBeNull();
+        expect(root.getAttribute('data-touched')).toBeNull();
+        button.click();
+        fixture.detectChanges();
+        expect(root.getAttribute('data-dirty')).toBe('');
+        expect(root.getAttribute('data-touched')).toBe('');
+        expect(button.getAttribute('data-touched')).toBe('');
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [FormField, RdxCheckboxRootDirective, RdxCheckboxButtonDirective, RdxCheckboxIndicatorDirective],
+    template: `
+        <div [formField]="terms" rdxCheckboxRoot>
+            <button rdxCheckboxButton>
+                <span rdxCheckboxIndicator></span>
+            </button>
+        </div>
+    `
+})
+class CheckboxSignalFormHost {
+    readonly model = signal({ terms: false });
+    readonly formTree = form(this.model);
+
+    get terms() {
+        return this.formTree.terms;
+    }
+}
+
+describe('RdxCheckboxRoot with Signal Forms', () => {
+    let fixture: ComponentFixture<CheckboxSignalFormHost>;
+    let host: CheckboxSignalFormHost;
+    let button: HTMLButtonElement;
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [CheckboxSignalFormHost] });
+        fixture = TestBed.createComponent(CheckboxSignalFormHost);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+        button = fixture.debugElement.query(By.css('[rdxCheckboxButton]')).nativeElement;
+    });
+
+    it('updates the bound field on toggle (FormCheckboxControl)', () => {
+        button.click();
+        fixture.detectChanges();
+        expect(host.model().terms).toBe(true);
+        expect(button.getAttribute('aria-checked')).toBe('true');
+    });
+
+    it('reflects a programmatic field change', () => {
+        host.model.update((value) => ({ ...value, terms: true }));
+        fixture.detectChanges();
+        expect(button.getAttribute('data-checked')).toBe('');
+        expect(button.getAttribute('aria-checked')).toBe('true');
     });
 });

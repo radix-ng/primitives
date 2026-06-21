@@ -353,6 +353,16 @@
       "dataAttributes": []
     },
     {
+      "name": "Signal Forms",
+      "slug": "signal-forms",
+      "section": "components",
+      "description": "Bridge Angular [Signal Forms](https://angular.dev/guide/forms/signals) into headless `Field` and `Form`.",
+      "doc": "radix-ng-examples/references/components/signal-forms.md",
+      "storybook": "https://radix-ng.com/?path=/docs/primitives-signal-forms--docs",
+      "anatomy": "<form rdxFormRoot [rdxSignalForm]=\"loginForm\">\n    <div rdxFieldRoot>\n        <label rdxFieldLabel>Email</label>\n        <input rdxFieldControl [formField]=\"loginForm.email\" rdxSignalField />\n        <p rdxFieldDescription>Use your account email.</p>\n        <p rdxFieldError #err=\"rdxFieldError\">{{ err.messages().join(' ') }}</p>\n    </div>\n</form>",
+      "dataAttributes": []
+    },
+    {
       "name": "Slider",
       "slug": "slider",
       "section": "components",

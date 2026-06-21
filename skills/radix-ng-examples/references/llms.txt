@@ -42,6 +42,7 @@ Generated from `@radix-ng/primitives@1.0.7` — if the installed version differs
 - [Scroll Area](https://radix-ng.com/components/scroll-area.md): A native scroll container with a custom, cross-browser scrollbar.
 - [Select](https://radix-ng.com/components/select.md): A control that presents a list of options for the user to pick from, triggered by a button.
 - [Separator](https://radix-ng.com/components/separator.md): A separator element accessible to screen readers.
+- [Signal Forms](https://radix-ng.com/components/signal-forms.md): Bridge Angular [Signal Forms](https://angular.dev/guide/forms/signals) into headless `Field` and `Form`.
 - [Slider](https://radix-ng.com/components/slider.md): An input where the user selects a value, or a range of values, from within a given range.
 - [Stepper](https://radix-ng.com/components/stepper.md): A set of steps that are used to indicate progress through a multi-step process.
 - [Switch](https://radix-ng.com/components/switch.md): A control that allows the user to toggle between checked and not checked.

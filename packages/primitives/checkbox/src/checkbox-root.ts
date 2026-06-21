@@ -10,6 +10,7 @@ import {
     model,
     output,
     Renderer2,
+    signal,
     Signal
 } from '@angular/core';
 import {
@@ -18,7 +19,8 @@ import {
     createContext,
     RdxCancelableChangeEventDetails,
     RdxControlValueAccessor,
-    RdxFormCheckboxControl
+    RdxFormCheckboxControl,
+    RdxValidationError
 } from '@radix-ng/primitives/core';
 import { injectCheckboxGroupContext } from './checkbox-group';
 
@@ -57,6 +59,9 @@ export interface CheckboxRootContext {
     form: Signal<string | undefined>;
     readonly: Signal<boolean>;
     state: Signal<'indeterminate' | 'checked' | 'unchecked'>;
+    invalidState: Signal<boolean>;
+    touchedState: Signal<boolean>;
+    dirtyState: Signal<boolean>;
     uncheckedValue: Signal<string | undefined>;
     toggle: (event?: Event) => void;
 }
@@ -77,6 +82,9 @@ const rootContext = (): CheckboxRootContext => {
         form: checkbox.form,
         readonly: checkbox.readOnlyState,
         state: checkbox.state,
+        invalidState: checkbox.invalidState,
+        touchedState: checkbox.touchedState,
+        dirtyState: checkbox.dirtyState,
         uncheckedValue: checkbox.uncheckedValue,
         toggle(event?: Event) {
             checkbox.toggle(event);
@@ -107,7 +115,11 @@ export const [injectCheckboxRootContext, provideCheckboxRootContext] = createCon
         '[attr.data-indeterminate]': 'indeterminateState() ? "" : undefined',
         '[attr.data-disabled]': 'disabledState() ? "" : undefined',
         '[attr.data-readonly]': 'readOnlyState() ? "" : undefined',
-        '[attr.data-required]': 'required() ? "" : undefined'
+        '[attr.data-required]': 'required() ? "" : undefined',
+        '[attr.data-invalid]': 'invalidState() ? "" : undefined',
+        '[attr.data-valid]': 'invalidState() ? undefined : ""',
+        '[attr.data-touched]': 'touchedState() ? "" : undefined',
+        '[attr.data-dirty]': 'dirtyState() ? "" : undefined'
     }
 })
 export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
@@ -187,6 +199,31 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
     readonly required = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
+     * Whether the checkbox is invalid. A non-empty {@link errors} list also marks it invalid.
+     * @group Props
+     */
+    readonly invalid = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /**
+     * Whether the checkbox has been touched. A `model()` so Signal Forms can write it; the checkbox
+     * also sets it on toggle (and emits {@link touch}).
+     * @group Props
+     */
+    readonly touched = model<boolean>(false);
+
+    /**
+     * Whether the checked state changed from its initial value. Merged with internal tracking.
+     * @group Props
+     */
+    readonly dirty = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /**
+     * Validation errors for the checkbox. A non-empty list marks it invalid.
+     * @group Props
+     */
+    readonly errors = input<readonly RdxValidationError[]>([]);
+
+    /**
      * Name of the form control. Submitted with the form as part of a name/value pair. Inside a
      * `rdxCheckboxGroup` this also identifies the checkbox in the group's value array.
      * @group Props
@@ -211,6 +248,12 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
      * @group Emits
      */
     readonly onCheckedChange = output<RdxCheckboxCheckedChangeEvent>();
+
+    /**
+     * Emits on interaction, notifying Signal Forms the checkbox was touched.
+     * @group Emits
+     */
+    readonly touch = output<void>();
 
     /**
      * @ignore
@@ -251,6 +294,14 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
     /** @ignore The effective disabled state, including the group. */
     readonly disabledState = computed(() => this.controlValueAccessor.disabled() || (this.group?.disabled() ?? false));
     readonly readOnlyState = computed(() => this.readonly());
+
+    private readonly dirtyValue = signal(false);
+    /** @ignore Invalid when the `invalid` input is set or the `errors` list is non-empty. */
+    readonly invalidState = computed(() => this.invalid() || (this.errors()?.length ?? 0) > 0);
+    /** @ignore */
+    readonly touchedState = computed(() => this.touched());
+    /** @ignore */
+    readonly dirtyState = computed(() => this.dirty() || this.dirtyValue());
 
     readonly state = computed(() =>
         this.indeterminateState() ? 'indeterminate' : this.checkedState() ? 'checked' : 'unchecked'
@@ -324,9 +375,13 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
         this.indeterminate.set(false);
         this.checked.set(next);
         this.controlValueAccessor.setValue(next);
+        this.dirtyValue.set(true);
         // Mark the form control touched on user interaction so `touched`-gated validation shows
         // (the visible control is the button, not the hidden input, so blur alone is unreliable).
+        // Both channels: CVA for Reactive forms, the `touched` model + `touch` output for Signal Forms.
         this.controlValueAccessor.markAsTouched();
+        this.touched.set(true);
+        this.touch.emit();
     }
 
     private syncUncheckedInput(): void {
