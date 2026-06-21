@@ -33,6 +33,11 @@ export default {
                 const inherited = CONFIG_DEFAULT_RE.exec(cleaned);
                 if (inherited) {
                     input.defaultValue = (config[inherited[1]] ?? inherited[2]).trim();
+                } else if (/^\{[\s\S]*\b(?:alias|transform)\b[\s\S]*\}$/.test(cleaned)) {
+                    // `input.required<T>({ alias })` / `input({ transform })` — no real default value;
+                    // compodoc captured the options object. Clear it so the Default column is empty
+                    // instead of showing `{ alias: … }`.
+                    input.defaultValue = '';
                 }
             }
 
