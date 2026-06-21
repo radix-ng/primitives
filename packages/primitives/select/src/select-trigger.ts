@@ -29,6 +29,8 @@ const attr = (value: boolean) => (value ? '' : undefined);
         '[attr.data-valid]': 'dataAttr(!invalidState())',
         '[attr.data-required]': 'dataAttr(requiredState())',
         '[attr.data-readonly]': 'dataAttr(readOnlyState())',
+        '[attr.data-touched]': 'dataAttr(touchedState())',
+        '[attr.data-dirty]': 'dataAttr(dirtyState())',
         '[attr.data-filled]': 'dataAttr(filledState())',
         '[attr.data-focused]': 'dataAttr(focusedState())',
         '(click)': 'onClickHandler($event)',
@@ -61,11 +63,19 @@ export class RdxSelectTrigger {
         contentId: () => this.rootContext.contentId
     });
 
-    protected readonly invalidState = computed(() => Boolean(this.fieldRootContext?.invalidState()));
+    protected readonly invalidState = computed(
+        () => this.rootContext.invalidState() || Boolean(this.fieldRootContext?.invalidState())
+    );
     protected readonly requiredState = computed(
         () => this.rootContext.required() || Boolean(this.fieldRootContext?.requiredState())
     );
     protected readonly readOnlyState = computed(() => this.rootContext.readOnly());
+    protected readonly touchedState = computed(
+        () => this.rootContext.touchedState() || Boolean(this.fieldRootContext?.touchedState())
+    );
+    protected readonly dirtyState = computed(
+        () => this.rootContext.dirtyState() || Boolean(this.fieldRootContext?.dirtyState())
+    );
     protected readonly filledState = computed(
         () => !this.rootContext.isEmptyModelValue() || Boolean(this.fieldRootContext?.filledState())
     );
@@ -166,6 +176,8 @@ export class RdxSelectTrigger {
     onBlur(): void {
         this.fieldRootContext?.setFocused(false);
         this.fieldRootContext?.setTouched(true);
+        // Notify Signal Forms (touched model + touch output) the control was touched.
+        this.rootContext.markAsTouched();
     }
 
     protected readonly dataAttr = attr;

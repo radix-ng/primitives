@@ -26,7 +26,9 @@ import {
     provideFloatingTree,
     RdxCancelableChangeEventDetails,
     RdxFloatingRootContext,
+    RdxFormValueControl,
     RdxTransitionStatus,
+    RdxValidationError,
     useTransitionStatus
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
@@ -87,6 +89,10 @@ export interface RdxSelectRootContext {
     disabled: Signal<boolean>;
     readOnly: Signal<boolean>;
     required: Signal<boolean>;
+    invalidState: Signal<boolean>;
+    touchedState: Signal<boolean>;
+    dirtyState: Signal<boolean>;
+    markAsTouched: () => void;
     modal: Signal<boolean>;
     isEmptyModelValue: Signal<boolean>;
     transitionStatus: Signal<RdxTransitionStatus>;
@@ -121,6 +127,10 @@ const context = (): RdxSelectRootContext => {
         disabled: context.disabled,
         readOnly: context.readOnly,
         required: context.required,
+        invalidState: context.invalidState,
+        touchedState: context.touchedState,
+        dirtyState: context.dirtyState,
+        markAsTouched: () => context.markAsTouched(),
         modal: context.modal,
         isEmptyModelValue: context.isEmptyModelValue,
         transitionStatus: context.transitionStatus,
@@ -169,7 +179,7 @@ export const [injectSelectRootContext, provideSelectRootContext] = createContext
     ],
     hostDirectives: [RdxPopper]
 })
-export class RdxSelectRoot {
+export class RdxSelectRoot implements RdxFormValueControl<AcceptableValue | AcceptableValue[] | undefined> {
     readonly contentId = injectId('rdx-select-content-');
 
     readonly open = model<boolean>(false);
@@ -207,6 +217,21 @@ export class RdxSelectRoot {
     /** Marks the control as required — reflected on the trigger as `aria-required` / `data-required`. */
     readonly required = input(false, { transform: booleanAttribute });
 
+    /** Whether the select is invalid. A non-empty {@link errors} list also marks it invalid. */
+    readonly invalid = input(false, { transform: booleanAttribute });
+
+    /** Whether the select has been touched. A `model()` so Signal Forms can write it; set on trigger blur. */
+    readonly touched = model<boolean>(false);
+
+    /** Whether the value changed from its initial value. Merged with internal tracking. */
+    readonly dirty = input(false, { transform: booleanAttribute });
+
+    /** Validation errors for the select. A non-empty list marks it invalid. */
+    readonly errors = input<readonly RdxValidationError[]>([]);
+
+    /** Emits on blur, notifying Signal Forms the select was touched. */
+    readonly touch = output<void>();
+
     /** Whether the popup is modal: locks page scroll and makes outside content inert while open. */
     readonly modal = input(true, { transform: booleanAttribute });
 
@@ -243,6 +268,23 @@ export class RdxSelectRoot {
         }
         return isNullish(value);
     });
+
+    private readonly dirtyValue = signal(false);
+    /** @ignore Invalid when the `invalid` input is set or the `errors` list is non-empty. */
+    readonly invalidState = computed(() => this.invalid() || (this.errors()?.length ?? 0) > 0);
+    /** @ignore */
+    readonly touchedState = computed(() => this.touched());
+    /** @ignore */
+    readonly dirtyState = computed(() => this.dirty() || this.dirtyValue());
+
+    /**
+     * @ignore Mark the select touched — sets the `touched` model and emits the `touch` output for
+     * Signal Forms. Called on trigger blur. (Select carries no `ControlValueAccessor`.)
+     */
+    markAsTouched(): void {
+        this.touched.set(true);
+        this.touch.emit();
+    }
 
     private hasAppliedDefaultValue = false;
     private hasAppliedDefaultOpen = false;
@@ -351,6 +393,7 @@ export class RdxSelectRoot {
         }
 
         this.value.set(nextValue);
+        this.dirtyValue.set(true);
 
         return true;
     }

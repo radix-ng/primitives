@@ -6213,8 +6213,24 @@
               "default": "undefined"
             },
             {
+              "name": "dirty",
+              "default": "false",
+              "description": "Whether the value changed from its initial value. Merged with internal tracking."
+            },
+            {
               "name": "disabled",
               "default": "false"
+            },
+            {
+              "name": "errors",
+              "type": "readonly RdxValidationError[]",
+              "default": "[]",
+              "description": "Validation errors for the select. A non-empty list marks it invalid."
+            },
+            {
+              "name": "invalid",
+              "default": "false",
+              "description": "Whether the select is invalid. A non-empty {@link errors} list also marks it invalid."
             },
             {
               "name": "isItemEqualToValue",
@@ -6251,6 +6267,12 @@
               "description": "Marks the control as required — reflected on the trigger as `aria-required` / `data-required`."
             },
             {
+              "name": "touched",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the select has been touched. A `model()` so Signal Forms can write it; set on trigger blur."
+            },
+            {
               "name": "value",
               "type": "AcceptableValue | AcceptableValue[]"
             }
@@ -6270,10 +6292,16 @@
               "name": "onValueChange",
               "type": "RdxSelectValueChangeEvent",
               "description": "Emits before a value change is committed; call `eventDetails.cancel()` to veto it."
+            },
+            {
+              "name": "touch",
+              "type": "void",
+              "description": "Emits on blur, notifying Signal Forms the select was touched."
             }
           ],
           "twoWay": [
             "open",
+            "touched",
             "value"
           ]
         },

@@ -1,8 +1,11 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { form, FormField } from '@angular/forms/signals';
+import { By } from '@angular/platform-browser';
 import { RdxFieldRoot } from '@radix-ng/primitives/field';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { _importsSelect } from '../index';
+import { RdxSelectRoot } from '../src/select-root';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -150,6 +153,180 @@ describe('Select Field integration on the trigger', () => {
         expect(trigger().getAttribute('aria-invalid')).toBe('true');
         expect(trigger().getAttribute('data-required')).toBe('');
         expect(trigger().getAttribute('aria-required')).toBe('true');
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [_importsSelect],
+    template: `
+        <div
+            [(value)]="value"
+            [(open)]="open"
+            [invalid]="invalid()"
+            [errors]="errors()"
+            [dirty]="dirty()"
+            rdxSelectRoot
+        >
+            <button rdxSelectTrigger>
+                <span rdxSelectValue placeholder="Select…"></span>
+            </button>
+            <div *rdxSelectPortal rdxSelectPositioner>
+                <div rdxSelectPopup>
+                    <div rdxSelectList>
+                        @for (fruit of fruits; track fruit) {
+                            <div [value]="fruit" rdxSelectItem>
+                                <span rdxSelectItemText>{{ fruit }}</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+})
+class SelectValidationHost {
+    readonly value = signal<string | undefined>(undefined);
+    readonly open = signal(false);
+    readonly invalid = signal(false);
+    readonly dirty = signal(false);
+    readonly errors = signal<{ kind: string; message?: string }[]>([]);
+    readonly fruits = ['Apple', 'Banana'];
+}
+
+describe('Select validation state (batch #4)', () => {
+    let fixture: ComponentFixture<SelectValidationHost>;
+    let host: SelectValidationHost;
+
+    async function settle(): Promise<void> {
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+    }
+    function trigger(): HTMLElement {
+        return fixture.nativeElement.querySelector('[rdxSelectTrigger]');
+    }
+    function popup(): HTMLElement | null {
+        return document.querySelector('[rdxSelectPopup]');
+    }
+
+    beforeEach(async () => {
+        TestBed.configureTestingModule({ imports: [SelectValidationHost] });
+        fixture = TestBed.createComponent(SelectValidationHost);
+        host = fixture.componentInstance;
+        await settle();
+    });
+
+    it('is valid by default', () => {
+        expect(trigger().getAttribute('data-valid')).toBe('');
+        expect(trigger().getAttribute('data-invalid')).toBeNull();
+        expect(trigger().getAttribute('aria-invalid')).toBeNull();
+    });
+
+    it('reflects the invalid input on the trigger', async () => {
+        host.invalid.set(true);
+        await settle();
+        expect(trigger().getAttribute('data-invalid')).toBe('');
+        expect(trigger().getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('is invalid when the errors list is non-empty', async () => {
+        host.errors.set([{ kind: 'required', message: 'Required.' }]);
+        await settle();
+        expect(trigger().getAttribute('data-invalid')).toBe('');
+        expect(trigger().getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('marks dirty after a value change', async () => {
+        expect(trigger().getAttribute('data-dirty')).toBeNull();
+        host.open.set(true);
+        await settle();
+        popup()?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+        await settle();
+        expect(host.value()).toBe('Apple');
+        expect(trigger().getAttribute('data-dirty')).toBe('');
+    });
+
+    it('marks touched on trigger blur', async () => {
+        expect(trigger().getAttribute('data-touched')).toBeNull();
+        trigger().dispatchEvent(new FocusEvent('blur'));
+        await settle();
+        expect(trigger().getAttribute('data-touched')).toBe('');
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [FormField, _importsSelect],
+    template: `
+        <div [formField]="city" rdxSelectRoot>
+            <button rdxSelectTrigger>
+                <span rdxSelectValue placeholder="Select…"></span>
+            </button>
+            <div *rdxSelectPortal rdxSelectPositioner>
+                <div rdxSelectPopup>
+                    <div rdxSelectList>
+                        @for (fruit of fruits; track fruit) {
+                            <div [value]="fruit" rdxSelectItem>
+                                <span rdxSelectItemText>{{ fruit }}</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+})
+class SelectSignalFormHost {
+    readonly model = signal<{ city: string | undefined }>({ city: 'Banana' });
+    readonly formTree = form(this.model);
+    readonly fruits = ['Apple', 'Banana'];
+
+    get city() {
+        return this.formTree.city;
+    }
+}
+
+describe('Select with Signal Forms', () => {
+    let fixture: ComponentFixture<SelectSignalFormHost>;
+    let host: SelectSignalFormHost;
+
+    async function settle(): Promise<void> {
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+    }
+    function trigger(): HTMLElement {
+        return fixture.nativeElement.querySelector('[rdxSelectTrigger]');
+    }
+    function popup(): HTMLElement | null {
+        return document.querySelector('[rdxSelectPopup]');
+    }
+    function root(): RdxSelectRoot {
+        return fixture.debugElement.query(By.directive(RdxSelectRoot)).injector.get(RdxSelectRoot);
+    }
+
+    beforeEach(async () => {
+        TestBed.configureTestingModule({ imports: [SelectSignalFormHost] });
+        fixture = TestBed.createComponent(SelectSignalFormHost);
+        host = fixture.componentInstance;
+        await settle();
+    });
+
+    it('reflects the bound field value (FormValueControl)', () => {
+        expect(root().value()).toBe('Banana');
+        expect(trigger().getAttribute('data-filled')).toBe('');
+    });
+
+    it('updates the bound field on item selection', async () => {
+        trigger().dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+        await settle();
+        // Opening highlights the currently-selected 'Banana'; move up to 'Apple' before committing.
+        popup()?.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
+        await settle();
+        popup()?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+        await settle();
+        expect(host.model().city).toBe('Apple');
     });
 });
 
