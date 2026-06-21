@@ -191,6 +191,53 @@ export class SignalFormsFieldExample {
 }
 ```
 
+## Control authoring — the shared state surface
+
+Every Radix NG form control exposes the optional Signal Forms `FormUiControl` state
+(`invalid` / `errors` / `touched` / `dirty` inputs + a `touch` output) so `[formField]` can write it and
+the control can reflect it as `data-*` / `aria-invalid`. Instead of re-declaring that block on every
+primitive, three reusable pieces live in **`@radix-ng/primitives/core`** — controls inherit and compose
+them rather than copy-paste:
+
+- **`RdxFormUiControlBase`** — an abstract `@Directive()` that declares the five members **once** and
+  builds the derived state (`formUi`). A control gets the whole surface with a single `extends` and only
+  adds its own `value` / `checked` model. The declarations have to stay on a directive class: Angular's
+  compiler only discovers `input()` / `model()` as field initializers, and Signal Forms binds
+  form-written state onto the **single directive that carries the value model** — so inheritance keeps
+  them co-located there (a host directive could not).
+- **`createFormUiState(...)`** — derives `invalidState` / `touchedState` / `dirtyState` and the dual
+  `markAsTouched` (it bridges the control's `ControlValueAccessor` when it has one, so the same call
+  notifies Reactive / template-driven forms too). The base calls it; a control that cannot extend the
+  base calls it directly. Compound controls also get `formUiStateContext()` to surface the state to a
+  child part (e.g. select reflects on its trigger).
+- **`RdxFormUiStateHost`** + **`provideFormUiState(...)`** — a host directive that reflects the state as
+  `aria-invalid` / `data-invalid|valid|touched|dirty` and marks touched on focus-out, so those host
+  bindings aren't repeated either.
+
+```ts
+import { inject, Directive, model } from '@angular/core';
+import {
+    RdxFormUiControlBase,
+    RdxFormUiStateHost,
+    provideFormUiState,
+    RdxFormValueControl
+} from '@radix-ng/primitives/core';
+
+@Directive({
+    selector: '[myControl]',
+    hostDirectives: [RdxFormUiStateHost],
+    providers: [provideFormUiState(() => inject(MyControl).formUi)]
+})
+export class MyControl extends RdxFormUiControlBase implements RdxFormValueControl<string> {
+    readonly value = model<string>('');
+    // invalid / errors / touched / dirty / touch + formUi are inherited — nothing else to declare.
+}
+```
+
+Controls already on this surface: `select`, `switch`, `radio`, `number-field`, `toggle-group`
+(`input` keeps its own equivalent inline). Dual controls override `formUiTouchTarget()` to return their
+CVA; CVA-less controls (like `select`) leave it to bind via Signal Forms only.
+
 ## API Reference
 
 `rdxSignalField` has no inputs — it reads the field from the co-located `[formField]` directive.

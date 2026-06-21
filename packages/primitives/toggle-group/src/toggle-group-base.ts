@@ -4,7 +4,10 @@ import {
     BooleanInput,
     createCancelableChangeEventDetails,
     DataOrientation,
-    RdxCancelableChangeEventDetails
+    RdxCancelableChangeEventDetails,
+    RdxFormUiControlBase,
+    RdxFormUiTouchTarget,
+    RdxFormValueControl
 } from '@radix-ng/primitives/core';
 import { RdxToggleGroupContext } from './toggle-group-context';
 
@@ -37,11 +40,13 @@ export function toggleGroupContext(instance: RdxToggleGroupBase): RdxToggleGroup
         role: 'group',
         '[attr.data-orientation]': 'orientation()',
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
-        '[attr.data-multiple]': 'multiple() ? "" : undefined',
-        '(focusout)': 'onTouched?.()'
+        '[attr.data-multiple]': 'multiple() ? "" : undefined'
     }
 })
-export abstract class RdxToggleGroupBase implements ControlValueAccessor {
+export abstract class RdxToggleGroupBase
+    extends RdxFormUiControlBase
+    implements ControlValueAccessor, RdxFormValueControl<string[] | undefined>
+{
     /**
      * The pressed values. Always an array — a single value is `[value]`. Use with `(onValueChange)`
      * for controlled state.
@@ -88,12 +93,19 @@ export abstract class RdxToggleGroupBase implements ControlValueAccessor {
     protected onTouched?: () => void;
 
     constructor() {
+        super();
+
         effect(() => {
             const initial = this.defaultValue();
             if (initial !== undefined && untracked(this.value) === undefined) {
                 this.value.set(initial);
             }
         });
+    }
+
+    /** @ignore Bridge the CVA `onTouched` so `markAsTouched()` also notifies Reactive/template forms. */
+    protected override formUiTouchTarget(): RdxFormUiTouchTarget {
+        return { markAsTouched: () => this.onTouched?.() };
     }
 
     /** @ignore Extra disabled state inherited from composite parents such as Toolbar. */
@@ -141,6 +153,7 @@ export abstract class RdxToggleGroupBase implements ControlValueAccessor {
         }
 
         this.value.set(next);
+        this.formUi.markDirty();
         this.onChange?.(next);
     }
 

@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { RdxCheckboxModule } from '../index';
 
@@ -240,5 +241,128 @@ describe('RdxCheckboxGroup', () => {
         parent.click();
         f.detectChanges();
         expect(f.componentInstance.value).toEqual(['b']);
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [RdxCheckboxModule],
+    template: `
+        <div [invalid]="invalid()" [errors]="errors()" [dirty]="dirty()" [allValues]="all" rdxCheckboxGroup>
+            <div name="a" rdxCheckboxRoot>
+                <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
+            </div>
+            <div name="b" rdxCheckboxRoot>
+                <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
+            </div>
+        </div>
+    `
+})
+class GroupValidationHost {
+    readonly invalid = signal(false);
+    readonly dirty = signal(false);
+    readonly errors = signal<{ kind: string; message?: string }[]>([]);
+    readonly all = ['a', 'b'];
+}
+
+describe('RdxCheckboxGroup validation state', () => {
+    let fixture: ComponentFixture<GroupValidationHost>;
+    let host: GroupValidationHost;
+    let group: HTMLElement;
+    let buttons: HTMLButtonElement[];
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [GroupValidationHost] });
+        fixture = TestBed.createComponent(GroupValidationHost);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+        group = fixture.debugElement.query(By.css('[rdxCheckboxGroup]')).nativeElement;
+        buttons = fixture.debugElement.queryAll(By.css('button[rdxCheckboxButton]')).map((d) => d.nativeElement);
+    });
+
+    it('is valid by default', () => {
+        expect(group.getAttribute('data-valid')).toBe('');
+        expect(group.getAttribute('data-invalid')).toBeNull();
+        expect(group.getAttribute('aria-invalid')).toBeNull();
+    });
+
+    it('reflects the invalid input on the group', () => {
+        host.invalid.set(true);
+        fixture.detectChanges();
+        expect(group.getAttribute('data-invalid')).toBe('');
+        expect(group.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('is invalid when the errors list is non-empty', () => {
+        host.errors.set([{ kind: 'required', message: 'Pick one.' }]);
+        fixture.detectChanges();
+        expect(group.getAttribute('data-invalid')).toBe('');
+        expect(group.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('marks dirty after a value change', () => {
+        expect(group.getAttribute('data-dirty')).toBeNull();
+        buttons[0].click();
+        fixture.detectChanges();
+        expect(group.getAttribute('data-dirty')).toBe('');
+    });
+
+    it('marks touched on focus-out', () => {
+        expect(group.getAttribute('data-touched')).toBeNull();
+        group.dispatchEvent(new FocusEvent('focusout'));
+        fixture.detectChanges();
+        expect(group.getAttribute('data-touched')).toBe('');
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [RdxCheckboxModule, FormField],
+    template: `
+        <div [formField]="picks" [allValues]="all" rdxCheckboxGroup>
+            <div name="a" rdxCheckboxRoot>
+                <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
+            </div>
+            <div name="b" rdxCheckboxRoot>
+                <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
+            </div>
+        </div>
+    `
+})
+class GroupSignalFormHost {
+    readonly model = signal<{ picks: string[] }>({ picks: ['b'] });
+    readonly formTree = form(this.model);
+    readonly all = ['a', 'b'];
+
+    get picks() {
+        return this.formTree.picks;
+    }
+}
+
+describe('RdxCheckboxGroup with Signal Forms', () => {
+    let fixture: ComponentFixture<GroupSignalFormHost>;
+    let host: GroupSignalFormHost;
+    let buttons: HTMLButtonElement[];
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [GroupSignalFormHost] });
+        fixture = TestBed.createComponent(GroupSignalFormHost);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+        buttons = fixture.debugElement.queryAll(By.css('button[rdxCheckboxButton]')).map((d) => d.nativeElement);
+    });
+
+    it('reflects the bound field value (FormValueControl)', () => {
+        expect(buttons[1].getAttribute('aria-checked')).toBe('true');
+        expect(buttons[0].getAttribute('aria-checked')).toBe('false');
+        host.model.update((value) => ({ ...value, picks: ['a', 'b'] }));
+        fixture.detectChanges();
+        expect(buttons[0].getAttribute('aria-checked')).toBe('true');
+    });
+
+    it('updates the bound field on toggle', () => {
+        buttons[0].click();
+        fixture.detectChanges();
+        expect(host.model().picks).toEqual(['b', 'a']);
     });
 });

@@ -20,8 +20,9 @@ import {
     createContext,
     provideValueAccessor,
     RdxCancelableChangeEventDetails,
-    RdxFormValueControl,
-    RdxValidationError
+    RdxFormUiControlBase,
+    RdxFormUiTouchTarget,
+    RdxFormValueControl
 } from '@radix-ng/primitives/core';
 import { RdxRadioValueChangeReason } from './radio-tokens';
 
@@ -86,7 +87,10 @@ export const [injectRadioRootContext, provideRadioRootContext] = createContext<R
         '(focusout)': 'onFocusOut($event)'
     }
 })
-export class RdxRadioGroupDirective implements ControlValueAccessor, RdxFormValueControl<string | null> {
+export class RdxRadioGroupDirective
+    extends RdxFormUiControlBase
+    implements ControlValueAccessor, RdxFormValueControl<string | null>
+{
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly compositeRoot = inject(RdxCompositeRoot, { self: true });
 
@@ -113,35 +117,16 @@ export class RdxRadioGroupDirective implements ControlValueAccessor, RdxFormValu
 
     readonly required = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    /** Whether the radio group is invalid. A non-empty {@link errors} list also marks it invalid. */
-    readonly invalid = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
-
-    /**
-     * Whether the group has been touched. A `model()` so Signal Forms can write it; the group also sets
-     * it on focus-out (and emits {@link touch}).
-     */
-    readonly touched = model<boolean>(false);
-
-    /** Whether the selection changed from its initial value. Merged with internal tracking. */
-    readonly dirty = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
-
-    /** Validation errors for the group. A non-empty list marks it invalid. */
-    readonly errors = input<readonly RdxValidationError[]>([]);
-
     /**
      * Event handler called when the value changes.
      */
     readonly onValueChange = output<RdxRadioValueChangeEvent>();
 
-    /** Emits on focus-out, notifying Signal Forms the group was touched. */
-    readonly touch = output<void>();
-
     private readonly disable = signal<boolean>(false);
     readonly disabledState = computed(() => this.disable() || this.disabled());
-    private readonly dirtyValue = signal(false);
-    readonly invalidState = computed(() => this.invalid() || (this.errors()?.length ?? 0) > 0);
-    readonly touchedState = computed(() => this.touched());
-    readonly dirtyState = computed(() => this.dirty() || this.dirtyValue());
+    readonly invalidState = this.formUi.invalidState;
+    readonly touchedState = this.formUi.touchedState;
+    readonly dirtyState = this.formUi.dirtyState;
     private readonly arrowNavigation = signal(false);
     private readonly itemMetadata = computed(() =>
         Array.from(this.compositeRoot.itemMap().values()).filter(isRadioItemMetadata)
@@ -176,6 +161,8 @@ export class RdxRadioGroupDirective implements ControlValueAccessor, RdxFormValu
     };
 
     constructor() {
+        super();
+
         let hasAppliedDefault = false;
         effect(() => {
             const defaultValue = this.defaultValue();
@@ -238,9 +225,14 @@ export class RdxRadioGroupDirective implements ControlValueAccessor, RdxFormValu
         }
 
         this.value.set(value);
-        this.dirtyValue.set(true);
+        this.formUi.markDirty();
         this.onChange?.(value);
         this.onTouched();
+    }
+
+    /** @ignore Bridge the CVA `onTouched` so `markAsTouched()` also notifies Reactive/template forms. */
+    protected override formUiTouchTarget(): RdxFormUiTouchTarget {
+        return { markAsTouched: () => this.onTouched() };
     }
 
     /**
@@ -290,9 +282,7 @@ export class RdxRadioGroupDirective implements ControlValueAccessor, RdxFormValu
     protected onFocusOut(event: FocusEvent): void {
         const next = event.relatedTarget as Node | null;
         if (!this.elementRef.nativeElement.contains(next)) {
-            this.touched.set(true);
-            this.touch.emit();
-            this.onTouched();
+            this.formUi.markAsTouched();
         }
     }
 }

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { resetRdxDevWarnings } from '@radix-ng/primitives/core';
 import { RdxToggle, RdxTogglePressedChangeEvent } from '@radix-ng/primitives/toggle';
@@ -373,5 +374,117 @@ describe('RdxToggleGroup with ReactiveFormsModule', () => {
         fixture.detectChanges();
         // Disabled group ignores interaction — the value is unchanged.
         expect(component.form.getRawValue().alignment).toEqual(['right']);
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [RdxToggleGroup, RdxToggle],
+    template: `
+        <div [invalid]="invalid()" [errors]="errors()" [dirty]="dirty()" rdxToggleGroup aria-label="Alignment">
+            <button rdxToggle value="left" aria-label="Left">Left</button>
+            <button rdxToggle value="right" aria-label="Right">Right</button>
+        </div>
+    `
+})
+class ToggleGroupValidationComponent {
+    readonly invalid = signal(false);
+    readonly dirty = signal(false);
+    readonly errors = signal<{ kind: string; message?: string }[]>([]);
+}
+
+describe('RdxToggleGroup validation state', () => {
+    let fixture: ComponentFixture<ToggleGroupValidationComponent>;
+    let host: ToggleGroupValidationComponent;
+    let group: HTMLElement;
+    let items: HTMLButtonElement[];
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [ToggleGroupValidationComponent] });
+        fixture = TestBed.createComponent(ToggleGroupValidationComponent);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+        group = fixture.debugElement.query(By.css('[rdxToggleGroup]')).nativeElement;
+        items = fixture.debugElement.queryAll(By.directive(RdxToggle)).map((d) => d.nativeElement);
+    });
+
+    it('is valid by default', () => {
+        expect(group.getAttribute('data-valid')).toBe('');
+        expect(group.getAttribute('data-invalid')).toBeNull();
+        expect(group.getAttribute('aria-invalid')).toBeNull();
+    });
+
+    it('reflects the invalid input on the group', () => {
+        host.invalid.set(true);
+        fixture.detectChanges();
+        expect(group.getAttribute('data-invalid')).toBe('');
+        expect(group.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('is invalid when the errors list is non-empty', () => {
+        host.errors.set([{ kind: 'required', message: 'Required.' }]);
+        fixture.detectChanges();
+        expect(group.getAttribute('data-invalid')).toBe('');
+        expect(group.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('marks dirty after a value change', () => {
+        expect(group.getAttribute('data-dirty')).toBeNull();
+        items[0].click();
+        fixture.detectChanges();
+        expect(group.getAttribute('data-dirty')).toBe('');
+    });
+
+    it('marks touched on focus-out', () => {
+        expect(group.getAttribute('data-touched')).toBeNull();
+        group.dispatchEvent(new FocusEvent('focusout'));
+        fixture.detectChanges();
+        expect(group.getAttribute('data-touched')).toBe('');
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [FormField, RdxToggleGroup, RdxToggle],
+    template: `
+        <div [formField]="alignment" rdxToggleGroup aria-label="Alignment">
+            <button rdxToggle value="left" aria-label="Left">Left</button>
+            <button rdxToggle value="right" aria-label="Right">Right</button>
+        </div>
+    `
+})
+class ToggleGroupSignalFormComponent {
+    readonly model = signal<{ alignment: string[] }>({ alignment: ['right'] });
+    readonly formTree = form(this.model);
+
+    get alignment() {
+        return this.formTree.alignment;
+    }
+}
+
+describe('RdxToggleGroup with Signal Forms', () => {
+    let fixture: ComponentFixture<ToggleGroupSignalFormComponent>;
+    let host: ToggleGroupSignalFormComponent;
+    let items: HTMLButtonElement[];
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [ToggleGroupSignalFormComponent] });
+        fixture = TestBed.createComponent(ToggleGroupSignalFormComponent);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+        items = fixture.debugElement.queryAll(By.directive(RdxToggle)).map((d) => d.nativeElement);
+    });
+
+    it('reflects the bound field value (FormValueControl)', () => {
+        expect(items[1].getAttribute('aria-pressed')).toBe('true');
+        host.model.update((value) => ({ ...value, alignment: ['left'] }));
+        fixture.detectChanges();
+        expect(items[0].getAttribute('aria-pressed')).toBe('true');
+    });
+
+    it('updates the bound field on click', () => {
+        items[0].click();
+        fixture.detectChanges();
+        expect(host.model().alignment).toEqual(['left']);
     });
 });

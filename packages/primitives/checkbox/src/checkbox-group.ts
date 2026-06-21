@@ -15,8 +15,13 @@ import {
     BooleanInput,
     createCancelableChangeEventDetails,
     createContext,
+    provideFormUiState,
     provideValueAccessor,
-    RdxCancelableChangeEventDetails
+    RdxCancelableChangeEventDetails,
+    RdxFormUiControlBase,
+    RdxFormUiStateHost,
+    RdxFormUiTouchTarget,
+    RdxFormValueControl
 } from '@radix-ng/primitives/core';
 import type { CheckedState } from './checkbox-root';
 
@@ -84,13 +89,21 @@ let nextCheckboxGroupId = 0;
 @Directive({
     selector: '[rdxCheckboxGroup]',
     exportAs: 'rdxCheckboxGroup',
-    providers: [provideValueAccessor(RdxCheckboxGroupDirective), provideCheckboxGroupContext(groupContext)],
+    hostDirectives: [RdxFormUiStateHost],
+    providers: [
+        provideValueAccessor(RdxCheckboxGroupDirective),
+        provideCheckboxGroupContext(groupContext),
+        provideFormUiState(() => inject(RdxCheckboxGroupDirective).formUi)
+    ],
     host: {
         role: 'group',
         '[attr.data-disabled]': 'disabledState() ? "" : undefined'
     }
 })
-export class RdxCheckboxGroupDirective implements ControlValueAccessor {
+export class RdxCheckboxGroupDirective
+    extends RdxFormUiControlBase
+    implements ControlValueAccessor, RdxFormValueControl<string[]>
+{
     /** The names of the currently checked checkboxes. Use with `onValueChange` or `[(value)]`. */
     readonly value = model<string[]>([]);
 
@@ -153,6 +166,8 @@ export class RdxCheckboxGroupDirective implements ControlValueAccessor {
     };
 
     constructor() {
+        super();
+
         effect(() => {
             const defaultValue = this.defaultValue();
             if (!this.hasAppliedDefault && defaultValue !== undefined) {
@@ -160,6 +175,11 @@ export class RdxCheckboxGroupDirective implements ControlValueAccessor {
                 this.value.set(defaultValue);
             }
         });
+    }
+
+    /** @ignore Bridge the CVA `onTouched` so `markAsTouched()` also notifies Reactive/template forms. */
+    protected override formUiTouchTarget(): RdxFormUiTouchTarget {
+        return { markAsTouched: () => this.onTouched() };
     }
 
     /** @ignore Register a child's disabled signal keyed by its name. */
@@ -280,6 +300,7 @@ export class RdxCheckboxGroupDirective implements ControlValueAccessor {
         }
 
         this.value.set(next);
+        this.formUi.markDirty();
         this.onChange(next);
         this.onTouched();
         return true;

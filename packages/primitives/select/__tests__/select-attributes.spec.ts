@@ -194,7 +194,7 @@ class SelectValidationHost {
     readonly fruits = ['Apple', 'Banana'];
 }
 
-describe('Select validation state (batch #4)', () => {
+describe('Select validation state', () => {
     let fixture: ComponentFixture<SelectValidationHost>;
     let host: SelectValidationHost;
 

@@ -1,6 +1,12 @@
 import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input } from '@angular/core';
 import { RdxCompositeMetadata, RdxCompositeRoot } from '@radix-ng/primitives/composite';
-import { BooleanInput, Direction, provideValueAccessor } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    Direction,
+    provideFormUiState,
+    provideValueAccessor,
+    RdxFormUiStateHost
+} from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { RdxToggleGroupBase, toggleGroupContext } from './toggle-group-base';
 import { provideToggleGroupContext } from './toggle-group-context';
@@ -14,10 +20,11 @@ import { provideToggleGroupContext } from './toggle-group-context';
 @Directive({
     selector: '[rdxToggleGroup]',
     exportAs: 'rdxToggleGroup',
-    hostDirectives: [RdxCompositeRoot],
+    hostDirectives: [RdxCompositeRoot, RdxFormUiStateHost],
     providers: [
         provideToggleGroupContext(() => toggleGroupContext(inject(RdxToggleGroup))),
-        provideValueAccessor(RdxToggleGroup)
+        provideValueAccessor(RdxToggleGroup),
+        provideFormUiState(() => inject(RdxToggleGroup).formUi)
     ]
 })
 export class RdxToggleGroup extends RdxToggleGroupBase {

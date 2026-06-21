@@ -1158,6 +1158,9 @@
           "selector": "[rdxCheckboxGroup]",
           "exportAs": "rdxCheckboxGroup",
           "description": "Groups a set of checkboxes that share a single array value (the names of the checked boxes).\n\nEach child `rdxCheckboxRoot` participates by its `name`. A child marked `parent` becomes a\n\"select all\" checkbox whose state is derived from `allValues`.",
+          "hostDirectives": [
+            "RdxFormUiStateHost"
+          ],
           "inputs": [
             {
               "name": "allValues",
@@ -1181,6 +1184,30 @@
               "type": "string[]",
               "default": "[]",
               "description": "The names of the currently checked checkboxes. Use with `onValueChange` or `[(value)]`."
+            },
+            {
+              "name": "dirty",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the value changed from its initial value. Merged with internal tracking."
+            },
+            {
+              "name": "errors",
+              "type": "readonly RdxValidationError[]",
+              "default": "[]",
+              "description": "Validation errors for the control. A non-empty list marks it invalid."
+            },
+            {
+              "name": "invalid",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+            },
+            {
+              "name": "touched",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out."
             }
           ],
           "outputs": [
@@ -1188,10 +1215,16 @@
               "name": "onValueChange",
               "type": "RdxCheckboxGroupValueChangeEvent",
               "description": "Emits the new array of checked names whenever the value changes."
+            },
+            {
+              "name": "touch",
+              "type": "void",
+              "description": "Emits when the control is touched, notifying Signal Forms (stable Angular 22 contract)."
             }
           ],
           "twoWay": [
-            "value"
+            "value",
+            "touched"
           ]
         },
         {
@@ -4654,22 +4687,10 @@
               "description": "The uncontrolled value of the field when it is initially rendered."
             },
             {
-              "name": "dirty",
-              "type": "boolean",
-              "default": "false",
-              "description": "Whether the value changed from its initial value. Merged with internal tracking."
-            },
-            {
               "name": "disabled",
               "type": "boolean",
               "default": "false",
               "description": "When `true`, the user cannot interact with the field."
-            },
-            {
-              "name": "errors",
-              "type": "readonly RdxValidationError[]",
-              "default": "[]",
-              "description": "Validation errors for the field. A non-empty list marks it invalid."
             },
             {
               "name": "form",
@@ -4686,12 +4707,6 @@
               "type": "string",
               "default": "injectId('rdx-number-field-')",
               "description": "The id of the input element."
-            },
-            {
-              "name": "invalid",
-              "type": "boolean",
-              "default": "false",
-              "description": "Whether the field is invalid. A non-empty {@link errors} list also marks it invalid."
             },
             {
               "name": "largeStep",
@@ -4753,16 +4768,34 @@
               "description": "Amount to increment and decrement with the buttons, arrow keys and scrub area."
             },
             {
-              "name": "touched",
-              "type": "boolean",
-              "default": "false",
-              "description": "Whether the field has been touched. A `model()` so Signal Forms can write it; set on blur."
-            },
-            {
               "name": "value",
               "type": "number | null",
               "default": "null",
               "description": "The controlled value of the field. Use with `(onValueChange)` or two-way `[(value)]`."
+            },
+            {
+              "name": "dirty",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the value changed from its initial value. Merged with internal tracking."
+            },
+            {
+              "name": "errors",
+              "type": "readonly RdxValidationError[]",
+              "default": "[]",
+              "description": "Validation errors for the control. A non-empty list marks it invalid."
+            },
+            {
+              "name": "invalid",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+            },
+            {
+              "name": "touched",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out."
             }
           ],
           "outputs": [
@@ -4779,12 +4812,12 @@
             {
               "name": "touch",
               "type": "void",
-              "description": "Emits on blur, notifying Signal Forms the field was touched."
+              "description": "Emits when the control is touched, notifying Signal Forms (stable Angular 22 contract)."
             }
           ],
           "twoWay": [
-            "touched",
-            "value"
+            "value",
+            "touched"
           ]
         },
         {
@@ -5808,31 +5841,13 @@
               "type": "string"
             },
             {
-              "name": "dirty",
-              "type": "boolean",
-              "default": "false",
-              "description": "Whether the selection changed from its initial value. Merged with internal tracking."
-            },
-            {
               "name": "disabled",
               "type": "boolean",
               "default": "false"
             },
             {
-              "name": "errors",
-              "type": "readonly RdxValidationError[]",
-              "default": "[]",
-              "description": "Validation errors for the group. A non-empty list marks it invalid."
-            },
-            {
               "name": "form",
               "type": "string"
-            },
-            {
-              "name": "invalid",
-              "type": "boolean",
-              "default": "false",
-              "description": "Whether the radio group is invalid. A non-empty {@link errors} list also marks it invalid."
             },
             {
               "name": "name",
@@ -5850,16 +5865,34 @@
               "default": "false"
             },
             {
-              "name": "touched",
-              "type": "boolean",
-              "default": "false",
-              "description": "Whether the group has been touched. A `model()` so Signal Forms can write it; the group also sets\nit on focus-out (and emits {@link touch})."
-            },
-            {
               "name": "value",
               "type": "string | null",
               "default": "null",
               "description": "The selected value. Deliberately typed as `string` (not Base UI's generic `Value`):\na radio group maps onto native radio inputs whose form value is a string, so values are\nthe option identifiers. Use the string key of your option as the value."
+            },
+            {
+              "name": "dirty",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the value changed from its initial value. Merged with internal tracking."
+            },
+            {
+              "name": "errors",
+              "type": "readonly RdxValidationError[]",
+              "default": "[]",
+              "description": "Validation errors for the control. A non-empty list marks it invalid."
+            },
+            {
+              "name": "invalid",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+            },
+            {
+              "name": "touched",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out."
             }
           ],
           "outputs": [
@@ -5871,12 +5904,12 @@
             {
               "name": "touch",
               "type": "void",
-              "description": "Emits on focus-out, notifying Signal Forms the group was touched."
+              "description": "Emits when the control is touched, notifying Signal Forms (stable Angular 22 contract)."
             }
           ],
           "twoWay": [
-            "touched",
-            "value"
+            "value",
+            "touched"
           ]
         }
       ]
@@ -6213,24 +6246,8 @@
               "default": "undefined"
             },
             {
-              "name": "dirty",
-              "default": "false",
-              "description": "Whether the value changed from its initial value. Merged with internal tracking."
-            },
-            {
               "name": "disabled",
               "default": "false"
-            },
-            {
-              "name": "errors",
-              "type": "readonly RdxValidationError[]",
-              "default": "[]",
-              "description": "Validation errors for the select. A non-empty list marks it invalid."
-            },
-            {
-              "name": "invalid",
-              "default": "false",
-              "description": "Whether the select is invalid. A non-empty {@link errors} list also marks it invalid."
             },
             {
               "name": "isItemEqualToValue",
@@ -6267,14 +6284,32 @@
               "description": "Marks the control as required — reflected on the trigger as `aria-required` / `data-required`."
             },
             {
+              "name": "value",
+              "type": "AcceptableValue | AcceptableValue[]"
+            },
+            {
+              "name": "dirty",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the value changed from its initial value. Merged with internal tracking."
+            },
+            {
+              "name": "errors",
+              "type": "readonly RdxValidationError[]",
+              "default": "[]",
+              "description": "Validation errors for the control. A non-empty list marks it invalid."
+            },
+            {
+              "name": "invalid",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+            },
+            {
               "name": "touched",
               "type": "boolean",
               "default": "false",
-              "description": "Whether the select has been touched. A `model()` so Signal Forms can write it; set on trigger blur."
-            },
-            {
-              "name": "value",
-              "type": "AcceptableValue | AcceptableValue[]"
+              "description": "Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out."
             }
           ],
           "outputs": [
@@ -6296,13 +6331,13 @@
             {
               "name": "touch",
               "type": "void",
-              "description": "Emits on blur, notifying Signal Forms the select was touched."
+              "description": "Emits when the control is touched, notifying Signal Forms (stable Angular 22 contract)."
             }
           ],
           "twoWay": [
             "open",
-            "touched",
-            "value"
+            "value",
+            "touched"
           ]
         },
         {
@@ -6786,33 +6821,15 @@
               "description": "The state of the switch when it is initially rendered. Use when you do not need to control its state."
             },
             {
-              "name": "dirty",
-              "type": "boolean",
-              "default": "false",
-              "description": "Whether the checked state changed from its initial value. Merged with internal tracking."
-            },
-            {
               "name": "disabled",
               "type": "boolean",
               "default": "false",
               "description": "When `true`, prevents the user from interacting with the switch."
             },
             {
-              "name": "errors",
-              "type": "readonly RdxValidationError[]",
-              "default": "[]",
-              "description": "Validation errors for the switch. A non-empty list marks it invalid."
-            },
-            {
               "name": "id",
               "type": "string",
               "default": "injectId('rdx-switch-')"
-            },
-            {
-              "name": "invalid",
-              "type": "boolean",
-              "default": "false",
-              "description": "Whether the switch is invalid. A non-empty {@link errors} list also marks it invalid."
             },
             {
               "name": "name",
@@ -6838,10 +6855,28 @@
               "description": "Value submitted with the form when the switch is on.\n\nBound publicly as `[value]`; the TS member is named `submitValue` so the\ndirective can satisfy `RdxFormCheckboxControl`, whose contract reserves a\n`value` member for `RdxFormValueControl` and forbids it on checkbox-style\ncontrols."
             },
             {
+              "name": "dirty",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the value changed from its initial value. Merged with internal tracking."
+            },
+            {
+              "name": "errors",
+              "type": "readonly RdxValidationError[]",
+              "default": "[]",
+              "description": "Validation errors for the control. A non-empty list marks it invalid."
+            },
+            {
+              "name": "invalid",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+            },
+            {
               "name": "touched",
               "type": "boolean",
               "default": "false",
-              "description": "Whether the switch has been touched. A `model()` so Signal Forms can write it; set on blur."
+              "description": "Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out."
             }
           ],
           "outputs": [
@@ -6853,7 +6888,7 @@
             {
               "name": "touch",
               "type": "void",
-              "description": "Emits on blur, notifying Signal Forms the switch was touched."
+              "description": "Emits when the control is touched, notifying Signal Forms (stable Angular 22 contract)."
             }
           ],
           "twoWay": [
@@ -7374,6 +7409,9 @@
           "selector": "[rdxToggleGroupWithoutFocus]",
           "exportAs": "rdxToggleGroupWithoutFocus",
           "description": "A toggle group that does NOT create its own composite root, for use inside a container that\nalready owns keyboard focus (e.g. a toolbar). The `[rdxToggle]` children register with the nearest\nancestor composite root instead. Mirrors Base UI's behavior of skipping its composite root\nwhen nested in a toolbar.",
+          "hostDirectives": [
+            "RdxFormUiStateHost"
+          ],
           "inputs": [
             {
               "name": "defaultValue",
@@ -7402,6 +7440,30 @@
               "name": "value",
               "type": "string[]",
               "description": "The pressed values. Always an array — a single value is `[value]`. Use with `(onValueChange)`\nfor controlled state."
+            },
+            {
+              "name": "dirty",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the value changed from its initial value. Merged with internal tracking."
+            },
+            {
+              "name": "errors",
+              "type": "readonly RdxValidationError[]",
+              "default": "[]",
+              "description": "Validation errors for the control. A non-empty list marks it invalid."
+            },
+            {
+              "name": "invalid",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+            },
+            {
+              "name": "touched",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out."
             }
           ],
           "outputs": [
@@ -7409,10 +7471,16 @@
               "name": "onValueChange",
               "type": "RdxToggleGroupValueChangeEvent",
               "description": "Event emitted when the pressed values change."
+            },
+            {
+              "name": "touch",
+              "type": "void",
+              "description": "Emits when the control is touched, notifying Signal Forms (stable Angular 22 contract)."
             }
           ],
           "twoWay": [
-            "value"
+            "value",
+            "touched"
           ]
         },
         {
@@ -7421,7 +7489,8 @@
           "exportAs": "rdxToggleGroup",
           "description": "A set of two-state buttons that can be toggled on or off. Owns composite keyboard focus over its\n`[rdxToggle]` children.\n\nSee https://base-ui.com/react/components/toggle-group",
           "hostDirectives": [
-            "RdxCompositeRoot"
+            "RdxCompositeRoot",
+            "RdxFormUiStateHost"
           ],
           "inputs": [
             {
@@ -7463,6 +7532,30 @@
               "name": "value",
               "type": "string[]",
               "description": "The pressed values. Always an array — a single value is `[value]`. Use with `(onValueChange)`\nfor controlled state."
+            },
+            {
+              "name": "dirty",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the value changed from its initial value. Merged with internal tracking."
+            },
+            {
+              "name": "errors",
+              "type": "readonly RdxValidationError[]",
+              "default": "[]",
+              "description": "Validation errors for the control. A non-empty list marks it invalid."
+            },
+            {
+              "name": "invalid",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+            },
+            {
+              "name": "touched",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out."
             }
           ],
           "outputs": [
@@ -7470,10 +7563,16 @@
               "name": "onValueChange",
               "type": "RdxToggleGroupValueChangeEvent",
               "description": "Event emitted when the pressed values change."
+            },
+            {
+              "name": "touch",
+              "type": "void",
+              "description": "Emits when the control is touched, notifying Signal Forms (stable Angular 22 contract)."
             }
           ],
           "twoWay": [
-            "value"
+            "value",
+            "touched"
           ]
         }
       ]

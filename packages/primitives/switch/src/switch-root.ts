@@ -1,4 +1,4 @@
-import { booleanAttribute, computed, Directive, effect, inject, input, model, output, signal } from '@angular/core';
+import { booleanAttribute, computed, Directive, effect, inject, input, model, output } from '@angular/core';
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
@@ -7,7 +7,8 @@ import {
     RdxCancelableChangeEventDetails,
     RdxControlValueAccessor,
     RdxFormCheckboxControl,
-    RdxValidationError
+    RdxFormUiControlBase,
+    RdxFormUiTouchTarget
 } from '@radix-ng/primitives/core';
 import { provideSwitchContext, RdxSwitchContext } from './switch-context';
 
@@ -75,7 +76,7 @@ const context = (): RdxSwitchContext => {
         '(blur)': 'markAsTouched()'
     }
 })
-export class RdxSwitchRoot implements RdxFormCheckboxControl {
+export class RdxSwitchRoot extends RdxFormUiControlBase implements RdxFormCheckboxControl {
     /** @ignore */
     protected readonly cva = injectControlValueAccessor<boolean | undefined>();
 
@@ -116,18 +117,6 @@ export class RdxSwitchRoot implements RdxFormCheckboxControl {
      */
     readonly required = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    /** Whether the switch is invalid. A non-empty {@link errors} list also marks it invalid. */
-    readonly invalid = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
-
-    /** Whether the switch has been touched. A `model()` so Signal Forms can write it; set on blur. */
-    readonly touched = model<boolean>(false);
-
-    /** Whether the checked state changed from its initial value. Merged with internal tracking. */
-    readonly dirty = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
-
-    /** Validation errors for the switch. A non-empty list marks it invalid. */
-    readonly errors = input<readonly RdxValidationError[]>([]);
-
     /** Name of the hidden form input rendered by `[rdxSwitchInput]`. */
     readonly name = input<string>();
 
@@ -149,23 +138,21 @@ export class RdxSwitchRoot implements RdxFormCheckboxControl {
     /** Event handler called when the checked state of the switch changes. */
     readonly onCheckedChange = output<RdxSwitchCheckedChangeEvent>();
 
-    /** Emits on blur, notifying Signal Forms the switch was touched. */
-    readonly touch = output<void>();
-
     /** @ignore */
     readonly checkedState = computed(() => !!this.cva.value());
     /** @ignore */
     protected readonly isDisabled = computed(() => !!this.cva.disabled());
 
-    private readonly dirtyValue = signal(false);
-    /** @ignore Invalid when the `invalid` input is set or the `errors` list is non-empty. */
-    readonly invalidState = computed(() => this.invalid() || (this.errors()?.length ?? 0) > 0);
     /** @ignore */
-    readonly touchedState = computed(() => this.touched());
+    readonly invalidState = this.formUi.invalidState;
     /** @ignore */
-    readonly dirtyState = computed(() => this.dirty() || this.dirtyValue());
+    readonly touchedState = this.formUi.touchedState;
+    /** @ignore */
+    readonly dirtyState = this.formUi.dirtyState;
 
     constructor() {
+        super();
+
         // Apply the uncontrolled `defaultChecked` once. `input()` values are not bound at field-init,
         // so the on state must be seeded here — into both the `checked` model and the CVA value, which
         // is the source of truth for `checkedState`/`aria-checked`/`data-checked`.
@@ -180,14 +167,17 @@ export class RdxSwitchRoot implements RdxFormCheckboxControl {
         });
     }
 
+    /** @ignore Bridge the CVA into `markAsTouched` (dual). */
+    protected override formUiTouchTarget(): RdxFormUiTouchTarget {
+        return injectControlValueAccessor<boolean | undefined>();
+    }
+
     /**
      * Mark the switch touched — CVA for Reactive forms, plus the `touched` model + `touch` output for
      * Signal Forms. Called on blur of the root button or the hidden input.
      */
     markAsTouched(): void {
-        this.cva.markAsTouched();
-        this.touched.set(true);
-        this.touch.emit();
+        this.formUi.markAsTouched();
     }
 
     /** @ignore Toggles the checked state unless disabled or read-only. */
@@ -210,6 +200,6 @@ export class RdxSwitchRoot implements RdxFormCheckboxControl {
 
         this.checked.set(next);
         this.cva.setValue(next);
-        this.dirtyValue.set(true);
+        this.formUi.markDirty();
     }
 }

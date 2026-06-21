@@ -1,5 +1,5 @@
 import { Directive, inject } from '@angular/core';
-import { provideValueAccessor } from '@radix-ng/primitives/core';
+import { provideFormUiState, provideValueAccessor, RdxFormUiStateHost } from '@radix-ng/primitives/core';
 import { injectToolbarGroupContext, injectToolbarRootContext } from '@radix-ng/primitives/toolbar';
 import { RdxToggleGroupBase, toggleGroupContext } from './toggle-group-base';
 import { provideToggleGroupContext } from './toggle-group-context';
@@ -13,9 +13,11 @@ import { provideToggleGroupContext } from './toggle-group-context';
 @Directive({
     selector: '[rdxToggleGroupWithoutFocus]',
     exportAs: 'rdxToggleGroupWithoutFocus',
+    hostDirectives: [RdxFormUiStateHost],
     providers: [
         provideToggleGroupContext(() => toggleGroupContext(inject(RdxToggleGroupWithoutFocus))),
-        provideValueAccessor(RdxToggleGroupWithoutFocus)
+        provideValueAccessor(RdxToggleGroupWithoutFocus),
+        provideFormUiState(() => inject(RdxToggleGroupWithoutFocus).formUi)
     ]
 })
 export class RdxToggleGroupWithoutFocus extends RdxToggleGroupBase {

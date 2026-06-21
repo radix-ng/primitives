@@ -12,6 +12,7 @@ export * from './src/live-announcer';
 export * from './src/predicates';
 export * from './src/provide-token';
 export * from './src/signal-forms/form-control';
+export * from './src/signal-forms/form-ui-state';
 export * from './src/types';
 
 export * from './src/floating/cancelable-change-event-details';
