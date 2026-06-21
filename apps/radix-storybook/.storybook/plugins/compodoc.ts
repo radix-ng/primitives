@@ -7,6 +7,11 @@ import docJson from '../documentation.json';
 // the same resolution `tools/scripts/skills/api-contract.mjs` applies for `api-contract.json`.
 const CONFIG_DEFAULT_RE = /^this\.config\.(\w+)\s*\?\?\s*([\s\S]+)$/;
 
+// Inputs that default to an auto-generated unique id (`input(injectId('rdx-…-'))`). The raw
+// `injectId('…')` call is meaningless in the Default column — replace it with a clear marker that
+// keeps the id prefix as a hint (e.g. `Auto-generated (rdx-progress-label-*)`).
+const AUTO_ID_RE = /^injectId\(\s*'([^']*)'\s*\)$/;
+
 function parsePositionerConfig(sourceCode?: string): Record<string, string> {
     const match = /provideRdxPopperContentConfig\(\s*\{([\s\S]*?)\}\s*\)/.exec(sourceCode ?? '');
     if (!match) return {};
@@ -74,6 +79,15 @@ export default {
                         const note = `Type: \`${constant.type}\`.`;
                         input.description = input.description ? `${input.description}\n\n${note}` : note;
                     }
+                }
+
+                // `injectId('rdx-…-')`: keep the id prefix as a hint in the Default column and explain
+                // the auto-generation in the description, rather than crowding the Default cell.
+                const autoId = AUTO_ID_RE.exec(cleaned);
+                if (autoId) {
+                    cleaned = `${autoId[1]}*`;
+                    const note = 'Auto-generated unique id when not set.';
+                    input.description = input.description ? `${input.description}\n\n${note}` : note;
                 }
 
                 // Anything that ends up "empty" — no default at all, a stripped options object, or an
