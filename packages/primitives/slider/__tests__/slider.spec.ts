@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
 import { RdxSliderControl } from '../src/slider-control';
@@ -398,5 +399,140 @@ describe('RdxSlider', () => {
 
         expect(thumb.style.insetInlineStart).toBe('50%');
         expect(indicator.style.width).toBe('50%');
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
+    template: `
+        <div [(value)]="value" [invalid]="invalid()" [errors]="errors()" [dirty]="dirty()" rdxSliderRoot>
+            <div rdxSliderControl>
+                <div rdxSliderTrack>
+                    <div rdxSliderIndicator></div>
+                    <div rdxSliderThumb>
+                        <input rdxSliderThumbInput aria-label="value" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+})
+class SliderValidationComponent {
+    readonly value = signal<SliderValue>(40);
+    readonly invalid = signal(false);
+    readonly dirty = signal(false);
+    readonly errors = signal<{ kind: string; message?: string }[]>([]);
+}
+
+describe('RdxSlider validation state', () => {
+    let fixture: ComponentFixture<SliderValidationComponent>;
+    let host: SliderValidationComponent;
+    let root: HTMLElement;
+    let input: HTMLInputElement;
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [SliderValidationComponent] });
+        fixture = TestBed.createComponent(SliderValidationComponent);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+        root = fixture.debugElement.query(By.css('[rdxSliderRoot]')).nativeElement;
+        input = fixture.debugElement.query(By.css('[rdxSliderThumbInput]')).nativeElement;
+    });
+
+    it('is valid by default', () => {
+        expect(root.getAttribute('data-valid')).toBe('');
+        expect(root.getAttribute('data-invalid')).toBeNull();
+        expect(root.getAttribute('aria-invalid')).toBeNull();
+    });
+
+    it('reflects the invalid input on the root', () => {
+        host.invalid.set(true);
+        fixture.detectChanges();
+        expect(root.getAttribute('data-invalid')).toBe('');
+        expect(root.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('is invalid when the errors list is non-empty', () => {
+        host.errors.set([{ kind: 'required', message: 'Required.' }]);
+        fixture.detectChanges();
+        expect(root.getAttribute('data-invalid')).toBe('');
+        expect(root.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('marks dirty after a value change', () => {
+        expect(root.getAttribute('data-dirty')).toBeNull();
+        input.focus();
+        press(input, 'ArrowRight');
+        fixture.detectChanges();
+        expect(root.getAttribute('data-dirty')).toBe('');
+    });
+
+    it('marks touched on focus-out', () => {
+        expect(root.getAttribute('data-touched')).toBeNull();
+        root.dispatchEvent(new FocusEvent('focusout'));
+        fixture.detectChanges();
+        expect(root.getAttribute('data-touched')).toBe('');
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [
+        FormField,
+        RdxSliderRoot,
+        RdxSliderControl,
+        RdxSliderTrack,
+        RdxSliderIndicator,
+        RdxSliderThumb,
+        RdxSliderThumbInput
+    ],
+    template: `
+        <div [formField]="amount" rdxSliderRoot>
+            <div rdxSliderControl>
+                <div rdxSliderTrack>
+                    <div rdxSliderIndicator></div>
+                    <div rdxSliderThumb>
+                        <input rdxSliderThumbInput aria-label="value" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+})
+class SliderSignalFormComponent {
+    readonly model = signal<{ amount: number }>({ amount: 40 });
+    readonly formTree = form(this.model);
+
+    get amount() {
+        return this.formTree.amount;
+    }
+}
+
+describe('RdxSlider with Signal Forms', () => {
+    let fixture: ComponentFixture<SliderSignalFormComponent>;
+    let host: SliderSignalFormComponent;
+    let input: HTMLInputElement;
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [SliderSignalFormComponent] });
+        fixture = TestBed.createComponent(SliderSignalFormComponent);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+        input = fixture.debugElement.query(By.css('[rdxSliderThumbInput]')).nativeElement;
+    });
+
+    it('reflects the bound field value (FormValueControl)', () => {
+        expect(input.value).toBe('40');
+        host.model.update((value) => ({ ...value, amount: 60 }));
+        fixture.detectChanges();
+        expect(input.value).toBe('60');
+    });
+
+    it('updates the bound field on interaction', () => {
+        input.focus();
+        press(input, 'ArrowRight');
+        fixture.detectChanges();
+        expect(host.model().amount).toBe(41);
     });
 });

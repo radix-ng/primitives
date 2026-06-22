@@ -6486,6 +6486,7 @@
           "description": "Groups all parts of the slider and owns its state, value-change logic and\nthumb registration. A single directive drives both orientations — there are no\nseparate horizontal/vertical components.\n\nSee https://base-ui.com/react/components/slider",
           "hostDirectives": [
             "RdxCompositeList",
+            "RdxFormUiStateHost",
             "RdxControlValueAccessor"
           ],
           "inputs": [
@@ -6588,6 +6589,30 @@
               "name": "value",
               "type": "SliderValue",
               "description": "The controlled value of the slider. Use with `(onValueChange)` or two-way `[(value)]`."
+            },
+            {
+              "name": "dirty",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the value changed from its initial value. Merged with internal tracking."
+            },
+            {
+              "name": "errors",
+              "type": "readonly RdxValidationError[]",
+              "default": "[]",
+              "description": "Validation errors for the control. A non-empty list marks it invalid."
+            },
+            {
+              "name": "invalid",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+            },
+            {
+              "name": "touched",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out."
             }
           ],
           "outputs": [
@@ -6600,10 +6625,16 @@
               "name": "onValueCommitted",
               "type": "RdxSliderValueCommitEvent",
               "description": "Emitted when interaction ends, with the final value — useful for committing to a backend."
+            },
+            {
+              "name": "touch",
+              "type": "void",
+              "description": "Emits when the control is touched, notifying Signal Forms (stable Angular 22 contract)."
             }
           ],
           "twoWay": [
-            "value"
+            "value",
+            "touched"
           ]
         },
         {

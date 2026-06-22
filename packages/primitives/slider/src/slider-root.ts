@@ -18,8 +18,12 @@ import {
     injectDocument,
     injectId,
     NumberInput,
+    provideFormUiState,
     RdxCancelableChangeEventDetails,
-    RdxControlValueAccessor
+    RdxControlValueAccessor,
+    RdxFormUiControlBase,
+    RdxFormUiStateHost,
+    RdxFormUiTouchTarget
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { provideSliderRootContext } from './slider-context';
@@ -114,9 +118,13 @@ function cloneChangeEventWithTarget(event: Event, value: SliderValue, name: stri
 @Directive({
     selector: 'div[rdxSliderRoot]',
     exportAs: 'rdxSliderRoot',
-    providers: [provideSliderRootContext(() => inject(RdxSliderRoot))],
+    providers: [
+        provideSliderRootContext(() => inject(RdxSliderRoot)),
+        provideFormUiState(() => inject(RdxSliderRoot).formUi)
+    ],
     hostDirectives: [
         RdxCompositeList,
+        RdxFormUiStateHost,
         {
             directive: RdxControlValueAccessor,
             inputs: ['value: value', 'disabled']
@@ -132,7 +140,10 @@ function cloneChangeEventWithTarget(event: Event, value: SliderValue, name: stri
         '[attr.data-dragging]': 'dragging() ? "" : undefined'
     }
 })
-export class RdxSliderRoot {
+// NOTE: does not `implements RdxFormValueControl` — the slider value is a `number | number[]` union,
+// while `min`/`max` are scalar `number`s; the shim ties `min`/`max` to `NonNullable<TValue>`, which the
+// union can't satisfy. The runtime contract (value model + the inherited `FormUiControl` state) holds.
+export class RdxSliderRoot extends RdxFormUiControlBase {
     /** @ignore */
     protected readonly cva = injectControlValueAccessor<SliderValue>();
     private readonly document = injectDocument();
@@ -368,6 +379,7 @@ export class RdxSliderRoot {
         this.lastChangeEvent = eventDetails.event;
         this.value.set(next);
         this.cva.setValue(next);
+        this.formUi.markDirty();
         return true;
     }
 
@@ -387,7 +399,7 @@ export class RdxSliderRoot {
         }
         const arr = Array.isArray(result) ? result : [result];
         const applied = this.setValue(arr, reason, event, index);
-        this.cva.markAsTouched();
+        this.markAsTouched();
         if (applied) {
             this.commitValue(event, reason);
         }
@@ -410,9 +422,14 @@ export class RdxSliderRoot {
         });
     }
 
-    /** @ignore */
+    /** @ignore Bridge the CVA into `markAsTouched` (dual). */
+    protected override formUiTouchTarget(): RdxFormUiTouchTarget {
+        return injectControlValueAccessor<SliderValue>();
+    }
+
+    /** @ignore Mark touched: CVA (Reactive/template) + `touched` model + `touch` (Signal Forms). */
     markAsTouched(): void {
-        this.cva.markAsTouched();
+        this.formUi.markAsTouched();
     }
 
     /** @ignore */
