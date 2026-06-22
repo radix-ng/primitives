@@ -70,6 +70,12 @@ export interface RdxFieldRootContext {
     setDirty: (value: boolean) => void;
     setTouched: (value: boolean) => void;
     setStateProvider: (provider: RdxFieldState | null) => RdxFieldState | null;
+    /**
+     * Identity-checked teardown: roll the slot back to `previous` only if `provider` is still the
+     * active one. A newer adapter that registered after `provider` (create-before-destroy during a
+     * view swap) owns the slot and must not be clobbered by the old adapter's destroy.
+     */
+    clearStateProvider: (provider: RdxFieldState | null, previous: RdxFieldState | null) => void;
     hasStateProvider: Signal<boolean>;
 }
 
@@ -108,6 +114,8 @@ const fieldRootContext = (): RdxFieldRootContext => {
          * provider so adapters can restore it on teardown.
          */
         setStateProvider: (provider: RdxFieldState | null) => root.setStateProvider(provider),
+        clearStateProvider: (provider: RdxFieldState | null, previous: RdxFieldState | null) =>
+            root.clearStateProvider(provider, previous),
         hasStateProvider: root.hasStateProvider
     };
 };
@@ -306,6 +314,17 @@ export class RdxFieldRoot {
         const previous = this.stateProvider();
         this.stateProvider.set(provider);
         return previous;
+    }
+
+    /**
+     * Identity-checked teardown — roll back to `previous` only if `provider` is still active. Prevents
+     * an old adapter's destroy from clobbering a newer adapter that registered after it (create-before-
+     * destroy during a structural view swap).
+     */
+    clearStateProvider(provider: RdxFieldState | null, previous: RdxFieldState | null): void {
+        if (this.stateProvider() === provider) {
+            this.stateProvider.set(previous);
+        }
     }
 
     /**

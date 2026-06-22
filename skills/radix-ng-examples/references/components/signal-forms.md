@@ -12,7 +12,7 @@ import {
     RdxFieldLabel,
     RdxFieldRoot
 } from '@radix-ng/primitives/field';
-import { RdxFormRoot } from '@radix-ng/primitives/form';
+import { RdxFormRoot, RdxFormSubmitEvent } from '@radix-ng/primitives/form';
 import { cn, demoButton, demoInput } from '../../storybook/styles';
 import { RdxSignalField } from '../src/signal-field';
 import { RdxSignalForm } from '../src/signal-form';
@@ -32,7 +32,12 @@ import { RdxSignalForm } from '../src/signal-form';
         RdxFieldError
     ],
     template: `
-        <form class="flex w-80 flex-col gap-3" [rdxSignalForm]="loginForm" (submit)="onSubmit($event)" rdxFormRoot>
+        <form
+            class="flex w-80 flex-col gap-3"
+            [rdxSignalForm]="loginForm"
+            (onFormSubmit)="onSubmit($event)"
+            rdxFormRoot
+        >
             <!--
               No manual [invalid]/[touched]/[dirty]/[disabled] on rdxFieldRoot — rdxSignalField drives them
               from the Signal Forms field, and the field expression is bound exactly once (on [formField]).
@@ -68,9 +73,10 @@ export class SignalFormsFieldExample {
         return this.loginForm.email;
     }
 
-    onSubmit(event: Event): void {
-        event.preventDefault();
-        console.log(this.model());
+    // `(onFormSubmit)` is RdxFormRoot's guarded submit — it fires only when the form is valid (an
+    // invalid submit focuses the first invalid field instead), so this runs only on a valid form.
+    onSubmit(event: RdxFormSubmitEvent): void {
+        console.log(event.values, this.model());
     }
 }
 ```
@@ -128,7 +134,7 @@ import {
     RdxFieldLabel,
     RdxFieldRoot
 } from '@radix-ng/primitives/field';
-import { RdxFormRoot } from '@radix-ng/primitives/form';
+import { RdxFormRoot, RdxFormSubmitEvent } from '@radix-ng/primitives/form';
 import { cn, demoButton, demoInput } from '../../storybook/styles';
 import { RdxSignalField } from '../src/signal-field';
 import { RdxSignalForm } from '../src/signal-form';
@@ -148,7 +154,12 @@ import { RdxSignalForm } from '../src/signal-form';
         RdxFieldError
     ],
     template: `
-        <form class="flex w-80 flex-col gap-3" [rdxSignalForm]="loginForm" (submit)="onSubmit($event)" rdxFormRoot>
+        <form
+            class="flex w-80 flex-col gap-3"
+            [rdxSignalForm]="loginForm"
+            (onFormSubmit)="onSubmit($event)"
+            rdxFormRoot
+        >
             <!--
               No manual [invalid]/[touched]/[dirty]/[disabled] on rdxFieldRoot — rdxSignalField drives them
               from the Signal Forms field, and the field expression is bound exactly once (on [formField]).
@@ -184,9 +195,10 @@ export class SignalFormsFieldExample {
         return this.loginForm.email;
     }
 
-    onSubmit(event: Event): void {
-        event.preventDefault();
-        console.log(this.model());
+    // `(onFormSubmit)` is RdxFormRoot's guarded submit — it fires only when the form is valid (an
+    // invalid submit focuses the first invalid field instead), so this runs only on a valid form.
+    onSubmit(event: RdxFormSubmitEvent): void {
+        console.log(event.values, this.model());
     }
 }
 ```

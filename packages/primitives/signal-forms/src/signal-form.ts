@@ -18,7 +18,8 @@ type NamedField = () => { errors: () => readonly { kind: string; message?: strin
  * `data-touched` / `data-submitting` attributes and the submit guard read authoritative Signal Forms
  * state. Signal Forms' own `submit()` owns the submit lifecycle and server-error application.
  *
- * `errorsFor(name)` routes a field's errors to a `rdxFieldRoot` by its `name` (top-level fields), so a
+ * `errorsFor(name)` routes a field's errors to a `rdxFieldRoot` by its `name`, walking the `FieldTree`
+ * so dotted paths into nested object/array fields resolve too (`address.street`, `items.0.name`). A
  * field can surface messages from the form alone — no per-field `rdxSignalField` needed for errors. If a
  * field *also* carries `rdxSignalField`, its errors already come from there; don't rely on both for the
  * same field or messages duplicate.
@@ -47,17 +48,27 @@ export class RdxSignalForm {
         };
 
         const previous = this.formContext.setStateProvider(state);
-        inject(DestroyRef).onDestroy(() => this.formContext.setStateProvider(previous));
+        // Identity-checked teardown: only roll back if our provider is still active, so a newer adapter
+        // mounted during a view swap (create-before-destroy) is not clobbered by this destroy.
+        inject(DestroyRef).onDestroy(() => this.formContext.clearStateProvider(state, previous));
     }
 
-    /** Messages for the top-level field whose key is `name` (`message ?? kind` per error). */
+    /**
+     * Messages for the field at the dotted `name` path (`message ?? kind` per error). Walks the
+     * `FieldTree` so nested object/array fields resolve too — e.g. `address.street`, `items.0.name`.
+     */
     private errorsFor(name: string): string[] {
-        const tree = this.form() as unknown as Record<string, NamedField | undefined>;
-        const field = tree[name];
-        if (typeof field !== 'function') {
+        let node: unknown = this.form();
+        for (const segment of name.split('.')) {
+            if (node == null) {
+                return [];
+            }
+            node = (node as Record<string, unknown>)[segment];
+        }
+        if (typeof node !== 'function') {
             return [];
         }
-        return field()
+        return (node as NamedField)()
             .errors()
             .map((error) => error.message ?? error.kind);
     }

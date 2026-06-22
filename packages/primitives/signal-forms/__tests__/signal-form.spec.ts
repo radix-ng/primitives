@@ -61,3 +61,50 @@ describe('RdxSignalForm — aggregate state + errorsFor routing', () => {
         expect(fieldEl.getAttribute('data-invalid')).toBeNull();
     });
 });
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [FormField, RdxFormRoot, RdxFieldRoot, RdxSignalForm],
+    // A nested field — `errorsFor` must walk the dotted path `address.street`, not just top-level keys.
+    template: `
+        <form [rdxSignalForm]="formTree" rdxFormRoot>
+            <div rdxFieldRoot name="address.street">
+                <input [formField]="street" />
+            </div>
+        </form>
+    `
+})
+class NestedSignalFormHost {
+    readonly model = signal({ address: { street: '' } });
+    readonly formTree = form(this.model, (path) => {
+        required(path.address.street);
+    });
+
+    get street() {
+        return this.formTree.address.street;
+    }
+}
+
+describe('RdxSignalForm — errorsFor resolves a dotted path', () => {
+    let fixture: ComponentFixture<NestedSignalFormHost>;
+    let host: NestedSignalFormHost;
+    let fieldEl: HTMLElement;
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [NestedSignalFormHost] });
+        fixture = TestBed.createComponent(NestedSignalFormHost);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+        fieldEl = fixture.debugElement.query(By.css('[rdxFieldRoot]')).nativeElement;
+    });
+
+    it('routes a nested field error to the `name="address.street"` field', () => {
+        expect(fieldEl.getAttribute('data-invalid')).toBe('');
+    });
+
+    it('clears the nested field once it becomes valid', () => {
+        host.model.update((value) => ({ ...value, address: { street: '123 Main St' } }));
+        fixture.detectChanges();
+        expect(fieldEl.getAttribute('data-invalid')).toBeNull();
+    });
+});

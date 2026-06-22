@@ -42,6 +42,7 @@ const fieldItemContext = (): RdxFieldRootContext => {
         setDirty: (value: boolean) => root.dirtyValue.set(value),
         setTouched: (value: boolean) => root.touchedValue.set(value),
         setStateProvider: (provider) => root.setStateProvider(provider),
+        clearStateProvider: (provider, previous) => root.clearStateProvider(provider, previous),
         hasStateProvider: root.hasStateProvider
     };
 };

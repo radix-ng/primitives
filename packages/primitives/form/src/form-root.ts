@@ -65,6 +65,11 @@ export interface RdxFormRootContext {
     /** Registers a field; returns its unregister callback. */
     register: (field: RdxFormFieldRegistration) => () => void;
     setStateProvider: (provider: RdxFormState | null) => RdxFormState | null;
+    /**
+     * Identity-checked teardown: roll the slot back to `previous` only if `provider` is still active,
+     * so an old adapter's destroy can't clobber a newer one (create-before-destroy on a view swap).
+     */
+    clearStateProvider: (provider: RdxFormState | null, previous: RdxFormState | null) => void;
     hasStateProvider: Signal<boolean>;
 }
 
@@ -75,6 +80,8 @@ const formRootContext = (): RdxFormRootContext => {
         notifyEdited: (name: string | undefined) => root.notifyEdited(name),
         register: (field: RdxFormFieldRegistration) => root.register(field),
         setStateProvider: (provider: RdxFormState | null) => root.setStateProvider(provider),
+        clearStateProvider: (provider: RdxFormState | null, previous: RdxFormState | null) =>
+            root.clearStateProvider(provider, previous),
         hasStateProvider: root.hasStateProvider
     };
 };
@@ -215,6 +222,16 @@ export class RdxFormRoot {
         const previous = this.stateProvider();
         this.stateProvider.set(provider);
         return previous;
+    }
+
+    /**
+     * Identity-checked teardown — roll back to `previous` only if `provider` is still active, so an
+     * old adapter's destroy can't clobber a newer one (create-before-destroy on a view swap).
+     */
+    clearStateProvider(provider: RdxFormState | null, previous: RdxFormState | null): void {
+        if (this.stateProvider() === provider) {
+            this.stateProvider.set(previous);
+        }
     }
 
     onSubmit(event: SubmitEvent): void {
