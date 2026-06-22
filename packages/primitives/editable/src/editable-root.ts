@@ -20,6 +20,8 @@ import {
     createContext,
     NumberInput,
     RdxCancelableChangeEventDetails,
+    RdxFormUiControlBase,
+    RdxFormValueControl,
     watch
 } from '@radix-ng/primitives/core';
 import { RdxFocusOutside, RdxPointerDownOutside } from '@radix-ng/primitives/dismissable-layer';
@@ -36,6 +38,9 @@ export interface RdxEditableValueChangeEvent {
 
 export type EditableRootContext = {
     disabled: Signal<boolean>;
+    invalidState: Signal<boolean>;
+    touchedState: Signal<boolean>;
+    dirtyState: Signal<boolean>;
     value: Signal<string | undefined>;
     inputValue: WritableSignal<string | undefined>;
     placeholder: Signal<{ edit: string; preview: string }>;
@@ -66,6 +71,9 @@ const rootContext = (): EditableRootContext => {
     const context = inject(RdxEditableRoot);
     return {
         disabled: context.disabled,
+        invalidState: context.invalidState,
+        touchedState: context.touchedState,
+        dirtyState: context.dirtyState,
         value: context.value,
         inputValue: context.inputValue,
         placeholder: context.$placeholder,
@@ -100,11 +108,18 @@ const rootContext = (): EditableRootContext => {
         '[attr.data-dismissable-layer]': '""'
     }
 })
-export class RdxEditableRoot {
+export class RdxEditableRoot extends RdxFormUiControlBase implements RdxFormValueControl<string | undefined> {
     private readonly focusOutside = inject(RdxFocusOutside);
     private readonly pointerDownOutside = inject(RdxPointerDownOutside);
 
     readonly value = model<string>();
+
+    /** @ignore */
+    readonly invalidState = this.formUi.invalidState;
+    /** @ignore */
+    readonly touchedState = this.formUi.touchedState;
+    /** @ignore */
+    readonly dirtyState = this.formUi.dirtyState;
 
     /** Uncontrolled initial value. */
     readonly defaultValue = input<string>();
@@ -161,6 +176,8 @@ export class RdxEditableRoot {
     private suppressFocusActivation = false;
 
     constructor() {
+        super();
+
         effect(() => {
             if (this.defaultValue() !== undefined) {
                 this.value.set(this.defaultValue());
@@ -195,6 +212,11 @@ export class RdxEditableRoot {
         return !this.suppressFocusActivation;
     }
 
+    /** @ignore Mark the field touched (model + `touch` output) for Signal Forms. Called on leaving edit mode. */
+    markAsTouched(): void {
+        this.formUi.markAsTouched();
+    }
+
     handleDismiss() {
         if (this.isEditing()) {
             if (this.submitMode() === 'blur' || this.submitMode() === 'both') {
@@ -218,13 +240,19 @@ export class RdxEditableRoot {
             return;
         }
 
+        const changed = (this.value() ?? '') !== value;
         this.value.set(value);
+        if (changed) {
+            this.formUi.markDirty();
+        }
+        this.markAsTouched();
         this.restoreFocusOnExit = true;
         this.isEditing.set(false);
     }
 
     cancel() {
         this.inputValue.set(this.value());
+        this.markAsTouched();
         this.restoreFocusOnExit = true;
         this.isEditing.set(false);
     }

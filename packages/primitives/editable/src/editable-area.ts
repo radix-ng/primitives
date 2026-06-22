@@ -9,6 +9,10 @@ import { injectEditableRootContext } from './editable-root';
         '[attr.data-empty]': 'rootContext.isEmpty() ? "" : undefined',
         '[attr.data-readonly]': 'rootContext.readonly() ? "" : undefined',
         '[attr.data-disabled]': 'rootContext.disabled() ? "" : undefined',
+        '[attr.data-invalid]': 'rootContext.invalidState() ? "" : undefined',
+        '[attr.data-valid]': 'rootContext.invalidState() ? undefined : ""',
+        '[attr.data-touched]': 'rootContext.touchedState() ? "" : undefined',
+        '[attr.data-dirty]': 'rootContext.dirtyState() ? "" : undefined',
         '[attr.data-auto-resize]': 'rootContext.autoResize() ? "" : undefined',
         // Auto-resize overlays the preview and input in a single grid cell so the area
         // sizes to the larger of the two. This is the layout mechanism for the feature,

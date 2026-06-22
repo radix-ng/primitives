@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { axe } from 'jest-axe';
 import { vi } from 'vitest';
@@ -268,5 +269,182 @@ describe('RdxEditable', () => {
 
     it('has no accessibility violations', async () => {
         expect(await axe(fixture.nativeElement)).toHaveNoViolations();
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [
+        RdxEditableRoot,
+        RdxEditableArea,
+        RdxEditablePreview,
+        RdxEditableInput,
+        RdxEditableEditTrigger,
+        RdxEditableSubmitTrigger
+    ],
+    template: `
+        <div
+            #root="rdxEditableRoot"
+            [(value)]="value"
+            [invalid]="invalid()"
+            [errors]="errors()"
+            [dirty]="dirty()"
+            rdxEditableRoot
+        >
+            <div rdxEditableArea>
+                <span rdxEditablePreview>{{ root.value() }}</span>
+                <input rdxEditableInput />
+            </div>
+            @if (!root.isEditing()) {
+                <button rdxEditableEditTrigger>Edit</button>
+            } @else {
+                <button rdxEditableSubmitTrigger>Submit</button>
+            }
+        </div>
+    `
+})
+class EditableValidationHost {
+    readonly value = signal<string | undefined>('Hello');
+    readonly invalid = signal(false);
+    readonly dirty = signal(false);
+    readonly errors = signal<{ kind: string; message?: string }[]>([]);
+}
+
+describe('RdxEditable validation state', () => {
+    let fixture: ComponentFixture<EditableValidationHost>;
+    let host: EditableValidationHost;
+
+    const area = () => fixture.debugElement.query(By.css('[rdxEditableArea]')).nativeElement as HTMLElement;
+    const input = () => fixture.debugElement.query(By.css('[rdxEditableInput]')).nativeElement as HTMLInputElement;
+    const editTrigger = () =>
+        fixture.debugElement.query(By.css('[rdxEditableEditTrigger]')).nativeElement as HTMLButtonElement;
+    const submitTrigger = () =>
+        fixture.debugElement.query(By.css('[rdxEditableSubmitTrigger]')).nativeElement as HTMLButtonElement;
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [EditableValidationHost] });
+        fixture = TestBed.createComponent(EditableValidationHost);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+    });
+
+    it('is valid by default', () => {
+        expect(area().getAttribute('data-valid')).toBe('');
+        expect(area().getAttribute('data-invalid')).toBeNull();
+        expect(input().getAttribute('aria-invalid')).toBeNull();
+    });
+
+    it('reflects the invalid input on the area and input', () => {
+        host.invalid.set(true);
+        fixture.detectChanges();
+        expect(area().getAttribute('data-invalid')).toBe('');
+        expect(input().getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('is invalid when the errors list is non-empty', () => {
+        host.errors.set([{ kind: 'required', message: 'Required.' }]);
+        fixture.detectChanges();
+        expect(area().getAttribute('data-invalid')).toBe('');
+        expect(input().getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('reflects the dirty input', () => {
+        expect(area().getAttribute('data-dirty')).toBeNull();
+        host.dirty.set(true);
+        fixture.detectChanges();
+        expect(area().getAttribute('data-dirty')).toBe('');
+    });
+
+    it('marks touched on submit, without dirty when the value is unchanged', () => {
+        editTrigger().click();
+        fixture.detectChanges();
+        submitTrigger().click();
+        fixture.detectChanges();
+        expect(area().getAttribute('data-touched')).toBe('');
+        expect(area().getAttribute('data-dirty')).toBeNull();
+    });
+
+    it('marks dirty after a value change is submitted', () => {
+        editTrigger().click();
+        fixture.detectChanges();
+        input().value = 'World';
+        input().dispatchEvent(new Event('input'));
+        fixture.detectChanges();
+        submitTrigger().click();
+        fixture.detectChanges();
+        expect(host.value()).toBe('World');
+        expect(area().getAttribute('data-dirty')).toBe('');
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [
+        RdxEditableRoot,
+        RdxEditableArea,
+        RdxEditablePreview,
+        RdxEditableInput,
+        RdxEditableEditTrigger,
+        RdxEditableSubmitTrigger,
+        FormField
+    ],
+    template: `
+        <div #root="rdxEditableRoot" [formField]="name" rdxEditableRoot>
+            <div rdxEditableArea>
+                <span rdxEditablePreview>{{ root.value() }}</span>
+                <input rdxEditableInput />
+            </div>
+            @if (!root.isEditing()) {
+                <button rdxEditableEditTrigger>Edit</button>
+            } @else {
+                <button rdxEditableSubmitTrigger>Submit</button>
+            }
+        </div>
+    `
+})
+class EditableSignalFormHost {
+    readonly model = signal<{ name: string }>({ name: 'Ada' });
+    readonly formTree = form(this.model);
+
+    get name() {
+        return this.formTree.name;
+    }
+}
+
+describe('RdxEditable with Signal Forms', () => {
+    let fixture: ComponentFixture<EditableSignalFormHost>;
+    let host: EditableSignalFormHost;
+
+    const rootValue = () =>
+        fixture.debugElement.query(By.directive(RdxEditableRoot)).injector.get(RdxEditableRoot).value();
+    const input = () => fixture.debugElement.query(By.css('[rdxEditableInput]')).nativeElement as HTMLInputElement;
+    const editTrigger = () =>
+        fixture.debugElement.query(By.css('[rdxEditableEditTrigger]')).nativeElement as HTMLButtonElement;
+    const submitTrigger = () =>
+        fixture.debugElement.query(By.css('[rdxEditableSubmitTrigger]')).nativeElement as HTMLButtonElement;
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [EditableSignalFormHost] });
+        fixture = TestBed.createComponent(EditableSignalFormHost);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+    });
+
+    it('reflects the bound field value (FormValueControl)', () => {
+        expect(rootValue()).toBe('Ada');
+        host.model.update((value) => ({ ...value, name: 'Grace' }));
+        fixture.detectChanges();
+        expect(rootValue()).toBe('Grace');
+    });
+
+    it('updates the bound field on submit', () => {
+        editTrigger().click();
+        fixture.detectChanges();
+        input().value = 'Grace';
+        input().dispatchEvent(new Event('input'));
+        fixture.detectChanges();
+        submitTrigger().click();
+        fixture.detectChanges();
+        expect(host.model().name).toBe('Grace');
     });
 });

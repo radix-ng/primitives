@@ -7,6 +7,7 @@ import { injectEditableRootContext } from './editable-root';
     host: {
         '[attr.aria-label]': 'ariaLabel()',
         '[attr.aria-required]': 'rootContext.required() ? "true" : undefined',
+        '[attr.aria-invalid]': 'rootContext.invalidState() ? "true" : undefined',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
         '[attr.data-readonly]': 'rootContext.readonly() ? "" : undefined',
         '[readonly]': 'rootContext.readonly()',
