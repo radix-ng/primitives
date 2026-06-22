@@ -262,9 +262,13 @@ export class MyControl extends RdxFormUiControlBase implements RdxFormValueContr
 }
 ```
 
-Controls already on this surface: `select`, `switch`, `radio`, `number-field`, `toggle-group`
-(`input` keeps its own equivalent inline). Dual controls override `formUiTouchTarget()` to return their
-CVA; CVA-less controls (like `select`) leave it to bind via Signal Forms only.
+**Every** form control ships this surface. Twelve `extends RdxFormUiControlBase` — `select`, `switch`,
+`radio`, `number-field`, `toggle-group`, `checkbox-group`, `slider`, `combobox`, `autocomplete`,
+`date-field`, `time-field`, `editable` — while `input` and `checkbox` keep their own equivalent inline.
+Dual controls (with a `ControlValueAccessor`) override `formUiTouchTarget()` to return their CVA;
+CVA-less controls (`select`, `date-field`, `time-field`, `editable`) bind via Signal Forms only. Slider
+extends the base but skips the `implements FormValueControl` check (its `number | number[]` value
+collides with the shim's scalar `min`/`max`) — it still ships the same runtime surface.
 
 ## API Reference
 

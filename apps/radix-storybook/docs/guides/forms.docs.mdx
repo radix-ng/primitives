@@ -217,13 +217,20 @@ Radix NG controls already expose the structural contract Signal Forms binds to:
 - **`FormCheckboxControl`** — a `checked = model<boolean>()` member, with no `value` member (Checkbox,
   Switch).
 
-Checkbox, Input, Number Field, Radio, and Switch already declare these interfaces today; the remaining
-value controls expose the required `value` model and are contract-ready. You bind the control directly
-with Angular's `[formField]` directive — the control itself needs no change:
+Beyond the required `value` / `checked` model, **every** form control also exposes the full optional
+`FormUiControl` surface — `invalid`, `errors`, `touched` (a `model()` plus a `touch` output), and
+`dirty` — and reflects it as `data-invalid` / `data-valid` / `data-touched` / `data-dirty` and
+`aria-invalid`. So a `[formField]`-bound control shows its validation state on its own, even without a
+`Field` wrapper; the form writes those inputs and the control renders the attributes:
 
 ```html
 <input rdxInput [formField]="form.email" />
 ```
+
+(The 14 controls share this surface through a small `RdxFormUiControlBase` in
+`@radix-ng/primitives/core`; all `implements FormValueControl` / `FormCheckboxControl` except Slider,
+whose `number | number[]` value collides with the shim's scalar `min`/`max` — it ships the same
+runtime surface.)
 
 ### The Signal Forms adapter
 
@@ -236,7 +243,11 @@ in. It ships two directives:
   `Field`. The field expression is bound **once** (on `[formField]`); no manual
   `[invalid]` / `[touched]` / `[dirty]` on `rdxFieldRoot`.
 - **`rdxSignalForm`** — sits on `form[rdxFormRoot]`, aggregates the form-level `data-*` attributes and
-  routes field errors to a `Field` by its `name`.
+  routes field errors to a `Field` by its `name` (dotted paths like `address.street` resolve).
+
+Per field, surface its errors **one** of two ways: put `rdxSignalField` on the control (per-field), or
+give the `Field` a `name` and let `rdxSignalForm` route them (form-level) — no `rdxSignalField` needed.
+Both at once is harmless (`messages()` dedupes), but prefer one mode.
 
 ```ts
 import { form, FormField, required } from '@angular/forms/signals';
