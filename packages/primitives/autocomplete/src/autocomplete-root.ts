@@ -39,7 +39,10 @@ import {
     provideFloatingTree,
     RdxCancelableChangeEventDetails,
     rdxDevWarning,
-    RdxFloatingRootContext
+    RdxFloatingRootContext,
+    RdxFormUiControlBase,
+    RdxFormUiTouchTarget,
+    RdxFormValueControl
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { RdxPopper } from '@radix-ng/primitives/popper';
@@ -161,6 +164,9 @@ const context = (): RdxComboboxRootContext => {
         openAndHighlight: (edge: 'first' | 'last', reason?: RdxComboboxOpenChangeReason, event?: Event) =>
             root.openAndHighlight(edge, reason, event),
         navigateByKeyboard: (direction: 1 | -1, event?: Event) => root.navigateByKeyboard(direction, event),
+        invalidState: root.invalidState,
+        touchedState: root.touchedState,
+        dirtyState: root.dirtyState,
         select: (item: ComboboxItemRef, event?: Event) => root.handleSelect(item, event),
         selectIndex: (index: number, event?: Event) => root.selectIndex(index, event),
         selectHighlighted: (event?: Event) => root.selectHighlighted(event),
@@ -215,7 +221,10 @@ function coerceAutoHighlight(value: BooleanInput | 'always'): boolean | 'always'
         '[attr.data-disabled]': 'disabledState() ? "" : undefined'
     }
 })
-export class RdxAutocompleteRoot implements ControlValueAccessor {
+export class RdxAutocompleteRoot
+    extends RdxFormUiControlBase
+    implements ControlValueAccessor, RdxFormValueControl<string>
+{
     private readonly injector = inject(Injector);
 
     /** Per-popup floating root context (ADR 0015) — `open` / `triggers` / reference for the dismissal engine. */
@@ -334,6 +343,12 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
     private readonly cvaDisabled = signal(false);
     readonly disabledState = computed(() => this.disabled() || this.cvaDisabled());
     readonly requiredState = computed(() => this.required());
+    /** @ignore */
+    readonly invalidState = this.formUi.invalidState;
+    /** @ignore */
+    readonly touchedState = this.formUi.touchedState;
+    /** @ignore */
+    readonly dirtyState = this.formUi.dirtyState;
     private readonly preventUnmountOnClose = signal(false);
     readonly present = computed(() => this.open() || this.preventUnmountOnClose());
 
@@ -442,6 +457,8 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
     private onTouched?: () => void;
 
     constructor() {
+        super();
+
         engineRegistry.set(this, this.engine);
 
         // Keep the dismissal reference in sync with the input (the anchor) so a press / focus on it counts
@@ -718,8 +735,13 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
         this.engine.focusInput();
     }
 
+    /** @ignore Bridge the CVA `onTouched` so `markAsTouched()` also notifies Reactive/template forms. */
+    protected override formUiTouchTarget(): RdxFormUiTouchTarget {
+        return { markAsTouched: () => this.onTouched?.() };
+    }
+
     markAsTouched(): void {
-        this.onTouched?.();
+        this.formUi.markAsTouched();
     }
 
     private commitValue(
@@ -742,6 +764,7 @@ export class RdxAutocompleteRoot implements ControlValueAccessor {
             return;
         }
         this.value.set(value);
+        this.formUi.markDirty();
         this.onChange?.(value);
     }
 

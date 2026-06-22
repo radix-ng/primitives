@@ -224,6 +224,13 @@ The root is a `ControlValueAccessor`, so it binds to a `FormControl` like any ot
 
 <Canvas of={Stories.ReactiveForms} />
 
+### Validation
+
+Bind the control's validity to `[invalid]` so the input reflects `data-invalid` / `aria-invalid`; the
+error message and submit guard follow the standard reactive-forms pattern.
+
+<Canvas of={Stories.Validation} />
+
 ### Empty state
 
 `RdxComboboxEmpty` shows only when no item matches the query.

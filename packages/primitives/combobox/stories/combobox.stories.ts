@@ -28,6 +28,8 @@ import { ComboboxOpenChange } from './combobox-open-change';
 import openChangeSource from './combobox-open-change?raw';
 import { ComboboxReactiveForms } from './combobox-reactive-forms';
 import reactiveFormsSource from './combobox-reactive-forms?raw';
+import { ComboboxValidation } from './combobox-validation';
+import validationSource from './combobox-validation?raw';
 import { ComboboxVirtualizedExample } from './combobox-virtualized';
 import virtualizedSource from './combobox-virtualized?raw';
 
@@ -55,6 +57,7 @@ export default {
                 ComboboxModal,
                 ComboboxCommand,
                 ComboboxReactiveForms,
+                ComboboxValidation,
                 ComboboxEmpty,
                 ComboboxVirtualizedExample
             ]
@@ -178,6 +181,15 @@ export const ReactiveForms: Story = {
     render: () => ({
         template: html`
             <combobox-reactive-forms />
+        `
+    })
+};
+
+export const Validation: Story = {
+    parameters: source(validationSource),
+    render: () => ({
+        template: html`
+            <combobox-validation />
         `
     })
 };

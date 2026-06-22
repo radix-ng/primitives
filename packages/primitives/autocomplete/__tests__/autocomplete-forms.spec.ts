@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { form, FormField } from '@angular/forms/signals';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { _importsAutocomplete } from '../index';
 
@@ -132,5 +133,142 @@ describe('Autocomplete forms', () => {
             await settle();
             expect(host.value).toBe('gra');
         });
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [_importsAutocomplete],
+    template: `
+        <div [(open)]="open" [invalid]="invalid()" [errors]="errors()" [dirty]="dirty()" rdxAutocompleteRoot>
+            <input rdxAutocompleteInput aria-label="Fruit" />
+            <div *rdxAutocompletePortal rdxAutocompletePositioner>
+                <div rdxAutocompletePopup>
+                    <div rdxAutocompleteList aria-label="Fruits">
+                        @for (fruit of fruits(); track fruit) {
+                            <div rdxAutocompleteItem>{{ fruit }}</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+})
+class AutocompleteValidationHost {
+    readonly open = signal(false);
+    readonly invalid = signal(false);
+    readonly dirty = signal(false);
+    readonly errors = signal<{ kind: string; message?: string }[]>([]);
+    readonly fruits = signal(['Apple', 'Banana', 'Grape']);
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [_importsAutocomplete, FormField],
+    template: `
+        <div [(open)]="open" [formField]="query" rdxAutocompleteRoot>
+            <input rdxAutocompleteInput aria-label="Fruit" />
+            <div *rdxAutocompletePortal rdxAutocompletePositioner>
+                <div rdxAutocompletePopup>
+                    <div rdxAutocompleteList aria-label="Fruits">
+                        @for (fruit of fruits(); track fruit) {
+                            <div rdxAutocompleteItem>{{ fruit }}</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+})
+class AutocompleteSignalFormHost {
+    readonly open = signal(false);
+    readonly model = signal<{ query: string }>({ query: '' });
+    readonly formTree = form(this.model);
+    readonly fruits = signal(['Apple', 'Banana', 'Grape']);
+
+    get query() {
+        return this.formTree.query;
+    }
+}
+
+describe('Autocomplete validation state (root → input)', () => {
+    let fixture: ComponentFixture<AutocompleteValidationHost>;
+    let host: AutocompleteValidationHost;
+
+    async function settle(): Promise<void> {
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+    }
+
+    beforeEach(async () => {
+        TestBed.configureTestingModule({ imports: [AutocompleteValidationHost] });
+        fixture = TestBed.createComponent(AutocompleteValidationHost);
+        host = fixture.componentInstance;
+        await settle();
+    });
+
+    it('is valid by default', () => {
+        expect(inputOf(fixture).getAttribute('data-valid')).toBe('');
+        expect(inputOf(fixture).getAttribute('data-invalid')).toBeNull();
+        expect(inputOf(fixture).getAttribute('aria-invalid')).toBeNull();
+    });
+
+    it('reflects the root invalid input on the input', async () => {
+        host.invalid.set(true);
+        await settle();
+        expect(inputOf(fixture).getAttribute('data-invalid')).toBe('');
+        expect(inputOf(fixture).getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('is invalid when the errors list is non-empty', async () => {
+        host.errors.set([{ kind: 'required', message: 'Required.' }]);
+        await settle();
+        expect(inputOf(fixture).getAttribute('data-invalid')).toBe('');
+        expect(inputOf(fixture).getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('marks dirty after a value change', async () => {
+        expect(inputOf(fixture).getAttribute('data-dirty')).toBeNull();
+        type(inputOf(fixture), 'app');
+        await settle();
+        expect(inputOf(fixture).getAttribute('data-dirty')).toBe('');
+    });
+
+    it('marks touched on input blur', async () => {
+        expect(inputOf(fixture).getAttribute('data-touched')).toBeNull();
+        inputOf(fixture).dispatchEvent(new FocusEvent('blur'));
+        await settle();
+        expect(inputOf(fixture).getAttribute('data-touched')).toBe('');
+    });
+});
+
+describe('Autocomplete with Signal Forms', () => {
+    let fixture: ComponentFixture<AutocompleteSignalFormHost>;
+    let host: AutocompleteSignalFormHost;
+
+    async function settle(): Promise<void> {
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+    }
+
+    beforeEach(async () => {
+        TestBed.configureTestingModule({ imports: [AutocompleteSignalFormHost] });
+        fixture = TestBed.createComponent(AutocompleteSignalFormHost);
+        host = fixture.componentInstance;
+        await settle();
+    });
+
+    it('reflects the bound field value (FormValueControl)', async () => {
+        host.model.update((value) => ({ ...value, query: 'Banana' }));
+        await settle();
+        expect(inputOf(fixture).value).toBe('Banana');
+    });
+
+    it('updates the bound field on typing', async () => {
+        type(inputOf(fixture), 'app');
+        await settle();
+        expect(host.model().query).toBe('app');
     });
 });

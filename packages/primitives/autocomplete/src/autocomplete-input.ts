@@ -53,6 +53,8 @@ const attr = (value: boolean) => (value ? '' : undefined);
         '[attr.data-valid]': 'dataAttr(!invalidState())',
         '[attr.data-disabled]': 'dataAttr(disabledState())',
         '[attr.data-required]': 'dataAttr(requiredState())',
+        '[attr.data-touched]': 'dataAttr(touchedState())',
+        '[attr.data-dirty]': 'dataAttr(dirtyState())',
         '[attr.data-filled]': 'dataAttr(filledState())',
         '[attr.data-focused]': 'dataAttr(focusedState())',
         '(input)': 'onInput($event)',
@@ -79,12 +81,20 @@ export class RdxAutocompleteInput {
     // `aria-autocomplete` tokens. Must reflect the static mechanism, not the transient inline preview.
     protected readonly ariaAutocomplete = computed(() => this.root.mode());
 
-    protected readonly invalidState = computed(() => this.invalid() || Boolean(this.fieldRootContext?.invalidState()));
+    protected readonly invalidState = computed(
+        () => this.invalid() || this.root.invalidState() || Boolean(this.fieldRootContext?.invalidState())
+    );
     protected readonly disabledState = computed(
         () => this.root.disabledState() || Boolean(this.fieldRootContext?.disabledState())
     );
     protected readonly requiredState = computed(
         () => this.root.requiredState() || Boolean(this.fieldRootContext?.requiredState())
+    );
+    protected readonly touchedState = computed(
+        () => this.root.touchedState() || Boolean(this.fieldRootContext?.touchedState())
+    );
+    protected readonly dirtyState = computed(
+        () => this.root.dirtyState() || Boolean(this.fieldRootContext?.dirtyState())
     );
     protected readonly filledState = computed(
         () => Boolean(this.root.value()) || Boolean(this.fieldRootContext?.filledState())
@@ -168,6 +178,8 @@ export class RdxAutocompleteInput {
     onBlur(): void {
         this.fieldRootContext?.setFocused(false);
         this.fieldRootContext?.setTouched(true);
+        // Notify Signal Forms (touched model + touch output) the control was touched.
+        this.root.markAsTouched();
     }
 
     onKeydown(event: KeyboardEvent): void {

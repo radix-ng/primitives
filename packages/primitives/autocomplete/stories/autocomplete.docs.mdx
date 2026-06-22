@@ -203,6 +203,13 @@ The form value is the input string. Bind `[formControl]` to the root.
 
 <Canvas of={Stories.TemplateDrivenForms} />
 
+### Validation
+
+Bind the control's validity to `[invalid]` so the input reflects `data-invalid` / `aria-invalid`; the
+error message and submit guard follow the standard reactive-forms pattern.
+
+<Canvas of={Stories.Validation} />
+
 ### Disabled
 
 <Canvas of={Stories.Disabled} />

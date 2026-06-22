@@ -29,7 +29,10 @@ import {
     provideFloatingRootContext,
     provideFloatingTree,
     RdxCancelableChangeEventDetails,
-    RdxFloatingRootContext
+    RdxFloatingRootContext,
+    RdxFormUiControlBase,
+    RdxFormUiTouchTarget,
+    RdxFormValueControl
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { RdxPopper } from '@radix-ng/primitives/popper';
@@ -125,6 +128,9 @@ const context = () => {
         disabledState: root.disabledState,
         readonly: root.readOnly,
         requiredState: root.requiredState,
+        invalidState: root.invalidState,
+        touchedState: root.touchedState,
+        dirtyState: root.dirtyState,
         openOnInputClick: root.openOnInputClick,
         modal: root.modal,
         virtualized: root.virtualized,
@@ -228,7 +234,10 @@ function coerceAutoHighlight(value: BooleanInput | 'always' | 'input-change'): b
         '[attr.data-disabled]': 'disabledState() ? "" : undefined'
     }
 })
-export class RdxComboboxRoot implements ControlValueAccessor {
+export class RdxComboboxRoot
+    extends RdxFormUiControlBase
+    implements ControlValueAccessor, RdxFormValueControl<ComboboxValue | null>
+{
     private readonly injector = inject(Injector);
 
     /** Per-popup floating root context (ADR 0015) — `open` / `triggers` / reference for the dismissal engine. */
@@ -391,6 +400,12 @@ export class RdxComboboxRoot implements ControlValueAccessor {
     private readonly cvaDisabled = signal(false);
     readonly disabledState = computed(() => this.disabled() || this.cvaDisabled());
     readonly requiredState = computed(() => this.required());
+    /** @ignore */
+    readonly invalidState = this.formUi.invalidState;
+    /** @ignore */
+    readonly touchedState = this.formUi.touchedState;
+    /** @ignore */
+    readonly dirtyState = this.formUi.dirtyState;
     private readonly preventUnmountOnClose = signal(false);
     readonly present = computed(() => this.open() || this.preventUnmountOnClose());
 
@@ -467,6 +482,8 @@ export class RdxComboboxRoot implements ControlValueAccessor {
     private onTouched?: () => void;
 
     constructor() {
+        super();
+
         // Expose the (private) engine to the context factory, which is a free function.
         engineRegistry.set(this, this.engine);
 
@@ -818,8 +835,13 @@ export class RdxComboboxRoot implements ControlValueAccessor {
         return this.chipsFocusLast?.() ?? false;
     }
 
+    /** @ignore Bridge the CVA `onTouched` so `markAsTouched()` also notifies Reactive/template forms. */
+    protected override formUiTouchTarget(): RdxFormUiTouchTarget {
+        return { markAsTouched: () => this.onTouched?.() };
+    }
+
     markAsTouched(): void {
-        this.onTouched?.();
+        this.formUi.markAsTouched();
     }
 
     /**
@@ -845,6 +867,7 @@ export class RdxComboboxRoot implements ControlValueAccessor {
             return false;
         }
         this.value.set(value);
+        this.formUi.markDirty();
         this.onChange?.(value);
         return true;
     }

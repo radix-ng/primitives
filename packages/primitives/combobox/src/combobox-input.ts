@@ -52,6 +52,8 @@ const attr = (value: boolean) => (value ? '' : undefined);
         '[attr.data-valid]': 'dataAttr(!invalidState())',
         '[attr.data-disabled]': 'dataAttr(disabledState())',
         '[attr.data-required]': 'dataAttr(requiredState())',
+        '[attr.data-touched]': 'dataAttr(touchedState())',
+        '[attr.data-dirty]': 'dataAttr(dirtyState())',
         '[attr.data-filled]': 'dataAttr(filledState())',
         '[attr.data-focused]': 'dataAttr(focusedState())',
         '(input)': 'onInput($event)',
@@ -74,12 +76,20 @@ export class RdxComboboxInput {
     /** Marks the input as invalid independently of any Field state. */
     readonly invalid = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    protected readonly invalidState = computed(() => this.invalid() || Boolean(this.fieldRootContext?.invalidState()));
+    protected readonly invalidState = computed(
+        () => this.invalid() || this.rootContext.invalidState() || Boolean(this.fieldRootContext?.invalidState())
+    );
     protected readonly disabledState = computed(
         () => this.rootContext.disabledState() || Boolean(this.fieldRootContext?.disabledState())
     );
     protected readonly requiredState = computed(
         () => this.rootContext.requiredState() || Boolean(this.fieldRootContext?.requiredState())
+    );
+    protected readonly touchedState = computed(
+        () => this.rootContext.touchedState() || Boolean(this.fieldRootContext?.touchedState())
+    );
+    protected readonly dirtyState = computed(
+        () => this.rootContext.dirtyState() || Boolean(this.fieldRootContext?.dirtyState())
     );
     protected readonly filledState = computed(
         () => !this.isEmptyValue() || Boolean(this.fieldRootContext?.filledState())
@@ -168,6 +178,8 @@ export class RdxComboboxInput {
     onBlur(): void {
         this.fieldRootContext?.setFocused(false);
         this.fieldRootContext?.setTouched(true);
+        // Notify Signal Forms (touched model + touch output) the control was touched.
+        this.rootContext.markAsTouched();
     }
 
     onKeydown(event: KeyboardEvent): void {

@@ -24,6 +24,8 @@ import { AutocompleteReactiveForms } from './autocomplete-reactive-forms';
 import reactiveFormsSource from './autocomplete-reactive-forms?raw';
 import { AutocompleteTemplateForms } from './autocomplete-template-forms';
 import templateFormsSource from './autocomplete-template-forms?raw';
+import { AutocompleteValidation } from './autocomplete-validation';
+import validationSource from './autocomplete-validation?raw';
 import { AutocompleteVirtualizedExample } from './autocomplete-virtualized';
 import virtualizedSource from './autocomplete-virtualized?raw';
 
@@ -50,6 +52,7 @@ export default {
                 AutocompleteVirtualizedExample,
                 AutocompleteReactiveForms,
                 AutocompleteTemplateForms,
+                AutocompleteValidation,
                 AutocompleteDisabled
             ]
         }),
@@ -154,6 +157,15 @@ export const ReactiveForms: Story = {
     render: () => ({
         template: html`
             <autocomplete-reactive-forms />
+        `
+    })
+};
+
+export const Validation: Story = {
+    parameters: source(validationSource),
+    render: () => ({
+        template: html`
+            <autocomplete-validation />
         `
     })
 };

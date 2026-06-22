@@ -31,7 +31,7 @@ Working examples built on `@radix-ng/primitives`. Full source is **bundled offli
 To style a primitive with a custom design system, pair an example with the data-attribute contract in
 the `radix-ng` skill (`references/styling-contract.json`).
 
-Total: **234 examples** across **43 components**.
+Total: **236 examples** across **43 components**.
 
 ## Components
 
@@ -75,6 +75,7 @@ Full source (all examples): [`references/components/autocomplete.md`](./referenc
 - **Virtualized**
 - **Reactive forms**
 - **Template-driven forms**
+- **Validation**
 - **Disabled**
 
 ### Avatar
@@ -146,6 +147,7 @@ Full source (all examples): [`references/components/combobox.md`](./references/c
 - **Modal**
 - **Controlled open state**
 - **Reactive forms**
+- **Validation**
 - **Empty state**
 - **Virtualized**
 

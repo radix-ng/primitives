@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { form, FormField } from '@angular/forms/signals';
 import { RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -138,5 +139,153 @@ describe('Combobox forms integration', () => {
             expect(input.getAttribute('data-required')).toBe('');
             expect(input.getAttribute('aria-required')).toBe('true');
         });
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [_importsCombobox],
+    template: `
+        <div [(open)]="open" [invalid]="invalid()" [errors]="errors()" [dirty]="dirty()" rdxComboboxRoot>
+            <input rdxComboboxInput aria-label="Fruit" />
+            <div *rdxComboboxPortal rdxComboboxPositioner>
+                <div rdxComboboxPopup>
+                    <div rdxComboboxList aria-label="Fruits">
+                        @for (fruit of fruits; track fruit.value) {
+                            <div [value]="fruit.value" rdxComboboxItem>{{ fruit.label }}</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+})
+class ComboboxValidationHost {
+    readonly open = signal(false);
+    readonly invalid = signal(false);
+    readonly dirty = signal(false);
+    readonly errors = signal<{ kind: string; message?: string }[]>([]);
+    readonly fruits = FRUITS;
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [_importsCombobox, FormField],
+    template: `
+        <div [(open)]="open" [formField]="fruit" rdxComboboxRoot>
+            <input rdxComboboxInput aria-label="Fruit" />
+            <div *rdxComboboxPortal rdxComboboxPositioner>
+                <div rdxComboboxPopup>
+                    <div rdxComboboxList aria-label="Fruits">
+                        @for (fruit of fruits; track fruit.value) {
+                            <div [value]="fruit.value" rdxComboboxItem>{{ fruit.label }}</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+})
+class ComboboxSignalFormHost {
+    readonly open = signal(false);
+    readonly model = signal<{ fruit: string | null }>({ fruit: null });
+    readonly formTree = form(this.model);
+    readonly fruits = FRUITS;
+
+    get fruit() {
+        return this.formTree.fruit;
+    }
+}
+
+describe('Combobox validation state (root → input)', () => {
+    let fixture: ComponentFixture<ComboboxValidationHost>;
+    let host: ComboboxValidationHost;
+
+    async function settle(): Promise<void> {
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+    }
+    function input(): HTMLInputElement {
+        return fixture.nativeElement.querySelector('input');
+    }
+
+    beforeEach(async () => {
+        TestBed.configureTestingModule({ imports: [ComboboxValidationHost] });
+        fixture = TestBed.createComponent(ComboboxValidationHost);
+        host = fixture.componentInstance;
+        await settle();
+    });
+
+    it('is valid by default', () => {
+        expect(input().getAttribute('data-valid')).toBe('');
+        expect(input().getAttribute('data-invalid')).toBeNull();
+        expect(input().getAttribute('aria-invalid')).toBeNull();
+    });
+
+    it('reflects the root invalid input on the input', async () => {
+        host.invalid.set(true);
+        await settle();
+        expect(input().getAttribute('data-invalid')).toBe('');
+        expect(input().getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('is invalid when the errors list is non-empty', async () => {
+        host.errors.set([{ kind: 'required', message: 'Required.' }]);
+        await settle();
+        expect(input().getAttribute('data-invalid')).toBe('');
+        expect(input().getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('marks dirty after a value change', async () => {
+        expect(input().getAttribute('data-dirty')).toBeNull();
+        host.open.set(true);
+        await settle();
+        (Array.from(document.querySelectorAll('[rdxComboboxItem]')) as HTMLElement[])[0].click();
+        await settle();
+        expect(input().getAttribute('data-dirty')).toBe('');
+    });
+
+    it('marks touched on input blur', async () => {
+        expect(input().getAttribute('data-touched')).toBeNull();
+        input().dispatchEvent(new FocusEvent('blur'));
+        await settle();
+        expect(input().getAttribute('data-touched')).toBe('');
+    });
+});
+
+describe('Combobox with Signal Forms', () => {
+    let fixture: ComponentFixture<ComboboxSignalFormHost>;
+    let host: ComboboxSignalFormHost;
+
+    async function settle(): Promise<void> {
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+    }
+
+    beforeEach(async () => {
+        TestBed.configureTestingModule({ imports: [ComboboxSignalFormHost] });
+        fixture = TestBed.createComponent(ComboboxSignalFormHost);
+        host = fixture.componentInstance;
+        await settle();
+    });
+
+    it('updates the bound field on item selection (FormValueControl)', async () => {
+        host.open.set(true);
+        await settle();
+        (Array.from(document.querySelectorAll('[rdxComboboxItem]')) as HTMLElement[])[0].click();
+        await settle();
+        expect(host.model().fruit).toBe('apple');
+    });
+
+    it('reflects the bound field value into the selection', async () => {
+        host.model.update((value) => ({ ...value, fruit: 'banana' }));
+        host.open.set(true);
+        await settle();
+        const banana = (Array.from(document.querySelectorAll('[rdxComboboxItem]')) as HTMLElement[]).find((el) =>
+            el.textContent?.includes('Banana')
+        )!;
+        expect(banana.getAttribute('aria-selected')).toBe('true');
     });
 });
