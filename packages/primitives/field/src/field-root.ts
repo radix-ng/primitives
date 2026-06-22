@@ -234,11 +234,27 @@ export class RdxFieldRoot {
     /** External messages from the enclosing Form matched by this field's `name`. */
     readonly externalErrors = computed(() => this.formContext?.errorsFor(this.name()) ?? []);
 
-    /** Provider messages first (`message ?? kind`), then the Form's external messages. */
-    readonly messages = computed(() => [
-        ...this.providerErrors().map((error) => error.message ?? error.kind),
-        ...this.externalErrors()
-    ]);
+    /**
+     * Provider messages first (`message ?? kind`), then the Form's external messages — **deduped by
+     * text**. A field can receive the same Signal Forms error from both a per-field `rdxSignalField`
+     * provider and a form-level `rdxSignalForm` name-routing (they read the same field state); deduping
+     * keeps that from rendering the message twice while still surfacing distinct messages from each
+     * source.
+     */
+    readonly messages = computed(() => {
+        const seen = new Set<string>();
+        const result: string[] = [];
+        for (const message of [
+            ...this.providerErrors().map((error) => error.message ?? error.kind),
+            ...this.externalErrors()
+        ]) {
+            if (!seen.has(message)) {
+                seen.add(message);
+                result.push(message);
+            }
+        }
+        return result;
+    });
 
     // External errors (provider content or Form server errors) force invalid regardless of the input or
     // a provider's `invalid` accessor — a server error must show even when client-side validity passes.

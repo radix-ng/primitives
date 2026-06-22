@@ -2,8 +2,9 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { form, FormField, required } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
-import { RdxFieldRoot } from '@radix-ng/primitives/field';
+import { RdxFieldError, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormRoot } from '@radix-ng/primitives/form';
+import { RdxSignalField } from '../src/signal-field';
 import { RdxSignalForm } from '../src/signal-form';
 
 @Component({
@@ -106,5 +107,46 @@ describe('RdxSignalForm — errorsFor resolves a dotted path', () => {
         host.model.update((value) => ({ ...value, address: { street: '123 Main St' } }));
         fixture.detectChanges();
         expect(fieldEl.getAttribute('data-invalid')).toBeNull();
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [FormField, RdxFormRoot, RdxFieldRoot, RdxFieldError, RdxSignalForm, RdxSignalField],
+    // Both adapters on the same field: per-field `rdxSignalField` AND form-level `name` routing.
+    // `messages()` must dedupe so the shared error renders once.
+    template: `
+        <form [rdxSignalForm]="formTree" rdxFormRoot>
+            <div rdxFieldRoot name="email">
+                <input [formField]="email" rdxSignalField />
+                <p #err="rdxFieldError" rdxFieldError>{{ err.messages().join('|') }}</p>
+            </div>
+        </form>
+    `
+})
+class BothAdaptersHost {
+    readonly model = signal({ email: '' });
+    readonly formTree = form(this.model, (path) => {
+        required(path.email, { message: 'Email is required.' });
+    });
+
+    get email() {
+        return this.formTree.email;
+    }
+}
+
+describe('RdxSignalForm + RdxSignalField on the same field — messages dedupe', () => {
+    let fixture: ComponentFixture<BothAdaptersHost>;
+    let errorEl: HTMLElement;
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [BothAdaptersHost] });
+        fixture = TestBed.createComponent(BothAdaptersHost);
+        fixture.detectChanges();
+        errorEl = fixture.debugElement.query(By.css('[rdxFieldError]')).nativeElement;
+    });
+
+    it('renders the shared error exactly once (no duplicate from the two sources)', () => {
+        expect(errorEl.textContent?.trim()).toBe('Email is required.');
     });
 });

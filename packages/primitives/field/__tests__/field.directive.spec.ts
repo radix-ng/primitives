@@ -178,5 +178,23 @@ describe('Field', () => {
             expect(fieldRoot.setStateProvider(first)).toBeNull();
             expect(fieldRoot.setStateProvider(null)).toBe(first);
         });
+
+        it('clearStateProvider rolls back only when its provider is still active (identity-checked)', () => {
+            const a = { invalid: () => true };
+            const b = { invalid: () => false };
+            expect(fieldRoot.setStateProvider(a)).toBeNull(); // slot = a
+            expect(fieldRoot.setStateProvider(b)).toBe(a); // slot = b (a is now stale)
+
+            // a's teardown must NOT clobber b (create-before-destroy on a view swap)
+            fieldRoot.clearStateProvider(a, null);
+            fixture.detectChanges();
+            expect(fieldRoot.hasStateProvider()).toBe(true);
+            expect(root.hasAttribute('data-invalid')).toBe(false); // still b → invalid=false
+
+            // b's teardown rolls the slot back to a
+            fieldRoot.clearStateProvider(b, a);
+            fixture.detectChanges();
+            expect(root.getAttribute('data-invalid')).toBe(''); // back to a → invalid=true
+        });
     });
 });

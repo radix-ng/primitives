@@ -55,6 +55,22 @@ the field, including the validation message shown by `rdxFieldError`.
 
 <Canvas of={SignalFormsStories.Field} />
 
+### Two ways to surface field errors
+
+There are **two modes** for routing a field's validation messages into `rdxFieldError.messages()` — pick
+**one per field**:
+
+1. **Per-field adapter** — put `rdxSignalField` on the control. It reads the bound field's `errors()`
+   directly and registers them on the enclosing `rdxFieldRoot`. Use this when the field already needs the
+   adapter for `data-invalid` / `data-touched` / `data-dirty` state (the common case).
+2. **Form-level name routing** — set a `name` on `rdxFieldRoot` that matches the field key; the
+   `rdxSignalForm` adapter's `errorsFor(name)` resolves it (dotted paths like `address.street` work). Use
+   this when a field only needs its _messages_ from the form and not the per-field state attributes — no
+   `rdxSignalField` needed.
+
+Using **both** for the same field is harmless — `messages()` deduplicates by text, so a message shared by
+the two sources renders once — but prefer a single mode for clarity.
+
 ## Control authoring — the shared state surface
 
 Every Radix NG form control exposes the optional Signal Forms `FormUiControl` state

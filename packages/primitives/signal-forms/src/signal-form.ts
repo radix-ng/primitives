@@ -20,9 +20,10 @@ type NamedField = () => { errors: () => readonly { kind: string; message?: strin
  *
  * `errorsFor(name)` routes a field's errors to a `rdxFieldRoot` by its `name`, walking the `FieldTree`
  * so dotted paths into nested object/array fields resolve too (`address.street`, `items.0.name`). A
- * field can surface messages from the form alone — no per-field `rdxSignalField` needed for errors. If a
- * field *also* carries `rdxSignalField`, its errors already come from there; don't rely on both for the
- * same field or messages duplicate.
+ * field can surface messages from the form alone — no per-field `rdxSignalField` needed for errors.
+ * These are the **two modes** (per-field adapter vs form-level name routing) — prefer one per field; if
+ * a field carries both, `rdxFieldError.messages()` deduplicates by text so the shared message is not
+ * shown twice.
  *
  * See ADR 0018.
  *

@@ -8,11 +8,26 @@
 > the Reactive/template ecosystem for a one-month-old API. Controls stay **dual**; the core stays
 > form-agnostic; Signal Forms ships as the **optional** adapter pair in `@radix-ng/primitives/signal-forms`.
 
-- Status: Proposed
-- Date: 2026-06-20
+- Status: Accepted (implemented; batch-#4 complete across all controls)
+- Date: 2026-06-20 (implementation completed 2026-06-22)
 - Decision owners: Radix NG maintainers
 - Related packages: `packages/primitives/{field,form,core}`, new `packages/primitives/signal-forms`
 - Supersedes the "defer" decision of **ADR 0004** (its revisit triggers are now met)
+
+> **Implementation complete (2026-06-22).** Both adapters shipped, and the optional `FormUiControl`
+> surface (`invalid` / `errors` / `touched` model + `touch` / `dirty`) now lands on **all 14 form
+> controls** — input, radio, checkbox, switch, number-field, select, toggle-group, checkbox-group,
+> slider, combobox, autocomplete, date-field, time-field, editable — not just the pilot five. The
+> per-control duplication was factored into three reusable pieces in `@radix-ng/primitives/core`
+> (`src/signal-forms/`): **`RdxFormUiControlBase`** (an abstract `@Directive()` that declares the five
+> members once and builds `formUi`; controls `extends` it — inheritance keeps the inputs on the same
+> directive as the `value`/`checked` model, which a host directive could not), **`createFormUiState()`**
+> (the derivation + dual `markAsTouched` with an optional CVA bridge), and **`RdxFormUiStateHost`** +
+> `provideFormUiState()` (a host directive for the `data-*` / `aria-invalid` / `focusout` reflection on
+> self/group controls). The only remaining forms work is the **Angular-22 gate** (re-run the spike, swap
+> the `core` shim for real `@angular/forms/signals` imports) and the optional secondary surface
+> (`name` / `required` / `readonly` / `min`/`max` where a control still lacks it). See
+> `signal-forms-readiness.md` for the per-control matrix.
 
 ## Context
 
@@ -101,11 +116,11 @@ This ADR delivers:
   checkbox**;
 - Storybook stories + docs example (Signal Forms tab in the forms guide) + `skills:build` regen.
 
-The shared `invalid` / `errors` / `touched` / `dirty` batch (readiness collisions #4) across the 🟡
-controls (select, combobox, autocomplete, toggle-group, checkbox-group, date/time-field, editable,
-slider) is **out of scope** here and tracked as follow-up in the readiness doc. Those controls still work
-with the adapter through the CVA path; they just don't yet expose the full optional `FormUiControl`
-surface.
+The shared `invalid` / `errors` / `touched` / `dirty` batch (readiness collisions #4) across the
+remaining controls (select, combobox, autocomplete, toggle-group, checkbox-group, date/time-field,
+editable, slider) was tracked as follow-up here. **Update (2026-06-22): that follow-up is complete** —
+batch-#4 now ships on all 14 controls via the shared `RdxFormUiControlBase` / `createFormUiState` /
+`RdxFormUiStateHost` mechanism (see the implementation note at the top of this ADR).
 
 ### Adapter design
 
@@ -129,7 +144,9 @@ root, so there is **no duplicate binding**):
 disabled, required, dirty, touched, errors })` (e.g. `invalid: () => state().invalid()`,
   `errors: () => state().errors().map(…)`);
 - leaves `filled` / `focused` to Field's DOM heuristic (partial ownership — the seam already supports it);
-- restores the previous provider on destroy (`setStateProvider` returns it) via `DestroyRef.onDestroy`.
+- on destroy rolls the slot back to the previous provider via `clearStateProvider(provider, previous)` —
+  an **identity-checked** teardown that no-ops if a newer adapter already owns the slot (create-before-
+  destroy during a view swap), so the old adapter's destroy can't clobber the new one.
 
 `[rdxSignalForm]` (same host as `form[rdxFormRoot]`):
 
@@ -163,8 +180,8 @@ consumers.
   supported — slightly more per-control code than a 22-only control would need.
 - The shim must be kept in sync with the real contract by hand (mitigated: it is a strict subset and
   `implements` against the real types is exercised inside the `signal-forms` entry's own specs).
-- The 🟡 controls bind through CVA until their batch-#4 lands (they still work; they just don't yet
-  expose the full optional `FormUiControl` surface).
+- ~~The 🟡 controls bind through CVA until their batch-#4 lands.~~ **Resolved (2026-06-22):** batch-#4
+  ships on all controls; every control now exposes the full optional `FormUiControl` surface.
 
 ## Alternatives Considered
 
@@ -203,8 +220,10 @@ consumers.
 
 ## Trigger for Revisit
 
-- batch-#4 (`invalid`/`errors`/`touched`/`dirty`) lands across the 🟡 controls — fold them into the
-  adapter's "fully conformant" set;
-- the shim drifts from the real contract, or the real `ValidationError` union is needed in `core`
-  (reconsider Alternative "flip the whole library");
+- ~~batch-#4 lands across the 🟡 controls~~ — **done (2026-06-22):** all 14 controls are fully
+  conformant via `RdxFormUiControlBase` / `createFormUiState` / `RdxFormUiStateHost`;
+- **the Angular-22 gate** — at the baseline bump, re-run the archived spike against stable 22 and swap
+  the `core` shim (`form-control.ts`) for real `@angular/forms/signals` imports (then this Alternative
+  "flip the whole library" is reconsidered);
+- the shim drifts from the real contract, or the real `ValidationError` union is needed in `core`;
 - Angular changes the Signal Forms control contract or the `[formField]` discovery rules.

@@ -31,7 +31,7 @@ Working examples built on `@radix-ng/primitives`. Full source is **bundled offli
 To style a primitive with a custom design system, pair an example with the data-attribute contract in
 the `radix-ng` skill (`references/styling-contract.json`).
 
-Total: **236 examples** across **43 components**.
+Total: **237 examples** across **43 components**.
 
 ## Components
 
@@ -382,6 +382,7 @@ Full source (all examples): [`references/components/separator.md`](./references/
 Full source (all examples): [`references/components/signal-forms.md`](./references/components/signal-forms.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-signal-forms--docs)
 
 - **Field driven by Signal Forms**
+- **Two ways to surface field errors**
 
 ### Slider
 
