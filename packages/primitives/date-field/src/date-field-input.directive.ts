@@ -57,7 +57,7 @@ export class RdxDateFieldInputDirective {
     /**
      * @ignore
      */
-    readonly isInvalid = computed(() => this.rootContext.isInvalid());
+    readonly isInvalid = computed(() => this.rootContext.invalidState());
 
     /**
      * @ignore

@@ -2453,12 +2453,43 @@
               "name": "value",
               "type": "DateValue | undefined",
               "description": "The controlled value of the date field."
+            },
+            {
+              "name": "dirty",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the value changed from its initial value. Merged with internal tracking."
+            },
+            {
+              "name": "errors",
+              "type": "readonly RdxValidationError[]",
+              "default": "[]",
+              "description": "Validation errors for the control. A non-empty list marks it invalid."
+            },
+            {
+              "name": "invalid",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+            },
+            {
+              "name": "touched",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out."
             }
           ],
-          "outputs": [],
+          "outputs": [
+            {
+              "name": "touch",
+              "type": "void",
+              "description": "Emits when the control is touched, notifying Signal Forms (stable Angular 22 contract)."
+            }
+          ],
           "twoWay": [
             "placeholder",
-            "value"
+            "value",
+            "touched"
           ]
         }
       ]
@@ -7224,12 +7255,43 @@
               "name": "value",
               "type": "TimeValue | undefined",
               "description": "The controlled checked state of the calendar."
+            },
+            {
+              "name": "dirty",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the value changed from its initial value. Merged with internal tracking."
+            },
+            {
+              "name": "errors",
+              "type": "readonly RdxValidationError[]",
+              "default": "[]",
+              "description": "Validation errors for the control. A non-empty list marks it invalid."
+            },
+            {
+              "name": "invalid",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+            },
+            {
+              "name": "touched",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out."
             }
           ],
-          "outputs": [],
+          "outputs": [
+            {
+              "name": "touch",
+              "type": "void",
+              "description": "Emits when the control is touched, notifying Signal Forms (stable Angular 22 contract)."
+            }
+          ],
           "twoWay": [
             "placeholder",
-            "value"
+            "value",
+            "touched"
           ]
         }
       ]

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { Time } from '@internationalized/date';
 import { Granularity, HourCycle, TimeValue } from '@radix-ng/primitives/core';
@@ -207,5 +208,124 @@ describe('Time Field', () => {
             expect(rootDirective(fixture).value()).toBeUndefined();
             expect(hour.getAttribute('aria-valuetext')).toBe('Empty');
         });
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    template: `
+        <div
+            #root="rdxTimeFieldRoot"
+            [value]="value()"
+            [invalid]="invalid()"
+            [errors]="errors()"
+            [dirty]="dirty()"
+            rdxTimeFieldRoot
+        >
+            @for (item of root.segmentContents(); track $index) {
+                <div [part]="item.part" rdxTimeFieldInput>{{ item.value }}</div>
+            }
+        </div>
+    `,
+    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective]
+})
+class TimeFieldValidationHost {
+    readonly value = signal<TimeValue | undefined>(undefined);
+    readonly invalid = signal(false);
+    readonly dirty = signal(false);
+    readonly errors = signal<{ kind: string; message?: string }[]>([]);
+}
+
+describe('RdxTimeField validation state', () => {
+    let fixture: ComponentFixture<TimeFieldValidationHost>;
+    let host: TimeFieldValidationHost;
+    let root: HTMLElement;
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [TimeFieldValidationHost] });
+        fixture = TestBed.createComponent(TimeFieldValidationHost);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+        root = fixture.debugElement.query(By.directive(RdxTimeFieldRootDirective)).nativeElement;
+    });
+
+    it('is valid by default', () => {
+        expect(root.getAttribute('data-valid')).toBe('');
+        expect(root.getAttribute('data-invalid')).toBeNull();
+        expect(root.getAttribute('aria-invalid')).toBeNull();
+    });
+
+    it('reflects the invalid input', () => {
+        host.invalid.set(true);
+        fixture.detectChanges();
+        expect(root.getAttribute('data-invalid')).toBe('');
+        expect(root.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('is invalid when the errors list is non-empty', () => {
+        host.errors.set([{ kind: 'required', message: 'Required.' }]);
+        fixture.detectChanges();
+        expect(root.getAttribute('data-invalid')).toBe('');
+        expect(root.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('reflects the dirty input', () => {
+        expect(root.getAttribute('data-dirty')).toBeNull();
+        host.dirty.set(true);
+        fixture.detectChanges();
+        expect(root.getAttribute('data-dirty')).toBe('');
+    });
+
+    it('marks touched on focus-out', () => {
+        expect(root.getAttribute('data-touched')).toBeNull();
+        root.dispatchEvent(new FocusEvent('focusout'));
+        fixture.detectChanges();
+        expect(root.getAttribute('data-touched')).toBe('');
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    template: `
+        <div #root="rdxTimeFieldRoot" [formField]="time" rdxTimeFieldRoot>
+            @for (item of root.segmentContents(); track $index) {
+                <div [part]="item.part" rdxTimeFieldInput>{{ item.value }}</div>
+            }
+        </div>
+    `,
+    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, FormField]
+})
+class TimeFieldSignalFormHost {
+    readonly model = signal<{ time: TimeValue | undefined }>({ time: new Time(10, 30) });
+    readonly formTree = form(this.model);
+
+    get time() {
+        return this.formTree.time;
+    }
+}
+
+describe('RdxTimeField with Signal Forms', () => {
+    let fixture: ComponentFixture<TimeFieldSignalFormHost>;
+    let host: TimeFieldSignalFormHost;
+
+    function rootValue(): TimeValue | undefined {
+        return fixture.debugElement
+            .query(By.directive(RdxTimeFieldRootDirective))
+            .injector.get(RdxTimeFieldRootDirective)
+            .value();
+    }
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [TimeFieldSignalFormHost] });
+        fixture = TestBed.createComponent(TimeFieldSignalFormHost);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+    });
+
+    it('reflects the bound field value (FormValueControl)', () => {
+        expect(rootValue()?.toString()).toBe('10:30:00');
+        host.model.update((value) => ({ ...value, time: new Time(14, 45) }));
+        fixture.detectChanges();
+        expect(rootValue()?.toString()).toBe('14:45:00');
     });
 });

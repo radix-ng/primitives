@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { CalendarDate, CalendarDateTime, DateValue } from '@internationalized/date';
 import { Granularity } from '@radix-ng/primitives/core';
@@ -109,5 +110,133 @@ describe('Date Field', () => {
 
         // an empty field must follow the locale's calendar system, not stay Gregorian
         expect(root.placeholder()?.calendar.identifier).toBe('buddhist');
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    template: `
+        <div
+            #root="rdxDateFieldRoot"
+            [value]="value()"
+            [maxValue]="maxValue()"
+            [invalid]="invalid()"
+            [errors]="errors()"
+            [dirty]="dirty()"
+            rdxDateFieldRoot
+        >
+            @for (item of root.segmentContents(); track $index) {
+                <div [part]="item.part" rdxDateFieldInput>{{ item.value }}</div>
+            }
+        </div>
+    `,
+    imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective]
+})
+class DateFieldValidationHost {
+    readonly value = signal<DateValue | undefined>(undefined);
+    readonly maxValue = signal<DateValue | undefined>(undefined);
+    readonly invalid = signal(false);
+    readonly dirty = signal(false);
+    readonly errors = signal<{ kind: string; message?: string }[]>([]);
+}
+
+describe('RdxDateField validation state', () => {
+    let fixture: ComponentFixture<DateFieldValidationHost>;
+    let host: DateFieldValidationHost;
+    let root: HTMLElement;
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [DateFieldValidationHost] });
+        fixture = TestBed.createComponent(DateFieldValidationHost);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+        root = fixture.debugElement.query(By.directive(RdxDateFieldRootDirective)).nativeElement;
+    });
+
+    it('is valid by default', () => {
+        expect(root.getAttribute('data-valid')).toBe('');
+        expect(root.getAttribute('data-invalid')).toBeNull();
+        expect(root.getAttribute('aria-invalid')).toBeNull();
+    });
+
+    it('reflects the invalid input', () => {
+        host.invalid.set(true);
+        fixture.detectChanges();
+        expect(root.getAttribute('data-invalid')).toBe('');
+        expect(root.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('is invalid when the errors list is non-empty', () => {
+        host.errors.set([{ kind: 'required', message: 'Required.' }]);
+        fixture.detectChanges();
+        expect(root.getAttribute('data-invalid')).toBe('');
+        expect(root.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('combines with the built-in range check (value after maxValue)', () => {
+        host.value.set(new CalendarDate(2030, 1, 1));
+        host.maxValue.set(new CalendarDate(2025, 1, 1));
+        fixture.detectChanges();
+        expect(root.getAttribute('data-invalid')).toBe('');
+    });
+
+    it('reflects the dirty input', () => {
+        expect(root.getAttribute('data-dirty')).toBeNull();
+        host.dirty.set(true);
+        fixture.detectChanges();
+        expect(root.getAttribute('data-dirty')).toBe('');
+    });
+
+    it('marks touched on focus-out', () => {
+        expect(root.getAttribute('data-touched')).toBeNull();
+        root.dispatchEvent(new FocusEvent('focusout'));
+        fixture.detectChanges();
+        expect(root.getAttribute('data-touched')).toBe('');
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    template: `
+        <div #root="rdxDateFieldRoot" [formField]="date" rdxDateFieldRoot>
+            @for (item of root.segmentContents(); track $index) {
+                <div [part]="item.part" rdxDateFieldInput>{{ item.value }}</div>
+            }
+        </div>
+    `,
+    imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective, FormField]
+})
+class DateFieldSignalFormHost {
+    readonly model = signal<{ date: DateValue | undefined }>({ date: new CalendarDate(2026, 1, 15) });
+    readonly formTree = form(this.model);
+
+    get date() {
+        return this.formTree.date;
+    }
+}
+
+describe('RdxDateField with Signal Forms', () => {
+    let fixture: ComponentFixture<DateFieldSignalFormHost>;
+    let host: DateFieldSignalFormHost;
+
+    function rootValue(): DateValue | undefined {
+        return fixture.debugElement
+            .query(By.directive(RdxDateFieldRootDirective))
+            .injector.get(RdxDateFieldRootDirective)
+            .value();
+    }
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [DateFieldSignalFormHost] });
+        fixture = TestBed.createComponent(DateFieldSignalFormHost);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+    });
+
+    it('reflects the bound field value (FormValueControl)', () => {
+        expect(rootValue()?.toString()).toBe('2026-01-15');
+        host.model.update((value) => ({ ...value, date: new CalendarDate(2027, 6, 20) }));
+        fixture.detectChanges();
+        expect(rootValue()?.toString()).toBe('2027-06-20');
     });
 });

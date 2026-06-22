@@ -29,6 +29,8 @@ import {
     normalizeDateStep,
     normalizeHourCycle,
     provideToken,
+    RdxFormUiControlBase,
+    RdxFormValueControl,
     SegmentValueObj,
     syncSegmentValues,
     TimeValue,
@@ -73,13 +75,21 @@ function isSameTimeValue(a: TimeValue | undefined, b: TimeValue | undefined): bo
         '[attr.aria-disabled]': 'disabled() ? "" : undefined',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
         '[attr.data-readonly]': 'readonly() ? "" : undefined',
-        '[attr.data-invalid]': 'isInvalid() ? "" : undefined',
+        '[attr.aria-invalid]': 'invalidState() ? "true" : undefined',
+        '[attr.data-invalid]': 'invalidState() ? "" : undefined',
+        '[attr.data-valid]': 'invalidState() ? undefined : ""',
+        '[attr.data-touched]': 'touchedState() ? "" : undefined',
+        '[attr.data-dirty]': 'dirtyState() ? "" : undefined',
         '[attr.dir]': 'dir()',
 
-        '(keydown)': 'onKeydown($event)'
+        '(keydown)': 'onKeydown($event)',
+        '(focusout)': 'markAsTouched()'
     }
 })
-export class RdxTimeFieldRootDirective {
+export class RdxTimeFieldRootDirective
+    extends RdxFormUiControlBase
+    implements RdxFormValueControl<TimeValue | undefined>
+{
     /**
      * The controlled checked state of the calendar.
      */
@@ -256,6 +266,24 @@ export class RdxTimeFieldRootDirective {
     });
 
     /**
+     * @ignore Effective invalid: the built-in range check OR the form-driven `invalid` / `errors`
+     * (Signal Forms). Reflected on the root and segments.
+     */
+    readonly invalidState = computed(() => this.isInvalid() || this.formUi.invalidState());
+    /** @ignore */
+    readonly touchedState = this.formUi.touchedState;
+    /** @ignore */
+    readonly dirtyState = this.formUi.dirtyState;
+
+    /** @ignore Whether the user has focused a segment — gates dirty tracking so a form/initial seed of `value` doesn't mark dirty. */
+    private readonly userInteracted = signal(false);
+
+    /** @ignore Mark the field touched (model + `touch` output) for Signal Forms. Called on segment blur. */
+    markAsTouched(): void {
+        this.formUi.markAsTouched();
+    }
+
+    /**
      * @ignore
      */
     readonly allSegmentContent = computed(() =>
@@ -317,6 +345,16 @@ export class RdxTimeFieldRootDirective {
     };
 
     constructor() {
+        super();
+
+        // Mark dirty when the value changes after the user has interacted (a form/initial seed of
+        // `value` lands before any segment focus, so it is excluded).
+        watch([this.value], () => {
+            if (this.userInteracted()) {
+                this.formUi.markDirty();
+            }
+        });
+
         watch([this.convertedModelValue], ([value]) => {
             if (
                 !isNullish(value) &&
@@ -360,5 +398,6 @@ export class RdxTimeFieldRootDirective {
      */
     setFocusedElement(el: HTMLElement) {
         this.currentFocusedElement.set(el);
+        this.userInteracted.set(true);
     }
 }

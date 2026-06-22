@@ -6,6 +6,8 @@ export interface TimeFieldContextToken {
     value: ModelSignal<TimeValue | undefined>;
     placeholder: ModelSignal<TimeValue>;
     isInvalid: Signal<boolean>;
+    /** Effective invalid: the built-in range check OR the form-driven invalid state. */
+    invalidState: Signal<boolean>;
     disabled: InputSignal<boolean>;
     readonly: InputSignal<boolean>;
     formatter: Signal<Formatter>;
