@@ -6,13 +6,13 @@ Field is form-agnostic. It does not replace Angular Forms; pass validation state
 Forms, template-driven forms, or Signal Forms when using them.
 
 ```typescript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
 import { RdxFieldError } from '../src/field-error';
 import { RdxFieldLabel } from '../src/field-label';
 import { RdxFieldRoot } from '../src/field-root';
 import { fieldDescription, fieldError, fieldLabel } from './field.shared';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -20,10 +20,10 @@ import { fieldDescription, fieldError, fieldLabel } from './field.shared';
     imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
     template: `
         <div class="flex w-80 flex-col gap-2" rdxFieldRoot required>
-            <label [class]="labelClass" rdxFieldLabel>Email</label>
-            <input [class]="inputClass" rdxFieldControl type="email" placeholder="name@example.com" />
-            <p [class]="descriptionClass" rdxFieldDescription>Used for account notifications.</p>
-            <p [class]="errorClass" rdxFieldError>Enter a valid email address.</p>
+            <label rdxFieldLabel [class]="labelClass">Email</label>
+            <input rdxFieldControl type="email" placeholder="name@example.com" [class]="inputClass" />
+            <p rdxFieldDescription [class]="descriptionClass">Used for account notifications.</p>
+            <p rdxFieldError [class]="errorClass">Enter a valid email address.</p>
         </div>
     `
 })
@@ -93,13 +93,13 @@ reflecting the field's validation state; its `disabled` is OR'd with the root's.
 The root owns the relationships between the field parts.
 
 ```typescript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
 import { RdxFieldError } from '../src/field-error';
 import { RdxFieldLabel } from '../src/field-label';
 import { RdxFieldRoot } from '../src/field-root';
 import { fieldDescription, fieldError, fieldLabel } from './field.shared';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -107,10 +107,10 @@ import { fieldDescription, fieldError, fieldLabel } from './field.shared';
     imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
     template: `
         <div class="flex w-80 flex-col gap-2" rdxFieldRoot required>
-            <label [class]="labelClass" rdxFieldLabel>Email</label>
-            <input [class]="inputClass" rdxFieldControl type="email" placeholder="name@example.com" />
-            <p [class]="descriptionClass" rdxFieldDescription>Used for account notifications.</p>
-            <p [class]="errorClass" rdxFieldError>Enter a valid email address.</p>
+            <label rdxFieldLabel [class]="labelClass">Email</label>
+            <input rdxFieldControl type="email" placeholder="name@example.com" [class]="inputClass" />
+            <p rdxFieldDescription [class]="descriptionClass">Used for account notifications.</p>
+            <p rdxFieldError [class]="errorClass">Enter a valid email address.</p>
         </div>
     `
 })
@@ -128,13 +128,13 @@ export class FieldDefaultExample {
 Pass invalid, dirty, and touched state from your form model.
 
 ```typescript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
 import { RdxFieldError } from '../src/field-error';
 import { RdxFieldLabel } from '../src/field-label';
 import { RdxFieldRoot } from '../src/field-root';
 import { fieldDescription, fieldError, fieldInputInvalid, fieldLabel } from './field.shared';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -142,16 +142,16 @@ import { fieldDescription, fieldError, fieldInputInvalid, fieldLabel } from './f
     imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
     template: `
         <div class="flex w-80 flex-col gap-2" rdxFieldRoot invalid required dirty touched>
-            <label [class]="labelClass" rdxFieldLabel>Workspace name</label>
+            <label rdxFieldLabel [class]="labelClass">Workspace name</label>
             <input
-                [class]="inputClass"
                 rdxFieldControl
                 value=""
                 placeholder="acme"
                 aria-errormessage="workspace-error"
+                [class]="inputClass"
             />
-            <p [class]="descriptionClass" rdxFieldDescription>Use lowercase letters and hyphens.</p>
-            <p id="workspace-error" [class]="errorClass" rdxFieldError>Workspace name is required.</p>
+            <p rdxFieldDescription [class]="descriptionClass">Use lowercase letters and hyphens.</p>
+            <p id="workspace-error" rdxFieldError [class]="errorClass">Workspace name is required.</p>
         </div>
     `
 })
@@ -169,14 +169,14 @@ Angular Forms remains responsible for validation. Field reflects the resulting s
 relationships.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
 import { RdxFieldError } from '../src/field-error';
 import { RdxFieldLabel } from '../src/field-label';
 import { RdxFieldRoot } from '../src/field-root';
 import { fieldDescription, fieldError, fieldInputInvalid, fieldLabel, fieldSubmitButton } from './field.shared';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -186,17 +186,17 @@ import { fieldDescription, fieldError, fieldInputInvalid, fieldLabel, fieldSubmi
         <form class="flex w-80 flex-col gap-3" [formGroup]="form" (ngSubmit)="submit()">
             <div
                 class="flex flex-col gap-2"
+                rdxFieldRoot
+                required
                 [invalid]="email.invalid && (email.touched || submitted())"
                 [dirty]="email.dirty"
                 [touched]="email.touched"
                 [disabled]="email.disabled"
-                rdxFieldRoot
-                required
             >
-                <label [class]="labelClass" rdxFieldLabel>Email</label>
-                <input [class]="inputClass" rdxFieldControl type="email" formControlName="email" />
-                <p [class]="descriptionClass" rdxFieldDescription>Use the email connected to your account.</p>
-                <p [class]="errorClass" rdxFieldError>
+                <label rdxFieldLabel [class]="labelClass">Email</label>
+                <input rdxFieldControl type="email" formControlName="email" [class]="inputClass" />
+                <p rdxFieldDescription [class]="descriptionClass">Use the email connected to your account.</p>
+                <p rdxFieldError [class]="errorClass">
                     @if (email.hasError('required')) {
                         Email is required.
                     } @else {
@@ -205,7 +205,7 @@ import { fieldDescription, fieldError, fieldInputInvalid, fieldLabel, fieldSubmi
                 </p>
             </div>
 
-            <button [class]="buttonClass" type="submit">Submit</button>
+            <button type="submit" [class]="buttonClass">Submit</button>
         </form>
     `
 })
@@ -240,26 +240,26 @@ For custom controls, pass `filled` and `focused` state to the root when the nati
 enough.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
 import { RdxFieldError } from '../src/field-error';
 import { RdxFieldLabel } from '../src/field-label';
 import { RdxFieldRoot } from '../src/field-root';
 import { fieldCustomTrigger, fieldDescription, fieldError, fieldLabel } from './field.shared';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'field-custom-control-example',
     imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
     template: `
-        <div class="flex w-80 flex-col gap-2" [filled]="selected()" [focused]="open()" rdxFieldRoot>
-            <label [class]="labelClass" rdxFieldLabel>Plan</label>
-            <button [class]="triggerClass" (click)="open.update((value) => !value)" type="button" rdxFieldControl>
+        <div class="flex w-80 flex-col gap-2" rdxFieldRoot [filled]="selected()" [focused]="open()">
+            <label rdxFieldLabel [class]="labelClass">Plan</label>
+            <button type="button" rdxFieldControl [class]="triggerClass" (click)="open.update((value) => !value)">
                 {{ selected() ? 'Pro' : 'Choose a plan' }}
             </button>
-            <p [class]="descriptionClass" rdxFieldDescription>Custom controls can pass state into the field root.</p>
-            <p [class]="errorClass" rdxFieldError>Choose a plan.</p>
+            <p rdxFieldDescription [class]="descriptionClass">Custom controls can pass state into the field root.</p>
+            <p rdxFieldError [class]="errorClass">Choose a plan.</p>
         </div>
     `
 })

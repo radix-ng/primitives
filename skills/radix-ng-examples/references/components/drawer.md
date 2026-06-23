@@ -8,10 +8,10 @@ modal by default but, unlike Alert Dialog, leaves modality and dismissal fully c
 and native CSS animations belong to the consumer.
 
 ```typescript
+import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { drawerImports } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -19,17 +19,17 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
     imports: [...drawerImports, LucideX],
     template: `
         <div rdxDrawerRoot>
-            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Open drawer</button>
+            <button rdxDrawerTrigger [class]="cn(b.base, b.primary, b.size.md)">Open drawer</button>
 
             <ng-template rdxDrawerPortal>
-                <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
+                <div rdxDrawerBackdrop [class]="cn(d.backdrop, d.overlayAnimated)"></div>
 
-                <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
-                    <div [class]="d.grip" aria-hidden="true"></div>
+                <div rdxDrawerPopup [class]="cn(d.popup, d.side.bottom)">
+                    <div aria-hidden="true" [class]="d.grip"></div>
 
-                    <div [class]="d.body" rdxDrawerContent>
-                        <h2 [class]="d.title" rdxDrawerTitle>Drag me down</h2>
-                        <p [class]="d.description" rdxDrawerDescription>
+                    <div rdxDrawerContent [class]="d.body">
+                        <h2 rdxDrawerTitle [class]="d.title">Drag me down</h2>
+                        <p rdxDrawerDescription [class]="d.description">
                             Swipe the sheet downwards or press Escape to dismiss it. Releasing before the halfway point
                             snaps it back.
                         </p>
@@ -40,12 +40,12 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                         </p>
 
                         <div [class]="d.footer">
-                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>Cancel</button>
-                            <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Confirm</button>
+                            <button rdxDrawerClose [class]="cn(b.base, b.outline, b.size.sm)">Cancel</button>
+                            <button rdxDrawerClose [class]="cn(b.base, b.primary, b.size.sm)">Confirm</button>
                         </div>
                     </div>
 
-                    <button [class]="d.close" aria-label="Close" rdxDrawerClose>
+                    <button aria-label="Close" rdxDrawerClose [class]="d.close">
                         <svg aria-hidden="true" lucideX size="16"></svg>
                     </button>
                 </div>
@@ -172,10 +172,10 @@ and its slide-out keyframe should hold the closed position with `forwards`:
 A bottom sheet you can swipe down to dismiss, with an accessible title, description, and close buttons.
 
 ```typescript
+import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { drawerImports } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -183,17 +183,17 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
     imports: [...drawerImports, LucideX],
     template: `
         <div rdxDrawerRoot>
-            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Open drawer</button>
+            <button rdxDrawerTrigger [class]="cn(b.base, b.primary, b.size.md)">Open drawer</button>
 
             <ng-template rdxDrawerPortal>
-                <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
+                <div rdxDrawerBackdrop [class]="cn(d.backdrop, d.overlayAnimated)"></div>
 
-                <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
-                    <div [class]="d.grip" aria-hidden="true"></div>
+                <div rdxDrawerPopup [class]="cn(d.popup, d.side.bottom)">
+                    <div aria-hidden="true" [class]="d.grip"></div>
 
-                    <div [class]="d.body" rdxDrawerContent>
-                        <h2 [class]="d.title" rdxDrawerTitle>Drag me down</h2>
-                        <p [class]="d.description" rdxDrawerDescription>
+                    <div rdxDrawerContent [class]="d.body">
+                        <h2 rdxDrawerTitle [class]="d.title">Drag me down</h2>
+                        <p rdxDrawerDescription [class]="d.description">
                             Swipe the sheet downwards or press Escape to dismiss it. Releasing before the halfway point
                             snaps it back.
                         </p>
@@ -204,12 +204,12 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                         </p>
 
                         <div [class]="d.footer">
-                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>Cancel</button>
-                            <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Confirm</button>
+                            <button rdxDrawerClose [class]="cn(b.base, b.outline, b.size.sm)">Cancel</button>
+                            <button rdxDrawerClose [class]="cn(b.base, b.primary, b.size.sm)">Confirm</button>
                         </div>
                     </div>
 
-                    <button [class]="d.close" aria-label="Close" rdxDrawerClose>
+                    <button aria-label="Close" rdxDrawerClose [class]="d.close">
                         <svg aria-hidden="true" lucideX size="16"></svg>
                     </button>
                 </div>
@@ -230,9 +230,9 @@ Own the open state with `[(open)]` and drive it from anywhere — buttons outsid
 close it alongside the trigger.
 
 ```typescript
+import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -244,18 +244,18 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
             <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="open.set(true)">Open from outside</button>
 
-            <div [(open)]="open" rdxDrawerRoot>
-                <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Open drawer</button>
+            <div rdxDrawerRoot [(open)]="open">
+                <button rdxDrawerTrigger [class]="cn(b.base, b.primary, b.size.md)">Open drawer</button>
 
                 <ng-template rdxDrawerPortal>
-                    <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
+                    <div rdxDrawerBackdrop [class]="cn(d.backdrop, d.overlayAnimated)"></div>
 
-                    <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
-                        <div [class]="d.grip" aria-hidden="true"></div>
+                    <div rdxDrawerPopup [class]="cn(d.popup, d.side.bottom)">
+                        <div aria-hidden="true" [class]="d.grip"></div>
 
-                        <div [class]="d.body" rdxDrawerContent>
-                            <h2 [class]="d.title" rdxDrawerTitle>Controlled drawer</h2>
-                            <p [class]="d.description" rdxDrawerDescription>
+                        <div rdxDrawerContent [class]="d.body">
+                            <h2 rdxDrawerTitle [class]="d.title">Controlled drawer</h2>
+                            <p rdxDrawerDescription [class]="d.description">
                                 The open state is owned by the component and bound with
                                 <code>[(open)]</code>
                                 .
@@ -287,9 +287,9 @@ Set `[swipeDirection]` and position the popup with CSS to anchor the drawer to a
 controls the dismiss gesture; the visual side is consumer CSS.
 
 ```typescript
+import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports, RdxDrawerSwipeDirection } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 type DrawerSide = 'top' | 'right' | 'bottom' | 'left';
 
@@ -307,23 +307,23 @@ const SIDES: { side: DrawerSide; swipeDirection: RdxDrawerSwipeDirection }[] = [
     template: `
         <div class="flex flex-wrap gap-3">
             @for (item of sides; track item.side) {
-                <div [swipeDirection]="item.swipeDirection" rdxDrawerRoot>
-                    <button [class]="cn(b.base, b.outline, b.size.md, 'capitalize')" rdxDrawerTrigger>
+                <div rdxDrawerRoot [swipeDirection]="item.swipeDirection">
+                    <button rdxDrawerTrigger [class]="cn(b.base, b.outline, b.size.md, 'capitalize')">
                         {{ item.side }}
                     </button>
 
                     <ng-template rdxDrawerPortal>
-                        <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
+                        <div rdxDrawerBackdrop [class]="cn(d.backdrop, d.overlayAnimated)"></div>
 
-                        <div [class]="cn(d.popup, d.side[item.side])" rdxDrawerPopup>
-                            <div [class]="d.body" rdxDrawerContent>
-                                <h2 [class]="cn(d.title, 'capitalize')" rdxDrawerTitle>{{ item.side }} drawer</h2>
-                                <p [class]="d.description" rdxDrawerDescription>
+                        <div rdxDrawerPopup [class]="cn(d.popup, d.side[item.side])">
+                            <div rdxDrawerContent [class]="d.body">
+                                <h2 rdxDrawerTitle [class]="cn(d.title, 'capitalize')">{{ item.side }} drawer</h2>
+                                <p rdxDrawerDescription [class]="d.description">
                                     Swipe {{ item.swipeDirection }} to dismiss.
                                 </p>
 
                                 <div [class]="d.footer">
-                                    <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Done</button>
+                                    <button rdxDrawerClose [class]="cn(b.base, b.primary, b.size.sm)">Done</button>
                                 </div>
                             </div>
                         </div>
@@ -352,9 +352,9 @@ points, with a fixed drag header and independently scrollable content. Add `[sna
 to step one point per release instead of skipping.
 
 ```typescript
+import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports, RdxDrawerSnapPoint } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 const TOP_MARGIN_REM = 1;
 const VISIBLE_SNAP_POINTS_REM = [30];
@@ -368,11 +368,12 @@ function toViewportSnapPoint(heightRem: number): RdxDrawerSnapPoint {
     selector: 'rdx-drawer-snap-points',
     imports: [...drawerImports],
     template: `
-        <div [snapPoints]="snapPoints" rdxDrawerRoot>
-            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerTrigger>Open snap drawer</button>
+        <div rdxDrawerRoot [snapPoints]="snapPoints">
+            <button rdxDrawerTrigger [class]="cn(b.base, b.outline, b.size.sm)">Open snap drawer</button>
 
             <ng-template rdxDrawerPortal>
                 <div
+                    rdxDrawerBackdrop
                     [class]="
                         cn(
                             'bg-foreground/20 fixed inset-0 min-h-dvh opacity-[calc(1-var(--drawer-swipe-progress))]',
@@ -382,7 +383,6 @@ function toViewportSnapPoint(heightRem: number): RdxDrawerSnapPoint {
                             'data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0'
                         )
                     "
-                    rdxDrawerBackdrop
                 ></div>
 
                 <div class="fixed inset-0 flex touch-none items-end justify-center" rdxDrawerViewport>
@@ -411,7 +411,7 @@ function toViewportSnapPoint(heightRem: number): RdxDrawerSnapPoint {
                                 </div>
 
                                 <div class="flex items-center justify-end gap-3">
-                                    <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>Close</button>
+                                    <button rdxDrawerClose [class]="cn(b.base, b.outline, b.size.sm)">Close</button>
                                 </div>
                             </div>
                         </div>
@@ -438,9 +438,9 @@ Base UI's right-edge swipe-area demo: the non-modal drawer portals back into a l
 `overflow-hidden` container and uses `rdxDrawerViewport` to position the popup inside it.
 
 ```typescript
+import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -448,10 +448,10 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
     imports: [...drawerImports],
     template: `
         <div
-            class="border-border bg-background text-foreground relative min-h-80 w-full max-w-2xl overflow-hidden border"
             #portalContainer
+            class="border-border bg-background text-foreground relative min-h-80 w-full max-w-2xl overflow-hidden border"
         >
-            <div [modal]="false" swipeDirection="right" rdxDrawerRoot>
+            <div swipeDirection="right" rdxDrawerRoot [modal]="false">
                 <div
                     class="border-primary bg-primary/10 absolute inset-y-0 right-0 z-[1] w-10 cursor-grab border-l-2 border-dashed data-[swiping]:cursor-grabbing"
                     rdxDrawerSwipeArea
@@ -467,8 +467,9 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                     <p class="text-muted-foreground text-sm">Swipe from the right edge to open the drawer.</p>
                 </div>
 
-                <ng-template [container]="portalContainer" rdxDrawerPortal>
+                <ng-template rdxDrawerPortal [container]="portalContainer">
                     <div
+                        rdxDrawerBackdrop
                         [class]="
                             cn(
                                 'bg-foreground/20 absolute inset-0 opacity-[calc(1-var(--drawer-swipe-progress))]',
@@ -478,7 +479,6 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                                 'data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0'
                             )
                         "
-                        rdxDrawerBackdrop
                     ></div>
 
                     <div class="absolute inset-0 z-20 flex items-stretch justify-end" rdxDrawerViewport>
@@ -487,12 +487,12 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                             rdxDrawerPopup
                         >
                             <div class="mx-auto w-full max-w-lg" rdxDrawerContent>
-                                <h2 [class]="d.title" rdxDrawerTitle>Library</h2>
-                                <p [class]="d.description" rdxDrawerDescription>
+                                <h2 rdxDrawerTitle [class]="d.title">Library</h2>
+                                <p rdxDrawerDescription [class]="d.description">
                                     Swipe from the edge whenever you want to jump back into your playlists.
                                 </p>
                                 <div [class]="d.footer">
-                                    <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>Close</button>
+                                    <button rdxDrawerClose [class]="cn(b.base, b.outline, b.size.sm)">Close</button>
                                 </div>
                             </div>
                         </div>
@@ -515,6 +515,7 @@ A taller sheet whose body scrolls. The swipe gesture yields to scrolling inside 
 until the scroll reaches its edge, so the drawer only swipes away from the top of the list.
 
 ```typescript
+import { cn, demoButton, demoCard, demoDrawer, demoFocusRing } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
 import {
@@ -524,7 +525,6 @@ import {
     RdxScrollAreaThumb,
     RdxScrollAreaViewport
 } from '@radix-ng/primitives/scroll-area';
-import { cn, demoButton, demoCard, demoDrawer, demoFocusRing } from '../../storybook/styles';
 
 const ITEMS = [
     { href: '/react/overview', label: 'Overview' },
@@ -586,14 +586,14 @@ const LONG_LIST = [
     ],
     template: `
         <div rdxDrawerRoot>
-            <button [class]="cn(b.base, b.primary, 'h-8 px-3 text-sm leading-none font-normal')" rdxDrawerTrigger>
+            <button rdxDrawerTrigger [class]="cn(b.base, b.primary, 'h-8 px-3 text-sm leading-none font-normal')">
                 Open mobile menu
             </button>
 
             <ng-template rdxDrawerPortal>
                 <div
-                    [class]="cn(d.backdrop, d.overlayAnimated, 'opacity-[calc(1-var(--drawer-swipe-progress))]')"
                     rdxDrawerBackdrop
+                    [class]="cn(d.backdrop, d.overlayAnimated, 'opacity-[calc(1-var(--drawer-swipe-progress))]')"
                 ></div>
 
                 <div class="group fixed inset-0 z-50" rdxDrawerViewport>
@@ -604,6 +604,7 @@ const LONG_LIST = [
                                 rdxScrollAreaContent
                             >
                                 <div
+                                    rdxDrawerPopup
                                     [class]="
                                         cn(
                                             card,
@@ -615,16 +616,15 @@ const LONG_LIST = [
                                             'min-[42rem]:rounded-2xl min-[42rem]:border'
                                         )
                                     "
-                                    rdxDrawerPopup
                                 >
                                     <nav class="relative flex flex-col px-6 pt-4 pb-6" aria-label="Navigation">
                                         <div class="grid grid-cols-[1fr_auto_1fr] items-start">
                                             <svg class="h-9 w-9" aria-hidden="true" />
                                             <div class="bg-muted h-1.5 w-12 justify-self-center rounded-full"></div>
                                             <button
-                                                [class]="cn(b.base, b.ghost, 'h-8 w-8 justify-self-end p-0')"
                                                 aria-label="Close menu"
                                                 rdxDrawerClose
+                                                [class]="cn(b.base, b.ghost, 'h-8 w-8 justify-self-end p-0')"
                                             >
                                                 <svg
                                                     class="block"
@@ -643,8 +643,8 @@ const LONG_LIST = [
                                         </div>
 
                                         <div class="w-full" rdxDrawerContent>
-                                            <h2 [class]="cn(d.title, 'm-0 mb-1')" rdxDrawerTitle>Menu</h2>
-                                            <p [class]="cn(d.description, 'm-0 mb-5')" rdxDrawerDescription>
+                                            <h2 rdxDrawerTitle [class]="cn(d.title, 'm-0 mb-1')">Menu</h2>
+                                            <p rdxDrawerDescription [class]="cn(d.description, 'm-0 mb-5')">
                                                 Scroll the long list. Flick down from the top to dismiss.
                                             </p>
 
@@ -712,9 +712,9 @@ Set `[modal]="false"` to keep page scrolling and outside pointer interactions av
 drawer is open; there is no backdrop in this mode.
 
 ```typescript
+import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -727,21 +727,21 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                 there is no backdrop.
             </p>
 
-            <div [modal]="false" rdxDrawerRoot>
-                <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Open non-modal drawer</button>
+            <div rdxDrawerRoot [modal]="false">
+                <button rdxDrawerTrigger [class]="cn(b.base, b.primary, b.size.md)">Open non-modal drawer</button>
 
                 <ng-template rdxDrawerPortal>
-                    <div [class]="cn(d.popup, d.side.bottom, d.overlayAnimated)" rdxDrawerPopup>
-                        <div [class]="d.grip" aria-hidden="true"></div>
+                    <div rdxDrawerPopup [class]="cn(d.popup, d.side.bottom, d.overlayAnimated)">
+                        <div aria-hidden="true" [class]="d.grip"></div>
 
-                        <div [class]="d.body" rdxDrawerContent>
-                            <h2 [class]="d.title" rdxDrawerTitle>Non-modal drawer</h2>
-                            <p [class]="d.description" rdxDrawerDescription>
+                        <div rdxDrawerContent [class]="d.body">
+                            <h2 rdxDrawerTitle [class]="d.title">Non-modal drawer</h2>
+                            <p rdxDrawerDescription [class]="d.description">
                                 Keep interacting with the rest of the page; the counter below still works.
                             </p>
 
                             <div [class]="d.footer">
-                                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Close</button>
+                                <button rdxDrawerClose [class]="cn(b.base, b.primary, b.size.sm)">Close</button>
                             </div>
                         </div>
                     </div>
@@ -768,9 +768,9 @@ An iOS-style action sheet: grouped actions with a separated destructive action a
 each closing the drawer.
 
 ```typescript
+import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 /** A full-width action-sheet row. */
 const action = cn(
@@ -784,13 +784,13 @@ const action = cn(
     imports: [...drawerImports],
     template: `
         <div rdxDrawerRoot>
-            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Photo options</button>
+            <button rdxDrawerTrigger [class]="cn(b.base, b.primary, b.size.md)">Photo options</button>
 
             <ng-template rdxDrawerPortal>
-                <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
+                <div rdxDrawerBackdrop [class]="cn(d.backdrop, d.overlayAnimated)"></div>
 
-                <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
-                    <div [class]="d.grip" aria-hidden="true"></div>
+                <div rdxDrawerPopup [class]="cn(d.popup, d.side.bottom)">
+                    <div aria-hidden="true" [class]="d.grip"></div>
 
                     <div class="overflow-y-auto pb-2" rdxDrawerContent>
                         <h2 class="sr-only" rdxDrawerTitle>Photo options</h2>
@@ -800,22 +800,22 @@ const action = cn(
 
                         <!-- Primary group of actions. -->
                         <div class="divide-border border-border flex flex-col divide-y border-y">
-                            <button [class]="action" rdxDrawerClose>Save to Photos</button>
-                            <button [class]="action" rdxDrawerClose>Copy Link</button>
-                            <button [class]="action" rdxDrawerClose>Add to Album</button>
+                            <button rdxDrawerClose [class]="action">Save to Photos</button>
+                            <button rdxDrawerClose [class]="action">Copy Link</button>
+                            <button rdxDrawerClose [class]="action">Add to Album</button>
                         </div>
 
                         <!-- Destructive action, set apart by a full-bleed spacer. -->
                         <div class="bg-muted h-2" aria-hidden="true"></div>
                         <button
-                            [class]="cn(action, 'border-border text-destructive border-b font-medium')"
                             rdxDrawerClose
+                            [class]="cn(action, 'border-border text-destructive border-b font-medium')"
                         >
                             Delete Photo
                         </button>
 
                         <div class="bg-muted h-2" aria-hidden="true"></div>
-                        <button [class]="cn(action, 'font-semibold')" rdxDrawerClose>Cancel</button>
+                        <button rdxDrawerClose [class]="cn(action, 'font-semibold')">Cancel</button>
                     </div>
                 </div>
             </ng-template>
@@ -839,9 +839,9 @@ handling the parent drawer while a nested drawer is open. Use the CSS variable i
 popup max-height.
 
 ```typescript
+import { cn, demoButton, demoDrawer, demoInput } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer, demoInput } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -849,10 +849,10 @@ import { cn, demoButton, demoDrawer, demoInput } from '../../storybook/styles';
     imports: [...drawerImports],
     template: `
         <div rdxDrawerRoot>
-            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Edit delivery</button>
+            <button rdxDrawerTrigger [class]="cn(b.base, b.primary, b.size.md)">Edit delivery</button>
 
             <ng-template rdxDrawerPortal>
-                <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
+                <div rdxDrawerBackdrop [class]="cn(d.backdrop, d.overlayAnimated)"></div>
 
                 <div
                     class="fixed inset-0 z-50 flex items-end justify-center px-4 pb-[calc(env(safe-area-inset-bottom,0px)+var(--drawer-keyboard-inset,0px))] transition-[padding-bottom] duration-200"
@@ -869,8 +869,8 @@ import { cn, demoButton, demoDrawer, demoInput } from '../../storybook/styles';
                             class="max-h-[inherit] [scroll-padding-bottom:calc(var(--drawer-keyboard-inset,0px)+4rem)] overflow-y-auto px-6 pb-6"
                         >
                             <div class="mb-5">
-                                <h2 [class]="d.title" rdxDrawerTitle>Delivery details</h2>
-                                <p [class]="d.description" rdxDrawerDescription>
+                                <h2 rdxDrawerTitle [class]="d.title">Delivery details</h2>
+                                <p rdxDrawerDescription [class]="d.description">
                                     Confirm the address and contact fields before placing the order.
                                 </p>
                             </div>
@@ -878,22 +878,22 @@ import { cn, demoButton, demoDrawer, demoInput } from '../../storybook/styles';
                             <div class="grid gap-4">
                                 <label class="grid gap-1.5">
                                     <span class="text-foreground text-sm font-medium">Name</span>
-                                    <input [class]="i.base" value="Ada Lovelace" />
+                                    <input value="Ada Lovelace" [class]="i.base" />
                                 </label>
 
                                 <label class="grid gap-1.5">
                                     <span class="text-foreground text-sm font-medium">Phone</span>
-                                    <input [class]="i.base" inputmode="tel" value="+1 415 555 0142" />
+                                    <input inputmode="tel" value="+1 415 555 0142" [class]="i.base" />
                                 </label>
 
                                 <label class="grid gap-1.5">
                                     <span class="text-foreground text-sm font-medium">Street address</span>
-                                    <input [class]="i.base" value="12 Market Street" />
+                                    <input value="12 Market Street" [class]="i.base" />
                                 </label>
 
                                 <label class="grid gap-1.5">
                                     <span class="text-foreground text-sm font-medium">Apartment</span>
-                                    <input [class]="i.base" placeholder="Optional" />
+                                    <input placeholder="Optional" [class]="i.base" />
                                 </label>
 
                                 <label class="grid gap-1.5">
@@ -907,10 +907,10 @@ Leave at reception if nobody answers.</textarea
                             </div>
 
                             <div class="bg-card sticky bottom-0 mt-6 flex justify-end gap-2 border-t py-4">
-                                <button [class]="cn(b.base, b.outline, b.size.sm)" type="button" rdxDrawerClose>
+                                <button type="button" rdxDrawerClose [class]="cn(b.base, b.outline, b.size.sm)">
                                     Cancel
                                 </button>
-                                <button [class]="cn(b.base, b.primary, b.size.sm)" type="button" rdxDrawerClose>
+                                <button type="button" rdxDrawerClose [class]="cn(b.base, b.primary, b.size.sm)">
                                     Save
                                 </button>
                             </div>
@@ -936,9 +936,9 @@ detected through the dialog hierarchy, so every parent gains `data-nested-drawer
 `--nested-drawers`) and recedes behind the one in front.
 
 ```typescript
+import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 /**
  * A self-recursive drawer: each level's content hosts the trigger for the next level, so drawers
@@ -951,19 +951,19 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
     imports: [...drawerImports],
     template: `
         <div rdxDrawerRoot>
-            <button [class]="cn(b.base, level() === 1 ? b.primary : b.outline, b.size.md)" rdxDrawerTrigger>
+            <button rdxDrawerTrigger [class]="cn(b.base, level() === 1 ? b.primary : b.outline, b.size.md)">
                 {{ level() === 1 ? 'Open drawer' : 'Open drawer ' + level() }}
             </button>
 
             <ng-template rdxDrawerPortal>
-                <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
+                <div rdxDrawerBackdrop [class]="cn(d.backdrop, d.overlayAnimated)"></div>
 
-                <div [class]="cn(d.popup, d.side.bottom)" rdxDrawerPopup>
-                    <div [class]="d.grip" aria-hidden="true"></div>
+                <div rdxDrawerPopup [class]="cn(d.popup, d.side.bottom)">
+                    <div aria-hidden="true" [class]="d.grip"></div>
 
-                    <div [class]="d.body" rdxDrawerContent>
-                        <h2 [class]="d.title" rdxDrawerTitle>Drawer level {{ level() }}</h2>
-                        <p [class]="d.description" rdxDrawerDescription>
+                    <div rdxDrawerContent [class]="d.body">
+                        <h2 rdxDrawerTitle [class]="d.title">Drawer level {{ level() }}</h2>
+                        <p rdxDrawerDescription [class]="d.description">
                             @if (level() < max()) {
                                 Open another to stack it on top — this one scales back and peeks behind it.
                             } @else {
@@ -975,7 +975,7 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                             @if (level() < max()) {
                                 <rdx-drawer-nested [level]="level() + 1" [max]="max()" />
                             }
-                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>Close</button>
+                            <button rdxDrawerClose [class]="cn(b.base, b.outline, b.size.sm)">Close</button>
                         </div>
                     </div>
                 </div>
@@ -1004,9 +1004,9 @@ Both gain `[data-active]`, `--drawer-swipe-progress`, `--nested-drawers`, and
 gesture.
 
 ```typescript
+import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { drawerImports } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -1014,7 +1014,7 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
     imports: [...drawerImports],
     template: `
         <div class="w-full" rdxDrawerProvider>
-            <div class="relative w-full overflow-hidden [--bleed:3rem]" #portalContainer>
+            <div #portalContainer class="relative w-full overflow-hidden [--bleed:3rem]">
                 <div class="bg-foreground absolute inset-0" rdxDrawerIndentBackground></div>
 
                 <div
@@ -1022,10 +1022,10 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                     rdxDrawerIndent
                 >
                     <div class="flex min-h-80 items-center justify-center">
-                        <div [modal]="false" rdxDrawerRoot>
-                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerTrigger>Open drawer</button>
+                        <div rdxDrawerRoot [modal]="false">
+                            <button rdxDrawerTrigger [class]="cn(b.base, b.outline, b.size.sm)">Open drawer</button>
 
-                            <ng-template [container]="portalContainer" rdxDrawerPortal>
+                            <ng-template rdxDrawerPortal [container]="portalContainer">
                                 <div
                                     class="bg-foreground/20 absolute inset-0 opacity-[calc(1-var(--drawer-swipe-progress))] transition-opacity duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)] data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0"
                                     rdxDrawerBackdrop
@@ -1038,14 +1038,14 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                                     >
                                         <div class="bg-muted mx-auto mb-4 h-1 w-12"></div>
                                         <div class="mx-auto w-full max-w-lg" rdxDrawerContent>
-                                            <h2 class="text-center" [class]="cn(d.title, 'text-center')" rdxDrawerTitle>
+                                            <h2 class="text-center" rdxDrawerTitle [class]="cn(d.title, 'text-center')">
                                                 Notifications
                                             </h2>
-                                            <p [class]="cn(d.description, 'mb-6 text-center')" rdxDrawerDescription>
+                                            <p rdxDrawerDescription [class]="cn(d.description, 'mb-6 text-center')">
                                                 You are all caught up. Good job!
                                             </p>
                                             <div class="flex justify-center gap-3">
-                                                <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>
+                                                <button rdxDrawerClose [class]="cn(b.base, b.outline, b.size.sm)">
                                                     Close
                                                 </button>
                                             </div>
@@ -1073,9 +1073,9 @@ Create a shared handle with `createRdxDrawerHandle()` when triggers live outside
 handle also supports imperative `open(id)`, `toggle(id)`, and `close()`.
 
 ```typescript
+import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { createRdxDrawerHandle, drawerImports } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -1085,10 +1085,10 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
         <div class="flex flex-col items-center gap-3">
             <!-- Triggers live outside the root and are linked through a shared handle. -->
             <div class="flex gap-2">
-                <button id="cart" [class]="cn(b.base, b.outline, b.size.md)" [handle]="handle" rdxDrawerTrigger>
+                <button id="cart" rdxDrawerTrigger [class]="cn(b.base, b.outline, b.size.md)" [handle]="handle">
                     Cart
                 </button>
-                <button id="account" [class]="cn(b.base, b.outline, b.size.md)" [handle]="handle" rdxDrawerTrigger>
+                <button id="account" rdxDrawerTrigger [class]="cn(b.base, b.outline, b.size.md)" [handle]="handle">
                     Account
                 </button>
             </div>
@@ -1097,21 +1097,21 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                 Open account imperatively
             </button>
 
-            <div [handle]="handle" rdxDrawerRoot>
+            <div rdxDrawerRoot [handle]="handle">
                 <ng-template rdxDrawerPortal>
-                    <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
+                    <div rdxDrawerBackdrop [class]="cn(d.backdrop, d.overlayAnimated)"></div>
 
-                    <div [class]="cn(d.popup, d.side.right)" rdxDrawerPopup>
-                        <div [class]="d.body" rdxDrawerContent>
-                            <h2 [class]="d.title" rdxDrawerTitle>Detached triggers</h2>
-                            <p [class]="d.description" rdxDrawerDescription>
+                    <div rdxDrawerPopup [class]="cn(d.popup, d.side.right)">
+                        <div rdxDrawerContent [class]="d.body">
+                            <h2 rdxDrawerTitle [class]="d.title">Detached triggers</h2>
+                            <p rdxDrawerDescription [class]="d.description">
                                 The triggers and this drawer are connected with
                                 <code>createRdxDrawerHandle()</code>
                                 rather than DOM nesting.
                             </p>
 
                             <div [class]="d.footer">
-                                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDrawerClose>Close</button>
+                                <button rdxDrawerClose [class]="cn(b.base, b.primary, b.size.sm)">Close</button>
                             </div>
                         </div>
                     </div>

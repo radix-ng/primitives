@@ -9,37 +9,37 @@ selection when closed. For free-form entry whose value is the typed text, reach 
 [Autocomplete](?path=/docs/primitives-autocomplete--docs).
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-default',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
-        <div [(value)]="value" rdxComboboxRoot>
+        <div rdxComboboxRoot [(value)]="value">
             <div [class]="c.control">
-                <input [class]="c.input" rdxComboboxInput placeholder="Search a fruit…" aria-label="Fruit" />
-                <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                <input rdxComboboxInput placeholder="Search a fruit…" aria-label="Fruit" [class]="c.input" />
+                <button rdxComboboxTrigger aria-label="Open" [class]="c.trigger">
                     <svg lucideChevronDown size="16"></svg>
                 </button>
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" rdxComboboxPopup>
-                    <div [class]="c.list" rdxComboboxList aria-label="Fruits">
+            <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                <div rdxComboboxPopup [class]="c.popup">
+                    <div rdxComboboxList aria-label="Fruits" [class]="c.list">
                         @for (fruit of fruits; track fruit) {
-                            <div [class]="c.item" [value]="fruit" rdxComboboxItem>
-                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                            <div rdxComboboxItem [class]="c.item" [value]="fruit">
+                                <span rdxComboboxItemIndicator [class]="c.itemIndicator">
                                     <svg lucideCheck size="14"></svg>
                                 </span>
                                 {{ fruit }}
                             </div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
+                    <div rdxComboboxEmpty [class]="c.empty">No fruit found.</div>
                 </div>
             </div>
         </div>
@@ -152,37 +152,37 @@ the wrapping element so the popup aligns to the whole control instead of the inl
 Single selection with built-in substring filtering. Type to filter, ArrowDown / Enter to pick.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-default',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
-        <div [(value)]="value" rdxComboboxRoot>
+        <div rdxComboboxRoot [(value)]="value">
             <div [class]="c.control">
-                <input [class]="c.input" rdxComboboxInput placeholder="Search a fruit…" aria-label="Fruit" />
-                <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                <input rdxComboboxInput placeholder="Search a fruit…" aria-label="Fruit" [class]="c.input" />
+                <button rdxComboboxTrigger aria-label="Open" [class]="c.trigger">
                     <svg lucideChevronDown size="16"></svg>
                 </button>
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" rdxComboboxPopup>
-                    <div [class]="c.list" rdxComboboxList aria-label="Fruits">
+            <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                <div rdxComboboxPopup [class]="c.popup">
+                    <div rdxComboboxList aria-label="Fruits" [class]="c.list">
                         @for (fruit of fruits; track fruit) {
-                            <div [class]="c.item" [value]="fruit" rdxComboboxItem>
-                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                            <div rdxComboboxItem [class]="c.item" [value]="fruit">
+                                <span rdxComboboxItemIndicator [class]="c.itemIndicator">
                                     <svg lucideCheck size="14"></svg>
                                 </span>
                                 {{ fruit }}
                             </div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
+                    <div rdxComboboxEmpty [class]="c.empty">No fruit found.</div>
                 </div>
             </div>
         </div>
@@ -200,30 +200,30 @@ export class ComboboxDefault {
 The whole control is disabled and won't open.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-disabled',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
-        <div [(value)]="value" disabled rdxComboboxRoot>
+        <div disabled rdxComboboxRoot [(value)]="value">
             <div [class]="c.control">
-                <input [class]="c.input" rdxComboboxInput placeholder="Search a fruit…" aria-label="Fruit" />
-                <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                <input rdxComboboxInput placeholder="Search a fruit…" aria-label="Fruit" [class]="c.input" />
+                <button rdxComboboxTrigger aria-label="Open" [class]="c.trigger">
                     <svg lucideChevronDown size="16"></svg>
                 </button>
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" rdxComboboxPopup>
-                    <div [class]="c.list" rdxComboboxList aria-label="Fruits">
+            <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                <div rdxComboboxPopup [class]="c.popup">
+                    <div rdxComboboxList aria-label="Fruits" [class]="c.list">
                         @for (fruit of fruits; track fruit) {
-                            <div [class]="c.item" [value]="fruit" rdxComboboxItem>
-                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                            <div rdxComboboxItem [class]="c.item" [value]="fruit">
+                                <span rdxComboboxItemIndicator [class]="c.itemIndicator">
                                     <svg lucideCheck size="14"></svg>
                                 </span>
                                 {{ fruit }}
@@ -248,10 +248,10 @@ Options organized into sections with `RdxComboboxGroup` / `RdxComboboxGroupLabel
 heading automatically once all of its items are filtered out.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 
 /** Options organized into sections with `RdxComboboxGroup` / `RdxComboboxGroupLabel`. A group hides
  * its heading automatically when all of its items are filtered out. */
@@ -260,22 +260,22 @@ import { _importsCombobox } from '../index';
     selector: 'combobox-grouped',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
-        <div [(value)]="value" rdxComboboxRoot>
+        <div rdxComboboxRoot [(value)]="value">
             <div [class]="c.control">
-                <input [class]="c.input" rdxComboboxInput placeholder="Search produce…" aria-label="Produce" />
-                <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                <input rdxComboboxInput placeholder="Search produce…" aria-label="Produce" [class]="c.input" />
+                <button rdxComboboxTrigger aria-label="Open" [class]="c.trigger">
                     <svg lucideChevronDown size="16"></svg>
                 </button>
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" rdxComboboxPopup>
-                    <div [class]="c.list" rdxComboboxList aria-label="Produce">
+            <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                <div rdxComboboxPopup [class]="c.popup">
+                    <div rdxComboboxList aria-label="Produce" [class]="c.list">
                         <div rdxComboboxGroup>
-                            <div [class]="c.groupLabel" rdxComboboxGroupLabel>Fruits</div>
+                            <div rdxComboboxGroupLabel [class]="c.groupLabel">Fruits</div>
                             @for (fruit of fruits; track fruit) {
-                                <div [class]="c.item" [value]="fruit" rdxComboboxItem>
-                                    <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                <div rdxComboboxItem [class]="c.item" [value]="fruit">
+                                    <span rdxComboboxItemIndicator [class]="c.itemIndicator">
                                         <svg lucideCheck size="14"></svg>
                                     </span>
                                     {{ fruit }}
@@ -283,10 +283,10 @@ import { _importsCombobox } from '../index';
                             }
                         </div>
                         <div rdxComboboxGroup>
-                            <div [class]="c.groupLabel" rdxComboboxGroupLabel>Vegetables</div>
+                            <div rdxComboboxGroupLabel [class]="c.groupLabel">Vegetables</div>
                             @for (vegetable of vegetables; track vegetable) {
-                                <div [class]="c.item" [value]="vegetable" rdxComboboxItem>
-                                    <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                <div rdxComboboxItem [class]="c.item" [value]="vegetable">
+                                    <span rdxComboboxItemIndicator [class]="c.itemIndicator">
                                         <svg lucideCheck size="14"></svg>
                                     </span>
                                     {{ vegetable }}
@@ -294,7 +294,7 @@ import { _importsCombobox } from '../index';
                             }
                         </div>
                     </div>
-                    <div [class]="c.empty" rdxComboboxEmpty>No produce found.</div>
+                    <div rdxComboboxEmpty [class]="c.empty">No produce found.</div>
                 </div>
             </div>
         </div>
@@ -314,10 +314,10 @@ A 2D grid (`grid`): wrap items in `RdxComboboxRow` and the list becomes `role="g
 `ArrowDown` move between rows keeping the column; `ArrowLeft` / `ArrowRight` move within a row.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideChevronDown } from '@lucide/angular';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideChevronDown } from '@lucide/angular';
 
 /**
  * A 2D grid list (`grid`): `ArrowUp`/`ArrowDown` move between rows keeping the column, `ArrowLeft`/
@@ -329,26 +329,26 @@ import { _importsCombobox } from '../index';
     selector: 'combobox-grid',
     imports: [_importsCombobox, LucideChevronDown],
     template: `
-        <div [(value)]="value" grid rdxComboboxRoot>
+        <div grid rdxComboboxRoot [(value)]="value">
             <div [class]="c.control">
-                <input [class]="c.input" rdxComboboxInput placeholder="Pick a size…" aria-label="Size" />
-                <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                <input rdxComboboxInput placeholder="Pick a size…" aria-label="Size" [class]="c.input" />
+                <button rdxComboboxTrigger aria-label="Open" [class]="c.trigger">
                     <svg lucideChevronDown size="16"></svg>
                 </button>
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" rdxComboboxPopup>
-                    <div [class]="list" rdxComboboxList aria-label="Sizes">
+            <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                <div rdxComboboxPopup [class]="c.popup">
+                    <div rdxComboboxList aria-label="Sizes" [class]="list">
                         @for (row of rows; track $index) {
-                            <div [class]="rowClass" rdxComboboxRow>
+                            <div rdxComboboxRow [class]="rowClass">
                                 @for (size of row; track size) {
-                                    <div [class]="cell" [value]="size" rdxComboboxItem>{{ size }}</div>
+                                    <div rdxComboboxItem [class]="cell" [value]="size">{{ size }}</div>
                                 }
                             </div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxComboboxEmpty>No size found.</div>
+                    <div rdxComboboxEmpty [class]="c.empty">No size found.</div>
                 </div>
             </div>
         </div>
@@ -378,24 +378,24 @@ Multiple selection: picks become chips before the input, the popup stays open be
 and Backspace in an empty input removes the last chip.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown, LucideX } from '@lucide/angular';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown, LucideX } from '@lucide/angular';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-multiple',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck, LucideX],
     template: `
-        <div [(value)]="value" multiple rdxComboboxRoot>
-            <div [class]="control" rdxComboboxAnchor>
+        <div multiple rdxComboboxRoot [(value)]="value">
+            <div rdxComboboxAnchor [class]="control">
                 @if (value().length) {
-                    <div [class]="c.chips" rdxComboboxChips>
+                    <div rdxComboboxChips [class]="c.chips">
                         @for (fruit of value(); track fruit) {
-                            <span [class]="c.chip" [value]="fruit" rdxComboboxChip>
+                            <span rdxComboboxChip [class]="c.chip" [value]="fruit">
                                 {{ fruit }}
-                                <button [class]="c.chipRemove" rdxComboboxChipRemove aria-label="Remove">
+                                <button rdxComboboxChipRemove aria-label="Remove" [class]="c.chipRemove">
                                     <svg lucideX size="12"></svg>
                                 </button>
                             </span>
@@ -403,29 +403,29 @@ import { _importsCombobox } from '../index';
                     </div>
                 }
                 <input
-                    [class]="c.inputInline"
-                    [placeholder]="value().length ? '' : 'Add fruits…'"
                     rdxComboboxInput
                     aria-label="Fruits"
+                    [class]="c.inputInline"
+                    [placeholder]="value().length ? '' : 'Add fruits…'"
                 />
-                <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                <button rdxComboboxTrigger aria-label="Open" [class]="c.trigger">
                     <svg lucideChevronDown size="16"></svg>
                 </button>
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" rdxComboboxPopup>
-                    <div [class]="c.list" rdxComboboxList aria-label="Fruits">
+            <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                <div rdxComboboxPopup [class]="c.popup">
+                    <div rdxComboboxList aria-label="Fruits" [class]="c.list">
                         @for (fruit of fruits; track fruit) {
-                            <div [class]="c.item" [value]="fruit" rdxComboboxItem>
-                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                            <div rdxComboboxItem [class]="c.item" [value]="fruit">
+                                <span rdxComboboxItemIndicator [class]="c.itemIndicator">
                                     <svg lucideCheck size="14"></svg>
                                 </span>
                                 {{ fruit }}
                             </div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
+                    <div rdxComboboxEmpty [class]="c.empty">No fruit found.</div>
                 </div>
             </div>
         </div>
@@ -446,10 +446,10 @@ Nothing loads until the user types — `RdxComboboxStatus` shows the "start typi
 loading / counts, while the just-selected item is kept available so it survives new result streams.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown, LucideX } from '@lucide/angular';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown, LucideX } from '@lucide/angular';
 
 interface DirectoryUser {
     id: string;
@@ -471,33 +471,33 @@ interface DirectoryUser {
     imports: [_importsCombobox, LucideChevronDown, LucideCheck, LucideX],
     template: `
         <div
-            [(value)]="value"
+            isItemEqualToValue="id"
+            rdxComboboxRoot
             [items]="items()"
             [itemToStringLabel]="labelOf"
             [filter]="null"
+            [(value)]="value"
             (onValueChange)="onValueChange()"
             (onInputValueChange)="search($event.value)"
             (onOpenChangeComplete)="onOpenChangeComplete($event)"
-            isItemEqualToValue="id"
-            rdxComboboxRoot
         >
             <div class="flex flex-col gap-1">
                 <label class="text-foreground text-sm font-medium" for="async-reviewer">Assign reviewer</label>
                 <div [class]="c.control">
-                    <input id="async-reviewer" [class]="input" rdxComboboxInput placeholder="e.g. Michael" />
+                    <input id="async-reviewer" rdxComboboxInput placeholder="e.g. Michael" [class]="input" />
                     @if (value()) {
-                        <button [class]="c.clear" rdxComboboxClear aria-label="Clear selection">
+                        <button rdxComboboxClear aria-label="Clear selection" [class]="c.clear">
                             <svg lucideX size="14"></svg>
                         </button>
                     }
-                    <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                    <button rdxComboboxTrigger aria-label="Open" [class]="c.trigger">
                         <svg lucideChevronDown size="16"></svg>
                     </button>
                 </div>
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" [attr.aria-busy]="loading() ? 'true' : null" rdxComboboxPopup>
+            <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                <div rdxComboboxPopup [class]="c.popup" [attr.aria-busy]="loading() ? 'true' : null">
                     <div rdxComboboxStatus>
                         @if (loading()) {
                             <div class="text-muted-foreground flex items-center gap-2 px-2 py-1.5 text-sm">
@@ -513,12 +513,12 @@ interface DirectoryUser {
                     </div>
 
                     @if (emptyMessage(); as message) {
-                        <div [class]="c.empty" rdxComboboxEmpty>{{ message }}</div>
+                        <div rdxComboboxEmpty [class]="c.empty">{{ message }}</div>
                     }
 
-                    <div [class]="c.list" rdxComboboxList aria-label="People">
+                    <div rdxComboboxList aria-label="People" [class]="c.list">
                         @for (user of items(); track user.id) {
-                            <div [class]="item" [value]="user" [textValue]="user.name" rdxComboboxItem>
+                            <div rdxComboboxItem [class]="item" [value]="user" [textValue]="user.name">
                                 <span
                                     class="col-start-1 mt-0.5 flex size-3.5 items-center justify-center"
                                     rdxComboboxItemIndicator
@@ -757,10 +757,10 @@ External filtering combined with `multiple` — nothing loads until the user typ
 chips, and already-selected people stay available as new results stream in.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
-import { LucideCheck, LucideX } from '@lucide/angular';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { LucideCheck, LucideX } from '@lucide/angular';
 
 interface DirectoryUser {
     id: string;
@@ -782,25 +782,25 @@ interface DirectoryUser {
     imports: [_importsCombobox, LucideCheck, LucideX],
     template: `
         <div
-            [(value)]="value"
+            multiple
+            rdxComboboxRoot
             [items]="items()"
             [itemToStringLabel]="labelOf"
             [filter]="null"
+            [(value)]="value"
             (onValueChange)="onValueChange($event.value)"
             (onInputValueChange)="search($event.value)"
             (onOpenChangeComplete)="onOpenChangeComplete($event)"
-            multiple
-            rdxComboboxRoot
         >
             <div class="flex flex-col gap-1">
                 <label class="text-foreground text-sm font-medium" for="async-reviewers">Assign reviewers</label>
-                <div [class]="control" rdxComboboxAnchor>
+                <div rdxComboboxAnchor [class]="control">
                     @if (value().length) {
-                        <div [class]="c.chips" rdxComboboxChips>
+                        <div rdxComboboxChips [class]="c.chips">
                             @for (user of value(); track user.id) {
-                                <span [class]="c.chip" [value]="user" rdxComboboxChip>
+                                <span rdxComboboxChip [class]="c.chip" [value]="user">
                                     {{ user.name }}
-                                    <button [class]="c.chipRemove" rdxComboboxChipRemove aria-label="Remove">
+                                    <button rdxComboboxChipRemove aria-label="Remove" [class]="c.chipRemove">
                                         <svg lucideX size="12"></svg>
                                     </button>
                                 </span>
@@ -809,15 +809,15 @@ interface DirectoryUser {
                     }
                     <input
                         id="async-reviewers"
+                        rdxComboboxInput
                         [class]="c.inputInline"
                         [placeholder]="value().length ? '' : 'e.g. Michael'"
-                        rdxComboboxInput
                     />
                 </div>
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" [attr.aria-busy]="loading() ? 'true' : null" rdxComboboxPopup>
+            <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                <div rdxComboboxPopup [class]="c.popup" [attr.aria-busy]="loading() ? 'true' : null">
                     <div rdxComboboxStatus>
                         @if (loading()) {
                             <div class="text-muted-foreground flex items-center gap-2 px-2 py-1.5 text-sm">
@@ -833,12 +833,12 @@ interface DirectoryUser {
                     </div>
 
                     @if (emptyMessage(); as message) {
-                        <div [class]="c.empty" rdxComboboxEmpty>{{ message }}</div>
+                        <div rdxComboboxEmpty [class]="c.empty">{{ message }}</div>
                     }
 
-                    <div [class]="c.list" rdxComboboxList aria-label="People">
+                    <div rdxComboboxList aria-label="People" [class]="c.list">
                         @for (user of items(); track user.id) {
-                            <div [class]="item" [value]="user" [textValue]="user.name" rdxComboboxItem>
+                            <div rdxComboboxItem [class]="item" [value]="user" [textValue]="user.name">
                                 <span
                                     class="col-start-1 mt-0.5 flex size-3.5 items-center justify-center"
                                     rdxComboboxItemIndicator
@@ -1091,11 +1091,11 @@ appears; choosing it opens a modal dialog (prefilled with the query) to confirm 
 is then added and selected — mirroring the Base UI pattern.
 
 ```typescript
+import { cn, demoButton, demoCombobox, demoDialog } from '../../storybook/styles';
+import { _importsCombobox } from '../index';
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown, LucidePlus, LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
-import { cn, demoButton, demoCombobox, demoDialog } from '../../storybook/styles';
-import { _importsCombobox } from '../index';
 
 /** Sentinel value for the "create" row, intercepted in `onValueChange`. */
 const CREATE = '__rdx_create__';
@@ -1111,20 +1111,20 @@ const CREATE = '__rdx_create__';
     imports: [_importsCombobox, ...dialogImports, LucideChevronDown, LucideCheck, LucidePlus, LucideX],
     template: `
         <div
+            multiple
+            rdxComboboxRoot
             [(value)]="value"
             [(open)]="open"
             (onInputValueChange)="query.set($event.value)"
             (onValueChange)="onValueChange($event.value)"
-            multiple
-            rdxComboboxRoot
         >
-            <div [class]="control" rdxComboboxAnchor>
+            <div rdxComboboxAnchor [class]="control">
                 @if (value().length) {
-                    <div [class]="c.chips" rdxComboboxChips>
+                    <div rdxComboboxChips [class]="c.chips">
                         @for (label of value(); track label) {
-                            <span [class]="c.chip" [value]="label" rdxComboboxChip>
+                            <span rdxComboboxChip [class]="c.chip" [value]="label">
                                 {{ label }}
-                                <button [class]="c.chipRemove" rdxComboboxChipRemove aria-label="Remove">
+                                <button rdxComboboxChipRemove aria-label="Remove" [class]="c.chipRemove">
                                     <svg lucideX size="12"></svg>
                                 </button>
                             </span>
@@ -1132,29 +1132,29 @@ const CREATE = '__rdx_create__';
                     </div>
                 }
                 <input
-                    [class]="c.inputInline"
-                    [placeholder]="value().length ? '' : 'e.g. bug'"
                     rdxComboboxInput
                     aria-label="Labels"
+                    [class]="c.inputInline"
+                    [placeholder]="value().length ? '' : 'e.g. bug'"
                 />
-                <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                <button rdxComboboxTrigger aria-label="Open" [class]="c.trigger">
                     <svg lucideChevronDown size="16"></svg>
                 </button>
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" rdxComboboxPopup>
-                    <div [class]="c.list" rdxComboboxList aria-label="Labels">
+            <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                <div rdxComboboxPopup [class]="c.popup">
+                    <div rdxComboboxList aria-label="Labels" [class]="c.list">
                         @for (label of options(); track label) {
-                            <div [class]="c.item" [value]="label" rdxComboboxItem>
-                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                            <div rdxComboboxItem [class]="c.item" [value]="label">
+                                <span rdxComboboxItemIndicator [class]="c.itemIndicator">
                                     <svg lucideCheck size="14"></svg>
                                 </span>
                                 {{ label }}
                             </div>
                         }
                         @if (showCreate()) {
-                            <div [class]="c.item" [value]="CREATE" [textValue]="query()" rdxComboboxItem>
+                            <div rdxComboboxItem [class]="c.item" [value]="CREATE" [textValue]="query()">
                                 <span [class]="c.itemIndicator">
                                     <svg lucidePlus size="14"></svg>
                                 </span>
@@ -1162,30 +1162,30 @@ const CREATE = '__rdx_create__';
                             </div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxComboboxEmpty>No labels found.</div>
+                    <div rdxComboboxEmpty [class]="c.empty">No labels found.</div>
                 </div>
             </div>
         </div>
 
-        <div [(open)]="dialogOpen" rdxDialogRoot>
+        <div rdxDialogRoot [(open)]="dialogOpen">
             <ng-template rdxDialogPortal>
-                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
-                <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-                    <h2 [class]="d.title" rdxDialogTitle>Create new label</h2>
-                    <p [class]="d.description" rdxDialogDescription>Add a new label to select.</p>
+                <div rdxDialogBackdrop [class]="cn(d.backdrop, d.backdropAnimated)"></div>
+                <div rdxDialogPopup [class]="cn(d.popup, d.popupAnimated)">
+                    <h2 rdxDialogTitle [class]="d.title">Create new label</h2>
+                    <p rdxDialogDescription [class]="d.description">Add a new label to select.</p>
                     <form (submit)="confirmCreate($event)">
                         <input
+                            placeholder="Label name"
+                            aria-label="Label name"
                             [class]="dialogInput"
                             [value]="newLabel()"
                             (input)="newLabel.set($any($event.target).value)"
-                            placeholder="Label name"
-                            aria-label="Label name"
                         />
                         <div [class]="d.footer">
-                            <button [class]="cn(b.base, b.outline, b.size.sm)" type="button" rdxDialogClose>
+                            <button type="button" rdxDialogClose [class]="cn(b.base, b.outline, b.size.sm)">
                                 Cancel
                             </button>
-                            <button [class]="cn(b.base, b.primary, b.size.sm)" type="submit">Create</button>
+                            <button type="submit" [class]="cn(b.base, b.primary, b.size.sm)">Create</button>
                         </div>
                     </form>
                 </div>
@@ -1254,10 +1254,10 @@ popup. Put `rdxComboboxAnchor` on the trigger so the popup anchors to it; the in
 the popup opens.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 
 /**
  * A select-like pattern where the trigger shows the current value and the **search input lives inside
@@ -1269,30 +1269,30 @@ import { _importsCombobox } from '../index';
     selector: 'combobox-input-in-popup',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
-        <div class="flex flex-col items-start gap-1" [(value)]="value" rdxComboboxRoot>
+        <div class="flex flex-col items-start gap-1" rdxComboboxRoot [(value)]="value">
             <span class="text-foreground text-sm font-medium" rdxComboboxLabel>Fruit</span>
-            <button [class]="c.selectTrigger" rdxComboboxTrigger rdxComboboxAnchor>
+            <button rdxComboboxTrigger rdxComboboxAnchor [class]="c.selectTrigger">
                 <span #selectedValue="rdxComboboxValue" rdxComboboxValue placeholder="Select a fruit">
                     {{ selectedValue.slotText() }}
                 </span>
                 <svg lucideChevronDown size="16"></svg>
             </button>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup + ' p-0'" rdxComboboxPopup>
+            <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                <div rdxComboboxPopup [class]="c.popup + ' p-0'">
                     <div [class]="c.searchHeader">
-                        <input [class]="c.popupInput" rdxComboboxInput placeholder="Search…" aria-label="Fruit" />
+                        <input rdxComboboxInput placeholder="Search…" aria-label="Fruit" [class]="c.popupInput" />
                     </div>
-                    <div [class]="c.list + ' p-1'" rdxComboboxList aria-label="Fruits">
+                    <div rdxComboboxList aria-label="Fruits" [class]="c.list + ' p-1'">
                         @for (fruit of fruits; track fruit) {
-                            <div [class]="c.item" [value]="fruit" rdxComboboxItem>
-                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                            <div rdxComboboxItem [class]="c.item" [value]="fruit">
+                                <span rdxComboboxItemIndicator [class]="c.itemIndicator">
                                     <svg lucideCheck size="14"></svg>
                                 </span>
                                 {{ fruit }}
                             </div>
                         }
-                        <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
+                        <div rdxComboboxEmpty [class]="c.empty">No fruit found.</div>
                     </div>
                 </div>
             </div>
@@ -1313,10 +1313,10 @@ as an activation signal and (by default) fills the input. Paired with `autoHighl
 first match is always ready for `Enter`.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideArrowRight } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideArrowRight } from '@lucide/angular';
 
 /**
  * A command/search palette: `selectionMode="none"` (no value is committed — it filters and runs an
@@ -1329,20 +1329,20 @@ import { _importsCombobox } from '../index';
     template: `
         <div
             class="flex w-64 flex-col gap-2"
-            (onValueChange)="run($event.value)"
             selectionMode="none"
             autoHighlight="always"
             rdxComboboxRoot
+            (onValueChange)="run($event.value)"
         >
             <div [class]="c.control">
-                <input [class]="c.input" rdxComboboxInput placeholder="Run a command…" aria-label="Command" />
+                <input rdxComboboxInput placeholder="Run a command…" aria-label="Command" [class]="c.input" />
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" rdxComboboxPopup>
-                    <div [class]="c.list" rdxComboboxList aria-label="Commands">
+            <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                <div rdxComboboxPopup [class]="c.popup">
+                    <div rdxComboboxList aria-label="Commands" [class]="c.list">
                         @for (command of commands; track command) {
-                            <div [class]="c.item" [value]="command" rdxComboboxItem>
+                            <div rdxComboboxItem [class]="c.item" [value]="command">
                                 <span [class]="c.itemIndicator">
                                     <svg lucideArrowRight size="14"></svg>
                                 </span>
@@ -1350,7 +1350,7 @@ import { _importsCombobox } from '../index';
                             </div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxComboboxEmpty>No commands.</div>
+                    <div rdxComboboxEmpty [class]="c.empty">No commands.</div>
                 </div>
             </div>
 
@@ -1379,10 +1379,10 @@ With `modal`, page scroll is locked and content outside the popup is inert while
 clicking it dismisses.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 
 /**
  * Modal combobox: while open, page scroll is locked and content outside the popup is inert. A
@@ -1393,29 +1393,29 @@ import { _importsCombobox } from '../index';
     selector: 'combobox-modal',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
-        <div [(value)]="value" modal rdxComboboxRoot>
+        <div modal rdxComboboxRoot [(value)]="value">
             <div [class]="c.control">
-                <input [class]="c.input" rdxComboboxInput placeholder="Search a fruit…" aria-label="Fruit" />
-                <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                <input rdxComboboxInput placeholder="Search a fruit…" aria-label="Fruit" [class]="c.input" />
+                <button rdxComboboxTrigger aria-label="Open" [class]="c.trigger">
                     <svg lucideChevronDown size="16"></svg>
                 </button>
             </div>
 
             <ng-template rdxComboboxPortal>
-                <div [class]="c.backdrop" rdxComboboxBackdrop></div>
-                <div [class]="c.positioner" rdxComboboxPositioner>
-                    <div [class]="c.popup" rdxComboboxPopup>
-                        <div [class]="c.list" rdxComboboxList aria-label="Fruits">
+                <div rdxComboboxBackdrop [class]="c.backdrop"></div>
+                <div rdxComboboxPositioner [class]="c.positioner">
+                    <div rdxComboboxPopup [class]="c.popup">
+                        <div rdxComboboxList aria-label="Fruits" [class]="c.list">
                             @for (fruit of fruits; track fruit) {
-                                <div [class]="c.item" [value]="fruit" rdxComboboxItem>
-                                    <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                <div rdxComboboxItem [class]="c.item" [value]="fruit">
+                                    <span rdxComboboxItemIndicator [class]="c.itemIndicator">
                                         <svg lucideCheck size="14"></svg>
                                     </span>
                                     {{ fruit }}
                                 </div>
                             }
                         </div>
-                        <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
+                        <div rdxComboboxEmpty [class]="c.empty">No fruit found.</div>
                     </div>
                 </div>
             </ng-template>
@@ -1450,10 +1450,10 @@ protected onOpenChange(change: { open: boolean; eventDetails: { cancel(): void }
 Live demo:
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox, RdxComboboxOpenChange } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 
 interface ComboboxOpenChangeLogEntry {
     label: string;
@@ -1472,44 +1472,44 @@ interface ComboboxOpenChangeLogEntry {
                 <div class="flex flex-col gap-3">
                     <div
                         #root="rdxComboboxRoot"
+                        rdxComboboxRoot
                         [(open)]="open"
                         [(value)]="value"
                         (onOpenChange)="handleOpenChange($event)"
-                        rdxComboboxRoot
                     >
                         <div [class]="c.control">
                             <input
-                                [class]="c.input"
                                 rdxComboboxInput
                                 placeholder="Search a framework…"
                                 aria-label="Framework"
+                                [class]="c.input"
                             />
-                            <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                            <button rdxComboboxTrigger aria-label="Open" [class]="c.trigger">
                                 <svg lucideChevronDown size="16"></svg>
                             </button>
                         </div>
 
-                        <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                            <div [class]="c.popup" rdxComboboxPopup>
-                                <div [class]="c.list" rdxComboboxList aria-label="Frameworks">
+                        <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                            <div rdxComboboxPopup [class]="c.popup">
+                                <div rdxComboboxList aria-label="Frameworks" [class]="c.list">
                                     @for (framework of frameworks; track framework) {
-                                        <div [class]="c.item" [value]="framework" rdxComboboxItem>
-                                            <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                        <div rdxComboboxItem [class]="c.item" [value]="framework">
+                                            <span rdxComboboxItemIndicator [class]="c.itemIndicator">
                                                 <svg lucideCheck size="14"></svg>
                                             </span>
                                             {{ framework }}
                                         </div>
                                     }
                                 </div>
-                                <div [class]="c.empty" rdxComboboxEmpty>No match found.</div>
+                                <div rdxComboboxEmpty [class]="c.empty">No match found.</div>
                             </div>
                         </div>
 
                         <div class="grid gap-2 pt-3">
                             <button
                                 class="border-border bg-background text-foreground hover:bg-muted inline-flex h-8 items-center justify-between rounded-md border px-3 text-xs"
-                                (click)="cancelClose.update((value) => !value)"
                                 type="button"
+                                (click)="cancelClose.update((value) => !value)"
                             >
                                 <span>Cancel close</span>
                                 <span class="text-muted-foreground">{{ cancelClose() ? 'on' : 'off' }}</span>
@@ -1517,8 +1517,8 @@ interface ComboboxOpenChangeLogEntry {
 
                             <button
                                 class="border-border bg-background text-foreground hover:bg-muted inline-flex h-8 items-center justify-between rounded-md border px-3 text-xs"
-                                (click)="keepMountedOnClose.update((value) => !value)"
                                 type="button"
+                                (click)="keepMountedOnClose.update((value) => !value)"
                             >
                                 <span>Keep mounted on close</span>
                                 <span class="text-muted-foreground">{{ keepMountedOnClose() ? 'on' : 'off' }}</span>
@@ -1550,8 +1550,8 @@ interface ComboboxOpenChangeLogEntry {
                         </div>
                         <button
                             class="text-muted-foreground hover:text-foreground inline-flex h-7 items-center rounded-md px-2 text-xs"
-                            (click)="logs.set([])"
                             type="button"
+                            (click)="logs.set([])"
                         >
                             Clear
                         </button>
@@ -1625,11 +1625,11 @@ export class ComboboxOpenChange {
 The root is a `ControlValueAccessor`, so it binds to a `FormControl` like any other control.
 
 ```typescript
+import { demoCombobox } from '../../storybook/styles';
+import { _importsCombobox } from '../index';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
-import { demoCombobox } from '../../storybook/styles';
-import { _importsCombobox } from '../index';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -1637,27 +1637,27 @@ import { _importsCombobox } from '../index';
     imports: [_importsCombobox, ReactiveFormsModule, LucideChevronDown, LucideCheck],
     template: `
         <form class="flex flex-col gap-3">
-            <div [formControl]="fruit" rdxComboboxRoot>
+            <div rdxComboboxRoot [formControl]="fruit">
                 <div [class]="c.control">
-                    <input [class]="c.input" rdxComboboxInput placeholder="Pick a fruit…" aria-label="Fruit" />
-                    <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                    <input rdxComboboxInput placeholder="Pick a fruit…" aria-label="Fruit" [class]="c.input" />
+                    <button rdxComboboxTrigger aria-label="Open" [class]="c.trigger">
                         <svg lucideChevronDown size="16"></svg>
                     </button>
                 </div>
 
-                <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                    <div [class]="c.popup" rdxComboboxPopup>
-                        <div [class]="c.list" rdxComboboxList aria-label="Fruits">
+                <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                    <div rdxComboboxPopup [class]="c.popup">
+                        <div rdxComboboxList aria-label="Fruits" [class]="c.list">
                             @for (f of fruits; track f) {
-                                <div [class]="c.item" [value]="f" rdxComboboxItem>
-                                    <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                <div rdxComboboxItem [class]="c.item" [value]="f">
+                                    <span rdxComboboxItemIndicator [class]="c.itemIndicator">
                                         <svg lucideCheck size="14"></svg>
                                     </span>
                                     {{ f }}
                                 </div>
                             }
                         </div>
-                        <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
+                        <div rdxComboboxEmpty [class]="c.empty">No fruit found.</div>
                     </div>
                 </div>
             </div>
@@ -1682,11 +1682,11 @@ Bind the control's validity to `[invalid]` so the input reflects `data-invalid` 
 error message and submit guard follow the standard reactive-forms pattern.
 
 ```typescript
+import { cn, demoButton, demoCombobox } from '../../storybook/styles';
+import { _importsCombobox } from '../index';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
-import { cn, demoButton, demoCombobox } from '../../storybook/styles';
-import { _importsCombobox } from '../index';
 
 /**
  * Reactive forms with validation. The control's validity is bound to the combobox `[invalid]` input,
@@ -1699,27 +1699,27 @@ import { _importsCombobox } from '../index';
     imports: [_importsCombobox, ReactiveFormsModule, LucideChevronDown, LucideCheck],
     template: `
         <form class="flex flex-col gap-3" (ngSubmit)="onSubmit()">
-            <div [formControl]="fruit" [invalid]="showError()" rdxComboboxRoot>
+            <div rdxComboboxRoot [formControl]="fruit" [invalid]="showError()">
                 <div [class]="cn(c.control, showError() && 'border-destructive focus-within:ring-destructive')">
-                    <input [class]="c.input" rdxComboboxInput placeholder="Pick a fruit…" aria-label="Fruit" />
-                    <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                    <input rdxComboboxInput placeholder="Pick a fruit…" aria-label="Fruit" [class]="c.input" />
+                    <button rdxComboboxTrigger aria-label="Open" [class]="c.trigger">
                         <svg lucideChevronDown size="16"></svg>
                     </button>
                 </div>
 
-                <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                    <div [class]="c.popup" rdxComboboxPopup>
-                        <div [class]="c.list" rdxComboboxList aria-label="Fruits">
+                <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                    <div rdxComboboxPopup [class]="c.popup">
+                        <div rdxComboboxList aria-label="Fruits" [class]="c.list">
                             @for (f of fruits; track f) {
-                                <div [class]="c.item" [value]="f" rdxComboboxItem>
-                                    <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                <div rdxComboboxItem [class]="c.item" [value]="f">
+                                    <span rdxComboboxItemIndicator [class]="c.itemIndicator">
                                         <svg lucideCheck size="14"></svg>
                                     </span>
                                     {{ f }}
                                 </div>
                             }
                         </div>
-                        <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
+                        <div rdxComboboxEmpty [class]="c.empty">No fruit found.</div>
                     </div>
                 </div>
             </div>
@@ -1728,7 +1728,7 @@ import { _importsCombobox } from '../index';
                 <p class="text-destructive text-sm">Please pick a fruit.</p>
             }
 
-            <button [class]="cn(b.base, b.primary, b.size.md, 'self-start')" type="submit">Submit</button>
+            <button type="submit" [class]="cn(b.base, b.primary, b.size.md, 'self-start')">Submit</button>
 
             @if (submitted()) {
                 <p class="text-muted-foreground text-sm">Submitted ✓</p>
@@ -1765,10 +1765,10 @@ export class ComboboxValidation {
 `RdxComboboxEmpty` shows only when no item matches the query.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 
 /**
  * `RdxComboboxEmpty` renders only when no item matches the query — type something like "zzz" to see
@@ -1779,27 +1779,27 @@ import { _importsCombobox } from '../index';
     selector: 'combobox-empty',
     imports: [_importsCombobox, LucideChevronDown, LucideCheck],
     template: `
-        <div [(value)]="value" rdxComboboxRoot>
+        <div rdxComboboxRoot [(value)]="value">
             <div [class]="c.control">
-                <input [class]="c.input" rdxComboboxInput placeholder="Try typing 'zzz'…" aria-label="Fruit" />
-                <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                <input rdxComboboxInput placeholder="Try typing 'zzz'…" aria-label="Fruit" [class]="c.input" />
+                <button rdxComboboxTrigger aria-label="Open" [class]="c.trigger">
                     <svg lucideChevronDown size="16"></svg>
                 </button>
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" rdxComboboxPopup>
-                    <div [class]="c.list" rdxComboboxList aria-label="Fruits">
+            <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                <div rdxComboboxPopup [class]="c.popup">
+                    <div rdxComboboxList aria-label="Fruits" [class]="c.list">
                         @for (fruit of fruits; track fruit) {
-                            <div [class]="c.item" [value]="fruit" rdxComboboxItem>
-                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                            <div rdxComboboxItem [class]="c.item" [value]="fruit">
+                                <span rdxComboboxItemIndicator [class]="c.itemIndicator">
                                     <svg lucideCheck size="14"></svg>
                                 </span>
                                 {{ fruit }}
                             </div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxComboboxEmpty>No fruit matches your search.</div>
+                    <div rdxComboboxEmpty [class]="c.empty">No fruit matches your search.</div>
                 </div>
             </div>
         </div>
@@ -1834,12 +1834,12 @@ Then drive a scroll container with `injectVirtualizer`, render only `getVirtualI
 row's `[index]` to the virtual item's index — exactly as in the example's "Show code".
 
 ```typescript
-import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
-import { LucideCheck } from '@lucide/angular';
-import { injectVirtualizer } from '@tanstack/angular-virtual';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsCombobox } from '../index';
 import { ComboboxItemHighlightedDetails, RdxComboboxRoot } from '../src/combobox-root';
+import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
+import { LucideCheck } from '@lucide/angular';
+import { injectVirtualizer } from '@tanstack/angular-virtual';
 
 /**
  * Externally virtualized list of 10,000 items. The combobox owns filtering and index navigation
@@ -1854,32 +1854,32 @@ import { ComboboxItemHighlightedDetails, RdxComboboxRoot } from '../src/combobox
     template: `
         <div
             #cmb="rdxComboboxRoot"
-            [(value)]="value"
-            [items]="items"
-            (onItemHighlighted)="onHighlight($event)"
             virtualized
             rdxComboboxRoot
+            [items]="items"
+            [(value)]="value"
+            (onItemHighlighted)="onHighlight($event)"
         >
             <div [class]="c.control">
-                <input [class]="c.input" rdxComboboxInput placeholder="Search 10,000 items…" aria-label="Item" />
+                <input rdxComboboxInput placeholder="Search 10,000 items…" aria-label="Item" [class]="c.input" />
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="popup" rdxComboboxPopup>
-                    <div [class]="c.empty" rdxComboboxEmpty>No items found.</div>
-                    <div [class]="c.list" rdxComboboxList aria-label="Items">
+            <div *rdxComboboxPortal rdxComboboxPositioner [class]="c.positioner">
+                <div rdxComboboxPopup [class]="popup">
+                    <div rdxComboboxEmpty [class]="c.empty">No items found.</div>
+                    <div rdxComboboxList aria-label="Items" [class]="c.list">
                         <div #scroll [class]="scroller">
                             <div [class]="spacer" [style.height.px]="virtualizer.getTotalSize()">
                                 @for (row of virtualizer.getVirtualItems(); track row.key) {
                                     <div
+                                        rdxComboboxItem
                                         [class]="item"
                                         [value]="cmb.filteredItems()[row.index]"
                                         [index]="row.index"
                                         [style.height.px]="row.size"
                                         [style.transform]="'translateY(' + row.start + 'px)'"
-                                        rdxComboboxItem
                                     >
-                                        <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                        <span rdxComboboxItemIndicator [class]="c.itemIndicator">
                                             <svg lucideCheck size="14"></svg>
                                         </span>
                                         {{ cmb.filteredItems()[row.index] }}

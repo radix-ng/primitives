@@ -3,13 +3,13 @@
 #### Displays task completion with accessible label, value, track, and indicator parts.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { cn } from '../../storybook/styles';
 import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
 import { RdxProgressLabelDirective } from '../src/progress-label.directive';
 import { RdxProgressRootDirective } from '../src/progress-root.directive';
 import { RdxProgressTrackDirective } from '../src/progress-track.directive';
 import { RdxProgressValueDirective } from '../src/progress-value.directive';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 
 const progressSteps = [12, 28, 44, 60, 76, 92, 100] as const;
 
@@ -24,14 +24,14 @@ const progressSteps = [12, 28, 44, 60, 76, 92, 100] as const;
         RdxProgressIndicatorDirective
     ],
     template: `
-        <div class="flex w-80 flex-col gap-2" [value]="progress()" rdxProgressRoot>
+        <div class="flex w-80 flex-col gap-2" rdxProgressRoot [value]="progress()">
             <div class="flex items-center justify-between gap-4">
                 <span class="text-foreground text-sm font-medium" rdxProgressLabel>Upload progress</span>
                 <span class="text-muted-foreground text-sm tabular-nums" rdxProgressValue></span>
             </div>
 
             <div class="bg-muted h-3 overflow-hidden rounded-full" rdxProgressTrack>
-                <div [class]="indicatorClass()" rdxProgressIndicator></div>
+                <div rdxProgressIndicator [class]="indicatorClass()"></div>
             </div>
         </div>
     `
@@ -118,13 +118,13 @@ import {
 An animated labelled progress bar with formatted value text.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { cn } from '../../storybook/styles';
 import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
 import { RdxProgressLabelDirective } from '../src/progress-label.directive';
 import { RdxProgressRootDirective } from '../src/progress-root.directive';
 import { RdxProgressTrackDirective } from '../src/progress-track.directive';
 import { RdxProgressValueDirective } from '../src/progress-value.directive';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 
 const progressSteps = [12, 28, 44, 60, 76, 92, 100] as const;
 
@@ -139,14 +139,14 @@ const progressSteps = [12, 28, 44, 60, 76, 92, 100] as const;
         RdxProgressIndicatorDirective
     ],
     template: `
-        <div class="flex w-80 flex-col gap-2" [value]="progress()" rdxProgressRoot>
+        <div class="flex w-80 flex-col gap-2" rdxProgressRoot [value]="progress()">
             <div class="flex items-center justify-between gap-4">
                 <span class="text-foreground text-sm font-medium" rdxProgressLabel>Upload progress</span>
                 <span class="text-muted-foreground text-sm tabular-nums" rdxProgressValue></span>
             </div>
 
             <div class="bg-muted h-3 overflow-hidden rounded-full" rdxProgressTrack>
-                <div [class]="indicatorClass()" rdxProgressIndicator></div>
+                <div rdxProgressIndicator [class]="indicatorClass()"></div>
             </div>
         </div>
     `
@@ -234,12 +234,12 @@ Use `min`, `max`, and `valueLabel` when progress is not a simple 0-100 percentag
 The same primitive state can drive an SVG circular progress indicator.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
 import { RdxProgressLabelDirective } from '../src/progress-label.directive';
 import { RdxProgressRootDirective } from '../src/progress-root.directive';
 import { RdxProgressTrackDirective } from '../src/progress-track.directive';
 import { RdxProgressValueDirective } from '../src/progress-value.directive';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -252,20 +252,20 @@ import { RdxProgressValueDirective } from '../src/progress-value.directive';
         RdxProgressIndicatorDirective
     ],
     template: `
-        <div class="relative grid size-40 place-items-center" [value]="progress()" rdxProgressRoot>
+        <div class="relative grid size-40 place-items-center" rdxProgressRoot [value]="progress()">
             <span class="sr-only" rdxProgressLabel>Storage used</span>
 
             <svg class="size-full -rotate-90" viewBox="0 0 100 100" rdxProgressTrack>
                 <circle class="stroke-muted fill-none" cx="50" cy="50" r="44" stroke-width="8" />
                 <circle
                     class="stroke-primary fill-none transition-all duration-500 ease-out"
-                    [attr.stroke-dasharray]="dashArray()"
                     cx="50"
                     cy="50"
                     r="44"
                     stroke-linecap="round"
                     stroke-width="8"
                     rdxProgressIndicator
+                    [attr.stroke-dasharray]="dashArray()"
                 />
             </svg>
 

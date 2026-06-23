@@ -49,9 +49,9 @@ registration. Use `data-composite-item-active` on an item when it should provide
 ### Default
 
 ```typescript
+import { cn, demoButton, demoInput } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxCompositeItem, RdxCompositeRoot } from '@radix-ng/primitives/composite';
-import { cn, demoButton, demoInput } from '../../storybook/styles';
 
 @Component({
     selector: 'rdx-composite-default',
@@ -66,22 +66,22 @@ import { cn, demoButton, demoInput } from '../../storybook/styles';
                 highlightItemOnHover
                 rdxCompositeRoot
             >
-                <button [class]="itemClass" data-composite-item-active rdxCompositeItem>Overview</button>
-                <button [class]="itemClass" rdxCompositeItem>Metrics</button>
-                <button [class]="itemClass" rdxCompositeItem>Reports</button>
+                <button data-composite-item-active rdxCompositeItem [class]="itemClass">Overview</button>
+                <button rdxCompositeItem [class]="itemClass">Metrics</button>
+                <button rdxCompositeItem [class]="itemClass">Reports</button>
             </div>
 
             <div
                 class="flex w-full flex-wrap items-center gap-2"
-                [disabledIndices]="[2]"
-                [loopFocus]="false"
                 orientation="horizontal"
                 rdxCompositeRoot
+                [disabledIndices]="[2]"
+                [loopFocus]="false"
             >
-                <button [class]="itemClass" rdxCompositeItem>Filter</button>
-                <input [class]="inputClass" rdxCompositeItem value="Search" />
-                <button [class]="itemClass" aria-disabled="true" rdxCompositeItem>Archive</button>
-                <button [class]="itemClass" rdxCompositeItem>Export</button>
+                <button rdxCompositeItem [class]="itemClass">Filter</button>
+                <input rdxCompositeItem value="Search" [class]="inputClass" />
+                <button aria-disabled="true" rdxCompositeItem [class]="itemClass">Archive</button>
+                <button rdxCompositeItem [class]="itemClass">Export</button>
             </div>
         </div>
     `
@@ -103,9 +103,9 @@ Use `CompositeList` when a primitive needs DOM-order registration and metadata w
 keyboard navigation.
 
 ```typescript
+import { cn, demoButton, demoCard } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxCompositeList, RdxCompositeListItem, RdxCompositeMetadata } from '@radix-ng/primitives/composite';
-import { cn, demoButton, demoCard } from '../../storybook/styles';
 
 @Component({
     selector: 'rdx-composite-list-only',
@@ -113,14 +113,14 @@ import { cn, demoButton, demoCard } from '../../storybook/styles';
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <div class="flex w-full max-w-xl flex-col gap-4">
-            <div class="flex flex-wrap items-center gap-2" (onMapChange)="onMapChange($event)" rdxCompositeList>
-                <button [class]="itemClass" [metadata]="{ id: 'overview', label: 'Overview' }" rdxCompositeListItem>
+            <div class="flex flex-wrap items-center gap-2" rdxCompositeList (onMapChange)="onMapChange($event)">
+                <button rdxCompositeListItem [class]="itemClass" [metadata]="{ id: 'overview', label: 'Overview' }">
                     Overview
                 </button>
-                <button [class]="itemClass" [metadata]="{ id: 'metrics', label: 'Metrics' }" rdxCompositeListItem>
+                <button rdxCompositeListItem [class]="itemClass" [metadata]="{ id: 'metrics', label: 'Metrics' }">
                     Metrics
                 </button>
-                <button [class]="itemClass" [metadata]="{ id: 'reports', label: 'Reports' }" rdxCompositeListItem>
+                <button rdxCompositeListItem [class]="itemClass" [metadata]="{ id: 'reports', label: 'Reports' }">
                     Reports
                 </button>
             </div>

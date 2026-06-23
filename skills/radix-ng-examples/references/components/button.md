@@ -7,9 +7,9 @@ styles — visual variants in the examples come from the centralized demo style 
 **Guides/Styling** page).
 
 ```typescript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 /**
  * Visual variants — the recommended `demoButton` styling from the centralized
@@ -21,11 +21,11 @@ import { RdxButtonDirective } from '../src/button.directive';
     imports: [RdxButtonDirective],
     template: `
         <div class="flex flex-wrap items-center gap-3">
-            <button [class]="cn(b.base, b.primary, b.size.md)" rdxButton>Primary</button>
-            <button [class]="cn(b.base, b.secondary, b.size.md)" rdxButton>Secondary</button>
-            <button [class]="cn(b.base, b.outline, b.size.md)" rdxButton>Outline</button>
-            <button [class]="cn(b.base, b.ghost, b.size.md)" rdxButton>Ghost</button>
-            <button [class]="cn(b.base, b.destructive, b.size.md)" rdxButton>Destructive</button>
+            <button rdxButton [class]="cn(b.base, b.primary, b.size.md)">Primary</button>
+            <button rdxButton [class]="cn(b.base, b.secondary, b.size.md)">Secondary</button>
+            <button rdxButton [class]="cn(b.base, b.outline, b.size.md)">Outline</button>
+            <button rdxButton [class]="cn(b.base, b.ghost, b.size.md)">Ghost</button>
+            <button rdxButton [class]="cn(b.base, b.destructive, b.size.md)">Destructive</button>
         </div>
     `
 })
@@ -68,9 +68,9 @@ Visual variants — `primary`, `secondary`, `outline`, `ghost`, and `destructive
 shared `demoButton` style layer, not the directive itself.
 
 ```typescript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 /**
  * Visual variants — the recommended `demoButton` styling from the centralized
@@ -82,11 +82,11 @@ import { RdxButtonDirective } from '../src/button.directive';
     imports: [RdxButtonDirective],
     template: `
         <div class="flex flex-wrap items-center gap-3">
-            <button [class]="cn(b.base, b.primary, b.size.md)" rdxButton>Primary</button>
-            <button [class]="cn(b.base, b.secondary, b.size.md)" rdxButton>Secondary</button>
-            <button [class]="cn(b.base, b.outline, b.size.md)" rdxButton>Outline</button>
-            <button [class]="cn(b.base, b.ghost, b.size.md)" rdxButton>Ghost</button>
-            <button [class]="cn(b.base, b.destructive, b.size.md)" rdxButton>Destructive</button>
+            <button rdxButton [class]="cn(b.base, b.primary, b.size.md)">Primary</button>
+            <button rdxButton [class]="cn(b.base, b.secondary, b.size.md)">Secondary</button>
+            <button rdxButton [class]="cn(b.base, b.outline, b.size.md)">Outline</button>
+            <button rdxButton [class]="cn(b.base, b.ghost, b.size.md)">Ghost</button>
+            <button rdxButton [class]="cn(b.base, b.destructive, b.size.md)">Destructive</button>
         </div>
     `
 })
@@ -101,10 +101,10 @@ export class RdxButtonVariantsComponent {
 `sm`, `md`, `lg`, and a square `icon` size.
 
 ```typescript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { LucideDynamicIcon, LucidePlus } from '@lucide/angular';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { LucideDynamicIcon, LucidePlus } from '@lucide/angular';
 
 /**
  * Sizes, including a square icon button.
@@ -115,10 +115,10 @@ import { RdxButtonDirective } from '../src/button.directive';
     imports: [RdxButtonDirective, LucideDynamicIcon, LucidePlus],
     template: `
         <div class="flex flex-wrap items-center gap-3">
-            <button [class]="cn(b.base, b.primary, b.size.sm)" rdxButton>Small</button>
-            <button [class]="cn(b.base, b.primary, b.size.md)" rdxButton>Medium</button>
-            <button [class]="cn(b.base, b.primary, b.size.lg)" rdxButton>Large</button>
-            <button [class]="cn(b.base, b.primary, b.size.icon)" rdxButton aria-label="Add">
+            <button rdxButton [class]="cn(b.base, b.primary, b.size.sm)">Small</button>
+            <button rdxButton [class]="cn(b.base, b.primary, b.size.md)">Medium</button>
+            <button rdxButton [class]="cn(b.base, b.primary, b.size.lg)">Large</button>
+            <button rdxButton aria-label="Add" [class]="cn(b.base, b.primary, b.size.icon)">
                 <svg class="flex" lucidePlus size="16" />
             </button>
         </div>
@@ -136,9 +136,9 @@ The first button uses the native `disabled` attribute (removed from the tab orde
 `focusableWhenDisabled`, so it stays focusable via `aria-disabled` while its activation is suppressed.
 
 ```typescript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 /**
  * Disabled handling. The first button uses the native `disabled` attribute
@@ -151,8 +151,8 @@ import { RdxButtonDirective } from '../src/button.directive';
     imports: [RdxButtonDirective],
     template: `
         <div class="flex flex-wrap items-center gap-3">
-            <button [class]="cn(b.base, b.primary, b.size.md)" rdxButton disabled>Disabled</button>
-            <button [class]="cn(b.base, b.outline, b.size.md)" rdxButton disabled focusableWhenDisabled>
+            <button rdxButton disabled [class]="cn(b.base, b.primary, b.size.md)">Disabled</button>
+            <button rdxButton disabled focusableWhenDisabled [class]="cn(b.base, b.outline, b.size.md)">
                 Disabled (focusable)
             </button>
         </div>
@@ -170,9 +170,9 @@ The directive applies button semantics to any element. Here an `<a>` renders as 
 keeping native link behavior.
 
 ```typescript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 /**
  * The directive works on any host. Here it renders an `<a>` as a button while
@@ -183,7 +183,7 @@ import { RdxButtonDirective } from '../src/button.directive';
     selector: 'rdx-button-as-link',
     imports: [RdxButtonDirective],
     template: `
-        <a [class]="cn(b.base, b.secondary, b.size.md)" rdxButton href="https://base-ui.com" target="_blank">
+        <a rdxButton href="https://base-ui.com" target="_blank" [class]="cn(b.base, b.secondary, b.size.md)">
             Open Base UI
         </a>
     `
@@ -201,10 +201,10 @@ with `focusableWhenDisabled` so focus stays on the button. Add `aria-busy` and r
 communicate the state.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideDynamicIcon, LucidePlus } from '@lucide/angular';
 import { cn, demoButton } from '../../storybook/styles';
 import { RdxButtonDirective } from '../src/button.directive';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideDynamicIcon, LucidePlus } from '@lucide/angular';
 
 /**
  * Loading state. Following Base UI's guidance, the button becomes `disabled`
@@ -217,18 +217,18 @@ import { RdxButtonDirective } from '../src/button.directive';
     imports: [RdxButtonDirective, LucideDynamicIcon, LucidePlus],
     template: `
         <button
+            rdxButton
+            focusableWhenDisabled
             [disabled]="loading()"
             [attr.aria-busy]="loading() ? 'true' : null"
             [class]="cn(b.base, b.primary, b.size.md)"
             (click)="run()"
-            rdxButton
-            focusableWhenDisabled
         >
             <svg
                 class="flex"
+                size="16"
                 [lucideIcon]="loading() ? 'loader-circle' : 'save'"
                 [class.animate-spin]="loading()"
-                size="16"
             />
             {{ loading() ? 'Saving…' : 'Save' }}
         </button>

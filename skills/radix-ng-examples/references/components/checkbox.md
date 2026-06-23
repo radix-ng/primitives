@@ -94,15 +94,15 @@ setChecked(change: RdxCheckboxCheckedChangeEvent) {
 The third "mixed" state. Clicking a checkbox in the indeterminate state resolves it to checked.
 
 ```typescript
+import { cn, demoButton, demoCheckbox } from '../../storybook/styles';
+import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
+import { RdxCheckboxInputDirective } from '../src/checkbox-input';
+import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, model } from '@angular/core';
 import { LucideDynamicIcon } from '@lucide/angular';
 import { RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { cn, demoButton, demoCheckbox } from '../../storybook/styles';
-import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
-import { RdxCheckboxInputDirective } from '../src/checkbox-input';
-import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -119,13 +119,13 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
     template: `
         <div class="flex items-center gap-3">
             <div
+                rdxCheckboxRoot
                 [checked]="checked()"
                 [indeterminate]="indeterminate()"
                 (onCheckedChange)="checked.set($event.checked); indeterminate.set(false)"
-                rdxCheckboxRoot
             >
-                <button id="r1" [class]="c.button" rdxCheckboxButton>
-                    <svg [class]="c.indicator" [lucideIcon]="iconName()" rdxCheckboxIndicator size="16" />
+                <button id="r1" rdxCheckboxButton [class]="c.button">
+                    <svg rdxCheckboxIndicator size="16" [class]="c.indicator" [lucideIcon]="iconName()" />
                 </button>
                 <input rdxCheckboxInput />
             </div>
@@ -139,7 +139,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
             <p>indeterminate:&nbsp;{{ indeterminate() | json }}</p>
         </section>
 
-        <button [class]="cn(b.base, b.primary, b.size.md, 'mt-3')" (click)="toggleIndeterminate()" type="button">
+        <button type="button" [class]="cn(b.base, b.primary, b.size.md, 'mt-3')" (click)="toggleIndeterminate()">
             Toggle Indeterminate state
         </button>
     `
@@ -167,15 +167,15 @@ The indicator is removed from layout when unchecked. Add `keepMounted` to keep i
 CSS transitions or measurement, matching Base UI's `Checkbox.Indicator keepMounted` prop.
 
 ```typescript
+import { demoCheckbox } from '../../storybook/styles';
+import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
+import { RdxCheckboxInputDirective } from '../src/checkbox-input';
+import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, model } from '@angular/core';
 import { LucideCheck as Check, LucideDynamicIcon } from '@lucide/angular';
 import { RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { demoCheckbox } from '../../storybook/styles';
-import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
-import { RdxCheckboxInputDirective } from '../src/checkbox-input';
-import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -191,9 +191,9 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
     ],
     template: `
         <div class="flex items-center gap-3">
-            <div [checked]="checked()" (onCheckedChange)="checked.set($event.checked)" rdxCheckboxRoot>
-                <button id="r1" [class]="c.button" rdxCheckboxButton>
-                    <svg [class]="c.indicator" [lucideIcon]="Check" keepMounted rdxCheckboxIndicator size="16" />
+            <div rdxCheckboxRoot [checked]="checked()" (onCheckedChange)="checked.set($event.checked)">
+                <button id="r1" rdxCheckboxButton [class]="c.button">
+                    <svg keepMounted rdxCheckboxIndicator size="16" [class]="c.indicator" [lucideIcon]="Check" />
                 </button>
                 <input rdxCheckboxInput />
             </div>
@@ -219,15 +219,15 @@ export class CheckboxKeepMountedExample {
 Two-way bind the root with `[(ngModel)]`.
 
 ```typescript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { LucideCheck } from '@lucide/angular';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { demoCheckbox } from '../../storybook/styles';
 import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { LucideCheck } from '@lucide/angular';
+import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 /**
  * Template-driven forms: two-way bind the root with `[(ngModel)]`.
@@ -246,9 +246,9 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
     ],
     template: `
         <div class="flex items-center gap-3">
-            <div [(ngModel)]="subscribed" rdxCheckboxRoot>
-                <button id="sub" [class]="c.button" rdxCheckboxButton>
-                    <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
+            <div rdxCheckboxRoot [(ngModel)]="subscribed">
+                <button id="sub" rdxCheckboxButton [class]="c.button">
+                    <svg rdxCheckboxIndicator size="16" lucideCheck [class]="c.indicator" />
                 </button>
                 <input rdxCheckboxInput />
             </div>
@@ -272,16 +272,16 @@ export class CheckboxNgModelExample {
 Bind the root with `formControlName`; `disabled` reacts to the control's enable/disable state.
 
 ```typescript
+import { cn, demoButton, demoCheckbox } from '../../storybook/styles';
+import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
+import { RdxCheckboxInputDirective } from '../src/checkbox-input';
+import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LucideCheck } from '@lucide/angular';
 import { RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { cn, demoButton, demoCheckbox } from '../../storybook/styles';
-import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
-import { RdxCheckboxInputDirective } from '../src/checkbox-input';
-import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -290,8 +290,8 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
         <section [formGroup]="personality">
             <div class="flex items-center gap-3 pb-3">
                 <div rdxCheckboxRoot formControlName="fun">
-                    <button id="r1" [class]="c.button" rdxCheckboxButton>
-                        <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
+                    <button id="r1" rdxCheckboxButton [class]="c.button">
+                        <svg rdxCheckboxIndicator size="16" lucideCheck [class]="c.indicator" />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -300,8 +300,8 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
             <div class="flex items-center gap-3 pb-3">
                 <div rdxCheckboxRoot formControlName="serious">
-                    <button id="r2" [class]="c.button" rdxCheckboxButton>
-                        <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
+                    <button id="r2" rdxCheckboxButton [class]="c.button">
+                        <svg rdxCheckboxIndicator size="16" lucideCheck [class]="c.indicator" />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -312,8 +312,8 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
             <div class="flex items-center gap-3 pb-3">
                 <div rdxCheckboxRoot formControlName="smart" form="smart">
-                    <button id="r3" [class]="c.button" rdxCheckboxButton>
-                        <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
+                    <button id="r3" rdxCheckboxButton [class]="c.button">
+                        <svg rdxCheckboxIndicator size="16" lucideCheck [class]="c.indicator" />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -326,7 +326,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
             {{ personality.value | json }}
         </section>
 
-        <button [class]="cn(b.base, b.primary, b.size.md)" (click)="toggleDisable()" type="button">
+        <button type="button" [class]="cn(b.base, b.primary, b.size.md)" (click)="toggleDisable()">
             Toggle disabled state
         </button>
     `,
@@ -369,15 +369,15 @@ export class CheckboxReactiveFormsExampleComponent {
 `Validators.requiredTrue` enforces acceptance; the error shows once the field is touched and submit is guarded.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { LucideCheck } from '@lucide/angular';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { cn, demoButton, demoCheckbox } from '../../storybook/styles';
 import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { LucideCheck } from '@lucide/angular';
+import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 /**
  * Reactive forms with validation: `Validators.requiredTrue` forces the box to be
@@ -399,8 +399,8 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
         <form class="flex flex-col gap-3" [formGroup]="form" (ngSubmit)="onSubmit()">
             <div class="flex items-center gap-3">
                 <div rdxCheckboxRoot formControlName="terms">
-                    <button id="terms" [class]="c.button" rdxCheckboxButton>
-                        <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
+                    <button id="terms" rdxCheckboxButton [class]="c.button">
+                        <svg rdxCheckboxIndicator size="16" lucideCheck [class]="c.indicator" />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -413,7 +413,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
                 <p class="text-destructive text-sm">You must accept the terms to continue.</p>
             }
 
-            <button [class]="cn(b.base, b.primary, b.size.md, 'self-start')" type="submit">Submit</button>
+            <button type="submit" [class]="cn(b.base, b.primary, b.size.md, 'self-start')">Submit</button>
 
             @if (submitted()) {
                 <p class="text-muted-foreground text-sm">Submitted ✓</p>
@@ -464,14 +464,14 @@ A parent checkbox derived from its children — `indeterminate` when only some a
 parent/child logic (and the flat all ↔ none toggle) is wired **by hand** in the component.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
-import { LucideCheck, LucideDynamicIcon } from '@lucide/angular';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { demoCheckbox } from '../../storybook/styles';
 import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import { CheckedState, RdxCheckboxRootDirective } from '../src/checkbox-root';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { LucideCheck, LucideDynamicIcon } from '@lucide/angular';
+import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 interface Item {
     id: string;
@@ -499,17 +499,17 @@ interface Item {
         <div class="flex flex-col gap-3">
             <div class="flex items-center gap-3">
                 <div
+                    rdxCheckboxRoot
                     [checked]="parentState() === true"
                     [indeterminate]="parentState() === 'indeterminate'"
                     (onCheckedChange)="toggleAll($event)"
-                    rdxCheckboxRoot
                 >
-                    <button id="all" [class]="c.button" rdxCheckboxButton>
+                    <button id="all" rdxCheckboxButton [class]="c.button">
                         <svg
-                            [class]="c.indicator"
-                            [lucideIcon]="parentState() === 'indeterminate' ? 'minus' : 'check'"
                             rdxCheckboxIndicator
                             size="16"
+                            [class]="c.indicator"
+                            [lucideIcon]="parentState() === 'indeterminate' ? 'minus' : 'check'"
                         />
                     </button>
                     <input rdxCheckboxInput />
@@ -520,13 +520,13 @@ interface Item {
             <div class="ml-6 flex flex-col gap-3">
                 @for (item of items(); track item.id) {
                     <div class="flex items-center gap-3">
-                        <div [checked]="item.checked" (onCheckedChange)="toggleItem(item.id, $event)" rdxCheckboxRoot>
-                            <button [class]="c.button" [id]="item.id" rdxCheckboxButton>
-                                <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
+                        <div rdxCheckboxRoot [checked]="item.checked" (onCheckedChange)="toggleItem(item.id, $event)">
+                            <button rdxCheckboxButton [class]="c.button" [id]="item.id">
+                                <svg rdxCheckboxIndicator size="16" lucideCheck [class]="c.indicator" />
                             </button>
                             <input rdxCheckboxInput />
                         </div>
-                        <label class="text-foreground text-sm font-medium" [htmlFor]="item.id" rdxLabel>
+                        <label class="text-foreground text-sm font-medium" rdxLabel [htmlFor]="item.id">
                             {{ item.label }}
                         </label>
                     </div>
@@ -575,14 +575,14 @@ back to the partial), disabled-but-checked children are preserved, and the group
 control, so `[(value)]`, `ngModel`, and reactive forms bind to the `string[]` value.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideCheck, LucideDynamicIcon } from '@lucide/angular';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { demoCheckbox } from '../../storybook/styles';
 import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
 import { RdxCheckboxGroupDirective } from '../src/checkbox-group';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideCheck, LucideDynamicIcon } from '@lucide/angular';
+import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 /**
  * `rdxCheckboxGroup` holds the array of checked names. Each child participates by its `name`, and
@@ -605,15 +605,15 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
         LucideCheck
     ],
     template: `
-        <div class="flex flex-col gap-3" #group="rdxCheckboxGroup" [(value)]="value" [allValues]="all" rdxCheckboxGroup>
+        <div #group="rdxCheckboxGroup" class="flex flex-col gap-3" rdxCheckboxGroup [allValues]="all" [(value)]="value">
             <div class="flex items-center gap-3">
                 <div parent rdxCheckboxRoot>
-                    <button id="all" [class]="c.button" rdxCheckboxButton>
+                    <button id="all" rdxCheckboxButton [class]="c.button">
                         <svg
-                            [class]="c.indicator"
-                            [lucideIcon]="group.parentState() === 'indeterminate' ? 'minus' : 'check'"
                             rdxCheckboxIndicator
                             size="16"
+                            [class]="c.indicator"
+                            [lucideIcon]="group.parentState() === 'indeterminate' ? 'minus' : 'check'"
                         />
                     </button>
                 </div>
@@ -623,12 +623,12 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
             <div class="ml-6 flex flex-col gap-3">
                 @for (item of items; track item.name) {
                     <div class="flex items-center gap-3">
-                        <div [name]="item.name" rdxCheckboxRoot>
-                            <button [class]="c.button" [id]="item.name" rdxCheckboxButton>
-                                <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
+                        <div rdxCheckboxRoot [name]="item.name">
+                            <button rdxCheckboxButton [class]="c.button" [id]="item.name">
+                                <svg rdxCheckboxIndicator size="16" lucideCheck [class]="c.indicator" />
                             </button>
                         </div>
-                        <label class="text-foreground text-sm font-medium" [htmlFor]="item.name" rdxLabel>
+                        <label class="text-foreground text-sm font-medium" rdxLabel [htmlFor]="item.name">
                             {{ item.label }}
                         </label>
                     </div>

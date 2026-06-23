@@ -8,10 +8,10 @@ systems (or Field inputs) stay the source of validity. It maps external/server e
 and resets field interaction state on native reset.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormErrors, RdxFormRoot, RdxFormSubmitEvent } from '../index';
 import { formError, formField, formInput, formLabel, formSubmit } from './form.shared';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 
 /**
  * Server-error mapping with clear-on-edit. The submit handler simulates a backend that rejects a
@@ -25,18 +25,18 @@ import { formError, formField, formInput, formLabel, formSubmit } from './form.s
     template: `
         <form
             class="flex w-80 flex-col gap-4"
+            rdxFormRoot
             [errors]="errors()"
             (onFormSubmit)="onSubmit($event)"
             (onClearErrors)="errors.set($event)"
-            rdxFormRoot
         >
-            <div [class]="field" name="email" rdxFieldRoot>
-                <label [class]="label" rdxFieldLabel>Email</label>
-                <input [class]="input" name="email" type="email" rdxFieldControl placeholder="name@example.com" />
-                <p #emailError="rdxFieldError" [class]="error" rdxFieldError>{{ emailError.messages().join(' ') }}</p>
+            <div name="email" rdxFieldRoot [class]="field">
+                <label rdxFieldLabel [class]="label">Email</label>
+                <input name="email" type="email" rdxFieldControl placeholder="name@example.com" [class]="input" />
+                <p #emailError="rdxFieldError" rdxFieldError [class]="error">{{ emailError.messages().join(' ') }}</p>
             </div>
 
-            <button [class]="submit" type="submit">Create account</button>
+            <button type="submit" [class]="submit">Create account</button>
             @if (success()) {
                 <p class="text-muted-foreground text-sm">Account created for {{ success() }}.</p>
             }
@@ -116,10 +116,10 @@ error maps onto the field by `name` and clears when you edit it.
 > so an always-fresh reference would resurrect cleared errors on the next change-detection pass.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormErrors, RdxFormRoot, RdxFormSubmitEvent } from '../index';
 import { formError, formField, formInput, formLabel, formSubmit } from './form.shared';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 
 /**
  * Server-error mapping with clear-on-edit. The submit handler simulates a backend that rejects a
@@ -133,18 +133,18 @@ import { formError, formField, formInput, formLabel, formSubmit } from './form.s
     template: `
         <form
             class="flex w-80 flex-col gap-4"
+            rdxFormRoot
             [errors]="errors()"
             (onFormSubmit)="onSubmit($event)"
             (onClearErrors)="errors.set($event)"
-            rdxFormRoot
         >
-            <div [class]="field" name="email" rdxFieldRoot>
-                <label [class]="label" rdxFieldLabel>Email</label>
-                <input [class]="input" name="email" type="email" rdxFieldControl placeholder="name@example.com" />
-                <p #emailError="rdxFieldError" [class]="error" rdxFieldError>{{ emailError.messages().join(' ') }}</p>
+            <div name="email" rdxFieldRoot [class]="field">
+                <label rdxFieldLabel [class]="label">Email</label>
+                <input name="email" type="email" rdxFieldControl placeholder="name@example.com" [class]="input" />
+                <p #emailError="rdxFieldError" rdxFieldError [class]="error">{{ emailError.messages().join(' ') }}</p>
             </div>
 
-            <button [class]="submit" type="submit">Create account</button>
+            <button type="submit" [class]="submit">Create account</button>
             @if (success()) {
                 <p class="text-muted-foreground text-sm">Account created for {{ success() }}.</p>
             }
@@ -181,10 +181,10 @@ Native `reset` clears external errors and every field's interaction state, and r
 reverted values.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormErrors, RdxFormRoot, RdxFormSubmitEvent } from '../index';
 import { formError, formField, formInput, formLabel, formReset, formSubmit } from './form.shared';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 
 /**
  * Native `reset` clears external errors and every field's interaction state (touched/dirty/focused),
@@ -198,21 +198,21 @@ import { formError, formField, formInput, formLabel, formReset, formSubmit } fro
     template: `
         <form
             class="flex w-80 flex-col gap-4"
+            rdxFormRoot
             [errors]="errors()"
             (onFormSubmit)="onSubmit($event)"
             (onClearErrors)="errors.set($event)"
             (reset)="verified.set(false)"
-            rdxFormRoot
         >
-            <div [class]="field" name="code" rdxFieldRoot>
-                <label [class]="label" rdxFieldLabel>Access code</label>
-                <input [class]="input" name="code" rdxFieldControl placeholder="1234" />
-                <p #codeError="rdxFieldError" [class]="error" rdxFieldError>{{ codeError.messages().join(' ') }}</p>
+            <div name="code" rdxFieldRoot [class]="field">
+                <label rdxFieldLabel [class]="label">Access code</label>
+                <input name="code" rdxFieldControl placeholder="1234" [class]="input" />
+                <p #codeError="rdxFieldError" rdxFieldError [class]="error">{{ codeError.messages().join(' ') }}</p>
             </div>
 
             <div class="flex gap-2">
-                <button [class]="submit" type="submit">Verify</button>
-                <button [class]="reset" type="reset">Reset</button>
+                <button type="submit" [class]="submit">Verify</button>
+                <button type="reset" [class]="reset">Reset</button>
             </div>
             @if (verified()) {
                 <p class="text-muted-foreground text-sm">Code accepted.</p>
@@ -249,11 +249,11 @@ Reactive Forms owns validity; Form adds the aggregate attributes and submit hand
 `<form>`. `(ngSubmit)` is the source of truth — Form never stops propagation.
 
 ```typescript
+import { RdxFormRoot } from '../index';
+import { formError, formField, formInput, formLabel, formSubmit } from './form.shared';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
-import { RdxFormRoot } from '../index';
-import { formError, formField, formInput, formLabel, formSubmit } from './form.shared';
 
 /**
  * Reactive Forms owns validity; `RdxFormRoot` adds the aggregate `data-*` attributes and submit/reset
@@ -265,19 +265,19 @@ import { formError, formField, formInput, formLabel, formSubmit } from './form.s
     selector: 'form-reactive-forms-example',
     imports: [ReactiveFormsModule, RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldError],
     template: `
-        <form class="flex w-80 flex-col gap-4" [formGroup]="form" (ngSubmit)="submit()" rdxFormRoot>
+        <form class="flex w-80 flex-col gap-4" rdxFormRoot [formGroup]="form" (ngSubmit)="submit()">
             <div
+                name="email"
+                rdxFieldRoot
+                required
                 [class]="field"
                 [invalid]="email.invalid && (email.touched || submitted())"
                 [touched]="email.touched"
                 [dirty]="email.dirty"
-                name="email"
-                rdxFieldRoot
-                required
             >
-                <label [class]="label" rdxFieldLabel>Email</label>
-                <input [class]="input" type="email" formControlName="email" rdxFieldControl />
-                <p [class]="error" rdxFieldError>
+                <label rdxFieldLabel [class]="label">Email</label>
+                <input type="email" formControlName="email" rdxFieldControl [class]="input" />
+                <p rdxFieldError [class]="error">
                     @if (email.hasError('required')) {
                         Email is required.
                     } @else {
@@ -286,7 +286,7 @@ import { formError, formField, formInput, formLabel, formSubmit } from './form.s
                 </p>
             </div>
 
-            <button [class]="submitButton" type="submit">Submit</button>
+            <button type="submit" [class]="submitButton">Submit</button>
         </form>
     `
 })
@@ -321,10 +321,10 @@ No `@angular/forms` at all — a valid submit serializes the form's `FormData` i
 (repeated names collapse into arrays).
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { RdxFieldControl, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormRoot, RdxFormSubmitEvent } from '../index';
 import { formField, formInput, formLabel, formSubmit } from './form.shared';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { RdxFieldControl, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 
 /**
  * No `@angular/forms` at all — just native controls. On a valid submit the Form serializes the form's
@@ -335,17 +335,17 @@ import { formField, formInput, formLabel, formSubmit } from './form.shared';
     selector: 'form-native-controls-example',
     imports: [RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl],
     template: `
-        <form class="flex w-80 flex-col gap-4" (onFormSubmit)="onSubmit($event)" rdxFormRoot>
-            <div [class]="field" name="name" rdxFieldRoot>
-                <label [class]="label" rdxFieldLabel>Name</label>
-                <input [class]="input" name="name" rdxFieldControl value="Ada" />
+        <form class="flex w-80 flex-col gap-4" rdxFormRoot (onFormSubmit)="onSubmit($event)">
+            <div name="name" rdxFieldRoot [class]="field">
+                <label rdxFieldLabel [class]="label">Name</label>
+                <input name="name" rdxFieldControl value="Ada" [class]="input" />
             </div>
-            <div [class]="field" name="role" rdxFieldRoot>
-                <label [class]="label" rdxFieldLabel>Role</label>
-                <input [class]="input" name="role" rdxFieldControl value="Engineer" />
+            <div name="role" rdxFieldRoot [class]="field">
+                <label rdxFieldLabel [class]="label">Role</label>
+                <input name="role" rdxFieldControl value="Engineer" [class]="input" />
             </div>
 
-            <button [class]="submit" type="submit">Submit</button>
+            <button type="submit" [class]="submit">Submit</button>
             @if (values()) {
                 <pre class="bg-muted text-foreground rounded-md p-3 text-xs">{{ values() }}</pre>
             }

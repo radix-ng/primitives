@@ -336,16 +336,16 @@ import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTa
             <div class="grid">
                 <div class="group col-start-1 row-start-1" rdxTabsPanel value="account">
                     <div
-                        class="bg-background text-foreground animate-tabs-panel-in group-data-[hidden]:animate-tabs-panel-out p-6 text-sm leading-6 outline-none"
                         *rdxTabsPanelPresence
+                        class="bg-background text-foreground animate-tabs-panel-in group-data-[hidden]:animate-tabs-panel-out p-6 text-sm leading-6 outline-none"
                     >
                         Make changes to your account here. Click save when you're done.
                     </div>
                 </div>
                 <div class="group col-start-1 row-start-1" rdxTabsPanel value="password">
                     <div
-                        class="bg-background text-foreground animate-tabs-panel-in group-data-[hidden]:animate-tabs-panel-out p-6 text-sm leading-6 outline-none"
                         *rdxTabsPanelPresence
+                        class="bg-background text-foreground animate-tabs-panel-in group-data-[hidden]:animate-tabs-panel-out p-6 text-sm leading-6 outline-none"
                     >
                         Change your password here. After saving, you'll be logged out.
                     </div>

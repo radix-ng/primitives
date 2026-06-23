@@ -6,9 +6,9 @@ Each field below calls `injectId('rdx-field-')` in its own injection context, wi
 to the matching `<input id>` without hardcoding an id or risking a collision.
 
 ```typescript
+import { cn, demoInput } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
-import { cn, demoInput } from '../../storybook/styles';
 
 /**
  * Each instance calls `injectId('rdx-field-')` in its injection context, so every
@@ -21,7 +21,7 @@ import { cn, demoInput } from '../../storybook/styles';
     template: `
         <div class="flex flex-col gap-1.5">
             <label class="text-foreground text-sm font-medium" [attr.for]="id">{{ label() }}</label>
-            <input [id]="id" [class]="inputClass" [placeholder]="label()" type="text" />
+            <input type="text" [id]="id" [class]="inputClass" [placeholder]="label()" />
             <code class="text-muted-foreground text-xs">id="{{ id }}"</code>
         </div>
     `

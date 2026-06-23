@@ -138,11 +138,11 @@ screen-reader users can still reach it.
 Render a `[rdxMenuTrigger]` on a toolbar button to open a menu from the toolbar.
 
 ```typescript
+import { demoMenu } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { toolbarImports } from '@radix-ng/primitives/toolbar';
-import { demoMenu } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -180,12 +180,12 @@ import { demoMenu } from '../../storybook/styles';
                 </button>
 
                 @if (menu.open()) {
-                    <div [class]="m.positioner" sideOffset="6" rdxMenuPositioner>
-                        <div [class]="m.popup" rdxMenuPopup>
-                            <button [class]="m.item" rdxMenuItem>Undo</button>
-                            <button [class]="m.item" rdxMenuItem>Redo</button>
-                            <div [class]="m.separator" rdxMenuSeparator></div>
-                            <button [class]="m.item" rdxMenuItem>Clear formatting</button>
+                    <div sideOffset="6" rdxMenuPositioner [class]="m.positioner">
+                        <div rdxMenuPopup [class]="m.popup">
+                            <button rdxMenuItem [class]="m.item">Undo</button>
+                            <button rdxMenuItem [class]="m.item">Redo</button>
+                            <div rdxMenuSeparator [class]="m.separator"></div>
+                            <button rdxMenuItem [class]="m.item">Clear formatting</button>
                         </div>
                     </div>
                 }
@@ -203,11 +203,11 @@ export class ToolbarWithMenuExample {
 Wrap toolbar buttons with a tooltip by stacking `[rdxTooltipTrigger]`.
 
 ```typescript
+import { demoTooltip } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideBold, LucideItalic } from '@lucide/angular';
 import { toolbarImports } from '@radix-ng/primitives/toolbar';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
-import { demoTooltip } from '../../storybook/styles';
 
 const itemClass =
     'text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center rounded-md outline-none transition-colors focus-visible:ring-2';
@@ -226,9 +226,9 @@ const itemClass =
                 <button class="${itemClass}" aria-label="Bold" rdxToolbarButton rdxTooltipTrigger>
                     <svg lucideBold size="16"></svg>
                 </button>
-                <div *rdxTooltipPortal [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
-                    <div [class]="t.popup" rdxTooltipPopup>Bold</div>
-                    <span [class]="t.arrow" rdxTooltipArrow></span>
+                <div *rdxTooltipPortal sideOffset="8" rdxTooltipPositioner [class]="t.positioner">
+                    <div rdxTooltipPopup [class]="t.popup">Bold</div>
+                    <span rdxTooltipArrow [class]="t.arrow"></span>
                 </div>
             </ng-container>
 
@@ -236,9 +236,9 @@ const itemClass =
                 <button class="${itemClass}" aria-label="Italic" rdxToolbarButton rdxTooltipTrigger>
                     <svg lucideItalic size="16"></svg>
                 </button>
-                <div *rdxTooltipPortal [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
-                    <div [class]="t.popup" rdxTooltipPopup>Italic</div>
-                    <span [class]="t.arrow" rdxTooltipArrow></span>
+                <div *rdxTooltipPortal sideOffset="8" rdxTooltipPositioner [class]="t.positioner">
+                    <div rdxTooltipPopup [class]="t.popup">Italic</div>
+                    <span rdxTooltipArrow [class]="t.arrow"></span>
                 </div>
             </ng-container>
         </div>
@@ -285,11 +285,11 @@ const stepClass =
 
             <div
                 class="flex items-center gap-0.5"
-                [value]="16"
                 rdxNumberFieldRoot
                 min="8"
                 max="72"
                 aria-label="Font size"
+                [value]="16"
             >
                 <button class="${stepClass}" aria-label="Decrease" rdxToolbarButton rdxNumberFieldDecrement>
                     <svg lucideMinus size="16"></svg>

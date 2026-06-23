@@ -7,10 +7,10 @@ primitives. It remains headless: styles and native CSS animations belong to the 
 follows Base UI.
 
 ```typescript
+import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucidePlus } from '@lucide/angular';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
-import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -18,13 +18,13 @@ import { cn, demoButton, demoTooltip } from '../../storybook/styles';
     imports: [...tooltipImports, LucidePlus],
     template: `
         <ng-container rdxTooltip>
-            <button [class]="cn(b.base, b.outline, b.size.icon)" aria-label="Add to library" rdxTooltipTrigger>
+            <button aria-label="Add to library" rdxTooltipTrigger [class]="cn(b.base, b.outline, b.size.icon)">
                 <svg aria-hidden="true" lucidePlus size="16" />
             </button>
 
-            <div *rdxTooltipPortal [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
-                <div [class]="t.popup" rdxTooltipPopup>Add to library</div>
-                <span [class]="t.arrow" rdxTooltipArrow></span>
+            <div *rdxTooltipPortal sideOffset="8" rdxTooltipPositioner [class]="t.positioner">
+                <div rdxTooltipPopup [class]="t.popup">Add to library</div>
+                <span rdxTooltipArrow [class]="t.arrow"></span>
             </div>
         </ng-container>
     `
@@ -96,10 +96,10 @@ exit keyframes on its root element finish. Use the `*` microsyntax on the positi
 A tooltip anchored to an icon button, with an arrow.
 
 ```typescript
+import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucidePlus } from '@lucide/angular';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
-import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -107,13 +107,13 @@ import { cn, demoButton, demoTooltip } from '../../storybook/styles';
     imports: [...tooltipImports, LucidePlus],
     template: `
         <ng-container rdxTooltip>
-            <button [class]="cn(b.base, b.outline, b.size.icon)" aria-label="Add to library" rdxTooltipTrigger>
+            <button aria-label="Add to library" rdxTooltipTrigger [class]="cn(b.base, b.outline, b.size.icon)">
                 <svg aria-hidden="true" lucidePlus size="16" />
             </button>
 
-            <div *rdxTooltipPortal [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
-                <div [class]="t.popup" rdxTooltipPopup>Add to library</div>
-                <span [class]="t.arrow" rdxTooltipArrow></span>
+            <div *rdxTooltipPortal sideOffset="8" rdxTooltipPositioner [class]="t.positioner">
+                <div rdxTooltipPopup [class]="t.popup">Add to library</div>
+                <span rdxTooltipArrow [class]="t.arrow"></span>
             </div>
         </ng-container>
     `
@@ -132,29 +132,29 @@ instant-open `timeout` window — once one tooltip opens, adjacent ones open ins
 ms after the last one closes.
 
 ```typescript
+import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideDynamicIcon } from '@lucide/angular';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
-import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-tooltip-provider',
     imports: [...tooltipImports, LucideDynamicIcon],
     template: `
-        <div class="flex items-center gap-2" [delay]="600" [timeout]="400" rdxTooltipProvider>
+        <div class="flex items-center gap-2" rdxTooltipProvider [delay]="600" [timeout]="400">
             @for (action of actions; track action.name) {
                 <ng-container rdxTooltip>
                     <button
+                        rdxTooltipTrigger
                         [class]="cn(b.base, b.outline, b.size.icon)"
                         [attr.aria-label]="action.name"
-                        rdxTooltipTrigger
                     >
-                        <svg [lucideIcon]="action.icon" aria-hidden="true" size="16" />
+                        <svg aria-hidden="true" size="16" [lucideIcon]="action.icon" />
                     </button>
 
-                    <div *rdxTooltipPortal [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
-                        <div [class]="t.popup" rdxTooltipPopup>{{ action.name }}</div>
+                    <div *rdxTooltipPortal sideOffset="8" rdxTooltipPositioner [class]="t.positioner">
+                        <div rdxTooltipPopup [class]="t.popup">{{ action.name }}</div>
                     </div>
                 </ng-container>
             }
@@ -180,9 +180,9 @@ Set `delay` (and `closeDelay`) on `rdxTooltipTrigger` to override the root, prov
 values for that trigger only.
 
 ```typescript
+import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
-import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -192,12 +192,12 @@ import { cn, demoButton, demoTooltip } from '../../storybook/styles';
         <div class="flex items-center gap-3">
             @for (item of triggers; track item.delay) {
                 <ng-container rdxTooltip>
-                    <button [class]="cn(b.base, b.outline, b.size.md)" [delay]="item.delay" rdxTooltipTrigger>
+                    <button rdxTooltipTrigger [class]="cn(b.base, b.outline, b.size.md)" [delay]="item.delay">
                         {{ item.label }}
                     </button>
 
-                    <div *rdxTooltipPortal [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
-                        <div [class]="t.popup" rdxTooltipPopup>Opened after {{ item.delay }} ms</div>
+                    <div *rdxTooltipPortal sideOffset="8" rdxTooltipPositioner [class]="t.positioner">
+                        <div rdxTooltipPopup [class]="t.popup">Opened after {{ item.delay }} ms</div>
                     </div>
                 </ng-container>
             }
@@ -223,9 +223,9 @@ Set `disabled` on `rdxTooltipTrigger` (or `disabled` on `rdxTooltip` for all tri
 trigger never opens the tooltip and reflects `data-trigger-disabled`.
 
 ```typescript
+import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
-import { cn, demoButton, demoTooltip } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -235,12 +235,12 @@ import { cn, demoButton, demoTooltip } from '../../storybook/styles';
         <div class="flex items-center gap-3">
             @for (item of triggers; track item.label) {
                 <ng-container rdxTooltip>
-                    <button [class]="cn(b.base, b.outline, b.size.md)" [disabled]="item.disabled" rdxTooltipTrigger>
+                    <button rdxTooltipTrigger [class]="cn(b.base, b.outline, b.size.md)" [disabled]="item.disabled">
                         {{ item.label }}
                     </button>
 
-                    <div *rdxTooltipPortal [class]="t.positioner" rdxTooltipPositioner>
-                        <div [class]="t.popup" rdxTooltipPopup>{{ item.label }} tooltip</div>
+                    <div *rdxTooltipPortal rdxTooltipPositioner [class]="t.positioner">
+                        <div rdxTooltipPopup [class]="t.popup">{{ item.label }} tooltip</div>
                     </div>
                 </ng-container>
             }
@@ -265,9 +265,9 @@ Set `trackCursorAxis` on the root to `'x'`, `'y'`, or `'both'` to make the popup
 along that axis.
 
 ```typescript
+import { demoTooltip } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
-import { demoTooltip } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -283,8 +283,8 @@ import { demoTooltip } from '../../storybook/styles';
                 Move the cursor over me
             </button>
 
-            <div *rdxTooltipPortal [class]="t.positioner" sideOffset="12" rdxTooltipPositioner>
-                <div [class]="t.popup" rdxTooltipPopup>Following the cursor</div>
+            <div *rdxTooltipPortal sideOffset="12" rdxTooltipPositioner [class]="t.positioner">
+                <div rdxTooltipPopup [class]="t.popup">Following the cursor</div>
             </div>
         </ng-container>
     `
@@ -300,6 +300,7 @@ Tooltip uses `updatePositionStrategy="always"` so it can follow moving triggers 
 when the trigger moves continuously, such as a slider thumb being dragged.
 
 ```typescript
+import { demoTooltip } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import {
     RdxSliderControl,
@@ -310,7 +311,6 @@ import {
     RdxSliderTrack
 } from '@radix-ng/primitives/slider';
 import { tooltipImports } from '@radix-ng/primitives/tooltip';
-import { demoTooltip } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -325,30 +325,30 @@ import { demoTooltip } from '../../storybook/styles';
         RdxSliderThumbInput
     ],
     template: `
-        <div class="relative w-52 select-none" [value]="45" [step]="5" rdxSliderRoot>
+        <div class="relative w-52 select-none" rdxSliderRoot [value]="45" [step]="5">
             <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>
                 <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
                     <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>
 
-                    <ng-container [open]="showTooltipState()" rdxTooltip disabled>
+                    <ng-container rdxTooltip disabled [open]="showTooltipState()">
                         <div
                             class="border-border bg-background focus-within:ring-ring focus-within:ring-offset-background block size-5 rounded-full border shadow-sm focus-within:ring-2 focus-within:ring-offset-2"
-                            [rdxOnPointerDown]="handlePointerDown"
                             rdxSliderThumb
                             rdxTooltipTrigger
+                            [rdxOnPointerDown]="handlePointerDown"
                         >
                             <input rdxSliderThumbInput aria-label="Volume" />
                         </div>
 
                         <div
                             *rdxTooltipPortal
-                            [class]="t.positioner"
                             sideOffset="8"
                             side="top"
                             updatePositionStrategy="always"
                             rdxTooltipPositioner
+                            [class]="t.positioner"
                         >
-                            <div [class]="t.popup" rdxTooltipPopup>Volume</div>
+                            <div rdxTooltipPopup [class]="t.popup">Volume</div>
                         </div>
                     </ng-container>
                 </div>

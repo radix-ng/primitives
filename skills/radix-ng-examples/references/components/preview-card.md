@@ -3,9 +3,9 @@
 #### A popup that appears when a link is hovered or focused, showing a visual preview.
 
 ```typescript
+import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { previewCardImports } from '@radix-ng/primitives/preview-card';
-import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -16,20 +16,20 @@ import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
             <p class="text-muted-foreground max-w-md text-sm leading-6">
                 The principles of good
                 <a
-                    [class]="link"
                     href="https://en.wikipedia.org/wiki/Typography"
                     rel="noreferrer"
                     target="_blank"
                     rdxPreviewCardTrigger
+                    [class]="link"
                 >
                     typography
                 </a>
                 remain in the digital age.
             </p>
 
-            <div *rdxPreviewCardPortal [class]="p.positioner" sideOffset="8" rdxPreviewCardPositioner>
-                <div [class]="p.popup" rdxPreviewCardPopup>
-                    <span [class]="p.arrow" rdxPreviewCardArrow></span>
+            <div *rdxPreviewCardPortal sideOffset="8" rdxPreviewCardPositioner [class]="p.positioner">
+                <div rdxPreviewCardPopup [class]="p.popup">
+                    <span rdxPreviewCardArrow [class]="p.arrow"></span>
                     <div class="grid gap-3">
                         <div class="bg-muted h-28 rounded-md"></div>
                         <p class="text-muted-foreground text-sm">
@@ -117,9 +117,9 @@ to the positioner — use the explicit `<ng-template rdxPreviewCardPortal>` form
 Control both the open state and the active trigger id.
 
 ```typescript
+import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { previewCardImports } from '@radix-ng/primitives/preview-card';
-import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -128,34 +128,34 @@ import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styl
     template: `
         <div class="grid gap-4">
             <div class="flex items-center gap-3">
-                <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="openFrom('design')" type="button">
+                <button type="button" [class]="cn(b.base, b.outline, b.size.sm)" (click)="openFrom('design')">
                     Open design
                 </button>
-                <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="open = false" type="button">Close</button>
+                <button type="button" [class]="cn(b.base, b.outline, b.size.sm)" (click)="open = false">Close</button>
             </div>
 
             <ng-container
                 #root="rdxPreviewCardRoot"
+                rdxPreviewCardRoot
                 [(open)]="open"
                 [(triggerId)]="triggerId"
                 (onOpenChange)="triggerId = $event.triggerId"
-                rdxPreviewCardRoot
             >
                 <p class="text-muted-foreground max-w-lg text-sm leading-6">
                     Discover
-                    <a id="typography" [class]="link" [payload]="cards.typography" href="#" rdxPreviewCardTrigger>
+                    <a id="typography" href="#" rdxPreviewCardTrigger [class]="link" [payload]="cards.typography">
                         typography
                     </a>
                     ,
-                    <a id="design" [class]="link" [payload]="cards.design" href="#" rdxPreviewCardTrigger>design</a>
+                    <a id="design" href="#" rdxPreviewCardTrigger [class]="link" [payload]="cards.design">design</a>
                     , or
-                    <a id="art" [class]="link" [payload]="cards.art" href="#" rdxPreviewCardTrigger>art</a>
+                    <a id="art" href="#" rdxPreviewCardTrigger [class]="link" [payload]="cards.art">art</a>
                     .
                 </p>
 
-                <div *rdxPreviewCardPortal [class]="p.positioner" sideOffset="8" rdxPreviewCardPositioner>
-                    <div [class]="p.popup" rdxPreviewCardPopup>
-                        <span [class]="p.arrow" rdxPreviewCardArrow></span>
+                <div *rdxPreviewCardPortal sideOffset="8" rdxPreviewCardPositioner [class]="p.positioner">
+                    <div rdxPreviewCardPopup [class]="p.popup">
+                        <span rdxPreviewCardArrow [class]="p.arrow"></span>
                         <div class="grid gap-2">
                             <div class="bg-muted h-24 rounded-md"></div>
                             <p class="text-muted-foreground text-sm">{{ root.payload() }}</p>
@@ -192,9 +192,9 @@ export class RdxPreviewCardControlledMultipleComponent {
 Associate triggers outside the root through a shared handle.
 
 ```typescript
+import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { createRdxPreviewCardHandle, previewCardImports } from '@radix-ng/primitives/preview-card';
-import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -206,32 +206,32 @@ import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
                 Detached triggers can live outside the root:
                 <a
                     id="typography"
-                    [class]="link"
-                    [handle]="previewCard"
                     href="#"
                     payload="Typography preview"
                     rdxPreviewCardTrigger
+                    [class]="link"
+                    [handle]="previewCard"
                 >
                     typography
                 </a>
                 and
                 <a
                     id="design"
-                    [class]="link"
-                    [handle]="previewCard"
                     href="#"
                     payload="Design preview"
                     rdxPreviewCardTrigger
+                    [class]="link"
+                    [handle]="previewCard"
                 >
                     design
                 </a>
                 .
             </p>
 
-            <ng-container #root="rdxPreviewCardRoot" [handle]="previewCard" rdxPreviewCardRoot>
-                <div *rdxPreviewCardPortal [class]="p.positioner" sideOffset="8" rdxPreviewCardPositioner>
-                    <div [class]="p.popup" rdxPreviewCardPopup>
-                        <span [class]="p.arrow" rdxPreviewCardArrow></span>
+            <ng-container #root="rdxPreviewCardRoot" rdxPreviewCardRoot [handle]="previewCard">
+                <div *rdxPreviewCardPortal sideOffset="8" rdxPreviewCardPositioner [class]="p.positioner">
+                    <div rdxPreviewCardPopup [class]="p.popup">
+                        <span rdxPreviewCardArrow [class]="p.arrow"></span>
                         <div class="grid gap-2">
                             <div class="bg-muted h-24 rounded-md"></div>
                             <p class="text-muted-foreground text-sm">{{ root.payload() }}</p>
@@ -254,10 +254,10 @@ export class RdxPreviewCardDetachedComponent {
 Configure side, offsets, collision behavior, and arrow padding on the positioner.
 
 ```typescript
+import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { Side } from '@radix-ng/primitives/popper';
 import { previewCardImports } from '@radix-ng/primitives/preview-card';
-import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -268,9 +268,9 @@ import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styl
             <div class="flex flex-wrap gap-2">
                 @for (option of sides; track option) {
                     <button
+                        type="button"
                         [class]="cn(b.base, side() === option ? b.primary : b.outline, b.size.sm)"
                         (click)="side.set(option)"
-                        type="button"
                     >
                         {{ option }}
                     </button>
@@ -278,17 +278,17 @@ import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styl
             </div>
 
             <ng-container rdxPreviewCardRoot>
-                <a [class]="link" href="#" rdxPreviewCardTrigger>Hover the positioned preview card</a>
+                <a href="#" rdxPreviewCardTrigger [class]="link">Hover the positioned preview card</a>
 
                 <div
                     *rdxPreviewCardPortal
-                    [class]="p.positioner"
-                    [side]="side()"
                     sideOffset="8"
                     rdxPreviewCardPositioner
+                    [class]="p.positioner"
+                    [side]="side()"
                 >
-                    <div [class]="p.popup" rdxPreviewCardPopup>
-                        <span [class]="p.arrow" rdxPreviewCardArrow></span>
+                    <div rdxPreviewCardPopup [class]="p.popup">
+                        <span rdxPreviewCardArrow [class]="p.arrow"></span>
                         <p class="text-muted-foreground text-sm">
                             The positioner exposes placement attributes and CSS variables for styling.
                         </p>
@@ -313,9 +313,9 @@ export class RdxPreviewCardPositioningComponent {
 Animate content changes when different triggers render different payloads.
 
 ```typescript
+import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { previewCardImports } from '@radix-ng/primitives/preview-card';
-import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -326,21 +326,21 @@ import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
             <p class="text-muted-foreground max-w-lg text-sm leading-6">
                 Compare
                 <a
-                    [class]="link"
                     href="#"
                     payload="Typography arranges type for readable language."
                     rdxPreviewCardTrigger
+                    [class]="link"
                 >
                     typography
                 </a>
                 ,
-                <a [class]="link" href="#" payload="Design shapes objects and systems." rdxPreviewCardTrigger>design</a>
+                <a href="#" payload="Design shapes objects and systems." rdxPreviewCardTrigger [class]="link">design</a>
                 , and
                 <a
-                    [class]="link"
                     href="#"
                     payload="Art communicates ideas through creative work."
                     rdxPreviewCardTrigger
+                    [class]="link"
                 >
                     art
                 </a>
@@ -349,15 +349,15 @@ import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
 
             <div
                 *rdxPreviewCardPortal
-                [class]="cn(p.positioner, 'transition-[left,right,top,bottom] duration-200')"
                 sideOffset="8"
                 rdxPreviewCardPositioner
+                [class]="cn(p.positioner, 'transition-[left,right,top,bottom] duration-200')"
             >
                 <div
-                    [class]="cn(p.popup, 'overflow-hidden transition-[width,height] duration-200')"
                     rdxPreviewCardPopup
+                    [class]="cn(p.popup, 'overflow-hidden transition-[width,height] duration-200')"
                 >
-                    <span [class]="p.arrow" rdxPreviewCardArrow></span>
+                    <span rdxPreviewCardArrow [class]="p.arrow"></span>
                     <div rdxPreviewCardViewport>
                         <div class="grid gap-2">
                             <div class="bg-muted h-24 rounded-md"></div>

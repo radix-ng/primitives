@@ -11,9 +11,9 @@ Use Autocomplete for free-form entry with suggestions (search boxes, command inp
 the value is a chosen item (or items) rather than the typed text.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
 const TAGS = [
     'feature',
@@ -64,24 +64,24 @@ const TAGS = [
     selector: 'autocomplete-default',
     imports: [_importsAutocomplete],
     template: `
-        <div [(value)]="value" rdxAutocompleteRoot>
-            <div [class]="c.control" rdxAutocompleteInputGroup>
+        <div rdxAutocompleteRoot [(value)]="value">
+            <div rdxAutocompleteInputGroup [class]="c.control">
                 <input
-                    [class]="cn(c.input, 'pr-3')"
                     rdxAutocompleteInput
                     placeholder="e.g. fix"
                     aria-label="Search tags"
+                    [class]="cn(c.input, 'pr-3')"
                 />
             </div>
 
-            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
-                <div [class]="c.popup" rdxAutocompletePopup>
-                    <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
+            <div *rdxAutocompletePortal rdxAutocompletePositioner [class]="c.positioner">
+                <div rdxAutocompletePopup [class]="c.popup">
+                    <div rdxAutocompleteList aria-label="Tags" [class]="c.list">
                         @for (tag of tags; track tag) {
-                            <div [class]="c.item" rdxAutocompleteItem>{{ tag }}</div>
+                            <div rdxAutocompleteItem [class]="c.item">{{ tag }}</div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
+                    <div rdxAutocompleteEmpty [class]="c.empty">No tags found.</div>
                 </div>
             </div>
         </div>
@@ -178,9 +178,9 @@ in place (non-matching items are hidden, not destroyed).
 Type to filter a list of suggestions; pick one to fill the input.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
 const TAGS = [
     'feature',
@@ -231,24 +231,24 @@ const TAGS = [
     selector: 'autocomplete-default',
     imports: [_importsAutocomplete],
     template: `
-        <div [(value)]="value" rdxAutocompleteRoot>
-            <div [class]="c.control" rdxAutocompleteInputGroup>
+        <div rdxAutocompleteRoot [(value)]="value">
+            <div rdxAutocompleteInputGroup [class]="c.control">
                 <input
-                    [class]="cn(c.input, 'pr-3')"
                     rdxAutocompleteInput
                     placeholder="e.g. fix"
                     aria-label="Search tags"
+                    [class]="cn(c.input, 'pr-3')"
                 />
             </div>
 
-            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
-                <div [class]="c.popup" rdxAutocompletePopup>
-                    <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
+            <div *rdxAutocompletePortal rdxAutocompletePositioner [class]="c.positioner">
+                <div rdxAutocompletePopup [class]="c.popup">
+                    <div rdxAutocompleteList aria-label="Tags" [class]="c.list">
                         @for (tag of tags; track tag) {
-                            <div [class]="c.item" rdxAutocompleteItem>{{ tag }}</div>
+                            <div rdxAutocompleteItem [class]="c.item">{{ tag }}</div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
+                    <div rdxAutocompleteEmpty [class]="c.empty">No tags found.</div>
                 </div>
             </div>
         </div>
@@ -269,9 +269,9 @@ suffix selected so the next keystroke replaces it. Inline modes highlight the fi
 so no `autoHighlight` is required.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
 const TAGS = [
     'feature',
@@ -322,19 +322,19 @@ const TAGS = [
     selector: 'autocomplete-inline',
     imports: [_importsAutocomplete],
     template: `
-        <div [(value)]="value" mode="both" rdxAutocompleteRoot>
-            <div [class]="c.control" rdxAutocompleteInputGroup>
-                <input [class]="c.input" rdxAutocompleteInput placeholder="e.g. fix" aria-label="Search tags" />
+        <div mode="both" rdxAutocompleteRoot [(value)]="value">
+            <div rdxAutocompleteInputGroup [class]="c.control">
+                <input rdxAutocompleteInput placeholder="e.g. fix" aria-label="Search tags" [class]="c.input" />
             </div>
 
-            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
-                <div [class]="c.popup" rdxAutocompletePopup>
-                    <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
+            <div *rdxAutocompletePortal rdxAutocompletePositioner [class]="c.positioner">
+                <div rdxAutocompletePopup [class]="c.popup">
+                    <div rdxAutocompleteList aria-label="Tags" [class]="c.list">
                         @for (tag of tags; track tag) {
-                            <div [class]="c.item" rdxAutocompleteItem>{{ tag }}</div>
+                            <div rdxAutocompleteItem [class]="c.item">{{ tag }}</div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
+                    <div rdxAutocompleteEmpty [class]="c.empty">No tags found.</div>
                 </div>
             </div>
         </div>
@@ -352,9 +352,9 @@ export class AutocompleteInline {
 `autoHighlight` keeps the first match highlighted as you type, so Enter selects it immediately.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
 const TAGS = [
     'feature',
@@ -405,19 +405,19 @@ const TAGS = [
     selector: 'autocomplete-auto-highlight',
     imports: [_importsAutocomplete],
     template: `
-        <div [(value)]="value" autoHighlight rdxAutocompleteRoot>
-            <div [class]="c.control" rdxAutocompleteInputGroup>
-                <input [class]="c.input" rdxAutocompleteInput placeholder="e.g. fix" aria-label="Search tags" />
+        <div autoHighlight rdxAutocompleteRoot [(value)]="value">
+            <div rdxAutocompleteInputGroup [class]="c.control">
+                <input rdxAutocompleteInput placeholder="e.g. fix" aria-label="Search tags" [class]="c.input" />
             </div>
 
-            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
-                <div [class]="c.popup" rdxAutocompletePopup>
-                    <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
+            <div *rdxAutocompletePortal rdxAutocompletePositioner [class]="c.positioner">
+                <div rdxAutocompletePopup [class]="c.popup">
+                    <div rdxAutocompleteList aria-label="Tags" [class]="c.list">
                         @for (tag of tags; track tag) {
-                            <div [class]="c.item" rdxAutocompleteItem>{{ tag }}</div>
+                            <div rdxAutocompleteItem [class]="c.item">{{ tag }}</div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
+                    <div rdxAutocompleteEmpty [class]="c.empty">No tags found.</div>
                 </div>
             </div>
         </div>
@@ -436,9 +436,9 @@ Group related suggestions with `rdxAutocompleteGroup` / `rdxAutocompleteGroupLab
 hides its heading automatically.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
 interface Group {
     label: string;
@@ -450,24 +450,24 @@ interface Group {
     selector: 'autocomplete-grouped',
     imports: [_importsAutocomplete],
     template: `
-        <div [(value)]="value" rdxAutocompleteRoot>
-            <div [class]="c.control" rdxAutocompleteInputGroup>
-                <input [class]="c.input" rdxAutocompleteInput placeholder="e.g. fix" aria-label="Search tags" />
+        <div rdxAutocompleteRoot [(value)]="value">
+            <div rdxAutocompleteInputGroup [class]="c.control">
+                <input rdxAutocompleteInput placeholder="e.g. fix" aria-label="Search tags" [class]="c.input" />
             </div>
 
-            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
-                <div [class]="c.popup" rdxAutocompletePopup>
-                    <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
+            <div *rdxAutocompletePortal rdxAutocompletePositioner [class]="c.positioner">
+                <div rdxAutocompletePopup [class]="c.popup">
+                    <div rdxAutocompleteList aria-label="Tags" [class]="c.list">
                         @for (group of groups; track group.label) {
                             <div rdxAutocompleteGroup>
-                                <div [class]="c.groupLabel" rdxAutocompleteGroupLabel>{{ group.label }}</div>
+                                <div rdxAutocompleteGroupLabel [class]="c.groupLabel">{{ group.label }}</div>
                                 @for (item of group.items; track item) {
-                                    <div [class]="c.item" rdxAutocompleteItem>{{ item }}</div>
+                                    <div rdxAutocompleteItem [class]="c.item">{{ item }}</div>
                                 }
                             </div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
+                    <div rdxAutocompleteEmpty [class]="c.empty">No tags found.</div>
                 </div>
             </div>
         </div>
@@ -527,28 +527,28 @@ export class AutocompleteGrouped {
 `limit` caps how many matches are shown at once.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-limit',
     imports: [_importsAutocomplete],
     template: `
-        <div #ac="rdxAutocompleteRoot" [(value)]="value" [limit]="8" rdxAutocompleteRoot>
-            <div [class]="c.control" rdxAutocompleteInputGroup>
-                <input [class]="c.input" rdxAutocompleteInput placeholder="e.g. component" aria-label="Search tags" />
+        <div #ac="rdxAutocompleteRoot" rdxAutocompleteRoot [limit]="8" [(value)]="value">
+            <div rdxAutocompleteInputGroup [class]="c.control">
+                <input rdxAutocompleteInput placeholder="e.g. component" aria-label="Search tags" [class]="c.input" />
             </div>
 
-            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
-                <div [class]="c.popup" rdxAutocompletePopup>
-                    <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
+            <div *rdxAutocompletePortal rdxAutocompletePositioner [class]="c.positioner">
+                <div rdxAutocompletePopup [class]="c.popup">
+                    <div rdxAutocompleteList aria-label="Tags" [class]="c.list">
                         @for (tag of tags; track tag) {
-                            <div [class]="c.item" rdxAutocompleteItem>{{ tag }}</div>
+                            <div rdxAutocompleteItem [class]="c.item">{{ tag }}</div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
+                    <div rdxAutocompleteEmpty [class]="c.empty">No tags found.</div>
                     @if (hiddenCount(ac.value()); as hidden) {
                         <div class="text-muted-foreground border-border mt-1 border-t px-2 py-1 text-xs">
                             {{ hidden }} more {{ hidden === 1 ? 'result' : 'results' }} not shown
@@ -632,10 +632,10 @@ multiple fields. This example uses `match-sorter` over `title` / `description` /
 highlights the matched text.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { matchSorter, rankings } from 'match-sorter';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete, AutocompleteFilter } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { matchSorter, rankings } from 'match-sorter';
 
 interface DocItem {
     title: string;
@@ -667,17 +667,17 @@ const fuzzyFilter: AutocompleteFilter = (value, query) => {
     selector: 'autocomplete-fuzzy',
     imports: [_importsAutocomplete],
     template: `
-        <div #ac="rdxAutocompleteRoot" [(value)]="value" [filter]="fuzzy" rdxAutocompleteRoot>
-            <div [class]="control" rdxAutocompleteInputGroup>
-                <input [class]="c.input" rdxAutocompleteInput placeholder="e.g. React" aria-label="Documentation" />
+        <div #ac="rdxAutocompleteRoot" rdxAutocompleteRoot [filter]="fuzzy" [(value)]="value">
+            <div rdxAutocompleteInputGroup [class]="control">
+                <input rdxAutocompleteInput placeholder="e.g. React" aria-label="Documentation" [class]="c.input" />
             </div>
 
-            <div *rdxAutocompletePortal [class]="positioner" rdxAutocompletePositioner>
-                <div [class]="popup" rdxAutocompletePopup>
-                    <div [class]="c.empty" rdxAutocompleteEmpty>No results found for "{{ ac.value() }}".</div>
-                    <div [class]="c.list" rdxAutocompleteList aria-label="Documentation">
+            <div *rdxAutocompletePortal rdxAutocompletePositioner [class]="positioner">
+                <div rdxAutocompletePopup [class]="popup">
+                    <div rdxAutocompleteEmpty [class]="c.empty">No results found for "{{ ac.value() }}".</div>
+                    <div rdxAutocompleteList aria-label="Documentation" [class]="c.list">
                         @for (item of items; track item.title) {
-                            <div [class]="itemClass" [value]="item" [textValue]="item.title" rdxAutocompleteItem>
+                            <div rdxAutocompleteItem [class]="itemClass" [value]="item" [textValue]="item.title">
                                 <span class="flex flex-col gap-0.5">
                                     <span
                                         class="text-foreground leading-5 font-semibold"
@@ -826,9 +826,9 @@ export class AutocompleteFuzzy {
 a failure) and `RdxAutocompleteStatus` announces loading, result counts, and errors.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 
 interface Movie {
     id: string;
@@ -951,18 +951,18 @@ const top100Movies: Movie[] = [
     selector: 'autocomplete-async',
     imports: [_importsAutocomplete],
     template: `
-        <div [(value)]="value" [filter]="null" (onValueChange)="search($event.value)" rdxAutocompleteRoot>
-            <div [class]="c.control" rdxAutocompleteInputGroup>
+        <div rdxAutocompleteRoot [filter]="null" [(value)]="value" (onValueChange)="search($event.value)">
+            <div rdxAutocompleteInputGroup [class]="c.control">
                 <input
-                    [class]="c.input"
                     rdxAutocompleteInput
                     placeholder="e.g. Pulp Fiction or 1994"
                     aria-label="Movie"
+                    [class]="c.input"
                 />
             </div>
 
-            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
-                <div [class]="c.popup" [hidden]="!status()" rdxAutocompletePopup>
+            <div *rdxAutocompletePortal rdxAutocompletePositioner [class]="c.positioner">
+                <div rdxAutocompletePopup [class]="c.popup" [hidden]="!status()">
                     <div class="text-muted-foreground flex items-center gap-2 px-2 py-1 text-xs" rdxAutocompleteStatus>
                         @if (loading()) {
                             <span
@@ -974,9 +974,9 @@ const top100Movies: Movie[] = [
                             {{ status() }}
                         }
                     </div>
-                    <div [class]="c.list" rdxAutocompleteList aria-label="Movies">
+                    <div rdxAutocompleteList aria-label="Movies" [class]="c.list">
                         @for (movie of results(); track movie.id) {
-                            <div [class]="c.item" [value]="movie.title" [textValue]="movie.title" rdxAutocompleteItem>
+                            <div rdxAutocompleteItem [class]="c.item" [value]="movie.title" [textValue]="movie.title">
                                 {{ movie.title }}
                                 <span class="text-muted-foreground ml-1 text-xs">{{ movie.year }}</span>
                             </div>
@@ -1054,10 +1054,10 @@ An always-open, inline autocomplete (no popup — the `List` is rendered directl
 (the autocomplete's `open` is shared with the dialog via `[(open)]`).
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { dialogImports } from '@radix-ng/primitives/dialog';
 import { cn, demoButton, demoCard, demoDialog } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { dialogImports } from '@radix-ng/primitives/dialog';
 
 interface Item {
     value: string;
@@ -1079,33 +1079,33 @@ interface Group {
     selector: 'autocomplete-command-palette',
     imports: [...dialogImports, _importsAutocomplete],
     template: `
-        <div [(open)]="open" rdxDialogRoot>
-            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open command palette</button>
+        <div rdxDialogRoot [(open)]="open">
+            <button rdxDialogTrigger [class]="cn(b.base, b.primary, b.size.md)">Open command palette</button>
 
             <ng-template rdxDialogPortal>
-                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
+                <div rdxDialogBackdrop [class]="cn(d.backdrop, d.backdropAnimated)"></div>
 
                 <div class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 pt-[12vh]">
-                    <div [class]="popup" rdxDialogPopup aria-label="Command palette">
-                        <div [(open)]="open" autoHighlight="always" rdxAutocompleteRoot>
+                    <div rdxDialogPopup aria-label="Command palette" [class]="popup">
+                        <div autoHighlight="always" rdxAutocompleteRoot [(open)]="open">
                             <input
                                 #cmdInput
-                                [class]="input"
                                 rdxAutocompleteInput
                                 placeholder="Search for apps and commands…"
                                 aria-label="Command"
+                                [class]="input"
                             />
 
-                            <div [class]="list" rdxAutocompleteList aria-label="Commands">
+                            <div rdxAutocompleteList aria-label="Commands" [class]="list">
                                 @for (group of groups; track group.value) {
                                     <div class="mb-1" rdxAutocompleteGroup>
-                                        <div [class]="groupLabel" rdxAutocompleteGroupLabel>{{ group.value }}</div>
+                                        <div rdxAutocompleteGroupLabel [class]="groupLabel">{{ group.value }}</div>
                                         @for (item of group.items; track item.value) {
                                             <div
+                                                rdxAutocompleteItem
                                                 [class]="itemClass"
                                                 [value]="item"
                                                 [textValue]="item.label"
-                                                rdxAutocompleteItem
                                             >
                                                 <span class="truncate">{{ item.label }}</span>
                                                 <span [class]="badge">
@@ -1115,7 +1115,7 @@ interface Group {
                                         }
                                     </div>
                                 }
-                                <div [class]="empty" rdxAutocompleteEmpty>No results found.</div>
+                                <div rdxAutocompleteEmpty [class]="empty">No results found.</div>
                             </div>
 
                             <div [class]="footer">
@@ -1211,9 +1211,9 @@ open; pressing an item inserts it into the message field, and `onValueChange` is
 `reason === 'item-press'` so the search box is not overwritten.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
 import { cn, demoCombobox, demoFocusRing } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
+import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
 
 interface Emoji {
     emoji: string;
@@ -1248,42 +1248,42 @@ function chunk<T>(items: T[], size: number): T[][] {
     template: `
         <div class="relative flex w-64">
             <input
-                class="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring relative -mr-px h-9 flex-1 rounded-l-md border px-2 text-sm outline-none focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-inset"
                 #message
+                class="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring relative -mr-px h-9 flex-1 rounded-l-md border px-2 text-sm outline-none focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-inset"
                 placeholder="Message…"
                 aria-label="Message"
             />
 
             <div
-                [(open)]="open"
-                [value]="search()"
-                (onValueChange)="onSearch($event)"
-                (onOpenChangeComplete)="onOpenComplete($event)"
                 grid
                 rdxAutocompleteRoot
+                [value]="search()"
+                [(open)]="open"
+                (onValueChange)="onSearch($event)"
+                (onOpenChangeComplete)="onOpenComplete($event)"
             >
-                <button [class]="trigger" rdxAutocompleteTrigger rdxAutocompleteAnchor aria-label="Choose emoji">
+                <button rdxAutocompleteTrigger rdxAutocompleteAnchor aria-label="Choose emoji" [class]="trigger">
                     😀
                 </button>
 
-                <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner align="end">
-                    <div [class]="popup" rdxAutocompletePopup>
+                <div *rdxAutocompletePortal rdxAutocompletePositioner align="end" [class]="c.positioner">
+                    <div rdxAutocompletePopup [class]="popup">
                         <input
-                            [class]="input"
                             rdxAutocompleteInput
                             placeholder="Search emojis…"
                             aria-label="Search emojis"
+                            [class]="input"
                         />
                         <div class="max-h-64 overflow-auto p-1">
                             @for (group of groups; track group.label) {
                                 <div rdxAutocompleteGroup>
-                                    <div [class]="c.groupLabel" rdxAutocompleteGroupLabel>
+                                    <div rdxAutocompleteGroupLabel [class]="c.groupLabel">
                                         {{ group.label }}
                                     </div>
                                     @for (row of group.rows; track $index) {
                                         <div class="grid grid-cols-5" rdxAutocompleteRow>
                                             @for (item of row; track item.emoji) {
-                                                <div [class]="cell" [textValue]="item.name" rdxAutocompleteItem>
+                                                <div rdxAutocompleteItem [class]="cell" [textValue]="item.name">
                                                     {{ item.emoji }}
                                                 </div>
                                             }
@@ -1292,7 +1292,7 @@ function chunk<T>(items: T[], size: number): T[][] {
                                 </div>
                             }
                         </div>
-                        <div [class]="c.empty" rdxAutocompleteEmpty>No emoji found.</div>
+                        <div rdxAutocompleteEmpty [class]="c.empty">No emoji found.</div>
                     </div>
                 </div>
             </div>
@@ -1511,10 +1511,10 @@ protected onOpenChange(change: { open: boolean; eventDetails: { cancel(): void }
 renders only the visible window.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
-import { injectVirtualizer } from '@tanstack/angular-virtual';
 import { cn, demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete, AutocompleteItemHighlightedDetails, RdxAutocompleteRoot } from '../index';
+import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
+import { injectVirtualizer } from '@tanstack/angular-virtual';
 
 /**
  * Externally virtualized list of 10,000 items. The autocomplete owns filtering and index navigation
@@ -1529,30 +1529,30 @@ import { _importsAutocomplete, AutocompleteItemHighlightedDetails, RdxAutocomple
     template: `
         <div
             #ac="rdxAutocompleteRoot"
-            [(value)]="value"
-            [items]="items"
-            (onItemHighlighted)="onHighlight($event)"
             virtualized
             rdxAutocompleteRoot
+            [items]="items"
+            [(value)]="value"
+            (onItemHighlighted)="onHighlight($event)"
         >
-            <div [class]="c.control" rdxAutocompleteInputGroup>
-                <input [class]="c.input" rdxAutocompleteInput placeholder="Search 10,000 items…" aria-label="Item" />
+            <div rdxAutocompleteInputGroup [class]="c.control">
+                <input rdxAutocompleteInput placeholder="Search 10,000 items…" aria-label="Item" [class]="c.input" />
             </div>
 
-            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
-                <div [class]="popup" rdxAutocompletePopup>
-                    <div [class]="c.empty" rdxAutocompleteEmpty>No items found.</div>
-                    <div [class]="c.list" rdxAutocompleteList aria-label="Items">
+            <div *rdxAutocompletePortal rdxAutocompletePositioner [class]="c.positioner">
+                <div rdxAutocompletePopup [class]="popup">
+                    <div rdxAutocompleteEmpty [class]="c.empty">No items found.</div>
+                    <div rdxAutocompleteList aria-label="Items" [class]="c.list">
                         <div #scroll [class]="scroller">
                             <div [class]="spacer" [style.height.px]="virtualizer.getTotalSize()">
                                 @for (row of virtualizer.getVirtualItems(); track row.key) {
                                     <div
+                                        rdxAutocompleteItem
                                         [class]="item"
                                         [value]="ac.filteredItems()[row.index]"
                                         [index]="row.index"
                                         [style.height.px]="row.size"
                                         [style.transform]="'translateY(' + row.start + 'px)'"
-                                        rdxAutocompleteItem
                                     >
                                         {{ ac.filteredItems()[row.index] }}
                                     </div>
@@ -1611,10 +1611,10 @@ export class AutocompleteVirtualizedExample {
 The form value is the input string. Bind `[formControl]` to the root.
 
 ```typescript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 /**
  * Reactive forms: the form value **is** the input string (typed or selected). Bind `[formControl]`
@@ -1626,19 +1626,19 @@ import { _importsAutocomplete } from '../index';
     imports: [_importsAutocomplete, ReactiveFormsModule],
     template: `
         <div class="flex flex-col gap-3">
-            <div [formControl]="fruit" rdxAutocompleteRoot>
-                <div [class]="c.control" rdxAutocompleteInputGroup>
-                    <input [class]="c.input" rdxAutocompleteInput placeholder="Search a fruit…" aria-label="Fruit" />
+            <div rdxAutocompleteRoot [formControl]="fruit">
+                <div rdxAutocompleteInputGroup [class]="c.control">
+                    <input rdxAutocompleteInput placeholder="Search a fruit…" aria-label="Fruit" [class]="c.input" />
                 </div>
 
-                <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
-                    <div [class]="c.popup" rdxAutocompletePopup>
-                        <div [class]="c.list" rdxAutocompleteList aria-label="Fruits">
+                <div *rdxAutocompletePortal rdxAutocompletePositioner [class]="c.positioner">
+                    <div rdxAutocompletePopup [class]="c.popup">
+                        <div rdxAutocompleteList aria-label="Fruits" [class]="c.list">
                             @for (item of fruits; track item) {
-                                <div [class]="c.item" rdxAutocompleteItem>{{ item }}</div>
+                                <div rdxAutocompleteItem [class]="c.item">{{ item }}</div>
                             }
                         </div>
-                        <div [class]="c.empty" rdxAutocompleteEmpty>No fruit found.</div>
+                        <div rdxAutocompleteEmpty [class]="c.empty">No fruit found.</div>
                     </div>
                 </div>
             </div>
@@ -1659,10 +1659,10 @@ export class AutocompleteReactiveForms {
 `[(ngModel)]` binds the input string two-way.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 /**
  * Template-driven forms: `[(ngModel)]` binds the input string two-way.
@@ -1673,19 +1673,19 @@ import { _importsAutocomplete } from '../index';
     imports: [_importsAutocomplete, FormsModule],
     template: `
         <div class="flex flex-col gap-3">
-            <div [(ngModel)]="value" rdxAutocompleteRoot>
-                <div [class]="c.control" rdxAutocompleteInputGroup>
-                    <input [class]="c.input" rdxAutocompleteInput placeholder="Search a fruit…" aria-label="Fruit" />
+            <div rdxAutocompleteRoot [(ngModel)]="value">
+                <div rdxAutocompleteInputGroup [class]="c.control">
+                    <input rdxAutocompleteInput placeholder="Search a fruit…" aria-label="Fruit" [class]="c.input" />
                 </div>
 
-                <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
-                    <div [class]="c.popup" rdxAutocompletePopup>
-                        <div [class]="c.list" rdxAutocompleteList aria-label="Fruits">
+                <div *rdxAutocompletePortal rdxAutocompletePositioner [class]="c.positioner">
+                    <div rdxAutocompletePopup [class]="c.popup">
+                        <div rdxAutocompleteList aria-label="Fruits" [class]="c.list">
                             @for (item of fruits; track item) {
-                                <div [class]="c.item" rdxAutocompleteItem>{{ item }}</div>
+                                <div rdxAutocompleteItem [class]="c.item">{{ item }}</div>
                             }
                         </div>
-                        <div [class]="c.empty" rdxAutocompleteEmpty>No fruit found.</div>
+                        <div rdxAutocompleteEmpty [class]="c.empty">No fruit found.</div>
                     </div>
                 </div>
             </div>
@@ -1707,10 +1707,10 @@ Bind the control's validity to `[invalid]` so the input reflects `data-invalid` 
 error message and submit guard follow the standard reactive-forms pattern.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { cn, demoButton, demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 
 /**
  * Reactive forms with validation. The form value **is** the input string; its validity is bound to the
@@ -1723,22 +1723,22 @@ import { _importsAutocomplete } from '../index';
     imports: [_importsAutocomplete, ReactiveFormsModule],
     template: `
         <form class="flex flex-col gap-3" (ngSubmit)="onSubmit()">
-            <div [formControl]="fruit" [invalid]="showError()" rdxAutocompleteRoot>
+            <div rdxAutocompleteRoot [formControl]="fruit" [invalid]="showError()">
                 <div
-                    [class]="cn(c.control, showError() && 'border-destructive focus-within:ring-destructive')"
                     rdxAutocompleteInputGroup
+                    [class]="cn(c.control, showError() && 'border-destructive focus-within:ring-destructive')"
                 >
-                    <input [class]="c.input" rdxAutocompleteInput placeholder="Search a fruit…" aria-label="Fruit" />
+                    <input rdxAutocompleteInput placeholder="Search a fruit…" aria-label="Fruit" [class]="c.input" />
                 </div>
 
-                <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
-                    <div [class]="c.popup" rdxAutocompletePopup>
-                        <div [class]="c.list" rdxAutocompleteList aria-label="Fruits">
+                <div *rdxAutocompletePortal rdxAutocompletePositioner [class]="c.positioner">
+                    <div rdxAutocompletePopup [class]="c.popup">
+                        <div rdxAutocompleteList aria-label="Fruits" [class]="c.list">
                             @for (item of fruits; track item) {
-                                <div [class]="c.item" rdxAutocompleteItem>{{ item }}</div>
+                                <div rdxAutocompleteItem [class]="c.item">{{ item }}</div>
                             }
                         </div>
-                        <div [class]="c.empty" rdxAutocompleteEmpty>No fruit found.</div>
+                        <div rdxAutocompleteEmpty [class]="c.empty">No fruit found.</div>
                     </div>
                 </div>
             </div>
@@ -1747,7 +1747,7 @@ import { _importsAutocomplete } from '../index';
                 <p class="text-destructive text-sm">Please enter a fruit.</p>
             }
 
-            <button [class]="cn(b.base, b.primary, b.size.md, 'self-start')" type="submit">Submit</button>
+            <button type="submit" [class]="cn(b.base, b.primary, b.size.md, 'self-start')">Submit</button>
 
             @if (submitted()) {
                 <p class="text-muted-foreground text-sm">Submitted ✓</p>
@@ -1782,25 +1782,25 @@ export class AutocompleteValidation {
 ### Disabled
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { demoCombobox } from '../../storybook/styles';
 import { _importsAutocomplete } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-disabled',
     imports: [_importsAutocomplete],
     template: `
-        <div [(value)]="value" disabled rdxAutocompleteRoot>
-            <div [class]="c.control" rdxAutocompleteInputGroup>
-                <input [class]="c.input" rdxAutocompleteInput placeholder="Disabled" aria-label="Fruit" />
+        <div disabled rdxAutocompleteRoot [(value)]="value">
+            <div rdxAutocompleteInputGroup [class]="c.control">
+                <input rdxAutocompleteInput placeholder="Disabled" aria-label="Fruit" [class]="c.input" />
             </div>
 
-            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
-                <div [class]="c.popup" rdxAutocompletePopup>
-                    <div [class]="c.list" rdxAutocompleteList aria-label="Fruits">
+            <div *rdxAutocompletePortal rdxAutocompletePositioner [class]="c.positioner">
+                <div rdxAutocompletePopup [class]="c.popup">
+                    <div rdxAutocompleteList aria-label="Fruits" [class]="c.list">
                         @for (fruit of fruits; track fruit) {
-                            <div [class]="c.item" rdxAutocompleteItem>{{ fruit }}</div>
+                            <div rdxAutocompleteItem [class]="c.item">{{ fruit }}</div>
                         }
                     </div>
                 </div>

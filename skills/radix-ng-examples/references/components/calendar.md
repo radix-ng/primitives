@@ -3,21 +3,21 @@
 #### Displays dates and days of the week, facilitating date-related interactions.
 
 ```typescript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { CalendarDate, DateValue } from '@internationalized/date';
-import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar } from '../../storybook/styles';
-import { RdxCalendarCellTriggerDirective } from '../src/calendar-cell-trigger.directive';
 import { RdxCalendarCellDirective } from '../src/calendar-cell.directive';
+import { RdxCalendarCellTriggerDirective } from '../src/calendar-cell-trigger.directive';
+import { RdxCalendarGridDirective } from '../src/calendar-grid.directive';
 import { RdxCalendarGridBodyDirective } from '../src/calendar-grid-body.directive';
 import { RdxCalendarGridHeadDirective } from '../src/calendar-grid-head.directive';
-import { RdxCalendarGridDirective } from '../src/calendar-grid.directive';
 import { RdxCalendarHeadCellDirective } from '../src/calendar-head-cell.directive';
 import { RdxCalendarHeaderDirective } from '../src/calendar-header.directive';
 import { RdxCalendarHeadingDirective } from '../src/calendar-heading.directive';
 import { RdxCalendarNextDirective } from '../src/calendar-next.directive';
 import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { CalendarDate, DateValue } from '@internationalized/date';
+import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -38,37 +38,37 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
         LucideChevronRight
     ],
     template: `
-        <div #root="rdxCalendarRoot" [class]="c.root" [value]="date" rdxCalendarRoot fixedWeeks>
-            <div [class]="c.header" rdxCalendarHeader>
-                <button [class]="c.nav" type="button" rdxCalendarPrev>
+        <div #root="rdxCalendarRoot" rdxCalendarRoot fixedWeeks [class]="c.root" [value]="date">
+            <div rdxCalendarHeader [class]="c.header">
+                <button type="button" rdxCalendarPrev [class]="c.nav">
                     <svg lucideChevronLeft size="16" />
                 </button>
-                <div #head="rdxCalendarHeading" [class]="c.heading" rdxCalendarHeading>{{ head.headingValue() }}</div>
-                <button [class]="c.nav" type="button" rdxCalendarNext>
+                <div #head="rdxCalendarHeading" rdxCalendarHeading [class]="c.heading">{{ head.headingValue() }}</div>
+                <button type="button" rdxCalendarNext [class]="c.nav">
                     <svg lucideChevronRight size="16" />
                 </button>
             </div>
 
-            <table [class]="c.grid" rdxCalendarGrid>
+            <table rdxCalendarGrid [class]="c.grid">
                 @for (month of root.months(); track $index) {
                     <thead rdxCalendarGridHead>
                         <tr [class]="c.headRow">
                             @for (day of root.weekDays(); track $index) {
-                                <th [class]="c.headCell" rdxCalendarHeadCell>{{ day }}</th>
+                                <th rdxCalendarHeadCell [class]="c.headCell">{{ day }}</th>
                             }
                         </tr>
                     </thead>
-                    <tbody [class]="c.body" rdxCalendarGridBody>
+                    <tbody rdxCalendarGridBody [class]="c.body">
                         @for (weekDates of month.weeks; track $index) {
                             <tr [class]="c.weekRow">
                                 @for (weekDate of weekDates; track $index) {
-                                    <td [class]="c.cell" [date]="weekDate" rdxCalendarCell>
+                                    <td rdxCalendarCell [class]="c.cell" [date]="weekDate">
                                         <div
                                             #cell="rdxCalendarCellTrigger"
+                                            rdxCalendarCellTrigger
                                             [class]="c.day"
                                             [day]="weekDate"
                                             [month]="month.value"
-                                            rdxCalendarCellTrigger
                                         >
                                             {{ cell.dayValue() }}
                                         </div>
@@ -238,21 +238,21 @@ Import all parts and piece them together.
 This example showcases some of the available locales and how the calendar systems are displayed.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
-import { CalendarIdentifier, createCalendar, getLocalTimeZone, toCalendar, today } from '@internationalized/date';
-import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar, demoInput } from '../../storybook/styles';
-import { RdxCalendarCellTriggerDirective } from '../src/calendar-cell-trigger.directive';
 import { RdxCalendarCellDirective } from '../src/calendar-cell.directive';
+import { RdxCalendarCellTriggerDirective } from '../src/calendar-cell-trigger.directive';
+import { RdxCalendarGridDirective } from '../src/calendar-grid.directive';
 import { RdxCalendarGridBodyDirective } from '../src/calendar-grid-body.directive';
 import { RdxCalendarGridHeadDirective } from '../src/calendar-grid-head.directive';
-import { RdxCalendarGridDirective } from '../src/calendar-grid.directive';
 import { RdxCalendarHeadCellDirective } from '../src/calendar-head-cell.directive';
 import { RdxCalendarHeaderDirective } from '../src/calendar-header.directive';
 import { RdxCalendarHeadingDirective } from '../src/calendar-heading.directive';
 import { RdxCalendarNextDirective } from '../src/calendar-next.directive';
 import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { CalendarIdentifier, createCalendar, getLocalTimeZone, toCalendar, today } from '@internationalized/date';
+import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -294,44 +294,44 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
 
             <div
                 #root="rdxCalendarRoot"
+                rdxCalendarRoot
+                fixedWeeks
                 [class]="c.root"
                 [value]="value()"
                 [locale]="locale()"
-                rdxCalendarRoot
-                fixedWeeks
             >
-                <div [class]="c.header" rdxCalendarHeader>
-                    <button [class]="c.nav" type="button" rdxCalendarPrev>
+                <div rdxCalendarHeader [class]="c.header">
+                    <button type="button" rdxCalendarPrev [class]="c.nav">
                         <svg lucideChevronLeft size="16" />
                     </button>
-                    <div #head="rdxCalendarHeading" [class]="c.heading" rdxCalendarHeading>
+                    <div #head="rdxCalendarHeading" rdxCalendarHeading [class]="c.heading">
                         {{ head.headingValue() }}
                     </div>
-                    <button [class]="c.nav" type="button" rdxCalendarNext>
+                    <button type="button" rdxCalendarNext [class]="c.nav">
                         <svg lucideChevronRight size="16" />
                     </button>
                 </div>
 
-                <table [class]="c.grid" rdxCalendarGrid>
+                <table rdxCalendarGrid [class]="c.grid">
                     @for (month of root.months(); track $index) {
                         <thead rdxCalendarGridHead>
                             <tr [class]="c.headRow">
                                 @for (day of root.weekDays(); track $index) {
-                                    <th [class]="c.headCell" rdxCalendarHeadCell>{{ day }}</th>
+                                    <th rdxCalendarHeadCell [class]="c.headCell">{{ day }}</th>
                                 }
                             </tr>
                         </thead>
-                        <tbody [class]="c.body" rdxCalendarGridBody>
+                        <tbody rdxCalendarGridBody [class]="c.body">
                             @for (weekDates of month.weeks; track $index) {
                                 <tr [class]="c.weekRow">
                                     @for (weekDate of weekDates; track $index) {
-                                        <td [class]="c.cell" [date]="weekDate" rdxCalendarCell>
+                                        <td rdxCalendarCell [class]="c.cell" [date]="weekDate">
                                             <div
                                                 #cell="rdxCalendarCellTrigger"
+                                                rdxCalendarCellTrigger
                                                 [class]="c.day"
                                                 [day]="weekDate"
                                                 [month]="month.value"
-                                                rdxCalendarCellTrigger
                                             >
                                                 {{ cell.dayValue() }}
                                             </div>
@@ -455,21 +455,21 @@ export class CalendarWithLocale {
 Set `multiple` to let the calendar hold an array of selected dates; clicking a selected date deselects it.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { CalendarDate } from '@internationalized/date';
-import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar } from '../../storybook/styles';
-import { RdxCalendarCellTriggerDirective } from '../src/calendar-cell-trigger.directive';
 import { RdxCalendarCellDirective } from '../src/calendar-cell.directive';
+import { RdxCalendarCellTriggerDirective } from '../src/calendar-cell-trigger.directive';
+import { RdxCalendarGridDirective } from '../src/calendar-grid.directive';
 import { RdxCalendarGridBodyDirective } from '../src/calendar-grid-body.directive';
 import { RdxCalendarGridHeadDirective } from '../src/calendar-grid-head.directive';
-import { RdxCalendarGridDirective } from '../src/calendar-grid.directive';
 import { RdxCalendarHeadCellDirective } from '../src/calendar-head-cell.directive';
 import { RdxCalendarHeaderDirective } from '../src/calendar-header.directive';
 import { RdxCalendarHeadingDirective } from '../src/calendar-heading.directive';
 import { RdxCalendarNextDirective } from '../src/calendar-next.directive';
 import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { CalendarDate } from '@internationalized/date';
+import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -490,37 +490,37 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
         LucideChevronRight
     ],
     template: `
-        <div #root="rdxCalendarRoot" [class]="c.root" [value]="value()" rdxCalendarRoot multiple fixedWeeks>
-            <div [class]="c.header" rdxCalendarHeader>
-                <button [class]="c.nav" type="button" rdxCalendarPrev>
+        <div #root="rdxCalendarRoot" rdxCalendarRoot multiple fixedWeeks [class]="c.root" [value]="value()">
+            <div rdxCalendarHeader [class]="c.header">
+                <button type="button" rdxCalendarPrev [class]="c.nav">
                     <svg lucideChevronLeft size="16" />
                 </button>
-                <div #head="rdxCalendarHeading" [class]="c.heading" rdxCalendarHeading>{{ head.headingValue() }}</div>
-                <button [class]="c.nav" type="button" rdxCalendarNext>
+                <div #head="rdxCalendarHeading" rdxCalendarHeading [class]="c.heading">{{ head.headingValue() }}</div>
+                <button type="button" rdxCalendarNext [class]="c.nav">
                     <svg lucideChevronRight size="16" />
                 </button>
             </div>
 
-            <table [class]="c.grid" rdxCalendarGrid>
+            <table rdxCalendarGrid [class]="c.grid">
                 @for (month of root.months(); track $index) {
                     <thead rdxCalendarGridHead>
                         <tr [class]="c.headRow">
                             @for (day of root.weekDays(); track $index) {
-                                <th [class]="c.headCell" rdxCalendarHeadCell>{{ day }}</th>
+                                <th rdxCalendarHeadCell [class]="c.headCell">{{ day }}</th>
                             }
                         </tr>
                     </thead>
-                    <tbody [class]="c.body" rdxCalendarGridBody>
+                    <tbody rdxCalendarGridBody [class]="c.body">
                         @for (weekDates of month.weeks; track $index) {
                             <tr [class]="c.weekRow">
                                 @for (weekDate of weekDates; track $index) {
-                                    <td [class]="c.cell" [date]="weekDate" rdxCalendarCell>
+                                    <td rdxCalendarCell [class]="c.cell" [date]="weekDate">
                                         <div
                                             #cell="rdxCalendarCellTrigger"
+                                            rdxCalendarCellTrigger
                                             [class]="c.day"
                                             [day]="weekDate"
                                             [month]="month.value"
-                                            rdxCalendarCellTrigger
                                         >
                                             {{ cell.dayValue() }}
                                         </div>
@@ -547,22 +547,22 @@ export class CalendarMultiple {
 Render an extra leading column with the ISO week number via `getWeekNumber`.
 
 ```typescript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { CalendarDate, DateValue } from '@internationalized/date';
-import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
-import { getWeekNumber } from '@radix-ng/primitives/core';
 import { cn, demoCalendar } from '../../storybook/styles';
-import { RdxCalendarCellTriggerDirective } from '../src/calendar-cell-trigger.directive';
 import { RdxCalendarCellDirective } from '../src/calendar-cell.directive';
+import { RdxCalendarCellTriggerDirective } from '../src/calendar-cell-trigger.directive';
+import { RdxCalendarGridDirective } from '../src/calendar-grid.directive';
 import { RdxCalendarGridBodyDirective } from '../src/calendar-grid-body.directive';
 import { RdxCalendarGridHeadDirective } from '../src/calendar-grid-head.directive';
-import { RdxCalendarGridDirective } from '../src/calendar-grid.directive';
 import { RdxCalendarHeadCellDirective } from '../src/calendar-head-cell.directive';
 import { RdxCalendarHeaderDirective } from '../src/calendar-header.directive';
 import { RdxCalendarHeadingDirective } from '../src/calendar-heading.directive';
 import { RdxCalendarNextDirective } from '../src/calendar-next.directive';
 import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { CalendarDate, DateValue } from '@internationalized/date';
+import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
+import { getWeekNumber } from '@radix-ng/primitives/core';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -583,41 +583,41 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
         LucideChevronRight
     ],
     template: `
-        <div #root="rdxCalendarRoot" [class]="c.root" [value]="date" rdxCalendarRoot fixedWeeks>
-            <div [class]="c.header" rdxCalendarHeader>
-                <button [class]="c.nav" type="button" rdxCalendarPrev>
+        <div #root="rdxCalendarRoot" rdxCalendarRoot fixedWeeks [class]="c.root" [value]="date">
+            <div rdxCalendarHeader [class]="c.header">
+                <button type="button" rdxCalendarPrev [class]="c.nav">
                     <svg lucideChevronLeft size="16" />
                 </button>
-                <div #head="rdxCalendarHeading" [class]="c.heading" rdxCalendarHeading>{{ head.headingValue() }}</div>
-                <button [class]="c.nav" type="button" rdxCalendarNext>
+                <div #head="rdxCalendarHeading" rdxCalendarHeading [class]="c.heading">{{ head.headingValue() }}</div>
+                <button type="button" rdxCalendarNext [class]="c.nav">
                     <svg lucideChevronRight size="16" />
                 </button>
             </div>
 
-            <table [class]="c.grid" rdxCalendarGrid>
+            <table rdxCalendarGrid [class]="c.grid">
                 @for (month of root.months(); track $index) {
                     <thead rdxCalendarGridHead>
                         <tr class="mt-4 grid w-full grid-cols-8">
-                            <th [class]="c.headCell" rdxCalendarHeadCell>Wk</th>
+                            <th rdxCalendarHeadCell [class]="c.headCell">Wk</th>
                             @for (day of root.weekDays(); track $index) {
-                                <th [class]="c.headCell" rdxCalendarHeadCell>{{ day }}</th>
+                                <th rdxCalendarHeadCell [class]="c.headCell">{{ day }}</th>
                             }
                         </tr>
                     </thead>
-                    <tbody [class]="c.body" rdxCalendarGridBody>
+                    <tbody rdxCalendarGridBody [class]="c.body">
                         @for (weekDates of month.weeks; track $index) {
                             <tr class="grid grid-cols-8">
                                 <div class="text-muted-foreground flex items-center justify-center text-xs">
                                     {{ getWeekNumber(weekDates[0]) }}
                                 </div>
                                 @for (weekDate of weekDates; track $index) {
-                                    <td [class]="c.cell" [date]="weekDate" rdxCalendarCell>
+                                    <td rdxCalendarCell [class]="c.cell" [date]="weekDate">
                                         <div
                                             #cell="rdxCalendarCellTrigger"
+                                            rdxCalendarCellTrigger
                                             [class]="c.day"
                                             [day]="weekDate"
                                             [month]="month.value"
-                                            rdxCalendarCellTrigger
                                         >
                                             {{ cell.dayValue() }}
                                         </div>
@@ -646,21 +646,21 @@ Pass an `isDateDisabled` matcher — a `(date) => boolean` callback run for ever
 dates are not focusable or selectable. This example disables weekends.
 
 ```typescript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { CalendarDate, DateValue, isWeekend } from '@internationalized/date';
-import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar } from '../../storybook/styles';
-import { RdxCalendarCellTriggerDirective } from '../src/calendar-cell-trigger.directive';
 import { RdxCalendarCellDirective } from '../src/calendar-cell.directive';
+import { RdxCalendarCellTriggerDirective } from '../src/calendar-cell-trigger.directive';
+import { RdxCalendarGridDirective } from '../src/calendar-grid.directive';
 import { RdxCalendarGridBodyDirective } from '../src/calendar-grid-body.directive';
 import { RdxCalendarGridHeadDirective } from '../src/calendar-grid-head.directive';
-import { RdxCalendarGridDirective } from '../src/calendar-grid.directive';
 import { RdxCalendarHeadCellDirective } from '../src/calendar-head-cell.directive';
 import { RdxCalendarHeaderDirective } from '../src/calendar-header.directive';
 import { RdxCalendarHeadingDirective } from '../src/calendar-heading.directive';
 import { RdxCalendarNextDirective } from '../src/calendar-next.directive';
 import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { CalendarDate, DateValue, isWeekend } from '@internationalized/date';
+import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -683,42 +683,42 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
     template: `
         <div
             #root="rdxCalendarRoot"
+            rdxCalendarRoot
+            fixedWeeks
             [class]="c.root"
             [value]="date"
             [isDateDisabled]="isDateDisabled"
-            rdxCalendarRoot
-            fixedWeeks
         >
-            <div [class]="c.header" rdxCalendarHeader>
-                <button [class]="c.nav" type="button" rdxCalendarPrev>
+            <div rdxCalendarHeader [class]="c.header">
+                <button type="button" rdxCalendarPrev [class]="c.nav">
                     <svg lucideChevronLeft size="16" />
                 </button>
-                <div #head="rdxCalendarHeading" [class]="c.heading" rdxCalendarHeading>{{ head.headingValue() }}</div>
-                <button [class]="c.nav" type="button" rdxCalendarNext>
+                <div #head="rdxCalendarHeading" rdxCalendarHeading [class]="c.heading">{{ head.headingValue() }}</div>
+                <button type="button" rdxCalendarNext [class]="c.nav">
                     <svg lucideChevronRight size="16" />
                 </button>
             </div>
 
-            <table [class]="c.grid" rdxCalendarGrid>
+            <table rdxCalendarGrid [class]="c.grid">
                 @for (month of root.months(); track $index) {
                     <thead rdxCalendarGridHead>
                         <tr [class]="c.headRow">
                             @for (day of root.weekDays(); track $index) {
-                                <th [class]="c.headCell" rdxCalendarHeadCell>{{ day }}</th>
+                                <th rdxCalendarHeadCell [class]="c.headCell">{{ day }}</th>
                             }
                         </tr>
                     </thead>
-                    <tbody [class]="c.body" rdxCalendarGridBody>
+                    <tbody rdxCalendarGridBody [class]="c.body">
                         @for (weekDates of month.weeks; track $index) {
                             <tr [class]="c.weekRow">
                                 @for (weekDate of weekDates; track $index) {
-                                    <td [class]="c.cell" [date]="weekDate" rdxCalendarCell>
+                                    <td rdxCalendarCell [class]="c.cell" [date]="weekDate">
                                         <div
                                             #cell="rdxCalendarCellTrigger"
+                                            rdxCalendarCellTrigger
                                             [class]="c.day"
                                             [day]="weekDate"
                                             [month]="month.value"
-                                            rdxCalendarCellTrigger
                                         >
                                             {{ cell.dayValue() }}
                                         </div>
@@ -749,21 +749,21 @@ export class CalendarDisabledDates {
 (e.g. already booked). They render struck-through and ignore pointer interaction.
 
 ```typescript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { CalendarDate, DateValue } from '@internationalized/date';
-import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar } from '../../storybook/styles';
-import { RdxCalendarCellTriggerDirective } from '../src/calendar-cell-trigger.directive';
 import { RdxCalendarCellDirective } from '../src/calendar-cell.directive';
+import { RdxCalendarCellTriggerDirective } from '../src/calendar-cell-trigger.directive';
+import { RdxCalendarGridDirective } from '../src/calendar-grid.directive';
 import { RdxCalendarGridBodyDirective } from '../src/calendar-grid-body.directive';
 import { RdxCalendarGridHeadDirective } from '../src/calendar-grid-head.directive';
-import { RdxCalendarGridDirective } from '../src/calendar-grid.directive';
 import { RdxCalendarHeadCellDirective } from '../src/calendar-head-cell.directive';
 import { RdxCalendarHeaderDirective } from '../src/calendar-header.directive';
 import { RdxCalendarHeadingDirective } from '../src/calendar-heading.directive';
 import { RdxCalendarNextDirective } from '../src/calendar-next.directive';
 import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { CalendarDate, DateValue } from '@internationalized/date';
+import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -786,42 +786,42 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
     template: `
         <div
             #root="rdxCalendarRoot"
+            rdxCalendarRoot
+            fixedWeeks
             [class]="c.root"
             [value]="date"
             [isDateUnavailable]="isDateUnavailable"
-            rdxCalendarRoot
-            fixedWeeks
         >
-            <div [class]="c.header" rdxCalendarHeader>
-                <button [class]="c.nav" type="button" rdxCalendarPrev>
+            <div rdxCalendarHeader [class]="c.header">
+                <button type="button" rdxCalendarPrev [class]="c.nav">
                     <svg lucideChevronLeft size="16" />
                 </button>
-                <div #head="rdxCalendarHeading" [class]="c.heading" rdxCalendarHeading>{{ head.headingValue() }}</div>
-                <button [class]="c.nav" type="button" rdxCalendarNext>
+                <div #head="rdxCalendarHeading" rdxCalendarHeading [class]="c.heading">{{ head.headingValue() }}</div>
+                <button type="button" rdxCalendarNext [class]="c.nav">
                     <svg lucideChevronRight size="16" />
                 </button>
             </div>
 
-            <table [class]="c.grid" rdxCalendarGrid>
+            <table rdxCalendarGrid [class]="c.grid">
                 @for (month of root.months(); track $index) {
                     <thead rdxCalendarGridHead>
                         <tr [class]="c.headRow">
                             @for (day of root.weekDays(); track $index) {
-                                <th [class]="c.headCell" rdxCalendarHeadCell>{{ day }}</th>
+                                <th rdxCalendarHeadCell [class]="c.headCell">{{ day }}</th>
                             }
                         </tr>
                     </thead>
-                    <tbody [class]="c.body" rdxCalendarGridBody>
+                    <tbody rdxCalendarGridBody [class]="c.body">
                         @for (weekDates of month.weeks; track $index) {
                             <tr [class]="c.weekRow">
                                 @for (weekDate of weekDates; track $index) {
-                                    <td [class]="c.cell" [date]="weekDate" rdxCalendarCell>
+                                    <td rdxCalendarCell [class]="c.cell" [date]="weekDate">
                                         <div
                                             #cell="rdxCalendarCellTrigger"
+                                            rdxCalendarCellTrigger
                                             [class]="c.day"
                                             [day]="weekDate"
                                             [month]="month.value"
-                                            rdxCalendarCellTrigger
                                         >
                                             {{ cell.dayValue() }}
                                         </div>
@@ -852,21 +852,21 @@ Override how the previous/next buttons move the view with `propsPrevPage` / `pro
 `(placeholder) => DateValue` callback. This example jumps a whole year per click.
 
 ```typescript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { CalendarDate, DateValue } from '@internationalized/date';
-import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar } from '../../storybook/styles';
-import { RdxCalendarCellTriggerDirective } from '../src/calendar-cell-trigger.directive';
 import { RdxCalendarCellDirective } from '../src/calendar-cell.directive';
+import { RdxCalendarCellTriggerDirective } from '../src/calendar-cell-trigger.directive';
+import { RdxCalendarGridDirective } from '../src/calendar-grid.directive';
 import { RdxCalendarGridBodyDirective } from '../src/calendar-grid-body.directive';
 import { RdxCalendarGridHeadDirective } from '../src/calendar-grid-head.directive';
-import { RdxCalendarGridDirective } from '../src/calendar-grid.directive';
 import { RdxCalendarHeadCellDirective } from '../src/calendar-head-cell.directive';
 import { RdxCalendarHeaderDirective } from '../src/calendar-header.directive';
 import { RdxCalendarHeadingDirective } from '../src/calendar-heading.directive';
 import { RdxCalendarNextDirective } from '../src/calendar-next.directive';
 import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { CalendarDate, DateValue } from '@internationalized/date';
+import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -889,43 +889,43 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
     template: `
         <div
             #root="rdxCalendarRoot"
+            rdxCalendarRoot
+            fixedWeeks
             [class]="c.root"
             [value]="date"
             [propsNextPage]="nextYear"
             [propsPrevPage]="prevYear"
-            rdxCalendarRoot
-            fixedWeeks
         >
-            <div [class]="c.header" rdxCalendarHeader>
-                <button [class]="c.nav" type="button" rdxCalendarPrev>
+            <div rdxCalendarHeader [class]="c.header">
+                <button type="button" rdxCalendarPrev [class]="c.nav">
                     <svg lucideChevronLeft size="16" />
                 </button>
-                <div #head="rdxCalendarHeading" [class]="c.heading" rdxCalendarHeading>{{ head.headingValue() }}</div>
-                <button [class]="c.nav" type="button" rdxCalendarNext>
+                <div #head="rdxCalendarHeading" rdxCalendarHeading [class]="c.heading">{{ head.headingValue() }}</div>
+                <button type="button" rdxCalendarNext [class]="c.nav">
                     <svg lucideChevronRight size="16" />
                 </button>
             </div>
 
-            <table [class]="c.grid" rdxCalendarGrid>
+            <table rdxCalendarGrid [class]="c.grid">
                 @for (month of root.months(); track $index) {
                     <thead rdxCalendarGridHead>
                         <tr [class]="c.headRow">
                             @for (day of root.weekDays(); track $index) {
-                                <th [class]="c.headCell" rdxCalendarHeadCell>{{ day }}</th>
+                                <th rdxCalendarHeadCell [class]="c.headCell">{{ day }}</th>
                             }
                         </tr>
                     </thead>
-                    <tbody [class]="c.body" rdxCalendarGridBody>
+                    <tbody rdxCalendarGridBody [class]="c.body">
                         @for (weekDates of month.weeks; track $index) {
                             <tr [class]="c.weekRow">
                                 @for (weekDate of weekDates; track $index) {
-                                    <td [class]="c.cell" [date]="weekDate" rdxCalendarCell>
+                                    <td rdxCalendarCell [class]="c.cell" [date]="weekDate">
                                         <div
                                             #cell="rdxCalendarCellTrigger"
+                                            rdxCalendarCellTrigger
                                             [class]="c.day"
                                             [day]="weekDate"
                                             [month]="month.value"
-                                            rdxCalendarCellTrigger
                                         >
                                             {{ cell.dayValue() }}
                                         </div>
@@ -957,21 +957,21 @@ Set `numberOfMonths` to render several months at once. Arrow-key navigation flow
 boundary between months, and (without `pagedNavigation`) the prev/next buttons shift the view by one month.
 
 ```typescript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { CalendarDate, DateValue } from '@internationalized/date';
-import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { cn, demoCalendar } from '../../storybook/styles';
-import { RdxCalendarCellTriggerDirective } from '../src/calendar-cell-trigger.directive';
 import { RdxCalendarCellDirective } from '../src/calendar-cell.directive';
+import { RdxCalendarCellTriggerDirective } from '../src/calendar-cell-trigger.directive';
+import { RdxCalendarGridDirective } from '../src/calendar-grid.directive';
 import { RdxCalendarGridBodyDirective } from '../src/calendar-grid-body.directive';
 import { RdxCalendarGridHeadDirective } from '../src/calendar-grid-head.directive';
-import { RdxCalendarGridDirective } from '../src/calendar-grid.directive';
 import { RdxCalendarHeadCellDirective } from '../src/calendar-head-cell.directive';
 import { RdxCalendarHeaderDirective } from '../src/calendar-header.directive';
 import { RdxCalendarHeadingDirective } from '../src/calendar-heading.directive';
 import { RdxCalendarNextDirective } from '../src/calendar-next.directive';
 import { RdxCalendarPrevDirective } from '../src/calendar-prev.directive';
 import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { CalendarDate, DateValue } from '@internationalized/date';
+import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -993,19 +993,19 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
     ],
     template: `
         <div
-            class="border-border bg-background rounded-xl border p-4 shadow-sm"
             #root="rdxCalendarRoot"
-            [value]="date"
-            [numberOfMonths]="2"
+            class="border-border bg-background rounded-xl border p-4 shadow-sm"
             rdxCalendarRoot
             fixedWeeks
+            [value]="date"
+            [numberOfMonths]="2"
         >
-            <div [class]="c.header" rdxCalendarHeader>
-                <button [class]="c.nav" type="button" rdxCalendarPrev>
+            <div rdxCalendarHeader [class]="c.header">
+                <button type="button" rdxCalendarPrev [class]="c.nav">
                     <svg lucideChevronLeft size="16" />
                 </button>
-                <div #head="rdxCalendarHeading" [class]="c.heading" rdxCalendarHeading>{{ head.headingValue() }}</div>
-                <button [class]="c.nav" type="button" rdxCalendarNext>
+                <div #head="rdxCalendarHeading" rdxCalendarHeading [class]="c.heading">{{ head.headingValue() }}</div>
+                <button type="button" rdxCalendarNext [class]="c.nav">
                     <svg lucideChevronRight size="16" />
                 </button>
             </div>
@@ -1016,21 +1016,21 @@ import { RdxCalendarRootDirective } from '../src/calendar-root.directive';
                         <thead rdxCalendarGridHead>
                             <tr [class]="c.headRow">
                                 @for (day of root.weekDays(); track $index) {
-                                    <th [class]="c.headCell" rdxCalendarHeadCell>{{ day }}</th>
+                                    <th rdxCalendarHeadCell [class]="c.headCell">{{ day }}</th>
                                 }
                             </tr>
                         </thead>
-                        <tbody [class]="c.body" rdxCalendarGridBody>
+                        <tbody rdxCalendarGridBody [class]="c.body">
                             @for (weekDates of month.weeks; track $index) {
                                 <tr [class]="c.weekRow">
                                     @for (weekDate of weekDates; track $index) {
-                                        <td [class]="c.cell" [date]="weekDate" rdxCalendarCell>
+                                        <td rdxCalendarCell [class]="c.cell" [date]="weekDate">
                                             <div
                                                 #cell="rdxCalendarCellTrigger"
+                                                rdxCalendarCellTrigger
                                                 [class]="c.day"
                                                 [day]="weekDate"
                                                 [month]="month.value"
-                                                rdxCalendarCellTrigger
                                             >
                                                 {{ cell.dayValue() }}
                                             </div>

@@ -3,6 +3,9 @@
 #### Bridge Angular [Signal Forms](https://angular.dev/guide/forms/signals) into headless `Field` and `Form`.
 
 ```typescript
+import { cn, demoButton, demoInput } from '../../storybook/styles';
+import { RdxSignalField } from '../src/signal-field';
+import { RdxSignalForm } from '../src/signal-form';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { email as emailFormat, form, FormField, required } from '@angular/forms/signals';
 import {
@@ -13,9 +16,6 @@ import {
     RdxFieldRoot
 } from '@radix-ng/primitives/field';
 import { RdxFormRoot, RdxFormSubmitEvent } from '@radix-ng/primitives/form';
-import { cn, demoButton, demoInput } from '../../storybook/styles';
-import { RdxSignalField } from '../src/signal-field';
-import { RdxSignalForm } from '../src/signal-form';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -34,22 +34,22 @@ import { RdxSignalForm } from '../src/signal-form';
     template: `
         <form
             class="flex w-80 flex-col gap-3"
+            rdxFormRoot
             [rdxSignalForm]="loginForm"
             (onFormSubmit)="onSubmit($event)"
-            rdxFormRoot
         >
             <!--
               No manual [invalid]/[touched]/[dirty]/[disabled] on rdxFieldRoot — rdxSignalField drives them
               from the Signal Forms field, and the field expression is bound exactly once (on [formField]).
             -->
             <div class="flex flex-col gap-2" rdxFieldRoot required>
-                <label [class]="labelClass" rdxFieldLabel>Email</label>
-                <input [class]="inputClass" [formField]="email" rdxFieldControl rdxSignalField type="email" />
-                <p [class]="descriptionClass" rdxFieldDescription>Use the email connected to your account.</p>
-                <p #err="rdxFieldError" [class]="errorClass" rdxFieldError>{{ err.messages().join(' ') }}</p>
+                <label rdxFieldLabel [class]="labelClass">Email</label>
+                <input rdxFieldControl rdxSignalField type="email" [class]="inputClass" [formField]="email" />
+                <p rdxFieldDescription [class]="descriptionClass">Use the email connected to your account.</p>
+                <p #err="rdxFieldError" rdxFieldError [class]="errorClass">{{ err.messages().join(' ') }}</p>
             </div>
 
-            <button [class]="buttonClass" type="submit">Submit</button>
+            <button type="submit" [class]="buttonClass">Submit</button>
         </form>
     `
 })
@@ -125,6 +125,9 @@ The `rdxFieldRoot` carries no manual `[invalid]`/`[touched]`/`[dirty]` — `rdxS
 the field, including the validation message shown by `rdxFieldError`.
 
 ```typescript
+import { cn, demoButton, demoInput } from '../../storybook/styles';
+import { RdxSignalField } from '../src/signal-field';
+import { RdxSignalForm } from '../src/signal-form';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { email as emailFormat, form, FormField, required } from '@angular/forms/signals';
 import {
@@ -135,9 +138,6 @@ import {
     RdxFieldRoot
 } from '@radix-ng/primitives/field';
 import { RdxFormRoot, RdxFormSubmitEvent } from '@radix-ng/primitives/form';
-import { cn, demoButton, demoInput } from '../../storybook/styles';
-import { RdxSignalField } from '../src/signal-field';
-import { RdxSignalForm } from '../src/signal-form';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -156,22 +156,22 @@ import { RdxSignalForm } from '../src/signal-form';
     template: `
         <form
             class="flex w-80 flex-col gap-3"
+            rdxFormRoot
             [rdxSignalForm]="loginForm"
             (onFormSubmit)="onSubmit($event)"
-            rdxFormRoot
         >
             <!--
               No manual [invalid]/[touched]/[dirty]/[disabled] on rdxFieldRoot — rdxSignalField drives them
               from the Signal Forms field, and the field expression is bound exactly once (on [formField]).
             -->
             <div class="flex flex-col gap-2" rdxFieldRoot required>
-                <label [class]="labelClass" rdxFieldLabel>Email</label>
-                <input [class]="inputClass" [formField]="email" rdxFieldControl rdxSignalField type="email" />
-                <p [class]="descriptionClass" rdxFieldDescription>Use the email connected to your account.</p>
-                <p #err="rdxFieldError" [class]="errorClass" rdxFieldError>{{ err.messages().join(' ') }}</p>
+                <label rdxFieldLabel [class]="labelClass">Email</label>
+                <input rdxFieldControl rdxSignalField type="email" [class]="inputClass" [formField]="email" />
+                <p rdxFieldDescription [class]="descriptionClass">Use the email connected to your account.</p>
+                <p #err="rdxFieldError" rdxFieldError [class]="errorClass">{{ err.messages().join(' ') }}</p>
             </div>
 
-            <button [class]="buttonClass" type="submit">Submit</button>
+            <button type="submit" [class]="buttonClass">Submit</button>
         </form>
     `
 })

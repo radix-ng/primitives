@@ -18,7 +18,7 @@ import {
     selector: 'slider-default-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
-        <div class="relative w-56 select-none" [value]="45" [step]="5" rdxSliderRoot>
+        <div class="relative w-56 select-none" rdxSliderRoot [value]="45" [step]="5">
             <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>
                 <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
                     <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>
@@ -143,12 +143,12 @@ import {
         <div class="grid w-80 gap-4">
             <div
                 class="relative w-full select-none"
+                rdxSliderRoot
+                name="volume"
                 [value]="value()"
                 [step]="5"
                 (onValueChange)="onValueChange($event)"
                 (onValueCommitted)="onValueCommitted($event)"
-                rdxSliderRoot
-                name="volume"
             >
                 <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>
                     <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
@@ -166,9 +166,9 @@ import {
             <label class="text-foreground flex items-center gap-2 text-sm">
                 <input
                     class="accent-primary size-4"
+                    type="checkbox"
                     [checked]="locked()"
                     (change)="locked.set($any($event.target).checked)"
-                    type="checkbox"
                 />
                 Cancel value changes
             </label>
@@ -259,7 +259,7 @@ import {
         <div class="grid w-72 gap-6">
             <div class="grid gap-2">
                 <span class="text-foreground text-sm font-medium">Center</span>
-                <div class="relative px-2 select-none" [value]="50" thumbAlignment="center" rdxSliderRoot>
+                <div class="relative px-2 select-none" thumbAlignment="center" rdxSliderRoot [value]="50">
                     <div class="flex h-6 w-full touch-none items-center" rdxSliderControl>
                         <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
                             <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>
@@ -276,7 +276,7 @@ import {
 
             <div class="grid gap-2">
                 <span class="text-foreground text-sm font-medium">Edge</span>
-                <div class="relative px-2 select-none" [value]="50" thumbAlignment="edge" rdxSliderRoot>
+                <div class="relative px-2 select-none" thumbAlignment="edge" rdxSliderRoot [value]="50">
                     <div class="flex h-6 w-full touch-none items-center" rdxSliderControl>
                         <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
                             <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>
@@ -293,7 +293,7 @@ import {
 
             <div class="grid gap-2">
                 <span class="text-foreground text-sm font-medium">Edge client only</span>
-                <div class="relative px-2 select-none" [value]="50" thumbAlignment="edge-client-only" rdxSliderRoot>
+                <div class="relative px-2 select-none" thumbAlignment="edge-client-only" rdxSliderRoot [value]="50">
                     <div class="flex h-6 w-full touch-none items-center" rdxSliderControl>
                         <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
                             <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>
@@ -337,21 +337,21 @@ import {
     selector: 'slider-range-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
-        <div class="relative w-56 select-none" [value]="[25, 75]" [minStepsBetweenValues]="1" rdxSliderRoot>
+        <div class="relative w-56 select-none" rdxSliderRoot [value]="[25, 75]" [minStepsBetweenValues]="1">
             <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>
                 <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
                     <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>
                     <div
                         class="border-border bg-background focus-within:ring-ring block size-5 rounded-full border shadow-sm focus-within:ring-2"
-                        [index]="0"
                         rdxSliderThumb
+                        [index]="0"
                     >
                         <input rdxSliderThumbInput aria-label="Minimum" />
                     </div>
                     <div
                         class="border-border bg-background focus-within:ring-ring block size-5 rounded-full border shadow-sm focus-within:ring-2"
-                        [index]="1"
                         rdxSliderThumb
+                        [index]="1"
                     >
                         <input rdxSliderThumbInput aria-label="Maximum" />
                     </div>
@@ -384,7 +384,7 @@ import {
     selector: 'slider-vertical-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
-        <div class="relative h-56 w-5 select-none" [value]="45" [step]="5" rdxSliderRoot orientation="vertical">
+        <div class="relative h-56 w-5 select-none" rdxSliderRoot orientation="vertical" [value]="45" [step]="5">
             <div class="flex h-full w-5 touch-none justify-center" rdxSliderControl>
                 <div class="bg-muted relative h-full w-1 rounded-full" rdxSliderTrack>
                     <div class="bg-primary w-full rounded-full" rdxSliderIndicator></div>
@@ -433,7 +433,7 @@ import {
         RdxSliderValue
     ],
     template: `
-        <div class="relative w-56 select-none" [value]="42" [format]="format" rdxSliderRoot>
+        <div class="relative w-56 select-none" rdxSliderRoot [value]="42" [format]="format">
             <div class="text-foreground mb-2 flex items-center justify-between text-sm">
                 <span id="slider-value-label">Budget</span>
                 <output class="text-muted-foreground tabular-nums" rdxSliderValue></output>
@@ -475,7 +475,7 @@ import {
     selector: 'slider-disabled-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
-        <div class="relative w-56 select-none data-[disabled]:opacity-50" [value]="45" rdxSliderRoot disabled>
+        <div class="relative w-56 select-none data-[disabled]:opacity-50" rdxSliderRoot disabled [value]="45">
             <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>
                 <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
                     <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>
@@ -522,7 +522,7 @@ import {
     template: `
         <div class="flex flex-col gap-3">
             <label class="text-foreground text-sm" id="volume-label">Volume</label>
-            <div class="relative w-56 select-none" [formControl]="volume" [step]="5" rdxSliderRoot>
+            <div class="relative w-56 select-none" rdxSliderRoot [formControl]="volume" [step]="5">
                 <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>
                     <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
                         <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>

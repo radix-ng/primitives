@@ -7,54 +7,54 @@ menu is a `rdxMenuRoot` with a standard `rdxMenuTrigger`; the menubar manages wh
 up Base UI-style Composite focus, arrow-key navigation, and hover-to-switch behavior between them.
 
 ```typescript
+import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideDot } from '@lucide/angular';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { RdxMenubarRoot } from '@radix-ng/primitives/menubar';
-import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
 
 @Component({
     selector: 'rdx-menubar-default',
     imports: [RdxMenuModule, RdxMenubarRoot, LucideCheck, LucideDot],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-        <div [class]="mb.root" rdxMenubarRoot>
+        <div rdxMenubarRoot [class]="mb.root">
             <!-- File -->
             <ng-container #fileMenu="rdxMenuRoot" rdxMenuRoot>
-                <button [class]="mb.trigger" rdxMenuTrigger>File</button>
+                <button rdxMenuTrigger [class]="mb.trigger">File</button>
 
-                <div [class]="cn(m.positioner, 'data-[closed]:hidden')" align="start" sideOffset="4" rdxMenuPositioner>
-                    <div [class]="m.popup" rdxMenuPopup>
-                        <button [class]="m.item" rdxMenuItem>
+                <div align="start" sideOffset="4" rdxMenuPositioner [class]="cn(m.positioner, 'data-[closed]:hidden')">
+                    <div rdxMenuPopup [class]="m.popup">
+                        <button rdxMenuItem [class]="m.item">
                             New Tab
                             <span [class]="mb.shortcut">⌘ T</span>
                         </button>
-                        <button [class]="m.item" rdxMenuItem>
+                        <button rdxMenuItem [class]="m.item">
                             New Window
                             <span [class]="mb.shortcut">⌘ N</span>
                         </button>
-                        <button [class]="m.item" [disabled]="true" rdxMenuItem>New Incognito Window</button>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
+                        <button rdxMenuItem [class]="m.item" [disabled]="true">New Incognito Window</button>
+                        <div rdxMenuSeparator [class]="m.separator"></div>
 
                         <!-- Share submenu -->
                         <ng-container #shareSub="rdxMenuRoot" rdxMenuRoot>
-                            <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
+                            <button rdxMenuSubTrigger [class]="cn(m.item, 'justify-between')">
                                 Share
                                 <span class="text-muted-foreground text-xs">›</span>
                             </button>
                             @if (shareSub.open()) {
-                                <div [class]="m.positioner" side="right" align="start" sideOffset="4" rdxMenuPositioner>
-                                    <div [class]="m.popup" rdxMenuPopup>
-                                        <button [class]="m.item" rdxMenuItem>Email Link</button>
-                                        <button [class]="m.item" rdxMenuItem>Messages</button>
-                                        <button [class]="m.item" rdxMenuItem>Notes</button>
+                                <div side="right" align="start" sideOffset="4" rdxMenuPositioner [class]="m.positioner">
+                                    <div rdxMenuPopup [class]="m.popup">
+                                        <button rdxMenuItem [class]="m.item">Email Link</button>
+                                        <button rdxMenuItem [class]="m.item">Messages</button>
+                                        <button rdxMenuItem [class]="m.item">Notes</button>
                                     </div>
                                 </div>
                             }
                         </ng-container>
 
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" rdxMenuItem>
+                        <div rdxMenuSeparator [class]="m.separator"></div>
+                        <button rdxMenuItem [class]="m.item">
                             Print…
                             <span [class]="mb.shortcut">⌘ P</span>
                         </button>
@@ -64,28 +64,28 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
 
             <!-- Edit -->
             <ng-container #editMenu="rdxMenuRoot" rdxMenuRoot>
-                <button [class]="mb.trigger" rdxMenuTrigger>Edit</button>
+                <button rdxMenuTrigger [class]="mb.trigger">Edit</button>
 
-                <div [class]="cn(m.positioner, 'data-[closed]:hidden')" align="start" sideOffset="4" rdxMenuPositioner>
-                    <div [class]="m.popup" rdxMenuPopup>
-                        <button [class]="m.item" rdxMenuItem>
+                <div align="start" sideOffset="4" rdxMenuPositioner [class]="cn(m.positioner, 'data-[closed]:hidden')">
+                    <div rdxMenuPopup [class]="m.popup">
+                        <button rdxMenuItem [class]="m.item">
                             Undo
                             <span [class]="mb.shortcut">⌘ Z</span>
                         </button>
-                        <button [class]="m.item" rdxMenuItem>
+                        <button rdxMenuItem [class]="m.item">
                             Redo
                             <span [class]="mb.shortcut">⇧ ⌘ Z</span>
                         </button>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" rdxMenuItem>
+                        <div rdxMenuSeparator [class]="m.separator"></div>
+                        <button rdxMenuItem [class]="m.item">
                             Cut
                             <span [class]="mb.shortcut">⌘ X</span>
                         </button>
-                        <button [class]="m.item" rdxMenuItem>
+                        <button rdxMenuItem [class]="m.item">
                             Copy
                             <span [class]="mb.shortcut">⌘ C</span>
                         </button>
-                        <button [class]="m.item" rdxMenuItem>
+                        <button rdxMenuItem [class]="m.item">
                             Paste
                             <span [class]="mb.shortcut">⌘ V</span>
                         </button>
@@ -95,60 +95,60 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
 
             <!-- View -->
             <ng-container #viewMenu="rdxMenuRoot" rdxMenuRoot>
-                <button [class]="mb.trigger" rdxMenuTrigger>View</button>
+                <button rdxMenuTrigger [class]="mb.trigger">View</button>
 
-                <div [class]="cn(m.positioner, 'data-[closed]:hidden')" align="start" sideOffset="4" rdxMenuPositioner>
-                    <div [class]="m.popup" rdxMenuPopup>
-                        <label [(checked)]="showBookmarks" [class]="m.selectableItem" rdxMenuCheckboxItem>
-                            <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>
-                                <svg [size]="12" lucideCheck></svg>
+                <div align="start" sideOffset="4" rdxMenuPositioner [class]="cn(m.positioner, 'data-[closed]:hidden')">
+                    <div rdxMenuPopup [class]="m.popup">
+                        <label rdxMenuCheckboxItem [class]="m.selectableItem" [(checked)]="showBookmarks">
+                            <span rdxMenuCheckboxItemIndicator [class]="m.itemIndicator">
+                                <svg lucideCheck [size]="12"></svg>
                             </span>
                             Always Show Bookmarks Bar
                         </label>
-                        <label [(checked)]="showFullUrls" [class]="m.selectableItem" rdxMenuCheckboxItem>
-                            <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>
-                                <svg [size]="12" lucideCheck></svg>
+                        <label rdxMenuCheckboxItem [class]="m.selectableItem" [(checked)]="showFullUrls">
+                            <span rdxMenuCheckboxItemIndicator [class]="m.itemIndicator">
+                                <svg lucideCheck [size]="12"></svg>
                             </span>
                             Always Show Full URLs
                         </label>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" rdxMenuItem>
+                        <div rdxMenuSeparator [class]="m.separator"></div>
+                        <button rdxMenuItem [class]="m.item">
                             Reload
                             <span [class]="mb.shortcut">⌘ R</span>
                         </button>
-                        <button [class]="m.item" [disabled]="true" rdxMenuItem>
+                        <button rdxMenuItem [class]="m.item" [disabled]="true">
                             Force Reload
                             <span [class]="mb.shortcut">⇧ ⌘ R</span>
                         </button>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" rdxMenuItem>Toggle Fullscreen</button>
+                        <div rdxMenuSeparator [class]="m.separator"></div>
+                        <button rdxMenuItem [class]="m.item">Toggle Fullscreen</button>
                     </div>
                 </div>
             </ng-container>
 
             <!-- Profiles -->
             <ng-container #profilesMenu="rdxMenuRoot" rdxMenuRoot>
-                <button [class]="mb.trigger" rdxMenuTrigger>Profiles</button>
+                <button rdxMenuTrigger [class]="mb.trigger">Profiles</button>
 
-                <div [class]="cn(m.positioner, 'data-[closed]:hidden')" align="start" sideOffset="4" rdxMenuPositioner>
-                    <div [class]="m.popup" rdxMenuPopup>
-                        <div [(value)]="activeProfile" rdxMenuRadioGroup>
-                            <label [class]="m.selectableItem" value="andy" rdxMenuRadioItem>
-                                <span [class]="m.itemIndicator" rdxMenuRadioItemIndicator>
-                                    <svg [size]="10" strokeWidth="5" lucideDot></svg>
+                <div align="start" sideOffset="4" rdxMenuPositioner [class]="cn(m.positioner, 'data-[closed]:hidden')">
+                    <div rdxMenuPopup [class]="m.popup">
+                        <div rdxMenuRadioGroup [(value)]="activeProfile">
+                            <label value="andy" rdxMenuRadioItem [class]="m.selectableItem">
+                                <span rdxMenuRadioItemIndicator [class]="m.itemIndicator">
+                                    <svg strokeWidth="5" lucideDot [size]="10"></svg>
                                 </span>
                                 Andy
                             </label>
-                            <label [class]="m.selectableItem" value="luis" rdxMenuRadioItem>
-                                <span [class]="m.itemIndicator" rdxMenuRadioItemIndicator>
-                                    <svg [size]="10" strokeWidth="5" lucideDot></svg>
+                            <label value="luis" rdxMenuRadioItem [class]="m.selectableItem">
+                                <span rdxMenuRadioItemIndicator [class]="m.itemIndicator">
+                                    <svg strokeWidth="5" lucideDot [size]="10"></svg>
                                 </span>
                                 Luis
                             </label>
                         </div>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="cn(m.item, 'pl-8')" rdxMenuItem>Edit…</button>
-                        <button [class]="cn(m.item, 'pl-8')" rdxMenuItem>Add Profile…</button>
+                        <div rdxMenuSeparator [class]="m.separator"></div>
+                        <button rdxMenuItem [class]="cn(m.item, 'pl-8')">Edit…</button>
+                        <button rdxMenuItem [class]="cn(m.item, 'pl-8')">Add Profile…</button>
                     </div>
                 </div>
             </ng-container>
@@ -244,54 +244,54 @@ A four-menu bar (File, Edit, View, Profiles) with a submenu, checkbox items, and
 Click a trigger to open it, then hover the other triggers to switch, or use the arrow keys.
 
 ```typescript
+import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideDot } from '@lucide/angular';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { RdxMenubarRoot } from '@radix-ng/primitives/menubar';
-import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
 
 @Component({
     selector: 'rdx-menubar-default',
     imports: [RdxMenuModule, RdxMenubarRoot, LucideCheck, LucideDot],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-        <div [class]="mb.root" rdxMenubarRoot>
+        <div rdxMenubarRoot [class]="mb.root">
             <!-- File -->
             <ng-container #fileMenu="rdxMenuRoot" rdxMenuRoot>
-                <button [class]="mb.trigger" rdxMenuTrigger>File</button>
+                <button rdxMenuTrigger [class]="mb.trigger">File</button>
 
-                <div [class]="cn(m.positioner, 'data-[closed]:hidden')" align="start" sideOffset="4" rdxMenuPositioner>
-                    <div [class]="m.popup" rdxMenuPopup>
-                        <button [class]="m.item" rdxMenuItem>
+                <div align="start" sideOffset="4" rdxMenuPositioner [class]="cn(m.positioner, 'data-[closed]:hidden')">
+                    <div rdxMenuPopup [class]="m.popup">
+                        <button rdxMenuItem [class]="m.item">
                             New Tab
                             <span [class]="mb.shortcut">⌘ T</span>
                         </button>
-                        <button [class]="m.item" rdxMenuItem>
+                        <button rdxMenuItem [class]="m.item">
                             New Window
                             <span [class]="mb.shortcut">⌘ N</span>
                         </button>
-                        <button [class]="m.item" [disabled]="true" rdxMenuItem>New Incognito Window</button>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
+                        <button rdxMenuItem [class]="m.item" [disabled]="true">New Incognito Window</button>
+                        <div rdxMenuSeparator [class]="m.separator"></div>
 
                         <!-- Share submenu -->
                         <ng-container #shareSub="rdxMenuRoot" rdxMenuRoot>
-                            <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
+                            <button rdxMenuSubTrigger [class]="cn(m.item, 'justify-between')">
                                 Share
                                 <span class="text-muted-foreground text-xs">›</span>
                             </button>
                             @if (shareSub.open()) {
-                                <div [class]="m.positioner" side="right" align="start" sideOffset="4" rdxMenuPositioner>
-                                    <div [class]="m.popup" rdxMenuPopup>
-                                        <button [class]="m.item" rdxMenuItem>Email Link</button>
-                                        <button [class]="m.item" rdxMenuItem>Messages</button>
-                                        <button [class]="m.item" rdxMenuItem>Notes</button>
+                                <div side="right" align="start" sideOffset="4" rdxMenuPositioner [class]="m.positioner">
+                                    <div rdxMenuPopup [class]="m.popup">
+                                        <button rdxMenuItem [class]="m.item">Email Link</button>
+                                        <button rdxMenuItem [class]="m.item">Messages</button>
+                                        <button rdxMenuItem [class]="m.item">Notes</button>
                                     </div>
                                 </div>
                             }
                         </ng-container>
 
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" rdxMenuItem>
+                        <div rdxMenuSeparator [class]="m.separator"></div>
+                        <button rdxMenuItem [class]="m.item">
                             Print…
                             <span [class]="mb.shortcut">⌘ P</span>
                         </button>
@@ -301,28 +301,28 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
 
             <!-- Edit -->
             <ng-container #editMenu="rdxMenuRoot" rdxMenuRoot>
-                <button [class]="mb.trigger" rdxMenuTrigger>Edit</button>
+                <button rdxMenuTrigger [class]="mb.trigger">Edit</button>
 
-                <div [class]="cn(m.positioner, 'data-[closed]:hidden')" align="start" sideOffset="4" rdxMenuPositioner>
-                    <div [class]="m.popup" rdxMenuPopup>
-                        <button [class]="m.item" rdxMenuItem>
+                <div align="start" sideOffset="4" rdxMenuPositioner [class]="cn(m.positioner, 'data-[closed]:hidden')">
+                    <div rdxMenuPopup [class]="m.popup">
+                        <button rdxMenuItem [class]="m.item">
                             Undo
                             <span [class]="mb.shortcut">⌘ Z</span>
                         </button>
-                        <button [class]="m.item" rdxMenuItem>
+                        <button rdxMenuItem [class]="m.item">
                             Redo
                             <span [class]="mb.shortcut">⇧ ⌘ Z</span>
                         </button>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" rdxMenuItem>
+                        <div rdxMenuSeparator [class]="m.separator"></div>
+                        <button rdxMenuItem [class]="m.item">
                             Cut
                             <span [class]="mb.shortcut">⌘ X</span>
                         </button>
-                        <button [class]="m.item" rdxMenuItem>
+                        <button rdxMenuItem [class]="m.item">
                             Copy
                             <span [class]="mb.shortcut">⌘ C</span>
                         </button>
-                        <button [class]="m.item" rdxMenuItem>
+                        <button rdxMenuItem [class]="m.item">
                             Paste
                             <span [class]="mb.shortcut">⌘ V</span>
                         </button>
@@ -332,60 +332,60 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
 
             <!-- View -->
             <ng-container #viewMenu="rdxMenuRoot" rdxMenuRoot>
-                <button [class]="mb.trigger" rdxMenuTrigger>View</button>
+                <button rdxMenuTrigger [class]="mb.trigger">View</button>
 
-                <div [class]="cn(m.positioner, 'data-[closed]:hidden')" align="start" sideOffset="4" rdxMenuPositioner>
-                    <div [class]="m.popup" rdxMenuPopup>
-                        <label [(checked)]="showBookmarks" [class]="m.selectableItem" rdxMenuCheckboxItem>
-                            <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>
-                                <svg [size]="12" lucideCheck></svg>
+                <div align="start" sideOffset="4" rdxMenuPositioner [class]="cn(m.positioner, 'data-[closed]:hidden')">
+                    <div rdxMenuPopup [class]="m.popup">
+                        <label rdxMenuCheckboxItem [class]="m.selectableItem" [(checked)]="showBookmarks">
+                            <span rdxMenuCheckboxItemIndicator [class]="m.itemIndicator">
+                                <svg lucideCheck [size]="12"></svg>
                             </span>
                             Always Show Bookmarks Bar
                         </label>
-                        <label [(checked)]="showFullUrls" [class]="m.selectableItem" rdxMenuCheckboxItem>
-                            <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>
-                                <svg [size]="12" lucideCheck></svg>
+                        <label rdxMenuCheckboxItem [class]="m.selectableItem" [(checked)]="showFullUrls">
+                            <span rdxMenuCheckboxItemIndicator [class]="m.itemIndicator">
+                                <svg lucideCheck [size]="12"></svg>
                             </span>
                             Always Show Full URLs
                         </label>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" rdxMenuItem>
+                        <div rdxMenuSeparator [class]="m.separator"></div>
+                        <button rdxMenuItem [class]="m.item">
                             Reload
                             <span [class]="mb.shortcut">⌘ R</span>
                         </button>
-                        <button [class]="m.item" [disabled]="true" rdxMenuItem>
+                        <button rdxMenuItem [class]="m.item" [disabled]="true">
                             Force Reload
                             <span [class]="mb.shortcut">⇧ ⌘ R</span>
                         </button>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" rdxMenuItem>Toggle Fullscreen</button>
+                        <div rdxMenuSeparator [class]="m.separator"></div>
+                        <button rdxMenuItem [class]="m.item">Toggle Fullscreen</button>
                     </div>
                 </div>
             </ng-container>
 
             <!-- Profiles -->
             <ng-container #profilesMenu="rdxMenuRoot" rdxMenuRoot>
-                <button [class]="mb.trigger" rdxMenuTrigger>Profiles</button>
+                <button rdxMenuTrigger [class]="mb.trigger">Profiles</button>
 
-                <div [class]="cn(m.positioner, 'data-[closed]:hidden')" align="start" sideOffset="4" rdxMenuPositioner>
-                    <div [class]="m.popup" rdxMenuPopup>
-                        <div [(value)]="activeProfile" rdxMenuRadioGroup>
-                            <label [class]="m.selectableItem" value="andy" rdxMenuRadioItem>
-                                <span [class]="m.itemIndicator" rdxMenuRadioItemIndicator>
-                                    <svg [size]="10" strokeWidth="5" lucideDot></svg>
+                <div align="start" sideOffset="4" rdxMenuPositioner [class]="cn(m.positioner, 'data-[closed]:hidden')">
+                    <div rdxMenuPopup [class]="m.popup">
+                        <div rdxMenuRadioGroup [(value)]="activeProfile">
+                            <label value="andy" rdxMenuRadioItem [class]="m.selectableItem">
+                                <span rdxMenuRadioItemIndicator [class]="m.itemIndicator">
+                                    <svg strokeWidth="5" lucideDot [size]="10"></svg>
                                 </span>
                                 Andy
                             </label>
-                            <label [class]="m.selectableItem" value="luis" rdxMenuRadioItem>
-                                <span [class]="m.itemIndicator" rdxMenuRadioItemIndicator>
-                                    <svg [size]="10" strokeWidth="5" lucideDot></svg>
+                            <label value="luis" rdxMenuRadioItem [class]="m.selectableItem">
+                                <span rdxMenuRadioItemIndicator [class]="m.itemIndicator">
+                                    <svg strokeWidth="5" lucideDot [size]="10"></svg>
                                 </span>
                                 Luis
                             </label>
                         </div>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="cn(m.item, 'pl-8')" rdxMenuItem>Edit…</button>
-                        <button [class]="cn(m.item, 'pl-8')" rdxMenuItem>Add Profile…</button>
+                        <div rdxMenuSeparator [class]="m.separator"></div>
+                        <button rdxMenuItem [class]="cn(m.item, 'pl-8')">Edit…</button>
+                        <button rdxMenuItem [class]="cn(m.item, 'pl-8')">Add Profile…</button>
                     </div>
                 </div>
             </ng-container>

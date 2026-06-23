@@ -3,9 +3,9 @@
 #### A succinct, low-priority message that appears temporarily, stacks, and can be swiped away.
 
 ```typescript
+import { cn, demoButton, demoToast } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
-import { cn, demoButton, demoToast } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -16,17 +16,17 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
         <button [class]="cn(b.base, b.primary, b.size.md)" (click)="notify()">Show toast</button>
 
         <div rdxToastPortal>
-            <div [class]="t.viewport" rdxToastViewport>
+            <div rdxToastViewport [class]="t.viewport">
                 @for (toast of manager.toasts(); track toast.id) {
-                    <div [class]="t.root" [toast]="toast" rdxToastRoot>
-                        <div [class]="t.content" rdxToastContent>
+                    <div rdxToastRoot [class]="t.root" [toast]="toast">
+                        <div rdxToastContent [class]="t.content">
                             <div class="min-w-0 flex-1">
-                                <p [class]="t.title" rdxToastTitle>{{ toast.title }}</p>
+                                <p rdxToastTitle [class]="t.title">{{ toast.title }}</p>
                                 @if (toast.description) {
-                                    <p [class]="t.description" rdxToastDescription>{{ toast.description }}</p>
+                                    <p rdxToastDescription [class]="t.description">{{ toast.description }}</p>
                                 }
                             </div>
-                            <button [class]="t.close" aria-label="Dismiss" rdxToastClose>✕</button>
+                            <button aria-label="Dismiss" rdxToastClose [class]="t.close">✕</button>
                         </div>
                     </div>
                 }
@@ -118,9 +118,9 @@ An anchored toast is wrapped in `rdxToastPositioner` instead of joining the stac
 Push a single toast; it auto-dismisses after the timeout.
 
 ```typescript
+import { cn, demoButton, demoToast } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
-import { cn, demoButton, demoToast } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -131,17 +131,17 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
         <button [class]="cn(b.base, b.primary, b.size.md)" (click)="notify()">Show toast</button>
 
         <div rdxToastPortal>
-            <div [class]="t.viewport" rdxToastViewport>
+            <div rdxToastViewport [class]="t.viewport">
                 @for (toast of manager.toasts(); track toast.id) {
-                    <div [class]="t.root" [toast]="toast" rdxToastRoot>
-                        <div [class]="t.content" rdxToastContent>
+                    <div rdxToastRoot [class]="t.root" [toast]="toast">
+                        <div rdxToastContent [class]="t.content">
                             <div class="min-w-0 flex-1">
-                                <p [class]="t.title" rdxToastTitle>{{ toast.title }}</p>
+                                <p rdxToastTitle [class]="t.title">{{ toast.title }}</p>
                                 @if (toast.description) {
-                                    <p [class]="t.description" rdxToastDescription>{{ toast.description }}</p>
+                                    <p rdxToastDescription [class]="t.description">{{ toast.description }}</p>
                                 }
                             </div>
-                            <button [class]="t.close" aria-label="Dismiss" rdxToastClose>✕</button>
+                            <button aria-label="Dismiss" rdxToastClose [class]="t.close">✕</button>
                         </div>
                     </div>
                 }
@@ -173,9 +173,9 @@ Add several toasts to see the collapsed stack, then hover or focus it to expand.
 while the stack is hovered or focused.
 
 ```typescript
+import { cn, demoButton, demoToast } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
-import { cn, demoButton, demoToast } from '../../storybook/styles';
 
 /**
  * Push several toasts to see the collapsed stack, then hover (or focus) the stack to expand it —
@@ -194,15 +194,15 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
         </div>
 
         <div rdxToastPortal>
-            <div [class]="t.viewport" rdxToastViewport>
+            <div rdxToastViewport [class]="t.viewport">
                 @for (toast of manager.toasts(); track toast.id) {
-                    <div [class]="t.root" [toast]="toast" rdxToastRoot>
-                        <div [class]="t.content" rdxToastContent>
+                    <div rdxToastRoot [class]="t.root" [toast]="toast">
+                        <div rdxToastContent [class]="t.content">
                             <div class="min-w-0 flex-1">
-                                <p [class]="t.title" rdxToastTitle>{{ toast.title }}</p>
-                                <p [class]="t.description" rdxToastDescription>{{ toast.description }}</p>
+                                <p rdxToastTitle [class]="t.title">{{ toast.title }}</p>
+                                <p rdxToastDescription [class]="t.description">{{ toast.description }}</p>
                             </div>
-                            <button [class]="t.close" aria-label="Dismiss" rdxToastClose>✕</button>
+                            <button aria-label="Dismiss" rdxToastClose [class]="t.close">✕</button>
                         </div>
                     </div>
                 }
@@ -234,9 +234,9 @@ export class ToastStackingExample {
 Drag a toast toward an allowed `swipeDirection` to dismiss it; release early to snap back.
 
 ```typescript
+import { cn, demoButton, demoToast } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
-import { cn, demoButton, demoToast } from '../../storybook/styles';
 
 /**
  * Toasts can be dismissed by swiping. `swipeDirection` lists the allowed directions; the gesture
@@ -252,17 +252,17 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
         <button [class]="cn(b.base, b.primary, b.size.md)" (click)="add()">Show swipeable toast</button>
 
         <div rdxToastPortal>
-            <div [class]="t.viewport" rdxToastViewport>
+            <div rdxToastViewport [class]="t.viewport">
                 @for (toast of manager.toasts(); track toast.id) {
-                    <div [class]="t.root" [toast]="toast" [swipeDirection]="['right', 'down']" rdxToastRoot>
-                        <div [class]="t.content" rdxToastContent>
+                    <div rdxToastRoot [class]="t.root" [toast]="toast" [swipeDirection]="['right', 'down']">
+                        <div rdxToastContent [class]="t.content">
                             <div class="min-w-0 flex-1">
-                                <p [class]="t.title" rdxToastTitle>Swipe me away</p>
-                                <p [class]="t.description" rdxToastDescription>
+                                <p rdxToastTitle [class]="t.title">Swipe me away</p>
+                                <p rdxToastDescription [class]="t.description">
                                     Drag right or down to dismiss. Release early to snap back.
                                 </p>
                             </div>
-                            <button [class]="t.close" aria-label="Dismiss" rdxToastClose>✕</button>
+                            <button aria-label="Dismiss" rdxToastClose [class]="t.close">✕</button>
                         </div>
                     </div>
                 }
@@ -287,9 +287,9 @@ export class ToastSwipeExample {
 Drive one toast through a promise: `loading`, then `success` or `error`.
 
 ```typescript
+import { cn, demoButton, demoToast } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
-import { cn, demoButton, demoToast } from '../../storybook/styles';
 
 /**
  * `manager.promise()` drives a single toast through a promise's lifecycle: it shows the `loading`
@@ -308,18 +308,18 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
         </div>
 
         <div rdxToastPortal>
-            <div [class]="t.viewport" rdxToastViewport>
+            <div rdxToastViewport [class]="t.viewport">
                 @for (toast of manager.toasts(); track toast.id) {
-                    <div [class]="t.root" [toast]="toast" rdxToastRoot>
-                        <div [class]="t.content" rdxToastContent>
+                    <div rdxToastRoot [class]="t.root" [toast]="toast">
+                        <div rdxToastContent [class]="t.content">
                             <div class="min-w-0 flex-1">
-                                <p [class]="t.title" rdxToastTitle>{{ toast.title }}</p>
+                                <p rdxToastTitle [class]="t.title">{{ toast.title }}</p>
                                 @if (toast.description) {
-                                    <p [class]="t.description" rdxToastDescription>{{ toast.description }}</p>
+                                    <p rdxToastDescription [class]="t.description">{{ toast.description }}</p>
                                 }
                             </div>
                             @if (!toast.loading) {
-                                <button [class]="t.close" aria-label="Dismiss" rdxToastClose>✕</button>
+                                <button aria-label="Dismiss" rdxToastClose [class]="t.close">✕</button>
                             }
                         </div>
                     </div>
@@ -356,10 +356,10 @@ export class ToastPromiseExample {
 Branch on a free-form `type` to render an icon, and raise `priority` to `high` for assertive errors.
 
 ```typescript
+import { cn, demoButton, demoToast } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { LucideCircleCheck, LucideCircleX, LucideInfo } from '@lucide/angular';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
-import { cn, demoButton, demoToast } from '../../storybook/styles';
 
 /**
  * `type` is a free-form category surfaced back on the toast object — branch on it in the template
@@ -379,26 +379,26 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
         </div>
 
         <div rdxToastPortal>
-            <div [class]="t.viewport" rdxToastViewport>
+            <div rdxToastViewport [class]="t.viewport">
                 @for (toast of manager.toasts(); track toast.id) {
-                    <div [class]="t.root" [toast]="toast" rdxToastRoot>
-                        <div [class]="t.content" rdxToastContent>
+                    <div rdxToastRoot [class]="t.root" [toast]="toast">
+                        <div rdxToastContent [class]="t.content">
                             @switch (toast.type) {
                                 @case ('success') {
-                                    <svg [class]="cn(t.icon, 'text-foreground')" lucideCircleCheck></svg>
+                                    <svg lucideCircleCheck [class]="cn(t.icon, 'text-foreground')"></svg>
                                 }
                                 @case ('error') {
-                                    <svg [class]="cn(t.icon, 'text-destructive')" lucideCircleX></svg>
+                                    <svg lucideCircleX [class]="cn(t.icon, 'text-destructive')"></svg>
                                 }
                                 @default {
-                                    <svg [class]="cn(t.icon, 'text-muted-foreground')" lucideInfo></svg>
+                                    <svg lucideInfo [class]="cn(t.icon, 'text-muted-foreground')"></svg>
                                 }
                             }
                             <div class="min-w-0 flex-1">
-                                <p [class]="t.title" rdxToastTitle>{{ toast.title }}</p>
-                                <p [class]="t.description" rdxToastDescription>{{ toast.description }}</p>
+                                <p rdxToastTitle [class]="t.title">{{ toast.title }}</p>
+                                <p rdxToastDescription [class]="t.description">{{ toast.description }}</p>
                             </div>
-                            <button [class]="t.close" aria-label="Dismiss" rdxToastClose>✕</button>
+                            <button aria-label="Dismiss" rdxToastClose [class]="t.close">✕</button>
                         </div>
                     </div>
                 }
@@ -436,9 +436,9 @@ export class ToastTypesExample {
 Placement is the consumer's CSS — here the viewport is anchored top-center and the stack grows down.
 
 ```typescript
+import { cn, demoButton, demoToast } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
-import { cn, demoButton, demoToast } from '../../storybook/styles';
 
 /**
  * Placement is entirely the consumer's CSS — the primitive only positions nothing. Here the viewport
@@ -454,15 +454,15 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
         <button [class]="cn(b.base, b.primary, b.size.md)" (click)="add()">Show toast (top)</button>
 
         <div rdxToastPortal>
-            <div [class]="t.viewportTop" rdxToastViewport>
+            <div rdxToastViewport [class]="t.viewportTop">
                 @for (toast of manager.toasts(); track toast.id) {
-                    <div [class]="t.rootTop" [toast]="toast" [swipeDirection]="['up']" rdxToastRoot>
-                        <div [class]="t.content" rdxToastContent>
+                    <div rdxToastRoot [class]="t.rootTop" [toast]="toast" [swipeDirection]="['up']">
+                        <div rdxToastContent [class]="t.content">
                             <div class="min-w-0 flex-1">
-                                <p [class]="t.title" rdxToastTitle>{{ toast.title }}</p>
-                                <p [class]="t.description" rdxToastDescription>{{ toast.description }}</p>
+                                <p rdxToastTitle [class]="t.title">{{ toast.title }}</p>
+                                <p rdxToastDescription [class]="t.description">{{ toast.description }}</p>
                             </div>
-                            <button [class]="t.close" aria-label="Dismiss" rdxToastClose>✕</button>
+                            <button aria-label="Dismiss" rdxToastClose [class]="t.close">✕</button>
                         </div>
                     </div>
                 }
@@ -490,9 +490,9 @@ export class ToastCustomPositionExample {
 `rdxToastAction` adds an in-toast action button; this one undoes the change and dismisses the toast.
 
 ```typescript
+import { cn, demoButton, demoToast } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, RdxToastObject, toastImports } from '@radix-ng/primitives/toast';
-import { cn, demoButton, demoToast } from '../../storybook/styles';
 
 /**
  * `rdxToastAction` renders an in-toast action button. The label and handler are passed through the
@@ -510,19 +510,19 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
         </div>
 
         <div rdxToastPortal>
-            <div [class]="t.viewport" rdxToastViewport>
+            <div rdxToastViewport [class]="t.viewport">
                 @for (toast of manager.toasts(); track toast.id) {
-                    <div [class]="t.root" [toast]="toast" rdxToastRoot>
-                        <div [class]="t.content" rdxToastContent>
+                    <div rdxToastRoot [class]="t.root" [toast]="toast">
+                        <div rdxToastContent [class]="t.content">
                             <div class="min-w-0 flex-1">
-                                <p [class]="t.title" rdxToastTitle>{{ toast.title }}</p>
+                                <p rdxToastTitle [class]="t.title">{{ toast.title }}</p>
                                 @if (toast.actionProps; as action) {
-                                    <button [class]="t.action" (click)="runAction(toast, $event)" rdxToastAction>
+                                    <button rdxToastAction [class]="t.action" (click)="runAction(toast, $event)">
                                         {{ action.label }}
                                     </button>
                                 }
                             </div>
-                            <button [class]="t.close" aria-label="Dismiss" rdxToastClose>✕</button>
+                            <button aria-label="Dismiss" rdxToastClose [class]="t.close">✕</button>
                         </div>
                     </div>
                 }
@@ -558,9 +558,9 @@ export class ToastUndoActionExample {
 Attach a typed `data` payload and read it back in the template for rich, app-specific toasts.
 
 ```typescript
+import { cn, demoButton, demoToast } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
-import { cn, demoButton, demoToast } from '../../storybook/styles';
 
 interface MentionData {
     user: string;
@@ -581,11 +581,11 @@ interface MentionData {
         <button [class]="cn(b.base, b.primary, b.size.md)" (click)="mention()">New mention</button>
 
         <div rdxToastPortal>
-            <div [class]="t.viewport" rdxToastViewport>
+            <div rdxToastViewport [class]="t.viewport">
                 @for (toast of manager.toasts(); track toast.id) {
-                    <div [class]="t.root" [toast]="toast" rdxToastRoot>
+                    <div rdxToastRoot [class]="t.root" [toast]="toast">
                         @let data = $any(toast.data);
-                        <div [class]="t.content" rdxToastContent>
+                        <div rdxToastContent [class]="t.content">
                             <span
                                 class="bg-muted text-muted-foreground grid size-9 shrink-0 place-items-center rounded-full text-xs font-semibold"
                                 aria-hidden="true"
@@ -593,10 +593,10 @@ interface MentionData {
                                 {{ data.initials }}
                             </span>
                             <div class="min-w-0 flex-1">
-                                <p [class]="t.title" rdxToastTitle>{{ data.user }} mentioned you</p>
-                                <p [class]="t.description" rdxToastDescription>“{{ data.message }}”</p>
+                                <p rdxToastTitle [class]="t.title">{{ data.user }} mentioned you</p>
+                                <p rdxToastDescription [class]="t.description">“{{ data.message }}”</p>
                             </div>
-                            <button [class]="t.close" aria-label="Dismiss" rdxToastClose>✕</button>
+                            <button aria-label="Dismiss" rdxToastClose [class]="t.close">✕</button>
                         </div>
                     </div>
                 }
@@ -631,9 +631,9 @@ export class ToastCustomDataExample {
 Pass a fixed `id` to upsert a single toast in place instead of stacking duplicates.
 
 ```typescript
+import { cn, demoButton, demoToast } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
-import { cn, demoButton, demoToast } from '../../storybook/styles';
 
 /**
  * Passing a fixed `id` upserts instead of stacking — repeated calls update the same toast in place
@@ -649,15 +649,15 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
         <button [class]="cn(b.base, b.primary, b.size.md)" (click)="copy()">Copy link</button>
 
         <div rdxToastPortal>
-            <div [class]="t.viewport" rdxToastViewport>
+            <div rdxToastViewport [class]="t.viewport">
                 @for (toast of manager.toasts(); track toast.id) {
-                    <div [class]="t.root" [toast]="toast" rdxToastRoot>
-                        <div [class]="t.content" rdxToastContent>
+                    <div rdxToastRoot [class]="t.root" [toast]="toast">
+                        <div rdxToastContent [class]="t.content">
                             <div class="min-w-0 flex-1">
-                                <p [class]="t.title" rdxToastTitle>{{ toast.title }}</p>
-                                <p [class]="t.description" rdxToastDescription>{{ toast.description }}</p>
+                                <p rdxToastTitle [class]="t.title">{{ toast.title }}</p>
+                                <p rdxToastDescription [class]="t.description">{{ toast.description }}</p>
                             </div>
-                            <button [class]="t.close" aria-label="Dismiss" rdxToastClose>✕</button>
+                            <button aria-label="Dismiss" rdxToastClose [class]="t.close">✕</button>
                         </div>
                     </div>
                 }
@@ -690,9 +690,9 @@ export class ToastDeduplicatedExample {
 Measured heights feed `--toast-offset-y`, so the expanded stack lines up even with differing heights.
 
 ```typescript
+import { cn, demoButton, demoToast } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
-import { cn, demoButton, demoToast } from '../../storybook/styles';
 
 /**
  * Each toast's height is measured and shared as `--toast-offset-y`, so the expanded layout lines up
@@ -711,15 +711,15 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
         </div>
 
         <div rdxToastPortal>
-            <div [class]="t.viewport" rdxToastViewport>
+            <div rdxToastViewport [class]="t.viewport">
                 @for (toast of manager.toasts(); track toast.id) {
-                    <div [class]="t.root" [toast]="toast" rdxToastRoot>
-                        <div [class]="t.content" rdxToastContent>
+                    <div rdxToastRoot [class]="t.root" [toast]="toast">
+                        <div rdxToastContent [class]="t.content">
                             <div class="min-w-0 flex-1">
-                                <p [class]="t.title" rdxToastTitle>{{ toast.title }}</p>
-                                <p [class]="t.description" rdxToastDescription>{{ toast.description }}</p>
+                                <p rdxToastTitle [class]="t.title">{{ toast.title }}</p>
+                                <p rdxToastDescription [class]="t.description">{{ toast.description }}</p>
                             </div>
-                            <button [class]="t.close" aria-label="Dismiss" rdxToastClose>✕</button>
+                            <button aria-label="Dismiss" rdxToastClose [class]="t.close">✕</button>
                         </div>
                     </div>
                 }
@@ -754,9 +754,9 @@ export class ToastVaryingHeightsExample {
 Pin a toast to an element with `rdxToastPositioner` (powered by popper) instead of joining the stack.
 
 ```typescript
+import { cn, demoButton, demoToast } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
-import { cn, demoButton, demoToast } from '../../storybook/styles';
 
 /**
  * An anchored toast is positioned against an element with `rdxToastPositioner` (powered by popper)
@@ -772,17 +772,17 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
         <button [class]="cn(b.base, b.primary, b.size.md)" (click)="show($event)">Anchored toast</button>
 
         <div rdxToastPortal>
-            <div [class]="t.viewport" rdxToastViewport>
+            <div rdxToastViewport [class]="t.viewport">
                 @for (toast of manager.toasts(); track toast.id) {
                     @if (toast.positionerProps; as positioner) {
-                        <div [anchor]="positioner.anchor" [side]="positioner.side ?? 'top'" rdxToastPositioner>
-                            <div [class]="t.anchored" [toast]="toast" rdxToastRoot>
-                                <div [class]="t.content" rdxToastContent>
+                        <div rdxToastPositioner [anchor]="positioner.anchor" [side]="positioner.side ?? 'top'">
+                            <div rdxToastRoot [class]="t.anchored" [toast]="toast">
+                                <div rdxToastContent [class]="t.content">
                                     <div class="min-w-0 flex-1">
-                                        <p [class]="t.title" rdxToastTitle>{{ toast.title }}</p>
-                                        <p [class]="t.description" rdxToastDescription>{{ toast.description }}</p>
+                                        <p rdxToastTitle [class]="t.title">{{ toast.title }}</p>
+                                        <p rdxToastDescription [class]="t.description">{{ toast.description }}</p>
                                     </div>
-                                    <button [class]="t.close" aria-label="Dismiss" rdxToastClose>✕</button>
+                                    <button aria-label="Dismiss" rdxToastClose [class]="t.close">✕</button>
                                 </div>
                             </div>
                         </div>

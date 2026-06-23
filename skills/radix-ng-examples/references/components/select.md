@@ -8,9 +8,6 @@ trigger) and **Item-aligned** (the popup overlaps the trigger, aligned to the se
 native `<select>` behavior).
 
 ```typescript
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { LucideCheck, LucideChevronDown } from '@lucide/angular';
-import { Align } from '@radix-ng/primitives/popper';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectGroupLabel } from '../src/select-group-label';
 import { RdxSelectItem } from '../src/select-item';
@@ -23,6 +20,9 @@ import { RdxSelectPositioner } from '../src/select-positioner';
 import { RdxSelectRoot } from '../src/select-root';
 import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { LucideCheck, LucideChevronDown } from '@lucide/angular';
+import { Align } from '@radix-ng/primitives/popper';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -56,7 +56,7 @@ import { RdxSelectValue } from '../src/select-value';
                 <svg lucideChevronDown size="16" />
             </button>
 
-            <div class="z-[100]" *rdxSelectPortal [sideOffset]="sideOffset()" [align]="align()" rdxSelectPositioner>
+            <div *rdxSelectPortal class="z-[100]" rdxSelectPositioner [sideOffset]="sideOffset()" [align]="align()">
                 <div
                     class="border-border bg-popover text-popover-foreground min-w-40 rounded-lg border shadow-md will-change-[opacity,transform]"
                     rdxSelectPopup
@@ -67,8 +67,8 @@ import { RdxSelectValue } from '../src/select-value';
                             @for (option of options; track option) {
                                 <div
                                     class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 cursor-default items-center rounded-sm pr-8 pl-6 text-sm leading-none outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                                    [value]="option"
                                     rdxSelectItem
+                                    [value]="option"
                                 >
                                     <span
                                         class="absolute left-0 inline-flex w-6 items-center justify-center"
@@ -86,8 +86,8 @@ import { RdxSelectValue } from '../src/select-value';
                             @for (vegetable of vegetables; track vegetable) {
                                 <div
                                     class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 cursor-default items-center rounded-sm pr-8 pl-6 text-sm leading-none outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                                    [value]="vegetable"
                                     rdxSelectItem
+                                    [value]="vegetable"
                                 >
                                     <span
                                         class="absolute left-0 inline-flex w-6 items-center justify-center"
@@ -224,9 +224,6 @@ the behavior of a native `<select>`. Use `rdxSelectItemAlignedPosition` and
 A grouped list (Fruits / Vegetables) with Popper positioning. Click the trigger to open the popup.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { LucideCheck, LucideChevronDown } from '@lucide/angular';
-import { Align } from '@radix-ng/primitives/popper';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectGroupLabel } from '../src/select-group-label';
 import { RdxSelectItem } from '../src/select-item';
@@ -239,6 +236,9 @@ import { RdxSelectPositioner } from '../src/select-positioner';
 import { RdxSelectRoot } from '../src/select-root';
 import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { LucideCheck, LucideChevronDown } from '@lucide/angular';
+import { Align } from '@radix-ng/primitives/popper';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -272,7 +272,7 @@ import { RdxSelectValue } from '../src/select-value';
                 <svg lucideChevronDown size="16" />
             </button>
 
-            <div class="z-[100]" *rdxSelectPortal [sideOffset]="sideOffset()" [align]="align()" rdxSelectPositioner>
+            <div *rdxSelectPortal class="z-[100]" rdxSelectPositioner [sideOffset]="sideOffset()" [align]="align()">
                 <div
                     class="border-border bg-popover text-popover-foreground min-w-40 rounded-lg border shadow-md will-change-[opacity,transform]"
                     rdxSelectPopup
@@ -283,8 +283,8 @@ import { RdxSelectValue } from '../src/select-value';
                             @for (option of options; track option) {
                                 <div
                                     class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 cursor-default items-center rounded-sm pr-8 pl-6 text-sm leading-none outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                                    [value]="option"
                                     rdxSelectItem
+                                    [value]="option"
                                 >
                                     <span
                                         class="absolute left-0 inline-flex w-6 items-center justify-center"
@@ -302,8 +302,8 @@ import { RdxSelectValue } from '../src/select-value';
                             @for (vegetable of vegetables; track vegetable) {
                                 <div
                                     class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 cursor-default items-center rounded-sm pr-8 pl-6 text-sm leading-none outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                                    [value]="vegetable"
                                     rdxSelectItem
+                                    [value]="vegetable"
                                 >
                                     <span
                                         class="absolute left-0 inline-flex w-6 items-center justify-center"
@@ -336,8 +336,6 @@ With `multiple`, picks accumulate in the value array, the trigger joins their la
 item keeps its indicator. Shows `RdxSelectIcon` and `RdxSelectSeparator`.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectGroupLabel } from '../src/select-group-label';
 import { RdxSelectIcon } from '../src/select-icon';
@@ -352,6 +350,8 @@ import { RdxSelectRoot } from '../src/select-root';
 import { RdxSelectSeparator } from '../src/select-separator';
 import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 
 /**
  * Multiple selection: picks accumulate in the value array, `RdxSelectValue` joins their labels, and
@@ -380,7 +380,7 @@ import { RdxSelectValue } from '../src/select-value';
         RdxSelectItemIndicator
     ],
     template: `
-        <div [(value)]="value" multiple rdxSelectRoot>
+        <div multiple rdxSelectRoot [(value)]="value">
             <button
                 class="border-border bg-background text-foreground data-[placeholder]:text-muted-foreground hover:bg-muted focus-visible:ring-ring focus-visible:ring-offset-background inline-flex h-9 min-w-52 items-center justify-between gap-2 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 aria-label="Pick fruits"
@@ -392,7 +392,7 @@ import { RdxSelectValue } from '../src/select-value';
                 <svg lucideChevronDown size="16" rdxSelectIcon></svg>
             </button>
 
-            <div class="z-[100]" *rdxSelectPortal [sideOffset]="5" rdxSelectPositioner>
+            <div *rdxSelectPortal class="z-[100]" rdxSelectPositioner [sideOffset]="5">
                 <div
                     class="border-border bg-popover text-popover-foreground min-w-52 rounded-lg border p-1 shadow-md"
                     rdxSelectPopup
@@ -401,8 +401,8 @@ import { RdxSelectValue } from '../src/select-value';
                         <div class="text-muted-foreground px-6 text-xs leading-6" rdxSelectGroupLabel>Fruits</div>
                         <div rdxSelectGroup>
                             @for (fruit of fruits; track fruit) {
-                                <div [class]="itemClass" [value]="fruit" rdxSelectItem>
-                                    <span [class]="indicatorClass" rdxSelectItemIndicator>
+                                <div rdxSelectItem [class]="itemClass" [value]="fruit">
+                                    <span rdxSelectItemIndicator [class]="indicatorClass">
                                         <svg lucideCheck size="16"></svg>
                                     </span>
                                     <span rdxSelectItemText>{{ fruit }}</span>
@@ -413,8 +413,8 @@ import { RdxSelectValue } from '../src/select-value';
                         <div class="text-muted-foreground px-6 text-xs leading-6" rdxSelectGroupLabel>Berries</div>
                         <div rdxSelectGroup>
                             @for (berry of berries; track berry) {
-                                <div [class]="itemClass" [value]="berry" rdxSelectItem>
-                                    <span [class]="indicatorClass" rdxSelectItemIndicator>
+                                <div rdxSelectItem [class]="itemClass" [value]="berry">
+                                    <span rdxSelectItemIndicator [class]="indicatorClass">
                                         <svg lucideCheck size="16"></svg>
                                     </span>
                                     <span rdxSelectItemText>{{ berry }}</span>
@@ -445,8 +445,6 @@ export class SelectMultiple {
 `closeInteractionType`, so app logic can distinguish keyboard, mouse, and touch flows explicitly.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import {
     RdxSelectItem,
     RdxSelectItemIndicator,
@@ -461,6 +459,8 @@ import {
     RdxSelectValue,
     RdxSelectValueChangeEvent
 } from '../index';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 
 interface SelectEventLogEntry {
     label: string;
@@ -492,11 +492,11 @@ interface SelectEventLogEntry {
                 <div class="flex flex-col gap-2">
                     <ng-container
                         #root="rdxSelectRoot"
+                        rdxSelectRoot
                         [(open)]="open"
                         [(value)]="value"
                         (onOpenChange)="handleOpenChange($event)"
                         (onValueChange)="handleValueChange($event)"
-                        rdxSelectRoot
                     >
                         <button
                             class="border-border bg-background text-foreground data-[placeholder]:text-muted-foreground hover:bg-muted focus-visible:ring-ring focus-visible:ring-offset-background inline-flex h-9 w-full items-center justify-between gap-2 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
@@ -509,7 +509,7 @@ interface SelectEventLogEntry {
                             <svg lucideChevronDown size="16" />
                         </button>
 
-                        <div class="z-[100]" *rdxSelectPortal sideOffset="6" rdxSelectPositioner>
+                        <div *rdxSelectPortal class="z-[100]" sideOffset="6" rdxSelectPositioner>
                             <div
                                 class="border-border bg-popover text-popover-foreground min-w-48 rounded-lg border p-1 shadow-md"
                                 rdxSelectPopup
@@ -518,8 +518,8 @@ interface SelectEventLogEntry {
                                     @for (option of options; track option.value) {
                                         <div
                                             class="data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-8 cursor-default items-center rounded-sm pr-8 pl-7 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                                            [value]="option.value"
                                             rdxSelectItem
+                                            [value]="option.value"
                                         >
                                             <span
                                                 class="absolute left-2 inline-flex size-4 items-center justify-center"
@@ -537,8 +537,8 @@ interface SelectEventLogEntry {
                         <div class="grid gap-2 pt-1">
                             <button
                                 class="border-border bg-background text-foreground hover:bg-muted inline-flex h-7 items-center justify-between rounded-md border px-3 text-xs"
-                                (click)="cancelNextOpen.update((value) => !value)"
                                 type="button"
+                                (click)="cancelNextOpen.update((value) => !value)"
                             >
                                 <span>Cancel next open</span>
                                 <span class="text-muted-foreground">{{ cancelNextOpen() ? 'armed' : 'off' }}</span>
@@ -546,8 +546,8 @@ interface SelectEventLogEntry {
 
                             <button
                                 class="border-border bg-background text-foreground hover:bg-muted inline-flex h-7 items-center justify-between rounded-md border px-3 text-xs"
-                                (click)="cancelNextValue.update((value) => !value)"
                                 type="button"
+                                (click)="cancelNextValue.update((value) => !value)"
                             >
                                 <span>Cancel next value</span>
                                 <span class="text-muted-foreground">{{ cancelNextValue() ? 'armed' : 'off' }}</span>
@@ -577,8 +577,8 @@ interface SelectEventLogEntry {
                         </div>
                         <button
                             class="text-muted-foreground hover:text-foreground inline-flex h-7 items-center rounded-md px-2 text-xs"
-                            (click)="logs.set([])"
                             type="button"
+                            (click)="logs.set([])"
                         >
                             Clear
                         </button>
@@ -667,8 +667,6 @@ key (here `id`) instead of reference, and render rich, two-line content in both 
 items from the selected object.
 
 ```typescript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { LucideCheck, LucideChevronsUpDown } from '@lucide/angular';
 import { RdxSelectItem } from '../src/select-item';
 import { RdxSelectItemIndicator } from '../src/select-item-indicator';
 import { RdxSelectItemText } from '../src/select-item-text';
@@ -679,6 +677,8 @@ import { RdxSelectPositioner } from '../src/select-positioner';
 import { RdxSelectRoot } from '../src/select-root';
 import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { LucideCheck, LucideChevronsUpDown } from '@lucide/angular';
 
 interface ShippingMethod {
     id: string;
@@ -715,7 +715,7 @@ interface ShippingMethod {
                 Shipping method
             </label>
 
-            <ng-container #root="rdxSelectRoot" [value]="shippingMethods[0]" [isItemEqualToValue]="'id'" rdxSelectRoot>
+            <ng-container #root="rdxSelectRoot" rdxSelectRoot [value]="shippingMethods[0]" [isItemEqualToValue]="'id'">
                 <button
                     class="border-border bg-background text-foreground hover:bg-muted focus-visible:ring-ring focus-visible:ring-offset-background inline-flex min-h-9 min-w-64 items-center justify-between gap-3 rounded-md border px-3 py-1.5 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2 data-[disabled]:opacity-50"
                     aria-labelledby="shipping-method-label"
@@ -736,7 +736,7 @@ interface ShippingMethod {
                     <svg class="text-muted-foreground shrink-0" lucideChevronsUpDown size="16" />
                 </button>
 
-                <div class="z-[100]" *rdxSelectPortal [sideOffset]="5" align="start" rdxSelectPositioner>
+                <div *rdxSelectPortal class="z-[100]" align="start" rdxSelectPositioner [sideOffset]="5">
                     <div
                         class="border-border bg-popover text-popover-foreground min-w-[var(--radix-select-trigger-width)] rounded-lg border shadow-md will-change-[opacity,transform]"
                         rdxSelectPopup
@@ -745,8 +745,8 @@ interface ShippingMethod {
                             @for (method of shippingMethods; track method.id) {
                                 <div
                                     class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground group relative grid cursor-default grid-cols-[1.25rem_1fr] items-start gap-2 rounded-sm py-1.5 pr-3 pl-2 outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                                    [value]="method"
                                     rdxSelectItem
+                                    [value]="method"
                                 >
                                     <span
                                         class="col-start-1 mt-0.5 inline-flex items-center justify-center"
@@ -791,8 +791,6 @@ When the list is taller than the available viewport, `rdxSelectScrollUpButton` a
 `rdxSelectScrollDownButton` appear automatically at the top and bottom of the popup.
 
 ```typescript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { LucideCheck, LucideChevronDown, LucideChevronUp } from '@lucide/angular';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectGroupLabel } from '../src/select-group-label';
 import { RdxSelectItem } from '../src/select-item';
@@ -807,6 +805,8 @@ import { RdxSelectScrollDownButton } from '../src/select-scroll-down-button';
 import { RdxSelectScrollUpButton } from '../src/select-scroll-up-button';
 import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { LucideCheck, LucideChevronDown, LucideChevronUp } from '@lucide/angular';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -843,7 +843,7 @@ import { RdxSelectValue } from '../src/select-value';
                 <svg lucideChevronDown size="16" />
             </button>
 
-            <div class="z-[100]" *rdxSelectPortal [sideOffset]="5" align="start" rdxSelectPositioner>
+            <div *rdxSelectPortal class="z-[100]" align="start" rdxSelectPositioner [sideOffset]="5">
                 <div
                     class="border-border bg-popover text-popover-foreground max-h-[300px] min-w-40 overflow-hidden rounded-lg border shadow-md will-change-[opacity,transform]"
                     rdxSelectPopup
@@ -860,8 +860,8 @@ import { RdxSelectValue } from '../src/select-value';
                             @for (option of options; track option) {
                                 <div
                                     class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 cursor-default items-center rounded-sm pr-8 pl-6 text-sm leading-none outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                                    [value]="option"
                                     rdxSelectItem
+                                    [value]="option"
                                 >
                                     <span
                                         class="absolute left-0 inline-flex w-6 items-center justify-center"
@@ -879,8 +879,8 @@ import { RdxSelectValue } from '../src/select-value';
                             @for (vegetable of vegetables; track vegetable) {
                                 <div
                                     class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 cursor-default items-center rounded-sm pr-8 pl-6 text-sm leading-none outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                                    [value]="vegetable"
                                     rdxSelectItem
+                                    [value]="vegetable"
                                 >
                                     <span
                                         class="absolute left-0 inline-flex w-6 items-center justify-center"
@@ -927,8 +927,6 @@ The popup opens aligned to the selected item, mirroring native `<select>` behavi
 value is pre-selected so the alignment is immediately visible.
 
 ```typescript
-import { booleanAttribute, ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectGroupLabel } from '../src/select-group-label';
 import { RdxSelectItem } from '../src/select-item';
@@ -942,6 +940,8 @@ import { RdxSelectPortal } from '../src/select-portal';
 import { RdxSelectRoot } from '../src/select-root';
 import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
+import { booleanAttribute, ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -964,7 +964,7 @@ import { RdxSelectValue } from '../src/select-value';
         RdxSelectItemIndicator
     ],
     template: `
-        <ng-container [value]="fruit()" [modal]="modal()" rdxSelectRoot>
+        <ng-container rdxSelectRoot [value]="fruit()" [modal]="modal()">
             <button
                 class="border-border bg-background text-foreground data-[placeholder]:text-muted-foreground hover:bg-muted focus-visible:ring-ring focus-visible:ring-offset-background inline-flex h-9 min-w-40 items-center justify-between gap-2 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 aria-label="Customise options"
@@ -988,8 +988,8 @@ import { RdxSelectValue } from '../src/select-value';
                                 @for (option of options; track option) {
                                     <div
                                         class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 cursor-default items-center rounded-sm pr-8 pl-6 text-sm leading-none outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                                        [value]="option"
                                         rdxSelectItem
+                                        [value]="option"
                                     >
                                         <span
                                             class="absolute left-0 inline-flex w-6 items-center justify-center"
@@ -1009,8 +1009,8 @@ import { RdxSelectValue } from '../src/select-value';
                                 @for (vegetable of vegetables; track vegetable) {
                                     <div
                                         class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 cursor-default items-center rounded-sm pr-8 pl-6 text-sm leading-none outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                                        [value]="vegetable"
                                         rdxSelectItem
+                                        [value]="vegetable"
                                     >
                                         <span
                                             class="absolute left-0 inline-flex w-6 items-center justify-center"
@@ -1045,8 +1045,6 @@ export class SelectAlignedPosition {
 Item-aligned positioning combined with a long list that overflows, showing both scroll buttons.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideCheck, LucideChevronDown, LucideChevronUp } from '@lucide/angular';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectGroupLabel } from '../src/select-group-label';
 import { RdxSelectItem } from '../src/select-item';
@@ -1062,6 +1060,8 @@ import { RdxSelectScrollDownButton } from '../src/select-scroll-down-button';
 import { RdxSelectScrollUpButton } from '../src/select-scroll-up-button';
 import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown, LucideChevronUp } from '@lucide/angular';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -1087,7 +1087,7 @@ import { RdxSelectValue } from '../src/select-value';
         RdxSelectScrollUpButton
     ],
     template: `
-        <ng-container [value]="fruit()" rdxSelectRoot>
+        <ng-container rdxSelectRoot [value]="fruit()">
             <button
                 class="border-border bg-background text-foreground data-[placeholder]:text-muted-foreground hover:bg-muted focus-visible:ring-ring focus-visible:ring-offset-background inline-flex h-9 min-w-40 items-center justify-between gap-2 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 aria-label="Customise options"
@@ -1117,8 +1117,8 @@ import { RdxSelectValue } from '../src/select-value';
                                 @for (option of options; track option) {
                                     <div
                                         class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 cursor-default items-center rounded-sm pr-8 pl-6 text-sm leading-none outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                                        [value]="option"
                                         rdxSelectItem
+                                        [value]="option"
                                     >
                                         <span
                                             class="absolute left-0 inline-flex w-6 items-center justify-center"
@@ -1138,8 +1138,8 @@ import { RdxSelectValue } from '../src/select-value';
                                 @for (vegetable of vegetables; track vegetable) {
                                     <div
                                         class="text-popover-foreground data-[disabled]:text-muted-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-7 cursor-default items-center rounded-sm pr-8 pl-6 text-sm leading-none outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                                        [value]="vegetable"
                                         rdxSelectItem
+                                        [value]="vegetable"
                                     >
                                         <span
                                             class="absolute left-0 inline-flex w-6 items-center justify-center"

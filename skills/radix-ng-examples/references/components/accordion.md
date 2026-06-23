@@ -78,6 +78,7 @@ import {
 Disable the whole accordion via `disabled` on the root, or a single item via `disabled` on the item.
 
 ```typescript
+import { cn, demoAccordion } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxAccordionHeaderDirective,
@@ -86,7 +87,6 @@ import {
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
-import { cn, demoAccordion } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -99,32 +99,32 @@ import { cn, demoAccordion } from '../../storybook/styles';
         RdxAccordionPanelDirective
     ],
     template: `
-        <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="'item-1'" rdxAccordionRoot>
-            <div [class]="a.item" [value]="'item-1'" rdxAccordionItem>
-                <h3 [class]="a.header" rdxAccordionHeader>
-                    <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
+        <div rdxAccordionRoot [class]="cn(a.root, 'w-[300px]')" [defaultValue]="'item-1'">
+            <div rdxAccordionItem [class]="a.item" [value]="'item-1'">
+                <h3 rdxAccordionHeader [class]="a.header">
+                    <button type="button" rdxAccordionTrigger [class]="a.trigger">Is it accessible?</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div rdxAccordionPanel [class]="a.content">
                     <div [class]="a.contentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
                 </div>
             </div>
 
-            <div [class]="a.item" [value]="'item-2'" disabled rdxAccordionItem>
-                <h3 [class]="a.header" rdxAccordionHeader>
-                    <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
+            <div disabled rdxAccordionItem [class]="a.item" [value]="'item-2'">
+                <h3 rdxAccordionHeader [class]="a.header">
+                    <button type="button" rdxAccordionTrigger [class]="a.trigger">Is it unstyled?</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div rdxAccordionPanel [class]="a.content">
                     <div [class]="a.contentText">
                         Yes. It's unstyled by default, giving you freedom over the look and feel.
                     </div>
                 </div>
             </div>
 
-            <div [class]="a.item" [value]="'item-3'" rdxAccordionItem>
-                <h3 [class]="a.header" rdxAccordionHeader>
-                    <button [class]="a.trigger" type="button" rdxAccordionTrigger>Can it be animated?</button>
+            <div rdxAccordionItem [class]="a.item" [value]="'item-3'">
+                <h3 rdxAccordionHeader [class]="a.header">
+                    <button type="button" rdxAccordionTrigger [class]="a.trigger">Can it be animated?</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div rdxAccordionPanel [class]="a.content">
                     <div [class]="a.contentText">Yes! You can animate the Accordion with CSS or JavaScript.</div>
                 </div>
             </div>
@@ -142,6 +142,7 @@ export class AccordionDisabledExample {
 Set `multiple` to let several items stay open at once.
 
 ```typescript
+import { cn, demoAccordion } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxAccordionHeaderDirective,
@@ -150,7 +151,6 @@ import {
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
-import { cn, demoAccordion } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -163,32 +163,32 @@ import { cn, demoAccordion } from '../../storybook/styles';
         RdxAccordionPanelDirective
     ],
     template: `
-        <div [class]="cn(a.root, 'w-[300px]')" [value]="['item-2', 'item-3']" multiple rdxAccordionRoot>
-            <div [class]="a.item" [value]="'item-1'" rdxAccordionItem>
-                <h3 [class]="a.header" rdxAccordionHeader>
-                    <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
+        <div multiple rdxAccordionRoot [class]="cn(a.root, 'w-[300px]')" [value]="['item-2', 'item-3']">
+            <div rdxAccordionItem [class]="a.item" [value]="'item-1'">
+                <h3 rdxAccordionHeader [class]="a.header">
+                    <button type="button" rdxAccordionTrigger [class]="a.trigger">Is it accessible?</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div rdxAccordionPanel [class]="a.content">
                     <div [class]="a.contentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
                 </div>
             </div>
 
-            <div [class]="a.item" [value]="'item-2'" rdxAccordionItem>
-                <h3 [class]="a.header" rdxAccordionHeader>
-                    <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
+            <div rdxAccordionItem [class]="a.item" [value]="'item-2'">
+                <h3 rdxAccordionHeader [class]="a.header">
+                    <button type="button" rdxAccordionTrigger [class]="a.trigger">Is it unstyled?</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div rdxAccordionPanel [class]="a.content">
                     <div [class]="a.contentText">
                         Yes. It's unstyled by default, giving you freedom over the look and feel.
                     </div>
                 </div>
             </div>
 
-            <div [class]="a.item" [value]="'item-3'" rdxAccordionItem>
-                <h3 [class]="a.header" rdxAccordionHeader>
-                    <button [class]="a.trigger" type="button" rdxAccordionTrigger>Can it be animated?</button>
+            <div rdxAccordionItem [class]="a.item" [value]="'item-3'">
+                <h3 rdxAccordionHeader [class]="a.header">
+                    <button type="button" rdxAccordionTrigger [class]="a.trigger">Can it be animated?</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div rdxAccordionPanel [class]="a.content">
                     <div [class]="a.contentText">
                         Yes. It's unstyled by default, giving you freedom over the look and feel.
                     </div>
@@ -209,6 +209,7 @@ In single mode the open item can always be closed by clicking its trigger again 
 there is no separate `collapsible` input).
 
 ```typescript
+import { cn, demoAccordion } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxAccordionHeaderDirective,
@@ -217,7 +218,6 @@ import {
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
-import { cn, demoAccordion } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -230,32 +230,32 @@ import { cn, demoAccordion } from '../../storybook/styles';
         RdxAccordionPanelDirective
     ],
     template: `
-        <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="'item-1'" rdxAccordionRoot>
-            <div [class]="a.item" [value]="'item-1'" rdxAccordionItem>
-                <h3 [class]="a.header" rdxAccordionHeader>
-                    <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
+        <div rdxAccordionRoot [class]="cn(a.root, 'w-[300px]')" [defaultValue]="'item-1'">
+            <div rdxAccordionItem [class]="a.item" [value]="'item-1'">
+                <h3 rdxAccordionHeader [class]="a.header">
+                    <button type="button" rdxAccordionTrigger [class]="a.trigger">Is it accessible?</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div rdxAccordionPanel [class]="a.content">
                     <div [class]="a.contentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
                 </div>
             </div>
 
-            <div [class]="a.item" [value]="'item-2'" rdxAccordionItem>
-                <h3 [class]="a.header" rdxAccordionHeader>
-                    <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
+            <div rdxAccordionItem [class]="a.item" [value]="'item-2'">
+                <h3 rdxAccordionHeader [class]="a.header">
+                    <button type="button" rdxAccordionTrigger [class]="a.trigger">Is it unstyled?</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div rdxAccordionPanel [class]="a.content">
                     <div [class]="a.contentText">
                         Yes. It's unstyled by default, giving you freedom over the look and feel.
                     </div>
                 </div>
             </div>
 
-            <div [class]="a.item" [value]="'item-3'" rdxAccordionItem>
-                <h3 [class]="a.header" rdxAccordionHeader>
-                    <button [class]="a.trigger" type="button" rdxAccordionTrigger>Can it be animated?</button>
+            <div rdxAccordionItem [class]="a.item" [value]="'item-3'">
+                <h3 rdxAccordionHeader [class]="a.header">
+                    <button type="button" rdxAccordionTrigger [class]="a.trigger">Can it be animated?</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div rdxAccordionPanel [class]="a.content">
                     <div [class]="a.contentText">Yes! You can animate the Accordion with CSS or JavaScript.</div>
                 </div>
             </div>
@@ -273,6 +273,7 @@ export class AccordionCollapsibleExample {
 Set `orientation="horizontal"` to expose horizontal state for styling. Following the APG guidance update adopted by Base UI, orientation no longer changes keyboard focus behavior.
 
 ```typescript
+import { cn, demoAccordion } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxAccordionHeaderDirective,
@@ -281,7 +282,6 @@ import {
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
-import { cn, demoAccordion } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -295,42 +295,42 @@ import { cn, demoAccordion } from '../../storybook/styles';
     ],
     template: `
         <div
+            rdxAccordionRoot
             [class]="cn(a.root, 'flex h-[300px] flex-row')"
             [defaultValue]="'item-1'"
             [orientation]="'horizontal'"
-            rdxAccordionRoot
         >
-            <div [class]="cn(a.item, a.itemH)" [value]="'item-1'" rdxAccordionItem>
-                <div [class]="a.header" rdxAccordionHeader>
-                    <button [class]="cn(a.trigger, a.triggerH)" type="button" rdxAccordionTrigger>
+            <div rdxAccordionItem [class]="cn(a.item, a.itemH)" [value]="'item-1'">
+                <div rdxAccordionHeader [class]="a.header">
+                    <button type="button" rdxAccordionTrigger [class]="cn(a.trigger, a.triggerH)">
                         Is it accessible?
                     </button>
                 </div>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div rdxAccordionPanel [class]="a.content">
                     <div [class]="a.contentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
                 </div>
             </div>
 
-            <div [class]="cn(a.item, a.itemH)" [value]="'item-2'" [disabled]="true" rdxAccordionItem>
-                <div [class]="a.header" rdxAccordionHeader>
-                    <button [class]="cn(a.trigger, a.triggerH)" type="button" rdxAccordionTrigger>
+            <div rdxAccordionItem [class]="cn(a.item, a.itemH)" [value]="'item-2'" [disabled]="true">
+                <div rdxAccordionHeader [class]="a.header">
+                    <button type="button" rdxAccordionTrigger [class]="cn(a.trigger, a.triggerH)">
                         Is it unstyled?
                     </button>
                 </div>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div rdxAccordionPanel [class]="a.content">
                     <div [class]="a.contentText">
                         Yes. It's unstyled by default, giving you freedom over the look and feel.
                     </div>
                 </div>
             </div>
 
-            <div [class]="cn(a.item, a.itemH)" [value]="'item-3'" rdxAccordionItem>
-                <div [class]="a.header" rdxAccordionHeader>
-                    <button [class]="cn(a.trigger, a.triggerH)" type="button" rdxAccordionTrigger>
+            <div rdxAccordionItem [class]="cn(a.item, a.itemH)" [value]="'item-3'">
+                <div rdxAccordionHeader [class]="a.header">
+                    <button type="button" rdxAccordionTrigger [class]="cn(a.trigger, a.triggerH)">
                         Can it be animated?
                     </button>
                 </div>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div rdxAccordionPanel [class]="a.content">
                     <div [class]="a.contentText">Yes! You can animate the Accordion with CSS or JavaScript.</div>
                 </div>
             </div>
@@ -350,6 +350,7 @@ root emits `onValueChange` with `{ value, eventDetails }`. Call `eventDetails.ca
 change before it commits.
 
 ```typescript
+import { cn, demoAccordion } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import {
     RdxAccordionHeaderDirective,
@@ -358,7 +359,6 @@ import {
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
-import { cn, demoAccordion } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -372,21 +372,21 @@ import { cn, demoAccordion } from '../../storybook/styles';
     ],
     template: `
         <div class="flex w-[300px] flex-col gap-3">
-            <div [class]="a.root" [defaultValue]="'item-1'" rdxAccordionRoot>
-                <div [class]="a.item" [value]="'item-1'" (onOpenChange)="log('Accessibility', $event)" rdxAccordionItem>
-                    <h3 [class]="a.header" rdxAccordionHeader>
-                        <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
+            <div rdxAccordionRoot [class]="a.root" [defaultValue]="'item-1'">
+                <div rdxAccordionItem [class]="a.item" [value]="'item-1'" (onOpenChange)="log('Accessibility', $event)">
+                    <h3 rdxAccordionHeader [class]="a.header">
+                        <button type="button" rdxAccordionTrigger [class]="a.trigger">Is it accessible?</button>
                     </h3>
-                    <div [class]="a.content" rdxAccordionPanel>
+                    <div rdxAccordionPanel [class]="a.content">
                         <div [class]="a.contentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
                     </div>
                 </div>
 
-                <div [class]="a.item" [value]="'item-2'" (onOpenChange)="log('Styling', $event)" rdxAccordionItem>
-                    <h3 [class]="a.header" rdxAccordionHeader>
-                        <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
+                <div rdxAccordionItem [class]="a.item" [value]="'item-2'" (onOpenChange)="log('Styling', $event)">
+                    <h3 rdxAccordionHeader [class]="a.header">
+                        <button type="button" rdxAccordionTrigger [class]="a.trigger">Is it unstyled?</button>
                     </h3>
-                    <div [class]="a.content" rdxAccordionPanel>
+                    <div rdxAccordionPanel [class]="a.content">
                         <div [class]="a.contentText">Yes. It's unstyled by default.</div>
                     </div>
                 </div>
@@ -415,6 +415,7 @@ form state. Use `hiddenUntilFound` instead to keep collapsed content discoverabl
 find-in-page (it renders `hidden="until-found"`).
 
 ```typescript
+import { cn, demoAccordion, demoInput } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
@@ -424,7 +425,6 @@ import {
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
-import { cn, demoAccordion, demoInput } from '../../storybook/styles';
 
 /**
  * With `keepMounted`, collapsed panels keep their element in the DOM while hidden.
@@ -442,23 +442,23 @@ import { cn, demoAccordion, demoInput } from '../../storybook/styles';
         RdxAccordionPanelDirective
     ],
     template: `
-        <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="'item-1'" keepMounted rdxAccordionRoot>
-            <div [class]="a.item" [value]="'item-1'" rdxAccordionItem>
-                <h3 [class]="a.header" rdxAccordionHeader>
-                    <button [class]="a.trigger" type="button" rdxAccordionTrigger>Shipping address</button>
+        <div keepMounted rdxAccordionRoot [class]="cn(a.root, 'w-[300px]')" [defaultValue]="'item-1'">
+            <div rdxAccordionItem [class]="a.item" [value]="'item-1'">
+                <h3 rdxAccordionHeader [class]="a.header">
+                    <button type="button" rdxAccordionTrigger [class]="a.trigger">Shipping address</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div rdxAccordionPanel [class]="a.content">
                     <div [class]="a.contentText">
-                        <input [(ngModel)]="address" [class]="input" placeholder="Type, then collapse & reopen" />
+                        <input placeholder="Type, then collapse & reopen" [class]="input" [(ngModel)]="address" />
                     </div>
                 </div>
             </div>
 
-            <div [class]="a.item" [value]="'item-2'" rdxAccordionItem>
-                <h3 [class]="a.header" rdxAccordionHeader>
-                    <button [class]="a.trigger" type="button" rdxAccordionTrigger>Billing address</button>
+            <div rdxAccordionItem [class]="a.item" [value]="'item-2'">
+                <h3 rdxAccordionHeader [class]="a.header">
+                    <button type="button" rdxAccordionTrigger [class]="a.trigger">Billing address</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div rdxAccordionPanel [class]="a.content">
                     <div [class]="a.contentText">Same as shipping.</div>
                 </div>
             </div>

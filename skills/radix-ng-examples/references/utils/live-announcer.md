@@ -6,9 +6,9 @@ The buttons below send messages to the live region. It is visually hidden, so th
 mirrors what assistive technology reads aloud.
 
 ```typescript
+import { cn, demoButton } from '../../storybook/styles';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RdxLiveAnnouncer } from '@radix-ng/primitives/core';
-import { cn, demoButton } from '../../storybook/styles';
 
 /**
  * Triggers screen-reader announcements through `RdxLiveAnnouncer`. The live region is visually
@@ -21,10 +21,10 @@ import { cn, demoButton } from '../../storybook/styles';
     template: `
         <div class="flex w-80 flex-col gap-4">
             <div class="flex gap-2">
-                <button [class]="cn(b.base, b.primary, b.size.md)" (click)="announce('polite')" type="button">
+                <button type="button" [class]="cn(b.base, b.primary, b.size.md)" (click)="announce('polite')">
                     Announce (polite)
                 </button>
-                <button [class]="cn(b.base, b.outline, b.size.md)" (click)="announce('assertive')" type="button">
+                <button type="button" [class]="cn(b.base, b.outline, b.size.md)" (click)="announce('assertive')">
                     Announce (assertive)
                 </button>
             </div>
