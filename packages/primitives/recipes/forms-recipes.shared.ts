@@ -8,7 +8,7 @@ import { cn, demoButton, demoCheckbox, demoFocusRing, demoInput, demoRadio } fro
  */
 
 /** Vertical form shell with a comfortable max width. */
-export const recipeForm = 'flex w-80 flex-col gap-5';
+export const recipeForm = 'flex w-100 flex-col gap-5';
 
 /** A single field: stacked label, control, description and error. */
 export const recipeField = 'flex flex-col gap-1.5';

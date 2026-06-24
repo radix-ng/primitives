@@ -234,13 +234,22 @@ export class RdxFormRoot {
      * **Displayed** aggregate invalidity — the source for the host `data-invalid` (a presentation
      * attribute). A field counts only once its own `validationMode` reveals it (`displayValid() === false`),
      * so the form stays **neutral on load** while its fields are, instead of leaking the gated state.
-     * Distinct from {@link anyInvalid} (actual, eager). A form-level provider's invalidity with no displayed
-     * field (rare) is revealed conservatively — only under `validationMode="always"` or after a submit
-     * attempt, never from `anyTouched` (one field's touch must not light the form for another untouched one).
+     * Distinct from {@link anyInvalid} (actual, eager).
+     *
+     * When **any** display-aware field is registered, those fields are the *authoritative* displayed
+     * source and win outright — a form-level provider's aggregate `invalid()` is **not** added on top
+     * (it would contradict a field that overrode its own `validationMode` to stay neutral; and the
+     * fields already reflect that provider's per-name state). The provider fallback applies only when no
+     * display-aware field carries the state, and then conservatively — under `validationMode="always"`
+     * or after a submit attempt, never from `anyTouched`.
      */
     readonly anyDisplayedInvalid = computed(() => {
-        if (this.fields().some((field) => field.displayValid?.() === false)) {
+        const fields = this.fields();
+        if (fields.some((field) => field.displayValid?.() === false)) {
             return true;
+        }
+        if (fields.some((field) => field.displayValid !== undefined)) {
+            return false;
         }
         const providerInvalid = this.stateProvider()?.invalid?.() ?? false;
         return providerInvalid && (this.validationMode() === 'always' || this.submitAttempted());

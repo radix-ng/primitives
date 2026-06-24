@@ -352,10 +352,11 @@ export class RdxFieldRoot {
     readonly invalidState = computed(() => this.validState() === false);
 
     /**
-     * Boolean **actual** invalidity — ungated by the display mode. The enclosing Form aggregates this
-     * (`anyInvalid` / `data-invalid` / submit-block / focus-first-invalid), so a field that is really
-     * invalid but displayed neutral still counts as invalid to the Form. Server errors + provider error
-     * content + the provider/input `invalid`.
+     * Boolean **actual** invalidity — ungated by the display mode. The enclosing Form aggregates this into
+     * `anyInvalid` (→ submit-block / focus-first-invalid), so a field that is really invalid but displayed
+     * neutral still blocks submit. The form's presentation `data-invalid` comes from the *displayed*
+     * aggregate (`anyDisplayedInvalid`) instead — not from this. Server errors + provider error content +
+     * the provider/input `invalid`.
      */
     readonly actualInvalidState = computed(() => this.serverErrors().length > 0 || this.clientInvalidState());
     readonly disabledState = computed(() => this.resolve('disabled', () => this.disabled()));

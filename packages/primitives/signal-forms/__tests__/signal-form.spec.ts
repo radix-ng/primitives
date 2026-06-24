@@ -328,3 +328,57 @@ describe('RdxSignalForm — a server error blocks submit even when the client mo
         expect(host.submitted).toBe(true);
     });
 });
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [FormField, RdxFormRoot, RdxFieldRoot, RdxSignalForm],
+    // Form is eager (`always`) but the field overrides to `onSubmit`. With rdxSignalForm invalid on load,
+    // the field stays neutral — and the form must NOT light up `data-invalid` from the provider fallback,
+    // because a display-aware field is registered (the field is the authoritative displayed source).
+    template: `
+        <form [rdxSignalForm]="formTree" validationMode="always" rdxFormRoot>
+            <div rdxFieldRoot name="email" validationMode="onSubmit">
+                <input [formField]="email" />
+            </div>
+        </form>
+    `
+})
+class FieldModeOverrideHost {
+    readonly model = signal({ email: '' });
+    readonly formTree = form(this.model, (path) => {
+        required(path.email, { message: 'Required.' });
+    });
+
+    get email() {
+        return this.formTree.email;
+    }
+}
+
+describe('RdxSignalForm — a field validationMode override is not contradicted by the form provider fallback', () => {
+    let fixture: ComponentFixture<FieldModeOverrideHost>;
+    let fieldEl: HTMLElement;
+    let formEl: HTMLFormElement;
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [FieldModeOverrideHost] });
+        fixture = TestBed.createComponent(FieldModeOverrideHost);
+        fixture.detectChanges();
+        fieldEl = fixture.debugElement.query(By.css('[rdxFieldRoot]')).nativeElement;
+        formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+    });
+
+    it('keeps BOTH the field and the form neutral on load (provider fallback yields to the field)', () => {
+        expect(fieldEl.getAttribute('data-invalid')).toBeNull();
+        expect(formEl.getAttribute('data-invalid')).toBeNull();
+        // …actual invalidity is still tracked for the submit guard.
+        const formRoot = fixture.debugElement.query(By.directive(RdxFormRoot)).injector.get(RdxFormRoot);
+        expect(formRoot.anyInvalid()).toBe(true);
+    });
+
+    it('reveals both once a submit is attempted (the field override is onSubmit)', () => {
+        formEl.dispatchEvent(new SubmitEvent('submit', { cancelable: true, bubbles: true }));
+        fixture.detectChanges();
+        expect(fieldEl.getAttribute('data-invalid')).toBe('');
+        expect(formEl.getAttribute('data-invalid')).toBe('');
+    });
+});
