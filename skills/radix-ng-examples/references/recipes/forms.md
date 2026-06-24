@@ -10,13 +10,56 @@ the engine your app already uses and keep identical accessible markup.
 ## Pick your form library
 
 Start by selecting your library, then follow the guide to build forms with Radix NG and that library.
-`target="_top"` is used so the links navigate the Storybook manager, not the docs iframe.
 
-- <a href="./?path=/docs/recipes-forms-signal-forms--docs" target="_top">**Angular Signal Forms**</a> —
-  the framework-native, signals-first engine. **Recommended** for Angular: the `rdxSignalField` adapter
-  reports field state into `Field` automatically.
-- <a href="./?path=/docs/recipes-forms-tanstack-form--docs" target="_top">**TanStack Form**</a> —
-  headless form state, validated with **Zod**. A manual integration with `Field`.
+<div className="sb-unstyled not-prose mt-8 grid gap-4 sm:grid-cols-2 sm:gap-6">
+  <a
+    className="group border-border bg-background hover:border-foreground/20 flex flex-col rounded-2xl border p-6 no-underline shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+    href="./?path=/docs/recipes-forms-signal-forms--docs"
+    target="_top"
+  >
+    <span className="flex items-center justify-between">
+      <span className="border-border bg-muted text-foreground flex size-12 items-center justify-center rounded-xl border">
+        <svg viewBox="0 0 24 24" className="size-7" fill="currentColor" aria-hidden="true">
+          <path d="M9.931 12.645h4.138L11.996 7.74M11.996 0L.622 4.06l1.732 15.025L11.996 24l9.642-4.915L23.378 4.06 11.996 0zM18.39 17.426h-2.337l-1.255-3.157H9.166l-1.244 3.157H5.61l6.386-14.054 6.395 14.054z" />
+        </svg>
+      </span>
+    </span>
+    <span className="text-foreground mt-5 block text-lg font-semibold tracking-tight">Angular Signal Forms</span>
+    <span className="text-muted-foreground mt-1.5 block flex-1 text-sm leading-relaxed">
+      Framework-native and signals-first — the recommended engine for Angular apps.
+    </span>
+    <span className="text-foreground/60 group-hover:text-foreground mt-5 inline-flex items-center gap-1.5 text-sm font-medium transition-colors">
+      View recipe
+      <svg viewBox="0 0 24 24" className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+        <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </span>
+  </a>
+
+  <a
+    className="group border-border bg-background hover:border-foreground/20 flex flex-col rounded-2xl border p-6 no-underline shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+    href="./?path=/docs/recipes-forms-tanstack-form--docs"
+    target="_top"
+  >
+    <span className="flex items-center justify-between">
+      <span className="border-border bg-muted text-foreground flex size-12 items-center justify-center rounded-xl border">
+        <svg viewBox="0 0 24 24" className="size-7" fill="currentColor" aria-hidden="true">
+          <path d="M6.93 13.688a.343.343 0 0 1 .468.132l.063.106c.48.851.98 1.66 1.5 2.426a35.65 35.65 0 0 0 2.074 2.742.345.345 0 0 1-.039.484l-.074.066c-2.543 2.223-4.191 2.665-4.953 1.333-.746-1.305-.477-3.672.808-7.11a.344.344 0 0 1 .153-.18ZM17.75 16.3a.34.34 0 0 1 .395.27l.02.1c.628 3.286.187 4.93-1.325 4.93-1.48 0-3.36-1.402-5.649-4.203a.327.327 0 0 1-.074-.222c0-.188.156-.34.344-.34h.121a32.984 32.984 0 0 0 2.809-.098c1.07-.086 2.191-.23 3.359-.437zm.871-6.977a.353.353 0 0 1 .445-.21l.102.034c3.262 1.11 4.504 2.332 3.719 3.664-.766 1.305-2.993 2.254-6.684 2.848a.362.362 0 0 1-.238-.047.343.343 0 0 1-.125-.476l.062-.106a34.07 34.07 0 0 0 1.367-2.523c.477-.989.93-2.051 1.352-3.184zM7.797 8.34a.362.362 0 0 1 .238.047.343.343 0 0 1 .125.476l-.062.106a34.088 34.088 0 0 0-1.367 2.523c-.477.988-.93 2.051-1.352 3.184a.353.353 0 0 1-.445.21l-.102-.034C1.57 13.742.328 12.52 1.113 11.188 1.88 9.883 4.106 8.934 7.797 8.34Zm5.281-3.984c2.543-2.223 4.192-2.664 4.953-1.332.746 1.304.477 3.671-.808 7.109a.344.344 0 0 1-.153.18.343.343 0 0 1-.468-.133l-.063-.106a34.64 34.64 0 0 0-1.5-2.426 35.65 35.65 0 0 0-2.074-2.742.345.345 0 0 1 .039-.484ZM7.285 2.274c1.48 0 3.364 1.402 5.649 4.203a.349.349 0 0 1 .078.218.348.348 0 0 1-.348.344l-.117-.004a34.584 34.584 0 0 0-2.809.102 35.54 35.54 0 0 0-3.363.437.343.343 0 0 1-.394-.273l-.02-.098c-.629-3.285-.188-4.93 1.324-4.93Zm5.43 4.832h-1.45a.638.638 0 0 0-.552.316L9.97 8.75a.644.644 0 0 0 0 .629l.743 1.328a.638.638 0 0 0 .55.316h1.45a.627.627 0 0 0 .547-.316l.747-1.328a.644.644 0 0 0 0-.63l-.746-1.327a.627.627 0 0 0-.547-.316zM18.98 7.75c.391-1.895.477-3.344.223-4.398-.148-.63-.422-1.137-.84-1.508-.441-.39-1-.582-1.625-.582-1.035 0-2.12.472-3.281 1.367a14.9 14.9 0 0 0-1.473 1.316 1.206 1.206 0 0 0-.136-.144c-1.446-1.285-2.66-2.082-3.7-2.39-.617-.184-1.195-.2-1.722-.024-.559.187-1.004.574-1.317 1.117-.515.894-.652 2.074-.46 3.527.078.59.214 1.235.402 1.934a1.119 1.119 0 0 0-.215.047C3.008 8.62 1.71 9.269.926 10.015c-.465.442-.77.938-.883 1.481-.113.578 0 1.156.312 1.7.516.894 1.465 1.597 2.817 2.155.543.223 1.156.426 1.844.61a1.023 1.023 0 0 0-.07.226c-.391 1.891-.477 3.344-.223 4.395.148.629.425 1.14.84 1.508.44.39 1 .582 1.625.582 1.035 0 2.12-.473 3.28-1.364.477-.37.973-.816 1.489-1.336a1.2 1.2 0 0 0 .195.227c1.446 1.285 2.66 2.082 3.7 2.39.617.184 1.195.2 1.722.024.559-.187 1.004-.574 1.317-1.117.515-.894.652-2.074.46-3.527a14.941 14.941 0 0 0-.425-2.012 1.225 1.225 0 0 0 .238-.047c1.828-.61 3.125-1.258 3.91-2.004.465-.441.77-.937.883-1.48.113-.578 0-1.157-.313-1.7-.515-.894-1.464-1.597-2.816-2.156a14.576 14.576 0 0 0-1.906-.625.865.865 0 0 0 .059-.195z" />
+        </svg>
+      </span>
+    </span>
+    <span className="text-foreground mt-5 block text-lg font-semibold tracking-tight">TanStack Form</span>
+    <span className="text-muted-foreground mt-1.5 block flex-1 text-sm leading-relaxed">
+      Headless form state, validated with Zod. A manual integration with the Field parts.
+    </span>
+    <span className="text-foreground/60 group-hover:text-foreground mt-5 inline-flex items-center gap-1.5 text-sm font-medium transition-colors">
+      View recipe
+      <svg viewBox="0 0 24 24" className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+        <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </span>
+  </a>
+</div>
 
 ## What's the same
 
