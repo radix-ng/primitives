@@ -50,7 +50,9 @@ export interface RdxInputValueChangeEvent {
         '[attr.id]': 'id()',
         '[attr.name]': 'name() || undefined',
         '[attr.aria-describedby]': 'describedBy()',
-        '[attr.aria-invalid]': 'invalidState() ? "true" : undefined',
+        // Validity follows the field's tri-state `displayValid` when inside a `rdxFieldRoot` (neutral →
+        // no aria-invalid, neither data-valid nor data-invalid), else the input's own binary invalidity.
+        '[attr.aria-invalid]': 'displayValid() === false ? "true" : undefined',
         '[attr.aria-required]': 'requiredState() ? "true" : undefined',
         '[attr.aria-disabled]': 'disabledState() ? "true" : undefined',
         '[attr.disabled]': 'disabledState() ? "" : undefined',
@@ -59,8 +61,8 @@ export interface RdxInputValueChangeEvent {
         '[attr.minlength]': 'minLength() ?? undefined',
         '[attr.maxlength]': 'maxLength() ?? undefined',
         '[attr.pattern]': 'patternAttr()',
-        '[attr.data-invalid]': 'dataAttr(invalidState())',
-        '[attr.data-valid]': 'dataAttr(!invalidState())',
+        '[attr.data-invalid]': 'dataAttr(displayValid() === false)',
+        '[attr.data-valid]': 'dataAttr(displayValid() === true)',
         '[attr.data-disabled]': 'dataAttr(disabledState())',
         '[attr.data-required]': 'dataAttr(requiredState())',
         '[attr.data-readonly]': 'dataAttr(readonly())',
@@ -203,8 +205,16 @@ export class RdxInputDirective implements RdxFormValueControl<RdxInputValue | un
      */
     readonly touch = output<void>();
 
-    protected readonly invalidState = computed(
-        () => this.invalid() || (this.errors()?.length ?? 0) > 0 || Boolean(this.fieldRootContext?.invalidState())
+    /** The input's own binary invalidity (its `invalid` input or a non-empty `errors` list). */
+    private readonly ownInvalid = computed(() => this.invalid() || (this.errors()?.length ?? 0) > 0);
+
+    /**
+     * Tri-state *displayed* validity: inside a `rdxFieldRoot` the field's gated `validState` is the single
+     * source (so a field whose `validationMode` defers display (e.g. `onBlur`) keeps the input neutral until revealed), otherwise
+     * the input's own binary invalidity. `true` valid / `false` invalid / `null` neutral.
+     */
+    protected readonly displayValid = computed<boolean | null>(() =>
+        this.fieldRootContext ? this.fieldRootContext.validState() : this.ownInvalid() ? false : true
     );
     protected readonly disabledState = computed(
         () => this.disabled() || Boolean(this.fieldRootContext?.disabledState())

@@ -10,8 +10,8 @@ import { injectTimeFieldsRootContext } from './time-field-context.token';
         '[attr.data-rdx-date-field-segment]': 'part()',
         '[attr.aria-disabled]': 'disabled() ? "" : undefined',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
-        '[attr.data-invalid]': 'isInvalid() ? "" : undefined',
-        '[attr.aria-invalid]': 'isInvalid() ? true : undefined',
+        '[attr.data-invalid]': 'displayValid() === false ? "" : undefined',
+        '[attr.aria-invalid]': 'displayValid() === false ? true : undefined',
 
         '(mousedown)': 'part() !== "literal" && handleSegmentClick($event)',
         '(keydown)': 'part() !== "literal" && handleSegmentKeydown($event)',
@@ -51,6 +51,9 @@ export class RdxTimeFieldInputDirective {
      * @ignore
      */
     readonly isInvalid = computed(() => this.rootContext.invalidState());
+
+    /** @ignore Tri-state display validity from the root (gated by an enclosing Field). */
+    readonly displayValid = computed(() => this.rootContext.displayValid());
 
     /**
      * @ignore

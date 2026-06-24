@@ -10,6 +10,8 @@ export interface DateFieldContextToken {
     isInvalid: Signal<boolean>;
     /** Effective invalid: the built-in range/availability check OR the form-driven invalid state. */
     invalidState: Signal<boolean>;
+    /** Tri-state displayed validity (`true`/`false`/`null`): the field's gated state inside a Field, else own. */
+    displayValid: Signal<boolean | null>;
     placeholder: ModelSignal<DateValue>;
     hourCycle: InputSignal<HourCycle>;
     step$: Signal<DateStep>;

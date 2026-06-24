@@ -17,7 +17,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
         '[attr.id]': 'id()',
         '[attr.aria-describedby]': 'describedBy()',
         '[attr.aria-controls]': 'triggerInteraction.ariaControls()',
-        '[attr.aria-invalid]': 'invalidState() ? "true" : undefined',
+        '[attr.aria-invalid]': 'displayValid() === false ? "true" : undefined',
         '[attr.aria-required]': 'requiredState() ? "true" : undefined',
         '[attr.aria-readonly]': 'readOnlyState() ? "true" : undefined',
         '[attr.disabled]': 'isDisabled() ? "" : undefined',
@@ -25,8 +25,8 @@ const attr = (value: boolean) => (value ? '' : undefined);
         '[attr.data-popup-open]': 'triggerInteraction.dataPopupOpen()',
         '[attr.data-placeholder]': 'dataAttr(rootContext.isEmptyModelValue())',
         '[attr.data-disabled]': 'dataAttr(isDisabled())',
-        '[attr.data-invalid]': 'dataAttr(invalidState())',
-        '[attr.data-valid]': 'dataAttr(!invalidState())',
+        '[attr.data-invalid]': 'dataAttr(displayValid() === false)',
+        '[attr.data-valid]': 'dataAttr(displayValid() === true)',
         '[attr.data-required]': 'dataAttr(requiredState())',
         '[attr.data-readonly]': 'dataAttr(readOnlyState())',
         '[attr.data-touched]': 'dataAttr(touchedState())',
@@ -65,6 +65,14 @@ export class RdxSelectTrigger {
 
     protected readonly invalidState = computed(
         () => this.rootContext.invalidState() || Boolean(this.fieldRootContext?.invalidState())
+    );
+    /**
+     * Tri-state *displayed* validity: when inside a `rdxFieldRoot` the field's gated `validState` is the
+     * single source (so the field's `validationMode` keeps the trigger neutral until revealed), otherwise
+     * the trigger's own binary invalidity.
+     */
+    protected readonly displayValid = computed<boolean | null>(() =>
+        this.fieldRootContext ? this.fieldRootContext.validState() : this.invalidState() ? false : true
     );
     protected readonly requiredState = computed(
         () => this.rootContext.required() || Boolean(this.fieldRootContext?.requiredState())

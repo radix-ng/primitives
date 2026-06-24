@@ -110,6 +110,33 @@ export function formUiStateContext(state: RdxFormUiState): RdxFormUiStateContext
 export const RDX_FORM_UI_STATE = new InjectionToken<RdxFormUiState>('RdxFormUiState');
 
 /**
+ * Tri-state *displayed* validity (`true` valid / `false` invalid / `null` neutral) an enclosing `Field`
+ * exposes so a control can reflect the field's single, gated display-state instead of its own eager
+ * invalid. A control inside a `rdxFieldRoot` reads this for its `data-valid` / `data-invalid` /
+ * `aria-invalid`; standalone (token absent) it falls back to its own binary invalidity. This keeps the
+ * field root, the control, and any trigger/group part on one display-state (Base UI's `valid: boolean |
+ * null`). `Field` provides it (`useFactory` over the root's `validState`).
+ */
+export const RDX_FIELD_VALIDITY = new InjectionToken<Signal<boolean | null>>('RdxFieldValidity');
+
+/**
+ * Tri-state display validity: when inside a `Field` the field's gated `validState` is the **single
+ * source** (the control reflects it, including its `validationMode` neutral state); standalone, the
+ * control's own binary invalidity.
+ *
+ * **Contract:** inside a `Field` a control's own `invalid` / `errors` inputs are **not** displayed — the
+ * Field owns displayed validity. Drive validity through the Field instead: bind `rdxSignalField`
+ * (Signal Forms), or set `[invalid]` on `rdxFieldRoot`. The control's own `invalid`/`errors` are for
+ * standalone use.
+ */
+export function resolveDisplayValid(
+    fieldValidity: Signal<boolean | null> | null,
+    ownInvalid: Signal<boolean>
+): boolean | null {
+    return fieldValidity ? fieldValidity() : ownInvalid() ? false : true;
+}
+
+/**
  * Provide a control's {@link RdxFormUiState} on its host element so {@link RdxFormUiStateHost} can
  * reflect it. Pair with `hostDirectives: [RdxFormUiStateHost]`:
  *
@@ -141,9 +168,11 @@ export function provideFormUiState(state: () => RdxFormUiState): Provider {
  */
 @Directive({
     host: {
-        '[attr.aria-invalid]': 'formUi.invalidState() ? "true" : undefined',
-        '[attr.data-invalid]': 'formUi.invalidState() ? "" : undefined',
-        '[attr.data-valid]': 'formUi.invalidState() ? undefined : ""',
+        // Tri-state via the enclosing Field when present (neutral → neither data-valid nor data-invalid),
+        // else the control's own binary invalidity. `touched`/`dirty` always reflect the control.
+        '[attr.aria-invalid]': 'displayValid() === false ? "true" : undefined',
+        '[attr.data-invalid]': 'displayValid() === false ? "" : undefined',
+        '[attr.data-valid]': 'displayValid() === true ? "" : undefined',
         '[attr.data-touched]': 'formUi.touchedState() ? "" : undefined',
         '[attr.data-dirty]': 'formUi.dirtyState() ? "" : undefined',
         '(focusout)': 'formUi.markAsTouched()'
@@ -152,6 +181,10 @@ export function provideFormUiState(state: () => RdxFormUiState): Provider {
 export class RdxFormUiStateHost {
     /** @ignore The injected state the host bindings read. */
     protected readonly formUi = inject(RDX_FORM_UI_STATE);
+    private readonly fieldValidity = inject(RDX_FIELD_VALIDITY, { optional: true });
+
+    /** @ignore Tri-state display validity (enclosing Field's gated state, else own invalidity). */
+    protected readonly displayValid = computed(() => resolveDisplayValid(this.fieldValidity, this.formUi.invalidState));
 }
 
 /**
@@ -196,6 +229,22 @@ export abstract class RdxFormUiControlBase {
         dirty: this.dirty,
         cva: this.formUiTouchTarget()
     });
+
+    /** The enclosing Field's tri-state display validity, if any. `protected` so a control whose own
+     * invalidity is richer than `formUi.invalidState` (e.g. date/time-field add a parse check) can build
+     * its own `displayValid` from it. */
+    protected readonly fieldValidity = inject(RDX_FIELD_VALIDITY, { optional: true });
+
+    /**
+     * Tri-state *displayed* validity for controls that bind their own host attributes (radio, switch,
+     * number-field): the enclosing Field's gated state when inside a `rdxFieldRoot`, else this control's
+     * own binary invalidity (`formUi.invalidState`). Bind `data-valid`/`data-invalid`/`aria-invalid` to
+     * this so a neutral field shows neither. Controls whose `invalidState` is richer than
+     * `formUi.invalidState` override this with `resolveDisplayValid(this.fieldValidity, this.invalidState)`.
+     */
+    readonly displayValid: Signal<boolean | null> = computed(() =>
+        resolveDisplayValid(this.fieldValidity, this.formUi.invalidState)
+    );
 
     /**
      * Override to bridge the control's `ControlValueAccessor` into `markAsTouched` (dual controls —

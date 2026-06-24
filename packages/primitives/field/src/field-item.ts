@@ -1,5 +1,5 @@
 import { booleanAttribute, computed, Directive, inject, input, signal } from '@angular/core';
-import { BooleanInput, injectId } from '@radix-ng/primitives/core';
+import { BooleanInput, injectId, RDX_FIELD_VALIDITY } from '@radix-ng/primitives/core';
 import { provideFieldRootContext, RdxFieldRoot, RdxFieldRootContext } from './field-root';
 
 const attr = (value: boolean) => (value ? '' : undefined);
@@ -25,6 +25,8 @@ const fieldItemContext = (): RdxFieldRootContext => {
         errorIds: root.errorIds,
         messages: root.messages,
         notifyEdited: () => root.notifyEdited(),
+        validState: root.validState,
+        formSubmitAttempted: root.formSubmitAttempted,
         invalidState: root.invalidState,
         disabledState: item.disabledState,
         requiredState: root.requiredState,
@@ -59,10 +61,15 @@ const fieldItemContext = (): RdxFieldRootContext => {
 @Directive({
     selector: '[rdxFieldItem]',
     exportAs: 'rdxFieldItem',
-    providers: [provideFieldRootContext(fieldItemContext)],
+    providers: [
+        provideFieldRootContext(fieldItemContext),
+        // Items delegate validity to the root; expose the root's tri-state to controls inside the item.
+        { provide: RDX_FIELD_VALIDITY, useFactory: () => inject(RdxFieldItem).root.validState }
+    ],
     host: {
-        '[attr.data-invalid]': 'dataAttr(root.invalidState())',
-        '[attr.data-valid]': 'dataAttr(!root.invalidState())',
+        // Tri-state, mirroring the root: neither attribute while the root's `validState` is neutral.
+        '[attr.data-invalid]': 'dataAttr(root.validState() === false)',
+        '[attr.data-valid]': 'dataAttr(root.validState() === true)',
         '[attr.data-disabled]': 'dataAttr(disabledState())',
         '[attr.data-required]': 'dataAttr(root.requiredState())',
         '[attr.data-dirty]': 'dataAttr(root.dirtyState())',

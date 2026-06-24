@@ -1,0 +1,217 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './tanstack-form.stories';
+
+<Meta title="Recipes/Forms/TanStack Form" />
+
+# TanStack Form
+
+#### Build accessible forms with **TanStack Form** and **Zod**, using the headless `Field` parts.
+
+This guide ports the shadcn/ui [TanStack Form](https://tanstack.com/form) guide to Angular. You'll
+create a form with `injectForm`, validate it with a **Zod** schema through TanStack's Standard Schema
+support, handle errors, and keep everything accessible — the headless `Field` markup is identical to the
+Signal Forms recipe, only the engine differs.
+
+> **Angular-first note:** [Signal Forms](?path=/docs/recipes-forms-signal-forms--docs) is the recommended
+> path — its `rdxSignalField` adapter reports field state into `Field` automatically, so you write no
+> per-field `[invalid]`/`[touched]`. TanStack exposes a field `api` rather than a `ControlValueAccessor`,
+> so this recipe stays a **manual integration**: each field forwards its `[invalid]`/`[touched]` and the
+> controlled `[value]`/`(input)`/`(blur)` wiring itself. There's no TanStack runtime adapter (the
+> published library has no TanStack dependency).
+
+> **Note:** Browser validation is intentionally disabled (`novalidate` on the `<form>`) so schema
+> validation and the `Field` error region own the messaging — in production code you'd keep basic
+> browser validation as a fallback.
+
+## Demo
+
+A bug report with a text input and a textarea. On submit the values are validated and any errors are
+shown next to each field.
+
+<Canvas sourceState="hidden" of={Stories.BugReport} />
+
+## Approach
+
+- `injectForm` manages form state; the `[tanstackField]` directive exposes a per-field `api` (value,
+  `handleChange`, `handleBlur`, `state.meta`) via its `field` export (`#title="field"`).
+- The headless `Field` parts render the accessible label/description/error and wire `for` /
+  `aria-describedby` / `aria-invalid`.
+- Client-side validation uses **Zod** through Standard Schema, with real-time feedback.
+- A field is shown invalid once it is touched and no longer valid (`isTouched && !isValid`).
+
+## Anatomy
+
+```html
+<form (submit)="$event.preventDefault(); form.handleSubmit()" novalidate>
+    <ng-container [tanstackField]="form" name="title" [validators]="titleValidators" #title="field">
+        <div rdxFieldRoot [invalid]="isInvalid(title)" [touched]="title.api.state.meta.isTouched" required>
+            <label rdxFieldLabel>Bug Title</label>
+            <input
+                rdxFieldControl
+                [value]="title.api.state.value"
+                (input)="title.api.handleChange($any($event.target).value)"
+                (blur)="title.api.handleBlur()"
+            />
+            <p rdxFieldDescription>Provide a concise title for your bug report.</p>
+            <p rdxFieldError>{{ messages(title) }}</p>
+        </div>
+    </ng-container>
+    <button type="submit">Submit</button>
+</form>
+```
+
+## Form
+
+### Create a schema
+
+Define the shape of the form with a Zod schema.
+
+```ts
+import { z } from 'zod';
+
+const formSchema = z.object({
+    title: z
+        .string()
+        .min(5, 'Bug title must be at least 5 characters.')
+        .max(32, 'Bug title must be at most 32 characters.'),
+    description: z
+        .string()
+        .min(20, 'Description must be at least 20 characters.')
+        .max(100, 'Description must be at most 100 characters.')
+});
+```
+
+### Set up the form
+
+Use `injectForm` to create the form instance, and attach the schema per field with the directive's
+`[validators]` input. TanStack accepts any Standard Schema, so the same Zod schema slice
+(`formSchema.shape.title`) drives both `onChange` (live feedback) and `onSubmit` (so a pristine submit
+also reports).
+
+```ts
+import { injectForm } from '@tanstack/angular-form';
+
+protected readonly titleValidators = {
+    onChange: formSchema.shape.title,
+    onSubmit: formSchema.shape.title
+};
+
+protected readonly reportForm = injectForm({
+    defaultValues: { title: '', description: '' },
+    onSubmit: ({ value }) => {
+        // value is validated and typed
+    }
+});
+```
+
+### Build the form
+
+<Canvas of={Stories.BugReport} />
+
+## Validation
+
+### Validation modes
+
+Attach a validator per trigger on the `[tanstackField]` directive's `validators` input:
+
+| Mode       | Description                          |
+| ---------- | ------------------------------------ |
+| `onChange` | Validation triggers on every change. |
+| `onBlur`   | Validation triggers on blur.         |
+| `onSubmit` | Validation triggers on submit.       |
+
+```ts
+protected readonly titleValidators = {
+    onChange: formSchema.shape.title,
+    onBlur: formSchema.shape.title,
+    onSubmit: formSchema.shape.title
+};
+```
+
+## Displaying errors
+
+Drive the `Field`'s state from the field's `meta` and gate display on interaction:
+
+- Bind `[invalid]` on `rdxFieldRoot` so it hides `rdxFieldError` and clears `aria-invalid` until invalid.
+- Read messages from `field.api.state.meta.errors` (Zod issues), deduped (a field may run `onChange`
+  + `onSubmit`).
+
+```ts
+protected isInvalid(field: FieldRef): boolean {
+    const meta = field.api.state.meta;
+    return meta.isTouched && !meta.isValid;
+}
+```
+
+## Working with different field types
+
+Compound Radix controls are controlled with `[value]`/`(onValueChange)` (or `[checked]`/
+`(onCheckedChange)`), piping the change into `handleChange`.
+
+- **Input / Textarea** — `[value]` + `(input)="…handleChange(…)"` + `(blur)="…handleBlur()"`.
+- **Select** — `[value]` on `rdxSelectRoot`, `(onValueChange)="…handleChange($any($event.value))"`.
+- **Radio group** — `[value]` on `rdxRadioRoot`, `(onValueChange)`.
+- **Checkbox group** — `[value]` + `[allValues]` on `rdxCheckboxGroup`, `(onValueChange)`.
+- **Switch** — `[checked]` on `rdxSwitchRoot`, `(onCheckedChange)="…handleChange($any($event.checked))"`.
+
+```html
+<!-- Select -->
+<div rdxSelectRoot [value]="area.api.state.value" (onValueChange)="area.api.handleChange($any($event.value))">
+    <button rdxSelectTrigger (blur)="area.api.handleBlur()">
+        <span rdxSelectValue placeholder="Select an area…" #v="rdxSelectedValue">{{ v.slotText() }}</span>
+    </button>
+    <!-- …portal / popup / items… -->
+</div>
+```
+
+### Complex form
+
+A complete issue form combining input, select, radio group, checkbox group, switch and textarea,
+validated by one Zod schema (each field validates against `formSchema.shape.<key>`).
+
+<Canvas of={Stories.Complex} />
+
+## Resetting the form
+
+Call `reset()` to restore the default values.
+
+```html
+<button type="button" (click)="form.reset()">Reset</button>
+```
+
+## Array fields
+
+`mode="array"` enables `pushValue` / `removeValue` on the parent field. Each row is its own
+`[tanstackField]` addressed with bracket notation (`emails[i].address`); the parent validates the array
+length while each row validates its own address.
+
+```ts
+const emailsLength = z
+    .array(z.unknown())
+    .min(1, 'Add at least one email address.')
+    .max(5, 'You can add up to 5 email addresses.');
+const address = z.email('Enter a valid email address.');
+```
+
+```html
+<ng-container [tanstackField]="form" name="emails" mode="array" [validators]="emailsValidators" #emails="field">
+    @for (entry of $any(emails.api.state.value); track index; let index = $index) {
+        <ng-container
+            [tanstackField]="form"
+            [name]="'emails[' + index + '].address'"
+            [validators]="addressValidators"
+            #sub="field"
+        >
+            <!-- input bound to sub.api.state.value -->
+        </ng-container>
+    }
+    <button type="button" (click)="emails.api.pushValue({ address: '' })">Add email address</button>
+</ng-container>
+```
+
+<Canvas of={Stories.ArrayFields} />
+
+## See also
+
+- **Primitives / Field**, **Primitives / Form** — the headless layers these recipes compose.
+- **Recipes / Forms / Signal Forms** — the same forms built with Angular Signal Forms.

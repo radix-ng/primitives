@@ -40,7 +40,7 @@ class Host {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsSelect, RdxFieldRoot],
     template: `
-        <div [invalid]="invalid()" [required]="required()" rdxFieldRoot>
+        <div [invalid]="invalid()" [required]="required()" validationMode="always" rdxFieldRoot>
             <button rdxSelectTrigger rdxSelectRoot>
                 <span rdxSelectValue placeholder="Select…"></span>
             </button>

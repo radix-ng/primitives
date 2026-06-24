@@ -11,7 +11,7 @@ import { RdxFieldRoot } from '../src/field-root';
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxFieldRoot, RdxFieldItem, RdxFieldLabel, RdxFieldControl, RdxFieldDescription],
     template: `
-        <div [invalid]="invalid()" [disabled]="rootDisabled()" rdxFieldRoot>
+        <div [invalid]="invalid()" [disabled]="rootDisabled()" validationMode="always" rdxFieldRoot>
             <div [disabled]="itemADisabled()" rdxFieldItem>
                 <label rdxFieldLabel>Option A</label>
                 <input id="ctrl-a" rdxFieldControl />

@@ -1,4 +1,5 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import { RdxSignalField } from '../src/signal-field';
 import { RdxSignalForm } from '../src/signal-form';
 import * as SignalFormsStories from './signal-forms.stories';
 
@@ -71,6 +72,40 @@ There are **two modes** for routing a field's validation messages into `rdxField
 Using **both** for the same field is harmless — `messages()` deduplicates by text, so a message shared by
 the two sources renders once — but prefer a single mode for clarity.
 
+### When validity is displayed (`validationMode`)
+
+`rdxSignalField` reports the field's **actual** state; the `Field` decides **when** to surface it from
+its `validationMode` (set on `rdxFormRoot`, or per field on `rdxFieldRoot`). The default is `'onBlur'`:
+an empty required field stays **neutral** — neither `data-valid` nor `data-invalid`, `rdxFieldError`
+hidden (Base UI's tri-state `valid: boolean | null`) — until it is touched or the form is submitted, then
+it reflects real validity. No manual `[invalid]`/`[touched]` wiring.
+
+| Mode         | Reveals validity when…                          |
+| ------------ | ----------------------------------------------- |
+| `'always'`   | immediately (eager)                             |
+| `'onChange'` | the value changes (dirty), or touched/submitted |
+| `'onBlur'`   | the field is touched, or submitted (default)    |
+| `'onSubmit'` | a submit has been attempted                     |
+
+```html
+<!-- onBlur is the default; set another mode on the form (or a field) to override -->
+<form rdxFormRoot validationMode="onSubmit">…</form>
+```
+
+The Form records the submit attempt **before** checking validity, so an invalid pristine submit is
+blocked (and the first invalid field focused) and its errors revealed — the submit handler needs no
+`markAsTouched()` ritual:
+
+```ts
+onSubmit() {
+    // Only runs on a valid submit; rdxFormRoot blocks + reveals errors otherwise.
+}
+```
+
+> Only server/external errors (`rdxFormRoot`'s `errors` input) bypass the gate — they show immediately.
+> Client validation is mode-gated whether it flows through the per-field `rdxSignalField` **or** the
+> form-level `rdxSignalForm` name-routing.
+
 ## Control authoring — the shared state surface
 
 Every Radix NG form control exposes the optional Signal Forms `FormUiControl` state
@@ -78,6 +113,12 @@ Every Radix NG form control exposes the optional Signal Forms `FormUiControl` st
 the control can reflect it as `data-*` / `aria-invalid`. Instead of re-declaring that block on every
 primitive, three reusable pieces live in **`@radix-ng/primitives/core`** — controls inherit and compose
 them rather than copy-paste:
+
+> **Single-source contract.** A control's own `invalid` / `errors` inputs reflect on its `data-*` /
+> `aria-invalid` only when it is used **standalone**. **Inside a `Field`, the `Field` owns the displayed
+> validity** (so the control honours the field's `validationMode` neutral state, and field + control never
+> disagree). To make a field invalid, drive it through the Field: `rdxSignalField` (Signal Forms) or
+> `[invalid]` on `rdxFieldRoot` — not the control's own `invalid` input.
 
 - **`RdxFormUiControlBase`** — an abstract `@Directive()` that declares the five members **once** and
   builds the derived state (`formUi`). A control gets the whole surface with a single `extends` and only
@@ -124,7 +165,9 @@ collides with the shim's scalar `min`/`max`) — it still ships the same runtime
 
 ## API Reference
 
-`rdxSignalField` has no inputs — it reads the field from the co-located `[formField]` directive.
+`rdxSignalField` has no inputs — it reads the field from the co-located `[formField]` directive and
+reports its actual state. When validity is **displayed** is controlled by `validationMode` on `rdxFormRoot`
+/ `rdxFieldRoot`, not on the adapter.
 
 `rdxSignalForm` takes the root field:
 

@@ -39,6 +39,8 @@ export interface RdxEditableValueChangeEvent {
 export type EditableRootContext = {
     disabled: Signal<boolean>;
     invalidState: Signal<boolean>;
+    /** Tri-state displayed validity (`true`/`false`/`null`): the field's gated state inside a Field, else own. */
+    displayValid: Signal<boolean | null>;
     touchedState: Signal<boolean>;
     dirtyState: Signal<boolean>;
     value: Signal<string | undefined>;
@@ -72,6 +74,7 @@ const rootContext = (): EditableRootContext => {
     return {
         disabled: context.disabled,
         invalidState: context.invalidState,
+        displayValid: context.displayValid,
         touchedState: context.touchedState,
         dirtyState: context.dirtyState,
         value: context.value,

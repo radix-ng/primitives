@@ -32,7 +32,7 @@ import { cn, demoButton, demoMenu } from '../storybook/styles';
                     Save
                 </button>
 
-                <ng-container #root="rdxMenuRoot" rdxMenuRoot>
+                <ng-container rdxMenuRoot>
                     <button
                         [class]="
                             cn(b.base, b.primary, b.size.icon, 'border-primary-foreground/20 rounded-l-none border-l')
@@ -43,22 +43,20 @@ import { cn, demoButton, demoMenu } from '../storybook/styles';
                         <svg lucideChevronDown size="16"></svg>
                     </button>
 
-                    @if (root.open()) {
-                        <div [class]="m.positioner" sideOffset="6" align="end" rdxMenuPositioner>
-                            <div [class]="m.popup" rdxMenuPopup>
-                                <button [class]="m.item" (click)="run('Save and duplicate')" rdxMenuItem>
-                                    Save and duplicate
-                                </button>
-                                <button [class]="m.item" (click)="run('Save as template')" rdxMenuItem>
-                                    Save as template
-                                </button>
-                                <div [class]="m.separator" rdxMenuSeparator></div>
-                                <button [class]="m.item" (click)="run('Save and close')" rdxMenuItem>
-                                    Save and close
-                                </button>
-                            </div>
+                    <div *rdxMenuPortal [class]="m.positioner" sideOffset="6" align="end" rdxMenuPositioner>
+                        <div [class]="m.popup" rdxMenuPopup>
+                            <button [class]="m.item" (onSelect)="run('Save and duplicate')" rdxMenuItem>
+                                Save and duplicate
+                            </button>
+                            <button [class]="m.item" (onSelect)="run('Save as template')" rdxMenuItem>
+                                Save as template
+                            </button>
+                            <div [class]="m.separator" rdxMenuSeparator></div>
+                            <button [class]="m.item" (onSelect)="run('Save and close')" rdxMenuItem>
+                                Save and close
+                            </button>
                         </div>
-                    }
+                    </div>
                 </ng-container>
             </div>
 
@@ -92,28 +90,27 @@ export class SplitButtonExample {
 ## Anatomy
 
 The two buttons sit inside one rounded shell. The primary button runs the default action; the chevron
-button is the menu trigger. Mount the positioner with `@if (root.open())` so the popup leaves the DOM
-when closed.
+button is the menu trigger. Mount the positioner with the structural `*rdxMenuPortal` so the popup
+teleports into `document.body` while open and animates out before unmounting. Bind each item's action to
+`(onSelect)` (not `(click)`) so keyboard activation records it too.
 
 ```html
 <div class="inline-flex rounded-md shadow-sm">
     <button class="rounded-r-none" rdxButton>Save</button>
 
-    <ng-container #root="rdxMenuRoot" rdxMenuRoot>
+    <ng-container rdxMenuRoot>
         <button class="rounded-l-none" aria-label="More save options" rdxMenuTrigger>
             <svg lucideChevronDown></svg>
         </button>
 
-        @if (root.open()) {
-            <div sideOffset="6" align="end" rdxMenuPositioner>
-                <div rdxMenuPopup>
-                    <button rdxMenuItem>Save and duplicate</button>
-                    <button rdxMenuItem>Save as template</button>
-                    <div rdxMenuSeparator></div>
-                    <button rdxMenuItem>Save and close</button>
-                </div>
+        <div *rdxMenuPortal sideOffset="6" align="end" rdxMenuPositioner>
+            <div rdxMenuPopup>
+                <button (onSelect)="run('Save and duplicate')" rdxMenuItem>Save and duplicate</button>
+                <button (onSelect)="run('Save as template')" rdxMenuItem>Save as template</button>
+                <div rdxMenuSeparator></div>
+                <button (onSelect)="run('Save and close')" rdxMenuItem>Save and close</button>
             </div>
-        }
+        </div>
     </ng-container>
 </div>
 ```
@@ -150,7 +147,7 @@ import { cn, demoButton, demoMenu } from '../storybook/styles';
                     Save
                 </button>
 
-                <ng-container #root="rdxMenuRoot" rdxMenuRoot>
+                <ng-container rdxMenuRoot>
                     <button
                         [class]="
                             cn(b.base, b.primary, b.size.icon, 'border-primary-foreground/20 rounded-l-none border-l')
@@ -161,22 +158,20 @@ import { cn, demoButton, demoMenu } from '../storybook/styles';
                         <svg lucideChevronDown size="16"></svg>
                     </button>
 
-                    @if (root.open()) {
-                        <div [class]="m.positioner" sideOffset="6" align="end" rdxMenuPositioner>
-                            <div [class]="m.popup" rdxMenuPopup>
-                                <button [class]="m.item" (click)="run('Save and duplicate')" rdxMenuItem>
-                                    Save and duplicate
-                                </button>
-                                <button [class]="m.item" (click)="run('Save as template')" rdxMenuItem>
-                                    Save as template
-                                </button>
-                                <div [class]="m.separator" rdxMenuSeparator></div>
-                                <button [class]="m.item" (click)="run('Save and close')" rdxMenuItem>
-                                    Save and close
-                                </button>
-                            </div>
+                    <div *rdxMenuPortal [class]="m.positioner" sideOffset="6" align="end" rdxMenuPositioner>
+                        <div [class]="m.popup" rdxMenuPopup>
+                            <button [class]="m.item" (onSelect)="run('Save and duplicate')" rdxMenuItem>
+                                Save and duplicate
+                            </button>
+                            <button [class]="m.item" (onSelect)="run('Save as template')" rdxMenuItem>
+                                Save as template
+                            </button>
+                            <div [class]="m.separator" rdxMenuSeparator></div>
+                            <button [class]="m.item" (onSelect)="run('Save and close')" rdxMenuItem>
+                                Save and close
+                            </button>
                         </div>
-                    }
+                    </div>
                 </ng-container>
             </div>
 

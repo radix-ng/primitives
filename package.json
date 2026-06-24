@@ -115,6 +115,7 @@
         "@swc/core": "1.15.8",
         "@swc/helpers": "0.5.23",
         "@tailwindcss/postcss": "^4.1.13",
+        "@tanstack/angular-form": "1.33.0",
         "@tanstack/angular-virtual": "5.0.4",
         "@testing-library/angular": "^15.2.0",
         "@testing-library/jest-dom": "^6.6.3",
@@ -174,7 +175,8 @@
         "verdaccio": "6.7.2",
         "vite": "8.0.16",
         "vite-tsconfig-paths": "^5.1.4",
-        "vitest": "4.1.8"
+        "vitest": "4.1.8",
+        "zod": "4.4.3"
     },
     "nx": {
         "includedScripts": []

@@ -19,16 +19,18 @@ import { injectNumberFieldRootContext } from './number-field-context';
         '[id]': 'rootContext.id()',
         '[value]': 'rootContext.inputValue()',
         '[attr.inputmode]': 'rootContext.inputMode()',
+        // Follows the field's tri-state `displayValid` (neutral → no aria-invalid); the required-empty a11y
+        // hint only fires standalone (where `displayValid` is `true`, never neutral inside a gated Field).
         '[attr.aria-invalid]':
-            'rootContext.invalidState() || (rootContext.required() && rootContext.currentValue() === null) ? "true" : undefined',
+            'rootContext.displayValid() === false || (rootContext.displayValid() === true && rootContext.required() && rootContext.currentValue() === null) ? "true" : undefined',
         '[disabled]': 'rootContext.isDisabled()',
         '[attr.readonly]': 'rootContext.readonly() ? "" : undefined',
         '[required]': 'rootContext.required()',
         '[attr.data-disabled]': 'rootContext.isDisabled() ? "" : undefined',
         '[attr.data-readonly]': 'rootContext.readonly() ? "" : undefined',
         '[attr.data-required]': 'rootContext.required() ? "" : undefined',
-        '[attr.data-invalid]': 'rootContext.invalidState() ? "" : undefined',
-        '[attr.data-valid]': 'rootContext.invalidState() ? undefined : ""',
+        '[attr.data-invalid]': 'rootContext.displayValid() === false ? "" : undefined',
+        '[attr.data-valid]': 'rootContext.displayValid() === true ? "" : undefined',
         '[attr.data-touched]': 'rootContext.touchedState() ? "" : undefined',
         '[attr.data-dirty]': 'rootContext.dirtyState() ? "" : undefined',
         '(focus)': 'onFocus($event)',

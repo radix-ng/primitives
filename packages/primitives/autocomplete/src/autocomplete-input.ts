@@ -40,7 +40,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
         '[attr.aria-labelledby]': 'root.labelId()',
         '[attr.aria-activedescendant]': 'root.activeId()',
         '[attr.aria-describedby]': 'describedBy()',
-        '[attr.aria-invalid]': 'invalidState() ? "true" : undefined',
+        '[attr.aria-invalid]': 'displayValid() === false ? "true" : undefined',
         '[attr.aria-required]': 'requiredState() ? "true" : undefined',
         '[attr.aria-disabled]': 'disabledState() ? "true" : undefined',
         '[attr.disabled]': 'disabledState() ? "" : undefined',
@@ -49,8 +49,8 @@ const attr = (value: boolean) => (value ? '' : undefined);
         '[value]': 'root.displayValue()',
         '[attr.data-popup-open]': 'dataAttr(root.open())',
         '[attr.data-list-empty]': 'dataAttr(root.visibleCount() === 0)',
-        '[attr.data-invalid]': 'dataAttr(invalidState())',
-        '[attr.data-valid]': 'dataAttr(!invalidState())',
+        '[attr.data-invalid]': 'dataAttr(displayValid() === false)',
+        '[attr.data-valid]': 'dataAttr(displayValid() === true)',
         '[attr.data-disabled]': 'dataAttr(disabledState())',
         '[attr.data-required]': 'dataAttr(requiredState())',
         '[attr.data-touched]': 'dataAttr(touchedState())',
@@ -83,6 +83,18 @@ export class RdxAutocompleteInput {
 
     protected readonly invalidState = computed(
         () => this.invalid() || this.root.invalidState() || Boolean(this.fieldRootContext?.invalidState())
+    );
+    /**
+     * Tri-state *displayed* validity: the enclosing Field's gated `validState` when inside a `rdxFieldRoot`
+     * (so a field whose `validationMode` defers display (e.g. `onBlur`) keeps the input neutral until revealed), else the input's
+     * own binary invalidity.
+     */
+    protected readonly displayValid = computed<boolean | null>(() =>
+        this.fieldRootContext
+            ? this.fieldRootContext.validState()
+            : this.invalid() || this.root.invalidState()
+              ? false
+              : true
     );
     protected readonly disabledState = computed(
         () => this.root.disabledState() || Boolean(this.fieldRootContext?.disabledState())

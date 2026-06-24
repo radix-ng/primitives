@@ -10,7 +10,7 @@ import {
     signal,
     Signal
 } from '@angular/core';
-import { createContext } from '@radix-ng/primitives/core';
+import { createContext, RDX_DEFAULT_VALIDATION_MODE, RdxValidationMode } from '@radix-ng/primitives/core';
 
 /** A normalized external-error map: each field name maps to its message(s) in display order. */
 export type RdxFormErrors = Record<string, string | string[]>;
@@ -32,8 +32,12 @@ export interface RdxFormSubmitEvent {
 export interface RdxFormFieldRegistration {
     /** The field's `name` (key external errors match against), or `undefined`. */
     name: () => string | undefined;
-    /** The field's merged invalid state (includes external errors). */
+    /** The field's **actual** invalid state (ungated, includes external errors) — drives the submit guard
+     * and `anyInvalid`. */
     invalid: () => boolean;
+    /** The field's **displayed** tri-state validity, gated by its `validationMode` — drives the form's
+     * presentation `data-invalid` so it stays neutral on load while its fields are. `null` = neutral. */
+    displayValid?: () => boolean | null;
     /** Whether the field is dirty. */
     dirty: () => boolean;
     /** Whether the field is touched. */
@@ -45,23 +49,55 @@ export interface RdxFormFieldRegistration {
 }
 
 /**
- * External owner of form-level state (e.g. a future Signal Forms `[rdxSignalForm]` adapter). Mirrors
- * Field's `RdxFieldState` seam one level up. Each member is optional: a provided accessor wins over the
- * built-in registry/`errors`-input behavior; absent accessors leave the built-in behavior untouched.
- * Kept as framework-free `() =>` accessors (no `@angular/forms/signals` dependency). See ADR 0004.
+ * External owner of form-level state (e.g. the Signal Forms `[rdxSignalForm]` adapter). Mirrors Field's
+ * `RdxFieldState` seam one level up. Each member is optional. The aggregate accessors (`dirty`/`touched`/
+ * `submitting`) take over the corresponding form-level state; `invalid` is **merged** with the field
+ * registry (so a real registered-field error still counts); the per-name accessors route a field's client
+ * state by `name`. Kept as framework-free `() =>` accessors (no `@angular/forms/signals` dependency). See
+ * ADR 0004.
  */
 export interface RdxFormState {
     invalid?: () => boolean;
     dirty?: () => boolean;
     touched?: () => boolean;
     submitting?: () => boolean;
-    /** Per-name external error source; while provided, the `errors` input + clear-on-edit are inert. */
+    /**
+     * Per-name **client** validation errors (e.g. `rdxSignalForm`'s Signal Forms name-routing). Surfaced
+     * through the Form's `clientErrorsFor` channel and gated by `validationMode` like any client validity.
+     * Independent of the Form's `errors` input (server errors), which stays eager.
+     */
     errorsFor?: (name: string) => string[];
+    /**
+     * Per-name `touched` / `dirty` for a name-routed field. Lets a `rdxFieldRoot` that has only a bare
+     * `[formField]` control (no `rdxSignalField` / `rdxFieldControl`) still reveal its error on blur under
+     * `validationMode="onBlur"`/`"onChange"` — the field reads its interaction state from here.
+     */
+    touchedFor?: (name: string) => boolean;
+    dirtyFor?: (name: string) => boolean;
 }
 
 export interface RdxFormRootContext {
-    errorsFor: (name: string | undefined) => string[];
+    /**
+     * **Client** validation errors routed by a form-level provider (e.g. `rdxSignalForm`'s Signal Forms
+     * name-routing). These are gated by `validationMode` like any client validity — adding `rdxSignalForm`
+     * must not change error-display timing.
+     */
+    clientErrorsFor: (name: string | undefined) => string[];
+    /** **Server/external** errors from the Form's `errors` input. Shown eagerly (not gated). */
+    externalErrorsFor: (name: string | undefined) => string[];
+    /** Per-name `touched` / `dirty` from a form-level provider (`rdxSignalForm`); `false` when none. */
+    touchedFor: (name: string | undefined) => boolean;
+    dirtyFor: (name: string | undefined) => boolean;
     notifyEdited: (name: string | undefined) => void;
+    /**
+     * Whether a submit has been attempted (set before the validity check on submit, cleared on reset).
+     * A presentation-timing seam: an adapter can reveal a field's error after a submit attempt without the
+     * field having been touched, so the consumer never hand-rolls "mark touched on submit". Base UI's
+     * submit-attempt state, kept at the form level.
+     */
+    submitAttempted: Signal<boolean>;
+    /** The form's default validation-display mode; a `rdxFieldRoot` may override it per field. */
+    validationMode: Signal<RdxValidationMode>;
     /** Registers a field; returns its unregister callback. */
     register: (field: RdxFormFieldRegistration) => () => void;
     setStateProvider: (provider: RdxFormState | null) => RdxFormState | null;
@@ -76,8 +112,13 @@ export interface RdxFormRootContext {
 const formRootContext = (): RdxFormRootContext => {
     const root = inject(RdxFormRoot);
     return {
-        errorsFor: (name: string | undefined) => root.errorsFor(name),
+        clientErrorsFor: (name: string | undefined) => root.clientErrorsFor(name),
+        externalErrorsFor: (name: string | undefined) => root.externalErrorsFor(name),
+        touchedFor: (name: string | undefined) => root.touchedFor(name),
+        dirtyFor: (name: string | undefined) => root.dirtyFor(name),
         notifyEdited: (name: string | undefined) => root.notifyEdited(name),
+        submitAttempted: root.submitAttempted,
+        validationMode: root.validationMode,
         register: (field: RdxFormFieldRegistration) => root.register(field),
         setStateProvider: (provider: RdxFormState | null) => root.setStateProvider(provider),
         clearStateProvider: (provider: RdxFormState | null, previous: RdxFormState | null) =>
@@ -121,7 +162,7 @@ function serializeFormData(data: FormData): Record<string, FormDataEntryValue | 
     providers: [provideFormRootContext(formRootContext)],
     host: {
         novalidate: '',
-        '[attr.data-invalid]': 'anyInvalid() ? "" : undefined',
+        '[attr.data-invalid]': 'anyDisplayedInvalid() ? "" : undefined',
         '[attr.data-dirty]': 'anyDirty() ? "" : undefined',
         '[attr.data-touched]': 'anyTouched() ? "" : undefined',
         '[attr.data-submitting]': 'submitting() ? "" : undefined',
@@ -134,6 +175,16 @@ export class RdxFormRoot {
 
     /** External/server validation errors keyed by `Field.Root` `name`. */
     readonly errors = input<RdxFormErrors | null | undefined>();
+
+    /**
+     * When fields reveal their validity (error styling + message). The control/adapter always reports the
+     * actual state; this decides *when* the Field surfaces it. A `rdxFieldRoot` can override it per field.
+     * Server errors (`errors` above) always show regardless. Defaults to `'onBlur'`.
+     *
+     * @group Props
+     * @defaultValue 'onBlur'
+     */
+    readonly validationMode = input<RdxValidationMode>(RDX_DEFAULT_VALIDATION_MODE);
 
     /** Emits the remaining error map after a field's external error is cleared by a user edit (or reset). */
     readonly onClearErrors = output<RdxFormErrors>();
@@ -172,36 +223,85 @@ export class RdxFormRoot {
         return result;
     });
 
+    /** **Actual** aggregate invalidity (eager) — drives the submit guard / focus-first-invalid and is the
+     * value to read in app logic. Merges a form-level provider with the field registry. */
     readonly anyInvalid = computed(() => this.aggregate('invalid'));
     readonly anyDirty = computed(() => this.aggregate('dirty'));
     readonly anyTouched = computed(() => this.aggregate('touched'));
     readonly submitting = computed(() => this.stateProvider()?.submitting?.() ?? false);
 
-    /** Resolve a boolean aggregate: a registered provider's accessor wins, else OR over the registry. */
+    /**
+     * **Displayed** aggregate invalidity — the source for the host `data-invalid` (a presentation
+     * attribute). A field counts only once its own `validationMode` reveals it (`displayValid() === false`),
+     * so the form stays **neutral on load** while its fields are, instead of leaking the gated state.
+     * Distinct from {@link anyInvalid} (actual, eager). A form-level provider's invalidity with no displayed
+     * field (rare) is revealed conservatively — only under `validationMode="always"` or after a submit
+     * attempt, never from `anyTouched` (one field's touch must not light the form for another untouched one).
+     */
+    readonly anyDisplayedInvalid = computed(() => {
+        if (this.fields().some((field) => field.displayValid?.() === false)) {
+            return true;
+        }
+        const providerInvalid = this.stateProvider()?.invalid?.() ?? false;
+        return providerInvalid && (this.validationMode() === 'always' || this.submitAttempted());
+    });
+
+    /**
+     * Whether a submit has been attempted on this form, exposed to fields via the context. Set true at the
+     * very start of {@link onSubmit} (before the validity check, so a field whose `validationMode` defers
+     * display, e.g. `onBlur`, reveals its error in time to block the submit) and cleared on native reset.
+     */
+    readonly submitAttempted = signal(false);
+
+    /**
+     * Resolve a boolean aggregate. For `dirty` / `touched` a registered provider's accessor wins, else OR
+     * over the registry. For **`invalid`** the two are **merged** (`provider || registry`): a registered
+     * field's actual invalidity — e.g. a server `[errors]` entry — must still count (and block submit) even
+     * when a form-level provider (`rdxSignalForm`) reports the client model valid.
+     */
     private aggregate(key: 'invalid' | 'dirty' | 'touched'): boolean {
         const accessor = this.stateProvider()?.[key];
-        return accessor ? accessor() : this.fields().some((field) => field[key]());
+        const fromRegistry = this.fields().some((field) => field[key]());
+        if (key === 'invalid') {
+            return (accessor?.() ?? false) || fromRegistry;
+        }
+        return accessor ? accessor() : fromRegistry;
     }
 
-    /** Resolves the external messages for a field name (provider source wins over the `errors` input). */
-    errorsFor(name: string | undefined): string[] {
+    /** Client validation errors from a form-level provider (`rdxSignalForm`); `[]` when none. Gated. */
+    clientErrorsFor(name: string | undefined): string[] {
         if (!name) {
             return [];
         }
-        const provider = this.stateProvider();
-        if (provider?.errorsFor) {
-            return provider.errorsFor(name);
+        return this.stateProvider()?.errorsFor?.(name) ?? [];
+    }
+
+    /** Per-name `touched` from a form-level provider (`rdxSignalForm`); `false` when none. */
+    touchedFor(name: string | undefined): boolean {
+        return name ? (this.stateProvider()?.touchedFor?.(name) ?? false) : false;
+    }
+
+    /** Per-name `dirty` from a form-level provider (`rdxSignalForm`); `false` when none. */
+    dirtyFor(name: string | undefined): boolean {
+        return name ? (this.stateProvider()?.dirtyFor?.(name) ?? false) : false;
+    }
+
+    /**
+     * Server/external errors from the `errors` input (eager). A separate channel from {@link clientErrorsFor}:
+     * the `errors` input always applies, even alongside a form-level client provider (`rdxSignalForm`), so
+     * adding `rdxSignalForm` never disables your server errors.
+     */
+    externalErrorsFor(name: string | undefined): string[] {
+        if (!name) {
+            return [];
         }
         return this.effectiveErrors()[name] ?? [];
     }
 
-    /** Clears a field's external error after a user edit, emitting the remaining map. */
+    /** Clears a field's server error (the `errors` input) after a user edit, emitting the remaining map.
+     * Client provider errors (`rdxSignalForm`) are not affected — Signal Forms re-validates them itself. */
     notifyEdited(name: string | undefined): void {
         if (!name) {
-            return;
-        }
-        // While a provider owns errors, Signal Forms clears/reapplies them itself — stay inert.
-        if (this.stateProvider()?.errorsFor) {
             return;
         }
         const errors = this.errors() ?? {};
@@ -238,6 +338,11 @@ export class RdxFormRoot {
         // SPA submits never navigate; never stopPropagation so Reactive Forms `(ngSubmit)` keeps firing.
         event.preventDefault();
 
+        // Record the attempt *before* reading validity. Display-gating uses `submitAttempted` to reveal
+        // errors (a `validationMode` of `onBlur`/`onSubmit`), but the Form aggregates *actual* invalidity,
+        // so a pristine invalid form is blocked and its errors revealed instead of submitting.
+        this.submitAttempted.set(true);
+
         if (this.aggregate('invalid')) {
             // Focus the first invalid registered field (DOM order); provider-only invalid has none to focus.
             this.fields()
@@ -252,15 +357,15 @@ export class RdxFormRoot {
 
     onReset(): void {
         // Don't prevent the native reset — control values revert on their own.
-        if (!this.stateProvider()?.errorsFor) {
-            const keys = Object.keys(this.errors() ?? {});
-            const hadVisible = keys.some((key) => !this.clearedNames().has(key));
-            if (keys.length) {
-                this.clearedNames.set(new Set(keys));
-            }
-            if (hadVisible) {
-                this.onClearErrors.emit({});
-            }
+        this.submitAttempted.set(false);
+        // Clear server errors (the `errors` input); client provider errors re-validate themselves.
+        const keys = Object.keys(this.errors() ?? {});
+        const hadVisible = keys.some((key) => !this.clearedNames().has(key));
+        if (keys.length) {
+            this.clearedNames.set(new Set(keys));
+        }
+        if (hadVisible) {
+            this.onClearErrors.emit({});
         }
         // Values revert asynchronously relative to the reset event — re-sync field state next macrotask.
         // Read the registry fresh inside the callback (fields may register/unregister in between), and

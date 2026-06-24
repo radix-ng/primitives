@@ -24,7 +24,7 @@ and resets field interaction state on native reset.
 - ✅ Handles native `reset`: clears errors and re-syncs each field's touched/dirty/focused/filled state.
 - ✅ Aggregate state via `data-invalid`, `data-dirty`, `data-touched`, and `data-submitting`.
 - ✅ Form-system-agnostic: works with plain native controls, Reactive Forms (`(ngSubmit)` still fires), and template-driven forms.
-- ✅ Signal Forms-ready: an `RdxFormState` provider seam lets a future `[rdxSignalForm]` adapter own validity, submitting, and server errors.
+- ✅ Signal Forms integration: an `RdxFormState` provider seam lets `[rdxSignalForm]` own the form's aggregate validity / dirty / touched / submitting and route per-field **client** errors by `name` (gated by `validationMode`). The `errors` input stays a separate eager **server** channel.
 
 ## Import
 

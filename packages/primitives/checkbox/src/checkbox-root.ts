@@ -17,6 +17,7 @@ import {
     BooleanInput,
     createCancelableChangeEventDetails,
     createContext,
+    RDX_FIELD_VALIDITY,
     RdxCancelableChangeEventDetails,
     RdxControlValueAccessor,
     RdxFormCheckboxControl,
@@ -60,6 +61,8 @@ export interface CheckboxRootContext {
     readonly: Signal<boolean>;
     state: Signal<'indeterminate' | 'checked' | 'unchecked'>;
     invalidState: Signal<boolean>;
+    /** Tri-state displayed validity (`true`/`false`/`null`) — the field's gated state when standalone in a Field. */
+    displayValid: Signal<boolean | null>;
     touchedState: Signal<boolean>;
     dirtyState: Signal<boolean>;
     uncheckedValue: Signal<string | undefined>;
@@ -83,6 +86,7 @@ const rootContext = (): CheckboxRootContext => {
         readonly: checkbox.readOnlyState,
         state: checkbox.state,
         invalidState: checkbox.invalidState,
+        displayValid: checkbox.displayValid,
         touchedState: checkbox.touchedState,
         dirtyState: checkbox.dirtyState,
         uncheckedValue: checkbox.uncheckedValue,
@@ -116,8 +120,8 @@ export const [injectCheckboxRootContext, provideCheckboxRootContext] = createCon
         '[attr.data-disabled]': 'disabledState() ? "" : undefined',
         '[attr.data-readonly]': 'readOnlyState() ? "" : undefined',
         '[attr.data-required]': 'required() ? "" : undefined',
-        '[attr.data-invalid]': 'invalidState() ? "" : undefined',
-        '[attr.data-valid]': 'invalidState() ? undefined : ""',
+        '[attr.data-invalid]': 'displayValid() === false ? "" : undefined',
+        '[attr.data-valid]': 'displayValid() === true ? "" : undefined',
         '[attr.data-touched]': 'touchedState() ? "" : undefined',
         '[attr.data-dirty]': 'dirtyState() ? "" : undefined'
     }
@@ -298,6 +302,18 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
     private readonly dirtyValue = signal(false);
     /** @ignore Invalid when the `invalid` input is set or the `errors` list is non-empty. */
     readonly invalidState = computed(() => this.invalid() || (this.errors()?.length ?? 0) > 0);
+
+    /** Tri-state display validity exposed by an enclosing Field; absent when standalone. */
+    private readonly fieldValidity = inject(RDX_FIELD_VALIDITY, { optional: true });
+    /**
+     * @ignore Tri-state *displayed* validity. A **standalone** checkbox inside a `rdxFieldRoot` defers to
+     * the field's gated `validState` (so a field whose `validationMode` defers display (e.g. `onBlur`) stays neutral); inside a
+     * `rdxCheckboxGroup` the group owns the field relationship, so the item keeps its own binary validity
+     * (the field's invalid must not paint every checkbox red).
+     */
+    readonly displayValid = computed<boolean | null>(() =>
+        !this.group && this.fieldValidity ? this.fieldValidity() : this.invalidState() ? false : true
+    );
     /** @ignore */
     readonly touchedState = computed(() => this.touched());
     /** @ignore */

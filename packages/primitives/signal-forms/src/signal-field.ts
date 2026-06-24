@@ -21,6 +21,11 @@ import { injectFieldRootContext, RdxFieldState } from '@radix-ng/primitives/fiel
  * read authoritative Signal Forms state. `filled` / `focused` stay on Field's DOM heuristic (partial
  * ownership — the seam supports it).
  *
+ * It reports the **actual** Signal Forms state only; the `Field` decides *when* to display it from its
+ * `validationMode` (default `'onBlur'` — neutral until the field is touched or the form submitted). So an
+ * empty required field is neutral on load with no manual `[invalid]`/`[touched]` wiring, and a pristine
+ * submit reveals the errors (the `Form` records the submit attempt before checking validity and blocks).
+ *
  * See ADR 0018.
  *
  * @group Components
@@ -35,8 +40,9 @@ export class RdxSignalField {
     private readonly fieldContext = injectFieldRootContext();
 
     constructor() {
-        // The accessors are evaluated lazily by Field's `*State` computeds during change detection
-        // (after the `[formField]` binding resolves), so reading `state()` inside these closures is safe.
+        // The accessors are evaluated lazily by Field's `*State` computeds during change detection (after
+        // the `[formField]` binding resolves), so reading `state()` inside these closures is safe. The
+        // adapter reports authoritative *actual* state; the Field gates the *display* by its validationMode.
         const state: RdxFieldState = {
             invalid: () => this.state().invalid(),
             disabled: () => this.state().disabled(),

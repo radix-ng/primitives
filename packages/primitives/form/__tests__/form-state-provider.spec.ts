@@ -13,6 +13,7 @@ import { _importsForm, RdxFormErrors, RdxFormRoot, RdxFormState, RdxFormSubmitEv
             [errors]="errors()"
             (onFormSubmit)="submitted.set($event)"
             (onClearErrors)="clearedCount.set(clearedCount() + 1)"
+            validationMode="always"
             rdxFormRoot
         >
             <div name="email" rdxFieldRoot>
@@ -94,11 +95,13 @@ describe('RdxFormState provider seam', () => {
         expect(field('email').querySelector('[rdxFieldError]')!.textContent!.trim()).toBe('built-in');
     });
 
-    it('teardown restores built-in error resolution', async () => {
+    it('server `errors` and a client provider are independent channels (both show; provider drops on teardown)', async () => {
         root.setStateProvider({ errorsFor: () => ['Owned'] });
         host.errors.set({ email: 'built-in' });
         await settle();
-        expect(field('email').querySelector('[rdxFieldError]')!.textContent!.trim()).toBe('Owned');
+        // Adding a client provider (e.g. rdxSignalForm) must NOT disable the server `errors` input —
+        // both channels surface, client first then server.
+        expect(field('email').querySelector('[rdxFieldError]')!.textContent!.trim()).toBe('Owned built-in');
 
         root.setStateProvider(null);
         await settle();

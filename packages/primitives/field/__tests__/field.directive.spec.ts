@@ -16,6 +16,7 @@ import { RdxFieldRoot } from '../src/field-root';
             [required]="required"
             [dirty]="dirty"
             [touched]="touched"
+            validationMode="always"
             rdxFieldRoot
         >
             <label rdxFieldLabel>Email</label>

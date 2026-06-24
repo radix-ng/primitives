@@ -31,6 +31,7 @@ import {
     provideToken,
     RdxFormUiControlBase,
     RdxFormValueControl,
+    resolveDisplayValid,
     SegmentValueObj,
     syncSegmentValues,
     TimeValue,
@@ -75,9 +76,9 @@ function isSameTimeValue(a: TimeValue | undefined, b: TimeValue | undefined): bo
         '[attr.aria-disabled]': 'disabled() ? "" : undefined',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
         '[attr.data-readonly]': 'readonly() ? "" : undefined',
-        '[attr.aria-invalid]': 'invalidState() ? "true" : undefined',
-        '[attr.data-invalid]': 'invalidState() ? "" : undefined',
-        '[attr.data-valid]': 'invalidState() ? undefined : ""',
+        '[attr.aria-invalid]': 'displayValid() === false ? "true" : undefined',
+        '[attr.data-invalid]': 'displayValid() === false ? "" : undefined',
+        '[attr.data-valid]': 'displayValid() === true ? "" : undefined',
         '[attr.data-touched]': 'touchedState() ? "" : undefined',
         '[attr.data-dirty]': 'dirtyState() ? "" : undefined',
         '[attr.dir]': 'dir()',
@@ -270,6 +271,11 @@ export class RdxTimeFieldRootDirective
      * (Signal Forms). Reflected on the root and segments.
      */
     readonly invalidState = computed(() => this.isInvalid() || this.formUi.invalidState());
+    /**
+     * @ignore Tri-state display validity: the enclosing Field's gated state when inside a `rdxFieldRoot`,
+     * else the time-field's own (parse + form) invalidity. Overrides the base default (`formUi` only).
+     */
+    override readonly displayValid = computed(() => resolveDisplayValid(this.fieldValidity, this.invalidState));
     /** @ignore */
     readonly touchedState = this.formUi.touchedState;
     /** @ignore */

@@ -3305,6 +3305,11 @@
               "type": "boolean",
               "default": "false",
               "description": "Whether the field has been blurred after receiving focus."
+            },
+            {
+              "name": "validationMode",
+              "type": "RdxValidationMode",
+              "description": "Overrides when this field reveals its validity (error styling + message). Falls back to the\nenclosing `rdxFormRoot`'s `validationMode`, then `'onBlur'`. Server errors always show regardless."
             }
           ],
           "outputs": []
@@ -3489,6 +3494,12 @@
               "name": "errors",
               "type": "RdxFormErrors | null | undefined",
               "description": "External/server validation errors keyed by `Field.Root` `name`."
+            },
+            {
+              "name": "validationMode",
+              "type": "RdxValidationMode",
+              "default": "RDX_DEFAULT_VALIDATION_MODE",
+              "description": "When fields reveal their validity (error styling + message). The control/adapter always reports the\nactual state; this decides *when* the Field surfaces it. A `rdxFieldRoot` can override it per field.\nServer errors (`errors` above) always show regardless. Defaults to `'onBlur'`."
             }
           ],
           "outputs": [
@@ -6558,7 +6569,7 @@
           "directive": "RdxSignalField",
           "selector": "[formField][rdxSignalField]",
           "exportAs": "rdxSignalField",
-          "description": "Bridges an Angular **Signal Forms** field into an enclosing `rdxFieldRoot` — with **no duplicate\nbinding**. Place it on the control that already carries `[formField]`; it reads the bound field's\nstate from that directive, so the field expression is written exactly once:\n\n```html\n<div rdxFieldRoot>\n  <label rdxFieldLabel>Email</label>\n  <input rdxInput [formField]=\"loginForm.email\" rdxSignalField />\n  <p rdxFieldError>Email is required.</p>\n</div>\n```\n\nIt owns no model and runs no validation — Signal Forms remains the source of truth. It only registers\nan {@link RdxFieldState} provider on the ancestor Field context so the field's `invalid` / `disabled` /\n`required` / `dirty` / `touched` data-attributes and the error *content* (`rdxFieldError.messages()`)\nread authoritative Signal Forms state. `filled` / `focused` stay on Field's DOM heuristic (partial\nownership — the seam supports it).\n\nSee ADR 0018.",
+          "description": "Bridges an Angular **Signal Forms** field into an enclosing `rdxFieldRoot` — with **no duplicate\nbinding**. Place it on the control that already carries `[formField]`; it reads the bound field's\nstate from that directive, so the field expression is written exactly once:\n\n```html\n<div rdxFieldRoot>\n  <label rdxFieldLabel>Email</label>\n  <input rdxInput [formField]=\"loginForm.email\" rdxSignalField />\n  <p rdxFieldError>Email is required.</p>\n</div>\n```\n\nIt owns no model and runs no validation — Signal Forms remains the source of truth. It only registers\nan {@link RdxFieldState} provider on the ancestor Field context so the field's `invalid` / `disabled` /\n`required` / `dirty` / `touched` data-attributes and the error *content* (`rdxFieldError.messages()`)\nread authoritative Signal Forms state. `filled` / `focused` stay on Field's DOM heuristic (partial\nownership — the seam supports it).\n\nIt reports the **actual** Signal Forms state only; the `Field` decides *when* to display it from its\n`validationMode` (default `'onBlur'` — neutral until the field is touched or the form submitted). So an\nempty required field is neutral on load with no manual `[invalid]`/`[touched]` wiring, and a pristine\nsubmit reveals the errors (the `Form` records the submit attempt before checking validity and blocks).\n\nSee ADR 0018.",
           "inputs": [],
           "outputs": []
         },

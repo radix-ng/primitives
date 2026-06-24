@@ -45,7 +45,7 @@ class ReactiveHost {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox, RdxFieldRoot, RdxLabelDirective],
     template: `
-        <div [invalid]="invalid()" [required]="required()" rdxFieldRoot>
+        <div [invalid]="invalid()" [required]="required()" validationMode="always" rdxFieldRoot>
             <label rdxLabel>Fruit</label>
             <div rdxComboboxRoot>
                 <input rdxComboboxInput />

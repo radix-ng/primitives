@@ -2,8 +2,12 @@ import { DestroyRef, Directive, inject, input } from '@angular/core';
 import type { FieldTree } from '@angular/forms/signals';
 import { injectFormRootContext, RdxFormState } from '@radix-ng/primitives/form';
 
-/** A Signal Forms subfield read structurally — callable to its state, which exposes `errors()`. */
-type NamedField = () => { errors: () => readonly { kind: string; message?: string }[] };
+/** A Signal Forms subfield read structurally — callable to its state (`errors()` / `touched()` / `dirty()`). */
+type NamedField = () => {
+    errors: () => readonly { kind: string; message?: string }[];
+    touched: () => boolean;
+    dirty: () => boolean;
+};
 
 /**
  * Bridges an Angular **Signal Forms** form into an enclosing `form[rdxFormRoot]`.
@@ -16,7 +20,9 @@ type NamedField = () => { errors: () => readonly { kind: string; message?: strin
  *
  * Registers an {@link RdxFormState} provider so the Form's aggregate `data-invalid` / `data-dirty` /
  * `data-touched` / `data-submitting` attributes and the submit guard read authoritative Signal Forms
- * state. Signal Forms' own `submit()` owns the submit lifecycle and server-error application.
+ * state. This adapter owns only client-side state and `name`-routing; server errors stay a separate
+ * eager channel applied through `rdxFormRoot[errors]`, and Signal Forms' own `submit()` owns the
+ * submit lifecycle.
  *
  * `errorsFor(name)` routes a field's errors to a `rdxFieldRoot` by its `name`, walking the `FieldTree`
  * so dotted paths into nested object/array fields resolve too (`address.street`, `items.0.name`). A
@@ -45,7 +51,11 @@ export class RdxSignalForm {
             dirty: () => this.state().dirty(),
             touched: () => this.state().touched(),
             submitting: () => this.state().submitting(),
-            errorsFor: (name) => this.errorsFor(name)
+            errorsFor: (name) => this.errorsFor(name),
+            // Per-name interaction state so a name-routed field (bare `[formField]`, no `rdxSignalField`)
+            // can reveal its error on blur/change under `validationMode="onBlur"`/`"onChange"`.
+            touchedFor: (name) => this.fieldState(name)?.touched() ?? false,
+            dirtyFor: (name) => this.fieldState(name)?.dirty() ?? false
         };
 
         const previous = this.formContext.setStateProvider(state);
@@ -59,19 +69,33 @@ export class RdxSignalForm {
      * `FieldTree` so nested object/array fields resolve too — e.g. `address.street`, `items.0.name`.
      */
     private errorsFor(name: string): string[] {
+        return (
+            this.fieldState(name)
+                ?.errors()
+                .map((error) => error.message ?? error.kind) ?? []
+        );
+    }
+
+    /**
+     * The Signal Forms field *state* at the dotted `name` path, or `null` if it doesn't resolve. Walks the
+     * `FieldTree` so nested object/array fields work (`address.street`, `items.0.name`).
+     */
+    private fieldState(name: string): ReturnType<NamedField> | null {
         let node: unknown = this.form();
         for (const segment of name.split('.')) {
-            if (node == null) {
-                return [];
+            if (node == null || (typeof node !== 'object' && typeof node !== 'function')) {
+                return null;
+            }
+            // Only walk into own properties: a `FieldTree` exposes its subfields as own keys, so a
+            // segment that is not one (`constructor`, `__proto__`, `toString`, …) is not a real field.
+            // Reading it would resolve to an inherited member — and a function one would then be called
+            // below — so reject it instead.
+            if (!Object.hasOwn(node, segment)) {
+                return null;
             }
             node = (node as Record<string, unknown>)[segment];
         }
-        if (typeof node !== 'function') {
-            return [];
-        }
-        return (node as NamedField)()
-            .errors()
-            .map((error) => error.message ?? error.kind);
+        return typeof node === 'function' ? (node as NamedField)() : null;
     }
 
     /** The current Signal Forms root field state (a `FieldTree` is callable). */

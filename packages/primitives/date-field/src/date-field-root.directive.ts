@@ -33,6 +33,7 @@ import {
     provideToken,
     RdxFormUiControlBase,
     RdxFormValueControl,
+    resolveDisplayValid,
     SegmentValueObj,
     syncSegmentValues,
     watch
@@ -50,9 +51,9 @@ import { RdxDateFieldInputDirective } from './date-field-input.directive';
         '[attr.aria-disabled]': 'disabled() ? "true" : undefined',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
         '[attr.data-readonly]': 'readonly() ? "" : undefined',
-        '[attr.aria-invalid]': 'invalidState() ? "true" : undefined',
-        '[attr.data-invalid]': 'invalidState() ? "" : undefined',
-        '[attr.data-valid]': 'invalidState() ? undefined : ""',
+        '[attr.aria-invalid]': 'displayValid() === false ? "true" : undefined',
+        '[attr.data-invalid]': 'displayValid() === false ? "" : undefined',
+        '[attr.data-valid]': 'displayValid() === true ? "" : undefined',
         '[attr.data-touched]': 'touchedState() ? "" : undefined',
         '[attr.data-dirty]': 'dirtyState() ? "" : undefined',
         '[attr.dir]': 'dir()',
@@ -227,6 +228,12 @@ export class RdxDateFieldRootDirective
      * `invalid` / `errors` (Signal Forms). Reflected on the root and segments.
      */
     readonly invalidState = computed(() => this.isInvalid() || this.formUi.invalidState());
+    /**
+     * @ignore Tri-state display validity: the enclosing Field's gated state when inside a `rdxFieldRoot`,
+     * else the date-field's own (parse + form) invalidity. Overrides the base (whose default uses only
+     * `formUi.invalidState`) so the standalone path keeps the built-in range/availability check.
+     */
+    override readonly displayValid = computed(() => resolveDisplayValid(this.fieldValidity, this.invalidState));
     /** @ignore */
     readonly touchedState = this.formUi.touchedState;
     /** @ignore */

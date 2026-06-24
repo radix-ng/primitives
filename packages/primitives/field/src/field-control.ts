@@ -15,15 +15,18 @@ const attr = (value: boolean) => (value ? '' : undefined);
     host: {
         '[attr.id]': 'id()',
         '[attr.aria-describedby]': 'describedBy()',
-        '[attr.aria-invalid]': 'rootContext.invalidState() ? "true" : undefined',
+        // `aria-invalid`/`data-*` follow the field's tri-state `validState`: while it is neutral (`null`,
+        // e.g. a field whose `validationMode` defers display (e.g. `onBlur`) before interaction) the control emits no `aria-invalid`
+        // and neither `data-valid` nor `data-invalid`, matching the field root.
+        '[attr.aria-invalid]': 'rootContext.validState() === false ? "true" : undefined',
         // On a native control the native `required`/`disabled` attributes already convey the state, so
         // `aria-required`/`aria-disabled` are only emitted on non-native (custom) controls.
         '[attr.aria-required]': '!isNativeFormControl() && rootContext.requiredState() ? "true" : undefined',
         '[attr.aria-disabled]': '!isNativeFormControl() && rootContext.disabledState() ? "true" : undefined',
         '[attr.disabled]': 'isNativeFormControl() && rootContext.disabledState() ? "" : undefined',
         '[attr.required]': 'isNativeFormControl() && rootContext.requiredState() ? "" : undefined',
-        '[attr.data-invalid]': 'dataAttr(rootContext.invalidState())',
-        '[attr.data-valid]': 'dataAttr(!rootContext.invalidState())',
+        '[attr.data-invalid]': 'dataAttr(rootContext.validState() === false)',
+        '[attr.data-valid]': 'dataAttr(rootContext.validState() === true)',
         '[attr.data-disabled]': 'dataAttr(rootContext.disabledState())',
         '[attr.data-required]': 'dataAttr(rootContext.requiredState())',
         '[attr.data-dirty]': 'dataAttr(rootContext.dirtyState())',

@@ -74,5 +74,8 @@ Generated from `@radix-ng/primitives@1.0.7` — if the installed version differs
 ## Recipes
 
 - [Confirmation Dialog](https://radix-ng.com/recipes/confirmation-dialog.md): An imperative `confirm()` that returns a `Promise<boolean>`, built on the Alert Dialog primitive.
+- [Forms](https://radix-ng.com/recipes/forms.md): Build accessible, headless forms with Radix NG `Field` / `Form` and the form library of your choice.
 - [Notification Dropdown](https://radix-ng.com/recipes/notification-dropdown.md): A bell trigger opening a scrollable list of notifications with an unread badge.
+- [Signal Forms](https://radix-ng.com/recipes/signal-forms.md): Build accessible forms with Angular **Signal Forms** and the headless `Field` parts.
 - [Split Button](https://radix-ng.com/recipes/split-button.md): A primary action paired with a menu of related actions, joined as one control.
+- [TanStack Form](https://radix-ng.com/recipes/tanstack-form.md): Build accessible forms with **TanStack Form** and **Zod**, using the headless `Field` parts.

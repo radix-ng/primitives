@@ -31,8 +31,9 @@ export class RdxFieldError {
     readonly id = input(injectId('rdx-field-error-'));
 
     /**
-     * The field's external messages (state provider's, then enclosing Form's), `[]` when none. Render
-     * them explicitly via the `exportAs` reference — the directive never injects text content itself:
+     * The field's validation messages — client (provider / form name-routing, once `validationMode`
+     * reveals them) then server (the Form's `errors` input, always); `[]` when none. Render them
+     * explicitly via the `exportAs` reference — the directive never injects text content itself:
      * `<p rdxFieldError #err="rdxFieldError">{{ err.messages().join(' ') }}</p>`.
      */
     readonly messages = this.rootContext.messages;

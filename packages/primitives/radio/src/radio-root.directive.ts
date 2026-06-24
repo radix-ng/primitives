@@ -78,10 +78,10 @@ export const [injectRadioRootContext, provideRadioRootContext] = createContext<R
         '[attr.aria-required]': 'required() ? "true" : undefined',
         '[attr.aria-disabled]': 'disabledState() ? "true" : undefined',
         '[attr.aria-readonly]': 'readonly() ? "true" : undefined',
-        '[attr.aria-invalid]': 'invalidState() ? "true" : undefined',
+        '[attr.aria-invalid]': 'displayValid() === false ? "true" : undefined',
         '[attr.data-disabled]': 'disabledState() ? "" : undefined',
-        '[attr.data-invalid]': 'invalidState() ? "" : undefined',
-        '[attr.data-valid]': 'invalidState() ? undefined : ""',
+        '[attr.data-invalid]': 'displayValid() === false ? "" : undefined',
+        '[attr.data-valid]': 'displayValid() === true ? "" : undefined',
         '[attr.data-touched]': 'touchedState() ? "" : undefined',
         '[attr.data-dirty]': 'dirtyState() ? "" : undefined',
         '(focusout)': 'onFocusOut($event)'

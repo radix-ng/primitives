@@ -64,8 +64,8 @@ export interface RdxNumberFieldValueChangeEvent {
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
         '[attr.data-readonly]': 'readonly() ? "" : undefined',
         '[attr.data-required]': 'required() ? "" : undefined',
-        '[attr.data-invalid]': 'invalidState() ? "" : undefined',
-        '[attr.data-valid]': 'invalidState() ? undefined : ""',
+        '[attr.data-invalid]': 'displayValid() === false ? "" : undefined',
+        '[attr.data-valid]': 'displayValid() === true ? "" : undefined',
         '[attr.data-touched]': 'touchedState() ? "" : undefined',
         '[attr.data-dirty]': 'dirtyState() ? "" : undefined',
         '[attr.data-scrubbing]': 'isScrubbing() ? "" : undefined'

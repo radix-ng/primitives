@@ -1,0 +1,151 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './signal-forms.stories';
+
+<Meta title="Recipes/Forms/Signal Forms" />
+
+# Signal Forms
+
+#### Build accessible forms with Angular **Signal Forms** and the headless `Field` parts.
+
+This guide builds the same forms you'll find on the React side of the ecosystem, using Angular's
+built-in [Signal Forms](https://angular.dev/guide/forms/signals) as the engine and Radix NG's `Form`,
+`Field` and control primitives for accessible, unstyled markup. You'll create a form with `form()`,
+validate it with the schema validators, surface errors, and keep everything keyboard- and
+screen-reader-friendly.
+
+> **Note:** Browser validation is intentionally off (`Form` renders `novalidate`) so schema validation
+> and the `Field` error region own the messaging.
+
+## Demo
+
+A bug report with a text input and a textarea. On submit the values are validated and any errors are
+shown next to each field.
+
+<Canvas sourceState="hidden" of={Stories.BugReport} />
+
+## Approach
+
+Signal Forms owns the value and the validation; the headless parts own structure and accessibility.
+
+- `form(model, schema)` holds the value (a `signal`) and the validation rules.
+- `rdxSignalField` (on each control next to `[formField]`) maps the bound field's `invalid` / `touched` /
+  `dirty` / `errors` into the enclosing `Field` automatically — **no manual `[invalid]`/`[touched]` per
+  field**.
+- `Field` (`rdxFieldRoot` + `rdxFieldLabel` / `rdxFieldDescription` / `rdxFieldError`) renders the label,
+  description and the polite error region, wiring `for` / `aria-describedby` / `aria-invalid` for you.
+- `rdxFormRoot`'s default `validationMode="onBlur"` keeps each field neutral until it is touched or the form is submitted;
+  `rdxFormRoot` records the submit attempt before checking validity, so a pristine invalid submit is
+  blocked (first invalid field focused) and the errors appear — the Base UI / shadcn "reveal after
+  interaction" behavior, with **no `markAsTouched()` ritual** in your code.
+
+## Anatomy
+
+A single field bound to Signal Forms. The control's value is written **once** with `[formField]`, and
+`rdxSignalField` drives the Field's state and error from it — the field needs no manual state bindings.
+
+```html
+<form rdxFormRoot>
+    <div rdxFieldRoot name="title">
+        <label rdxFieldLabel>Bug Title</label>
+        <input rdxFieldControl rdxSignalField [formField]="reportForm.title" />
+        <p rdxFieldDescription>Provide a concise title for your bug report.</p>
+        <p rdxFieldError #err="rdxFieldError">{{ err.messages().join(' ') }}</p>
+    </div>
+    <button type="submit">Submit</button>
+</form>
+```
+
+## Set up the form
+
+Define the model as a `signal` and describe the validation with the schema function. Each validator
+takes an optional `message`.
+
+```ts
+import { form, minLength, maxLength, required } from '@angular/forms/signals';
+
+type BugReport = { title: string; description: string };
+
+readonly model = signal<BugReport>({ title: '', description: '' });
+readonly reportForm = form(this.model, (path) => {
+    required(path.title, { message: 'Bug title is required.' });
+    minLength(path.title, 5, { message: 'Bug title must be at least 5 characters.' });
+    maxLength(path.title, 32, { message: 'Bug title must be at most 32 characters.' });
+});
+```
+
+## Displaying errors
+
+`rdxSignalField` does the gating for you: the Field stays **neutral** (neither
+`data-valid` nor `data-invalid`, `rdxFieldError` hidden) until the field is touched or the form is
+submitted, then reveals real validity — no per-field helper. Because `rdxFormRoot` records the submit
+attempt **before** checking validity, a pristine invalid submit is blocked and its errors revealed, so
+your handler only runs on a valid submit:
+
+```ts
+protected onSubmit(): void {
+    this.result.set(this.model());
+}
+```
+
+`rdxFieldError` reads its text from `messages()` (the bound field's Signal Forms errors) and stays hidden
+(plus `aria-invalid` off) until the field is invalid **and** revealed (touched or submitted).
+
+> These recipes use the per-field `rdxSignalField`; the form-level `rdxSignalForm` name-routing also
+> honours `validationMode` (its routed client errors are gated the same way). Only the Form's server
+> `errors` input shows immediately.
+
+## Field types
+
+The complex example wires every control type to Signal Forms with a single `[formField]` binding plus
+`rdxSignalField` on the same element — no per-field state bindings.
+
+- **Input / Textarea** — `[formField]` + `rdxFieldControl rdxSignalField` on the native control.
+- **Select** — `[formField]` + `rdxSignalField` on `rdxSelectRoot`; the trigger inherits `aria-invalid`.
+- **Radio group** — `[formField]` + `rdxSignalField` on `rdxRadioRoot`; each `rdxRadioItem` carries a `value`.
+- **Checkbox group** — `[formField]` + `[allValues]` + `rdxSignalField` on `rdxCheckboxGroup` (`string[]`).
+- **Switch** — `[formField]` on `rdxSwitchRoot` for a boolean (no error to gate).
+
+```html
+<!-- Select -->
+<div rdxFieldRoot name="area">
+    <label rdxFieldLabel>Area</label>
+    <div rdxSelectRoot rdxSignalField [formField]="issueForm.area">
+        <button rdxSelectTrigger>
+            <span rdxSelectValue placeholder="Select an area…" #v="rdxSelectedValue">{{ v.slotText() }}</span>
+        </button>
+        <!-- …portal / popup / items… -->
+    </div>
+    <p rdxFieldError #err="rdxFieldError">{{ err.messages().join(' ') }}</p>
+</div>
+```
+
+<Canvas of={Stories.Complex} />
+
+## Array fields
+
+Mutating the model signal reshapes the field tree; `applyEach` applies the per-item schema so each row
+validates independently. Add up to five rows and remove individual ones.
+
+```ts
+import { applyEach, email, form, required } from '@angular/forms/signals';
+
+readonly model = signal<{ emails: { address: string }[] }>({ emails: [{ address: '' }] });
+readonly contactsForm = form(this.model, (path) => {
+    applyEach(path.emails, (item) => {
+        required(item.address, { message: 'Email is required.' });
+        email(item.address, { message: 'Enter a valid email address.' });
+    });
+});
+
+addEmail() {
+    this.model.update((c) => ({ emails: [...c.emails, { address: '' }] }));
+}
+```
+
+<Canvas of={Stories.ArrayFields} />
+
+## See also
+
+- **Primitives / Signal Forms** — the `rdxSignalForm` / `rdxSignalField` adapter reference.
+- **Primitives / Field**, **Primitives / Form** — the headless layers these recipes compose.
+- **Recipes / Forms / TanStack Form** — the same forms built with TanStack Form.

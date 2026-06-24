@@ -9,7 +9,16 @@ import {
     signal,
     Signal
 } from '@angular/core';
-import { BooleanInput, createContext, injectId, RdxValidationError } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    createContext,
+    injectId,
+    isValidationRevealed,
+    RDX_DEFAULT_VALIDATION_MODE,
+    RDX_FIELD_VALIDITY,
+    RdxValidationError,
+    RdxValidationMode
+} from '@radix-ng/primitives/core';
 import { injectFormRootContext, RdxFormFieldRegistration } from '@radix-ng/primitives/form';
 
 const attr = (value: boolean) => (value ? '' : undefined);
@@ -27,6 +36,11 @@ const attr = (value: boolean) => (value ? '' : undefined);
  * See ADR 0004 and `signal-forms-readiness.md` (prep #4).
  */
 export interface RdxFieldState {
+    /**
+     * The control's **actual** invalidity (ungated). The Field decides *when* to display it from its
+     * `validationMode` (e.g. only after blur) — the adapter just reports the real state. A non-empty
+     * `errors()` also counts as invalid.
+     */
     invalid?: () => boolean;
     disabled?: () => boolean;
     required?: () => boolean;
@@ -35,10 +49,11 @@ export interface RdxFieldState {
     filled?: () => boolean;
     focused?: () => boolean;
     /**
-     * Optional source of error *content* (not just the invalid boolean). When provided and non-empty
-     * it forces `invalidState` true, and its messages (`message ?? kind` per error) surface through
-     * `RdxFieldError.messages()` ahead of any enclosing Form's external messages. Uses `core`'s
-     * framework-free shim type so the seam stays free of `@angular/forms/signals` (ADR 0004 amendment).
+     * Optional source of error *content* (not just the invalid boolean). A non-empty list marks the field
+     * **actually** invalid (client validation) and its messages (`message ?? kind` per error) surface
+     * through `RdxFieldError.messages()` once the field's `validationMode` reveals client validity, ahead of
+     * any enclosing Form's server messages. Uses `core`'s framework-free shim type so the seam stays free of
+     * `@angular/forms/signals` (ADR 0004 amendment).
      */
     errors?: () => RdxValidationError[];
 }
@@ -53,6 +68,11 @@ export interface RdxFieldRootContext {
     errorIds: Signal<string[]>;
     messages: Signal<string[]>;
     notifyEdited: () => void;
+    /** Tri-state *displayed* validity (`true` valid / `false` invalid / `null` neutral), gated by the
+     * field's `validationMode`. The source for `data-valid` / `data-invalid` on the field and its controls. */
+    validState: Signal<boolean | null>;
+    /** Whether the enclosing Form has had a submit attempted (always `false` with no Form). */
+    formSubmitAttempted: Signal<boolean>;
     invalidState: Signal<boolean>;
     disabledState: Signal<boolean>;
     requiredState: Signal<boolean>;
@@ -87,10 +107,13 @@ const fieldRootContext = (): RdxFieldRootContext => {
         name: root.name,
         descriptionIds: root.descriptionIds,
         errorIds: root.errorIds,
-        /** Combined external messages (state provider's, then enclosing Form's), for `RdxFieldError`. */
+        /** Combined messages for `RdxFieldError`: client (provider + form name-routing, when revealed) then
+         * server (`errors` input, always). */
         messages: root.messages,
         /** Notify an enclosing Form that this field's control was edited (composite-control opt-in). */
         notifyEdited: () => root.notifyEdited(),
+        validState: root.validState,
+        formSubmitAttempted: root.formSubmitAttempted,
         invalidState: root.invalidState,
         disabledState: root.disabledState,
         requiredState: root.requiredState,
@@ -133,10 +156,16 @@ export const [injectFieldRootContext, provideFieldRootContext] = createContext<R
 @Directive({
     selector: '[rdxFieldRoot]',
     exportAs: 'rdxFieldRoot',
-    providers: [provideFieldRootContext(fieldRootContext)],
+    providers: [
+        provideFieldRootContext(fieldRootContext),
+        // Expose the tri-state display validity so controls inside the field reflect it (single source).
+        { provide: RDX_FIELD_VALIDITY, useFactory: () => inject(RdxFieldRoot).validState }
+    ],
     host: {
-        '[attr.data-invalid]': 'dataAttr(invalidState())',
-        '[attr.data-valid]': 'dataAttr(!invalidState())',
+        // Tri-state: `data-invalid` when displayed-invalid, `data-valid` only when displayed-valid,
+        // and **neither** when neutral (`validState()` is `null`).
+        '[attr.data-invalid]': 'dataAttr(validState() === false)',
+        '[attr.data-valid]': 'dataAttr(validState() === true)',
         '[attr.data-disabled]': 'dataAttr(disabledState())',
         '[attr.data-required]': 'dataAttr(requiredState())',
         '[attr.data-dirty]': 'dataAttr(dirtyState())',
@@ -210,6 +239,14 @@ export class RdxFieldRoot {
      */
     readonly name = input<string>();
 
+    /**
+     * Overrides when this field reveals its validity (error styling + message). Falls back to the
+     * enclosing `rdxFormRoot`'s `validationMode`, then `'onBlur'`. Server errors always show regardless.
+     *
+     * @group Props
+     */
+    readonly validationMode = input<RdxValidationMode>();
+
     /** The enclosing Form, if any. All Form-related behavior is a no-op when this is `null`. */
     private readonly formContext = injectFormRootContext(true);
 
@@ -231,24 +268,34 @@ export class RdxFieldRoot {
     /** Error content from a registered state provider (e.g. a Signal Forms adapter). */
     private readonly providerErrors = computed(() => this.stateProvider()?.errors?.() ?? []);
 
-    /** External messages from the enclosing Form matched by this field's `name`. */
-    readonly externalErrors = computed(() => this.formContext?.errorsFor(this.name()) ?? []);
+    /** **Client** validation errors routed by a form-level provider (`rdxSignalForm`) — gated by `validationMode`. */
+    private readonly clientErrors = computed(() => this.formContext?.clientErrorsFor(this.name()) ?? []);
+
+    /** **Server/external** errors from the Form's `errors` input — shown eagerly (never gated). */
+    private readonly serverErrors = computed(() => this.formContext?.externalErrorsFor(this.name()) ?? []);
+
+    /** Whether the enclosing Form has had a submit attempted; `false` when standalone. A presentation
+     * seam an adapter can read to reveal errors after a submit attempt (Base UI's submit-attempt state). */
+    readonly formSubmitAttempted = computed(() => this.formContext?.submitAttempted() ?? false);
 
     /**
-     * Provider messages first (`message ?? kind`), then the Form's external messages — **deduped by
-     * text**. A field can receive the same Signal Forms error from both a per-field `rdxSignalField`
-     * provider and a form-level `rdxSignalForm` name-routing (they read the same field state); deduping
-     * keeps that from rendering the message twice while still surfacing distinct messages from each
-     * source.
+     * Client messages first (per-field `rdxSignalField` provider, then form-level `rdxSignalForm`
+     * name-routing) — only once `validationMode` reveals client validity — then the Form's **server**
+     * messages (the `errors` input), which always show. **Deduped by text**: a field can receive the same
+     * Signal Forms error from both a per-field provider and the form-level routing (they read the same
+     * field state), so deduping renders it once while still surfacing distinct messages from each source.
      */
     readonly messages = computed(() => {
+        // **Client** messages (per-field `rdxSignalField` provider + form-level `rdxSignalForm` routing)
+        // surface only once the field's `validationMode` reveals them; **server** messages (the `errors`
+        // input) always show. So a neutral field stays empty and the polite live region announces on reveal.
+        const client = this.validationRevealed()
+            ? [...this.providerErrors().map((error) => error.message ?? error.kind), ...this.clientErrors()]
+            : [];
         const seen = new Set<string>();
         const result: string[] = [];
-        for (const message of [
-            ...this.providerErrors().map((error) => error.message ?? error.kind),
-            ...this.externalErrors()
-        ]) {
-            if (!seen.has(message)) {
+        for (const message of [...client, ...this.serverErrors()]) {
+            if (message && !seen.has(message)) {
                 seen.add(message);
                 result.push(message);
             }
@@ -256,18 +303,75 @@ export class RdxFieldRoot {
         return result;
     });
 
-    // External errors (provider content or Form server errors) force invalid regardless of the input or
-    // a provider's `invalid` accessor — a server error must show even when client-side validity passes.
-    readonly invalidState = computed(() => {
-        if (this.externalErrors().length > 0 || this.providerErrors().length > 0) {
-            return true;
+    /** Effective validation-display mode: this field's override → the enclosing Form's → the default. */
+    readonly effectiveValidationMode = computed<RdxValidationMode>(
+        () => this.validationMode() ?? this.formContext?.validationMode() ?? RDX_DEFAULT_VALIDATION_MODE
+    );
+
+    /** Whether client-side validity is revealed yet, per {@link effectiveValidationMode} + interaction. */
+    private readonly validationRevealed = computed(() =>
+        isValidationRevealed(this.effectiveValidationMode(), {
+            touched: this.touchedState(),
+            dirty: this.dirtyState(),
+            submitAttempted: this.formSubmitAttempted()
+        })
+    );
+
+    /**
+     * Client-side invalidity (gated by `validationMode`): the per-field provider's error content / `invalid`
+     * (`rdxSignalField`), a form-level provider's name-routed errors (`rdxSignalForm`), or the `[invalid]`
+     * input. Excludes server errors (which are eager).
+     */
+    private readonly clientInvalidState = computed(
+        () =>
+            this.providerErrors().length > 0 ||
+            this.clientErrors().length > 0 ||
+            this.resolve('invalid', () => this.invalid())
+    );
+
+    /**
+     * Tri-state *displayed* validity (`boolean | null`) — the source for `data-valid` / `data-invalid`.
+     * Server errors show immediately; client-side validity (including `rdxSignalForm` name-routing) stays
+     * **neutral** (`null`) until the field's {@link effectiveValidationMode} reveals it, then `false`/`true`.
+     */
+    readonly validState = computed<boolean | null>(() => {
+        if (this.serverErrors().length > 0) {
+            return false;
         }
-        return this.resolve('invalid', () => this.invalid());
+        if (!this.validationRevealed()) {
+            return null;
+        }
+        return this.clientInvalidState() ? false : true;
     });
+
+    /**
+     * Boolean **displayed** invalidity (= `validState() === false`), used by `rdxFieldError` (hidden) and
+     * `rdxFieldControl`'s `aria-describedby` error linking. A neutral (`null`) `validState` reads as not
+     * invalid here, so the error region stays hidden until the field's mode reveals it.
+     */
+    readonly invalidState = computed(() => this.validState() === false);
+
+    /**
+     * Boolean **actual** invalidity — ungated by the display mode. The enclosing Form aggregates this
+     * (`anyInvalid` / `data-invalid` / submit-block / focus-first-invalid), so a field that is really
+     * invalid but displayed neutral still counts as invalid to the Form. Server errors + provider error
+     * content + the provider/input `invalid`.
+     */
+    readonly actualInvalidState = computed(() => this.serverErrors().length > 0 || this.clientInvalidState());
     readonly disabledState = computed(() => this.resolve('disabled', () => this.disabled()));
     readonly requiredState = computed(() => this.resolve('required', () => this.required()));
-    readonly dirtyState = computed(() => this.resolve('dirty', () => this.dirty() || this.dirtyValue()));
-    readonly touchedState = computed(() => this.resolve('touched', () => this.touched() || this.touchedValue()));
+    // `touched`/`dirty` also OR in the enclosing Form's per-name state (`rdxSignalForm` name-routing), so a
+    // field with only a bare `[formField]` (no `rdxSignalField`/`rdxFieldControl`) still reveals on blur.
+    readonly dirtyState = computed(
+        () =>
+            this.resolve('dirty', () => this.dirty() || this.dirtyValue()) ||
+            (this.formContext?.dirtyFor(this.name()) ?? false)
+    );
+    readonly touchedState = computed(
+        () =>
+            this.resolve('touched', () => this.touched() || this.touchedValue()) ||
+            (this.formContext?.touchedFor(this.name()) ?? false)
+    );
     readonly filledState = computed(() => this.resolve('filled', () => this.filled() ?? this.filledValue()));
     readonly focusedState = computed(() => this.resolve('focused', () => this.focused() ?? this.focusedValue()));
 
@@ -280,7 +384,11 @@ export class RdxFieldRoot {
         if (formContext) {
             const registration: RdxFormFieldRegistration = {
                 name: () => this.name(),
-                invalid: () => this.invalidState(),
+                // `invalid` reports *actual* validity (ungated) — `form.anyInvalid` + the submit guard must
+                // reflect real state even before a field reveals it. `displayValid` reports the *gated*
+                // tri-state so the form's presentation `data-invalid` stays neutral on load.
+                invalid: () => this.actualInvalidState(),
+                displayValid: () => this.validState(),
                 dirty: () => this.dirtyState(),
                 touched: () => this.touchedState(),
                 focus: () => this.focusControl(),
@@ -345,9 +453,10 @@ export class RdxFieldRoot {
 
     /**
      * Prefer the registered provider's value for `key` when it exposes one,
-     * otherwise fall back to the root inputs / DOM-derived signals.
+     * otherwise fall back to the root inputs / DOM-derived signals. `errors` (content) and `valid`
+     * (tri-state `boolean | null`) are resolved separately, so they're excluded from this boolean key.
      */
-    private resolve(key: Exclude<keyof RdxFieldState, 'errors'>, fallback: () => boolean): boolean {
+    private resolve(key: Exclude<keyof RdxFieldState, 'errors' | 'valid'>, fallback: () => boolean): boolean {
         const accessor = this.stateProvider()?.[key];
         return accessor ? accessor() : fallback();
     }

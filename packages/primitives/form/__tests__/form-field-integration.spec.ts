@@ -9,7 +9,7 @@ import { _importsForm, RdxFormErrors } from '../index';
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsForm, RdxFieldRoot, RdxFieldControl, RdxFieldError],
     template: `
-        <form [errors]="errors()" rdxFormRoot>
+        <form [errors]="errors()" validationMode="always" rdxFormRoot>
             <div #emailField="rdxFieldRoot" name="email" rdxFieldRoot>
                 <input id="email-input" name="email" rdxFieldControl />
                 <p #emailErr="rdxFieldError" rdxFieldError>{{ emailErr.messages().join(' | ') }}</p>
@@ -56,14 +56,14 @@ describe('Field ↔ Form integration', () => {
         await settle();
     });
 
-    it('an unnamed field is exempt from external errors', async () => {
+    it('an unnamed field is exempt from server errors', async () => {
         host.errors.set({ email: 'taken' });
         await settle();
         expect(field('email').hasAttribute('data-invalid')).toBe(true);
         expect(field('').hasAttribute('data-invalid')).toBe(false);
     });
 
-    it('external errors override a client-valid field and drive aria-describedby', async () => {
+    it('server errors override a client-valid field and drive aria-describedby', async () => {
         host.errors.set({ email: 'taken' });
         await settle();
 
@@ -92,7 +92,14 @@ describe('Field ↔ Form integration', () => {
             expect(field('email').querySelector('[rdxFieldError]')!.textContent!.trim()).toBe('Bad value');
         });
 
-        it('provider messages precede Form external messages', async () => {
+        it('provider errors also force the Form invalid (actual aggregate), not just the field display', () => {
+            expect(formEl().hasAttribute('data-invalid')).toBe(false);
+            emailFieldRoot().setStateProvider({ errors: () => [{ kind: 'custom', message: 'Bad value' }] });
+            fixture.detectChanges();
+            expect(formEl().hasAttribute('data-invalid')).toBe(true);
+        });
+
+        it('provider messages precede Form server errors', async () => {
             emailFieldRoot().setStateProvider({ errors: () => [{ kind: 'custom', message: 'Provider' }] });
             host.errors.set({ email: 'Server' });
             await settle();
