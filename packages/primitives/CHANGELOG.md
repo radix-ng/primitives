@@ -1,3 +1,26 @@
+## 1.0.8 (2026-06-25)
+
+### 🚀 Features
+
+- **forms:** add validation display modes for signal forms ([4cfd80cb](https://github.com/radix-ng/primitives/commit/4cfd80cb))
+- **forms:** validation state for editable ([de78cbb4](https://github.com/radix-ng/primitives/commit/de78cbb4))
+- **forms:** validation state for date-field & time-field ([3448d12b](https://github.com/radix-ng/primitives/commit/3448d12b))
+- **combobox,autocomplete:** Signal Forms validation state ([f6ff3878](https://github.com/radix-ng/primitives/commit/f6ff3878))
+- **slider:** signal Forms validation state via RdxFormUiControlBase ([d37b5ea8](https://github.com/radix-ng/primitives/commit/d37b5ea8))
+- **forms:** reusable Signal Forms state surface (base/helper/host-directive) ([f437cf65](https://github.com/radix-ng/primitives/commit/f437cf65))
+- **select:** added signal forms adapter ([600253c1](https://github.com/radix-ng/primitives/commit/600253c1))
+- **forms:** signal forms adapter + control validation state + Field.Item ([95b8e52a](https://github.com/radix-ng/primitives/commit/95b8e52a))
+
+### 🩹 Fixes
+
+- **forms:** form data-invalid respects per-field validationMode override ([07185c59](https://github.com/radix-ng/primitives/commit/07185c59))
+- **forms:** dedupe field error messages from dual Signal Forms adapters ([c73351d2](https://github.com/radix-ng/primitives/commit/c73351d2))
+- **forms:** robust Signal Forms adapter teardown + nested-path errorsFor ([2a7016ea](https://github.com/radix-ng/primitives/commit/2a7016ea))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 1.0.7 (2026-06-20)
 
 ### 🩹 Fixes
