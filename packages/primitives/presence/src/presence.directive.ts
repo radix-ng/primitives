@@ -71,8 +71,10 @@ export class RdxPresenceDirective {
 
     private mountView(): HTMLElement[] {
         this.viewRef = this.viewContainerRef.createEmbeddedView(this.templateRef);
-        const node = this.viewRef.rootNodes.find((n): n is HTMLElement => n instanceof HTMLElement);
-        return node ? [node] : [];
+        // Return *all* root elements (not just the first) so a multi-root template — e.g. a backdrop
+        // plus content — has the exit animation on any root suspend the unmount. Mirrors
+        // `RdxPortalPresence.mountView`, which already watches every relocated root node.
+        return (this.viewRef.rootNodes as Node[]).filter((node): node is HTMLElement => node instanceof HTMLElement);
     }
 
     private destroyView(): void {

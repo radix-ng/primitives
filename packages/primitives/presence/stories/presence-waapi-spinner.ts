@@ -14,6 +14,9 @@ import { PresenceDemo } from './presence';
     selector: 'presence-waapi-spinner',
     imports: [PresenceDemo],
     providers: [provideRdxPresenceContext(() => ({ present: inject(PresenceWaapiSpinner).open }))],
+    // Exception to the no-story-CSS rule: this fixture needs a pre-existing infinite `@keyframes`
+    // spinner to exercise the freshness filter. A named, infinite `@keyframes` can't be expressed with
+    // headless Tailwind utilities story-locally, so the styles stay here.
     styles: `
         @keyframes waapi-spin {
             to {

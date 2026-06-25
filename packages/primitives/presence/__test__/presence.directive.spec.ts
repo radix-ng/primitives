@@ -45,6 +45,25 @@ class PresenceAnimHostComponent {
     readonly present = signal(true);
 }
 
+// Multi-root template (backdrop + content) where only the *second* root carries the exit
+// `@keyframes`. Guards the regression where `mountView()` watched only the first root node.
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'test-presence-multiroot-host',
+    standalone: true,
+    imports: [TestPresenceWrapper],
+    providers: [provideRdxPresenceContext(() => ({ present: inject(PresenceMultiRootHostComponent).present }))],
+    template: `
+        <ng-template testPresence>
+            <span class="backdrop">backdrop</span>
+            <span class="content" [attr.data-state]="present() ? 'open' : 'closed'">content</span>
+        </ng-template>
+    `
+})
+class PresenceMultiRootHostComponent {
+    readonly present = signal(true);
+}
+
 describe('RdxPresenceDirective', () => {
     let fixture: ComponentFixture<PresenceHostComponent>;
     let host: PresenceHostComponent;
@@ -197,5 +216,62 @@ describe('RdxPresenceDirective — exit animation', () => {
         expect(content()).not.toBeNull();
         // same view was kept, not re-created
         expect(content()).toBe(opened);
+    });
+});
+
+describe('RdxPresenceDirective — multi-root exit animation', () => {
+    let fixture: ComponentFixture<PresenceMultiRootHostComponent>;
+    let host: PresenceMultiRootHostComponent;
+    let gcsSpy: MockInstance;
+
+    const content = () => fixture.nativeElement.querySelector('.content') as HTMLElement | null;
+    const backdrop = () => fixture.nativeElement.querySelector('.backdrop') as HTMLElement | null;
+
+    const endAnimation = (node: HTMLElement, animationName = 'exit') => {
+        const event = new Event('animationend') as AnimationEvent & { animationName: string };
+        event.animationName = animationName;
+        node.dispatchEvent(event);
+    };
+
+    beforeEach(() => {
+        // Only the element with `data-state='closed'` (the content root) animates; the backdrop never does.
+        gcsSpy = vi.spyOn(window, 'getComputedStyle').mockImplementation(
+            (el: Element) =>
+                ({
+                    animationName: el.getAttribute?.('data-state') === 'closed' ? 'exit' : 'none',
+                    display: 'block'
+                }) as unknown as CSSStyleDeclaration
+        );
+
+        fixture = TestBed.createComponent(PresenceMultiRootHostComponent);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+    });
+
+    afterEach(() => gcsSpy.mockRestore());
+
+    it('stays mounted while an exit animation on a non-first root is running', () => {
+        expect(content()).not.toBeNull();
+        expect(backdrop()).not.toBeNull();
+
+        host.present.set(false);
+        fixture.detectChanges();
+
+        // The exit animation lives on the second root (content); the view must stay mounted.
+        expect(content()).not.toBeNull();
+        expect(content()!.getAttribute('data-state')).toBe('closed');
+    });
+
+    it('unmounts once the second-root exit animation ends', () => {
+        host.present.set(false);
+        fixture.detectChanges();
+        const node = content();
+        expect(node).not.toBeNull();
+
+        endAnimation(node!);
+        fixture.detectChanges();
+
+        expect(content()).toBeNull();
+        expect(backdrop()).toBeNull();
     });
 });

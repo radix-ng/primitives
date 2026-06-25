@@ -13,19 +13,6 @@ import { PresenceDemo } from './presence';
     selector: 'presence-waapi-transition',
     imports: [PresenceDemo],
     providers: [provideRdxPresenceContext(() => ({ present: inject(PresenceWaapiTransition).open }))],
-    styles: `
-        .waapi-box {
-            transition:
-                opacity 300ms ease,
-                transform 300ms ease;
-        }
-
-        /* Exit is a transition — the machine must wait for it via the Web Animations API. */
-        .waapi-box[data-state='closed'] {
-            opacity: 0;
-            transform: scale(0.96);
-        }
-    `,
     template: `
         <div class="flex flex-col items-center gap-4">
             <button
@@ -39,7 +26,7 @@ import { PresenceDemo } from './presence';
             <div class="flex h-28 items-center">
                 <ng-template presenceDemo>
                     <div
-                        class="waapi-box border-border bg-card text-card-foreground flex h-24 w-48 items-center justify-center rounded-md border text-sm shadow-sm"
+                        class="waapi-box border-border bg-card text-card-foreground flex h-24 w-48 items-center justify-center rounded-md border text-sm shadow-sm transition-[opacity,transform] duration-300 ease-[ease] data-[state=closed]:scale-95 data-[state=closed]:opacity-0 data-[state=open]:scale-100 data-[state=open]:opacity-100"
                         [attr.data-state]="open() ? 'open' : 'closed'"
                     >
                         transition exit

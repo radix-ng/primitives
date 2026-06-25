@@ -17,6 +17,9 @@ export class PresenceDemo {}
     selector: 'presence-example',
     imports: [PresenceDemo],
     providers: [provideRdxPresenceContext(() => ({ present: inject(PresenceExample).open }))],
+    // Exception to the no-story-CSS rule: this fixture exists to drive a real enter/exit `@keyframes`
+    // pair through the presence machine. Named `@keyframes` cannot be expressed with headless Tailwind
+    // utilities story-locally (they'd have to live in the global theme), so the styles stay here.
     styles: `
         @keyframes presence-enter {
             from {
