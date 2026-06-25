@@ -174,7 +174,6 @@
         "typescript-eslint": "^8.61.1",
         "verdaccio": "6.7.2",
         "vite": "8.0.16",
-        "vite-tsconfig-paths": "^5.1.4",
         "vitest": "4.1.8",
         "zod": "4.4.3"
     },

@@ -12,16 +12,14 @@ const source = (code: string) => ({ docs: { source: { code, language: 'typescrip
 
 export default {
     title: 'Recipes/Forms/Signal Forms',
-    decorators: [
-        moduleMetadata({ imports: [SignalFormsBugReport, SignalFormsComplex, SignalFormsArray] }),
-        tailwindDemoDecorator({ size: 'tall' })
-    ]
+    decorators: [moduleMetadata({ imports: [SignalFormsBugReport, SignalFormsComplex, SignalFormsArray] })]
 } as Meta;
 
 type Story = StoryObj;
 
 export const BugReport: Story = {
     parameters: source(bugReportSource),
+    decorators: [tailwindDemoDecorator()],
     render: () => ({
         template: html`
             <signal-forms-bug-report />
@@ -31,6 +29,7 @@ export const BugReport: Story = {
 
 export const Complex: Story = {
     parameters: source(complexSource),
+    decorators: [tailwindDemoDecorator({ size: 'tall' })],
     render: () => ({
         template: html`
             <signal-forms-complex />
@@ -40,6 +39,7 @@ export const Complex: Story = {
 
 export const ArrayFields: Story = {
     parameters: source(arraySource),
+    decorators: [tailwindDemoDecorator({ size: 'tall' })],
     render: () => ({
         template: html`
             <signal-forms-array />

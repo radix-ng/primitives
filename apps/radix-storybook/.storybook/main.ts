@@ -5,7 +5,6 @@ import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import remarkGfm from 'remark-gfm';
 import { mergeConfig, Plugin, UserConfig } from 'vite';
-import viteTsConfigPaths from 'vite-tsconfig-paths';
 
 const require = createRequire(import.meta.url);
 
@@ -87,7 +86,8 @@ const config: StorybookConfig = {
 
     async viteFinal(config: UserConfig) {
         return mergeConfig(config, {
-            plugins: [rawTsPlugin(), viteTsConfigPaths()]
+            resolve: { tsconfigPaths: true },
+            plugins: [rawTsPlugin()]
         });
     },
 

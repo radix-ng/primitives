@@ -3,7 +3,6 @@ import { playwright } from '@vitest/browser-playwright';
 import { writeFileSync } from 'node:fs';
 import { dirname, isAbsolute, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 const root = dirname(fileURLToPath(import.meta.url));
@@ -59,7 +58,8 @@ function writeBenchResults(_ctx: unknown, file: string, results: BenchRow[]): st
 export default defineConfig({
     root,
     cacheDir: '../../node_modules/.vitest/apps/radix-perf-testing',
-    plugins: [angular(), tsconfigPaths()],
+    resolve: { tsconfigPaths: true },
+    plugins: [angular()],
     // Pre-bundle deps that primitives pull in, so the browser runner doesn't reload mid-run when one
     // is first imported (reloads make Vitest warn and can skew the first samples).
     optimizeDeps: {
