@@ -56,7 +56,3 @@ export function arrayRemove<T>(array: T[], item: T): T[] {
     }
     return copy;
 }
-
-export function removeLinks(items: HTMLElement[]): HTMLElement[] {
-    return items.filter((el) => el.tagName !== 'A');
-}

@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } fro
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { RdxFocusScope } from '../src/focus-scope';
-import { createFocusScopesStack, FocusScopeAPI, removeLinks } from '../src/stack';
+import { createFocusScopesStack, FocusScopeAPI } from '../src/stack';
 import { getTabbableCandidates, getTabbableEdges } from '../src/utils';
 
 /**
@@ -22,7 +22,7 @@ const flush = (): Promise<void> => new Promise((resolve) => requestAnimationFram
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxFocusScope],
     template: `
-        <div #scope [loop]="loop()" rdxFocusScope>
+        <div #scope [loop]="loop()" [trapped]="trapped()" rdxFocusScope>
             <button #a>A</button>
             <button #b>B</button>
             <button #c>C</button>
@@ -31,7 +31,9 @@ const flush = (): Promise<void> => new Promise((resolve) => requestAnimationFram
 })
 class LoopHost {
     readonly loop = signal(false);
+    readonly trapped = signal(false);
     readonly scope = viewChild.required('scope', { read: ElementRef });
+    readonly directive = viewChild.required('scope', { read: RdxFocusScope });
     readonly a = viewChild.required('a', { read: ElementRef });
     readonly b = viewChild.required('b', { read: ElementRef });
     readonly c = viewChild.required('c', { read: ElementRef });
@@ -78,7 +80,7 @@ describe('RdxFocusScope characterization', () => {
             expect(document.activeElement).toBe(fixture.componentInstance.c().nativeElement);
         });
 
-        it('prevents default at the edge but does not wrap when loop is off', () => {
+        it('lets Tab leave at the edge when neither loop nor trapped (outer focus guards stay reachable)', () => {
             const fixture = TestBed.createComponent(LoopHost);
             fixture.detectChanges();
             const host = fixture.componentInstance.scope().nativeElement as HTMLElement;
@@ -87,8 +89,41 @@ describe('RdxFocusScope characterization', () => {
             last.focus();
             const event = tab(host);
 
+            // A plain non-modal scope must NOT trap Tab at the edge — the browser has to reach whatever
+            // follows the host (e.g. RdxFloatingFocusManager's hidden outer guard). Base UI / Radix
+            // `FocusScope`: `if (!loop && !trapped) return`.
+            expect(event.defaultPrevented).toBe(false);
+        });
+
+        it('still prevents Tab at the edge when trapped (containment) even with loop off', () => {
+            const fixture = TestBed.createComponent(LoopHost);
+            fixture.componentInstance.trapped.set(true);
+            fixture.detectChanges();
+            const host = fixture.componentInstance.scope().nativeElement as HTMLElement;
+
+            const last = fixture.componentInstance.c().nativeElement as HTMLElement;
+            last.focus();
+            const event = tab(host);
+
             expect(event.defaultPrevented).toBe(true);
-            expect(document.activeElement).toBe(last); // no wrap
+            expect(document.activeElement).toBe(last); // contained, no wrap
+        });
+
+        it('stands down on a paused scope — a nested scope owns Tab, so it must not double-handle', () => {
+            const fixture = TestBed.createComponent(LoopHost);
+            fixture.componentInstance.loop.set(true);
+            fixture.detectChanges();
+            const host = fixture.componentInstance.scope().nativeElement as HTMLElement;
+
+            // A nested scope took over → this scope is paused (Base UI / Radix `if (focusScope.paused) return`).
+            fixture.componentInstance.directive().focusScope.pause();
+
+            (fixture.componentInstance.c().nativeElement as HTMLElement).focus(); // edge
+            const event = tab(host);
+
+            // Paused: no wrap, no preventDefault — the active (nested) scope handles the bubbled Tab.
+            expect(event.defaultPrevented).toBe(false);
+            expect(document.activeElement).toBe(fixture.componentInstance.c().nativeElement);
         });
 
         it('does not interfere with a non-edge Tab', () => {
@@ -202,12 +237,6 @@ describe('RdxFocusScope characterization', () => {
             expect(last?.id).toBe('last');
 
             container.remove();
-        });
-
-        it('removeLinks strips anchor elements', () => {
-            const button = document.createElement('button');
-            const anchor = document.createElement('a');
-            expect(removeLinks([button, anchor])).toEqual([button]);
         });
     });
 

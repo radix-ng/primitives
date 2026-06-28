@@ -32,12 +32,20 @@ export function composedContains(container: Node, node: Node | null): boolean {
 /**
  * Attempts focusing the first element in a list of candidates.
  * Stops when focus has actually moved.
+ *
+ * Reads the active element from `root` (a focus scope passes its host's `ownerDocument`); falling back to
+ * the global `document` would, in an iframe / multi-document scope, never detect that focus moved inside
+ * the inner document and so walk past every candidate, leaving focus on the last one instead of the first.
  */
-export function focusFirst(candidates: HTMLElement[], { select = false } = {}) {
-    const previouslyFocusedElement = getActiveElement();
+export function focusFirst(
+    candidates: HTMLElement[],
+    { select = false, root }: { select?: boolean; root?: DocumentOrShadowRoot } = {}
+) {
+    const ownerRoot = root ?? candidates[0]?.ownerDocument ?? document;
+    const previouslyFocusedElement = getActiveElement(ownerRoot);
     for (const candidate of candidates) {
         focus(candidate, { select });
-        if (getActiveElement() !== previouslyFocusedElement) return true;
+        if (getActiveElement(ownerRoot) !== previouslyFocusedElement) return true;
     }
 
     return;

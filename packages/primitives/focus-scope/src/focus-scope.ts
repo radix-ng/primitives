@@ -15,7 +15,7 @@ import {
 } from '@angular/core';
 import { BooleanInput, createContext, getActiveElement } from '@radix-ng/primitives/core';
 import { RdxFocusScopeConfigToken } from './focus-scope.config';
-import { createFocusScopesStack, FocusScopeAPI, removeLinks } from './stack';
+import { createFocusScopesStack, FocusScopeAPI } from './stack';
 import {
     AUTOFOCUS_ON_MOUNT,
     AUTOFOCUS_ON_UNMOUNT,
@@ -217,8 +217,9 @@ export class RdxFocusScope {
                         container.dispatchEvent(mountEvent);
 
                         if (!mountEvent.defaultPrevented) {
-                            focusFirst(removeLinks(getTabbableCandidates(container)), {
-                                select: true
+                            focusFirst(getTabbableCandidates(container), {
+                                select: true,
+                                root: this.ownerDocument
                             });
                             if (getActiveElement(this.ownerDocument) === previouslyFocusedElement) focus(container);
                         }
@@ -279,6 +280,16 @@ export class RdxFocusScope {
     }
 
     handleKeyDown(event: KeyboardEvent) {
+        // Only a looping or trapped scope polices Tab at its edges. A plain non-modal scope must let Tab
+        // through so the browser can reach whatever follows the host — e.g. the hidden outer focus guards
+        // `RdxFloatingFocusManager` places around it (calling `preventDefault()` here would fire first and
+        // strand focus at the boundary, defeating the guard). A paused scope (a nested scope took over)
+        // also stands down so it can't double-handle a bubbled Tab. Mirrors Base UI / Radix `FocusScope`:
+        // `if ((!loop && !trapped) || focusScope.paused) return`.
+        if ((!this.loop() && !this.isTrapped()) || this.focusScope.paused()) {
+            return;
+        }
+
         const isTabKey = event.key === 'Tab' && !event.altKey && !event.ctrlKey && !event.metaKey;
 
         const focusedElement = getActiveElement(this.ownerDocument) as HTMLElement | null;
