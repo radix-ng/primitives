@@ -76,7 +76,7 @@ export class RdxDateFieldInputDirective {
         return useDateField({
             hasLeftFocus: this.hasLeftFocus,
             lastKeyZero: this.lastKeyZero,
-            placeholder: this.rootContext.placeholder,
+            placeholder: this.rootContext.effectivePlaceholder,
             hourCycle: this.rootContext.hourCycle(),
             segmentValues: this.rootContext.segmentValues,
             formatter: this.rootContext.formatter(),

@@ -30,7 +30,7 @@ import {
     isSegmentNavigationKey,
     normalizeDateStep,
     normalizeHourCycle,
-    provideToken,
+    provideExistingToken,
     RdxFormUiControlBase,
     RdxFormValueControl,
     resolveDisplayValid,
@@ -45,7 +45,7 @@ import { RdxDateFieldInputDirective } from './date-field-input.directive';
 @Directive({
     selector: '[rdxDateFieldRoot]',
     exportAs: 'rdxDateFieldRoot',
-    providers: [provideToken(DATE_FIELDS_ROOT_CONTEXT, RdxDateFieldRootDirective)],
+    providers: [provideExistingToken(DATE_FIELDS_ROOT_CONTEXT, RdxDateFieldRootDirective)],
     host: {
         role: 'group',
         '[attr.aria-disabled]': 'disabled() ? "true" : undefined',
@@ -152,6 +152,14 @@ export class RdxDateFieldRootDirective
      */
     readonly placeholder = model<DateValue | undefined>(this.defaultDate().copy());
 
+    /**
+     * Always-defined placeholder used for segment math. A controlled `[placeholder]` can be reset to
+     * `undefined`; fall back to the default date so segment attributes and key handlers never
+     * dereference `undefined`.
+     * @ignore
+     */
+    readonly effectivePlaceholder = computed(() => this.placeholder() ?? this.defaultDate().copy());
+
     // Internal state
 
     /**
@@ -181,11 +189,13 @@ export class RdxDateFieldRootDirective
      * @ignore
      */
     readonly inferredGranularity = computed(() => {
-        const placeholder = this.placeholder();
+        // Use the always-defined placeholder: a controlled `[placeholder]` reset to `undefined` while
+        // `value` is a date-time must still infer 'minute' (from the default's shape), not drop to 'day'.
+        const placeholder = this.effectivePlaceholder();
 
-        if (this.granularity()) return placeholder && !hasTime(placeholder) ? 'day' : this.granularity();
+        if (this.granularity()) return !hasTime(placeholder) ? 'day' : this.granularity();
 
-        return placeholder && hasTime(placeholder) ? 'minute' : 'day';
+        return hasTime(placeholder) ? 'minute' : 'day';
     });
 
     /**
@@ -253,7 +263,7 @@ export class RdxDateFieldRootDirective
     readonly allSegmentContent = computed(() =>
         createContent({
             granularity: <Granularity>this.inferredGranularity(),
-            dateRef: <DateValue>this.placeholder(),
+            dateRef: this.effectivePlaceholder(),
             formatter: this.formatter(),
             hideTimeZone: this.hideTimeZone(),
             hourCycle: this.hourCycle(),

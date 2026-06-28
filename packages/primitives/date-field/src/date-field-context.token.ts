@@ -5,15 +5,20 @@ import { DateStep, Formatter, HourCycle, SegmentValueObj } from '@radix-ng/primi
 export interface DateFieldContextToken {
     locale: InputSignal<string>;
     value: ModelSignal<DateValue | undefined>;
-    disabled: InputSignal<boolean>;
-    readonly: InputSignal<boolean>;
+    // Read-only views: consumers only read these. Typed as `Signal<…>` supertypes so the concrete
+    // signal kind (transformed input, model, computed) is an implementation detail and mocks stay simple.
+    disabled: Signal<boolean>;
+    readonly: Signal<boolean>;
     isInvalid: Signal<boolean>;
     /** Effective invalid: the built-in range/availability check OR the form-driven invalid state. */
     invalidState: Signal<boolean>;
     /** Tri-state displayed validity (`true`/`false`/`null`): the field's gated state inside a Field, else own. */
     displayValid: Signal<boolean | null>;
-    placeholder: ModelSignal<DateValue>;
-    hourCycle: InputSignal<HourCycle>;
+    /** The controlled placeholder; may be `undefined`. Use `effectivePlaceholder` for segment math. */
+    placeholder: Signal<DateValue | undefined>;
+    /** Always-defined placeholder (falls back to the default date) for segment attributes/key handlers. */
+    effectivePlaceholder: Signal<DateValue>;
+    hourCycle: Signal<HourCycle | undefined>;
     step$: Signal<DateStep>;
     formatter: Signal<Formatter>;
     segmentValues: WritableSignal<SegmentValueObj>;

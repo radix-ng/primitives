@@ -28,7 +28,7 @@ import {
     isSegmentNavigationKey,
     normalizeDateStep,
     normalizeHourCycle,
-    provideToken,
+    provideExistingToken,
     RdxFormUiControlBase,
     RdxFormValueControl,
     resolveDisplayValid,
@@ -70,7 +70,7 @@ function isSameTimeValue(a: TimeValue | undefined, b: TimeValue | undefined): bo
 @Directive({
     selector: '[rdxTimeFieldRoot]',
     exportAs: 'rdxTimeFieldRoot',
-    providers: [provideToken(TIME_FIELDS_ROOT_CONTEXT, RdxTimeFieldRootDirective)],
+    providers: [provideExistingToken(TIME_FIELDS_ROOT_CONTEXT, RdxTimeFieldRootDirective)],
     host: {
         role: 'group',
         '[attr.aria-disabled]': 'disabled() ? "" : undefined',
@@ -170,6 +170,14 @@ export class RdxTimeFieldRootDirective
      */
     readonly placeholder = model<TimeValue | undefined>(this.defaultDate().copy());
 
+    /**
+     * Always-defined placeholder used for segment math. A controlled `[placeholder]` can be reset to
+     * `undefined`; fall back to the default time so the converted placeholder is never built from
+     * `undefined`.
+     * @ignore
+     */
+    readonly effectivePlaceholder = computed(() => this.placeholder() ?? this.defaultDate().copy());
+
     // Internal state
 
     /**
@@ -216,7 +224,7 @@ export class RdxTimeFieldRootDirective
 
     readonly convertedPlaceholder = linkedSignal({
         source: () => {
-            return convertValue(<TimeValue>this.placeholder());
+            return convertValue(this.effectivePlaceholder());
         },
         computation: (value: TimeValue) => {
             return value;

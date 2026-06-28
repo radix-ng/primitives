@@ -116,6 +116,74 @@ describe('Date Field', () => {
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     template: `
+        <div #root="rdxDateFieldRoot" [value]="value()" [placeholder]="placeholder()" rdxDateFieldRoot>
+            @for (item of root.segmentContents(); track $index) {
+                <div [part]="item.part" rdxDateFieldInput>{{ item.value }}</div>
+            }
+        </div>
+    `,
+    imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective]
+})
+class DateFieldPlaceholderHost {
+    readonly value = signal<DateValue | undefined>(undefined);
+    readonly placeholder = signal<DateValue | undefined>(new CalendarDate(2026, 6, 6));
+}
+
+describe('RdxDateField controlled placeholder', () => {
+    let fixture: ComponentFixture<DateFieldPlaceholderHost>;
+    let host: DateFieldPlaceholderHost;
+
+    function segs(): HTMLElement[] {
+        return Array.from(fixture.nativeElement.querySelectorAll<HTMLElement>('[data-rdx-date-field-segment]')).filter(
+            (el) => el.getAttribute('data-rdx-date-field-segment') !== 'literal'
+        );
+    }
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [DateFieldPlaceholderHost] });
+        fixture = TestBed.createComponent(DateFieldPlaceholderHost);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+    });
+
+    // A controlled `[placeholder]` reset to `undefined` must not crash segment attrs / key handlers:
+    // the root falls back to `effectivePlaceholder` (the default date) for all internal segment math.
+    it('keeps rendering segments and handling keys when placeholder is reset to undefined', () => {
+        host.placeholder.set(undefined);
+        fixture.detectChanges();
+
+        expect(
+            segs()
+                .map((el) => el.getAttribute('data-rdx-date-field-segment'))
+                .sort()
+        ).toEqual(['day', 'month', 'year']);
+
+        const year = segs().find((el) => el.getAttribute('data-rdx-date-field-segment') === 'year')!;
+        year.focus();
+        expect(() =>
+            year.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', code: 'ArrowUp', bubbles: true }))
+        ).not.toThrow();
+    });
+
+    // Silent-regression guard: with a date-time `value` and `[placeholder]` reset to `undefined`, the
+    // inferred granularity must come from the (date-time) default fallback, not raw `placeholder`, so the
+    // time segments stay rendered instead of silently disappearing.
+    it('keeps time segments when value is date-time and placeholder is reset to undefined', () => {
+        host.value.set(new CalendarDateTime(2025, 1, 15, 10, 30));
+        fixture.detectChanges();
+
+        host.placeholder.set(undefined);
+        fixture.detectChanges();
+
+        const remaining = segs().map((el) => el.getAttribute('data-rdx-date-field-segment'));
+        expect(remaining).toContain('hour');
+        expect(remaining).toContain('minute');
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    template: `
         <div
             #root="rdxDateFieldRoot"
             [value]="value()"

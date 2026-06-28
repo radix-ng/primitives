@@ -1,6 +1,6 @@
 // https://github.com/unovue/reka-ui/blob/v2/packages/core/src/shared/date/useDateField.ts
 
-import { computed, InputSignal, ModelSignal, Signal, WritableSignal } from '@angular/core';
+import { computed, ModelSignal, Signal, WritableSignal } from '@angular/core';
 import { CalendarDateTime, CycleTimeOptions, DateFields, DateValue, TimeFields } from '@internationalized/date';
 import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ARROW_UP, BACKSPACE, SHIFT, TAB } from '../kbd-constants';
 import { getDaysInMonth, toDate } from './comparators';
@@ -43,13 +43,16 @@ type DateTimeValueIncrementation = {
 export type UseDateFieldProps = {
     hasLeftFocus: WritableSignal<boolean>;
     lastKeyZero: WritableSignal<boolean>;
-    placeholder: ModelSignal<DateValue> | WritableSignal<DateValue>;
-    hourCycle: HourCycle;
+    // Read-only here: the helper only reads `placeholder`/`hourCycle`/`disabled`/`readonly`.
+    // Callers pass an always-defined `effectivePlaceholder` (the field roots fall back to the default
+    // date when a controlled `[placeholder]` is reset to `undefined`), so this stays non-nullable.
+    placeholder: Signal<DateValue>;
+    hourCycle: HourCycle | undefined;
     formatter: Formatter;
     segmentValues: WritableSignal<SegmentValueObj>;
     step: Signal<DateStep>;
-    disabled: InputSignal<boolean>;
-    readonly: InputSignal<boolean>;
+    disabled: Signal<boolean>;
+    readonly: Signal<boolean>;
     part: SegmentPart;
     modelValue: ModelSignal<DateValue | undefined> | WritableSignal<DateValue | undefined>;
     focusNext: () => void;
@@ -58,7 +61,7 @@ export type UseDateFieldProps = {
 type SegmentAttrProps = {
     disabled: boolean;
     segmentValues: SegmentValueObj;
-    hourCycle: HourCycle;
+    hourCycle: HourCycle | undefined;
     placeholder: DateValue;
     formatter: Formatter;
 };

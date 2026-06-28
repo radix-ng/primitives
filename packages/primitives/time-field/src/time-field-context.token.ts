@@ -4,16 +4,19 @@ import { DateStep, Formatter, HourCycle, SegmentValueObj, TimeValue } from '@rad
 export interface TimeFieldContextToken {
     locale: InputSignal<string>;
     value: ModelSignal<TimeValue | undefined>;
-    placeholder: ModelSignal<TimeValue>;
+    /** The controlled placeholder; may be `undefined`. Use `convertedPlaceholder` for segment math. */
+    placeholder: Signal<TimeValue | undefined>;
     isInvalid: Signal<boolean>;
     /** Effective invalid: the built-in range check OR the form-driven invalid state. */
     invalidState: Signal<boolean>;
     /** Tri-state displayed validity (`true`/`false`/`null`): the field's gated state inside a Field, else own. */
     displayValid: Signal<boolean | null>;
-    disabled: InputSignal<boolean>;
-    readonly: InputSignal<boolean>;
+    // Read-only views: consumers only read these. Typed as `Signal<…>` supertypes so the concrete
+    // signal kind (transformed input, model, computed) is an implementation detail and mocks stay simple.
+    disabled: Signal<boolean>;
+    readonly: Signal<boolean>;
     formatter: Signal<Formatter>;
-    hourCycle: InputSignal<HourCycle>;
+    hourCycle: Signal<HourCycle | undefined>;
     segmentValues: WritableSignal<SegmentValueObj>;
     focusNext: () => void;
     setFocusedElement: (el: HTMLElement) => void;

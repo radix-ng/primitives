@@ -1,5 +1,5 @@
-import { afterNextRender, Directive, ElementRef, forwardRef, inject, Injector } from '@angular/core';
-import { setupInternalBackdrop } from '@radix-ng/primitives/core';
+import { afterNextRender, Directive, ElementRef, inject, Injector } from '@angular/core';
+import { provideExistingToken, setupInternalBackdrop } from '@radix-ng/primitives/core';
 import {
     legacyPopperVars,
     provideRdxPopperContentConfig,
@@ -23,7 +23,7 @@ import { injectSelectRootContext } from './select-root';
     providers: [
         ...provideRdxPopperContentWrapper(RdxSelectPositioner),
         provideRdxPopperContentConfig({ align: 'start', updatePositionStrategy: 'always' }),
-        { provide: RDX_SELECT_POSITIONER_TOKEN, useExisting: forwardRef(() => RdxSelectPositioner) }
+        provideExistingToken(RDX_SELECT_POSITIONER_TOKEN, RdxSelectPositioner)
     ],
     host: {
         // The unified vars + placement attrs come from the wrapper (ADR 0012); only `box-sizing` and
