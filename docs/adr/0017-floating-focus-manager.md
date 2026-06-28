@@ -24,6 +24,20 @@
 > consumer passes it); and the **Phase-5 WebKit / screen-reader matrices** (Tier-B confirmations before
 > Acceptance). The portal-focus bridge / focus-guards toolkit exist; full portal tab-order is a later phase.
 
+> **Naming correction (2026-06-28).** This ADR uses the name `RdxFocusGuards` for two different things;
+> the implemented reality has since diverged from both, so read every later mention with this mapping:
+>
+> - The **legacy global `RdxFocusGuards` directive** (the old `@radix-ng/primitives/focus-guards`
+>   entrypoint — a `document.body` singleton on the `data-radix-focus-guard` attribute, contrasted below as
+>   "weaker") **was removed.** It was unused and is not the parity path.
+> - The **portal-focus bridge** the ADR planned to build "as the `RdxFocusGuards` analog" landed instead as
+>   a **function toolkit in `focus-scope/src/focus-guards.ts`** (`createFocusGuard`, `disableFocusInside` /
+>   `enableFocusInside`, `useFocusGuardsTabbability`, `createAriaOwnsAnchor`, `isOutsideEvent` on the
+>   `data-rdx-focus-guard` attribute), consumed by `RdxFloatingFocusManager` — **not** a separate primitive.
+>
+> So a future parity audit should compare Base UI's `FocusGuard` / `FloatingPortal` against
+> `focus-scope/src/focus-guards.ts`, and ignore the deleted `focus-guards/` entrypoint.
+
 ## Context
 
 Base UI co-locates a cluster of behaviors in **one** component, `FloatingFocusManager`, under **one
@@ -333,7 +347,8 @@ Strict parity is **not** achievable as a thin wrapper over `RdxFocusScope` alone
    mover: it renders inner/outer `FocusGuard`s, makes the portal subtree tabbable **only while open**, adds
    `aria-owns` from the portal root, and **calls focus-out close itself when focus crosses the outer
    guard** (`FloatingPortal.tsx`: `closeOnFocusOut` + `before/afterOutsideRef`). Our `RdxPortal` /
-   `RdxPortalPresence` only **move DOM**, and the global `RdxFocusGuards` is weaker. This ADR therefore
+   `RdxPortalPresence` only **move DOM**, and the legacy global `RdxFocusGuards` directive (since removed)
+   was weaker. This ADR therefore
    **depends on portal-focus infrastructure work** (§6); it cannot be a `RdxFocusScope` wrapper.
 3. **Owner-`Document` focus guards** — see §6.
 
@@ -479,10 +494,11 @@ stall on them:
   `RdxPortal` / `RdxPortalPresence` only move DOM. A **portal-focus bridge** must be built (or these
   primitives extended) so the manager gets guard/tabbability/`aria-owns` coordination — strict parity is
   impossible without it.
-- **`RdxFocusGuards` (`focus-guards/src/focus-guards.ts`)** has the **same process-global bug class** this
-  trilogy removes elsewhere: a module-global `count` and global `document` / `document.body`. If the
-  manager uses or replaces guards, they must be moved into **owner-`Document` scope** with a browser guard
-  and covered by **two-document/iframe** tests.
+- **The legacy global `RdxFocusGuards` directive** (the old `focus-guards/` entrypoint — _since removed_,
+  see the naming correction up top) had the **same process-global bug class** this trilogy removes
+  elsewhere: a module-global `count` and global `document` / `document.body`. The replacement toolkit
+  (`focus-scope/src/focus-guards.ts`) therefore creates guards per `ownerDocument` with a browser guard;
+  it must stay covered by **two-document/iframe** tests.
 
 ### 6a. The portal-focus bridge is a contract, not just a dependency
 

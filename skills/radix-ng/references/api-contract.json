@@ -3432,19 +3432,6 @@
       ]
     },
     {
-      "slug": "focus-guards",
-      "section": "components",
-      "parts": [
-        {
-          "directive": "RdxFocusGuards",
-          "selector": "[rdxFocusGuards]",
-          "description": "Injects a pair of focus guards at the edges of the whole DOM tree\nto ensure `focusin` & `focusout` events can be caught consistently.",
-          "inputs": [],
-          "outputs": []
-        }
-      ]
-    },
-    {
       "slug": "focus-scope",
       "section": "utils",
       "parts": [
