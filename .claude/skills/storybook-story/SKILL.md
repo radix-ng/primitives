@@ -94,7 +94,7 @@ description: |
 ## Examples   (### Title + one-line desc + <Canvas of={Stories.X} /> per example)
 ## Data attributes  (optional table, if the primitive exposes data-* state separately)
 ## API Reference  (### per part → "Renders a `<x>` element" note + <ArgTypes> + Data attributes / CSS variables tables; see "API Reference — Base UI parity")
-## Accessibility  (a11y notes + a ### Keyboard Interactions table; goes LAST — see rules below)
+## Accessibility  (native-first lead sentence + a standards-mapping table + a ### Keyboard Interactions table; goes LAST — see rules below)
 ```
 
 - **Surface `Default` with `<Primary />` (+ `<Controls />`)**, not `<Canvas of={Default}>` — see checklist item 1. A simple primitive may instead use `<Canvas sourceState="hidden" of={Stories.SomeStandaloneStory} />` as the hero (e.g. Button uses `Variants`).
@@ -144,14 +144,35 @@ it here. Each `###` part subsection, in this order:
 - **Reference page to copy:** `packages/primitives/collapsible/stories/collapsible.docs.mdx`.
 - After editing any `*.docs.mdx`, run `pnpm skills:build` to regenerate the LLM bundle (CI-verified).
 
-### Keyboard Interactions & Accessibility (canonical convention)
+### Accessibility section (canonical convention)
 
-Every keyboard-interactive primitive documents its keys the same way. Match this exactly:
+The `## Accessibility` section has three parts, in this order: a **native-first lead sentence**, a
+**standards-mapping table**, then the **`### Keyboard Interactions`** subsection. It is the **last**
+section on the page, after `## API Reference`. The library-wide philosophy lives once on the
+`Overview/Accessibility` page (source hierarchy Native HTML → WAI-ARIA → APG → WCAG 2.2 + the honest
+"designed against / tested for" disclaimer); per-primitive sections **link back to it**, they don't
+restate the manifesto.
 
-- **Nesting & placement.** A `## Accessibility` section holds a `### Keyboard Interactions` subsection
-  (Title Case, level 3). `## Accessibility` is the **last** section on the page, after `## API Reference`.
-  Never use a standalone `## Keyboard interactions` heading. If `## Accessibility` already exists, add the
-  subsection inside it — never a second Accessibility section.
+- **Lead sentence.** One line stating what native semantics the primitive reuses and that ARIA is added
+  only where the platform doesn't provide the widget — then name + link the specific
+  [APG pattern](https://www.w3.org/WAI/ARIA/apg/patterns/) it's built against (Dialog, Menu, Tabs,
+  Tooltip, Switch, Radio Group, …). If the primitive is purely native (e.g. Label, Aspect Ratio), say so
+  and skip the APG link.
+- **Standards-mapping table.** `| Area | Implementation | Reference |`, rows in this order where they
+  apply: **Semantics** (roles, `aria-modal`, labelling), **Keyboard** (one-line summary), **Focus**
+  (initial focus, trap, restore), **State** (`aria-controls` / `aria-expanded` / `data-*`). The
+  **Reference** column links the concrete APG sub-section **and** the specific WCAG 2.2 success criteria
+  (e.g. `[WCAG 4.1.2](https://www.w3.org/TR/WCAG22/#name-role-value)` for name/role/value,
+  `2.1.1` keyboard, `2.1.2` no-keyboard-trap, `2.4.3` focus-order). **Ground every row in source** — the
+  same "trace it to a real handler / real binding" rule as Keyboard Interactions and `data-*`. Never
+  list an Area you can't point to in code + a test.
+- **Honest claims only — never write "WCAG compliant" / "accessible" as a bare assertion.** Conformance
+  depends on consumer assembly. Frame as "built/designed against … and tested for the documented
+  behaviors". Add a row only when a passing test backs it (jest-axe + behavior/Vitest) — claims are
+  earned, not declared.
+- **Nesting & placement.** `## Accessibility` holds the `### Keyboard Interactions` subsection (Title
+  Case, level 3). Never a standalone `## Keyboard interactions` heading. If `## Accessibility` already
+  exists, add subsections inside it — never a second Accessibility section.
 - **Table shape.** `| Key | Description |`. One key (or key combo) per row. Descriptions are concise and
   end with a period. (Prettier aligns the pipes — don't hand-pad.)
 - **Key formatting.** Each key token in backticks. Arrow keys are `ArrowUp` / `ArrowDown` / `ArrowLeft` /
@@ -165,8 +186,25 @@ Every keyboard-interactive primitive documents its keys the same way. Match this
   pointer-driven, e.g. Toast), **omit the section** rather than fabricate one.
 - **User-facing language.** Describe behavior, not implementation — never name internal directives
   (`RdxDismissableLayer`, `RdxEscapeKeyDown`, "composite group") in the table.
-- **Reference sections to copy:** Tabs, Menu (rich nav + typeahead), Dialog (Escape + focus trap),
-  Time Field / Date Field (segmented input), Switch / Toggle (minimal Space/Enter).
+- **Reference sections to copy:** **Dialog** (`packages/primitives/dialog/stories/dialog.docs.mdx`) is
+  the canonical full Accessibility section — native-first lead, standards-mapping table, Keyboard
+  Interactions. Also: Tabs, Menu (rich nav + typeahead), Time/Date Field (segmented input),
+  Switch / Toggle (minimal Space/Enter).
+
+### Standard-backed test names (canonical convention)
+
+Tag the specs that verify an accessibility behavior so the test name cites the standard it backs — this
+makes the suite a self-documenting traceability matrix for the Accessibility-table rows.
+
+- Prefix the `it(...)` title with `[APG <Pattern>]` and/or `[WCAG <x.y.z>]`, then the normal description:
+  `it('[APG Dialog][WCAG 4.1.2] links the trigger and popup with accessible ids and roles', …)`,
+  `it('[WCAG 2.1.2] lets Tab leave a non-modal focus scope', …)`. One bracket per standard, APG before
+  WCAG, no lowercasing (`[APG Dialog]`, not `[apg]`).
+- **Tag only specs that map cleanly to a criterion** — roles/labels, Escape/keyboard, focus trap/restore,
+  axe. Don't tag plumbing tests (controlled state, outputs) just to decorate them.
+- In code, comment **only deviations or non-trivial decisions** with a standard reference + link (e.g.
+  `// APG keyboard convention: Tab leaves the composite; arrows move within it.`) — don't sprinkle
+  citations on obvious bindings. Reference: `packages/primitives/dialog/__tests__/dialog.spec.ts`.
 
 ### TOC gotcha — real headings in demos
 

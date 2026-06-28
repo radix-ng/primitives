@@ -7,11 +7,45 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 # Accessibility
 
-Radix Primitives follow the WAI-ARIA authoring practices guidelines and are
-tested in a wide selection of modern browsers and commonly used assistive
-technologies.
+Radix NG primitives are designed against the WAI-ARIA specification, the
+WAI-ARIA Authoring Practices Guide (APG), and WCAG 2.2, and are tested for the
+keyboard and focus behaviors documented on each primitive's page.
 
 We take care of many of the difficult implementation details related to accessibility, including `aria` and `role` attributes, focus management, and keyboard navigation. That means that users should be able to use our components as-is in most contexts and rely on functionality to follow the expected accessibility design patterns.
+
+## How we decide what semantics to use
+
+We follow a strict order of sources, from most to least authoritative for a
+given decision. Each layer is consulted only when the layer above it does not
+already provide what we need.
+
+1. **Native HTML first.** If a native element already carries the right
+   semantics and behavior (a `<button>`, `<label>`, `<fieldset>`, `<dialog>`,
+   form controls), we use it. ARIA itself is explicit that it is a _supplement_
+   to native semantics, not a replacement for them when the host language
+   already provides equivalent meaning — see the
+   [first rule of ARIA use](https://www.w3.org/TR/using-aria/#firstrule).
+2. **[WAI-ARIA](https://www.w3.org/TR/wai-aria-1.2/).** For custom widgets that
+   have no native equivalent, we add roles, states, and properties to convey
+   meaning to assistive technology.
+3. **[WAI-ARIA APG](https://www.w3.org/WAI/ARIA/apg/).** We use the Authoring
+   Practices Guide as the reference for _how_ to apply those semantics —
+   keyboard interaction and focus management for each
+   [common pattern](https://www.w3.org/WAI/ARIA/apg/patterns/). The APG is W3C
+   authoring guidance, not a normative standard like WCAG or the ARIA spec.
+4. **[WCAG 2.2](https://www.w3.org/TR/WCAG22/).** We treat the WCAG success
+   criteria as the behavioral bar a primitive must clear: keyboard operability,
+   focus order, no keyboard trap, labels, error identification, and
+   name/role/value.
+
+Each primitive's **Accessibility** section maps these sources to its concrete
+implementation, and links the specific APG pattern and WCAG success criteria it
+is built against.
+
+> We do **not** claim WCAG conformance for the library as a whole — conformance
+> depends on how you assemble and style the primitives in your application. What
+> we provide are headless building blocks _designed against_ these references and
+> _tested for_ the documented keyboard and focus behaviors.
 
 ## WAI-ARIA
 

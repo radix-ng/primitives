@@ -292,7 +292,7 @@ describe('Dialog', () => {
         }).toThrow(/structural directive/);
     });
 
-    it('links the trigger and popup with accessible ids and roles', () => {
+    it('[APG Dialog][WCAG 4.1.2] links the trigger and popup with accessible ids and roles', () => {
         trigger.click();
         fixture.detectChanges();
 
@@ -334,7 +334,7 @@ describe('Dialog', () => {
         expect(fixture.componentInstance.open).toBe(false);
     });
 
-    it('closes when Escape is pressed', async () => {
+    it('[APG Dialog] closes when Escape is pressed', async () => {
         trigger.click();
         fixture.detectChanges();
         await fixture.whenStable();

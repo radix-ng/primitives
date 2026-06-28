@@ -9469,6 +9469,23 @@ These parts read their behavior and state from context and do not expose additio
 
 ## Accessibility
 
+Dialog uses native HTML where it can (the trigger and close are real
+`<button>`s) and adds ARIA only for the windowing semantics the platform does
+not provide. It is built against the
+[APG Dialog (Modal) Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/).
+
+| Area      | Implementation                                                                                  | Reference                                                                                                              |
+| --------- | ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Semantics | `role="dialog"`, `aria-modal="true"` (modal only), labelled by `Title`, described by `Description` | [APG Dialog](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/), [WCAG 4.1.2](https://www.w3.org/TR/WCAG22/#name-role-value) |
+| Keyboard  | `Escape` closes the topmost dialog; `Tab` / `Shift+Tab` cycle focus within a modal dialog        | [APG Dialog Keyboard](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/#keyboardinteraction), [WCAG 2.1.1](https://www.w3.org/TR/WCAG22/#keyboard) |
+| Focus     | Initial focus moves into the dialog on open; focus is trapped while modal; focus is restored to the trigger on close | [WCAG 2.1.2 No Keyboard Trap](https://www.w3.org/TR/WCAG22/#no-keyboard-trap), [WCAG 2.4.3 Focus Order](https://www.w3.org/TR/WCAG22/#focus-order) |
+| State     | `aria-controls` links the trigger to the open popup; `aria-expanded` reflects open state; `data-open` / `data-closed` for styling | [WAI-ARIA states and properties](https://www.w3.org/TR/wai-aria-1.2/#states_and_properties) |
+
+A non-modal dialog (`modal="trap-focus"` or `modal="false"`) intentionally drops
+`aria-modal` and does not render content underneath inert, so `Tab` can leave it
+— see the [Non-modal](#non-modal) and [Trap focus only](#trap-focus-only)
+examples.
+
 ### Keyboard Interactions
 
 | Key               | Description                                                                       |

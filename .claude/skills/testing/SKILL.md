@@ -66,6 +66,14 @@ expect(await axe(container)).toHaveNoViolations();
 
 References to copy: `drawer/__tests__/drawer.spec.ts`, `form/__tests__/form-a11y.spec.ts`.
 
+**Standard-backed test names.** When a spec verifies an accessibility behavior, prefix the `it(...)`
+title with the standard it backs: `[APG <Pattern>]` and/or `[WCAG <x.y.z>]`, APG before WCAG, no
+lowercasing — e.g. `it('[APG Dialog][WCAG 4.1.2] links the trigger and popup with accessible ids and
+roles', …)`. Tag only specs that map cleanly to a criterion (roles/labels, keyboard, focus
+trap/restore, axe), not plumbing. This mirrors each primitive's Accessibility-table rows so the suite
+reads as a traceability matrix (full convention: `storybook-story` skill). Reference:
+`dialog/__tests__/dialog.spec.ts`.
+
 ---
 
 ## 2. Browser regression — `apps/visual-regression` (Playwright over the built Storybook)
