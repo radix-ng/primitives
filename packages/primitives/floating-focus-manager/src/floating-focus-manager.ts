@@ -28,6 +28,7 @@ import {
     enableFocusInside,
     focus,
     FOCUS_GUARD_ATTR,
+    type FocusableElement,
     getNextTabbable,
     getPreviousTabbable,
     getTabbableCandidates,
@@ -703,7 +704,7 @@ export class RdxFloatingFocusManager {
         return tree?.all.find((candidate) => candidate.context === this.rootContext) ?? null;
     }
 
-    private getTabbableContent(): HTMLElement[] {
+    private getTabbableContent(): FocusableElement[] {
         return getTabbableCandidates(this.rootContext?.floatingElement ?? this.host);
     }
 
@@ -713,11 +714,11 @@ export class RdxFloatingFocusManager {
         return parent && parent !== floating.ownerDocument.body ? parent : floating;
     }
 
-    private defaultPreviousFocusable(): HTMLElement | null {
+    private defaultPreviousFocusable(): FocusableElement | null {
         return getPreviousTabbable(this.rootContext?.referenceElement ?? this.host);
     }
 
-    private defaultNextFocusable(): HTMLElement | null {
+    private defaultNextFocusable(): FocusableElement | null {
         return getNextTabbable(this.rootContext?.referenceElement ?? this.host);
     }
 

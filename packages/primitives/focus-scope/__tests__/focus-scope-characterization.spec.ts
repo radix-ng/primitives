@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { RdxFocusScope } from '../src/focus-scope';
 import { createFocusScopesStack, FocusScopeAPI } from '../src/stack';
-import { getTabbableCandidates, getTabbableEdges } from '../src/utils';
+import { getTabbableCandidates, getTabbableEdges, isTabbable, tabbable } from '../src/utils';
 
 /**
  * Characterization of the CURRENT `RdxFocusScope` behavior (ADR 0017 Phase 0 / 1a). These lock the
@@ -219,12 +219,17 @@ describe('RdxFocusScope characterization', () => {
                 <input id="h" type="hidden" />
                 <a id="link" href="#">link</a>
             `;
+            // Base UI `tabbable()` requires `isConnected` — candidates must be in a real document.
+            document.body.appendChild(container);
+
             const ids = getTabbableCandidates(container).map((el) => el.id);
 
             expect(ids).toContain('x');
-            expect(ids).toContain('link');
+            expect(ids).toContain('link'); // a[href] is tabbable (Base UI parity, no link-stripping)
             expect(ids).not.toContain('d'); // disabled skipped
             expect(ids).not.toContain('h'); // hidden input skipped
+
+            container.remove();
         });
 
         it('getTabbableEdges returns the first and last tabbable element', () => {
@@ -240,6 +245,83 @@ describe('RdxFocusScope characterization', () => {
         });
     });
 
+    // ─── Base UI tabbable parity (shadow / inert / radio / details) ────────────
+
+    describe('Base UI tabbable parity', () => {
+        let container: HTMLElement;
+
+        beforeEach(() => {
+            container = document.createElement('div');
+            document.body.appendChild(container);
+        });
+        afterEach(() => container.remove());
+
+        it('pierces shadow DOM and slotted content (composed traversal)', () => {
+            const shadow = container.attachShadow({ mode: 'open' });
+            shadow.innerHTML = `<button id="in-shadow">s</button><slot></slot>`;
+            const slotted = document.createElement('button');
+            slotted.id = 'slotted';
+            container.appendChild(slotted);
+
+            const ids = tabbable(container).map((el) => el.id);
+            expect(ids).toContain('in-shadow');
+            expect(ids).toContain('slotted');
+        });
+
+        it('excludes elements under an inert ancestor', () => {
+            container.innerHTML = `<div inert><button id="inert-btn">b</button></div><button id="ok">ok</button>`;
+
+            const ids = tabbable(container).map((el) => el.id);
+            expect(ids).toContain('ok');
+            expect(ids).not.toContain('inert-btn');
+        });
+
+        it('keeps only the checked radio of a named group tabbable', () => {
+            container.innerHTML = `
+                <input type="radio" name="g" id="r1" />
+                <input type="radio" name="g" id="r2" checked />
+                <input type="radio" name="g" id="r3" />
+            `;
+
+            const ids = tabbable(container).map((el) => el.id);
+            expect(ids).toEqual(['r2']);
+        });
+
+        it('falls back to the first radio when none is checked', () => {
+            container.innerHTML = `
+                <input type="radio" name="g" id="r1" />
+                <input type="radio" name="g" id="r2" />
+            `;
+
+            const ids = tabbable(container).map((el) => el.id);
+            expect(ids).toEqual(['r1']);
+        });
+
+        it('treats a closed <details> as exposing only its <summary>', () => {
+            container.innerHTML = `
+                <details id="d">
+                    <summary id="sum">more</summary>
+                    <button id="inside">b</button>
+                </details>
+            `;
+
+            const closed = tabbable(container).map((el) => el.id);
+            expect(closed).toContain('sum');
+            expect(closed).not.toContain('inside'); // hidden inside a collapsed details
+
+            (container.querySelector('#d') as HTMLDetailsElement).open = true;
+            const open = tabbable(container).map((el) => el.id);
+            expect(open).toContain('sum');
+            expect(open).toContain('inside');
+        });
+
+        it('isTabbable reflects disabled / tabindex state', () => {
+            container.innerHTML = `<button id="b">b</button><button id="off" tabindex="-1">o</button>`;
+            expect(isTabbable(container.querySelector('#b'))).toBe(true);
+            expect(isTabbable(container.querySelector('#off'))).toBe(false);
+        });
+    });
+
     // ─── auto-focus on mount ──────────────────────────────────────────────────
 
     describe('auto-focus on mount', () => {
@@ -249,6 +331,28 @@ describe('RdxFocusScope characterization', () => {
             await flush();
 
             expect(document.activeElement).toBe(fixture.componentInstance.a().nativeElement);
+        });
+
+        it('autofocuses the first link when the content is link-only (no more removeLinks)', async () => {
+            @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
+                imports: [RdxFocusScope],
+                template: `
+                    <div rdxFocusScope>
+                        <a #link href="#">go</a>
+                    </div>
+                `
+            })
+            class LinkOnlyHost {
+                readonly link = viewChild.required('link', { read: ElementRef });
+            }
+
+            const fixture = TestBed.createComponent(LinkOnlyHost);
+            fixture.autoDetectChanges();
+            await flush();
+
+            // a[href] is tabbable (Base UI parity); the scope now lands initial focus on it.
+            expect(document.activeElement).toBe(fixture.componentInstance.link().nativeElement);
         });
 
         it('mountAutoFocus is preventable (preventDefault skips the auto-focus)', async () => {

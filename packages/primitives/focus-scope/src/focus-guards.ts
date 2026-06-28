@@ -1,5 +1,5 @@
 import { effect } from '@angular/core';
-import { composedContains, getTabbableCandidates } from './utils';
+import { composedContains, queryComposedAll, tabbable } from './utils';
 
 /** Marks the leading / trailing focus-guard spans (Base UI `data-base-ui-focus-guard`). */
 export const FOCUS_GUARD_ATTR = 'data-rdx-focus-guard';
@@ -54,15 +54,18 @@ export function createAriaOwnsAnchor(ownerDocument: Document, portalId: string):
  * trigger steps onto the guard instead of jumping into the content.
  */
 export function disableFocusInside(container: HTMLElement): void {
-    for (const element of getTabbableCandidates(container)) {
+    for (const element of tabbable(container)) {
         element.setAttribute(SAVED_TABINDEX_ATTR, element.getAttribute('tabindex') ?? '');
         element.setAttribute('tabindex', '-1');
     }
 }
 
-/** Restores the tabbability that {@link disableFocusInside} suspended. Base UI `enableFocusInside`. */
+/**
+ * Restores the tabbability that {@link disableFocusInside} suspended. Base UI `enableFocusInside`.
+ * Collects markers across the composed tree so guards inside shadow roots / slots are restored too.
+ */
 export function enableFocusInside(container: HTMLElement): void {
-    container.querySelectorAll<HTMLElement>(`[${SAVED_TABINDEX_ATTR}]`).forEach((element) => {
+    queryComposedAll(container, `[${SAVED_TABINDEX_ATTR}]`).forEach((element) => {
         const original = element.getAttribute(SAVED_TABINDEX_ATTR);
         element.removeAttribute(SAVED_TABINDEX_ATTR);
         if (original) {
