@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { RdxButtonDirective } from '@radix-ng/primitives/button';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoMenu } from '../storybook/styles';
+import { cn, demoButton, demoMenu } from '../../storybook/styles';
 
 /**
  * Split Button — a primary action joined to a menu of related actions.

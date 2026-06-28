@@ -43,7 +43,7 @@ import {
     recipeLabel,
     recipeSubmit,
     recipeTextarea
-} from './forms-recipes.shared';
+} from '../forms-recipes.shared';
 
 /** Structural view of the `[tanstackField]` exportAs ref used in the templates. */
 type FieldRef = { api: { state: { meta: { isTouched: boolean; isValid: boolean; errors: unknown[] } } } };
@@ -281,7 +281,7 @@ import {
     recipeLabel,
     recipeSubmit,
     recipeTextarea
-} from './forms-recipes.shared';
+} from '../forms-recipes.shared';
 
 /** Structural view of the `[tanstackField]` exportAs ref used in the templates. */
 type FieldRef = { api: { state: { meta: { isTouched: boolean; isValid: boolean; errors: unknown[] } } } };
@@ -543,7 +543,7 @@ import {
     recipeSwitch,
     recipeSwitchThumb,
     recipeTextarea
-} from './forms-recipes.shared';
+} from '../forms-recipes.shared';
 
 type FieldRef = { api: { state: { meta: { isTouched: boolean; isValid: boolean; errors: unknown[] } } } };
 
@@ -919,7 +919,7 @@ import {
     recipeLabel,
     recipeReset,
     recipeSubmit
-} from './forms-recipes.shared';
+} from '../forms-recipes.shared';
 
 type FieldRef = { api: { state: { meta: { isTouched: boolean; isValid: boolean; errors: unknown[] } } } };
 

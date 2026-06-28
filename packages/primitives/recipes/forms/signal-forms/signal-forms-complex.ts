@@ -55,7 +55,7 @@ import {
     recipeSwitch,
     recipeSwitchThumb,
     recipeTextarea
-} from './forms-recipes.shared';
+} from '../forms-recipes.shared';
 
 type Issue = {
     title: string;

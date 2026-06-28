@@ -18,7 +18,7 @@ import {
     RdxScrollAreaThumb,
     RdxScrollAreaViewport
 } from '@radix-ng/primitives/scroll-area';
-import { cn, demoButton, demoCard, demoPopover } from '../storybook/styles';
+import { cn, demoButton, demoCard, demoPopover } from '../../storybook/styles';
 
 interface Notification {
     id: number;
@@ -219,7 +219,7 @@ import {
     RdxScrollAreaThumb,
     RdxScrollAreaViewport
 } from '@radix-ng/primitives/scroll-area';
-import { cn, demoButton, demoCard, demoPopover } from '../storybook/styles';
+import { cn, demoButton, demoCard, demoPopover } from '../../storybook/styles';
 
 interface Notification {
     id: number;

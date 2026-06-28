@@ -1,4 +1,4 @@
-import { cn, demoButton, demoCheckbox, demoFocusRing, demoInput, demoRadio } from '../storybook/styles';
+import { cn, demoButton, demoCheckbox, demoFocusRing, demoInput, demoRadio } from '../../storybook/styles';
 
 /**
  * Shared Tailwind class constants for the cross-cutting "Forms" recipe stories

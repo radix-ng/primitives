@@ -15,7 +15,7 @@ import {
     recipeLabel,
     recipeReset,
     recipeSubmit
-} from './forms-recipes.shared';
+} from '../forms-recipes.shared';
 
 type Contacts = { emails: { address: string }[] };
 

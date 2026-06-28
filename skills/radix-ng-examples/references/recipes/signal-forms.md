@@ -37,7 +37,7 @@ import {
     recipeLabel,
     recipeSubmit,
     recipeTextarea
-} from './forms-recipes.shared';
+} from '../forms-recipes.shared';
 
 type BugReport = { title: string; description: string };
 
@@ -290,7 +290,7 @@ import {
     recipeSwitch,
     recipeSwitchThumb,
     recipeTextarea
-} from './forms-recipes.shared';
+} from '../forms-recipes.shared';
 
 type Issue = {
     title: string;
@@ -584,7 +584,7 @@ import {
     recipeLabel,
     recipeReset,
     recipeSubmit
-} from './forms-recipes.shared';
+} from '../forms-recipes.shared';
 
 type Contacts = { emails: { address: string }[] };
 

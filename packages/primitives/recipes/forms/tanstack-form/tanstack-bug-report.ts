@@ -17,7 +17,7 @@ import {
     recipeLabel,
     recipeSubmit,
     recipeTextarea
-} from './forms-recipes.shared';
+} from '../forms-recipes.shared';
 
 /** Structural view of the `[tanstackField]` exportAs ref used in the templates. */
 type FieldRef = { api: { state: { meta: { isTouched: boolean; isValid: boolean; errors: unknown[] } } } };

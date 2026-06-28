@@ -1,5 +1,5 @@
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { tailwindDemoDecorator } from '../storybook/tailwind-demo';
+import { tailwindDemoDecorator } from '../../../storybook/tailwind-demo';
 import { SignalFormsArray } from './signal-forms-array';
 import arraySource from './signal-forms-array?raw';
 import { SignalFormsBugReport } from './signal-forms-bug-report';

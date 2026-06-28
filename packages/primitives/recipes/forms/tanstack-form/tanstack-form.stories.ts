@@ -1,5 +1,5 @@
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { tailwindDemoDecorator } from '../storybook/tailwind-demo';
+import { tailwindDemoDecorator } from '../../../storybook/tailwind-demo';
 import { TanstackArray } from './tanstack-array';
 import arraySource from './tanstack-array?raw';
 import { TanstackBugReport } from './tanstack-bug-report';

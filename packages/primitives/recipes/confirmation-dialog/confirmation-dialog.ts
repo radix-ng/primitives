@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, Injectable, signal } from '@angular/core';
 import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
 import { RdxButtonDirective } from '@radix-ng/primitives/button';
-import { cn, demoButton, demoDialog } from '../storybook/styles';
+import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 /**
  * Confirmation Dialog — an imperative `confirm()` built on the Alert Dialog primitive.

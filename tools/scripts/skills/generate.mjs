@@ -58,7 +58,10 @@ const titleToSlug = (title) =>
 const getSlug = (filePath) => {
     const fileName = path.basename(filePath, '.docs.mdx');
     const packageName = path.basename(path.dirname(path.dirname(filePath)));
-    if (packageName === 'primitives' || packageName === 'core' || fileName === 'sheet') {
+    // Recipes live under packages/primitives/recipes/** and may be nested in
+    // per-recipe subfolders — always slug by filename regardless of nesting depth.
+    const inRecipes = path.relative(primitivesRoot, filePath).split(path.sep)[0] === 'recipes';
+    if (inRecipes || packageName === 'primitives' || packageName === 'core' || fileName === 'sheet') {
         return titleToSlug(fileName);
     }
     return packageName;

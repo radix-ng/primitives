@@ -18,7 +18,7 @@ import {
     recipeLabel,
     recipeSubmit,
     recipeTextarea
-} from './forms-recipes.shared';
+} from '../forms-recipes.shared';
 
 type BugReport = { title: string; description: string };
 
