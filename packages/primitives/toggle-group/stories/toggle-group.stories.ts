@@ -1,9 +1,9 @@
 import {
-    LucideAlignCenter,
-    LucideAlignLeft,
-    LucideAlignRight,
     LucideBold,
     LucideItalic,
+    LucideTextAlignCenter,
+    LucideTextAlignEnd,
+    LucideTextAlignStart,
     LucideUnderline
 } from '@lucide/angular';
 import { RdxToggle } from '@radix-ng/primitives/toggle';
@@ -26,9 +26,9 @@ export default {
                 RdxToggleGroup,
                 RdxToggle,
                 ToggleGroup,
-                LucideAlignLeft,
-                LucideAlignCenter,
-                LucideAlignRight,
+                LucideTextAlignStart,
+                LucideTextAlignCenter,
+                LucideTextAlignEnd,
                 LucideBold,
                 LucideItalic,
                 LucideUnderline
@@ -46,13 +46,13 @@ export const Default: Story = {
         template: html`
             <div class="${groupClass}" [value]="value" rdxToggleGroup aria-label="Text alignment">
                 <button class="${itemClass}" rdxToggle value="left" aria-label="Left aligned">
-                    <svg class="flex" lucideAlignLeft size="12"></svg>
+                    <svg class="flex" lucideTextAlignStart size="12"></svg>
                 </button>
                 <button class="${itemClass}" rdxToggle value="center" aria-label="Center aligned">
-                    <svg class="flex" lucideAlignCenter size="12"></svg>
+                    <svg class="flex" lucideTextAlignCenter size="12"></svg>
                 </button>
                 <button class="${itemClass}" rdxToggle value="right" aria-label="Right aligned">
-                    <svg class="flex" lucideAlignRight size="12"></svg>
+                    <svg class="flex" lucideTextAlignEnd size="12"></svg>
                 </button>
             </div>
         `
@@ -84,13 +84,13 @@ export const DisabledItem: Story = {
         template: html`
             <div class="${groupClass}" [value]="value" rdxToggleGroup aria-label="Text alignment">
                 <button class="${itemClass}" rdxToggle value="left" disabled aria-label="Left aligned">
-                    <svg class="flex" lucideAlignLeft size="12"></svg>
+                    <svg class="flex" lucideTextAlignStart size="12"></svg>
                 </button>
                 <button class="${itemClass}" rdxToggle value="center" aria-label="Center aligned">
-                    <svg class="flex" lucideAlignCenter size="12"></svg>
+                    <svg class="flex" lucideTextAlignCenter size="12"></svg>
                 </button>
                 <button class="${itemClass}" rdxToggle value="right" aria-label="Right aligned">
-                    <svg class="flex" lucideAlignRight size="12"></svg>
+                    <svg class="flex" lucideTextAlignEnd size="12"></svg>
                 </button>
             </div>
         `
@@ -103,13 +103,13 @@ export const DisabledGroup: Story = {
         template: html`
             <div class="${groupClass}" [value]="value" rdxToggleGroup disabled aria-label="Text alignment">
                 <button class="${itemClass}" rdxToggle value="left" aria-label="Left aligned">
-                    <svg class="flex" lucideAlignLeft size="12"></svg>
+                    <svg class="flex" lucideTextAlignStart size="12"></svg>
                 </button>
                 <button class="${itemClass}" rdxToggle value="center" aria-label="Center aligned">
-                    <svg class="flex" lucideAlignCenter size="12"></svg>
+                    <svg class="flex" lucideTextAlignCenter size="12"></svg>
                 </button>
                 <button class="${itemClass}" rdxToggle value="right" aria-label="Right aligned">
-                    <svg class="flex" lucideAlignRight size="12"></svg>
+                    <svg class="flex" lucideTextAlignEnd size="12"></svg>
                 </button>
             </div>
         `

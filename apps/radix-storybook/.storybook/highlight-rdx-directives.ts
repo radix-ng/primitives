@@ -11,7 +11,7 @@ function wrapTextNode(node: Text) {
     for (const m of matches) {
         if (m.index! > last) frag.append(text.slice(last, m.index));
         const mark = document.createElement('mark');
-        mark.dataset.rdxDirective = '';
+        mark.dataset['rdxDirective'] = '';
         mark.textContent = m[0];
         frag.append(mark);
         last = m.index! + m[0].length;

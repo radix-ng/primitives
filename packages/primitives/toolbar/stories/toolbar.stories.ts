@@ -1,9 +1,9 @@
 import {
-    LucideAlignCenter,
-    LucideAlignLeft,
-    LucideAlignRight,
     LucideBold,
     LucideItalic,
+    LucideTextAlignCenter,
+    LucideTextAlignEnd,
+    LucideTextAlignStart,
     LucideUnderline
 } from '@lucide/angular';
 import { RdxToggle } from '@radix-ng/primitives/toggle';
@@ -48,9 +48,9 @@ export default {
                 LucideBold,
                 LucideItalic,
                 LucideUnderline,
-                LucideAlignLeft,
-                LucideAlignCenter,
-                LucideAlignRight
+                LucideTextAlignStart,
+                LucideTextAlignCenter,
+                LucideTextAlignEnd
             ]
         }),
         tailwindDemoDecorator()
@@ -80,13 +80,13 @@ export const Default: Story = {
 
                 <div class="flex gap-1" rdxToggleGroupWithoutFocus [value]="alignment" aria-label="Text alignment">
                     <button class="${toggleClass}" rdxToggle value="left" aria-label="Align left">
-                        <svg lucideAlignLeft size="16"></svg>
+                        <svg lucideTextAlignStart size="16"></svg>
                     </button>
                     <button class="${toggleClass}" rdxToggle value="center" aria-label="Align center">
-                        <svg lucideAlignCenter size="16"></svg>
+                        <svg lucideTextAlignCenter size="16"></svg>
                     </button>
                     <button class="${toggleClass}" rdxToggle value="right" aria-label="Align right">
-                        <svg lucideAlignRight size="16"></svg>
+                        <svg lucideTextAlignEnd size="16"></svg>
                     </button>
                 </div>
 
@@ -121,13 +121,13 @@ export const Vertical: Story = {
                     aria-label="Text alignment"
                 >
                     <button class="${toggleClass}" rdxToggle value="left" aria-label="Align left">
-                        <svg lucideAlignLeft size="16"></svg>
+                        <svg lucideTextAlignStart size="16"></svg>
                     </button>
                     <button class="${toggleClass}" rdxToggle value="center" aria-label="Align center">
-                        <svg lucideAlignCenter size="16"></svg>
+                        <svg lucideTextAlignCenter size="16"></svg>
                     </button>
                     <button class="${toggleClass}" rdxToggle value="right" aria-label="Align right">
-                        <svg lucideAlignRight size="16"></svg>
+                        <svg lucideTextAlignEnd size="16"></svg>
                     </button>
                 </div>
                 <div class="bg-border mx-1 my-1 h-px" rdxToolbarSeparator orientation="horizontal"></div>

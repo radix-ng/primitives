@@ -11,7 +11,7 @@ const packageVersionUrl = `https://www.npmjs.com/package/@radix-ng/primitives/v/
 const telegramUrl = 'https://t.me/headless_angular';
 
 // Component-level titles of primitives that are still in beta.
-const BETA = new Set(['Alert Dialog', 'Select']);
+const BETA = new Set(['']);
 
 function PackageVersionTool() {
     return React.createElement(

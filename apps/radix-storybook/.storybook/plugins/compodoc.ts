@@ -1,5 +1,40 @@
 import { setCompodocJson } from '@storybook/addon-docs/angular';
-import docJson from '../documentation.json';
+import rawDocJson from '../documentation.json';
+
+// Minimal shape of the slice of compodoc's `documentation.json` this plugin touches. The file is
+// 11+ MB, and TypeScript's inference over a JSON literal that large is both slow and unreliable —
+// tsserver bails out and widens the default export to `{}`, while `tsc` produces a 150-member union
+// whose members lack the fields accessed below. Describing only what we use and casting through
+// `unknown` makes the type-check deterministic and cheap, and matches the runtime data (e.g. compodoc
+// records `extends` as an array of base-class names).
+interface CompodocInput {
+    name?: string;
+    defaultValue?: string;
+    type?: string;
+    description?: string;
+}
+
+interface CompodocDoc {
+    extends?: string[];
+    sourceCode?: string;
+    inputsClass?: CompodocInput[];
+    propertiesClass?: unknown[];
+    methodsClass?: unknown[];
+}
+
+interface CompodocVariable {
+    name: string;
+    defaultValue?: string;
+    type?: string;
+}
+
+interface CompodocJson {
+    components: CompodocDoc[];
+    directives: CompodocDoc[];
+    miscellaneous?: { variables?: CompodocVariable[] };
+}
+
+const docJson = rawDocJson as unknown as CompodocJson;
 
 // Inputs inherited from `RdxPopperContentWrapper` (ADR 0012 thin positioners) carry the base-class
 // default expression `this.config.<key> ?? <fallback>`, where `config` is the positioner's own

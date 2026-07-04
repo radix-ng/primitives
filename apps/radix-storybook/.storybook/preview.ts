@@ -1,8 +1,5 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import {
-    LucideAlignCenter,
-    LucideAlignLeft,
-    LucideAlignRight,
     LucideBold,
     LucideCheck,
     LucideChevronDown,
@@ -20,6 +17,9 @@ import {
     LucidePlus,
     LucideSave,
     LucideStrikethrough,
+    LucideTextAlignCenter,
+    LucideTextAlignEnd,
+    LucideTextAlignStart,
     LucideUnfoldVertical,
     LucideX,
     provideLucideIcons
@@ -56,9 +56,9 @@ const preview: Preview = {
             providers: [
                 provideZonelessChangeDetection(),
                 provideLucideIcons(
-                    LucideAlignCenter,
-                    LucideAlignLeft,
-                    LucideAlignRight,
+                    LucideTextAlignCenter,
+                    LucideTextAlignEnd,
+                    LucideTextAlignStart,
                     LucideBold,
                     LucideCheck,
                     LucideChevronDown,
