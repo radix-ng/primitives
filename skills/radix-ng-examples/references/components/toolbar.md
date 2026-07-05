@@ -20,13 +20,13 @@
 
     <div class="flex gap-1" rdxToggleGroupWithoutFocus [value]="alignment" aria-label="Text alignment">
         <button class="${toggleClass}" rdxToggle value="left" aria-label="Align left">
-            <svg lucideAlignLeft size="16"></svg>
+            <svg lucideTextAlignStart size="16"></svg>
         </button>
         <button class="${toggleClass}" rdxToggle value="center" aria-label="Align center">
-            <svg lucideAlignCenter size="16"></svg>
+            <svg lucideTextAlignCenter size="16"></svg>
         </button>
         <button class="${toggleClass}" rdxToggle value="right" aria-label="Align right">
-            <svg lucideAlignRight size="16"></svg>
+            <svg lucideTextAlignEnd size="16"></svg>
         </button>
     </div>
 
@@ -105,13 +105,13 @@ Set `orientation="vertical"` to lay the toolbar out vertically (arrow navigation
         aria-label="Text alignment"
     >
         <button class="${toggleClass}" rdxToggle value="left" aria-label="Align left">
-            <svg lucideAlignLeft size="16"></svg>
+            <svg lucideTextAlignStart size="16"></svg>
         </button>
         <button class="${toggleClass}" rdxToggle value="center" aria-label="Align center">
-            <svg lucideAlignCenter size="16"></svg>
+            <svg lucideTextAlignCenter size="16"></svg>
         </button>
         <button class="${toggleClass}" rdxToggle value="right" aria-label="Align right">
-            <svg lucideAlignRight size="16"></svg>
+            <svg lucideTextAlignEnd size="16"></svg>
         </button>
     </div>
     <div class="bg-border mx-1 my-1 h-px" rdxToolbarSeparator orientation="horizontal"></div>

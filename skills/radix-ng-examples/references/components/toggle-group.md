@@ -5,13 +5,13 @@
 ```html
 <div class="${groupClass}" [value]="value" rdxToggleGroup aria-label="Text alignment">
     <button class="${itemClass}" rdxToggle value="left" aria-label="Left aligned">
-        <svg class="flex" lucideAlignLeft size="12"></svg>
+        <svg class="flex" lucideTextAlignStart size="12"></svg>
     </button>
     <button class="${itemClass}" rdxToggle value="center" aria-label="Center aligned">
-        <svg class="flex" lucideAlignCenter size="12"></svg>
+        <svg class="flex" lucideTextAlignCenter size="12"></svg>
     </button>
     <button class="${itemClass}" rdxToggle value="right" aria-label="Right aligned">
-        <svg class="flex" lucideAlignRight size="12"></svg>
+        <svg class="flex" lucideTextAlignEnd size="12"></svg>
     </button>
 </div>
 ```
@@ -92,13 +92,13 @@ Disable a single `[rdxToggle]` with `disabled`, or the whole group with `disable
 ```html
 <div class="${groupClass}" [value]="value" rdxToggleGroup aria-label="Text alignment">
     <button class="${itemClass}" rdxToggle value="left" disabled aria-label="Left aligned">
-        <svg class="flex" lucideAlignLeft size="12"></svg>
+        <svg class="flex" lucideTextAlignStart size="12"></svg>
     </button>
     <button class="${itemClass}" rdxToggle value="center" aria-label="Center aligned">
-        <svg class="flex" lucideAlignCenter size="12"></svg>
+        <svg class="flex" lucideTextAlignCenter size="12"></svg>
     </button>
     <button class="${itemClass}" rdxToggle value="right" aria-label="Right aligned">
-        <svg class="flex" lucideAlignRight size="12"></svg>
+        <svg class="flex" lucideTextAlignEnd size="12"></svg>
     </button>
 </div>
 ```
@@ -106,13 +106,13 @@ Disable a single `[rdxToggle]` with `disabled`, or the whole group with `disable
 ```html
 <div class="${groupClass}" [value]="value" rdxToggleGroup disabled aria-label="Text alignment">
     <button class="${itemClass}" rdxToggle value="left" aria-label="Left aligned">
-        <svg class="flex" lucideAlignLeft size="12"></svg>
+        <svg class="flex" lucideTextAlignStart size="12"></svg>
     </button>
     <button class="${itemClass}" rdxToggle value="center" aria-label="Center aligned">
-        <svg class="flex" lucideAlignCenter size="12"></svg>
+        <svg class="flex" lucideTextAlignCenter size="12"></svg>
     </button>
     <button class="${itemClass}" rdxToggle value="right" aria-label="Right aligned">
-        <svg class="flex" lucideAlignRight size="12"></svg>
+        <svg class="flex" lucideTextAlignEnd size="12"></svg>
     </button>
 </div>
 ```

@@ -23074,13 +23074,13 @@ When `disabled` is present the toggle cannot be activated.
 ```html
 <div class="${groupClass}" [value]="value" rdxToggleGroup aria-label="Text alignment">
     <button class="${itemClass}" rdxToggle value="left" aria-label="Left aligned">
-        <svg class="flex" lucideAlignLeft size="12"></svg>
+        <svg class="flex" lucideTextAlignStart size="12"></svg>
     </button>
     <button class="${itemClass}" rdxToggle value="center" aria-label="Center aligned">
-        <svg class="flex" lucideAlignCenter size="12"></svg>
+        <svg class="flex" lucideTextAlignCenter size="12"></svg>
     </button>
     <button class="${itemClass}" rdxToggle value="right" aria-label="Right aligned">
-        <svg class="flex" lucideAlignRight size="12"></svg>
+        <svg class="flex" lucideTextAlignEnd size="12"></svg>
     </button>
 </div>
 ```
@@ -23161,13 +23161,13 @@ Disable a single `[rdxToggle]` with `disabled`, or the whole group with `disable
 ```html
 <div class="${groupClass}" [value]="value" rdxToggleGroup aria-label="Text alignment">
     <button class="${itemClass}" rdxToggle value="left" disabled aria-label="Left aligned">
-        <svg class="flex" lucideAlignLeft size="12"></svg>
+        <svg class="flex" lucideTextAlignStart size="12"></svg>
     </button>
     <button class="${itemClass}" rdxToggle value="center" aria-label="Center aligned">
-        <svg class="flex" lucideAlignCenter size="12"></svg>
+        <svg class="flex" lucideTextAlignCenter size="12"></svg>
     </button>
     <button class="${itemClass}" rdxToggle value="right" aria-label="Right aligned">
-        <svg class="flex" lucideAlignRight size="12"></svg>
+        <svg class="flex" lucideTextAlignEnd size="12"></svg>
     </button>
 </div>
 ```
@@ -23175,13 +23175,13 @@ Disable a single `[rdxToggle]` with `disabled`, or the whole group with `disable
 ```html
 <div class="${groupClass}" [value]="value" rdxToggleGroup disabled aria-label="Text alignment">
     <button class="${itemClass}" rdxToggle value="left" aria-label="Left aligned">
-        <svg class="flex" lucideAlignLeft size="12"></svg>
+        <svg class="flex" lucideTextAlignStart size="12"></svg>
     </button>
     <button class="${itemClass}" rdxToggle value="center" aria-label="Center aligned">
-        <svg class="flex" lucideAlignCenter size="12"></svg>
+        <svg class="flex" lucideTextAlignCenter size="12"></svg>
     </button>
     <button class="${itemClass}" rdxToggle value="right" aria-label="Right aligned">
-        <svg class="flex" lucideAlignRight size="12"></svg>
+        <svg class="flex" lucideTextAlignEnd size="12"></svg>
     </button>
 </div>
 ```
@@ -23263,13 +23263,13 @@ Uses composite focus with a single item tab stop to manage focus among items.
 
     <div class="flex gap-1" rdxToggleGroupWithoutFocus [value]="alignment" aria-label="Text alignment">
         <button class="${toggleClass}" rdxToggle value="left" aria-label="Align left">
-            <svg lucideAlignLeft size="16"></svg>
+            <svg lucideTextAlignStart size="16"></svg>
         </button>
         <button class="${toggleClass}" rdxToggle value="center" aria-label="Align center">
-            <svg lucideAlignCenter size="16"></svg>
+            <svg lucideTextAlignCenter size="16"></svg>
         </button>
         <button class="${toggleClass}" rdxToggle value="right" aria-label="Align right">
-            <svg lucideAlignRight size="16"></svg>
+            <svg lucideTextAlignEnd size="16"></svg>
         </button>
     </div>
 
@@ -23348,13 +23348,13 @@ Set `orientation="vertical"` to lay the toolbar out vertically (arrow navigation
         aria-label="Text alignment"
     >
         <button class="${toggleClass}" rdxToggle value="left" aria-label="Align left">
-            <svg lucideAlignLeft size="16"></svg>
+            <svg lucideTextAlignStart size="16"></svg>
         </button>
         <button class="${toggleClass}" rdxToggle value="center" aria-label="Align center">
-            <svg lucideAlignCenter size="16"></svg>
+            <svg lucideTextAlignCenter size="16"></svg>
         </button>
         <button class="${toggleClass}" rdxToggle value="right" aria-label="Align right">
-            <svg lucideAlignRight size="16"></svg>
+            <svg lucideTextAlignEnd size="16"></svg>
         </button>
     </div>
     <div class="bg-border mx-1 my-1 h-px" rdxToolbarSeparator orientation="horizontal"></div>
