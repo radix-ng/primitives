@@ -1,3 +1,43 @@
+## 1.0.10 (2026-07-05)
+
+### 🚀 Features
+
+- ⚠️  **popper:** added collisionAvoidance + offset functions; menu keepMounted/finalFocus ([d548b0e4](https://github.com/radix-ng/primitives/commit/d548b0e4))
+- ⚠️  **focus-scope:** port Base UI tabbable/focusable walker ([350a49c9](https://github.com/radix-ng/primitives/commit/350a49c9))
+
+### 🩹 Fixes
+
+- **menu:** don't build the modal backdrop while a keepMounted menu is closed ([4484666f](https://github.com/radix-ng/primitives/commit/4484666f))
+- ⚠️  **focus-scope:** let Tab leave non-modal scopes; drop link-skipping autofocus ([9a1d6ade](https://github.com/radix-ng/primitives/commit/9a1d6ade))
+
+### Refactors
+
+- ⚠️  **core:** type provideExistingToken with ProviderToken<T>/Type<T> ([15a0ed68](https://github.com/radix-ng/primitives/commit/15a0ed68))
+
+### ⚠️  Breaking Changes
+
+- **popper:** added collisionAvoidance + offset functions; menu keepMounted/finalFocus  ([d548b0e4](https://github.com/radix-ng/primitives/commit/d548b0e4))
+  numeric alignOffset now displaces center-aligned popups
+  (previously a no-op); sticky='always' now enables cross-axis shift; popover/
+  tooltip/preview-card/toast now fall back to the perpendicular axis
+  (fallbackAxisSide 'end', matching Base UI) instead of staying on-axis.
+  avoidCollisions is deprecated in favor of collisionAvoidance.
+- **core:** type provideExistingToken with ProviderToken<T>/Type<T>  ([15a0ed68](https://github.com/radix-ng/primitives/commit/15a0ed68))
+- **focus-scope:** port Base UI tabbable/focusable walker  ([350a49c9](https://github.com/radix-ng/primitives/commit/350a49c9))
+  tabbable detection now requires elements to be connected
+  to the document and applies real visibility/radio-group/inert semantics,
+  so the set of elements considered tabbable can differ from the previous
+  TreeWalker approximation.
+- **focus-scope:** let Tab leave non-modal scopes; drop link-skipping autofocus  ([9a1d6ade](https://github.com/radix-ng/primitives/commit/9a1d6ade))
+  a focus scope whose first tabbable element is a link now
+  autofocuses that link on mount; non-modal scopes no longer trap Tab at the
+  edge. Use mountAutoFocus.preventDefault() or manager-level initialFocus to
+  override.
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 1.0.9 (2026-06-28)
 
 ### 🚀 Features
