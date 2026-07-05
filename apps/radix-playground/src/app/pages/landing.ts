@@ -113,7 +113,7 @@ type CopyTarget = 'install' | 'skill';
                             <span class="whitespace-nowrap">for Angular.</span>
                         </h1>
 
-                        <p class="text-muted-foreground mb-8 max-w-[30em] text-lg leading-8 text-pretty">
+                        <p class="text-muted-foreground mb-8 max-w-[30em] text-lg leading-8">
                             A low-level, accessible component library that adapts
                             <strong class="text-foreground font-semibold whitespace-nowrap">Base UI</strong>
                             's architecture and behavior to Angular. Primitives ship no styles and expose their state
@@ -213,7 +213,7 @@ type CopyTarget = 'install' | 'skill';
                                 <i class="block size-2.5 rounded-full bg-[color:var(--landing-accent-fill)]"></i>
                                 <i class="block size-2.5 rounded-full bg-[color:var(--landing-green)]"></i>
                             </span>
-                            <span class="text-muted-foreground ml-2 font-mono text-xs">switch.component.html</span>
+                            <span class="text-muted-foreground ml-2 font-mono text-xs">switch.html</span>
                             <span
                                 class="landing-code-status bg-background/75 relative ml-auto h-6 w-20 overflow-hidden rounded-full border border-[color:var(--landing-accent-border)] font-mono text-[0.68rem] text-[var(--landing-accent-text)]"
                                 aria-hidden="true"
