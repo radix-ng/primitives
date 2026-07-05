@@ -395,6 +395,16 @@ export class RdxFloatingFocusManager {
      * - an element (direct or from a callback) → that element (returned **explicitly**, bypassing the
      *   "focus moved elsewhere" guard).
      */
+    /**
+     * Public view of {@link resolveReturnFocusTarget} for a **keep-mounted** primitive to apply
+     * return-focus on *close* — the composed scope's unmount-driven return never runs while the popup
+     * stays in the DOM. Returns an explicit element, `false` (suppress), or `undefined` (default →
+     * caller restores the previously-focused element, e.g. the trigger).
+     */
+    resolveReturnTarget(): HTMLElement | false | undefined {
+        return this.resolveReturnFocusTarget();
+    }
+
     private resolveReturnFocusTarget(): HTMLElement | false | undefined {
         const resolved = resolveReturnFocus(this.effectiveReturnFocus(), this.effectiveCloseInteractionType());
         if (resolved === false) {

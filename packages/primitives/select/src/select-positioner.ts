@@ -1,6 +1,7 @@
 import { afterNextRender, Directive, ElementRef, inject, Injector } from '@angular/core';
 import { provideExistingToken, setupInternalBackdrop } from '@radix-ng/primitives/core';
 import {
+    DROPDOWN_COLLISION_AVOIDANCE,
     legacyPopperVars,
     provideRdxPopperContentConfig,
     provideRdxPopperContentWrapper,
@@ -22,7 +23,11 @@ import { injectSelectRootContext } from './select-root';
     selector: '[rdxSelectPositioner]',
     providers: [
         ...provideRdxPopperContentWrapper(RdxSelectPositioner),
-        provideRdxPopperContentConfig({ align: 'start', updatePositionStrategy: 'always' }),
+        provideRdxPopperContentConfig({
+            align: 'start',
+            collisionAvoidance: DROPDOWN_COLLISION_AVOIDANCE,
+            updatePositionStrategy: 'always'
+        }),
         provideExistingToken(RDX_SELECT_POSITIONER_TOKEN, RdxSelectPositioner)
     ],
     host: {

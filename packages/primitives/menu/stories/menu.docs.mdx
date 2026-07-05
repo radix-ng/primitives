@@ -237,6 +237,35 @@ the popup with a CSS transition (here via Tailwind arbitrary utilities, so no st
 
 <Canvas of={Stories.Viewport} />
 
+### Keep mounted
+
+By default the popup mounts when the menu opens and unmounts when it closes (after any exit
+animation). Set `[keepMounted]="true"` on the explicit `<ng-template rdxMenuPortal>` to keep the popup
+in the DOM while closed — useful to query or pre-measure its content. While closed-and-settled the
+positioner carries a native `hidden` (removed from layout, the accessibility tree, and the tab order),
+Base UI-aligned; opening drops it. Focus still returns to the trigger (or a custom `finalFocus`
+element) on close, exactly as with the default unmount behavior.
+
+```html
+<ng-template [keepMounted]="true" rdxMenuPortal>
+    <div rdxMenuPositioner>
+        <div rdxMenuPopup>…items…</div>
+    </div>
+</ng-template>
+```
+
+<Canvas of={Stories.KeepMounted} />
+
+### Custom return focus (`finalFocus`)
+
+When the menu closes, focus returns to the trigger by default. Bind `finalFocus` on `rdxMenuPopup` to
+send it elsewhere instead — an element to focus, `false` to suppress return-focus, or a callback
+receiving the close interaction type. This maps to the floating focus manager's `returnFocus` policy.
+
+```html
+<div [finalFocus]="afterElement" rdxMenuPopup>…</div>
+```
+
 ### CSS animations
 
 The structural `*rdxMenuPortal` keeps the popup mounted until the closed-state exit keyframes on its

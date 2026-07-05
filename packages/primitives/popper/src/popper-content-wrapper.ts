@@ -15,6 +15,7 @@ import {
     output,
     Provider,
     resource,
+    Signal,
     signal,
     Type
 } from '@angular/core';
@@ -35,7 +36,25 @@ import { BooleanInput, createContext, elementSize, NumberInput, watch } from '@r
 import { RdxPopper } from './popper';
 import { RdxPopperArrow } from './popper-arrow';
 import { RdxPopperContentConfigToken } from './popper-content.config';
-import { Align, isNotNull, Side, transformOrigin } from './utils';
+import {
+    Align,
+    getSideAndAlignFromPlacement,
+    isNotNull,
+    OffsetFunction,
+    RdxCollisionAvoidance,
+    ResolvedCollisionAvoidance,
+    Side,
+    transformOrigin
+} from './utils';
+
+/**
+ * `input()` transform for `sideOffset` / `alignOffset`: coerce string/number attribute values to a
+ * number but pass an {@link OffsetFunction} through untouched. A **named** module-level function (not
+ * an inline arrow) so compodoc parses the file — see CLAUDE.md's compodoc gotcha.
+ */
+function coerceOffset(value: number | OffsetFunction | string | null | undefined): number | OffsetFunction {
+    return typeof value === 'function' ? value : numberAttribute(value);
+}
 
 export type RdxPopperAnchorElement =
     | Element
@@ -46,14 +65,17 @@ export type RdxPopperAnchorElement =
     | undefined;
 
 type PopperPositionParams = {
+    positioningActive: boolean;
     anchor: ReferenceElement | null;
     strategy: 'fixed' | 'absolute';
     placement: Placement;
-    sideOffset: number;
-    alignOffset: number;
+    side: Side;
+    align: Align;
+    sideOffset: number | OffsetFunction;
+    alignOffset: number | OffsetFunction;
     arrowHeight: number;
     arrowWidth: number;
-    avoidCollisions: boolean;
+    collisionAvoidance: ResolvedCollisionAvoidance;
     sticky: 'partial' | 'always';
     detectOverflowOptions: {
         padding: number | Partial<Record<Side, number>>;
@@ -118,17 +140,21 @@ export class RdxPopperContentWrapper {
     readonly side = input<Side>(this.config.side ?? 'bottom');
 
     /**
-     * Distance between the anchor and the popup in pixels.
+     * Distance between the anchor and the popup in pixels. Also accepts an {@link OffsetFunction} that
+     * reads the anchor / positioner dimensions and the resolved side / align.
      */
-    readonly sideOffset = input<number, NumberInput>(this.config.sideOffset ?? 0, { transform: numberAttribute });
+    readonly sideOffset = input(this.config.sideOffset ?? 0, { transform: coerceOffset });
 
     /**
      * How to align the popup relative to the specified side. May change when collisions occur.
      */
     readonly align = input<Align>(this.config.align ?? 'center');
 
-    /** An offset in pixels from the `start` or `end` alignment options. */
-    readonly alignOffset = input<number, NumberInput>(this.config.alignOffset ?? 0, { transform: numberAttribute });
+    /**
+     * An offset in pixels from the `start` or `end` alignment options. Also accepts an
+     * {@link OffsetFunction} (same signature as `sideOffset`).
+     */
+    readonly alignOffset = input(this.config.alignOffset ?? 0, { transform: coerceOffset });
 
     /**
      * Minimum distance to maintain between the arrow and the edges of the popup.
@@ -136,9 +162,49 @@ export class RdxPopperContentWrapper {
      */
     readonly arrowPadding = input<number, NumberInput>(this.config.arrowPadding ?? 0, { transform: numberAttribute });
 
-    /** When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges. */
+    /**
+     * When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges.
+     *
+     * @deprecated Use {@link collisionAvoidance} for fine-grained control (Base UI parity). Still honored:
+     * `false` disables all avoidance (unless a `collisionAvoidance` object is provided, which wins).
+     */
     readonly avoidCollisions = input<boolean, BooleanInput>(this.config.avoidCollisions ?? true, {
         transform: booleanAttribute
+    });
+
+    /**
+     * How the popup avoids colliding with the boundary edges, per axis (Base UI `collisionAvoidance`).
+     * Overrides the deprecated `avoidCollisions` and any per-primitive preset. An object here **fully
+     * replaces** the preset — omitted fields fall back to `side: 'flip'`, `align: 'flip'`,
+     * `fallbackAxisSide: 'end'`, never to the preset. See {@link RdxCollisionAvoidance}.
+     */
+    readonly collisionAvoidance = input<RdxCollisionAvoidance | undefined>(undefined);
+
+    /**
+     * Collision avoidance resolved against the deprecated `avoidCollisions` flag, the per-primitive
+     * config preset, and the wrapper defaults. Precedence: an explicit `collisionAvoidance` input →
+     * a legacy `avoidCollisions=false` (disables everything) → the config preset → the Base UI defaults.
+     */
+    private readonly effectiveCollisionAvoidance = computed<ResolvedCollisionAvoidance>(() => {
+        const explicit = this.collisionAvoidance();
+
+        // Legacy escape hatch (deprecated): `avoidCollisions=false` disables avoidance entirely — unless
+        // the consumer passes an explicit `collisionAvoidance` object, which always wins. Checked before
+        // the preset so `[avoidCollisions]="false"` still works on a positioner that ships a preset.
+        if (!explicit && this.avoidCollisions() === false) {
+            return { side: 'none', align: 'none', fallbackAxisSide: 'none' };
+        }
+
+        // A consumer object fully REPLACES the preset (Base UI parity — the preset is only the default
+        // when the consumer passes nothing); omitted fields fall back to the global defaults, not the
+        // preset. `??` (not spread-merge) is what enforces the "replaces, not merges" semantics.
+        const source = explicit ?? this.config.collisionAvoidance;
+
+        return {
+            side: source?.side ?? 'flip',
+            align: source?.align ?? 'flip',
+            fallbackAxisSide: source?.fallbackAxisSide ?? 'end'
+        };
     });
 
     /**
@@ -261,27 +327,78 @@ export class RdxPopperContentWrapper {
     private readonly position = resource<ComputePositionReturn | null, PopperPositionParams>({
         params: () => this.positionParams(),
         loader: ({ params }) => {
-            if (!params.anchor) {
+            // Skip computing a position for a paused (closed keep-mounted) positioner.
+            if (!params.positioningActive || !params.anchor) {
                 return Promise.resolve(null);
             }
+
+            const ca = params.collisionAvoidance;
+            // Ported from Base UI `useAnchorPositioning`: `side`/`align`/`fallbackAxisSide` select and
+            // configure the `flip()` / `shift()` middleware instead of the old boolean toggle.
+            const shiftDisabled = ca.align === 'none' && ca.side !== 'shift';
+            const crossAxisShiftEnabled = !shiftDisabled && (params.sticky === 'always' || ca.side === 'shift');
+
+            const flipMiddleware =
+                ca.side === 'none'
+                    ? undefined
+                    : flip({
+                          ...params.detectOverflowOptions,
+                          mainAxis: ca.side === 'flip',
+                          crossAxis: ca.align === 'flip' ? 'alignment' : false,
+                          fallbackAxisSideDirection: ca.fallbackAxisSide
+                      });
+
+            const shiftMiddleware = shiftDisabled
+                ? undefined
+                : shift({
+                      ...params.detectOverflowOptions,
+                      mainAxis: ca.align !== 'none',
+                      crossAxis: crossAxisShiftEnabled,
+                      // `partial` keeps the popup attached to the anchor (limitShift); `always` keeps it
+                      // fully inside the boundary regardless (no limiter).
+                      limiter: params.sticky === 'partial' ? limitShift() : undefined
+                  });
+
+            // https://floating-ui.com/docs/flip#combining-with-shift — run shift first when shifting is
+            // the primary correction (or for center alignment), otherwise flip first.
+            const collisionMiddleware =
+                ca.side === 'shift' || ca.align === 'shift' || params.align === 'center'
+                    ? [shiftMiddleware, flipMiddleware]
+                    : [flipMiddleware, shiftMiddleware];
 
             return computePosition(params.anchor, this.elementRef.nativeElement, {
                 // default to `fixed` strategy so users don't have to pick and we also avoid focus scroll issues
                 strategy: params.strategy,
                 placement: params.placement,
                 middleware: [
-                    offset({
-                        mainAxis: params.sideOffset + params.arrowHeight || 0,
-                        alignmentAxis: params.alignOffset
+                    offset((state) => {
+                        const [placedSide, placedAlign] = getSideAndAlignFromPlacement(state.placement);
+                        const data = {
+                            side: placedSide,
+                            align: placedAlign,
+                            anchor: {
+                                width: state.rects.reference.width,
+                                height: state.rects.reference.height
+                            },
+                            positioner: {
+                                width: state.rects.floating.width,
+                                height: state.rects.floating.height
+                            }
+                        };
+                        const sideAxis =
+                            typeof params.sideOffset === 'function' ? params.sideOffset(data) : params.sideOffset;
+                        const alignAxis =
+                            typeof params.alignOffset === 'function' ? params.alignOffset(data) : params.alignOffset;
+
+                        return {
+                            mainAxis: sideAxis + params.arrowHeight || 0,
+                            // both axes so `alignOffset` also applies to center-aligned popups
+                            // (`alignmentAxis` overrides `crossAxis` for start/end placements)
+                            crossAxis: alignAxis,
+                            alignmentAxis: alignAxis
+                        };
                     }),
-                    params.avoidCollisions &&
-                        shift({
-                            mainAxis: true,
-                            crossAxis: false,
-                            limiter: params.sticky === 'partial' ? limitShift() : undefined,
-                            ...params.detectOverflowOptions
-                        }),
-                    params.avoidCollisions && flip({ ...params.detectOverflowOptions }),
+                    ...collisionMiddleware,
                     size({
                         ...params.detectOverflowOptions,
                         apply: ({ elements, rects, availableWidth, availableHeight }) => {
@@ -314,14 +431,17 @@ export class RdxPopperContentWrapper {
 
     private positionParams(): PopperPositionParams {
         return {
+            positioningActive: this.positioningActive(),
             anchor: this.resolvedAnchor(),
             strategy: this.positionStrategy(),
             placement: this.desiredPlacement(),
+            side: this.side(),
+            align: this.align(),
             sideOffset: this.sideOffset(),
             alignOffset: this.alignOffset(),
             arrowHeight: this.arrowSize()().height,
             arrowWidth: this.arrowSize()().width,
-            avoidCollisions: this.avoidCollisions(),
+            collisionAvoidance: this.effectiveCollisionAvoidance(),
             sticky: this.sticky(),
             detectOverflowOptions: this.detectOverflowOptions(),
             arrow: this.arrow(),
@@ -427,7 +547,23 @@ export class RdxPopperContentWrapper {
         };
     });
 
+    /**
+     * Whether the positioner should actively track its anchor (recompute + `autoUpdate`). Defaults to
+     * always-on — the historical behavior, correct for a positioner that unmounts when its layer closes.
+     * A positioner that can stay mounted while closed (`keepMounted`) **overrides** this with its
+     * open/presence signal so a closed, hidden positioner doesn't spin an endless `autoUpdate`
+     * `requestAnimationFrame` loop (only relevant when `updatePositionStrategy: 'always'`). It's a
+     * reassignable field (not `readonly`) because the render effect below reads it lazily, after the
+     * subclass constructor has swapped it in.
+     */
+    protected positioningActive: Signal<boolean> = computed(() => true);
+
     private readonly afterRenderEffect = afterRenderEffect((onCleanup) => {
+        // Closed keep-mounted positioner: skip positioning entirely so `autoUpdate` doesn't keep firing.
+        if (!this.positioningActive()) {
+            return;
+        }
+
         this.position.reload();
 
         const anchor = this.resolvedAnchor();

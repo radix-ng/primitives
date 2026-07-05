@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RdxReturnFocus } from '@radix-ng/primitives/floating-focus-manager';
 import { FOCUS_GUARD_ATTR } from '@radix-ng/primitives/focus-scope';
 import {
     RdxMenuArrow,
@@ -409,9 +410,173 @@ class RadioGroupApiComponent {
 })
 class StructureMenuComponent {}
 
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
+    template: `
+        <div #root="rdxMenuRoot" [(open)]="open" rdxMenuRoot>
+            <button rdxMenuTrigger>Open</button>
+
+            @if (root.open()) {
+                <div rdxMenuPositioner>
+                    <div [finalFocus]="finalFocus" rdxMenuPopup>
+                        <button rdxMenuItem>Alpha</button>
+                    </div>
+                </div>
+            }
+        </div>
+        <button #after data-testid="after">After</button>
+    `
+})
+class FinalFocusMenuComponent {
+    open = false;
+    finalFocus: RdxReturnFocus | undefined = undefined;
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPortal, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
+    template: `
+        <div #root="rdxMenuRoot" [(open)]="open" rdxMenuRoot>
+            <button rdxMenuTrigger>Open</button>
+
+            <ng-template [keepMounted]="true" rdxMenuPortal>
+                <div rdxMenuPositioner>
+                    <div [finalFocus]="finalFocus" rdxMenuPopup>
+                        <button rdxMenuItem>Alpha</button>
+                    </div>
+                </div>
+            </ng-template>
+        </div>
+        <button #after data-testid="after">After</button>
+    `
+})
+class KeepMountedMenuComponent {
+    readonly open = signal(false);
+    finalFocus: RdxReturnFocus | undefined = undefined;
+}
+
 // ─── Spec ─────────────────────────────────────────────────────────────────────
 
 describe('Menu', () => {
+    describe('finalFocus (returnFocus override)', () => {
+        let fixture: ComponentFixture<FinalFocusMenuComponent>;
+        let trigger: HTMLButtonElement;
+        let after: HTMLButtonElement;
+
+        beforeEach(async () => {
+            fixture = TestBed.createComponent(FinalFocusMenuComponent);
+            fixture.detectChanges();
+            trigger = fixture.nativeElement.querySelector('[rdxMenuTrigger]');
+            after = fixture.nativeElement.querySelector('[data-testid="after"]');
+        });
+
+        afterEach(() => fixture.destroy());
+
+        async function open() {
+            trigger.focus();
+            trigger.click();
+            fixture.detectChanges();
+            await nextFrame();
+        }
+
+        async function close() {
+            fixture.componentInstance.open = false;
+            fixture.detectChanges();
+            await nextFrame();
+            await nextFrame();
+        }
+
+        it('returns focus to a custom finalFocus element on close', async () => {
+            fixture.componentInstance.finalFocus = after;
+            await open();
+            await close();
+
+            expect(document.activeElement).toBe(after);
+        });
+
+        it('returns focus to the trigger by default (finalFocus unset)', async () => {
+            await open();
+            await close();
+
+            expect(document.activeElement).toBe(trigger);
+        });
+
+        it('does not return focus to the trigger or the custom element when finalFocus is false', async () => {
+            fixture.componentInstance.finalFocus = false;
+            await open();
+            await close();
+
+            expect(document.activeElement).not.toBe(after);
+            expect(document.activeElement).not.toBe(trigger);
+        });
+    });
+
+    describe('keepMounted', () => {
+        let fixture: ComponentFixture<KeepMountedMenuComponent>;
+        let trigger: HTMLButtonElement;
+
+        const positioner = () => document.body.querySelector('[rdxMenuPositioner]') as HTMLElement | null;
+        const firstItem = () => positioner()!.querySelector('[rdxMenuItem]') as HTMLButtonElement;
+
+        beforeEach(() => {
+            fixture = TestBed.createComponent(KeepMountedMenuComponent);
+            fixture.detectChanges();
+            trigger = fixture.nativeElement.querySelector('[rdxMenuTrigger]');
+        });
+
+        afterEach(() => fixture.destroy());
+
+        async function open() {
+            trigger.focus();
+            trigger.click();
+            fixture.detectChanges();
+            await fixture.whenStable();
+        }
+
+        async function close() {
+            fixture.componentInstance.open.set(false);
+            fixture.detectChanges();
+            await fixture.whenStable();
+            await nextFrame();
+            await nextFrame();
+        }
+
+        it('keeps the popup mounted (teleported to <body>) but hidden while closed (finding 6)', () => {
+            expect(positioner()).not.toBeNull();
+            expect(positioner()!.hidden).toBe(true);
+        });
+
+        it('reveals the popup on open and hides it again on close (finding 6)', async () => {
+            await open();
+            expect(positioner()!.hidden).toBe(false);
+
+            await close();
+            expect(positioner()!.hidden).toBe(true);
+        });
+
+        it('returns focus to the trigger when a kept-mounted menu closes (finding 3)', async () => {
+            await open();
+            firstItem().focus();
+            expect(positioner()!.contains(document.activeElement)).toBe(true);
+
+            await close();
+
+            expect(document.activeElement).toBe(trigger);
+        });
+
+        it('honors finalFocus on close while kept mounted (finding 3)', async () => {
+            const after = fixture.nativeElement.querySelector('[data-testid="after"]') as HTMLButtonElement;
+            fixture.componentInstance.finalFocus = after;
+            await open();
+            firstItem().focus();
+
+            await close();
+
+            expect(document.activeElement).toBe(after);
+        });
+    });
+
     describe('trigger', () => {
         let fixture: ComponentFixture<BasicMenuComponent>;
         let trigger: HTMLButtonElement;

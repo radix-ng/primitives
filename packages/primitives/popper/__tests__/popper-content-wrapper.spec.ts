@@ -1,10 +1,12 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, Directive, input, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { autoUpdate, computePosition } from '@floating-ui/dom';
 import { vi } from 'vitest';
 import { popperImports } from '../index';
-import { RdxPopperContentWrapper } from '../src/popper-content-wrapper';
+import { provideRdxPopperContentWrapper, RdxPopperContentWrapper } from '../src/popper-content-wrapper';
+import { provideRdxPopperContentConfig } from '../src/popper-content.config';
+import { Align, OffsetFunction, RdxCollisionAvoidance } from '../src/utils';
 
 vi.mock('@floating-ui/dom', async () => {
     const actual = await vi.importActual<typeof import('@floating-ui/dom')>('@floating-ui/dom');
@@ -83,6 +85,94 @@ class ReactivePopperHostComponent {
 })
 class CustomAnchorPopperHostComponent {}
 
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [popperImports],
+    template: `
+        <div rdxPopperRoot>
+            <button rdxPopperAnchor>Anchor</button>
+            <div
+                [collisionAvoidance]="collisionAvoidance()"
+                [avoidCollisions]="avoidCollisions()"
+                [align]="align()"
+                [sideOffset]="sideOffset()"
+                [alignOffset]="alignOffset()"
+                rdxPopperContentWrapper
+            >
+                <div rdxPopperContent>Content</div>
+            </div>
+        </div>
+    `
+})
+class CollisionPopperHostComponent {
+    readonly collisionAvoidance = signal<RdxCollisionAvoidance | undefined>(undefined);
+    readonly avoidCollisions = signal(true);
+    readonly align = signal<Align>('center');
+    readonly sideOffset = signal<number | OffsetFunction>(0);
+    readonly alignOffset = signal<number | OffsetFunction>(0);
+}
+
+// Applies a DROPDOWN-style config preset on the wrapper element (mirrors what a real positioner does
+// via `provideRdxPopperContentConfig`), so the preset-vs-input resolution can be exercised.
+@Directive({
+    selector: '[testDropdownConfig]',
+    providers: [provideRdxPopperContentConfig({ collisionAvoidance: { fallbackAxisSide: 'none' } })]
+})
+class TestDropdownConfigDirective {}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [popperImports, TestDropdownConfigDirective],
+    template: `
+        <div rdxPopperRoot>
+            <button rdxPopperAnchor>Anchor</button>
+            <div
+                [collisionAvoidance]="collisionAvoidance()"
+                [avoidCollisions]="avoidCollisions()"
+                testDropdownConfig
+                rdxPopperContentWrapper
+            >
+                <div rdxPopperContent>Content</div>
+            </div>
+        </div>
+    `
+})
+class PresetPopperHostComponent {
+    readonly collisionAvoidance = signal<RdxCollisionAvoidance | undefined>(undefined);
+    readonly avoidCollisions = signal(true);
+}
+
+// A positioner subclass whose `positioningActive` gate is toggleable via an input — mirrors how the
+// menu positioner pauses positioning while a keep-mounted popup is closed.
+@Directive({
+    selector: '[testGatedPositioner]',
+    providers: [...provideRdxPopperContentWrapper(TestGatedPositioner)]
+})
+class TestGatedPositioner extends RdxPopperContentWrapper {
+    readonly gate = input(true);
+
+    constructor() {
+        super();
+        this.positioningActive = computed(() => this.gate());
+    }
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [popperImports, TestGatedPositioner],
+    template: `
+        <div rdxPopperRoot>
+            <button rdxPopperAnchor>Anchor</button>
+            <div [gate]="active()" updatePositionStrategy="always" testGatedPositioner>
+                <div rdxPopperContent>Content</div>
+            </div>
+        </div>
+    `
+})
+class GatedPositionerHostComponent {
+    readonly active = signal(true);
+}
+
 describe('RdxPopperContentWrapper', () => {
     const autoUpdateMock = vi.mocked(autoUpdate);
     const computePositionMock = vi.mocked(computePosition);
@@ -96,7 +186,10 @@ describe('RdxPopperContentWrapper', () => {
                 DefaultPopperHostComponent,
                 AlwaysPopperHostComponent,
                 ReactivePopperHostComponent,
-                CustomAnchorPopperHostComponent
+                CustomAnchorPopperHostComponent,
+                CollisionPopperHostComponent,
+                PresetPopperHostComponent,
+                GatedPositionerHostComponent
             ]
         });
     });
@@ -227,6 +320,178 @@ describe('RdxPopperContentWrapper', () => {
         expect(computePositionMock).toHaveBeenCalledWith(buttons[0], expect.any(HTMLElement), expect.any(Object));
         expect(autoUpdateMock).toHaveBeenCalledWith(buttons[0], expect.any(HTMLElement), expect.any(Function), {
             animationFrame: false
+        });
+    });
+
+    describe('collision avoidance (Base UI parity)', () => {
+        type Middleware = { name: string; options: any };
+
+        /** Latest middleware array handed to `computePosition`, with the falsy (disabled) slots removed. */
+        function lastMiddleware(): Middleware[] {
+            const call = computePositionMock.mock.calls.at(-1)!;
+            return ((call[2] as any).middleware as (Middleware | false | undefined)[]).filter(Boolean) as Middleware[];
+        }
+
+        function byName(name: string): Middleware | undefined {
+            return lastMiddleware().find((m) => m.name === name);
+        }
+
+        async function render(setup?: (host: CollisionPopperHostComponent) => void) {
+            const fixture = TestBed.createComponent(CollisionPopperHostComponent);
+            setup?.(fixture.componentInstance);
+            fixture.detectChanges();
+            await fixture.whenStable();
+            return fixture;
+        }
+
+        it('applies flip + shift with the Base UI defaults (flip / flip / end)', async () => {
+            await render();
+
+            const flip = byName('flip');
+            const shift = byName('shift');
+
+            expect(flip?.options).toEqual(
+                expect.objectContaining({ mainAxis: true, crossAxis: 'alignment', fallbackAxisSideDirection: 'end' })
+            );
+            expect(shift?.options).toEqual(expect.objectContaining({ mainAxis: true }));
+        });
+
+        it('disables both flip and shift when the deprecated avoidCollisions is false', async () => {
+            await render((host) => host.avoidCollisions.set(false));
+
+            expect(byName('flip')).toBeUndefined();
+            expect(byName('shift')).toBeUndefined();
+        });
+
+        it('omits flip when collisionAvoidance.side is none but keeps shift', async () => {
+            await render((host) => host.collisionAvoidance.set({ side: 'none' }));
+
+            expect(byName('flip')).toBeUndefined();
+            expect(byName('shift')?.options).toEqual(expect.objectContaining({ mainAxis: true }));
+        });
+
+        it('omits shift when align is none and side stays flip', async () => {
+            await render((host) => host.collisionAvoidance.set({ align: 'none' }));
+
+            expect(byName('shift')).toBeUndefined();
+            expect(byName('flip')?.options).toEqual(expect.objectContaining({ crossAxis: false }));
+        });
+
+        it('maps fallbackAxisSide none (DROPDOWN preset) onto flip', async () => {
+            await render((host) => host.collisionAvoidance.set({ fallbackAxisSide: 'none' }));
+
+            expect(byName('flip')?.options).toEqual(expect.objectContaining({ fallbackAxisSideDirection: 'none' }));
+        });
+
+        it('runs shift before flip for center alignment, flip before shift otherwise', async () => {
+            await render((host) => host.align.set('center'));
+            let names = lastMiddleware().map((m) => m.name);
+            expect(names.indexOf('shift')).toBeLessThan(names.indexOf('flip'));
+
+            await render((host) => host.align.set('start'));
+            names = lastMiddleware().map((m) => m.name);
+            expect(names.indexOf('flip')).toBeLessThan(names.indexOf('shift'));
+        });
+
+        // Findings 1 & 4: config preset (DROPDOWN) resolution.
+        async function renderPreset(setup?: (host: PresetPopperHostComponent) => void) {
+            const fixture = TestBed.createComponent(PresetPopperHostComponent);
+            setup?.(fixture.componentInstance);
+            fixture.detectChanges();
+            await fixture.whenStable();
+            return fixture;
+        }
+
+        it('applies the config preset when the consumer passes nothing (fallbackAxisSide: none)', async () => {
+            await renderPreset();
+
+            expect(byName('flip')?.options).toEqual(expect.objectContaining({ fallbackAxisSideDirection: 'none' }));
+        });
+
+        it('honors the deprecated avoidCollisions=false even when a preset is provided (finding 1)', async () => {
+            await renderPreset((host) => host.avoidCollisions.set(false));
+
+            expect(byName('flip')).toBeUndefined();
+            expect(byName('shift')).toBeUndefined();
+        });
+
+        it('lets a consumer object fully replace the preset — omitted fields use global defaults (finding 4)', async () => {
+            // Preset is `{ fallbackAxisSide: 'none' }`; the consumer object omits it, so it must fall back
+            // to the global default `end`, NOT leak the preset's `none`.
+            await renderPreset((host) => host.collisionAvoidance.set({ side: 'shift' }));
+
+            expect(byName('flip')?.options).toEqual(expect.objectContaining({ fallbackAxisSideDirection: 'end' }));
+        });
+    });
+
+    describe('positioning gate (keep-mounted, finding 2)', () => {
+        it('skips computePosition + autoUpdate while positioningActive is false, resumes when true', async () => {
+            const fixture = TestBed.createComponent(GatedPositionerHostComponent);
+            fixture.componentInstance.active.set(false);
+            fixture.detectChanges();
+            await fixture.whenStable();
+
+            expect(autoUpdateMock).not.toHaveBeenCalled();
+            expect(computePositionMock).not.toHaveBeenCalled();
+
+            fixture.componentInstance.active.set(true);
+            fixture.detectChanges();
+            await fixture.whenStable();
+
+            expect(autoUpdateMock).toHaveBeenCalled();
+        });
+    });
+
+    describe('offset functions (Base UI parity)', () => {
+        function lastOffsetFn(): OffsetFunction {
+            const call = computePositionMock.mock.calls.at(-1)!;
+            const offset = ((call[2] as any).middleware as any[]).filter(Boolean).find((m) => m?.name === 'offset');
+            return offset.options as OffsetFunction;
+        }
+
+        const state = {
+            placement: 'bottom' as const,
+            rects: { reference: { width: 120, height: 40 }, floating: { width: 200, height: 80 } }
+        };
+
+        async function render(setup?: (host: CollisionPopperHostComponent) => void) {
+            const fixture = TestBed.createComponent(CollisionPopperHostComponent);
+            setup?.(fixture.componentInstance);
+            fixture.detectChanges();
+            await fixture.whenStable();
+            return fixture;
+        }
+
+        it('resolves a numeric sideOffset onto the main axis', async () => {
+            await render((host) => host.sideOffset.set(8));
+
+            expect((lastOffsetFn() as any)(state)).toEqual(
+                expect.objectContaining({ mainAxis: 8, crossAxis: 0, alignmentAxis: 0 })
+            );
+        });
+
+        it('invokes a sideOffset function with the anchor / positioner dimensions and placement', async () => {
+            const sideOffset = vi.fn(({ anchor }) => anchor.width);
+            await render((host) => host.sideOffset.set(sideOffset as OffsetFunction));
+
+            const result = (lastOffsetFn() as any)(state);
+
+            expect(sideOffset).toHaveBeenCalledWith({
+                side: 'bottom',
+                align: 'center',
+                anchor: { width: 120, height: 40 },
+                positioner: { width: 200, height: 80 }
+            });
+            expect(result.mainAxis).toBe(120);
+        });
+
+        it('applies an alignOffset function to both cross and alignment axes', async () => {
+            await render((host) => host.alignOffset.set((({ anchor }) => anchor.height) as OffsetFunction));
+
+            const result = (lastOffsetFn() as any)(state);
+
+            expect(result.crossAxis).toBe(40);
+            expect(result.alignmentAxis).toBe(40);
         });
     });
 });

@@ -11,12 +11,16 @@ import { injectRdxMenuRootContext } from './menu-root';
  * This replaces the consumer-owned `@if (root.open())` mount: it adds both teleporting *and*
  * exit-animation support. Apply it with the `*` microsyntax on the positioner —
  * `<div *rdxMenuPortal rdxMenuPositioner>` — or as an explicit `<ng-template rdxMenuPortal>`. For a
- * custom container, or a backdrop alongside the positioner (multi-root), use the explicit form.
+ * custom container, a backdrop alongside the positioner (multi-root), or `[keepMounted]`, use the
+ * explicit form.
+ *
+ * Set `[keepMounted]="true"` to keep the popup mounted while the menu is closed (the positioner's
+ * `data-closed` state hides it) — inherited from {@link RdxPortalPresence}.
  */
 @Directive({
     selector: 'ng-template[rdxMenuPortal]',
     exportAs: 'rdxMenuPortal',
-    hostDirectives: [{ directive: RdxPortalPresence, inputs: ['container'] }],
+    hostDirectives: [{ directive: RdxPortalPresence, inputs: ['container', 'keepMounted'] }],
     providers: [provideRdxPresenceContext(() => ({ present: injectRdxMenuRootContext().present }))]
 })
 export class RdxMenuPortal {}

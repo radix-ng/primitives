@@ -1,6 +1,7 @@
 import { DestroyRef, Directive, effect, ElementRef, inject, signal } from '@angular/core';
 import { useGraceArea } from '@radix-ng/primitives/core';
 import {
+    DROPDOWN_COLLISION_AVOIDANCE,
     provideRdxPopperContentConfig,
     provideRdxPopperContentWrapper,
     RdxPopperContentWrapper
@@ -19,7 +20,14 @@ import { injectNavigationMenuRootContext } from './navigation-menu-root-context'
     selector: '[rdxNavigationMenuPositioner]',
     providers: [
         ...provideRdxPopperContentWrapper(RdxNavigationMenuPositioner),
-        provideRdxPopperContentConfig({ arrowPadding: 5, collisionPadding: 5, updatePositionStrategy: 'always' })
+        // A (non-nested) navigation menu is dropdown-shaped: prefer top/bottom, don't fall back to the
+        // perpendicular axis (Base UI `NavigationMenuPositioner` applies DROPDOWN).
+        provideRdxPopperContentConfig({
+            arrowPadding: 5,
+            collisionPadding: 5,
+            collisionAvoidance: DROPDOWN_COLLISION_AVOIDANCE,
+            updatePositionStrategy: 'always'
+        })
     ],
     host: {
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',

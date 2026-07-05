@@ -11,6 +11,8 @@ import { RdxMenuBackdropExampleComponent } from './menu-backdrop';
 import backdropSource from './menu-backdrop?raw';
 import { RdxMenuDefaultComponent } from './menu-default';
 import defaultSource from './menu-default?raw';
+import { RdxMenuKeepMountedComponent } from './menu-keep-mounted';
+import keepMountedSource from './menu-keep-mounted?raw';
 import { RdxMenuNestedComponent } from './menu-nested';
 import { RdxMenuNestedRtlComponent } from './menu-nested-rtl';
 import nestedRtlSource from './menu-nested-rtl?raw';
@@ -37,6 +39,7 @@ export default {
                 RdxMenuArrowExampleComponent,
                 RdxMenuBackdropExampleComponent,
                 RdxMenuAnimatedComponent,
+                RdxMenuKeepMountedComponent,
                 RdxMenuViewportExampleComponent,
                 MenuRadioItemsStory,
                 MenuCheckboxItemsStory,
@@ -132,6 +135,15 @@ export const Viewport: Story = {
     render: () => ({
         template: html`
             <rdx-menu-viewport />
+        `
+    })
+};
+
+export const KeepMounted: Story = {
+    parameters: source(keepMountedSource),
+    render: () => ({
+        template: html`
+            <rdx-menu-keep-mounted />
         `
     })
 };

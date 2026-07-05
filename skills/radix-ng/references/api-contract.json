@@ -507,9 +507,8 @@
             },
             {
               "name": "alignOffset",
-              "type": "number",
               "default": "0",
-              "description": "An offset in pixels from the `start` or `end` alignment options."
+              "description": "An offset in pixels from the `start` or `end` alignment options. Also accepts an\n{@link OffsetFunction} (same signature as `sideOffset`)."
             },
             {
               "name": "anchor",
@@ -526,7 +525,14 @@
               "name": "avoidCollisions",
               "type": "boolean",
               "default": "true",
-              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges."
+              "deprecated": true,
+              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges.\n\n`false` disables all avoidance (unless a `collisionAvoidance` object is provided, which wins)."
+            },
+            {
+              "name": "collisionAvoidance",
+              "type": "RdxCollisionAvoidance | undefined",
+              "default": "undefined",
+              "description": "How the popup avoids colliding with the boundary edges, per axis (Base UI `collisionAvoidance`).\nOverrides the deprecated `avoidCollisions` and any per-primitive preset. An object here **fully\nreplaces** the preset — omitted fields fall back to `side: 'flip'`, `align: 'flip'`,\n`fallbackAxisSide: 'end'`, never to the preset. See {@link RdxCollisionAvoidance}."
             },
             {
               "name": "collisionBoundary",
@@ -559,9 +565,8 @@
             },
             {
               "name": "sideOffset",
-              "type": "number",
               "default": "4",
-              "description": "Distance between the anchor and the popup in pixels."
+              "description": "Distance between the anchor and the popup in pixels. Also accepts an {@link OffsetFunction} that\nreads the anchor / positioner dimensions and the resolved side / align."
             },
             {
               "name": "sticky",
@@ -1731,9 +1736,8 @@
             },
             {
               "name": "alignOffset",
-              "type": "number",
               "default": "0",
-              "description": "An offset in pixels from the `start` or `end` alignment options."
+              "description": "An offset in pixels from the `start` or `end` alignment options. Also accepts an\n{@link OffsetFunction} (same signature as `sideOffset`)."
             },
             {
               "name": "anchor",
@@ -1750,7 +1754,14 @@
               "name": "avoidCollisions",
               "type": "boolean",
               "default": "true",
-              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges."
+              "deprecated": true,
+              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges.\n\n`false` disables all avoidance (unless a `collisionAvoidance` object is provided, which wins)."
+            },
+            {
+              "name": "collisionAvoidance",
+              "type": "RdxCollisionAvoidance | undefined",
+              "default": "undefined",
+              "description": "How the popup avoids colliding with the boundary edges, per axis (Base UI `collisionAvoidance`).\nOverrides the deprecated `avoidCollisions` and any per-primitive preset. An object here **fully\nreplaces** the preset — omitted fields fall back to `side: 'flip'`, `align: 'flip'`,\n`fallbackAxisSide: 'end'`, never to the preset. See {@link RdxCollisionAvoidance}."
             },
             {
               "name": "collisionBoundary",
@@ -1783,9 +1794,8 @@
             },
             {
               "name": "sideOffset",
-              "type": "number",
               "default": "4",
-              "description": "Distance between the anchor and the popup in pixels."
+              "description": "Distance between the anchor and the popup in pixels. Also accepts an {@link OffsetFunction} that\nreads the anchor / positioner dimensions and the resolved side / align."
             },
             {
               "name": "sticky",
@@ -3851,7 +3861,7 @@
           "directive": "RdxMenuPortal",
           "selector": "ng-template[rdxMenuPortal]",
           "exportAs": "rdxMenuPortal",
-          "description": "Structural directive that teleports the menu popup into a container (default `document.body`) while\nthe menu is open, and keeps it mounted until any CSS exit `@keyframes` finishes.\n\nThis replaces the consumer-owned `@if (root.open())` mount: it adds both teleporting *and*\nexit-animation support. Apply it with the `*` microsyntax on the positioner —\n`<div *rdxMenuPortal rdxMenuPositioner>` — or as an explicit `<ng-template rdxMenuPortal>`. For a\ncustom container, or a backdrop alongside the positioner (multi-root), use the explicit form.",
+          "description": "Structural directive that teleports the menu popup into a container (default `document.body`) while\nthe menu is open, and keeps it mounted until any CSS exit `@keyframes` finishes.\n\nThis replaces the consumer-owned `@if (root.open())` mount: it adds both teleporting *and*\nexit-animation support. Apply it with the `*` microsyntax on the positioner —\n`<div *rdxMenuPortal rdxMenuPositioner>` — or as an explicit `<ng-template rdxMenuPortal>`. For a\ncustom container, a backdrop alongside the positioner (multi-root), or `[keepMounted]`, use the\nexplicit form.\n\nSet `[keepMounted]=\"true\"` to keep the popup mounted while the menu is closed (the positioner's\n`data-closed` state hides it) — inherited from {@link RdxPortalPresence}.",
           "hostDirectives": [
             "RdxPortalPresence"
           ],
@@ -3879,9 +3889,8 @@
             },
             {
               "name": "alignOffset",
-              "type": "number",
               "default": "0",
-              "description": "An offset in pixels from the `start` or `end` alignment options."
+              "description": "An offset in pixels from the `start` or `end` alignment options. Also accepts an\n{@link OffsetFunction} (same signature as `sideOffset`)."
             },
             {
               "name": "anchor",
@@ -3898,7 +3907,14 @@
               "name": "avoidCollisions",
               "type": "boolean",
               "default": "true",
-              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges."
+              "deprecated": true,
+              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges.\n\n`false` disables all avoidance (unless a `collisionAvoidance` object is provided, which wins)."
+            },
+            {
+              "name": "collisionAvoidance",
+              "type": "RdxCollisionAvoidance | undefined",
+              "default": "undefined",
+              "description": "How the popup avoids colliding with the boundary edges, per axis (Base UI `collisionAvoidance`).\nOverrides the deprecated `avoidCollisions` and any per-primitive preset. An object here **fully\nreplaces** the preset — omitted fields fall back to `side: 'flip'`, `align: 'flip'`,\n`fallbackAxisSide: 'end'`, never to the preset. See {@link RdxCollisionAvoidance}."
             },
             {
               "name": "collisionBoundary",
@@ -3931,9 +3947,8 @@
             },
             {
               "name": "sideOffset",
-              "type": "number",
               "default": "0",
-              "description": "Distance between the anchor and the popup in pixels."
+              "description": "Distance between the anchor and the popup in pixels. Also accepts an {@link OffsetFunction} that\nreads the anchor / positioner dimensions and the resolved side / align."
             },
             {
               "name": "sticky",
@@ -4540,9 +4555,8 @@
             },
             {
               "name": "alignOffset",
-              "type": "number",
               "default": "0",
-              "description": "An offset in pixels from the `start` or `end` alignment options."
+              "description": "An offset in pixels from the `start` or `end` alignment options. Also accepts an\n{@link OffsetFunction} (same signature as `sideOffset`)."
             },
             {
               "name": "anchor",
@@ -4559,7 +4573,14 @@
               "name": "avoidCollisions",
               "type": "boolean",
               "default": "true",
-              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges."
+              "deprecated": true,
+              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges.\n\n`false` disables all avoidance (unless a `collisionAvoidance` object is provided, which wins)."
+            },
+            {
+              "name": "collisionAvoidance",
+              "type": "RdxCollisionAvoidance | undefined",
+              "default": "undefined",
+              "description": "How the popup avoids colliding with the boundary edges, per axis (Base UI `collisionAvoidance`).\nOverrides the deprecated `avoidCollisions` and any per-primitive preset. An object here **fully\nreplaces** the preset — omitted fields fall back to `side: 'flip'`, `align: 'flip'`,\n`fallbackAxisSide: 'end'`, never to the preset. See {@link RdxCollisionAvoidance}."
             },
             {
               "name": "collisionBoundary",
@@ -4592,9 +4613,8 @@
             },
             {
               "name": "sideOffset",
-              "type": "number",
               "default": "0",
-              "description": "Distance between the anchor and the popup in pixels."
+              "description": "Distance between the anchor and the popup in pixels. Also accepts an {@link OffsetFunction} that\nreads the anchor / positioner dimensions and the resolved side / align."
             },
             {
               "name": "sticky",
@@ -5189,9 +5209,8 @@
             },
             {
               "name": "alignOffset",
-              "type": "number",
               "default": "0",
-              "description": "An offset in pixels from the `start` or `end` alignment options."
+              "description": "An offset in pixels from the `start` or `end` alignment options. Also accepts an\n{@link OffsetFunction} (same signature as `sideOffset`)."
             },
             {
               "name": "anchor",
@@ -5208,7 +5227,14 @@
               "name": "avoidCollisions",
               "type": "boolean",
               "default": "true",
-              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges."
+              "deprecated": true,
+              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges.\n\n`false` disables all avoidance (unless a `collisionAvoidance` object is provided, which wins)."
+            },
+            {
+              "name": "collisionAvoidance",
+              "type": "RdxCollisionAvoidance | undefined",
+              "default": "undefined",
+              "description": "How the popup avoids colliding with the boundary edges, per axis (Base UI `collisionAvoidance`).\nOverrides the deprecated `avoidCollisions` and any per-primitive preset. An object here **fully\nreplaces** the preset — omitted fields fall back to `side: 'flip'`, `align: 'flip'`,\n`fallbackAxisSide: 'end'`, never to the preset. See {@link RdxCollisionAvoidance}."
             },
             {
               "name": "collisionBoundary",
@@ -5241,9 +5267,8 @@
             },
             {
               "name": "sideOffset",
-              "type": "number",
               "default": "0",
-              "description": "Distance between the anchor and the popup in pixels."
+              "description": "Distance between the anchor and the popup in pixels. Also accepts an {@link OffsetFunction} that\nreads the anchor / positioner dimensions and the resolved side / align."
             },
             {
               "name": "sticky",
@@ -5432,9 +5457,8 @@
             },
             {
               "name": "alignOffset",
-              "type": "number",
               "default": "0",
-              "description": "An offset in pixels from the `start` or `end` alignment options."
+              "description": "An offset in pixels from the `start` or `end` alignment options. Also accepts an\n{@link OffsetFunction} (same signature as `sideOffset`)."
             },
             {
               "name": "anchor",
@@ -5451,7 +5475,14 @@
               "name": "avoidCollisions",
               "type": "boolean",
               "default": "true",
-              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges."
+              "deprecated": true,
+              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges.\n\n`false` disables all avoidance (unless a `collisionAvoidance` object is provided, which wins)."
+            },
+            {
+              "name": "collisionAvoidance",
+              "type": "RdxCollisionAvoidance | undefined",
+              "default": "undefined",
+              "description": "How the popup avoids colliding with the boundary edges, per axis (Base UI `collisionAvoidance`).\nOverrides the deprecated `avoidCollisions` and any per-primitive preset. An object here **fully\nreplaces** the preset — omitted fields fall back to `side: 'flip'`, `align: 'flip'`,\n`fallbackAxisSide: 'end'`, never to the preset. See {@link RdxCollisionAvoidance}."
             },
             {
               "name": "collisionBoundary",
@@ -5484,9 +5515,8 @@
             },
             {
               "name": "sideOffset",
-              "type": "number",
               "default": "0",
-              "description": "Distance between the anchor and the popup in pixels."
+              "description": "Distance between the anchor and the popup in pixels. Also accepts an {@link OffsetFunction} that\nreads the anchor / positioner dimensions and the resolved side / align."
             },
             {
               "name": "sticky",
@@ -5626,9 +5656,8 @@
             },
             {
               "name": "alignOffset",
-              "type": "number",
               "default": "0",
-              "description": "An offset in pixels from the `start` or `end` alignment options."
+              "description": "An offset in pixels from the `start` or `end` alignment options. Also accepts an\n{@link OffsetFunction} (same signature as `sideOffset`)."
             },
             {
               "name": "anchor",
@@ -5645,7 +5674,14 @@
               "name": "avoidCollisions",
               "type": "boolean",
               "default": "true",
-              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges."
+              "deprecated": true,
+              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges.\n\n`false` disables all avoidance (unless a `collisionAvoidance` object is provided, which wins)."
+            },
+            {
+              "name": "collisionAvoidance",
+              "type": "RdxCollisionAvoidance | undefined",
+              "default": "undefined",
+              "description": "How the popup avoids colliding with the boundary edges, per axis (Base UI `collisionAvoidance`).\nOverrides the deprecated `avoidCollisions` and any per-primitive preset. An object here **fully\nreplaces** the preset — omitted fields fall back to `side: 'flip'`, `align: 'flip'`,\n`fallbackAxisSide: 'end'`, never to the preset. See {@link RdxCollisionAvoidance}."
             },
             {
               "name": "collisionBoundary",
@@ -5678,9 +5714,8 @@
             },
             {
               "name": "sideOffset",
-              "type": "number",
               "default": "0",
-              "description": "Distance between the anchor and the popup in pixels."
+              "description": "Distance between the anchor and the popup in pixels. Also accepts an {@link OffsetFunction} that\nreads the anchor / positioner dimensions and the resolved side / align."
             },
             {
               "name": "sticky",
@@ -6264,9 +6299,8 @@
             },
             {
               "name": "alignOffset",
-              "type": "number",
               "default": "0",
-              "description": "An offset in pixels from the `start` or `end` alignment options."
+              "description": "An offset in pixels from the `start` or `end` alignment options. Also accepts an\n{@link OffsetFunction} (same signature as `sideOffset`)."
             },
             {
               "name": "anchor",
@@ -6283,7 +6317,14 @@
               "name": "avoidCollisions",
               "type": "boolean",
               "default": "true",
-              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges."
+              "deprecated": true,
+              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges.\n\n`false` disables all avoidance (unless a `collisionAvoidance` object is provided, which wins)."
+            },
+            {
+              "name": "collisionAvoidance",
+              "type": "RdxCollisionAvoidance | undefined",
+              "default": "undefined",
+              "description": "How the popup avoids colliding with the boundary edges, per axis (Base UI `collisionAvoidance`).\nOverrides the deprecated `avoidCollisions` and any per-primitive preset. An object here **fully\nreplaces** the preset — omitted fields fall back to `side: 'flip'`, `align: 'flip'`,\n`fallbackAxisSide: 'end'`, never to the preset. See {@link RdxCollisionAvoidance}."
             },
             {
               "name": "collisionBoundary",
@@ -6316,9 +6357,8 @@
             },
             {
               "name": "sideOffset",
-              "type": "number",
               "default": "0",
-              "description": "Distance between the anchor and the popup in pixels."
+              "description": "Distance between the anchor and the popup in pixels. Also accepts an {@link OffsetFunction} that\nreads the anchor / positioner dimensions and the resolved side / align."
             },
             {
               "name": "sticky",
@@ -7388,9 +7428,8 @@
             },
             {
               "name": "alignOffset",
-              "type": "number",
               "default": "0",
-              "description": "An offset in pixels from the `start` or `end` alignment options."
+              "description": "An offset in pixels from the `start` or `end` alignment options. Also accepts an\n{@link OffsetFunction} (same signature as `sideOffset`)."
             },
             {
               "name": "anchor",
@@ -7407,7 +7446,14 @@
               "name": "avoidCollisions",
               "type": "boolean",
               "default": "true",
-              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges."
+              "deprecated": true,
+              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges.\n\n`false` disables all avoidance (unless a `collisionAvoidance` object is provided, which wins)."
+            },
+            {
+              "name": "collisionAvoidance",
+              "type": "RdxCollisionAvoidance | undefined",
+              "default": "undefined",
+              "description": "How the popup avoids colliding with the boundary edges, per axis (Base UI `collisionAvoidance`).\nOverrides the deprecated `avoidCollisions` and any per-primitive preset. An object here **fully\nreplaces** the preset — omitted fields fall back to `side: 'flip'`, `align: 'flip'`,\n`fallbackAxisSide: 'end'`, never to the preset. See {@link RdxCollisionAvoidance}."
             },
             {
               "name": "collisionBoundary",
@@ -7440,9 +7486,8 @@
             },
             {
               "name": "sideOffset",
-              "type": "number",
               "default": "8",
-              "description": "Distance between the anchor and the popup in pixels."
+              "description": "Distance between the anchor and the popup in pixels. Also accepts an {@link OffsetFunction} that\nreads the anchor / positioner dimensions and the resolved side / align."
             },
             {
               "name": "sticky",
@@ -7960,9 +8005,8 @@
             },
             {
               "name": "alignOffset",
-              "type": "number",
               "default": "0",
-              "description": "An offset in pixels from the `start` or `end` alignment options."
+              "description": "An offset in pixels from the `start` or `end` alignment options. Also accepts an\n{@link OffsetFunction} (same signature as `sideOffset`)."
             },
             {
               "name": "anchor",
@@ -7979,7 +8023,14 @@
               "name": "avoidCollisions",
               "type": "boolean",
               "default": "true",
-              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges."
+              "deprecated": true,
+              "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges.\n\n`false` disables all avoidance (unless a `collisionAvoidance` object is provided, which wins)."
+            },
+            {
+              "name": "collisionAvoidance",
+              "type": "RdxCollisionAvoidance | undefined",
+              "default": "undefined",
+              "description": "How the popup avoids colliding with the boundary edges, per axis (Base UI `collisionAvoidance`).\nOverrides the deprecated `avoidCollisions` and any per-primitive preset. An object here **fully\nreplaces** the preset — omitted fields fall back to `side: 'flip'`, `align: 'flip'`,\n`fallbackAxisSide: 'end'`, never to the preset. See {@link RdxCollisionAvoidance}."
             },
             {
               "name": "collisionBoundary",
@@ -8012,9 +8063,8 @@
             },
             {
               "name": "sideOffset",
-              "type": "number",
               "default": "0",
-              "description": "Distance between the anchor and the popup in pixels."
+              "description": "Distance between the anchor and the popup in pixels. Also accepts an {@link OffsetFunction} that\nreads the anchor / positioner dimensions and the resolved side / align."
             },
             {
               "name": "sticky",

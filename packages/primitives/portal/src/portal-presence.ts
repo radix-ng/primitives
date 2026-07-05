@@ -1,5 +1,6 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import {
+    booleanAttribute,
     computed,
     DestroyRef,
     Directive,
@@ -47,6 +48,18 @@ export class RdxPortalPresence {
      */
     readonly container = input<RdxPortalContainer>();
 
+    /**
+     * Keep the portal mounted (in the container) while the layer is closed. When `true` the content
+     * stays in the DOM regardless of the {@link RDX_PRESENCE_CONTEXT} `present` flag — the consumer is
+     * responsible for hiding it while closed (typically via the `data-closed` / `data-open` state on the
+     * positioner). Any `*rdxXxxPortal` wrapper opts in by mapping this input in its `hostDirectives`.
+     */
+    readonly keepMounted = input(false, { transform: booleanAttribute });
+
+    /** The layer's own open/present flag, OR'd with {@link keepMounted} to gate mount/unmount. */
+    private readonly contextPresent = inject(RDX_PRESENCE_CONTEXT).present;
+    private readonly present = computed(() => this.contextPresent() || this.keepMounted());
+
     private readonly _computedContainer = linkedSignal(this.container);
 
     private readonly elementContainer = computed<HTMLElement | null>(() => {
@@ -60,7 +73,7 @@ export class RdxPortalPresence {
 
     constructor() {
         const machine = new PresenceMachine({
-            present: inject(RDX_PRESENCE_CONTEXT).present,
+            present: this.present,
             isBrowser: this.isBrowser,
             injector: inject(Injector),
             mountView: () => this.mountView(),

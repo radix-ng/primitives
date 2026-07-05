@@ -121,3 +121,34 @@ test('animated menu keeps the popup mounted through the exit animation, then unm
     await expect(page.locator('[rdxMenuPositioner]')).toHaveCount(0);
     await expect(page.locator('[rdxMenuPopup]')).toHaveCount(0);
 });
+
+test('a keepMounted menu stays in the DOM while closed but is hidden (not in layout / tab order)', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (e) => errors.push(String(e)));
+    page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
+
+    await gotoStory(page, 'primitives-menu--keep-mounted');
+    const positioner = page.locator('[rdxMenuPositioner]');
+
+    // Closed: the popup is teleported into <body> (kept mounted) but the native `hidden` removes it from
+    // layout and the a11y / tab order — so it is present but not visible.
+    await expect(positioner).toHaveCount(1);
+    await expect(positioner).toHaveAttribute('hidden', '');
+    await expect(positioner).toBeHidden();
+
+    // Open: the `hidden` is dropped and the popup positions and shows.
+    await page.locator('[rdxMenuTrigger]').first().click();
+    await expect(positioner).not.toHaveAttribute('hidden', /.*/);
+    await expect(page.locator('[rdxMenuPopup]')).toBeVisible();
+
+    // Close via Escape: focus returns to the trigger (the unmount-driven return never runs while kept
+    // mounted — finding #3), and the popup hides again while staying in the DOM.
+    await page.keyboard.press('Escape');
+    await expect(positioner).toHaveAttribute('hidden', '');
+    await expect(page.locator('[rdxMenuTrigger]')).toBeFocused();
+    await expect(positioner).toHaveCount(1);
+
+    // No endless positioning rAF loop / runtime errors while closed-and-mounted (finding #2).
+    await page.waitForTimeout(200);
+    expect(errors).toEqual([]);
+});

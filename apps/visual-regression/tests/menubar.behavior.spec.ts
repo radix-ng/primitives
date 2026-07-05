@@ -5,7 +5,9 @@ import { expect, Page, test } from '@playwright/test';
  * each menu uses the new floating dismissal engine) onto a real browser. Guards that opening, switching
  * between sibling menus, and dismissal still work — the cases the per-menu (vs legacy global-stack)
  * containment had to preserve. The Default story keeps every menu popup mounted, so assertions scope to
- * the *open* popup (`[data-state="open"]`) rather than counting all mounted popups.
+ * the *open* popup (`[data-open]`) rather than counting all mounted popups. The popup uses Base UI's
+ * `data-open`/`data-closed` state (not the Radix-era `data-state`); the trigger reflects open state via
+ * `aria-expanded`.
  */
 async function gotoStory(page: Page, storyId: string): Promise<void> {
     await page.goto(`/iframe.html?id=${storyId}&viewMode=story`);
@@ -13,7 +15,7 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
 }
 
 const trigger = '[rdxMenuTrigger]';
-const openPopup = '[rdxMenuPopup][data-state="open"]';
+const openPopup = '[rdxMenuPopup][data-open]';
 
 test('Tab enters the menubar on a trigger and arrow navigation keeps working', async ({ page }) => {
     await gotoStory(page, 'primitives-menubar--default');
@@ -32,7 +34,7 @@ test('Tab enters the menubar on a trigger and arrow navigation keeps working', a
 
     await page.keyboard.press('ArrowDown');
     await expect(page.locator(openPopup)).toHaveCount(1);
-    await expect(triggers.nth(1)).toHaveAttribute('data-state', 'open');
+    await expect(triggers.nth(1)).toHaveAttribute('aria-expanded', 'true');
 });
 
 test('opens a menu and keeps it open without runtime errors', async ({ page }) => {
@@ -52,13 +54,13 @@ test('hovering a sibling trigger switches menus — only one open at a time', as
 
     await triggers.first().click();
     await expect(page.locator(openPopup)).toHaveCount(1);
-    await expect(triggers.first()).toHaveAttribute('data-state', 'open');
+    await expect(triggers.first()).toHaveAttribute('aria-expanded', 'true');
 
     await triggers.nth(1).hover();
     // Switched: still exactly one open popup, now the second menu's.
     await expect(page.locator(openPopup)).toHaveCount(1);
-    await expect(triggers.nth(1)).toHaveAttribute('data-state', 'open');
-    await expect(triggers.first()).toHaveAttribute('data-state', 'closed');
+    await expect(triggers.nth(1)).toHaveAttribute('aria-expanded', 'true');
+    await expect(triggers.first()).toHaveAttribute('aria-expanded', 'false');
 });
 
 test('ArrowDown after switching an open menubar moves focus into the current popup', async ({ page }) => {
@@ -70,7 +72,7 @@ test('ArrowDown after switching an open menubar moves focus into the current pop
 
     await page.keyboard.press('ArrowRight');
     await expect(triggers.nth(1)).toBeFocused();
-    await expect(triggers.nth(1)).toHaveAttribute('data-state', 'open');
+    await expect(triggers.nth(1)).toHaveAttribute('aria-expanded', 'true');
 
     await page.keyboard.press('ArrowDown');
 

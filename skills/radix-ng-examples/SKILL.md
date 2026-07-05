@@ -31,7 +31,7 @@ Working examples built on `@radix-ng/primitives`. Full source is **bundled offli
 To style a primitive with a custom design system, pair an example with the data-attribute contract in
 the `radix-ng` skill (`references/styling-contract.json`).
 
-Total: **238 examples** across **43 components**.
+Total: **240 examples** across **43 components**.
 
 ## Components
 
@@ -261,6 +261,8 @@ Full source (all examples): [`references/components/menu.md`](./references/compo
 - **Arrow**
 - **Backdrop**
 - **Viewport (animated resize)**
+- **Keep mounted**
+- **Custom return focus (`finalFocus`)**
 - **CSS animations**
 
 ### Menubar

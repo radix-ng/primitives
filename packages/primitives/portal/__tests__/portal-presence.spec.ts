@@ -33,6 +33,31 @@ class PortalHostComponent {
     readonly container = signal<RdxPortalContainer | undefined>(undefined);
 }
 
+// Wrapper opting into the shared `keepMounted` input (as a real `*rdxXxxPortal` does).
+@Directive({
+    selector: 'ng-template[testKeepMountedPortal]',
+    standalone: true,
+    hostDirectives: [{ directive: RdxPortalPresence, inputs: ['keepMounted'] }]
+})
+class TestKeepMountedPortalWrapper {}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'test-keep-mounted-host',
+    standalone: true,
+    imports: [TestKeepMountedPortalWrapper],
+    providers: [provideRdxPresenceContext(() => ({ present: inject(KeepMountedHostComponent).present }))],
+    template: `
+        <ng-template [keepMounted]="keepMounted()" testKeepMountedPortal>
+            <div class="content" [attr.data-state]="present() ? 'open' : 'closed'">content</div>
+        </ng-template>
+    `
+})
+class KeepMountedHostComponent {
+    readonly present = signal(false);
+    readonly keepMounted = signal(false);
+}
+
 // Two sibling root nodes (dialog-shaped: backdrop + popup), each with its own exit animation hook.
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -334,6 +359,69 @@ describe('RdxPortalPresence — multi-root (dialog-shaped) exit', () => {
         fixture.detectChanges();
         expect(backdrop()).toBeNull();
         expect(popup()).toBeNull();
+    });
+});
+
+describe('RdxPortalPresence — keepMounted', () => {
+    let fixture: ComponentFixture<KeepMountedHostComponent>;
+    let host: KeepMountedHostComponent;
+    let gcsSpy: MockInstance;
+
+    const bodyContent = () => document.body.querySelector(':scope > .content') as HTMLElement | null;
+
+    beforeEach(() => {
+        // keepMounted is orthogonal to exit animations — report none so mount/unmount is deterministic.
+        gcsSpy = vi
+            .spyOn(window, 'getComputedStyle')
+            .mockReturnValue({ animationName: 'none', display: 'block' } as unknown as CSSStyleDeclaration);
+        fixture = TestBed.createComponent(KeepMountedHostComponent);
+        host = fixture.componentInstance;
+    });
+
+    afterEach(() => {
+        fixture.destroy();
+        gcsSpy.mockRestore();
+    });
+
+    it('mounts while closed when keepMounted is true (consumer hides via data-state)', () => {
+        host.keepMounted.set(true);
+        fixture.detectChanges();
+
+        const content = bodyContent();
+        expect(content).not.toBeNull();
+        // still in the DOM, but marked closed so the consumer's `data-closed` CSS hides it
+        expect(content!.getAttribute('data-state')).toBe('closed');
+    });
+
+    it('does not mount while closed when keepMounted is false (default)', () => {
+        fixture.detectChanges();
+
+        expect(bodyContent()).toBeNull();
+    });
+
+    it('keeps the same node across a close while keepMounted is true', () => {
+        host.present.set(true);
+        host.keepMounted.set(true);
+        fixture.detectChanges();
+        const opened = bodyContent();
+        expect(opened).not.toBeNull();
+
+        host.present.set(false);
+        fixture.detectChanges();
+
+        expect(bodyContent()).toBe(opened);
+        expect(bodyContent()!.getAttribute('data-state')).toBe('closed');
+    });
+
+    it('unmounts once keepMounted flips back to false while closed', () => {
+        host.keepMounted.set(true);
+        fixture.detectChanges();
+        expect(bodyContent()).not.toBeNull();
+
+        host.keepMounted.set(false);
+        fixture.detectChanges();
+
+        expect(bodyContent()).toBeNull();
     });
 });
 

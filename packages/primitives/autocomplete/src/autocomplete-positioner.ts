@@ -1,6 +1,7 @@
 import { afterNextRender, Directive, ElementRef, inject, Injector } from '@angular/core';
 import { setupInternalBackdrop } from '@radix-ng/primitives/core';
 import {
+    DROPDOWN_COLLISION_AVOIDANCE,
     provideRdxPopperContentConfig,
     provideRdxPopperContentWrapper,
     RdxPopperContentWrapper
@@ -22,7 +23,11 @@ import { RdxAutocompleteRoot } from './autocomplete-root';
     exportAs: 'rdxAutocompletePositioner',
     providers: [
         ...provideRdxPopperContentWrapper(RdxAutocompletePositioner),
-        provideRdxPopperContentConfig({ sideOffset: 4, align: 'start' })
+        provideRdxPopperContentConfig({
+            sideOffset: 4,
+            align: 'start',
+            collisionAvoidance: DROPDOWN_COLLISION_AVOIDANCE
+        })
     ]
 })
 export class RdxAutocompletePositioner extends RdxPopperContentWrapper {
