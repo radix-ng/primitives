@@ -34,6 +34,16 @@ export function setupMenuInternalBackdrop(
         isOpen: () => rootContext.isOpen(),
         cutout: () => cutoutElement(rootContext),
         shouldRender: () => {
+            // The backdrop must exist only while the menu is present (open or running its exit
+            // animation), never while idle-closed. This matters for a `keepMounted` menu: its
+            // positioner stays in the DOM while closed, so without this gate the shared backdrop
+            // helper — which creates the element on `shouldRender()` alone — would build it at page
+            // load and capture a stale cutout rect (the trigger's off-screen position), then never
+            // refresh it. On open the stale backdrop would cover the trigger, and the trigger
+            // `mouseup` would land on the backdrop and immediately close the menu (`cancel-open`).
+            if (!rootContext.present()) {
+                return false;
+            }
             const type = rootContext.parentType();
             if (type === 'menu' || !rootContext.modal()) {
                 return false; // submenus and non-modal menus get no backdrop

@@ -152,3 +152,53 @@ test('a keepMounted menu stays in the DOM while closed but is hidden (not in lay
     await page.waitForTimeout(200);
     expect(errors).toEqual([]);
 });
+
+test('a keepMounted modal menu builds no internal backdrop while closed (stale-cutout regression)', async ({
+    page
+}) => {
+    await gotoStory(page, 'primitives-menu--keep-mounted');
+    const backdrop = page.locator('[data-rdx-menu-internal-backdrop]');
+
+    // Closed: even though the positioner is kept mounted, the modal backdrop must NOT exist yet. If it
+    // were built now it would capture a stale cutout rect (the trigger's position at page load) and,
+    // once the page scrolls, cover the trigger — so the opening press would land on the backdrop and
+    // close the menu again. The backdrop's lifetime is gated on the menu being present.
+    await expect(backdrop).toHaveCount(0);
+
+    // Open: the backdrop is created now, against the trigger's current rect, so its cutout keeps the
+    // trigger clickable rather than covering it.
+    await page.locator('[rdxMenuTrigger]').first().click();
+    await expect(backdrop).toHaveCount(1);
+
+    await page.keyboard.press('Escape');
+    await expect(backdrop).toHaveCount(0);
+});
+
+test('a keepMounted menu stays open on a real trigger press even when the page has scrolled', async ({ page }) => {
+    // Reproduces the docs-page report: on a long, scrolled page the kept-mounted popup opens on
+    // pointerdown, then the trigger `mouseup` closed it again. Root cause was a stale modal-backdrop
+    // cutout covering the trigger. Uses the docs view (every story stacked → a tall, scrolled page) and
+    // a real press (down → hold → up), which a fast synthetic `click()` does not surface.
+    await page.goto('/iframe.html?id=primitives-menu--docs&viewMode=docs');
+    await page.waitForLoadState('networkidle');
+
+    const trigger = page.locator('rdx-menu-keep-mounted [rdxMenuTrigger]').first();
+    await trigger.scrollIntoViewIfNeeded();
+    const box = (await trigger.boundingBox())!;
+    const cx = box.x + box.width / 2;
+    const cy = box.y + box.height / 2;
+
+    await page.mouse.move(cx, cy, { steps: 4 });
+    await page.mouse.down();
+    await page.waitForTimeout(90); // human press duration; lets change detection build the backdrop
+    // While held, the backdrop must not cover the trigger point (else `mouseup` lands on it).
+    const underPoint = await page.evaluate(
+        ([x, y]) => !!document.elementFromPoint(x, y)?.closest('[data-rdx-menu-internal-backdrop]'),
+        [cx, cy]
+    );
+    expect(underPoint, 'internal backdrop must not cover the trigger').toBe(false);
+    await page.mouse.up();
+
+    // After the full press the menu stays open.
+    await expect(page.locator('[rdxMenuPopup][data-open]')).toHaveCount(1);
+});
