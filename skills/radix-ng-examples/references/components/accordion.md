@@ -536,7 +536,7 @@ Focus moves through accordion triggers using the browser's normal tab order. `Ar
 
 ### Panel
 
-`RdxAccordionPanelDirective` — the collapsible content. Apply to a container element (typically a `<div>`).
+`RdxAccordionPanelDirective` — the collapsible content. Reads everything from context, so it takes no inputs. Apply to a container element (typically a `<div>`).
 
 **Data attributes**
 

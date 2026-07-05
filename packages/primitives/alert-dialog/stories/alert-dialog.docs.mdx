@@ -1,6 +1,5 @@
-import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as Stories from './alert-dialog.stories';
-import { RdxAlertDialogRoot, RdxAlertDialogTrigger } from '../index';
 
 <Meta title="Primitives/Alert Dialog" />
 
@@ -117,15 +116,15 @@ Control the alert dialog's `open` state from a menu item to launch a destructive
 ### Root
 
 `RdxAlertDialogRoot` composes the Dialog root and forces alert semantics (always modal, no pointer
-dismissal, `role="alertdialog"`).
-
-<ArgTypes of={RdxAlertDialogRoot} />
+dismissal, `role="alertdialog"`). It forwards the Dialog root's state API — `[(open)]`, `[(triggerId)]`,
+`defaultOpen`, `defaultTriggerId`, and `handle`, plus the `onOpenChange` and `onOpenChangeComplete`
+outputs — but not `modal` or `disablePointerDismissal`, which are fixed for the alert variant. See the
+Dialog reference for their types and defaults.
 
 ### Trigger
 
-`RdxAlertDialogTrigger` opens the alert dialog; it behaves like the dialog trigger.
-
-<ArgTypes of={RdxAlertDialogTrigger} />
+`RdxAlertDialogTrigger` opens the alert dialog; it behaves like the dialog trigger and forwards its
+inputs: `handle`, `payload`, `id`, and `disabled`. See the Dialog reference for their types and defaults.
 
 ### Portal, Backdrop, Popup, Title, Description, Close, Viewport
 

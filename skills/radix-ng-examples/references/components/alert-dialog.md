@@ -542,11 +542,15 @@ export class RdxAlertDialogFromMenuComponent {
 ### Root
 
 `RdxAlertDialogRoot` composes the Dialog root and forces alert semantics (always modal, no pointer
-dismissal, `role="alertdialog"`).
+dismissal, `role="alertdialog"`). It forwards the Dialog root's state API — `[(open)]`, `[(triggerId)]`,
+`defaultOpen`, `defaultTriggerId`, and `handle`, plus the `onOpenChange` and `onOpenChangeComplete`
+outputs — but not `modal` or `disablePointerDismissal`, which are fixed for the alert variant. See the
+Dialog reference for their types and defaults.
 
 ### Trigger
 
-`RdxAlertDialogTrigger` opens the alert dialog; it behaves like the dialog trigger.
+`RdxAlertDialogTrigger` opens the alert dialog; it behaves like the dialog trigger and forwards its
+inputs: `handle`, `payload`, `id`, and `disabled`. See the Dialog reference for their types and defaults.
 
 ### Portal, Backdrop, Popup, Title, Description, Close, Viewport
 

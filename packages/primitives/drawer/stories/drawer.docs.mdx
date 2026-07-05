@@ -1,6 +1,6 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as Stories from './drawer.stories';
-import { RdxDrawerRoot, RdxDrawerPopup, RdxDrawerSwipeArea, RdxDrawerVirtualKeyboardProvider } from '../index';
+import { RdxDrawerRoot, RdxDrawerSwipeArea } from '../index';
 
 <Meta title="Primitives/Drawer" />
 
@@ -232,10 +232,9 @@ handle also supports imperative `open(id)`, `toggle(id)`, and `close()`.
 ### Popup
 
 `RdxDrawerPopup` composes the dialog popup (focus trap, dismissal, scroll lock, a11y) and owns the
-swipe gesture. It exposes the dialog popup's dismissal and focus events and reads everything else from
-context.
-
-<ArgTypes of={RdxDrawerPopup} />
+swipe gesture. It re-exposes the dialog popup's dismissal and focus outputs — `escapeKeyDown`,
+`pointerDownOutside`, `focusOutside`, `interactOutside`, `openAutoFocus`, and `closeAutoFocus` — and
+reads everything else from context.
 
 ### SwipeArea
 
@@ -249,8 +248,6 @@ context.
 `--drawer-keyboard-inset`, aligns focused keyboard inputs above the virtual keyboard, applies and
 restores scroll slack, uses touch tap-to-focus for iOS keyboard opening, and suspends itself while a
 nested drawer is open.
-
-<ArgTypes of={RdxDrawerVirtualKeyboardProvider} />
 
 ### Provider, Indent, and IndentBackground
 

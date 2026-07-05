@@ -1,6 +1,5 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as Stories from './composite.stories';
-import { RdxCompositeItem } from '../src/composite-item';
 import { RdxCompositeList } from '../src/composite-list';
 import { RdxCompositeListItem } from '../src/composite-list-item';
 import { RdxCompositeRoot } from '../src/composite-root';
@@ -82,4 +81,6 @@ keyboard navigation.
 
 ### RdxCompositeItem
 
-<ArgTypes of={RdxCompositeItem} />
+`RdxCompositeItem` registers with the nearest `RdxCompositeRoot` and receives the roving `tabindex` from
+the root's highlighted index. It forwards a single `metadata` input to the composed `RdxCompositeListItem`
+(see above) and has no inputs of its own.

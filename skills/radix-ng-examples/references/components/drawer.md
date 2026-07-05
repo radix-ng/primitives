@@ -1139,8 +1139,9 @@ export class RdxDrawerDetachedComponent {
 ### Popup
 
 `RdxDrawerPopup` composes the dialog popup (focus trap, dismissal, scroll lock, a11y) and owns the
-swipe gesture. It exposes the dialog popup's dismissal and focus events and reads everything else from
-context.
+swipe gesture. It re-exposes the dialog popup's dismissal and focus outputs — `escapeKeyDown`,
+`pointerDownOutside`, `focusOutside`, `interactOutside`, `openAutoFocus`, and `closeAutoFocus` — and
+reads everything else from context.
 
 ### SwipeArea
 

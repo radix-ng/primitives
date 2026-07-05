@@ -139,10 +139,18 @@ The next example moves the anchor with the pointer and uses the same `always` st
 
 ### RdxPopper
 
+`[rdxPopperRoot]` establishes the positioning context: it collects the nested `RdxPopperAnchor` and lets
+a primitive override the reference with a virtual element. It has no inputs.
+
 ### RdxPopperAnchor
+
+`[rdxPopperAnchor]` marks the element the content is positioned against. It has no inputs.
 
 ### RdxPopperContentWrapper
 
 ### RdxPopperContent
+
+`[rdxPopperContent]` reflects the resolved `data-side` / `data-align` from the wrapper and suppresses
+animations until the content has been placed. It has no inputs.
 
 ### RdxPopperArrow

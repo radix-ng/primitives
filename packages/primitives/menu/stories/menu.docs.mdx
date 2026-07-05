@@ -1,10 +1,7 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as Stories from './menu.stories';
 import {
-    RdxMenuArrow,
-    RdxMenuBackdrop,
     RdxMenuCheckboxItem,
-    RdxMenuGroup,
     RdxMenuItem,
     RdxMenuLinkItem,
     RdxMenuPopup,
@@ -477,15 +474,11 @@ automatically.
 An optional overlay rendered behind the popup. Exposes `data-open`, `data-closed`,
 `data-starting-style`, and `data-ending-style` for CSS animations. No inputs.
 
-<ArgTypes of={RdxMenuBackdrop} />
-
 ### RdxMenuArrow
 
 An optional visual arrow rendered inside the popup and positioned by the shared Popper Arrow
 primitive. Exposes `data-side`, `data-align`, and `data-uncentered` (set when the arrow cannot be
 centered on the anchor). No inputs.
-
-<ArgTypes of={RdxMenuArrow} />
 
 ### RdxMenuGroup
 

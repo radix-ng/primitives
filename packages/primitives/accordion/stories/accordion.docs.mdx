@@ -2,7 +2,6 @@ import { ArgTypes, Canvas, Controls, Meta, Primary } from '@storybook/addon-docs
 import * as AccordionStories from './accordion.stories';
 import { RdxAccordionRootDirective } from '../src/accordion-root.directive';
 import { RdxAccordionItemDirective } from '../src/accordion-item.directive';
-import { RdxAccordionPanelDirective } from '../src/accordion-panel.directive';
 
 <Meta title="Primitives/Accordion" of={AccordionStories} />
 
@@ -160,9 +159,7 @@ Focus moves through accordion triggers using the browser's normal tab order. `Ar
 
 ### Panel
 
-`RdxAccordionPanelDirective` — the collapsible content. Apply to a container element (typically a `<div>`).
-
-<ArgTypes of={RdxAccordionPanelDirective} />
+`RdxAccordionPanelDirective` — the collapsible content. Reads everything from context, so it takes no inputs. Apply to a container element (typically a `<div>`).
 
 **Data attributes**
 

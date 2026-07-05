@@ -845,7 +845,7 @@
             {
               "name": "delayMs",
               "type": "number",
-              "default": "this.config.delayMs",
+              "default": "0",
               "description": "Useful for delaying rendering so it only appears for those with slower connections."
             }
           ],

@@ -546,7 +546,7 @@ Focus moves through accordion triggers using the browser's normal tab order. `Ar
 
 ### Panel
 
-`RdxAccordionPanelDirective` — the collapsible content. Apply to a container element (typically a `<div>`).
+`RdxAccordionPanelDirective` — the collapsible content. Reads everything from context, so it takes no inputs. Apply to a container element (typically a `<div>`).
 
 **Data attributes**
 
@@ -1112,11 +1112,15 @@ export class RdxAlertDialogFromMenuComponent {
 ### Root
 
 `RdxAlertDialogRoot` composes the Dialog root and forces alert semantics (always modal, no pointer
-dismissal, `role="alertdialog"`).
+dismissal, `role="alertdialog"`). It forwards the Dialog root's state API — `[(open)]`, `[(triggerId)]`,
+`defaultOpen`, `defaultTriggerId`, and `handle`, plus the `onOpenChange` and `onOpenChangeComplete`
+outputs — but not `modal` or `disablePointerDismissal`, which are fixed for the alert variant. See the
+Dialog reference for their types and defaults.
 
 ### Trigger
 
-`RdxAlertDialogTrigger` opens the alert dialog; it behaves like the dialog trigger.
+`RdxAlertDialogTrigger` opens the alert dialog; it behaves like the dialog trigger and forwards its
+inputs: `handle`, `payload`, `id`, and `disabled`. See the Dialog reference for their types and defaults.
 
 ### Portal, Backdrop, Popup, Title, Description, Close, Viewport
 
@@ -10638,8 +10642,9 @@ export class RdxDrawerDetachedComponent {
 ### Popup
 
 `RdxDrawerPopup` composes the dialog popup (focus trap, dismissal, scroll lock, a11y) and owns the
-swipe gesture. It exposes the dialog popup's dismissal and focus events and reads everything else from
-context.
+swipe gesture. It re-exposes the dialog popup's dismissal and focus outputs — `escapeKeyDown`,
+`pointerDownOutside`, `focusOutside`, `interactOutside`, `openAutoFocus`, and `closeAutoFocus` — and
+reads everything else from context.
 
 ### SwipeArea
 
@@ -27278,6 +27283,10 @@ export class RdxCompositeListOnlyComponent {
 
 ### RdxCompositeItem
 
+`RdxCompositeItem` registers with the nearest `RdxCompositeRoot` and receives the roving `tabindex` from
+the root's highlighted index. It forwards a single `metadata` input to the composed `RdxCompositeListItem`
+(see above) and has no inputs of its own.
+
 ---
 
 # Direction Provider
@@ -27933,11 +27942,19 @@ The next example moves the anchor with the pointer and uses the same `always` st
 
 ### RdxPopper
 
+`[rdxPopperRoot]` establishes the positioning context: it collects the nested `RdxPopperAnchor` and lets
+a primitive override the reference with a virtual element. It has no inputs.
+
 ### RdxPopperAnchor
+
+`[rdxPopperAnchor]` marks the element the content is positioned against. It has no inputs.
 
 ### RdxPopperContentWrapper
 
 ### RdxPopperContent
+
+`[rdxPopperContent]` reflects the resolved `data-side` / `data-align` from the wrapper and suppresses
+animations until the content has been placed. It has no inputs.
 
 ### RdxPopperArrow
 

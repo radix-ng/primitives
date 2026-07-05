@@ -16,12 +16,7 @@ export const tailwindDemoDecorator = (
 
     return componentWrapperDecorator(
         (story) => html`
-            <div
-                class="border-border bg-background text-foreground ${sizing} flex rounded-xl border"
-                data-demo="tailwind"
-            >
-                ${story}
-            </div>
+            <div class="bg-background text-foreground ${sizing} flex" data-demo="tailwind">${story}</div>
         `
     );
 };

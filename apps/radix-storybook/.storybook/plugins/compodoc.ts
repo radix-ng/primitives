@@ -7,11 +7,17 @@ import rawDocJson from '../documentation.json';
 // whose members lack the fields accessed below. Describing only what we use and casting through
 // `unknown` makes the type-check deterministic and cheap, and matches the runtime data (e.g. compodoc
 // records `extends` as an array of base-class names).
+interface CompodocJsDocTag {
+    tagName?: { escapedText?: string };
+    comment?: unknown;
+}
+
 interface CompodocInput {
     name?: string;
     defaultValue?: string;
     type?: string;
     description?: string;
+    jsdoctags?: CompodocJsDocTag[];
 }
 
 interface CompodocDoc {
@@ -41,6 +47,19 @@ const docJson = rawDocJson as unknown as CompodocJson;
 // `provideRdxPopperContentConfig({...})`. Resolve it so the ArgTypes table shows the real default —
 // the same resolution `tools/scripts/skills/api-contract.mjs` applies for `api-contract.json`.
 const CONFIG_DEFAULT_RE = /^this\.config\.(\w+)\s*\?\?\s*([\s\S]+)$/;
+
+// A bare `this.config.<key>` (no `?? fallback`) — e.g. `input<number>(this.config.delayMs)`, backed
+// by an `injectXxxConfig()` default the plugin can't statically resolve. Storybook coerces the raw
+// expression to the input's declared type, so a numeric input renders `this.config.delayMs` as `NaN`.
+const BARE_CONFIG_RE = /^this\.config\.(\w+)$/;
+
+// Read the authored `@defaultValue` JSDoc tag (compodoc wraps its comment in HTML, e.g. `<p>0</p>`)
+// so an otherwise-unresolvable default can still show its real value.
+function jsDocDefault(input: CompodocInput): string {
+    const tag = input.jsdoctags?.find((t) => t.tagName?.escapedText === 'defaultValue');
+    const comment = typeof tag?.comment === 'string' ? tag.comment : '';
+    return comment.replace(/<[^>]+>/g, '').trim();
+}
 
 // Inputs that default to an auto-generated unique id (`input(injectId('rdx-…-'))`). The raw
 // `injectId('…')` call is meaningless in the Default column — replace it with a clear marker that
@@ -90,9 +109,15 @@ export default {
                 let cleaned = (input.defaultValue ?? '').replace(/,\s*\{[\s\S]*\}\s*$/, '').trim();
 
                 const inherited = CONFIG_DEFAULT_RE.exec(cleaned);
+                const bareConfig = BARE_CONFIG_RE.exec(cleaned);
                 if (inherited) {
                     // Inputs inherited from a thin positioner: resolve `this.config.<key> ?? <fallback>`.
                     cleaned = (config[inherited[1]] ?? inherited[2]).trim();
+                } else if (bareConfig) {
+                    // Bare `this.config.<key>` — resolve to the positioner config value if any, else the
+                    // authored `@defaultValue` JSDoc tag (e.g. avatar `delayMs` → `0`), else empty so it
+                    // renders as a dash below instead of the raw expression / `NaN`.
+                    cleaned = (config[bareConfig[1]] ?? jsDocDefault(input)).trim();
                 } else if (/^\{[\s\S]*\b(?:alias|transform)\b[\s\S]*\}$/.test(cleaned)) {
                     // `input.required<T>({ alias })` / `input({ transform })` — no real default value;
                     // compodoc captured the options object. Show nothing rather than `{ alias: … }`.

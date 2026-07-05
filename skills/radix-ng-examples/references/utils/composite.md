@@ -164,3 +164,7 @@ export class RdxCompositeListOnlyComponent {
 ### RdxCompositeRoot
 
 ### RdxCompositeItem
+
+`RdxCompositeItem` registers with the nearest `RdxCompositeRoot` and receives the roving `tabindex` from
+the root's highlighted index. It forwards a single `metadata` input to the composed `RdxCompositeListItem`
+(see above) and has no inputs of its own.

@@ -62,6 +62,18 @@ const cleanType = (type) => (type ?? '').replace(/,\s*[^,]*(?:BooleanInput|Numbe
 // published default matches runtime instead of leaking the base-class expression.
 const CONFIG_DEFAULT_RE = /^this\.config\.(\w+)\s*\?\?\s*([\s\S]+)$/;
 
+// A bare `this.config.<key>` (no `?? fallback`) — e.g. `input<number>(this.config.delayMs)`, backed by
+// an `injectXxxConfig()` default that can't be statically resolved. Fall back to the authored
+// `@defaultValue` JSDoc tag so the published default is the real value instead of the raw expression.
+const BARE_CONFIG_RE = /^this\.config\.(\w+)$/;
+
+// compodoc wraps the `@defaultValue` tag comment in HTML (e.g. `<p>0</p>`); strip to the bare literal.
+const jsdocDefault = (member) => {
+    const tag = (member.jsdoctags ?? []).find((t) => t?.tagName?.escapedText === 'defaultValue');
+    const comment = typeof tag?.comment === 'string' ? tag.comment : '';
+    return comment.replace(/<[^>]+>/g, '').trim();
+};
+
 const parsePositionerConfig = (sourceCode) => {
     const match = /provideRdxPopperContentConfig\(\s*\{([\s\S]*?)\}\s*\)/.exec(sourceCode ?? '');
     if (!match) return {};
@@ -75,16 +87,20 @@ const parsePositionerConfig = (sourceCode) => {
 };
 
 // `defaultValue` is the raw `input()` argument list — drop the options object, then resolve any
-// inherited `this.config.<key> ?? <fallback>` against the positioner's config defaults.
-const cleanDefault = (defaultValue, config = {}) => {
-    if (defaultValue === undefined) return undefined;
+// inherited `this.config.<key> ?? <fallback>` against the positioner's config defaults, or a bare
+// `this.config.<key>` against the input's `@defaultValue` JSDoc tag.
+const cleanDefault = (input, config = {}) => {
+    if (input.defaultValue === undefined) return undefined;
 
-    let cleaned = defaultValue.replace(/,\s*\{[\s\S]*\}\s*$/, '').trim();
+    let cleaned = input.defaultValue.replace(/,\s*\{[\s\S]*\}\s*$/, '').trim();
 
     const inherited = CONFIG_DEFAULT_RE.exec(cleaned);
+    const bareConfig = BARE_CONFIG_RE.exec(cleaned);
     if (inherited) {
         const [, key, fallback] = inherited;
         cleaned = (config[key] ?? fallback).trim();
+    } else if (bareConfig) {
+        cleaned = (config[bareConfig[1]] ?? jsdocDefault(input)).trim();
     }
 
     return cleaned || undefined;
@@ -134,7 +150,7 @@ export function generateApiContract({ workspaceRoot, primitivesRoot, skillsRoot,
                         compact({
                             name: bindingName(input),
                             type: cleanType(input.type) || undefined,
-                            default: cleanDefault(input.defaultValue, positionerConfig),
+                            default: cleanDefault(input, positionerConfig),
                             required: input.required || undefined,
                             deprecated: input.deprecated || undefined,
                             description: description(input)
