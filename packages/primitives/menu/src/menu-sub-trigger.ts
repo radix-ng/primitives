@@ -21,7 +21,6 @@ import {
     applyPointerTunnel,
     createSafePolygonHandler,
     hasOpenChildSubmenu,
-    MenuSide,
     registerOpenSubmenu
 } from './menu-safe-polygon';
 
@@ -60,6 +59,7 @@ const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();
         '(keydown.arrowright)': 'onArrowRight($event)',
         '(pointermove)': 'onPointerMove($event)',
         '(pointerleave)': 'onPointerLeave()',
+        '(pointerout)': 'onPointerOut($event)',
         '(rdx-menu-subtrigger-clear-highlight)': 'clearHighlight()'
     }
 })
@@ -160,8 +160,9 @@ export class RdxMenuSubTrigger {
             const { handler, dispose } = createSafePolygonHandler({
                 reference,
                 floating: popup,
-                // Live getter: `data-side` may be unresolved at open time and can flip on collision.
-                side: () => (popup.getAttribute('data-side') as MenuSide) ?? 'right',
+                // Physical side from context (live: unresolved at open, flips on collision). NOT the popup's
+                // `data-side`, which is the logical `inline-*` echo the geometry can't interpret.
+                side: () => this.submenuContext.popupPhysicalSide() ?? 'right',
                 x: this.lastPointer.x,
                 y: this.lastPointer.y,
                 onClose: () => this.scheduleClose(),
@@ -323,6 +324,21 @@ export class RdxMenuSubTrigger {
     }
 
     protected onPointerLeave(): void {
+        clearTimeout(this.openTimer);
+    }
+
+    /**
+     * Backup cancellation for a `pointerleave` that Chrome can drop during a fast pointer sweep across
+     * adjacent triggers, which would otherwise leave the delayed hover-open armed and open a stale
+     * submenu for a trigger the pointer has already left (stranding the parent at `pointer-events: none`).
+     * `pointerout` bubbles, so it also fires while crossing between the trigger's own descendants — those
+     * (where `relatedTarget` is still inside the trigger) must not cancel the pending open. Base UI parity
+     * (`guardStaleOpen`); safe on this single, hover-driven trigger.
+     */
+    protected onPointerOut(event: PointerEvent): void {
+        if (this.elementRef.nativeElement.contains(event.relatedTarget as Node | null)) {
+            return;
+        }
         clearTimeout(this.openTimer);
     }
 

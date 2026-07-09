@@ -17,7 +17,7 @@ import { createRdxTriggerInteraction, useTriggerFocusGuards } from '@radix-ng/pr
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { getFocusableMenuItems } from './menu-focus';
 import { injectRdxMenuRootContext } from './menu-root';
-import { applyPointerTunnel, createSafePolygonHandler, hasOpenChildSubmenu, MenuSide } from './menu-safe-polygon';
+import { applyPointerTunnel, createSafePolygonHandler, hasOpenChildSubmenu } from './menu-safe-polygon';
 
 const numberOrUndefined = (value: NumberInput | undefined) => (value == null ? undefined : numberAttribute(value));
 
@@ -147,7 +147,8 @@ export class RdxMenuTrigger {
             const { handler, dispose } = createSafePolygonHandler({
                 reference: trigger,
                 floating: popup,
-                side: () => (popup.getAttribute('data-side') as MenuSide) ?? 'bottom',
+                // Physical side from context — the popup's `data-side` may be a logical `inline-*` echo.
+                side: () => this.rootContext.popupPhysicalSide() ?? 'bottom',
                 x: this.lastPointer.x,
                 y: this.lastPointer.y,
                 onClose: () => this.scheduleClose(),

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { RdxReturnFocus } from '@radix-ng/primitives/floating-focus-manager';
 import { FOCUS_GUARD_ATTR } from '@radix-ng/primitives/focus-scope';
 import {
@@ -2003,6 +2004,61 @@ describe('Menu', () => {
             fixture.detectChanges();
 
             expect(subTrigger.getAttribute('aria-expanded')).toBe('true');
+        });
+
+        it('cancels a pending hover-open when the pointer leaves via pointerout (Chrome drops pointerleave)', async () => {
+            const pointerMove = new Event('pointermove', { bubbles: true });
+            Object.defineProperty(pointerMove, 'pointerType', { value: 'mouse' });
+            subTrigger.dispatchEvent(pointerMove);
+
+            // Simulate Chrome dropping the non-bubbling `pointerleave` during a fast sweep: only the
+            // bubbling `pointerout` fires as the pointer leaves the trigger for a sibling.
+            const pointerOut = new Event('pointerout', { bubbles: true });
+            Object.defineProperty(pointerOut, 'relatedTarget', { value: document.body });
+            subTrigger.dispatchEvent(pointerOut);
+
+            await new Promise((resolve) => setTimeout(resolve, 120));
+            fixture.detectChanges();
+
+            expect(subTrigger.getAttribute('aria-expanded')).toBe('false');
+        });
+
+        it('keeps the pending hover-open when pointerout stays within the trigger subtree', async () => {
+            const child = document.createElement('span');
+            subTrigger.appendChild(child);
+
+            const pointerMove = new Event('pointermove', { bubbles: true });
+            Object.defineProperty(pointerMove, 'pointerType', { value: 'mouse' });
+            subTrigger.dispatchEvent(pointerMove);
+
+            // An internal crossing (relatedTarget still inside the trigger) must not cancel the open.
+            const pointerOut = new Event('pointerout', { bubbles: true });
+            Object.defineProperty(pointerOut, 'relatedTarget', { value: child });
+            subTrigger.dispatchEvent(pointerOut);
+
+            await new Promise((resolve) => setTimeout(resolve, 120));
+            fixture.detectChanges();
+
+            expect(subTrigger.getAttribute('aria-expanded')).toBe('true');
+        });
+
+        it('exposes the popup physical side through context for safe-polygon geometry (not the logical data-side)', () => {
+            // Safe-polygon needs the PHYSICAL side; the popup's `data-side` can be the logical
+            // `inline-*` echo when opened with `side="inline-start"` / `inline-end`, which the geometry
+            // switch cannot interpret. The physical side flows through the root context, read live from
+            // the popup's own signal (so it also flips on collision).
+            const root = fixture.debugElement.query(By.directive(RdxMenuRoot)).injector.get(RdxMenuRoot);
+            const popupEl = document.createElement('div');
+            const physicalSide = signal<'left' | 'right' | 'top' | 'bottom' | undefined>('left');
+
+            const unregister = root.registerPopup(popupEl, physicalSide);
+            expect(root.popupPhysicalSide()).toBe('left');
+
+            physicalSide.set('right'); // e.g. a collision flip
+            expect(root.popupPhysicalSide()).toBe('right');
+
+            unregister();
+            expect(root.popupPhysicalSide()).toBeUndefined();
         });
 
         it('closes submenu on ArrowLeft from within sub-popup', () => {

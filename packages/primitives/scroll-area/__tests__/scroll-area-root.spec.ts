@@ -113,6 +113,48 @@ describe('RdxScrollArea', () => {
         expect(thumb.getAttribute('data-orientation')).toBe('vertical');
     });
 
+    function setModality(root: HTMLElement, pointerType: 'touch' | 'mouse'): void {
+        const event =
+            typeof PointerEvent === 'undefined'
+                ? new Event('pointerdown', { bubbles: true })
+                : new PointerEvent('pointerdown', { bubbles: true, pointerType });
+        Object.defineProperty(event, 'pointerType', { value: pointerType });
+        root.dispatchEvent(event);
+    }
+
+    function fireScroll(viewport: HTMLElement, top: number): void {
+        Object.defineProperty(viewport, 'scrollTop', { value: top, configurable: true });
+        viewport.dispatchEvent(new Event('scroll'));
+    }
+
+    it('marks data-scrolling for a touch-modality scroll even without interaction events (iOS momentum)', () => {
+        // WebKit consumes a touch that catches an in-flight momentum/rubber-band scroll without firing
+        // any DOM events, so no user-interaction event precedes the scroll. Touch modality must still
+        // attribute it to the user so the scrollbar shows (Base UI parity).
+        const fixture = setup();
+        const root = fixture.nativeElement.querySelector('[rdxScrollAreaRoot]') as HTMLElement;
+        const viewport = fixture.nativeElement.querySelector('[rdxScrollAreaViewport]') as HTMLElement;
+
+        setModality(root, 'touch');
+        fireScroll(viewport, 50);
+        fixture.detectChanges();
+
+        expect(viewport.hasAttribute('data-scrolling')).toBe(true);
+    });
+
+    it('ignores a programmatic scroll in mouse modality (no data-scrolling)', () => {
+        const fixture = setup();
+        const root = fixture.nativeElement.querySelector('[rdxScrollAreaRoot]') as HTMLElement;
+        const viewport = fixture.nativeElement.querySelector('[rdxScrollAreaViewport]') as HTMLElement;
+
+        // Mouse modality with no preceding user-interaction event: the scroll is treated as programmatic.
+        setModality(root, 'mouse');
+        fireScroll(viewport, 50);
+        fixture.detectChanges();
+
+        expect(viewport.hasAttribute('data-scrolling')).toBe(false);
+    });
+
     it('should apply the Angular CSP nonce to the injected scrollbar stylesheet', () => {
         const fixture = TestBed.createComponent(CspNonceHostComponent);
         fixture.detectChanges();

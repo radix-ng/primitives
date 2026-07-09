@@ -53,7 +53,6 @@ const viewportContext = (): ScrollAreaViewportContext => {
         '[attr.data-overflow-y-end]': 'rootContext.overflowEdges().yEnd ? "" : undefined',
         '(scroll)': 'onScroll()',
         '(wheel)': 'onUserInteraction()',
-        '(touchmove)': 'onUserInteraction()',
         '(pointermove)': 'onUserInteraction()',
         '(pointerenter)': 'onUserInteraction()',
         '(keydown)': 'onUserInteraction()'
@@ -255,7 +254,11 @@ export class RdxScrollAreaViewport {
 
         this.computeThumbPosition();
 
-        if (!this.programmaticScroll) {
+        // WebKit consumes a touch that catches an in-flight momentum scroll or rubber-band bounce
+        // without dispatching any DOM events for the whole gesture (not even `touchstart`), so such a
+        // scroll can't be attributed to the user through events. Treat every scroll in touch modality
+        // as user-driven instead, otherwise the scrollbar never shows on iOS (Base UI parity).
+        if (this.rootContext.touchModality() || !this.programmaticScroll) {
             this.rootContext.handleScroll({ x: viewportEl.scrollLeft, y: viewportEl.scrollTop });
         }
 

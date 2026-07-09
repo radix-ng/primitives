@@ -34,6 +34,11 @@ export default {
             options: ['top', 'right', 'bottom', 'left', 'inline-start', 'inline-end'],
             control: { type: 'select' }
         },
+        // Pair with a logical `side` (`inline-start` / `inline-end`) to see it resolve left/right by direction.
+        dir: {
+            options: ['ltr', 'rtl'],
+            control: { type: 'inline-radio' }
+        },
         sideOffset: {
             control: { type: 'number' }
         }
@@ -46,6 +51,7 @@ export const Default: Story = {
     args: {
         side: 'top',
         align: 'center',
+        dir: 'ltr',
         sideOffset: 8
     },
     render: (args) => ({

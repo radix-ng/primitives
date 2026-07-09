@@ -178,7 +178,12 @@ export class RdxMenuPopup {
         this.floatingContext.setFloatingElement(this.elementRef.nativeElement);
 
         const unregister = this.rootContext.registerTransitionElement(this.elementRef.nativeElement);
-        const unregisterPopup = this.rootContext.registerPopup(this.elementRef.nativeElement);
+        // Register the wrapper's PHYSICAL side (not the popup's logical `data-side` echo) so safe-polygon
+        // geometry stays correct when opened with a logical `side="inline-start"` / `inline-end`.
+        const unregisterPopup = this.rootContext.registerPopup(
+            this.elementRef.nativeElement,
+            this.wrapper?.physicalPlacedSide
+        );
         inject(DestroyRef).onDestroy(() => {
             unregister();
             unregisterPopup();

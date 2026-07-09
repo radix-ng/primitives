@@ -29,6 +29,7 @@ import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 import { getFocusableMenuItems } from './menu-focus';
+import type { MenuSide } from './menu-safe-polygon';
 
 export type RdxMenuTransitionStatus = 'starting' | 'ending' | undefined;
 /**
@@ -115,6 +116,12 @@ export interface RdxMenuRootContext {
     trigger: Signal<HTMLElement | undefined>;
     /** The popup element, once mounted. Used by submenu safe-polygon geometry. */
     popupElement: Signal<HTMLElement | undefined>;
+    /**
+     * The popup's **physical** placed side (`top`/`bottom`/`left`/`right`) for safe-polygon geometry —
+     * never the popup's `data-side`, which is the logical `inline-start`/`inline-end` echo when a logical
+     * side was requested and which the geometry cannot interpret.
+     */
+    popupPhysicalSide: Signal<MenuSide | undefined>;
     beforeContentFocusGuard: Signal<HTMLElement | null>;
     transitionStatus: Signal<RdxMenuTransitionStatus>;
     close: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
@@ -126,7 +133,7 @@ export interface RdxMenuRootContext {
     /** Open the menu without moving focus into the popup (used for menubar hover-switching). */
     showWithoutAutoFocus: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
     registerTrigger: (el: HTMLElement) => () => void;
-    registerPopup: (el: HTMLElement) => () => void;
+    registerPopup: (el: HTMLElement, physicalSide?: Signal<MenuSide | undefined>) => () => void;
     setBeforeContentFocusGuard: (element: HTMLElement | null) => void;
     registerTransitionElement: (element: HTMLElement) => () => void;
     registerPopupArrowNavigationHandler: (handler: (offset: 1 | -1) => boolean) => () => void;
@@ -191,6 +198,7 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         hasTriggerInteractionHandler: instance.hasTriggerInteractionHandler.asReadonly(),
         trigger: instance.trigger.asReadonly(),
         popupElement: instance.popupElement.asReadonly(),
+        popupPhysicalSide: instance.popupPhysicalSide,
         beforeContentFocusGuard: instance.beforeContentFocusGuard.asReadonly(),
         transitionStatus: instance.transitionStatus,
         close: (reason, event) => instance.close(reason, event),
@@ -200,7 +208,7 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         show: (autoFocus, reason, event) => instance.show(autoFocus, reason, event),
         showWithoutAutoFocus: (reason, event) => instance.show(false, reason, event),
         registerTrigger: (el) => instance.registerTrigger(el),
-        registerPopup: (el) => instance.registerPopup(el),
+        registerPopup: (el, physicalSide) => instance.registerPopup(el, physicalSide),
         setBeforeContentFocusGuard: (element) => instance.setBeforeContentFocusGuard(element),
         registerTransitionElement: (el) => instance.registerTransitionElement(el),
         registerPopupArrowNavigationHandler: (handler) => instance.registerPopupArrowNavigationHandler(handler),
@@ -294,6 +302,9 @@ export class RdxMenuRoot {
 
     readonly trigger = signal<HTMLElement | undefined>(undefined);
     readonly popupElement = signal<HTMLElement | undefined>(undefined);
+    private readonly popupPhysicalSideSource = signal<Signal<MenuSide | undefined> | undefined>(undefined);
+    /** Physical placed side read through the popup's own signal (undefined until the popup is placed). */
+    readonly popupPhysicalSide = computed(() => this.popupPhysicalSideSource()?.());
     readonly beforeContentFocusGuard = signal<HTMLElement | null>(null);
     readonly transitionStatus = this.transition.status;
     readonly activeIndex = signal<number | null>(null);
@@ -513,11 +524,13 @@ export class RdxMenuRoot {
         };
     }
 
-    registerPopup(el: HTMLElement): () => void {
+    registerPopup(el: HTMLElement, physicalSide?: Signal<MenuSide | undefined>): () => void {
         this.popupElement.set(el);
+        this.popupPhysicalSideSource.set(physicalSide);
         return () => {
             if (this.popupElement() === el) {
                 this.popupElement.set(undefined);
+                this.popupPhysicalSideSource.set(undefined);
             }
         };
     }
