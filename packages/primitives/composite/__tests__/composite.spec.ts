@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
     RdxCompositeItem,
     RdxCompositeList,
     RdxCompositeListItem,
-    RdxCompositeRoot
+    RdxCompositeRoot,
+    scrollIntoViewIfNeeded
 } from '@radix-ng/primitives/composite';
 import { Direction } from '@radix-ng/primitives/core';
 
@@ -134,6 +135,43 @@ class CompositeGroupedHostComponent {
     itemMap = new Map<HTMLElement, { index: number; id?: unknown }>();
 }
 
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    template: `
+        <div [disabledIndices]="disabledIndices" orientation="horizontal" rdxCompositeRoot>
+            <button rdxCompositeItem>One</button>
+            <button aria-disabled="true" rdxCompositeItem>Two</button>
+            <button rdxCompositeItem>Three</button>
+        </div>
+    `,
+    imports: [RdxCompositeRoot, RdxCompositeItem]
+})
+class CompositeControlledHostComponent {
+    disabledIndices: number[] | undefined = undefined;
+    @ViewChild(RdxCompositeRoot) root!: RdxCompositeRoot;
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    template: `
+        <div
+            [(highlightedIndex)]="highlightedIndex"
+            [disabledIndices]="disabledIndices"
+            orientation="horizontal"
+            rdxCompositeRoot
+        >
+            <button rdxCompositeItem>One</button>
+            <button aria-disabled="true" rdxCompositeItem>Two</button>
+            <button rdxCompositeItem>Three</button>
+        </div>
+    `,
+    imports: [RdxCompositeRoot, RdxCompositeItem]
+})
+class CompositeBoundHostComponent {
+    highlightedIndex = 0;
+    disabledIndices: number[] | undefined = undefined;
+}
+
 describe('RdxCompositeRoot / RdxCompositeItem', () => {
     let fixture: ComponentFixture<CompositeHostComponent>;
     let root: HTMLElement;
@@ -147,7 +185,9 @@ describe('RdxCompositeRoot / RdxCompositeItem', () => {
                 CompositeCheckboxHostComponent,
                 CompositeListHostComponent,
                 CompositeForHostComponent,
-                CompositeGroupedHostComponent
+                CompositeGroupedHostComponent,
+                CompositeControlledHostComponent,
+                CompositeBoundHostComponent
             ]
         });
         fixture = TestBed.createComponent(CompositeHostComponent);
@@ -372,6 +412,128 @@ describe('RdxCompositeRoot / RdxCompositeItem', () => {
         groupedFixture.detectChanges();
 
         expect(idsByIndex()).toEqual(['b1', 'b2', 'a1', 'a2']);
+    });
+
+    it('does not steal a controlled highlightedIndex on a DOM-disabled item when disabledIndices is absent', async () => {
+        const controlledFixture = TestBed.createComponent(CompositeControlledHostComponent);
+        controlledFixture.detectChanges();
+        await controlledFixture.whenStable();
+        controlledFixture.detectChanges();
+
+        const root = controlledFixture.componentInstance.root;
+
+        // Consumer moves the tab stop onto the aria-disabled item. With no `disabledIndices`, the root
+        // must not re-validate the index away (Base UI parity) — the DOM disabled fallback drives
+        // navigation, not the root's index ownership.
+        root.highlightedIndex.set(1);
+        controlledFixture.detectChanges();
+        await controlledFixture.whenStable();
+        controlledFixture.detectChanges();
+
+        expect(root.highlightedIndex()).toBe(1);
+    });
+
+    it('re-validates a highlightedIndex off a disabled item when disabledIndices is provided', async () => {
+        const controlledFixture = TestBed.createComponent(CompositeControlledHostComponent);
+        controlledFixture.componentInstance.disabledIndices = [1];
+        controlledFixture.changeDetectorRef.markForCheck();
+        controlledFixture.detectChanges();
+        await controlledFixture.whenStable();
+        controlledFixture.detectChanges();
+
+        const root = controlledFixture.componentInstance.root;
+
+        // With `disabledIndices` explicitly provided, the gate opens: a highlighted index landing on a
+        // disabled item is moved to the first enabled one.
+        root.highlightedIndex.set(1);
+        controlledFixture.detectChanges();
+        await controlledFixture.whenStable();
+        controlledFixture.detectChanges();
+
+        expect(root.highlightedIndex()).toBe(0);
+    });
+
+    it('leaves an externally bound highlightedIndex on a DOM-disabled item alone without disabledIndices', async () => {
+        const boundFixture = TestBed.createComponent(CompositeBoundHostComponent);
+        boundFixture.detectChanges();
+        await boundFixture.whenStable();
+        boundFixture.detectChanges();
+
+        // Parent drives the two-way binding onto the aria-disabled item. With no `disabledIndices` the
+        // gate is closed, so the root does not touch the consumer's bound value.
+        boundFixture.componentInstance.highlightedIndex = 1;
+        boundFixture.changeDetectorRef.markForCheck();
+        boundFixture.detectChanges();
+        await boundFixture.whenStable();
+        boundFixture.detectChanges();
+
+        expect(boundFixture.componentInstance.highlightedIndex).toBe(1);
+    });
+
+    it('re-validates and writes back an externally bound highlightedIndex when disabledIndices is provided', async () => {
+        // Documents the deliberate divergence from Base UI: Angular's `model()` cannot tell a controlled
+        // `[(highlightedIndex)]` from an uncontrolled one, so with `disabledIndices` provided the root
+        // corrects a disabled index and the correction propagates back through the two-way binding.
+        const boundFixture = TestBed.createComponent(CompositeBoundHostComponent);
+        boundFixture.componentInstance.disabledIndices = [1];
+        boundFixture.changeDetectorRef.markForCheck();
+        boundFixture.detectChanges();
+        await boundFixture.whenStable();
+        boundFixture.detectChanges();
+
+        boundFixture.componentInstance.highlightedIndex = 1;
+        boundFixture.changeDetectorRef.markForCheck();
+        boundFixture.detectChanges();
+        await boundFixture.whenStable();
+        boundFixture.detectChanges();
+
+        expect(boundFixture.componentInstance.highlightedIndex).toBe(0);
+    });
+
+    it('aligns a wider-than-container item by the leading edge per direction (Base UI edge order)', () => {
+        const container = document.createElement('div');
+        const element = document.createElement('div');
+        container.appendChild(element);
+        document.body.appendChild(container);
+
+        const setGeometry = (el: HTMLElement, props: Record<string, unknown>) => {
+            for (const [key, value] of Object.entries(props)) {
+                Object.defineProperty(el, key, { configurable: true, value });
+            }
+        };
+
+        // Container shows [100, 200); the element spans [50, 250], so it overflows on both sides —
+        // the only case where the LTR/RTL edge order matters. jsdom has no layout, so mock the geometry.
+        setGeometry(container, {
+            clientWidth: 100,
+            scrollWidth: 300,
+            clientHeight: 0,
+            scrollHeight: 0,
+            scrollLeft: 100,
+            scrollTop: 0
+        });
+        setGeometry(element, {
+            offsetWidth: 200,
+            offsetHeight: 0,
+            offsetLeft: 50,
+            offsetTop: 0,
+            offsetParent: container
+        });
+
+        let scrolledLeft: number | undefined;
+        container.scrollTo = ((options: ScrollToOptions) => {
+            scrolledLeft = options.left;
+        }) as typeof container.scrollTo;
+
+        // LTR resolves the right-edge overflow first → align right edges: 50 + 200 - 100 = 150.
+        scrollIntoViewIfNeeded(container, element, 'ltr', 'horizontal');
+        expect(scrolledLeft).toBe(150);
+
+        // RTL resolves the left-edge overflow first → align left edges: 50.
+        scrollIntoViewIfNeeded(container, element, 'rtl', 'horizontal');
+        expect(scrolledLeft).toBe(50);
+
+        container.remove();
     });
 
     it('focuses items on hover when highlightItemOnHover is true', () => {

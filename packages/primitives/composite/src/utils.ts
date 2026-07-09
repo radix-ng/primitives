@@ -266,25 +266,49 @@ export function scrollIntoViewIfNeeded(
         const containerStyles = getScrollStyles(scrollContainer);
         const elementStyles = getScrollStyles(element);
 
-        if (
-            elementOffsetLeft - elementStyles.scrollMarginLeft <
-            scrollContainer.scrollLeft + containerStyles.scrollPaddingLeft
-        ) {
-            left = elementOffsetLeft - elementStyles.scrollMarginLeft - containerStyles.scrollPaddingLeft;
-        } else if (
-            elementOffsetLeft + element.offsetWidth + elementStyles.scrollMarginRight >
-            scrollContainer.scrollLeft + scrollContainer.clientWidth - containerStyles.scrollPaddingRight
-        ) {
-            left =
-                elementOffsetLeft +
-                element.offsetWidth +
-                elementStyles.scrollMarginRight -
-                scrollContainer.clientWidth +
-                containerStyles.scrollPaddingRight;
+        // Which edge to align first differs by direction (Base UI parity): LTR resolves a
+        // right-edge overflow before a left one, RTL the reverse. It only matters when the
+        // element is wider than the container, where both edges overflow at once.
+        if (direction === 'ltr') {
+            if (
+                elementOffsetLeft + element.offsetWidth + elementStyles.scrollMarginRight >
+                scrollContainer.scrollLeft + scrollContainer.clientWidth - containerStyles.scrollPaddingRight
+            ) {
+                // overflow to the right, align right edges
+                left =
+                    elementOffsetLeft +
+                    element.offsetWidth +
+                    elementStyles.scrollMarginRight -
+                    scrollContainer.clientWidth +
+                    containerStyles.scrollPaddingRight;
+            } else if (
+                elementOffsetLeft - elementStyles.scrollMarginLeft <
+                scrollContainer.scrollLeft + containerStyles.scrollPaddingLeft
+            ) {
+                // overflow to the left, align left edges
+                left = elementOffsetLeft - elementStyles.scrollMarginLeft - containerStyles.scrollPaddingLeft;
+            }
         }
 
         if (direction === 'rtl') {
-            left = Math.max(left, 0);
+            if (
+                elementOffsetLeft - elementStyles.scrollMarginRight <
+                scrollContainer.scrollLeft + containerStyles.scrollPaddingLeft
+            ) {
+                // overflow to the left, align left edges
+                left = elementOffsetLeft - elementStyles.scrollMarginLeft - containerStyles.scrollPaddingLeft;
+            } else if (
+                elementOffsetLeft + element.offsetWidth + elementStyles.scrollMarginRight >
+                scrollContainer.scrollLeft + scrollContainer.clientWidth - containerStyles.scrollPaddingRight
+            ) {
+                // overflow to the right, align right edges
+                left =
+                    elementOffsetLeft +
+                    element.offsetWidth +
+                    elementStyles.scrollMarginRight -
+                    scrollContainer.clientWidth +
+                    containerStyles.scrollPaddingRight;
+            }
         }
     }
 

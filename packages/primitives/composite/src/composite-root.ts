@@ -138,26 +138,51 @@ export class RdxCompositeRoot {
 
             if (!this.hasSetInitialIndex) {
                 this.hasSetInitialIndex = true;
-                const activeIndex = items.findIndex((item) => item.element.hasAttribute(ACTIVE_COMPOSITE_ITEM));
 
+                const activeIndex = items.findIndex((item) => item.element.hasAttribute(ACTIVE_COMPOSITE_ITEM));
                 if (activeIndex !== -1) {
                     this.setHighlightedIndex(activeIndex, true);
                     return;
                 }
+
+                // Initial pass: move the tab stop off a disabled default item. The DOM disabled /
+                // aria-disabled fallback is intentionally allowed here (Base UI init parity).
+                this.moveHighlightOffDisabledItem();
+                return;
             }
 
-            if (this.isIndexDisabled(this.highlightedIndex())) {
-                const firstEnabledIndex = getMinListIndex(this.elements(), this.disabledIndices());
-
-                if (!isIndexOutOfListBounds(items, firstEnabledIndex)) {
-                    this.setHighlightedIndex(firstEnabledIndex);
-                }
+            // Re-validation after the initial pass. `disabledIndices` can resolve a render late (e.g.
+            // Toolbar derives it from item metadata), leaving the tab stop on a now-disabled item. Gated
+            // on `disabledIndices` being provided, so composites relying on the DOM disabled fallback keep
+            // their index untouched (Base UI's `disabledIndices == null` skip in useCompositeRoot).
+            //
+            // Deliberate divergence from Base UI's second gate (`externalHighlightedIndex != null`):
+            // Angular's `model()` cannot distinguish a controlled `[(highlightedIndex)]` from an
+            // uncontrolled one, so when `disabledIndices` IS provided this re-validation also applies to a
+            // controlled index — a consumer that both controls the index and passes `disabledIndices` may
+            // see it corrected and written back through the binding. That combination is contradictory,
+            // and moving to the first enabled item keeps a reachable tab stop.
+            if (this.disabledIndices() != null) {
+                this.moveHighlightOffDisabledItem();
             }
         });
 
         effect(() => {
             this.onMapChange.emit(this.itemMap());
         });
+    }
+
+    /** Move the roving tab stop to the first enabled item when the highlighted one is disabled. */
+    private moveHighlightOffDisabledItem(): void {
+        if (!this.isIndexDisabled(this.highlightedIndex())) {
+            return;
+        }
+
+        const elements = this.elements();
+        const firstEnabledIndex = getMinListIndex(elements, this.disabledIndices());
+        if (!isIndexOutOfListBounds(elements, firstEnabledIndex)) {
+            this.setHighlightedIndex(firstEnabledIndex);
+        }
     }
 
     indexOf(element: HTMLElement): number {
