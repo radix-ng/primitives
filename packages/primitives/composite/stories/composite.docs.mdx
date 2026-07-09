@@ -65,6 +65,13 @@ keyboard navigation.
 
 <Canvas of={Stories.ListOnly} />
 
+### Reorder
+
+Reordering items in place keeps roving focus correct: the tab stop and arrow-key navigation follow the new
+document order even though the items are moved without re-registering.
+
+<Canvas of={Stories.Reorder} />
+
 ## API Reference
 
 ### RdxCompositeList
