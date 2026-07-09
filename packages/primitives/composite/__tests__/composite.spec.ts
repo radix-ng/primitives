@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
     RdxCompositeItem,
@@ -95,6 +95,45 @@ class CompositeListHostComponent {
     itemMap = new Map<HTMLElement, { index: number; id?: unknown }>();
 }
 
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    template: `
+        <div (onMapChange)="itemMap = $event" orientation="horizontal" rdxCompositeRoot>
+            @for (id of order(); track id) {
+                <button [metadata]="{ id }" rdxCompositeItem>{{ id }}</button>
+            }
+        </div>
+    `,
+    imports: [RdxCompositeRoot, RdxCompositeItem]
+})
+class CompositeForHostComponent {
+    readonly order = signal(['one', 'two', 'three']);
+    itemMap = new Map<HTMLElement, { index: number; id?: unknown }>();
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    template: `
+        <div (onMapChange)="itemMap = $event" orientation="horizontal" rdxCompositeRoot>
+            @for (group of groups(); track group.id) {
+                <div class="group">
+                    @for (item of group.items; track item) {
+                        <button [metadata]="{ id: item }" rdxCompositeItem>{{ item }}</button>
+                    }
+                </div>
+            }
+        </div>
+    `,
+    imports: [RdxCompositeRoot, RdxCompositeItem]
+})
+class CompositeGroupedHostComponent {
+    readonly groups = signal([
+        { id: 'a', items: ['a1', 'a2'] },
+        { id: 'b', items: ['b1', 'b2'] }
+    ]);
+    itemMap = new Map<HTMLElement, { index: number; id?: unknown }>();
+}
+
 describe('RdxCompositeRoot / RdxCompositeItem', () => {
     let fixture: ComponentFixture<CompositeHostComponent>;
     let root: HTMLElement;
@@ -106,7 +145,9 @@ describe('RdxCompositeRoot / RdxCompositeItem', () => {
                 CompositeHostComponent,
                 CompositeInputHostComponent,
                 CompositeCheckboxHostComponent,
-                CompositeListHostComponent
+                CompositeListHostComponent,
+                CompositeForHostComponent,
+                CompositeGroupedHostComponent
             ]
         });
         fixture = TestBed.createComponent(CompositeHostComponent);
@@ -256,6 +297,81 @@ describe('RdxCompositeRoot / RdxCompositeItem', () => {
             { id: 'two', index: 1 },
             { id: 'three', index: 2 }
         ]);
+    });
+
+    it('re-sorts registered items when they are moved in the DOM without re-registering', async () => {
+        const [one, two, three] = items;
+
+        // Reorder in place: (One, Two, Three) -> (Three, One, Two). This mirrors an
+        // `@for` reorder that reuses views — the item directives never re-register,
+        // so only a DOM-move observer can keep the index map correct.
+        root.insertBefore(three, one);
+
+        // Let the MutationObserver deliver (microtask) and the reorder tick flush.
+        await new Promise((resolve) => setTimeout(resolve));
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        const orderedIds = Array.from(fixture.componentInstance.itemMap.entries())
+            .sort(([, a], [, b]) => a.index - b.index)
+            .map(([, meta]) => meta.id);
+
+        expect(orderedIds).toEqual(['three', 'one', 'two']);
+        // Roving tabindex is positional: index 0 stays highlighted, now on "Three".
+        expect(three.getAttribute('tabindex')).toBe('0');
+        expect(one.getAttribute('tabindex')).toBe('-1');
+        expect(two.getAttribute('tabindex')).toBe('-1');
+    });
+
+    it('re-sorts items after an @for reorder that reuses views', async () => {
+        const forFixture = TestBed.createComponent(CompositeForHostComponent);
+        forFixture.detectChanges();
+        await forFixture.whenStable();
+        forFixture.detectChanges();
+
+        const idsByIndex = () =>
+            Array.from(forFixture.componentInstance.itemMap.entries())
+                .sort(([, a], [, b]) => a.index - b.index)
+                .map(([, meta]) => meta.id);
+
+        expect(idsByIndex()).toEqual(['one', 'two', 'three']);
+
+        // Reverse the tracked array: Angular reuses the views and moves the DOM
+        // nodes without re-running item registration.
+        forFixture.componentInstance.order.set(['three', 'two', 'one']);
+        forFixture.detectChanges();
+
+        await new Promise((resolve) => setTimeout(resolve));
+        await forFixture.whenStable();
+        forFixture.detectChanges();
+
+        expect(idsByIndex()).toEqual(['three', 'two', 'one']);
+    });
+
+    it('re-sorts items when a wrapping group is moved (grouped reorder)', async () => {
+        const groupedFixture = TestBed.createComponent(CompositeGroupedHostComponent);
+        groupedFixture.detectChanges();
+        await groupedFixture.whenStable();
+        groupedFixture.detectChanges();
+
+        const idsByIndex = () =>
+            Array.from(groupedFixture.componentInstance.itemMap.entries())
+                .sort(([, a], [, b]) => a.index - b.index)
+                .map(([, meta]) => meta.id);
+
+        expect(idsByIndex()).toEqual(['a1', 'a2', 'b1', 'b2']);
+
+        // Reverse the GROUPS: Angular moves the wrapper `div`s (with their items) as
+        // units — the items are never directly re-registered, and the move shows up
+        // as a childList mutation on the root (the groups' common ancestor).
+        groupedFixture.componentInstance.groups.update((current) => [...current].reverse());
+        groupedFixture.detectChanges();
+
+        await new Promise((resolve) => setTimeout(resolve));
+        await groupedFixture.whenStable();
+        groupedFixture.detectChanges();
+
+        expect(idsByIndex()).toEqual(['b1', 'b2', 'a1', 'a2']);
     });
 
     it('focuses items on hover when highlightItemOnHover is true', () => {

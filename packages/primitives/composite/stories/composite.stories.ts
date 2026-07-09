@@ -4,6 +4,8 @@ import { RdxCompositeDefaultComponent } from './composite-default';
 import defaultSource from './composite-default?raw';
 import { RdxCompositeListOnlyComponent } from './composite-list-only';
 import listOnlySource from './composite-list-only?raw';
+import { RdxCompositeReorderComponent } from './composite-reorder';
+import reorderSource from './composite-reorder?raw';
 
 const html = String.raw;
 
@@ -17,7 +19,7 @@ export default {
     title: 'Utilities/Composite',
     decorators: [
         moduleMetadata({
-            imports: [RdxCompositeDefaultComponent, RdxCompositeListOnlyComponent]
+            imports: [RdxCompositeDefaultComponent, RdxCompositeListOnlyComponent, RdxCompositeReorderComponent]
         }),
         tailwindDemoDecorator()
     ]
@@ -39,6 +41,15 @@ export const ListOnly: Story = {
     render: () => ({
         template: html`
             <rdx-composite-list-only />
+        `
+    })
+};
+
+export const Reorder: Story = {
+    parameters: source(reorderSource),
+    render: () => ({
+        template: html`
+            <rdx-composite-reorder />
         `
     })
 };
