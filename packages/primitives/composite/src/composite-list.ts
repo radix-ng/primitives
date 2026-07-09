@@ -36,7 +36,16 @@ export const [injectRdxCompositeListContext, provideRdxCompositeListContext] = c
 })
 export class RdxCompositeList {
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
-    private readonly registeredItems = signal<RdxCompositeItemRegistration[]>([]);
+
+    /**
+     * Stable element → registration map. Kept as a plain (mutable) Map so a registration is an O(1)
+     * `set`/`delete` instead of re-creating the whole array on every mount — with N items each
+     * registering, an array copy per item is an O(n^2) mount. `registrationTick` is the reactive
+     * trigger: bumped on every register/unregister so `items` re-derives. Mirrors Base UI's composite
+     * list (stable map + `mapTick`).
+     */
+    private readonly registrations = new Map<HTMLElement, RdxCompositeItemRegistration>();
+    private readonly registrationTick = signal(0);
 
     /**
      * Bumped when registered items are moved in the DOM without re-registering
@@ -53,7 +62,24 @@ export class RdxCompositeList {
     /** Items registered with this list, sorted in DOM order. */
     readonly items = computed(() => {
         this.reorderTick();
-        return sortByDocumentPosition(this.registeredItems());
+        this.registrationTick();
+        return sortByDocumentPosition([...this.registrations.values()]);
+    });
+
+    /**
+     * Element → document-order index. Depends only on `items()` (not on any item's metadata), so
+     * `indexOf` is an O(1) lookup and rebuilds only when the item set/order changes — the mount hot
+     * path where N items each read their index. Keeping metadata out of it avoids invalidating every
+     * item's index when a single item's metadata changes.
+     */
+    private readonly indexMap = computed(() => {
+        const map = new Map<HTMLElement, number>();
+
+        this.items().forEach((item, index) => {
+            map.set(item.element, index);
+        });
+
+        return map;
     });
 
     /** Ordered metadata keyed by item element. */
@@ -129,18 +155,21 @@ export class RdxCompositeList {
     }
 
     registerItem<Metadata extends RdxCompositeItemMetadata>(item: RdxCompositeItemRegistration<Metadata>): () => void {
-        this.registeredItems.update((items) => [
-            ...items.filter((registered) => registered.element !== item.element),
-            item
-        ]);
+        this.registrations.set(item.element, item);
+        this.registrationTick.update((tick) => tick + 1);
 
         return () => {
-            this.registeredItems.update((items) => items.filter((registered) => registered.element !== item.element));
+            // Only unregister if this exact registration is still current — a re-registration of the
+            // same element must not be removed by the previous registration's cleanup.
+            if (this.registrations.get(item.element) === item) {
+                this.registrations.delete(item.element);
+                this.registrationTick.update((tick) => tick + 1);
+            }
         };
     }
 
     indexOf(element: HTMLElement): number {
-        return this.items().findIndex((item) => item.element === element);
+        return this.indexMap().get(element) ?? -1;
     }
 
     elements(): HTMLElement[] {
