@@ -1,5 +1,5 @@
 import { InjectionToken, Provider } from '@angular/core';
-import { Align, OffsetFunction, RdxCollisionAvoidance, Side } from './utils';
+import { Align, OffsetFunction, RdxCollisionAvoidance, Side, SideOrLogical } from './utils';
 
 /**
  * Default positioning values for `RdxPopperContentWrapper`.
@@ -9,7 +9,7 @@ import { Align, OffsetFunction, RdxCollisionAvoidance, Side } from './utils';
  * `undefined` falls back to the wrapper's built-in default. Consumer template bindings always win.
  */
 export interface RdxPopperContentConfig {
-    side?: Side;
+    side?: SideOrLogical;
     align?: Align;
     sideOffset?: number | OffsetFunction;
     alignOffset?: number | OffsetFunction;

@@ -2,11 +2,19 @@ import { ChangeDetectionStrategy, Component, computed, Directive, input, signal 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { autoUpdate, computePosition } from '@floating-ui/dom';
+import { Direction } from '@radix-ng/primitives/core';
 import { vi } from 'vitest';
 import { popperImports } from '../index';
 import { provideRdxPopperContentWrapper, RdxPopperContentWrapper } from '../src/popper-content-wrapper';
 import { provideRdxPopperContentConfig } from '../src/popper-content.config';
-import { Align, OffsetFunction, RdxCollisionAvoidance } from '../src/utils';
+import {
+    Align,
+    OffsetFunction,
+    RdxCollisionAvoidance,
+    resolvePhysicalSide,
+    SideOrLogical,
+    toLogicalSide
+} from '../src/utils';
 
 vi.mock('@floating-ui/dom', async () => {
     const actual = await vi.importActual<typeof import('@floating-ui/dom')>('@floating-ui/dom');
@@ -91,9 +99,27 @@ class CustomAnchorPopperHostComponent {}
     template: `
         <div rdxPopperRoot>
             <button rdxPopperAnchor>Anchor</button>
+            <div [side]="side()" [dir]="dir()" rdxPopperContentWrapper>
+                <div rdxPopperContent>Content</div>
+            </div>
+        </div>
+    `
+})
+class LogicalSidePopperHostComponent {
+    readonly side = signal<SideOrLogical>('inline-start');
+    readonly dir = signal<Direction | undefined>(undefined);
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [popperImports],
+    template: `
+        <div rdxPopperRoot>
+            <button rdxPopperAnchor>Anchor</button>
             <div
                 [collisionAvoidance]="collisionAvoidance()"
                 [avoidCollisions]="avoidCollisions()"
+                [side]="side()"
                 [align]="align()"
                 [sideOffset]="sideOffset()"
                 [alignOffset]="alignOffset()"
@@ -107,6 +133,7 @@ class CustomAnchorPopperHostComponent {}
 class CollisionPopperHostComponent {
     readonly collisionAvoidance = signal<RdxCollisionAvoidance | undefined>(undefined);
     readonly avoidCollisions = signal(true);
+    readonly side = signal<SideOrLogical>('bottom');
     readonly align = signal<Align>('center');
     readonly sideOffset = signal<number | OffsetFunction>(0);
     readonly alignOffset = signal<number | OffsetFunction>(0);
@@ -189,7 +216,8 @@ describe('RdxPopperContentWrapper', () => {
                 CustomAnchorPopperHostComponent,
                 CollisionPopperHostComponent,
                 PresetPopperHostComponent,
-                GatedPositionerHostComponent
+                GatedPositionerHostComponent,
+                LogicalSidePopperHostComponent
             ]
         });
     });
@@ -320,6 +348,110 @@ describe('RdxPopperContentWrapper', () => {
         expect(computePositionMock).toHaveBeenCalledWith(buttons[0], expect.any(HTMLElement), expect.any(Object));
         expect(autoUpdateMock).toHaveBeenCalledWith(buttons[0], expect.any(HTMLElement), expect.any(Function), {
             animationFrame: false
+        });
+    });
+
+    describe('logical sides (Base UI parity)', () => {
+        // `renderPlaced` swaps the computePosition implementation; restore the module default
+        // (`mockClear` in the outer beforeEach clears calls, not implementations).
+        afterEach(() => {
+            computePositionMock.mockImplementation(() =>
+                Promise.resolve({ x: 0, y: 0, placement: 'bottom', strategy: 'fixed', middlewareData: {} })
+            );
+        });
+
+        it('resolves inline-start/inline-end to physical sides for the direction', () => {
+            expect(resolvePhysicalSide('inline-start', false)).toBe('left');
+            expect(resolvePhysicalSide('inline-end', false)).toBe('right');
+            expect(resolvePhysicalSide('inline-start', true)).toBe('right');
+            expect(resolvePhysicalSide('inline-end', true)).toBe('left');
+        });
+
+        it('passes physical sides through unchanged in both directions', () => {
+            for (const side of ['top', 'bottom', 'left', 'right'] as const) {
+                expect(resolvePhysicalSide(side, false)).toBe(side);
+                expect(resolvePhysicalSide(side, true)).toBe(side);
+            }
+        });
+
+        it('reports a rendered side logically only when the requested side was logical (toLogicalSide)', () => {
+            // Logical request → left/right rendered side maps back to logical, by direction.
+            expect(toLogicalSide('inline-start', 'left', false)).toBe('inline-start');
+            expect(toLogicalSide('inline-start', 'right', false)).toBe('inline-end'); // flipped
+            expect(toLogicalSide('inline-start', 'left', true)).toBe('inline-end');
+            expect(toLogicalSide('inline-end', 'right', true)).toBe('inline-start');
+            // top/bottom rendered side and physical requests pass through.
+            expect(toLogicalSide('inline-start', 'top', false)).toBe('top');
+            expect(toLogicalSide('left', 'right', false)).toBe('right');
+            expect(toLogicalSide('bottom', 'bottom', true)).toBe('bottom');
+        });
+
+        it('positions a logical inline-start on the left in LTR and flips to the right in RTL', async () => {
+            const fixture = TestBed.createComponent(LogicalSidePopperHostComponent);
+            fixture.detectChanges();
+            await fixture.whenStable();
+
+            expect(computePositionMock.mock.calls.at(-1)![2]).toEqual(expect.objectContaining({ placement: 'left' }));
+
+            computePositionMock.mockClear();
+            fixture.componentInstance.dir.set('rtl');
+            fixture.detectChanges();
+            await fixture.whenStable();
+
+            expect(computePositionMock.mock.calls.at(-1)![2]).toEqual(expect.objectContaining({ placement: 'right' }));
+        });
+
+        // `data-side` / `placedSide()` echo the requested kind (Base UI positioner `side`); the
+        // physical side stays available separately for internal geometry (`physicalPlacedSide`).
+        async function renderPlaced(placement: 'left' | 'right' | 'bottom', dir?: Direction) {
+            computePositionMock.mockImplementation(() =>
+                Promise.resolve({ x: 0, y: 0, placement, strategy: 'fixed' as const, middlewareData: {} })
+            );
+
+            const fixture = TestBed.createComponent(LogicalSidePopperHostComponent);
+            if (dir) {
+                fixture.componentInstance.dir.set(dir);
+            }
+            fixture.detectChanges();
+            await fixture.whenStable();
+            fixture.detectChanges();
+
+            const debugElement = fixture.debugElement.query(By.directive(RdxPopperContentWrapper));
+
+            return {
+                fixture,
+                wrapper: debugElement.injector.get(RdxPopperContentWrapper),
+                element: debugElement.nativeElement as HTMLElement
+            };
+        }
+
+        it('reports data-side logically when a logical side was requested, keeping the physical side internally', async () => {
+            const { element, wrapper } = await renderPlaced('left');
+
+            expect(element.getAttribute('data-side')).toBe('inline-start');
+            expect(wrapper.placedSide()).toBe('inline-start');
+            expect(wrapper.physicalPlacedSide()).toBe('left');
+        });
+
+        it('keeps data-side logical after a collision flip and maps it by direction', async () => {
+            // LTR inline-start flipped onto the physical right edge → the logical opposite.
+            const flipped = await renderPlaced('right');
+            expect(flipped.element.getAttribute('data-side')).toBe('inline-end');
+
+            // RTL: the physical right edge IS the reading-start edge.
+            const rtl = await renderPlaced('right', 'rtl');
+            expect(rtl.element.getAttribute('data-side')).toBe('inline-start');
+            expect(rtl.wrapper.physicalPlacedSide()).toBe('right');
+        });
+
+        it('reports data-side physically for a physical request (unchanged contract)', async () => {
+            const { fixture, element } = await renderPlaced('left');
+            fixture.componentInstance.side.set('left');
+            fixture.detectChanges();
+            await fixture.whenStable();
+            fixture.detectChanges();
+
+            expect(element.getAttribute('data-side')).toBe('left');
         });
     });
 
@@ -492,6 +624,22 @@ describe('RdxPopperContentWrapper', () => {
 
             expect(result.crossAxis).toBe(40);
             expect(result.alignmentAxis).toBe(40);
+        });
+
+        it('reports the placed side logically to the offset function when a logical side was requested', async () => {
+            const sideOffset = vi.fn(() => 0);
+            await render((host) => {
+                host.side.set('inline-start');
+                host.sideOffset.set(sideOffset as OffsetFunction);
+            });
+
+            // Not flipped: physical left → inline-start (LTR).
+            (lastOffsetFn() as any)({ ...state, placement: 'left' });
+            expect(sideOffset).toHaveBeenLastCalledWith(expect.objectContaining({ side: 'inline-start' }));
+
+            // Flipped to the physical right edge: a logical request stays logical → inline-end (LTR).
+            (lastOffsetFn() as any)({ ...state, placement: 'right' });
+            expect(sideOffset).toHaveBeenLastCalledWith(expect.objectContaining({ side: 'inline-end' }));
         });
     });
 });

@@ -546,6 +546,12 @@
               "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
             },
             {
+              "name": "dir",
+              "type": "Direction | undefined",
+              "default": "undefined",
+              "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
+            },
+            {
               "name": "hideWhenDetached",
               "type": "boolean",
               "default": "false",
@@ -559,9 +565,9 @@
             },
             {
               "name": "side",
-              "type": "Side",
+              "type": "SideOrLogical",
               "default": "'bottom'",
-              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled."
+              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled.\n\nAccepts the logical `'inline-start'` / `'inline-end'` in addition to the physical sides; those\nresolve to `left` / `right` for the text direction (Base UI parity). The placed side reported via\n`data-side` / `placedSide()` echoes the requested kind: logical in → logical out (even after a\ncollision flip), physical in → physical out."
             },
             {
               "name": "sideOffset",
@@ -1775,6 +1781,12 @@
               "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
             },
             {
+              "name": "dir",
+              "type": "Direction | undefined",
+              "default": "undefined",
+              "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
+            },
+            {
               "name": "hideWhenDetached",
               "type": "boolean",
               "default": "false",
@@ -1788,9 +1800,9 @@
             },
             {
               "name": "side",
-              "type": "Side",
+              "type": "SideOrLogical",
               "default": "'bottom'",
-              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled."
+              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled.\n\nAccepts the logical `'inline-start'` / `'inline-end'` in addition to the physical sides; those\nresolve to `left` / `right` for the text direction (Base UI parity). The placed side reported via\n`data-side` / `placedSide()` echoes the requested kind: logical in → logical out (even after a\ncollision flip), physical in → physical out."
             },
             {
               "name": "sideOffset",
@@ -3928,6 +3940,12 @@
               "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
             },
             {
+              "name": "dir",
+              "type": "Direction | undefined",
+              "default": "undefined",
+              "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
+            },
+            {
               "name": "hideWhenDetached",
               "type": "boolean",
               "default": "false",
@@ -3941,9 +3959,9 @@
             },
             {
               "name": "side",
-              "type": "Side",
+              "type": "SideOrLogical",
               "default": "'bottom'",
-              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled."
+              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled.\n\nAccepts the logical `'inline-start'` / `'inline-end'` in addition to the physical sides; those\nresolve to `left` / `right` for the text direction (Base UI parity). The placed side reported via\n`data-side` / `placedSide()` echoes the requested kind: logical in → logical out (even after a\ncollision flip), physical in → physical out."
             },
             {
               "name": "sideOffset",
@@ -4594,6 +4612,12 @@
               "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
             },
             {
+              "name": "dir",
+              "type": "Direction | undefined",
+              "default": "undefined",
+              "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
+            },
+            {
               "name": "hideWhenDetached",
               "type": "boolean",
               "default": "false",
@@ -4607,9 +4631,9 @@
             },
             {
               "name": "side",
-              "type": "Side",
+              "type": "SideOrLogical",
               "default": "'bottom'",
-              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled."
+              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled.\n\nAccepts the logical `'inline-start'` / `'inline-end'` in addition to the physical sides; those\nresolve to `left` / `right` for the text direction (Base UI parity). The placed side reported via\n`data-side` / `placedSide()` echoes the requested kind: logical in → logical out (even after a\ncollision flip), physical in → physical out."
             },
             {
               "name": "sideOffset",
@@ -5248,6 +5272,12 @@
               "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
             },
             {
+              "name": "dir",
+              "type": "Direction | undefined",
+              "default": "undefined",
+              "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
+            },
+            {
               "name": "hideWhenDetached",
               "type": "boolean",
               "default": "false",
@@ -5261,9 +5291,9 @@
             },
             {
               "name": "side",
-              "type": "Side",
+              "type": "SideOrLogical",
               "default": "'bottom'",
-              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled."
+              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled.\n\nAccepts the logical `'inline-start'` / `'inline-end'` in addition to the physical sides; those\nresolve to `left` / `right` for the text direction (Base UI parity). The placed side reported via\n`data-side` / `placedSide()` echoes the requested kind: logical in → logical out (even after a\ncollision flip), physical in → physical out."
             },
             {
               "name": "sideOffset",
@@ -5496,6 +5526,12 @@
               "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
             },
             {
+              "name": "dir",
+              "type": "Direction | undefined",
+              "default": "undefined",
+              "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
+            },
+            {
               "name": "hideWhenDetached",
               "type": "boolean",
               "default": "false",
@@ -5509,9 +5545,9 @@
             },
             {
               "name": "side",
-              "type": "Side",
+              "type": "SideOrLogical",
               "default": "'bottom'",
-              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled."
+              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled.\n\nAccepts the logical `'inline-start'` / `'inline-end'` in addition to the physical sides; those\nresolve to `left` / `right` for the text direction (Base UI parity). The placed side reported via\n`data-side` / `placedSide()` echoes the requested kind: logical in → logical out (even after a\ncollision flip), physical in → physical out."
             },
             {
               "name": "sideOffset",
@@ -5695,6 +5731,12 @@
               "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
             },
             {
+              "name": "dir",
+              "type": "Direction | undefined",
+              "default": "undefined",
+              "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
+            },
+            {
               "name": "hideWhenDetached",
               "type": "boolean",
               "default": "false",
@@ -5708,9 +5750,9 @@
             },
             {
               "name": "side",
-              "type": "Side",
+              "type": "SideOrLogical",
               "default": "'bottom'",
-              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled."
+              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled.\n\nAccepts the logical `'inline-start'` / `'inline-end'` in addition to the physical sides; those\nresolve to `left` / `right` for the text direction (Base UI parity). The placed side reported via\n`data-side` / `placedSide()` echoes the requested kind: logical in → logical out (even after a\ncollision flip), physical in → physical out."
             },
             {
               "name": "sideOffset",
@@ -6338,6 +6380,12 @@
               "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
             },
             {
+              "name": "dir",
+              "type": "Direction | undefined",
+              "default": "undefined",
+              "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
+            },
+            {
               "name": "hideWhenDetached",
               "type": "boolean",
               "default": "false",
@@ -6351,9 +6399,9 @@
             },
             {
               "name": "side",
-              "type": "Side",
+              "type": "SideOrLogical",
               "default": "'bottom'",
-              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled."
+              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled.\n\nAccepts the logical `'inline-start'` / `'inline-end'` in addition to the physical sides; those\nresolve to `left` / `right` for the text direction (Base UI parity). The placed side reported via\n`data-side` / `placedSide()` echoes the requested kind: logical in → logical out (even after a\ncollision flip), physical in → physical out."
             },
             {
               "name": "sideOffset",
@@ -7467,6 +7515,12 @@
               "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
             },
             {
+              "name": "dir",
+              "type": "Direction | undefined",
+              "default": "undefined",
+              "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
+            },
+            {
               "name": "hideWhenDetached",
               "type": "boolean",
               "default": "false",
@@ -7480,9 +7534,9 @@
             },
             {
               "name": "side",
-              "type": "Side",
+              "type": "SideOrLogical",
               "default": "'top'",
-              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled."
+              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled.\n\nAccepts the logical `'inline-start'` / `'inline-end'` in addition to the physical sides; those\nresolve to `left` / `right` for the text direction (Base UI parity). The placed side reported via\n`data-side` / `placedSide()` echoes the requested kind: logical in → logical out (even after a\ncollision flip), physical in → physical out."
             },
             {
               "name": "sideOffset",
@@ -8044,6 +8098,12 @@
               "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
             },
             {
+              "name": "dir",
+              "type": "Direction | undefined",
+              "default": "undefined",
+              "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
+            },
+            {
               "name": "hideWhenDetached",
               "type": "boolean",
               "default": "false",
@@ -8057,9 +8117,9 @@
             },
             {
               "name": "side",
-              "type": "Side",
+              "type": "SideOrLogical",
               "default": "'top'",
-              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled."
+              "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled.\n\nAccepts the logical `'inline-start'` / `'inline-end'` in addition to the physical sides; those\nresolve to `left` / `right` for the text direction (Base UI parity). The placed side reported via\n`data-side` / `placedSide()` echoes the requested kind: logical in → logical out (even after a\ncollision flip), physical in → physical out."
             },
             {
               "name": "sideOffset",

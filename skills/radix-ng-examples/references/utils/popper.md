@@ -8,7 +8,7 @@ compose it with `Presence` and `Portal` when those behaviors are needed.
 
 ## Features
 
-- Supports `top`, `right`, `bottom`, and `left` placement with `start`, `center`, or `end` alignment.
+- Supports `top`, `right`, `bottom`, and `left` placement — plus the logical `inline-start` / `inline-end` sides that resolve by text direction — with `start`, `center`, or `end` alignment.
 - Flips and shifts content to avoid collisions with viewport or custom boundaries.
 - Exposes placement state through `data-side` and `data-align`.
 - Provides CSS custom properties for transform origin, available space, and anchor dimensions.
@@ -35,6 +35,13 @@ compose it with `Presence` and `Portal` when those behaviors are needed.
 
 Use `side`, `align`, `sideOffset`, and `alignOffset` to control the preferred position. When `avoidCollisions` is
 enabled, the final placement may differ from the preferred placement.
+
+`side` also accepts the logical values `inline-start` and `inline-end`, which resolve to `left` / `right` by text
+direction — `inline-start` is the reading-start edge (`left` in LTR, `right` in RTL) and `inline-end` the reading-end
+edge. Direction is read from an enclosing direction provider, or overridden per-positioner with the `dir` input. The
+placed side reported through `data-side` echoes the kind you requested: pass a logical side and `data-side` stays
+logical (`inline-start` / `inline-end`, even after a collision flip), so a `[data-side="inline-start"]` style rule is
+direction-agnostic; pass a physical side and `data-side` is always physical.
 
 The Default story exposes these values as controls.
 

@@ -31,7 +31,7 @@ export default {
             control: { type: 'select' }
         },
         side: {
-            options: ['top', 'right', 'bottom', 'left'],
+            options: ['top', 'right', 'bottom', 'left', 'inline-start', 'inline-end'],
             control: { type: 'select' }
         },
         sideOffset: {

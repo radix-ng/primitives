@@ -32,7 +32,8 @@ import {
     shift,
     size
 } from '@floating-ui/dom';
-import { BooleanInput, createContext, elementSize, NumberInput, watch } from '@radix-ng/primitives/core';
+import { BooleanInput, createContext, Direction, elementSize, NumberInput, watch } from '@radix-ng/primitives/core';
+import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { RdxPopper } from './popper';
 import { RdxPopperArrow } from './popper-arrow';
 import { RdxPopperContentConfigToken } from './popper-content.config';
@@ -43,7 +44,10 @@ import {
     OffsetFunction,
     RdxCollisionAvoidance,
     ResolvedCollisionAvoidance,
+    resolvePhysicalSide,
     Side,
+    SideOrLogical,
+    toLogicalSide,
     transformOrigin
 } from './utils';
 
@@ -69,7 +73,9 @@ type PopperPositionParams = {
     anchor: ReferenceElement | null;
     strategy: 'fixed' | 'absolute';
     placement: Placement;
-    side: Side;
+    /** The original requested side (may be logical) — used to report the side logically to offset functions. */
+    side: SideOrLogical;
+    isRtl: boolean;
     align: Align;
     sideOffset: number | OffsetFunction;
     alignOffset: number | OffsetFunction;
@@ -92,6 +98,7 @@ const context = () => {
 
     return {
         placedSide: popperContentWrapper.placedSide,
+        physicalPlacedSide: popperContentWrapper.physicalPlacedSide,
         placedAlign: popperContentWrapper.placedAlign,
         arrowX: popperContentWrapper.arrowX,
         arrowY: popperContentWrapper.arrowY,
@@ -136,8 +143,23 @@ export class RdxPopperContentWrapper {
     /**
      * The preferred side of the anchor to render against when open.
      * Will be reversed when collisions occur and avoidCollisions is enabled.
+     *
+     * Accepts the logical `'inline-start'` / `'inline-end'` in addition to the physical sides; those
+     * resolve to `left` / `right` for the text direction (Base UI parity). The placed side reported via
+     * `data-side` / `placedSide()` echoes the requested kind: logical in → logical out (even after a
+     * collision flip), physical in → physical out.
      */
-    readonly side = input<Side>(this.config.side ?? 'bottom');
+    readonly side = input<SideOrLogical>(this.config.side ?? 'bottom');
+
+    /**
+     * Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a
+     * physical one. Falls back to an enclosing direction provider, then `ltr`.
+     */
+    readonly dir = input<Direction | undefined>(undefined);
+    private readonly direction = injectDirection(this.dir);
+
+    /** The `side` input with any logical inline value resolved to a physical side for the direction. */
+    private readonly resolvedSide = computed<Side>(() => resolvePhysicalSide(this.side(), this.direction() === 'rtl'));
 
     /**
      * Distance between the anchor and the popup in pixels. Also accepts an {@link OffsetFunction} that
@@ -267,7 +289,7 @@ export class RdxPopperContentWrapper {
     readonly anchorHidden = computed(() => this.position.value()?.middlewareData.hide?.referenceHidden === true);
 
     private readonly desiredPlacement = computed(
-        () => (this.side() + (this.align() !== 'center' ? '-' + this.align() : '')) as Placement
+        () => (this.resolvedSide() + (this.align() !== 'center' ? '-' + this.align() : '')) as Placement
     );
 
     private readonly arrowSize = computed(() => {
@@ -374,7 +396,10 @@ export class RdxPopperContentWrapper {
                     offset((state) => {
                         const [placedSide, placedAlign] = getSideAndAlignFromPlacement(state.placement);
                         const data = {
-                            side: placedSide,
+                            // Report the placed side in the same kind the consumer requested: logical
+                            // when a logical `side` was passed (so a post-collision flip stays logical),
+                            // physical otherwise (Base UI parity).
+                            side: toLogicalSide(params.side, placedSide, params.isRtl),
                             align: placedAlign,
                             anchor: {
                                 width: state.rects.reference.width,
@@ -436,6 +461,7 @@ export class RdxPopperContentWrapper {
             strategy: this.positionStrategy(),
             placement: this.desiredPlacement(),
             side: this.side(),
+            isRtl: this.direction() === 'rtl',
             align: this.align(),
             sideOffset: this.sideOffset(),
             alignOffset: this.alignOffset(),
@@ -491,9 +517,23 @@ export class RdxPopperContentWrapper {
     });
 
     /**
-     * The side the panel is currently placed against.
+     * The physical side the panel is currently placed against. Internal geometry (arrow position,
+     * transform origins) must use this — never {@link placedSide}, which can be logical.
      */
-    readonly placedSide = computed(() => this.placement()?.side);
+    readonly physicalPlacedSide = computed(() => this.placement()?.side);
+
+    /**
+     * The side the panel is currently placed against, reported in the kind the consumer requested
+     * (Base UI positioner `side`): when a logical `side` was passed, a placed `left`/`right` maps back
+     * to `inline-start`/`inline-end` for the direction — so a post-collision flip stays logical and
+     * `[data-side="inline-start"]` CSS is direction-agnostic. A physical request is always reported
+     * physically.
+     */
+    readonly placedSide = computed<SideOrLogical | undefined>(() => {
+        const side = this.placement()?.side;
+
+        return side === undefined ? undefined : toLogicalSide(this.side(), side, this.direction() === 'rtl');
+    });
 
     /**
      * The current alignment of the panel.

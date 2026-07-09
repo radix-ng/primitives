@@ -8,6 +8,53 @@ const ALIGN_OPTIONS = ['start', 'center', 'end'] as const;
 export type Side = (typeof SIDE_OPTIONS)[number];
 export type Align = (typeof ALIGN_OPTIONS)[number];
 
+/** Logical (writing-direction-relative) inline sides, resolved to a physical {@link Side} by text direction. */
+export type LogicalSide = 'inline-start' | 'inline-end';
+
+/** A physical {@link Side} or a {@link LogicalSide} — accepted by the positioner's `side` input. */
+export type SideOrLogical = Side | LogicalSide;
+
+/**
+ * Resolve a logical inline side to a physical one for the current text direction; physical sides pass
+ * through unchanged (Base UI `useAnchorPositioning`). `inline-start` is the reading-start edge
+ * (`left` in LTR, `right` in RTL); `inline-end` is the reading-end edge.
+ */
+export function resolvePhysicalSide(side: SideOrLogical, isRtl: boolean): Side {
+    if (side === 'inline-start') {
+        return isRtl ? 'right' : 'left';
+    }
+
+    if (side === 'inline-end') {
+        return isRtl ? 'left' : 'right';
+    }
+
+    return side;
+}
+
+/**
+ * Report a rendered physical side back in the same "kind" the consumer requested (Base UI
+ * `getLogicalSide`): when a logical side was requested, a `left`/`right` rendered side is mapped back
+ * to `inline-start`/`inline-end` for the direction (so a post-collision flip surfaces logically); a
+ * physical request, or a `top`/`bottom` rendered side, passes through unchanged.
+ */
+export function toLogicalSide(requestedSide: SideOrLogical, renderedSide: Side, isRtl: boolean): SideOrLogical {
+    const requestedLogical = requestedSide === 'inline-start' || requestedSide === 'inline-end';
+
+    if (!requestedLogical) {
+        return renderedSide;
+    }
+
+    if (renderedSide === 'left') {
+        return isRtl ? 'inline-end' : 'inline-start';
+    }
+
+    if (renderedSide === 'right') {
+        return isRtl ? 'inline-start' : 'inline-end';
+    }
+
+    return renderedSide;
+}
+
 /**
  * How the popper avoids collisions with the boundary edges (Base UI `collisionAvoidance`).
  *
@@ -34,11 +81,12 @@ export type ResolvedCollisionAvoidance = Required<RdxCollisionAvoidance>;
 /**
  * Function form of `sideOffset` / `alignOffset` (Base UI `OffsetFunction`). Receives the resolved
  * placement and the measured anchor / positioner dimensions, and returns the offset in pixels — e.g.
- * `({ anchor }) => anchor.width` to offset by the trigger's own width. `side` is the physical side the
- * popup is placed against.
+ * `({ anchor }) => anchor.width` to offset by the trigger's own width. `side` is the side the popup is
+ * placed against — reported logically (`inline-start` / `inline-end`) when a logical side was
+ * requested, otherwise physical (Base UI parity).
  */
 export type OffsetFunction = (data: {
-    side: Side;
+    side: SideOrLogical;
     align: Align;
     anchor: { width: number; height: number };
     positioner: { width: number; height: number };

@@ -40,7 +40,9 @@ export class RdxPopperArrow {
 
     readonly height = input(5, { transform: numberAttribute });
 
-    baseSide = computed(() => OPPOSITE_SIDE[this.popperContentContext.placedSide()!]);
+    // Geometry is physical: the arrow reads `physicalPlacedSide` (`placedSide` can be logical
+    // `inline-start`/`inline-end` when a logical side was requested — a styling hook, not a direction).
+    baseSide = computed(() => OPPOSITE_SIDE[this.popperContentContext.physicalPlacedSide()!]);
 
     protected readonly style = computed(() => {
         return {
@@ -53,13 +55,13 @@ export class RdxPopperArrow {
                 right: '0 0',
                 bottom: 'center 0',
                 left: '100% 0'
-            }[this.popperContentContext.placedSide()!],
+            }[this.popperContentContext.physicalPlacedSide()!],
             transform: {
                 top: 'translateY(100%)',
                 right: 'translateY(50%) rotate(90deg) translateX(-50%)',
                 bottom: `rotate(180deg)`,
                 left: 'translateY(50%) rotate(-90deg) translateX(50%)'
-            }[this.popperContentContext.placedSide()!],
+            }[this.popperContentContext.physicalPlacedSide()!],
             visibility: this.popperContentContext.shouldHideArrow() ? 'hidden' : undefined
         };
     });
