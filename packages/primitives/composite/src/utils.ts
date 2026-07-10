@@ -217,6 +217,13 @@ export function isListIndexDisabled(
         return true;
     }
 
+    // A natively disabled element can never receive focus, so it is always skipped — even when
+    // `disabledIndices` marks it as enabled. Only `aria-disabled` items can be
+    // focusable-while-disabled.
+    if (element.matches(':disabled')) {
+        return true;
+    }
+
     return (
         disabledIndices === undefined &&
         (element.hasAttribute('disabled') || element.getAttribute('aria-disabled') === 'true')

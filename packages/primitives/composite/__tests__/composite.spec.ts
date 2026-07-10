@@ -172,6 +172,22 @@ class CompositeBoundHostComponent {
     disabledIndices: number[] | undefined = undefined;
 }
 
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    template: `
+        <div [disabledIndices]="disabledIndices" orientation="horizontal" rdxCompositeRoot>
+            <button rdxCompositeItem>One</button>
+            <button disabled rdxCompositeItem>Two</button>
+            <button rdxCompositeItem>Three</button>
+        </div>
+    `,
+    imports: [RdxCompositeRoot, RdxCompositeItem]
+})
+class CompositeNativeDisabledHostComponent {
+    // An empty explicit list marks every item enabled — the natively disabled one must still be skipped.
+    disabledIndices: number[] | undefined = [];
+}
+
 describe('RdxCompositeRoot / RdxCompositeItem', () => {
     let fixture: ComponentFixture<CompositeHostComponent>;
     let root: HTMLElement;
@@ -187,7 +203,8 @@ describe('RdxCompositeRoot / RdxCompositeItem', () => {
                 CompositeForHostComponent,
                 CompositeGroupedHostComponent,
                 CompositeControlledHostComponent,
-                CompositeBoundHostComponent
+                CompositeBoundHostComponent,
+                CompositeNativeDisabledHostComponent
             ]
         });
         fixture = TestBed.createComponent(CompositeHostComponent);
@@ -317,6 +334,24 @@ describe('RdxCompositeRoot / RdxCompositeItem', () => {
         keydown(items[0], 'ArrowRight');
         await flushMicrotasks();
         expect(document.activeElement).toBe(items[1]);
+    });
+
+    it('always skips a natively disabled item, even when disabledIndices marks it enabled', async () => {
+        const nativeFixture = TestBed.createComponent(CompositeNativeDisabledHostComponent);
+        nativeFixture.detectChanges();
+        const nativeItems = Array.from(nativeFixture.nativeElement.querySelectorAll<HTMLElement>('[rdxCompositeItem]'));
+
+        nativeItems[0].focus();
+        nativeFixture.detectChanges();
+
+        keydown(nativeItems[0], 'ArrowRight');
+        await flushMicrotasks();
+        nativeFixture.detectChanges();
+
+        // A natively disabled element can never receive focus, so it can't hold the roving tab stop —
+        // unlike aria-disabled (see the previous test), an explicit disabledIndices does not re-enable it.
+        expect(document.activeElement).toBe(nativeItems[2]);
+        expect(nativeItems.map((item) => item.getAttribute('tabindex'))).toEqual(['-1', '-1', '0']);
     });
 
     it('uses data-composite-item-active as the initial highlighted item', () => {
