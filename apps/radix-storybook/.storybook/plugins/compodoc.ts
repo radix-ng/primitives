@@ -54,11 +54,18 @@ const CONFIG_DEFAULT_RE = /^this\.config\.(\w+)\s*\?\?\s*([\s\S]+)$/;
 const BARE_CONFIG_RE = /^this\.config\.(\w+)$/;
 
 // Read the authored `@defaultValue` JSDoc tag (compodoc wraps its comment in HTML, e.g. `<p>0</p>`)
-// so an otherwise-unresolvable default can still show its real value.
+// so an otherwise-unresolvable default can still show its real value. Strip the tags in a loop until
+// stable so overlapping/nested angle brackets can't re-form a tag from the leftovers
+// (CodeQL js/incomplete-multi-character-sanitization).
 function jsDocDefault(input: CompodocInput): string {
     const tag = input.jsdoctags?.find((t) => t.tagName?.escapedText === 'defaultValue');
-    const comment = typeof tag?.comment === 'string' ? tag.comment : '';
-    return comment.replace(/<[^>]+>/g, '').trim();
+    let comment = typeof tag?.comment === 'string' ? tag.comment : '';
+    let previous: string;
+    do {
+        previous = comment;
+        comment = comment.replace(/<[^>]+>/g, '');
+    } while (comment !== previous);
+    return comment.trim();
 }
 
 // Inputs that default to an auto-generated unique id (`input(injectId('rdx-…-'))`). The raw

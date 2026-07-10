@@ -47,10 +47,20 @@ const slugToTitle = (slug) =>
         .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
         .join(' ');
 
+// Strip HTML tags, repeating until stable: a single pass over overlapping/nested angle brackets can
+// re-form a tag from the leftovers (CodeQL js/incomplete-multi-character-sanitization).
+const stripHtmlTags = (value) => {
+    let previous;
+    let result = value;
+    do {
+        previous = result;
+        result = result.replace(/<[^>]+>/g, '');
+    } while (result !== previous);
+    return result;
+};
+
 const cleanInlineMarkdown = (value) =>
-    value
-        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-        .replace(/<[^>]+>/g, '')
+    stripHtmlTags(value.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'))
         .replace(/[`*_]/g, '')
         .replace(/^[-\s✅]+/, '')
         .replace(/\s+/g, ' ')

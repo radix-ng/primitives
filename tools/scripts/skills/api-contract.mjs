@@ -68,10 +68,17 @@ const CONFIG_DEFAULT_RE = /^this\.config\.(\w+)\s*\?\?\s*([\s\S]+)$/;
 const BARE_CONFIG_RE = /^this\.config\.(\w+)$/;
 
 // compodoc wraps the `@defaultValue` tag comment in HTML (e.g. `<p>0</p>`); strip to the bare literal.
+// Repeat the replacement until it stabilizes: a single pass over overlapping/nested angle brackets can
+// re-form a tag from the leftovers (CodeQL js/incomplete-multi-character-sanitization).
 const jsdocDefault = (member) => {
     const tag = (member.jsdoctags ?? []).find((t) => t?.tagName?.escapedText === 'defaultValue');
-    const comment = typeof tag?.comment === 'string' ? tag.comment : '';
-    return comment.replace(/<[^>]+>/g, '').trim();
+    let comment = typeof tag?.comment === 'string' ? tag.comment : '';
+    let previous;
+    do {
+        previous = comment;
+        comment = comment.replace(/<[^>]+>/g, '');
+    } while (comment !== previous);
+    return comment.trim();
 };
 
 const parsePositionerConfig = (sourceCode) => {
