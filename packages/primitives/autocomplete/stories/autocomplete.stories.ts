@@ -20,6 +20,8 @@ import { AutocompleteInline } from './autocomplete-inline';
 import inlineSource from './autocomplete-inline?raw';
 import { AutocompleteLimit } from './autocomplete-limit';
 import limitSource from './autocomplete-limit?raw';
+import { AutocompleteLocale } from './autocomplete-locale';
+import localeSource from './autocomplete-locale?raw';
 import { AutocompleteReactiveForms } from './autocomplete-reactive-forms';
 import reactiveFormsSource from './autocomplete-reactive-forms?raw';
 import { AutocompleteTemplateForms } from './autocomplete-template-forms';
@@ -46,6 +48,7 @@ export default {
                 AutocompleteGrouped,
                 AutocompleteLimit,
                 AutocompleteFuzzy,
+                AutocompleteLocale,
                 AutocompleteAsync,
                 AutocompleteCommandPalette,
                 AutocompleteGrid,
@@ -112,6 +115,15 @@ export const FuzzyMatching: Story = {
     render: () => ({
         template: html`
             <autocomplete-fuzzy />
+        `
+    })
+};
+
+export const Localization: Story = {
+    parameters: source(localeSource),
+    render: () => ({
+        template: html`
+            <autocomplete-locale />
         `
     })
 };

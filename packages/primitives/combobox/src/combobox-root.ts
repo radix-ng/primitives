@@ -348,6 +348,9 @@ export class RdxComboboxRoot
      */
     readonly filter = input<ComboboxFilter | null | undefined>(undefined);
 
+    /** Locale for the default `contains` filter's string comparison. Defaults to the runtime locale. */
+    readonly locale = input<Intl.LocalesArgument>();
+
     /** Maximum number of matching items to show. `-1` (default) means no limit. */
     readonly limit = input(-1, { transform: numberAttribute });
 
@@ -438,6 +441,7 @@ export class RdxComboboxRoot
         virtualized: this.virtualized,
         items: this.items,
         filter: this.filter,
+        locale: this.locale,
         limit: this.limit,
         grid: this.grid,
         rowOf: (element) => element.closest('[rdxComboboxRow]'),

@@ -672,6 +672,11 @@
               "description": "Maximum number of matching items to show. `-1` (default) means no limit."
             },
             {
+              "name": "locale",
+              "type": "Intl.LocalesArgument",
+              "description": "Locale for the default `contains` filter's string comparison. Defaults to the runtime locale."
+            },
+            {
               "name": "loopFocus",
               "default": "true",
               "description": "Whether keyboard navigation wraps at the list boundaries."
@@ -1916,6 +1921,11 @@
               "name": "limit",
               "default": "-1",
               "description": "Maximum number of matching items to show. `-1` (default) means no limit."
+            },
+            {
+              "name": "locale",
+              "type": "Intl.LocalesArgument",
+              "description": "Locale for the default `contains` filter's string comparison. Defaults to the runtime locale."
             },
             {
               "name": "loopFocus",

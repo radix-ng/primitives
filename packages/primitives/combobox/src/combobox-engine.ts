@@ -77,6 +77,8 @@ export interface ComboboxEngineConfig {
     items: Signal<readonly AcceptableValue[] | undefined>;
     /** Filter: `undefined` → default contains; a function → custom; `null` → built-in filtering off. */
     filter: Signal<ComboboxFilter | null | undefined>;
+    /** Locale for the default `contains` collator; `undefined` → the runtime's default locale. */
+    locale: Signal<Intl.LocalesArgument>;
     /** Maximum number of matching items to show (`-1` = no limit). */
     limit: Signal<number>;
     /** Whether the list is a 2D grid (row/column arrow navigation). Defaults off for plain lists. */
@@ -115,7 +117,9 @@ export interface ComboboxEngineConfig {
  */
 export function useComboboxEngine(config: ComboboxEngineConfig) {
     const { injector } = config;
-    const defaultFilter = useFilter();
+    // Locale-aware default filter. A `computed` so changing `locale` rebuilds the collator and
+    // re-filters the list — mirrors Base UI, where `useFilter({ locale })` re-memoizes on change.
+    const defaultFilter = computed(() => useFilter({ locale: config.locale() }));
 
     const listId = injectId(config.listIdPrefix);
     const labelId = signal<string | undefined>(undefined);
@@ -161,7 +165,7 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
         // on the item's own text (the element content), no value→text round-trip.
         return filter
             ? filter(item.value(), query, config.itemToString)
-            : defaultFilter.contains(item.textValue(), query);
+            : defaultFilter().contains(item.textValue(), query);
     };
 
     const visibleItems = computed(() => {
@@ -197,7 +201,7 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
             data.filter((value) =>
                 filter
                     ? filter(value, query, config.itemToString)
-                    : defaultFilter.contains(config.itemToString(value), query)
+                    : defaultFilter().contains(config.itemToString(value), query)
             )
         );
     });

@@ -141,6 +141,14 @@ highlights the matched text.
 
 <Canvas of={Stories.FuzzyMatching} />
 
+### Localization
+
+Set `locale` to make the default `contains` filter compare strings with that locale's collation rules.
+Under Turkish, the lowercase query `i` matches the dotted `İ` but not the dotless `I`; changing `locale`
+re-filters the list immediately.
+
+<Canvas of={Stories.Localization} />
+
 ### Async
 
 `[filter]="null"` hands filtering to you; a fake request searches the movie list (`will_error` simulates
