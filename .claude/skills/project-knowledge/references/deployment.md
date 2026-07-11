@@ -38,7 +38,7 @@ Notes:
 - Creating the GitHub Release needs local GitHub auth (`GITHUB_TOKEN`/`GH_TOKEN` env or `gh auth`); without it the Release step fails and CI is never triggered.
 - For prereleases, mark the GitHub Release as **Pre-release** (not "Latest") so the repo's latest-release pointer stays on the stable version. Install a prerelease explicitly: `npm i @radix-ng/primitives@beta`.
 - `pnpm release:dry-run` previews version bumps and release notes; `pnpm release:primitives` cuts version + changelog without publishing.
-- Current version: `1.0.0-beta.0` (first `1.0.0` prerelease; previous stable line was `0.51.0`).
+- Current version: `1.0.x` stable, published under the `latest` dist-tag (the `1.0.0` line succeeded the previous stable `0.51.0`; source of truth is `packages/primitives/package.json`).
 
 ## Storybook — also the public site
 

@@ -47,16 +47,16 @@ import { Component } from '@angular/core';
 import {
   RdxCollapsibleRootDirective,
   RdxCollapsibleTriggerDirective,
-  RdxCollapsibleContentDirective
+  RdxCollapsiblePanelDirective
 } from '@radix-ng/primitives/collapsible';
 
 @Component({
   selector: 'app-demo',
-  imports: [RdxCollapsibleRootDirective, RdxCollapsibleTriggerDirective, RdxCollapsibleContentDirective],
+  imports: [RdxCollapsibleRootDirective, RdxCollapsibleTriggerDirective, RdxCollapsiblePanelDirective],
   template: `
     <div rdxCollapsibleRoot>
       <button rdxCollapsibleTrigger>Toggle</button>
-      <div rdxCollapsibleContent>Content</div>
+      <div rdxCollapsiblePanel>Content</div>
     </div>
   `
 })
@@ -64,7 +64,7 @@ export class DemoComponent {}
 ```
 
 Primitives are headless: style them via the `data-*` attributes they expose (e.g.
-`[data-state="open"]`, `[data-disabled]`) with the tooling of your choice.
+`[data-open]`, `[data-disabled]`) with the tooling of your choice.
 
 ## Documentation
 

@@ -19,7 +19,7 @@ Angular port of headless UI primitives. This is a **signals-first, headless** co
 **Reference priority:** [Base UI](https://base-ui.com/) is the primary reference we align to — match its component APIs, naming, and behavior when designing or updating primitives. [Radix UI](https://www.radix-ui.com/) was the original foundation of this library and remains a valid secondary reference to consult, especially for patterns Base UI doesn't cover.
 
 - **Monorepo**: Nx 22, pnpm workspaces
-- **Angular**: 21 (signals API: `input()`, `model()`, `computed()`, `signal()`, `linkedSignal()`)
+- **Angular**: 21 / 22 (peer range `^21.0.0 || ^22.0.0`; signals API: `input()`, `model()`, `computed()`, `signal()`, `linkedSignal()`)
 - **TypeScript**: 5.9
 - **Testing**: Vitest + AnalogJS Angular Vite plugin + `@testing-library/angular`
 - **Storybook**: 10 (`@storybook/angular` + AnalogJS vite plugin)

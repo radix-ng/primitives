@@ -11,7 +11,7 @@ metadata:
 
 | Layer                  | Choice                                                   | Why                                                                                            |
 | ---------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| Framework              | Angular 21, zoneless                                     | Modern signals API; zoneless for performance                                                   |
+| Framework              | Angular 21 / 22, zoneless                                | Modern signals API; zoneless for performance                                                   |
 | Monorepo               | Nx 22 + pnpm workspaces                                  | Task caching, affected-graph CI, secondary entry generation                                    |
 | Build                  | ng-packagr                                               | Angular library standard; each primitive is a secondary entry                                  |
 | Tests                  | Vitest + AnalogJS vite plugin + @testing-library/angular | Faster than Jest; AnalogJS bridges Angular and Vite; runs zoneless/zone-free (see patterns.md) |

@@ -7,7 +7,7 @@ metadata:
 
 # Radix NG Primitives
 
-**Package:** `@radix-ng/primitives` (v1.0.0-beta.2; last stable 0.51.0)
+**Package:** `@radix-ng/primitives` (v1.0.x stable; the `1.0.0` line succeeded `0.51.0`)
 **npm:** published, tree-shakeable secondary entries (`@radix-ng/primitives/<name>`)
 
 ## What it is
@@ -16,7 +16,7 @@ A headless, signals-first UI primitive library for Angular. Primitives ship **no
 
 ## Audience
 
-Angular developers building their own design systems or adopting accessible headless components. Supports Angular 21+, targets modern Angular signals API.
+Angular developers building their own design systems or adopting accessible headless components. Supports Angular 21 and 22 (peer range `^21.0.0 || ^22.0.0`), targets the modern Angular signals API.
 
 ## Core features
 
