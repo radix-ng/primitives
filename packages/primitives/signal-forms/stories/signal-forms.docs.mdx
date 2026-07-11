@@ -26,8 +26,8 @@ the accessibility layer to Angular. The full support matrix is below.
 - ✅ Optionally delegates submission to Angular's public `submit()` lifecycle — validation, touched state,
   concurrent-submit protection, `submitting()`, and returned submission errors remain Angular-owned.
 - ✅ Resets values and control-owned touched/dirty state through Angular's `FieldState.reset()`.
-- ✅ Mirrors classic `NgControl` dirty/touched state — including reset, pristine, and untouched
-  transitions — on every dual Reactive/template-driven control.
+- ✅ Mirrors the complete classic `NgControl` UI lifecycle on every dual control: dirty/touched,
+  reset/pristine/untouched, valid/invalid/pending/disabled, and normalized validation errors.
 - ✅ Leaves `@angular/forms` out of every other entry — install it only when you use this one.
 
 ## Import
@@ -42,26 +42,28 @@ Every Signal Forms and reset check below is covered by a runtime spec in the con
 only by structural TypeScript compatibility. Reset means `field().reset(value)` restores the model and
 visible control value, then returns both Angular and control-owned interaction state to untouched / pristine.
 
-`NgControl state` means the control reflects `dirty` / `touched` and reacts to Angular's default
-`reset()`, `markAsPristine()`, and `markAsUntouched()` lifecycle. It applies to both Reactive Forms and
-`ngModel`; Signal-only controls use `FieldState.reset()` instead.
+`NgControl lifecycle` means the control reflects `dirty` / `touched`, reacts to Angular's default
+`reset()` / `markAsPristine()` / `markAsUntouched()`, and mirrors validation status. `VALID` and
+`INVALID` produce the matching `data-*` state, while `PENDING` and `DISABLED` stay neutral. Angular
+errors are available through `validationErrors()` as `{ kind, message? }[]`. This applies to both
+Reactive Forms and `ngModel`; Signal-only controls use their signal inputs and `FieldState.reset()`.
 
-| Control        | Signal value                      | `[formField]` | Reactive / `ngModel` | `NgControl` state | `FieldState.reset()` |
-| -------------- | --------------------------------- | ------------- | -------------------- | ----------------- | -------------------- |
-| Input          | `string \| undefined`             | ✅            | ✅ native            | ✅                | ✅                   |
-| Checkbox       | `boolean`                         | ✅            | ✅ CVA               | ✅                | ✅                   |
-| Checkbox Group | `string[]`                        | ✅            | ✅ CVA               | ✅                | ✅                   |
-| Switch         | `boolean`                         | ✅            | ✅ CVA               | ✅                | ✅                   |
-| Radio Group    | `string \| null`                  | ✅            | ✅ CVA               | ✅                | ✅                   |
-| Select         | value / value array / `undefined` | ✅            | ✅ CVA               | ✅                | ✅                   |
-| Toggle Group   | `string[] \| undefined`           | ✅            | ✅ CVA               | ✅                | ✅                   |
-| Slider         | `number \| number[]`              | ✅            | ✅ CVA               | ✅                | ✅                   |
-| Number Field   | `number \| null`                  | ✅            | ✅ CVA               | ✅                | ✅                   |
-| Combobox       | value / value array / `null`      | ✅            | ✅ CVA               | ✅                | ✅                   |
-| Autocomplete   | `string`                          | ✅            | ✅ CVA               | ✅                | ✅                   |
-| Date Field     | `DateValue \| undefined`          | ✅            | —                    | —                 | ✅                   |
-| Time Field     | `TimeValue \| undefined`          | ✅            | —                    | —                 | ✅                   |
-| Editable       | `string \| undefined`             | ✅            | —                    | —                 | ✅                   |
+| Control        | Signal value                      | `[formField]` | Reactive / `ngModel` | `NgControl` lifecycle | `FieldState.reset()` |
+| -------------- | --------------------------------- | ------------- | -------------------- | --------------------- | -------------------- |
+| Input          | `string \| undefined`             | ✅            | ✅ native            | ✅                    | ✅                   |
+| Checkbox       | `boolean`                         | ✅            | ✅ CVA               | ✅                    | ✅                   |
+| Checkbox Group | `string[]`                        | ✅            | ✅ CVA               | ✅                    | ✅                   |
+| Switch         | `boolean`                         | ✅            | ✅ CVA               | ✅                    | ✅                   |
+| Radio Group    | `string \| null`                  | ✅            | ✅ CVA               | ✅                    | ✅                   |
+| Select         | value / value array / `undefined` | ✅            | ✅ CVA               | ✅                    | ✅                   |
+| Toggle Group   | `string[] \| undefined`           | ✅            | ✅ CVA               | ✅                    | ✅                   |
+| Slider         | `number \| number[]`              | ✅            | ✅ CVA               | ✅                    | ✅                   |
+| Number Field   | `number \| null`                  | ✅            | ✅ CVA               | ✅                    | ✅                   |
+| Combobox       | value / value array / `null`      | ✅            | ✅ CVA               | ✅                    | ✅                   |
+| Autocomplete   | `string`                          | ✅            | ✅ CVA               | ✅                    | ✅                   |
+| Date Field     | `DateValue \| undefined`          | ✅            | —                    | —                     | ✅                   |
+| Time Field     | `TimeValue \| undefined`          | ✅            | —                    | —                     | ✅                   |
+| Editable       | `string \| undefined`             | ✅            | —                    | —                     | ✅                   |
 
 An em dash is intentional: `date-field`, `time-field`, and `editable` currently expose the
 Angular-native `value = model()` contract but do not ship a `ControlValueAccessor`. The matrix makes
@@ -242,7 +244,7 @@ event.
 Every Radix NG form control exposes the optional Signal Forms `FormUiControl` state
 (`invalid` / `pending` / `errors` / `touched` / `dirty` inputs + a `touch` output) so `[formField]` can write it and
 the control can reflect it as `data-*` / `aria-invalid`. Instead of re-declaring that block on every
-primitive, three reusable pieces live in **`@radix-ng/primitives/core`** — controls inherit and compose
+primitive, four reusable pieces live in **`@radix-ng/primitives/core`** — controls inherit and compose
 them rather than copy-paste:
 
 > **Single-source contract.** A control's own `invalid` / `errors` inputs reflect on its `data-*` /
@@ -255,12 +257,17 @@ them rather than copy-paste:
   builds the derived state (`formUi`). A control gets the whole surface with a single `extends` and only
   adds its own `value` / `checked` model; its inherited `reset()` clears control-owned interaction state.
   When the host also has a classic `NgControl`, the base automatically treats Angular's `dirty` and
-  `touched` flags as authoritative and follows their reset / pristine / untouched transitions.
+  `touched` flags as authoritative, follows reset / pristine / untouched transitions, and merges
+  Angular validation status/errors into `validState` / `validationErrors()`.
   The declarations have to stay on a directive class: Angular's
   compiler only discovers `input()` / `model()` as field initializers, and Signal Forms binds
   form-written state onto the **single directive that carries the value model** — so inheritance keeps
   them co-located there (a host directive could not).
-- **`createFormUiState(...)`** — derives `invalidState` / `pendingState` / `touchedState` / `dirtyState` and the dual
+- **`injectNgControlState()`** — lazily reads a same-host classic `NgControl` after CVA construction and
+  mirrors its unified `AbstractControl.events` stream. Signal Forms' DI-compatible `FormField` is
+  deliberately ignored because it owns the same state through signals.
+- **`createFormUiState(...)`** — derives `invalidState` / `pendingState` / tri-state `validState` /
+  `errorsState` / `touchedState` / `dirtyState` and the dual
   `markAsTouched` (it bridges the control's `ControlValueAccessor` when it has one, so the same call
   notifies Reactive / template-driven forms too). The base calls it; a control that cannot extend the
   base calls it directly. Compound controls also get `formUiStateContext()` to surface the state to a

@@ -30,7 +30,9 @@
 > self/group controls). The stable Angular-22 runtime gate is complete. Every control is runtime-covered
 > for value binding and `FieldState.reset()`; reset restores the visible value and clears both Angular and
 > control-owned touched/dirty state. All 11 Reactive/template-driven controls also reflect Angular-owned
-> dirty/touched state, including reset, pristine, and untouched transitions. Select additionally ships a direct `ControlValueAccessor`, with
+> dirty/touched state and validation status/errors, including reset, pristine, untouched, pending, and
+> disabled transitions. `PENDING` / `DISABLED` are neutral, while Angular errors normalize to
+> `{ kind, message? }[]`. Select additionally ships a direct `ControlValueAccessor`, with
 > runtime coverage for Reactive Forms, `ngModel`, disabled state, reset, cancellation, and multiple object
 > values. The public Storybook matrix records which controls also retain a CVA.
 > Opt-in Angular-owned submission is specified separately in ADR 0020.

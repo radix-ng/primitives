@@ -30,6 +30,10 @@ export interface RdxFormUiState {
     readonly invalidState: Signal<boolean>;
     /** Whether asynchronous validation is still settling. Pending is neither valid nor invalid. */
     readonly pendingState: Signal<boolean>;
+    /** Tri-state validity: valid / invalid / neutral while pending or disabled. */
+    readonly validState: Signal<boolean | null>;
+    /** Explicit control errors merged with same-host Angular Forms errors. */
+    readonly errorsState: Signal<readonly RdxValidationError[]>;
     /** Whether the control has been touched (reflects the `touched` model). */
     readonly touchedState: Signal<boolean>;
     /** Whether the value changed from its initial value — external `dirty` OR internal tracking. */
@@ -69,8 +73,8 @@ export interface RdxFormUiStateOptions {
 
 /**
  * Builds the shared form-UI state and its mutators from a control's input signals, removing the
- * per-control copy-paste of the `invalidState`/`pendingState`/`touchedState`/`dirtyState` computeds and the
- * `markAsTouched`/`markDirty` logic.
+ * per-control copy-paste of the validation/interaction computeds and the `markAsTouched`/`markDirty`
+ * logic.
  *
  * **Why the inputs stay on the control (not in here):** Angular's compiler only discovers
  * `input()`/`model()` declared as field initializers, and Signal Forms binds form-written state
@@ -82,10 +86,40 @@ export interface RdxFormUiStateOptions {
  */
 export function createFormUiState(options: RdxFormUiStateOptions): RdxFormUiState {
     const dirtyValue = signal(false);
+    const errorsState = computed(() => {
+        const ownErrors = options.errors() ?? [];
+        const ngControlErrors = options.ngControlState?.connected() ? options.ngControlState.errors() : [];
+        return ngControlErrors.length > 0 ? [...ownErrors, ...ngControlErrors] : ownErrors;
+    });
+    const invalidState = computed(
+        () =>
+            options.invalid() ||
+            errorsState().length > 0 ||
+            Boolean(options.ngControlState?.connected() && options.ngControlState.invalid())
+    );
+    const pendingState = computed(
+        () =>
+            (options.pending?.() ?? false) ||
+            Boolean(options.ngControlState?.connected() && options.ngControlState.pending())
+    );
+    const validState = computed<boolean | null>(() => {
+        if (pendingState()) {
+            return null;
+        }
+        if (invalidState()) {
+            return false;
+        }
+        if (options.ngControlState?.connected() && options.ngControlState.disabled()) {
+            return null;
+        }
+        return true;
+    });
 
     return {
-        invalidState: computed(() => options.invalid() || (options.errors()?.length ?? 0) > 0),
-        pendingState: computed(() => options.pending?.() ?? false),
+        invalidState,
+        pendingState,
+        validState,
+        errorsState,
         touchedState: computed(() =>
             options.ngControlState?.connected() ? options.ngControlState.touched() : options.touched()
         ),
@@ -114,6 +148,7 @@ export function createFormUiState(options: RdxFormUiStateOptions): RdxFormUiStat
 export interface RdxFormUiStateContext {
     invalidState: Signal<boolean>;
     pendingState: Signal<boolean>;
+    validState: Signal<boolean | null>;
     touchedState: Signal<boolean>;
     dirtyState: Signal<boolean>;
     markAsTouched: () => void;
@@ -124,6 +159,7 @@ export function formUiStateContext(state: RdxFormUiState): RdxFormUiStateContext
     return {
         invalidState: state.invalidState,
         pendingState: state.pendingState,
+        validState: state.validState,
         touchedState: state.touchedState,
         dirtyState: state.dirtyState,
         markAsTouched: () => state.markAsTouched()
@@ -216,7 +252,7 @@ export class RdxFormUiStateHost {
 
     /** @ignore Tri-state display validity (enclosing Field's gated state, else own invalidity). */
     protected readonly displayValid = computed(() =>
-        resolveDisplayValid(this.fieldValidity, this.formUi.invalidState, this.formUi.pendingState)
+        this.fieldValidity ? this.fieldValidity() : this.formUi.validState()
     );
 }
 
@@ -270,6 +306,9 @@ export abstract class RdxFormUiControlBase {
         cva: this.formUiTouchTarget()
     });
 
+    /** Validation errors from the control inputs and a same-host Reactive/template-driven form control. */
+    readonly validationErrors = this.formUi.errorsState;
+
     constructor() {
         // Reactive/template-driven forms own their NgControl interaction state. Signal Forms instead
         // writes the public touched/dirty members, so standalone controls retain the existing fallback.
@@ -306,7 +345,7 @@ export abstract class RdxFormUiControlBase {
      * `resolveDisplayValid(this.fieldValidity, this.invalidState, this.formUi.pendingState)`.
      */
     readonly displayValid: Signal<boolean | null> = computed(() =>
-        resolveDisplayValid(this.fieldValidity, this.formUi.invalidState, this.formUi.pendingState)
+        this.fieldValidity ? this.fieldValidity() : this.formUi.validState()
     );
 
     /**

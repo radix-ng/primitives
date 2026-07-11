@@ -76,8 +76,10 @@ All 14 controls are runtime-covered for `FieldState.reset(value)`: the model and
 visible control value are restored, Angular touched/dirty return to false, and
 control-owned interaction tracking is cleared. The 11 controls with Reactive /
 template-driven support additionally mirror the same-host `NgControl` through
-`AbstractControl.events`: dirty/touched changes are authoritative, including
-default `reset()`, `markAsPristine()`, and `markAsUntouched()` transitions.
+`AbstractControl.events`: value, dirty/touched, status, disabled, and errors stay
+synchronized. `PENDING` / `DISABLED` are neutral; Angular `ValidationErrors`
+normalize to `{ kind, message? }[]`. This includes default `reset()`,
+`markAsPristine()`, and `markAsUntouched()` transitions.
 Signal-only controls expose the optional custom-control `reset()` hook. The
 public support matrix lives in
 `packages/primitives/signal-forms/stories/signal-forms.docs.mdx`.
@@ -279,13 +281,14 @@ inputs, so ArgTypes/api-contract are intact). slider extends the base but skips 
   had a base, so it is a 3-level chain (`RdxToggleGroup → RdxToggleGroupBase → RdxFormUiControlBase`),
   which works.
 - **`injectNgControlState()`** — lazily discovers a same-host Reactive/template-driven `NgControl`
-  after value-accessor construction, then mirrors value/dirty/touched through Angular's unified
-  `AbstractControl.events` stream. Signal Forms' DI-compatible `FormField` is deliberately ignored
-  because it owns state through signals and has no events stream.
+  after value-accessor construction, then mirrors value, dirty/touched, valid/invalid/pending/disabled,
+  and normalized errors through Angular's unified `AbstractControl.events` stream. Signal Forms'
+  DI-compatible `FormField` is deliberately ignored because it owns state through signals and has no
+  events stream.
 - **`createFormUiState({ invalid, pending, errors, touched, touch, dirty, ngControlState?, cva? })`** → `{ invalidState,
-pendingState, touchedState, dirtyState, markAsTouched, markDirty }`. The derivation + dual `markAsTouched` engine
+pendingState, validState, errorsState, touchedState, dirtyState, markAsTouched, markDirty }`. The derivation + dual `markAsTouched` engine
   the base calls (also usable directly by a control that cannot extend the base). Compound controls
-  also get `RdxFormUiStateContext` + `formUiStateContext()` to spread the five state fields into their
+  also get `RdxFormUiStateContext` + `formUiStateContext()` to spread the validation/interaction fields into their
   context for child parts (select → trigger).
 - **`RdxFormUiStateHost`** host directive + **`provideFormUiState(() => inject(MyControl).formUi)`** —
   owns the identical `aria-invalid` + `data-invalid/valid/touched/dirty` bindings and the

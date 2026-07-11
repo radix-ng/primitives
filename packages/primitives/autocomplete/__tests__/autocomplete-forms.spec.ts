@@ -109,6 +109,29 @@ describe('Autocomplete forms', () => {
             await settle();
             expect(inputOf(fixture).hasAttribute('disabled')).toBe(true);
         });
+
+        it('reflects valid, pending, invalid, and disabled status on the input', async () => {
+            expect(inputOf(fixture).getAttribute('data-valid')).toBe('');
+
+            host.control.setErrors({ server: { message: 'Try another value.' } });
+            await settle();
+            expect(inputOf(fixture).getAttribute('data-invalid')).toBe('');
+            expect(inputOf(fixture).getAttribute('aria-invalid')).toBe('true');
+
+            host.control.markAsPending();
+            await settle();
+            expect(inputOf(fixture).getAttribute('data-valid')).toBeNull();
+            expect(inputOf(fixture).getAttribute('data-invalid')).toBeNull();
+
+            host.control.setErrors(null);
+            await settle();
+            expect(inputOf(fixture).getAttribute('data-valid')).toBe('');
+
+            host.control.disable();
+            await settle();
+            expect(inputOf(fixture).getAttribute('data-valid')).toBeNull();
+            expect(inputOf(fixture).getAttribute('data-invalid')).toBeNull();
+        });
     });
 
     describe('template-driven forms', () => {

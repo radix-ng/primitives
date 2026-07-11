@@ -105,6 +105,30 @@ describe('Combobox forms integration', () => {
             const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
             expect(input.hasAttribute('disabled')).toBe(true);
         });
+
+        it('reflects valid, pending, invalid, and disabled status on the input', async () => {
+            const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+            expect(input.getAttribute('data-valid')).toBe('');
+
+            host.control.setErrors({ required: true });
+            await settle();
+            expect(input.getAttribute('data-invalid')).toBe('');
+            expect(input.getAttribute('aria-invalid')).toBe('true');
+
+            host.control.markAsPending();
+            await settle();
+            expect(input.getAttribute('data-valid')).toBeNull();
+            expect(input.getAttribute('data-invalid')).toBeNull();
+
+            host.control.setErrors(null);
+            await settle();
+            expect(input.getAttribute('data-valid')).toBe('');
+
+            host.control.disable();
+            await settle();
+            expect(input.getAttribute('data-valid')).toBeNull();
+            expect(input.getAttribute('data-invalid')).toBeNull();
+        });
     });
 
     describe('field integration', () => {

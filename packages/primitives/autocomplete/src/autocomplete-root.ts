@@ -122,6 +122,7 @@ const context = (): RdxComboboxRootContext => {
         grid: root.grid,
         invalidState: root.invalidState,
         pendingState: root.formUi.pendingState,
+        validState: root.formUi.validState,
         touchedState: root.touchedState,
         dirtyState: root.dirtyState,
         filteredItems: engine.filteredItems,
@@ -350,6 +351,7 @@ export class RdxAutocompleteRoot
     /** @ignore */
     readonly invalidState = this.formUi.invalidState;
     readonly pendingState = this.formUi.pendingState;
+    readonly validState = this.formUi.validState;
     /** @ignore */
     readonly touchedState = this.formUi.touchedState;
     /** @ignore */

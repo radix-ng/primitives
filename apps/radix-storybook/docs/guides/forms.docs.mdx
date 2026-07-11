@@ -116,7 +116,7 @@ export class SignupForm {
 Angular owns validation and submission. To surface the resulting state to the user, wrap the control
 in a `Field` (next section).
 
-### Interaction state and reset
+### Interaction, validation, and reset
 
 Every control in the table with Reactive Forms support also mirrors its same-host `NgControl`
 interaction state. `control.dirty` and `control.touched` appear as `data-dirty` and `data-touched` on
@@ -124,9 +124,18 @@ the control's state-bearing part (the root, trigger, or input, depending on the 
 default `reset()`, `markAsPristine()`, and `markAsUntouched()` transitions remove those attributes
 again. The same bridge is used by `ngModel`.
 
-This keeps the control itself synchronized without manual `[dirty]` / `[touched]` bindings. A wrapping
-`rdxFieldRoot` remains form-agnostic: map the `FormControl` state onto the Field as shown below when the
-whole label / description / error group should reflect it.
+Validation status follows the same path. `VALID` emits `data-valid`, `INVALID` emits `data-invalid` and
+`aria-invalid="true"`, while `PENDING` and `DISABLED` are neutral (neither validity attribute). Angular's
+`ValidationErrors` map is normalized on the directive's `validationErrors()` signal as
+`{ kind, message? }[]`: the object key becomes `kind`, and a string value or nested `message` is
+preserved. Explicit `[invalid]`, `[pending]`, and `[errors]` inputs are merged with the Angular state.
+No `data-pending` attribute is added because Base UI does not publish one.
+
+This keeps the control itself synchronized without manual state bindings. A wrapping `rdxFieldRoot`
+remains form-agnostic and owns displayed validity when present, so its `validationMode` is still the
+single gate. Map the `FormControl` state onto the Field as shown below when the whole label / description /
+error group should reflect it; Radix NG does not invent human-readable messages for Angular's built-in
+validator keys.
 
 ## Template-driven Forms
 

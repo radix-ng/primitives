@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, ValidationErrors } from '@angular/forms';
 import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { RdxValidationError } from '@radix-ng/primitives/core';
@@ -96,6 +96,31 @@ class InputSignalFormHost {
 })
 class InputReactiveFormsHost {
     readonly control = new FormControl('Ada', { nonNullable: true });
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [ReactiveFormsModule, RdxInputDirective],
+    template: `
+        <input [formControl]="control" rdxInput />
+    `
+})
+class InputAsyncReactiveFormsHost {
+    private readonly validationResolvers: Array<(errors: ValidationErrors | null) => void> = [];
+    readonly control = new FormControl('Ada', {
+        nonNullable: true,
+        asyncValidators: [
+            () =>
+                new Promise<ValidationErrors | null>((resolve) => {
+                    this.validationResolvers.push(resolve);
+                })
+        ]
+    });
+
+    resolveValidation(errors: ValidationErrors | null): void {
+        const resolvers = this.validationResolvers.splice(0);
+        resolvers.forEach((resolve) => resolve(errors));
+    }
 }
 
 describe('Input', () => {
@@ -370,6 +395,51 @@ describe('Input', () => {
             expect(input.value).toBe('Ada');
             expect(input.getAttribute('data-dirty')).toBeNull();
             expect(input.getAttribute('data-touched')).toBeNull();
+        });
+
+        it('mirrors valid, pending, invalid, disabled, and mapped async errors', async () => {
+            TestBed.configureTestingModule({ imports: [InputAsyncReactiveFormsHost] });
+            const fixture = TestBed.createComponent(InputAsyncReactiveFormsHost);
+            const host = fixture.componentInstance;
+            fixture.detectChanges();
+            await Promise.resolve();
+            fixture.detectChanges();
+
+            const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+            const directive = fixture.debugElement
+                .query(By.directive(RdxInputDirective))
+                .injector.get(RdxInputDirective);
+
+            expect(host.control.pending).toBe(true);
+            expect(input.getAttribute('data-valid')).toBeNull();
+            expect(input.getAttribute('data-invalid')).toBeNull();
+            expect(input.getAttribute('aria-invalid')).toBeNull();
+
+            host.resolveValidation(null);
+            await fixture.whenStable();
+            fixture.detectChanges();
+            expect(host.control.valid).toBe(true);
+            expect(input.getAttribute('data-valid')).toBe('');
+
+            host.control.setValue('Grace');
+            fixture.detectChanges();
+            expect(host.control.pending).toBe(true);
+            expect(input.getAttribute('data-valid')).toBeNull();
+            expect(input.getAttribute('data-invalid')).toBeNull();
+
+            host.resolveValidation({ server: { message: 'Already taken.' } });
+            await fixture.whenStable();
+            fixture.detectChanges();
+            expect(host.control.invalid).toBe(true);
+            expect(input.getAttribute('data-invalid')).toBe('');
+            expect(input.getAttribute('aria-invalid')).toBe('true');
+            expect(directive.validationErrors()).toEqual([{ kind: 'server', message: 'Already taken.' }]);
+
+            host.control.disable();
+            fixture.detectChanges();
+            expect(input.getAttribute('data-valid')).toBeNull();
+            expect(input.getAttribute('data-invalid')).toBeNull();
+            expect(input.getAttribute('data-disabled')).toBe('');
         });
     });
 });

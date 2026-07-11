@@ -130,6 +130,7 @@ const context = () => {
         requiredState: root.requiredState,
         invalidState: root.invalidState,
         pendingState: root.formUi.pendingState,
+        validState: root.formUi.validState,
         touchedState: root.touchedState,
         dirtyState: root.dirtyState,
         openOnInputClick: root.openOnInputClick,
@@ -407,6 +408,7 @@ export class RdxComboboxRoot
     /** @ignore */
     readonly invalidState = this.formUi.invalidState;
     readonly pendingState = this.formUi.pendingState;
+    readonly validState = this.formUi.validState;
     /** @ignore */
     readonly touchedState = this.formUi.touchedState;
     /** @ignore */

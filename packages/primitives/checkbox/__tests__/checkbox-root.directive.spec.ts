@@ -528,6 +528,45 @@ describe('RdxCheckboxRoot with Reactive Forms', () => {
         expect(root.getAttribute('data-dirty')).toBeNull();
         expect(root.getAttribute('data-touched')).toBeNull();
     });
+
+    it('mirrors valid, pending, invalid, disabled, and mapped errors', async () => {
+        TestBed.configureTestingModule({ imports: [CheckboxReactiveFormsHost] });
+        const fixture = TestBed.createComponent(CheckboxReactiveFormsHost);
+        const host = fixture.componentInstance;
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        const root = fixture.debugElement.query(By.css('[rdxCheckboxRoot]')).nativeElement as HTMLElement;
+        const button = fixture.debugElement.query(By.css('[rdxCheckboxButton]')).nativeElement as HTMLButtonElement;
+        const directive = fixture.debugElement
+            .query(By.directive(RdxCheckboxRootDirective))
+            .injector.get(RdxCheckboxRootDirective);
+
+        expect(root.getAttribute('data-valid')).toBe('');
+
+        host.control.setErrors({ required: true });
+        fixture.detectChanges();
+        expect(root.getAttribute('data-invalid')).toBe('');
+        expect(button.getAttribute('aria-invalid')).toBe('true');
+        expect(directive.validationErrors()).toEqual([{ kind: 'required' }]);
+
+        host.control.markAsPending();
+        fixture.detectChanges();
+        expect(root.getAttribute('data-valid')).toBeNull();
+        expect(root.getAttribute('data-invalid')).toBeNull();
+        expect(button.getAttribute('aria-invalid')).toBeNull();
+
+        host.control.setErrors(null);
+        fixture.detectChanges();
+        expect(root.getAttribute('data-valid')).toBe('');
+
+        host.control.disable();
+        fixture.detectChanges();
+        expect(root.getAttribute('data-valid')).toBeNull();
+        expect(root.getAttribute('data-invalid')).toBeNull();
+        expect(root.getAttribute('data-disabled')).toBe('');
+    });
 });
 
 describe('RdxCheckboxRoot with Signal Forms', () => {

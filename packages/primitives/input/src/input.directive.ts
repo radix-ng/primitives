@@ -215,25 +215,49 @@ export class RdxInputDirective implements RdxFormValueControl<RdxInputValue | un
      */
     readonly touch = output<void>();
 
-    /** The input's own binary invalidity (its `invalid` input or a non-empty `errors` list). */
-    private readonly ownInvalid = computed(() => this.invalid() || (this.errors()?.length ?? 0) > 0);
+    /** Validation errors from the input and a same-host Reactive/template-driven form control. */
+    readonly validationErrors = computed<readonly RdxValidationError[]>(() => {
+        const ownErrors = this.errors() ?? [];
+        const ngControlErrors = this.ngControlState.connected() ? this.ngControlState.errors() : [];
+        return ngControlErrors.length > 0 ? [...ownErrors, ...ngControlErrors] : ownErrors;
+    });
+
+    /** The input's binary invalidity, including a same-host Reactive/template-driven form control. */
+    private readonly ownInvalid = computed(
+        () =>
+            this.invalid() ||
+            this.validationErrors().length > 0 ||
+            Boolean(this.ngControlState.connected() && this.ngControlState.invalid())
+    );
+    private readonly pendingState = computed(
+        () => this.pending() || Boolean(this.ngControlState.connected() && this.ngControlState.pending())
+    );
 
     /**
      * Tri-state *displayed* validity: inside a `rdxFieldRoot` the field's gated `validState` is the single
      * source (so a field whose `validationMode` defers display (e.g. `onBlur`) keeps the input neutral until revealed), otherwise
      * the input's own binary invalidity. `true` valid / `false` invalid / `null` neutral.
      */
-    protected readonly displayValid = computed<boolean | null>(() =>
-        this.fieldRootContext
-            ? this.fieldRootContext.validState()
-            : this.pending()
-              ? null
-              : this.ownInvalid()
-                ? false
-                : true
-    );
+    protected readonly displayValid = computed<boolean | null>(() => {
+        if (this.fieldRootContext) {
+            return this.fieldRootContext.validState();
+        }
+        if (this.pendingState()) {
+            return null;
+        }
+        if (this.ownInvalid()) {
+            return false;
+        }
+        if (this.ngControlState.connected() && this.ngControlState.disabled()) {
+            return null;
+        }
+        return true;
+    });
     protected readonly disabledState = computed(
-        () => this.disabled() || Boolean(this.fieldRootContext?.disabledState())
+        () =>
+            this.disabled() ||
+            Boolean(this.ngControlState.connected() && this.ngControlState.disabled()) ||
+            Boolean(this.fieldRootContext?.disabledState())
     );
     protected readonly requiredState = computed(
         () => this.required() || Boolean(this.fieldRootContext?.requiredState())

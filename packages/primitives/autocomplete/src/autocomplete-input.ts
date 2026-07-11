@@ -81,23 +81,21 @@ export class RdxAutocompleteInput {
     // `aria-autocomplete` tokens. Must reflect the static mechanism, not the transient inline preview.
     protected readonly ariaAutocomplete = computed(() => this.root.mode());
 
-    protected readonly invalidState = computed(
-        () => this.invalid() || this.root.invalidState() || Boolean(this.fieldRootContext?.invalidState())
-    );
     /**
      * Tri-state *displayed* validity: the enclosing Field's gated `validState` when inside a `rdxFieldRoot`
      * (so a field whose `validationMode` defers display (e.g. `onBlur`) keeps the input neutral until revealed), else the input's
      * own binary invalidity.
      */
-    protected readonly displayValid = computed<boolean | null>(() =>
-        this.fieldRootContext
-            ? this.fieldRootContext.validState()
-            : this.root.pendingState()
-              ? null
-              : this.invalid() || this.root.invalidState()
-                ? false
-                : true
-    );
+    protected readonly displayValid = computed<boolean | null>(() => {
+        if (this.fieldRootContext) {
+            return this.fieldRootContext.validState();
+        }
+        const rootValid = this.root.validState();
+        if (rootValid === null) {
+            return null;
+        }
+        return this.invalid() ? false : rootValid;
+    });
     protected readonly disabledState = computed(
         () => this.root.disabledState() || Boolean(this.fieldRootContext?.disabledState())
     );

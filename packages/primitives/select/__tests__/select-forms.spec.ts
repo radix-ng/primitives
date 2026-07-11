@@ -46,7 +46,7 @@ class SelectReactiveFormsHost {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [FormsModule, _importsSelect],
     template: `
-        <div [(ngModel)]="value" rdxSelectRoot>
+        <div [(ngModel)]="value" required rdxSelectRoot>
             <button rdxSelectTrigger>
                 <span #selectedValue="rdxSelectedValue" rdxSelectValue placeholder="Select…">
                     {{ selectedValue.slotText() }}
@@ -249,6 +249,34 @@ describe('Select with Reactive Forms', () => {
         expect(trigger.getAttribute('data-dirty')).toBeNull();
         expect(trigger.getAttribute('data-touched')).toBeNull();
     });
+
+    it('mirrors valid, pending, invalid, disabled, and mapped errors from the FormControl', async () => {
+        const trigger: HTMLButtonElement = fixture.nativeElement.querySelector('[rdxSelectTrigger]');
+        const root = selectRoot(fixture);
+
+        expect(trigger.getAttribute('data-valid')).toBe('');
+
+        host.control.setErrors({ server: { message: 'Choose another fruit.' } });
+        await settle();
+        expect(trigger.getAttribute('data-invalid')).toBe('');
+        expect(trigger.getAttribute('aria-invalid')).toBe('true');
+        expect(root.validationErrors()).toEqual([{ kind: 'server', message: 'Choose another fruit.' }]);
+
+        host.control.markAsPending();
+        await settle();
+        expect(trigger.getAttribute('data-valid')).toBeNull();
+        expect(trigger.getAttribute('data-invalid')).toBeNull();
+        expect(trigger.getAttribute('aria-invalid')).toBeNull();
+
+        host.control.setErrors(null);
+        await settle();
+        expect(trigger.getAttribute('data-valid')).toBe('');
+
+        host.control.disable();
+        await settle();
+        expect(trigger.getAttribute('data-valid')).toBeNull();
+        expect(trigger.getAttribute('data-invalid')).toBeNull();
+    });
 });
 
 describe('Select with template-driven forms', () => {
@@ -295,6 +323,28 @@ describe('Select with template-driven forms', () => {
         await settle();
         expect(trigger.getAttribute('data-dirty')).toBeNull();
         expect(trigger.getAttribute('data-touched')).toBeNull();
+    });
+
+    it('mirrors template-driven validation state', async () => {
+        const control = fixture.debugElement.query(By.directive(NgModel)).injector.get(NgModel).control;
+        const trigger: HTMLButtonElement = fixture.nativeElement.querySelector('[rdxSelectTrigger]');
+
+        expect(control.valid).toBe(true);
+        expect(trigger.getAttribute('data-valid')).toBe('');
+
+        host.value = '';
+        fixture.changeDetectorRef.markForCheck();
+        await settle();
+        expect(control.invalid).toBe(true);
+        expect(trigger.getAttribute('data-invalid')).toBe('');
+        expect(selectRoot(fixture).validationErrors()).toEqual([{ kind: 'required' }]);
+
+        host.value = 'Apple';
+        fixture.changeDetectorRef.markForCheck();
+        await settle();
+        expect(control.valid).toBe(true);
+        expect(trigger.getAttribute('data-valid')).toBe('');
+        expect(trigger.getAttribute('data-invalid')).toBeNull();
     });
 });
 

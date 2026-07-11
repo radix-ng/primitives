@@ -305,8 +305,23 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
     readonly readOnlyState = computed(() => this.readonly());
 
     private readonly dirtyValue = signal(false);
+    /** Validation errors from the checkbox input and a same-host Reactive/template-driven form control. */
+    readonly validationErrors = computed<readonly RdxValidationError[]>(() => {
+        const ownErrors = this.errors() ?? [];
+        const ngControlErrors = this.ngControlState.connected() ? this.ngControlState.errors() : [];
+        return ngControlErrors.length > 0 ? [...ownErrors, ...ngControlErrors] : ownErrors;
+    });
     /** @ignore Invalid when the `invalid` input is set or the `errors` list is non-empty. */
-    readonly invalidState = computed(() => this.invalid() || (this.errors()?.length ?? 0) > 0);
+    readonly invalidState = computed(
+        () =>
+            this.invalid() ||
+            this.validationErrors().length > 0 ||
+            Boolean(this.ngControlState.connected() && this.ngControlState.invalid())
+    );
+    /** @ignore Whether explicit or Angular-owned async validation is pending. */
+    readonly pendingState = computed(
+        () => this.pending() || Boolean(this.ngControlState.connected() && this.ngControlState.pending())
+    );
 
     /** Tri-state display validity exposed by an enclosing Field; absent when standalone. */
     private readonly fieldValidity = inject(RDX_FIELD_VALIDITY, { optional: true });
@@ -316,15 +331,21 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
      * `rdxCheckboxGroup` the group owns the field relationship, so the item keeps its own binary validity
      * (the field's invalid must not paint every checkbox red).
      */
-    readonly displayValid = computed<boolean | null>(() =>
-        !this.group && this.fieldValidity
-            ? this.fieldValidity()
-            : this.pending()
-              ? null
-              : this.invalidState()
-                ? false
-                : true
-    );
+    readonly displayValid = computed<boolean | null>(() => {
+        if (!this.group && this.fieldValidity) {
+            return this.fieldValidity();
+        }
+        if (this.pendingState()) {
+            return null;
+        }
+        if (this.invalidState()) {
+            return false;
+        }
+        if (this.ngControlState.connected() && this.ngControlState.disabled()) {
+            return null;
+        }
+        return true;
+    });
     /** @ignore */
     readonly touchedState = computed(() =>
         this.ngControlState.connected() ? this.ngControlState.touched() : this.touched()
