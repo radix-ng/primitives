@@ -27,7 +27,7 @@ import { RdxDateFieldRootDirective } from '../src/date-field-root.directive';
 class DateFieldHost {
     readonly granularity = signal<Granularity | undefined>(undefined);
     readonly locale = signal<string>('en');
-    readonly value = signal<DateValue | undefined>(undefined);
+    readonly value = signal<DateValue | null>(null);
 }
 
 function rootDirective(fixture: ComponentFixture<DateFieldHost>): RdxDateFieldRootDirective {
@@ -125,7 +125,7 @@ describe('Date Field', () => {
     imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective]
 })
 class DateFieldPlaceholderHost {
-    readonly value = signal<DateValue | undefined>(undefined);
+    readonly value = signal<DateValue | null>(null);
     readonly placeholder = signal<DateValue | undefined>(new CalendarDate(2026, 6, 6));
 }
 
@@ -201,7 +201,7 @@ describe('RdxDateField controlled placeholder', () => {
     imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective]
 })
 class DateFieldValidationHost {
-    readonly value = signal<DateValue | undefined>(undefined);
+    readonly value = signal<DateValue | null>(null);
     readonly maxValue = signal<DateValue | undefined>(undefined);
     readonly invalid = signal(false);
     readonly dirty = signal(false);
@@ -275,7 +275,7 @@ describe('RdxDateField validation state', () => {
     imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective, FormField]
 })
 class DateFieldSignalFormHost {
-    readonly model = signal<{ date: DateValue | undefined }>({ date: new CalendarDate(2026, 1, 15) });
+    readonly model = signal<{ date: DateValue | null }>({ date: null });
     readonly formTree = form(this.model);
 
     get date() {
@@ -287,7 +287,7 @@ describe('RdxDateField with Signal Forms', () => {
     let fixture: ComponentFixture<DateFieldSignalFormHost>;
     let host: DateFieldSignalFormHost;
 
-    function rootValue(): DateValue | undefined {
+    function rootValue(): DateValue | null {
         return fixture.debugElement
             .query(By.directive(RdxDateFieldRootDirective))
             .injector.get(RdxDateFieldRootDirective)
@@ -302,13 +302,16 @@ describe('RdxDateField with Signal Forms', () => {
     });
 
     it('reflects the bound field value (FormValueControl)', () => {
-        expect(rootValue()?.toString()).toBe('2026-01-15');
+        expect(rootValue()).toBeNull();
         host.model.update((value) => ({ ...value, date: new CalendarDate(2027, 6, 20) }));
         fixture.detectChanges();
         expect(rootValue()?.toString()).toBe('2027-06-20');
     });
 
     it('resets the value and interaction state through Signal Forms', () => {
+        host.formTree().reset({ date: new CalendarDate(2026, 1, 15) });
+        fixture.detectChanges();
+
         const root = fixture.debugElement.query(By.css('[rdxDateFieldRoot]')).nativeElement as HTMLElement;
         const day = fixture.nativeElement.querySelector('[data-rdx-date-field-segment="day"]') as HTMLElement;
         day.focus();

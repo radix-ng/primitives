@@ -3,7 +3,7 @@ import { DateStep, Formatter, HourCycle, SegmentValueObj, TimeValue } from '@rad
 
 export interface TimeFieldContextToken {
     locale: InputSignal<string>;
-    value: ModelSignal<TimeValue | undefined>;
+    value: ModelSignal<TimeValue | null>;
     /** The controlled placeholder; may be `undefined`. Use `convertedPlaceholder` for segment math. */
     placeholder: Signal<TimeValue | undefined>;
     isInvalid: Signal<boolean>;
@@ -20,7 +20,7 @@ export interface TimeFieldContextToken {
     segmentValues: WritableSignal<SegmentValueObj>;
     focusNext: () => void;
     setFocusedElement: (el: HTMLElement) => void;
-    convertedModelValue: WritableSignal<TimeValue | undefined>;
+    convertedModelValue: WritableSignal<TimeValue | null>;
     convertedPlaceholder: WritableSignal<TimeValue>;
     step$: Signal<DateStep>;
 }

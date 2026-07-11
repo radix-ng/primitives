@@ -4,7 +4,7 @@ import { DateStep, Formatter, HourCycle, SegmentValueObj } from '@radix-ng/primi
 
 export interface DateFieldContextToken {
     locale: InputSignal<string>;
-    value: ModelSignal<DateValue | undefined>;
+    value: ModelSignal<DateValue | null>;
     // Read-only views: consumers only read these. Typed as `Signal<…>` supertypes so the concrete
     // signal kind (transformed input, model, computed) is an implementation detail and mocks stay simple.
     disabled: Signal<boolean>;

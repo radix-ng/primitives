@@ -53,6 +53,7 @@ export class TimeFieldDefaultExample {}
 - ✅ `minValue` / `maxValue` range validation exposed through `data-invalid`.
 - ✅ Locale-aware formatting (segment order, separators, numbering system).
 - ✅ Headless and accessible — state is published via `data-*` attributes for you to style.
+- ✅ Uses `null` as the empty value for stable Angular Signal Forms fields.
 
 > Time Field is a Radix NG addition — it has no Base UI counterpart — but it follows the same
 > headless, signals-first, `data-*`-driven conventions as the rest of the library.
@@ -98,6 +99,20 @@ optional visually-hidden input for native form participation.
   <input rdxVisuallyHiddenInput feature="focusable" />
 </div>
 ```
+
+## Signal Forms
+
+Time Field uses the Angular-native `value = model<TimeValue | null>(null)` contract and does not ship a
+`ControlValueAccessor`. Use `null` for an empty time. Angular treats `undefined` as an absent optional
+child in a `FieldTree`, so it is not a valid empty value for a bound `[formField]` leaf.
+
+```ts
+readonly model = signal<{ time: TimeValue | null }>({ time: null });
+readonly timeForm = form(this.model);
+```
+
+Add `rdxSignalField` next to `[formField]` when an enclosing `rdxFieldRoot` should receive validation
+and interaction state. See the [Signal Forms matrix](?path=/docs/primitives-signal-forms--docs#control-integration-matrix).
 
 ## Examples
 

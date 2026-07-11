@@ -62,14 +62,12 @@ import { RdxDateFieldInputDirective } from './date-field-input.directive';
         '(focusout)': 'markAsTouched()'
     }
 })
-export class RdxDateFieldRootDirective
-    extends RdxFormUiControlBase
-    implements RdxFormValueControl<DateValue | undefined>
-{
+export class RdxDateFieldRootDirective extends RdxFormUiControlBase implements RdxFormValueControl<DateValue | null> {
     /**
-     * The controlled value of the date field.
+     * The controlled value of the date field. `null` represents an empty field and keeps the value
+     * addressable as an Angular Signal Forms child field (`undefined` denotes an absent optional path).
      */
-    readonly value = model<DateValue | undefined>();
+    readonly value = model<DateValue | null>(null);
 
     /**
      * A matcher that marks specific dates as unavailable; a matched value makes the field invalid.
@@ -142,7 +140,7 @@ export class RdxDateFieldRootDirective
         getDefaultDate({
             defaultPlaceholder: undefined,
             granularity: this.granularity(),
-            defaultValue: this.value(),
+            defaultValue: this.value() ?? undefined,
             locale: this.locale()
         })
     );
@@ -206,7 +204,7 @@ export class RdxDateFieldRootDirective
      * @ignore
      */
     readonly segmentValues = linkedSignal<
-        { value: DateValue | undefined; granularity: Granularity; formatter: Formatter },
+        { value: DateValue | null; granularity: Granularity; formatter: Formatter },
         SegmentValueObj
     >({
         source: () => ({

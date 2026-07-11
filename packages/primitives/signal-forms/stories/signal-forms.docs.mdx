@@ -38,36 +38,36 @@ import { RdxSignalField, RdxSignalForm } from '@radix-ng/primitives/signal-forms
 
 ## Control integration matrix
 
-Every Signal Forms and reset check below is covered by a runtime spec in the control's package — not
-only by structural TypeScript compatibility. Reset means `field().reset(value)` restores the model and
-visible control value, then returns both Angular and control-owned interaction state to untouched / pristine.
+The matrix is executable, not just structural TypeScript compatibility. Every Signal Forms row has
+per-control value/reset specs plus a cross-control visible-state spec for `[formField] rdxSignalField`.
+Every classic row is also mounted on its real control root in an 11-control conformance spec for
+`formControlName + rdxNgControlField`: errors, dirty/touched, disabled neutrality, inferred names, and
+reset all travel through the same Field contract.
 
-`NgControl lifecycle` means the control reflects `dirty` / `touched`, reacts to Angular's default
-`reset()` / `markAsPristine()` / `markAsUntouched()`, and mirrors validation status. `VALID` and
-`INVALID` produce the matching `data-*` state, while `PENDING` and `DISABLED` stay neutral. Angular
-errors are available through `validationErrors()` as `{ kind, message? }[]`. This applies to both
-Reactive Forms and `ngModel`; Signal-only controls use their signal inputs and `FieldState.reset()`.
+The value column shows the value to put in an Angular **Signal Forms model**. Angular deliberately
+treats an `undefined` object property as an absent optional `FieldTree`, so do not initialize a bound
+leaf to `undefined`. Use the control's concrete empty value: `''`, `[]`, or `null`.
 
-| Control        | Signal value                      | `[formField]` | Reactive / `ngModel` | `NgControl` lifecycle | `FieldState.reset()` |
-| -------------- | --------------------------------- | ------------- | -------------------- | --------------------- | -------------------- |
-| Input          | `string \| undefined`             | ✅            | ✅ native            | ✅                    | ✅                   |
-| Checkbox       | `boolean`                         | ✅            | ✅ CVA               | ✅                    | ✅                   |
-| Checkbox Group | `string[]`                        | ✅            | ✅ CVA               | ✅                    | ✅                   |
-| Switch         | `boolean`                         | ✅            | ✅ CVA               | ✅                    | ✅                   |
-| Radio Group    | `string \| null`                  | ✅            | ✅ CVA               | ✅                    | ✅                   |
-| Select         | value / value array / `undefined` | ✅            | ✅ CVA               | ✅                    | ✅                   |
-| Toggle Group   | `string[] \| undefined`           | ✅            | ✅ CVA               | ✅                    | ✅                   |
-| Slider         | `number \| number[]`              | ✅            | ✅ CVA               | ✅                    | ✅                   |
-| Number Field   | `number \| null`                  | ✅            | ✅ CVA               | ✅                    | ✅                   |
-| Combobox       | value / value array / `null`      | ✅            | ✅ CVA               | ✅                    | ✅                   |
-| Autocomplete   | `string`                          | ✅            | ✅ CVA               | ✅                    | ✅                   |
-| Date Field     | `DateValue \| undefined`          | ✅            | —                    | —                     | ✅                   |
-| Time Field     | `TimeValue \| undefined`          | ✅            | —                    | —                     | ✅                   |
-| Editable       | `string \| undefined`             | ✅            | —                    | —                     | ✅                   |
+| Control        | Signal model value                   | `[formField]` + `rdxSignalField` | `formControl` / `ngModel` + `rdxNgControlField` | Signal `reset()` |
+| -------------- | ------------------------------------ | -------------------------------- | ------------------------------------------------ | ---------------- |
+| Input          | `string` (empty: `''`)               | ✅                               | ✅ native                                        | ✅               |
+| Checkbox       | `boolean`                            | ✅                               | ✅ CVA                                           | ✅               |
+| Checkbox Group | `string[]`                           | ✅                               | ✅ CVA                                           | ✅               |
+| Switch         | `boolean`                            | ✅                               | ✅ CVA                                           | ✅               |
+| Radio Group    | `string \| null`                     | ✅                               | ✅ CVA                                           | ✅               |
+| Select         | value / value array / `null` or `[]` | ✅                               | ✅ CVA                                           | ✅               |
+| Toggle Group   | `string[]` (empty: `[]`)             | ✅                               | ✅ CVA                                           | ✅               |
+| Slider         | `number \| number[]`                 | ✅                               | ✅ CVA                                           | ✅               |
+| Number Field   | `number \| null`                     | ✅                               | ✅ CVA                                           | ✅               |
+| Combobox       | value / value array / `null`         | ✅                               | ✅ CVA                                           | ✅               |
+| Autocomplete   | `string` (empty: `''`)               | ✅                               | ✅ CVA                                           | ✅               |
+| Date Field     | `DateValue \| null`                  | ✅                               | —                                                | ✅               |
+| Time Field     | `TimeValue \| null`                  | ✅                               | —                                                | ✅               |
+| Editable       | `string` (empty: `''`)               | ✅                               | —                                                | ✅               |
 
-An em dash is intentional: `date-field`, `time-field`, and `editable` currently expose the
-Angular-native `value = model()` contract but do not ship a `ControlValueAccessor`. The matrix makes
-that boundary explicit instead of implying parity that does not yet exist.
+An em dash is intentional: `date-field`, `time-field`, and `editable` expose the Angular-native
+`value = model()` contract but do not ship a `ControlValueAccessor`. Date and Time Field use `null` for
+their empty value specifically so an empty Signal Forms field remains addressable.
 
 ## Anatomy
 

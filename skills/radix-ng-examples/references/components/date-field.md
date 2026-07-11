@@ -49,7 +49,7 @@ export class DateFieldComponent {
     /** How much of the date/time to render — `'day'` shows date only, `'second'` adds the time. */
     readonly granularity = input<Granularity>('day');
 
-    readonly value = model<DateValue | undefined>();
+    readonly value = model<DateValue | null>(null);
 }
 ```
 
@@ -62,6 +62,7 @@ export class DateFieldComponent {
 - ✅ Highly composable
 - ✅ Accessible by default
 - ✅ Supports both date and date-time formats
+- ✅ Uses `null` as the empty value for stable Angular Signal Forms fields
 
 ## Preface
 
@@ -95,6 +96,20 @@ Import all parts and piece them together.
     <input rdxVisuallyHiddenInput />
 </div>
 ```
+
+## Signal Forms
+
+Date Field uses the Angular-native `value = model<DateValue | null>(null)` contract and does not ship a
+`ControlValueAccessor`. Use `null` for an empty date. Angular treats `undefined` as an absent optional
+child in a `FieldTree`, so it is not a valid empty value for a bound `[formField]` leaf.
+
+```ts
+readonly model = signal<{ date: DateValue | null }>({ date: null });
+readonly dateForm = form(this.model);
+```
+
+Add `rdxSignalField` next to `[formField]` when an enclosing `rdxFieldRoot` should receive validation
+and interaction state. See the [Signal Forms matrix](?path=/docs/primitives-signal-forms--docs#control-integration-matrix).
 
 ## API Reference
 

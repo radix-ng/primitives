@@ -279,6 +279,11 @@ Radix NG controls already expose the structural contract Signal Forms binds to:
 - **`FormCheckboxControl`** — a `checked = model<boolean>()` member, with no `value` member (Checkbox,
   Switch).
 
+Use a concrete empty value in the Signal Forms model. Angular's `FieldTree` treats an `undefined`
+object property as an absent optional child, so `[formField]="form.date"` cannot bind while `date` is
+`undefined`. Use `''` for text controls, `[]` for groups/multiple selection, and `null` for nullable
+controls such as Radio, Select, Number Field, Combobox, Date Field, and Time Field.
+
 Beyond the required `value` / `checked` model, **every** form control also exposes the optional
 `FormUiControl` surface — `invalid`, `pending`, `errors`, `touched` (a `model()` plus a `touch` output),
 and `dirty` — and reflects the Base UI validity/interaction contract as `data-invalid` / `data-valid` /

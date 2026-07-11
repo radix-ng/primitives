@@ -28,7 +28,7 @@ import { RdxTimeFieldRootDirective } from '../src/time-field-root.directive';
 class TimeFieldHost {
     readonly granularity = signal<Granularity | undefined>(undefined);
     readonly hourCycle = signal<HourCycle>(undefined);
-    readonly value = signal<TimeValue | undefined>(undefined);
+    readonly value = signal<TimeValue | null>(null);
     readonly placeholder = signal<TimeValue | undefined>(undefined);
 }
 
@@ -132,7 +132,7 @@ describe('Time Field', () => {
             type(minute, '30');
             fixture.detectChanges();
 
-            const value = rootDirective(fixture).value() as Time | undefined;
+            const value = rootDirective(fixture).value() as Time | null;
             expect(value).toBeInstanceOf(Time);
             expect(value?.hour).toBe(9);
             expect(value?.minute).toBe(30);
@@ -205,7 +205,7 @@ describe('Time Field', () => {
             fixture.detectChanges();
 
             // the hour stays empty (no null - 12 / +12 arithmetic) and nothing is committed
-            expect(rootDirective(fixture).value()).toBeUndefined();
+            expect(rootDirective(fixture).value()).toBeNull();
             expect(hour.getAttribute('aria-valuetext')).toBe('Empty');
         });
     });
@@ -230,7 +230,7 @@ describe('Time Field', () => {
     imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective]
 })
 class TimeFieldValidationHost {
-    readonly value = signal<TimeValue | undefined>(undefined);
+    readonly value = signal<TimeValue | null>(null);
     readonly invalid = signal(false);
     readonly dirty = signal(false);
     readonly errors = signal<{ kind: string; message?: string }[]>([]);
@@ -296,7 +296,7 @@ describe('RdxTimeField validation state', () => {
     imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, FormField]
 })
 class TimeFieldSignalFormHost {
-    readonly model = signal<{ time: TimeValue | undefined }>({ time: new Time(10, 30) });
+    readonly model = signal<{ time: TimeValue | null }>({ time: null });
     readonly formTree = form(this.model);
 
     get time() {
@@ -308,7 +308,7 @@ describe('RdxTimeField with Signal Forms', () => {
     let fixture: ComponentFixture<TimeFieldSignalFormHost>;
     let host: TimeFieldSignalFormHost;
 
-    function rootValue(): TimeValue | undefined {
+    function rootValue(): TimeValue | null {
         return fixture.debugElement
             .query(By.directive(RdxTimeFieldRootDirective))
             .injector.get(RdxTimeFieldRootDirective)
@@ -323,13 +323,16 @@ describe('RdxTimeField with Signal Forms', () => {
     });
 
     it('reflects the bound field value (FormValueControl)', () => {
-        expect(rootValue()?.toString()).toBe('10:30:00');
+        expect(rootValue()).toBeNull();
         host.model.update((value) => ({ ...value, time: new Time(14, 45) }));
         fixture.detectChanges();
         expect(rootValue()?.toString()).toBe('14:45:00');
     });
 
     it('resets the value and interaction state through Signal Forms', () => {
+        host.formTree().reset({ time: new Time(10, 30) });
+        fixture.detectChanges();
+
         const root = fixture.debugElement.query(By.css('[rdxTimeFieldRoot]')).nativeElement as HTMLElement;
         const hour = fixture.nativeElement.querySelector('[data-rdx-date-field-segment="hour"]') as HTMLElement;
         hour.focus();

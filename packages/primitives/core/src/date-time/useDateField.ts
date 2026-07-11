@@ -54,7 +54,7 @@ export type UseDateFieldProps = {
     disabled: Signal<boolean>;
     readonly: Signal<boolean>;
     part: SegmentPart;
-    modelValue: ModelSignal<DateValue | undefined> | WritableSignal<DateValue | undefined>;
+    modelValue: ModelSignal<DateValue | null> | WritableSignal<DateValue | null>;
     focusNext: () => void;
 };
 
@@ -276,7 +276,7 @@ export function useDateField(props: UseDateFieldProps) {
 
         const str = prevValue.toString();
         if (str.length === 1) {
-            props.modelValue.set(undefined);
+            props.modelValue.set(null);
             return null;
         }
 

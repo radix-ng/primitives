@@ -44,5 +44,5 @@ export class DateFieldComponent {
     /** How much of the date/time to render — `'day'` shows date only, `'second'` adds the time. */
     readonly granularity = input<Granularity>('day');
 
-    readonly value = model<DateValue | undefined>();
+    readonly value = model<DateValue | null>(null);
 }

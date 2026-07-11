@@ -2507,8 +2507,9 @@
             },
             {
               "name": "value",
-              "type": "DateValue | undefined",
-              "description": "The controlled value of the date field."
+              "type": "DateValue | null",
+              "default": "null",
+              "description": "The controlled value of the date field. `null` represents an empty field and keeps the value\naddressable as an Angular Signal Forms child field (`undefined` denotes an absent optional path)."
             },
             {
               "name": "dirty",
@@ -7470,8 +7471,9 @@
             },
             {
               "name": "value",
-              "type": "TimeValue | undefined",
-              "description": "The controlled checked state of the calendar."
+              "type": "TimeValue | null",
+              "default": "null",
+              "description": "The controlled time value. `null` represents an empty field and keeps the value addressable as\nan Angular Signal Forms child field (`undefined` denotes an absent optional path)."
             },
             {
               "name": "dirty",

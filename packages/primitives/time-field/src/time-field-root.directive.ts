@@ -54,7 +54,7 @@ function convertValue(value: TimeValue, date: DateValue = today(getLocalTimeZone
  * so the segment editor has a date context) back onto the public `value` model.
  * A date-bearing model keeps its shape; a time-only model is exposed as a plain `Time`.
  */
-function toModelValue(value: TimeValue, current: TimeValue | undefined): TimeValue {
+function toModelValue(value: TimeValue, current: TimeValue | null): TimeValue {
     if (current && 'day' in current) {
         return value;
     }
@@ -62,7 +62,7 @@ function toModelValue(value: TimeValue, current: TimeValue | undefined): TimeVal
     return new Time(value.hour, value.minute, value.second, value.millisecond);
 }
 
-function isSameTimeValue(a: TimeValue | undefined, b: TimeValue | undefined): boolean {
+function isSameTimeValue(a: TimeValue | null, b: TimeValue | null): boolean {
     if (isNullish(a) || isNullish(b)) return a === b;
     return (a as { compare(other: TimeValue): number }).compare(b) === 0;
 }
@@ -87,14 +87,12 @@ function isSameTimeValue(a: TimeValue | undefined, b: TimeValue | undefined): bo
         '(focusout)': 'markAsTouched()'
     }
 })
-export class RdxTimeFieldRootDirective
-    extends RdxFormUiControlBase
-    implements RdxFormValueControl<TimeValue | undefined>
-{
+export class RdxTimeFieldRootDirective extends RdxFormUiControlBase implements RdxFormValueControl<TimeValue | null> {
     /**
-     * The controlled checked state of the calendar.
+     * The controlled time value. `null` represents an empty field and keeps the value addressable as
+     * an Angular Signal Forms child field (`undefined` denotes an absent optional path).
      */
-    readonly value = model<TimeValue | undefined>();
+    readonly value = model<TimeValue | null>(null);
 
     /**
      * The hour cycle to use for formatting times. Defaults to the locale preference
@@ -161,7 +159,7 @@ export class RdxTimeFieldRootDirective
     readonly defaultDate = computed(() =>
         getDefaultTime({
             defaultPlaceholder: undefined,
-            defaultValue: this.value()
+            defaultValue: this.value() ?? undefined
         })
     );
 
@@ -217,7 +215,7 @@ export class RdxTimeFieldRootDirective
 
             return convertValue(this.value()!);
         },
-        computation: (value: TimeValue | undefined) => {
+        computation: (value: TimeValue | null) => {
             return value;
         }
     });
@@ -239,7 +237,7 @@ export class RdxTimeFieldRootDirective
      * @ignore
      */
     readonly segmentValues = linkedSignal<
-        { value: TimeValue | undefined; granularity: Granularity; formatter: Formatter },
+        { value: TimeValue | null; granularity: Granularity; formatter: Formatter },
         SegmentValueObj
     >({
         source: () => ({
@@ -391,7 +389,7 @@ export class RdxTimeFieldRootDirective
             // buffer; mirror it back onto the public `value` model so two-way binding and
             // `valueChange` fire. The guard keeps this idempotent and breaks the feedback loop
             // (`value` → `convertedModelValue` source → here) once the values agree.
-            const next = isNullish(value) ? undefined : toModelValue(value, this.value());
+            const next = isNullish(value) ? null : toModelValue(value, this.value());
             if (!isSameTimeValue(this.value(), next)) {
                 this.value.set(next);
             }
