@@ -120,6 +120,10 @@ const context = (): RdxComboboxRootContext => {
         modal: root.modal,
         virtualized: root.virtualized,
         grid: root.grid,
+        invalidState: root.invalidState,
+        pendingState: root.formUi.pendingState,
+        touchedState: root.touchedState,
+        dirtyState: root.dirtyState,
         filteredItems: engine.filteredItems,
         highlightedItem: engine.highlightedItem,
         highlightedIndex: engine.highlightedIndex,
@@ -164,9 +168,6 @@ const context = (): RdxComboboxRootContext => {
         openAndHighlight: (edge: 'first' | 'last', reason?: RdxComboboxOpenChangeReason, event?: Event) =>
             root.openAndHighlight(edge, reason, event),
         navigateByKeyboard: (direction: 1 | -1, event?: Event) => root.navigateByKeyboard(direction, event),
-        invalidState: root.invalidState,
-        touchedState: root.touchedState,
-        dirtyState: root.dirtyState,
         select: (item: ComboboxItemRef, event?: Event) => root.handleSelect(item, event),
         selectIndex: (index: number, event?: Event) => root.selectIndex(index, event),
         selectHighlighted: (event?: Event) => root.selectHighlighted(event),
@@ -348,6 +349,7 @@ export class RdxAutocompleteRoot
     readonly requiredState = computed(() => this.required());
     /** @ignore */
     readonly invalidState = this.formUi.invalidState;
+    readonly pendingState = this.formUi.pendingState;
     /** @ignore */
     readonly touchedState = this.formUi.touchedState;
     /** @ignore */

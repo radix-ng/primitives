@@ -748,6 +748,12 @@
               "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
             },
             {
+              "name": "pending",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
+            },
+            {
               "name": "touched",
               "type": "boolean",
               "default": "false",
@@ -1250,6 +1256,12 @@
               "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
             },
             {
+              "name": "pending",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
+            },
+            {
               "name": "touched",
               "type": "boolean",
               "default": "false",
@@ -1356,6 +1368,12 @@
               "type": "boolean",
               "default": "false",
               "description": "When inside a `rdxCheckboxGroup`, marks this as the \"select all\" checkbox: its state is\nderived from the group's `allValues`, and toggling it checks or unchecks every child."
+            },
+            {
+              "name": "pending",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether async validation is pending. Pending checkboxes publish neither valid nor invalid state."
             },
             {
               "name": "readOnly",
@@ -2003,6 +2021,12 @@
               "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
             },
             {
+              "name": "pending",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
+            },
+            {
               "name": "touched",
               "type": "boolean",
               "default": "false",
@@ -2503,6 +2527,12 @@
               "type": "boolean",
               "default": "false",
               "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+            },
+            {
+              "name": "pending",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
             },
             {
               "name": "touched",
@@ -3174,6 +3204,12 @@
               "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
             },
             {
+              "name": "pending",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
+            },
+            {
               "name": "touched",
               "type": "boolean",
               "default": "false",
@@ -3603,6 +3639,12 @@
               "type": "readonly RegExp[]",
               "default": "[]",
               "description": "Patterns the value must match. Reflected to the native `pattern` attribute\nonly when exactly one pattern is provided (the attribute holds a single regex)."
+            },
+            {
+              "name": "pending",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether async validation is pending. Pending inputs publish neither valid nor invalid state."
             },
             {
               "name": "readonly",
@@ -4965,6 +5007,12 @@
               "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
             },
             {
+              "name": "pending",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
+            },
+            {
               "name": "touched",
               "type": "boolean",
               "default": "false",
@@ -6095,6 +6143,12 @@
               "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
             },
             {
+              "name": "pending",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
+            },
+            {
               "name": "touched",
               "type": "boolean",
               "default": "false",
@@ -6523,6 +6577,12 @@
               "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
             },
             {
+              "name": "pending",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
+            },
+            {
               "name": "touched",
               "type": "boolean",
               "default": "false",
@@ -6654,7 +6714,7 @@
           "directive": "RdxSignalField",
           "selector": "[formField][rdxSignalField]",
           "exportAs": "rdxSignalField",
-          "description": "Bridges an Angular **Signal Forms** field into an enclosing `rdxFieldRoot` — with **no duplicate\nbinding**. Place it on the control that already carries `[formField]`; it reads the bound field's\nstate from that directive, so the field expression is written exactly once:\n\n```html\n<div rdxFieldRoot>\n  <label rdxFieldLabel>Email</label>\n  <input rdxInput [formField]=\"loginForm.email\" rdxSignalField />\n  <p rdxFieldError>Email is required.</p>\n</div>\n```\n\nIt owns no model and runs no validation — Signal Forms remains the source of truth. It only registers\nan {@link RdxFieldState} provider on the ancestor Field context so the field's `invalid` / `disabled` /\n`required` / `dirty` / `touched` data-attributes and the error *content* (`rdxFieldError.messages()`)\nread authoritative Signal Forms state. `filled` / `focused` stay on Field's DOM heuristic (partial\nownership — the seam supports it).\n\nIt reports the **actual** Signal Forms state only; the `Field` decides *when* to display it from its\n`validationMode` (default `'onBlur'` — neutral until the field is touched or the form submitted). So an\nempty required field is neutral on load with no manual `[invalid]`/`[touched]` wiring, and a pristine\nsubmit reveals the errors (the `Form` records the submit attempt before checking validity and blocks).\n\nSee ADR 0018.",
+          "description": "Bridges an Angular **Signal Forms** field into an enclosing `rdxFieldRoot` — with **no duplicate\nbinding**. Place it on the control that already carries `[formField]`; it reads the bound field's\nstate from that directive, so the field expression is written exactly once:\n\n```html\n<div rdxFieldRoot>\n  <label rdxFieldLabel>Email</label>\n  <input rdxInput [formField]=\"loginForm.email\" rdxSignalField />\n  <p rdxFieldError>Email is required.</p>\n</div>\n```\n\nIt owns no model and runs no validation — Signal Forms remains the source of truth. It only registers\nan {@link RdxFieldState} provider on the ancestor Field context so the field's `invalid` / `disabled` /\n`required` / `dirty` / `touched` data-attributes, tri-state pending validity, and the error *content*\n(`rdxFieldError.messages()`) read authoritative Signal Forms state. `filled` / `focused` stay on\nField's DOM heuristic (partial ownership — the seam supports it).\n\nIt reports the **actual** Signal Forms state only; the `Field` decides *when* to display it from its\n`validationMode` (default `'onBlur'` — neutral until the field is touched or the form submitted). So an\nempty required field is neutral on load with no manual `[invalid]`/`[touched]` wiring, and a pristine\nsubmit reveals the errors (the `Form` records the submit attempt before checking validity and blocks).\n\nSee ADR 0018.",
           "inputs": [],
           "outputs": []
         },
@@ -6662,7 +6722,7 @@
           "directive": "RdxSignalForm",
           "selector": "form[rdxFormRoot][rdxSignalForm]",
           "exportAs": "rdxSignalForm",
-          "description": "Bridges an Angular **Signal Forms** form into an enclosing `form[rdxFormRoot]`.\n\n```html\n<form rdxFormRoot [rdxSignalForm]=\"loginForm\">\n  <!-- fields bound with [formField] (+ rdxSignalField) -->\n</form>\n```\n\nRegisters an {@link RdxFormState} provider so the Form's aggregate `data-invalid` / `data-dirty` /\n`data-touched` / `data-submitting` attributes and the submit guard read authoritative Signal Forms\nstate. This adapter owns only client-side state and `name`-routing; server errors stay a separate\neager channel applied through `rdxFormRoot[errors]`, and Signal Forms' own `submit()` owns the\nsubmit lifecycle.\n\n`errorsFor(name)` routes a field's errors to a `rdxFieldRoot` by its `name`, walking the `FieldTree`\nso dotted paths into nested object/array fields resolve too (`address.street`, `items.0.name`). A\nfield can surface messages from the form alone — no per-field `rdxSignalField` needed for errors.\nThese are the **two modes** (per-field adapter vs form-level name routing) — prefer one per field; if\na field carries both, `rdxFieldError.messages()` deduplicates by text so the shared message is not\nshown twice.\n\nSee ADR 0018.",
+          "description": "Bridges an Angular **Signal Forms** form into an enclosing `form[rdxFormRoot]`.\n\n```html\n<form rdxFormRoot [rdxSignalForm]=\"loginForm\">\n  <!-- fields bound with [formField] (+ rdxSignalField) -->\n</form>\n```\n\nRegisters an {@link RdxFormState} provider so the Form's aggregate `data-invalid` / `data-dirty` /\n`data-touched` / `data-submitting` attributes and the submit guard read authoritative Signal Forms\nstate. By default this adapter owns only client-side state and `name`-routing; server errors stay a\nseparate eager channel applied through `rdxFormRoot[errors]`. Add `rdxSignalSubmit` to delegate native\nsubmission to Signal Forms' own `submit()` lifecycle instead of `rdxFormRoot.onFormSubmit`:\n\n```html\n<form rdxFormRoot [rdxSignalForm]=\"loginForm\" rdxSignalSubmit>…</form>\n```\n\n`errorsFor(name)` routes a field's errors to a `rdxFieldRoot` by its `name`, walking the `FieldTree`\nso dotted paths into nested object/array fields resolve too (`address.street`, `items.0.name`). A\nfield can surface messages from the form alone — no per-field `rdxSignalField` needed for errors.\nThese are the **two modes** (per-field adapter vs form-level name routing) — prefer one per field; if\na field carries both, `rdxFieldError.messages()` deduplicates by text so the shared message is not\nshown twice.\n\nSee ADR 0018 and ADR 0020.",
           "inputs": [
             {
               "name": "rdxSignalForm",
@@ -6670,6 +6730,12 @@
               "default": "{ alias: 'rdxSignalForm' }",
               "required": true,
               "description": "The Signal Forms root field (from `form(...)`) whose aggregate state drives the enclosing Form."
+            },
+            {
+              "name": "rdxSignalSubmit",
+              "type": "boolean",
+              "default": "false",
+              "description": "Delegate native submission to Angular Signal Forms' `submit()` lifecycle. Opt-in so adding the\nstate adapter to an existing 1.x form cannot silently replace its `(onFormSubmit)` side effects.\nThe bound `form()` must define `submission.action`; Angular reports a descriptive error otherwise."
             }
           ],
           "outputs": []
@@ -6824,6 +6890,12 @@
               "type": "boolean",
               "default": "false",
               "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+            },
+            {
+              "name": "pending",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
             },
             {
               "name": "touched",
@@ -7121,6 +7193,12 @@
               "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
             },
             {
+              "name": "pending",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
+            },
+            {
               "name": "touched",
               "type": "boolean",
               "default": "false",
@@ -7399,6 +7477,12 @@
               "type": "boolean",
               "default": "false",
               "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+            },
+            {
+              "name": "pending",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
             },
             {
               "name": "touched",
@@ -7750,6 +7834,12 @@
               "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
             },
             {
+              "name": "pending",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
+            },
+            {
               "name": "touched",
               "type": "boolean",
               "default": "false",
@@ -7840,6 +7930,12 @@
               "type": "boolean",
               "default": "false",
               "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+            },
+            {
+              "name": "pending",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
             },
             {
               "name": "touched",

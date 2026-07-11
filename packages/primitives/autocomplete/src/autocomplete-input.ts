@@ -92,9 +92,11 @@ export class RdxAutocompleteInput {
     protected readonly displayValid = computed<boolean | null>(() =>
         this.fieldRootContext
             ? this.fieldRootContext.validState()
-            : this.invalid() || this.root.invalidState()
-              ? false
-              : true
+            : this.root.pendingState()
+              ? null
+              : this.invalid() || this.root.invalidState()
+                ? false
+                : true
     );
     protected readonly disabledState = computed(
         () => this.root.disabledState() || Boolean(this.fieldRootContext?.disabledState())

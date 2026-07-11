@@ -208,6 +208,9 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
      */
     readonly invalid = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /** Whether async validation is pending. Pending checkboxes publish neither valid nor invalid state. */
+    readonly pending = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
     /**
      * Whether the checkbox has been touched. A `model()` so Signal Forms can write it; the checkbox
      * also sets it on toggle (and emits {@link touch}).
@@ -312,7 +315,13 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
      * (the field's invalid must not paint every checkbox red).
      */
     readonly displayValid = computed<boolean | null>(() =>
-        !this.group && this.fieldValidity ? this.fieldValidity() : this.invalidState() ? false : true
+        !this.group && this.fieldValidity
+            ? this.fieldValidity()
+            : this.pending()
+              ? null
+              : this.invalidState()
+                ? false
+                : true
     );
     /** @ignore */
     readonly touchedState = computed(() => this.touched());

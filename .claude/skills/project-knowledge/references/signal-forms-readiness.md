@@ -52,9 +52,25 @@ Both extend `FormUiControl`, which adds optional state as plain signals:
 CVA stays for Reactive/Template forms; a control can implement **both** CVA and
 `FormValueControl`/`FormCheckboxControl` at once, enabling additive migration.
 
-Prerequisite for shipping real integration: **Angular 22** (the API is
-experimental in 21). Everything in [Prep work](#prep-work-doable-on-angular-21)
-is version-independent.
+The shipping prerequisite was **Angular 22** (the API is experimental in 21);
+the workspace now satisfies it. Everything in
+[Prep work](#prep-work-doable-on-angular-21) remains version-independent.
+
+## Current shipped integration (2026-07-11)
+
+The Angular 22 gate is complete. The opt-in `@radix-ng/primitives/signal-forms`
+entry now ships both adapters:
+
+- `rdxSignalField` maps authoritative field state and errors into `Field`.
+- `rdxSignalForm` maps aggregate form state and name-routed errors into `Form`.
+- `rdxSignalSubmit` optionally delegates native submit to Angular's public
+  `submit()` lifecycle. Without it, the existing Base UI-style
+  `(onFormSubmit)` path is unchanged.
+
+All controls expose Angular's optional `pending` input. Pending is carried
+through the internal state seams as neutral validity (neither `data-valid` nor
+`data-invalid`); applications render progress directly from Angular's
+`field().pending()` signal. See ADR 0018 and ADR 0020.
 
 ## Conformance matrix
 
@@ -228,12 +244,11 @@ All five keep CVA (dual: Reactive/template-driven **and** Signal Forms).
   `markAsTouched()` on leaving edit mode (`submit`/`cancel`), `markDirty()` in `submit()` only on an
   actual value change. Verified in `editable-root.directive.spec.ts`.
 
-**🎉 Batch #4 is COMPLETE across every form control** — `invalid`/`errors`/`touched`/`dirty` (+ the
+**🎉 Batch #4 is COMPLETE across every form control** — `invalid`/`pending`/`errors`/`touched`/`dirty` (+ the
 `touch` output) ship on all of: input, radio, checkbox, switch, number-field, select, toggle-group,
-checkbox-group, slider, combobox, autocomplete, date-field, time-field, editable. The only remaining
-work is the **Angular 22 gate** (re-run the spike, swap the `core` shim for real
-`@angular/forms/signals` imports) and the optional secondary surface (`name` / `required` / `readonly`
-/ `min`/`max` where a control still lacks them).
+checkbox-group, slider, combobox, autocomplete, date-field, time-field, editable. The Angular 22 gate
+and real `@angular/forms/signals` adapter entry have landed. Remaining conformance work is the optional
+secondary surface (`name` / `required` / `readonly` / `min`/`max` where a control still lacks them).
 
 ### Shared batch-#4 mechanisms (`@radix-ng/primitives/core`)
 
@@ -244,7 +259,7 @@ inputs, so ArgTypes/api-contract are intact). slider extends the base but skips 
 (union value vs scalar `min`/`max`).
 
 - **`RdxFormUiControlBase`** (abstract `@Directive()`) — declares the optional `FormUiControl` inputs
-  (`invalid`/`errors`/`touched`/`dirty` + `touch` output) **once** and builds `formUi` from them, so a
+  (`invalid`/`pending`/`errors`/`touched`/`dirty` + `touch` output) **once** and builds `formUi` from them, so a
   control inherits the whole surface with one `extends`. Inputs must live on a decorated directive
   class (the Angular compiler only discovers `input()`/`model()` as field initializers, and Signal
   Forms binds form-written state onto the single directive that carries the `value`/`checked` model) —
@@ -253,10 +268,10 @@ inputs, so ArgTypes/api-contract are intact). slider extends the base but skips 
   Limitation: one `extends` slot — fine for the form roots (most extend nothing); toggle-group already
   had a base, so it is a 3-level chain (`RdxToggleGroup → RdxToggleGroupBase → RdxFormUiControlBase`),
   which works.
-- **`createFormUiState({ invalid, errors, touched, touch, dirty, cva? })`** → `{ invalidState,
-touchedState, dirtyState, markAsTouched, markDirty }`. The derivation + dual `markAsTouched` engine
+- **`createFormUiState({ invalid, pending, errors, touched, touch, dirty, cva? })`** → `{ invalidState,
+pendingState, touchedState, dirtyState, markAsTouched, markDirty }`. The derivation + dual `markAsTouched` engine
   the base calls (also usable directly by a control that cannot extend the base). Compound controls
-  also get `RdxFormUiStateContext` + `formUiStateContext()` to spread the four state fields into their
+  also get `RdxFormUiStateContext` + `formUiStateContext()` to spread the five state fields into their
   context for child parts (select → trigger).
 - **`RdxFormUiStateHost`** host directive + **`provideFormUiState(() => inject(MyControl).formUi)`** —
   owns the identical `aria-invalid` + `data-invalid/valid/touched/dirty` bindings and the
@@ -350,16 +365,11 @@ filled/focused`) and the context gains `setStateProvider(provider | null)`
    The DOM heuristic in `rdxFieldControl`/`rdxInput` is untouched and stays the
    default; provider precedence simply makes its writes inert for owned states.
    Covered by 5 new specs in `field.directive.spec.ts`. Version-independent.
-5. ✅ **Runtime spike — DONE for 21.x experimental** (2026-06-11; was the
-   mandatory gate from the ADR 0004 amendment). 9 specs (custom-control
-   discovery of `rdxInput`, value round-trip, errors/name delivery, touched on
-   blur, CVA path via switch) ran green against 21.2.9; the spec is **archived
-   at `docs/spikes/signal-forms-spike.spec.ts`** out of the test glob — it
-   pinned the experimental API, and the stable-22 contract diff is already
-   known and documented. At the Angular 22 bump: copy back into
-   `input/__tests__/`, re-run against stable (the last gate step), then swap
-   the `core` shim for real imports (prep #3 note). See "Open question —
-   ANSWERED" above for the findings.
+5. ✅ **Runtime integration gate — DONE.** The original 21.2.9 experimental
+   spike remains archived at `docs/spikes/signal-forms-spike.spec.ts`. The
+   shipped primitive suites now cover custom-control discovery, value
+   round-trip, validation state, errors/name delivery, touched/dirty, pending,
+   and the opt-in submission lifecycle against stable Angular 22.
 6. ✅ **Remove CDK from the form path** — done as part of removing `@angular/cdk`
    from the whole library. `BooleanInput`/`NumberInput` now come from
    `@radix-ng/primitives/core` (`core/src/types.ts`), id generation uses the `core`
@@ -367,15 +377,10 @@ filled/focused`) and the context gains `setStateProvider(provider | null)`
    (`RdxLiveAnnouncer`, `isPlatformBrowser`, the `Direction` type). `@angular/cdk` is
    no longer a peer dependency. See `architecture.md` for the full breakdown.
 
-Progress: **1 ✅ → 2 ✅ → 3 ✅ → 4 ✅** done, **plus** both structural collisions
-resolved — the `value` split (switch + checkbox) and the checkbox `indeterminate`
-split. All five clean controls (radio, input, number-field, switch, checkbox)
-now `implements` and compile. **6** (CDK removal from the form path) is done — CDK
-is fully removed from the library. Remaining: the shared **`invalid`/`errors`/
-`touched`/`dirty` batch** (collisions #4) across the 🟡 controls; **5** (spike) —
-now a **mandatory gate** before the Angular 22 bump is announced as Signal
-Forms-compatible. Note: `implements` is a **compile-time** guarantee — runtime
-binding of `[formField]` to these directives stays unverified until the spike.
+Progress: **1 ✅ → 2 ✅ → 3 ✅ → 4 ✅ → 5 ✅ → 6 ✅**. Both structural collisions
+are resolved, the shared form UI state (including `pending`) ships across the
+control set, runtime `[formField]` integration is covered by the primitive
+suites on Angular 22, and CDK is fully removed from the library.
 
 ## Form layer (shipped 2026-06-11)
 
@@ -386,16 +391,17 @@ binding of `[formField]` to these directives stays unverified until the spike.
 `errors` accessor (`() => RdxValidationError[]`) so Signal Forms
 `ValidationError[]` _content_ (not just the invalid boolean) flows into
 `rdxFieldError` (`messages()`, provider messages before Form messages). The
-Angular 22 adapter then becomes a pair: `[rdxSignalField]` (ADR 0004) +
-`[rdxSignalForm]` (registers an `RdxFormState`). Signal Forms' `submit()` owns
-the submit lifecycle and server-error application — while an `RdxFormState`
-provider owns `errorsFor`, Form's own `errors`-input/clear-on-edit machinery is
-inert by design; the submit guard reads `provider.invalid()` when owned, but
-first-invalid **focus** always uses the DOM-ordered field registry. Adapters must
-allow an explicit `Field.name` to win, since Signal Forms' path-derived names may
-not match server error keys. Entry direction is `field` → `form` (Form never
-imports Field; the registration interface uses structural `() =>` accessors to
-keep the ng-packagr graph acyclic).
+Angular 22 adapter is a pair: `[rdxSignalField]` (ADR 0004) + `[rdxSignalForm]`
+(registers an `RdxFormState`). Adding `rdxSignalSubmit` delegates native
+submission to Angular's public `submit()` lifecycle; otherwise the Base UI-style
+`(onFormSubmit)` lifecycle stays active. Angular submission errors flow through
+Signal Forms field state. Form's own `errors` input remains a separate eager
+Base UI-compatible channel and clears on edit independently. The submit guard
+reads provider state, while first-invalid **focus** always uses the DOM-ordered
+field registry. Adapters allow an explicit `Field.name` to win, since Signal
+Forms' path-derived names may not match server error keys. Entry direction is
+`field` → `form` (Form never imports Field; the registration interface uses
+structural `() =>` accessors to keep the ng-packagr graph acyclic).
 
 ## Related
 

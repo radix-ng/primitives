@@ -142,6 +142,9 @@ export class RdxInputDirective implements RdxFormValueControl<RdxInputValue | un
      */
     readonly invalid = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /** Whether async validation is pending. Pending inputs publish neither valid nor invalid state. */
+    readonly pending = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
     /**
      * Whether the input has been touched. A two-way model: the input sets it on
      * blur (emitting `touchedChange`, which Signal Forms' `[formField]` listens
@@ -214,7 +217,13 @@ export class RdxInputDirective implements RdxFormValueControl<RdxInputValue | un
      * the input's own binary invalidity. `true` valid / `false` invalid / `null` neutral.
      */
     protected readonly displayValid = computed<boolean | null>(() =>
-        this.fieldRootContext ? this.fieldRootContext.validState() : this.ownInvalid() ? false : true
+        this.fieldRootContext
+            ? this.fieldRootContext.validState()
+            : this.pending()
+              ? null
+              : this.ownInvalid()
+                ? false
+                : true
     );
     protected readonly disabledState = computed(
         () => this.disabled() || Boolean(this.fieldRootContext?.disabledState())

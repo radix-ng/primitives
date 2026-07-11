@@ -42,6 +42,8 @@ export interface RdxFieldState {
      * `errors()` also counts as invalid.
      */
     invalid?: () => boolean;
+    /** Whether async validation is pending. Pending validity remains neutral, never falsely valid. */
+    pending?: () => boolean;
     disabled?: () => boolean;
     required?: () => boolean;
     dirty?: () => boolean;
@@ -338,6 +340,11 @@ export class RdxFieldRoot {
         if (this.serverErrors().length > 0) {
             return false;
         }
+        // Angular Signal Forms distinguishes pending from both valid and invalid. Preserve Base UI's
+        // tri-state presentation by publishing neither validity attribute while validation settles.
+        if (this.pendingState()) {
+            return null;
+        }
         if (!this.validationRevealed()) {
             return null;
         }
@@ -359,6 +366,7 @@ export class RdxFieldRoot {
      * the provider/input `invalid`.
      */
     readonly actualInvalidState = computed(() => this.serverErrors().length > 0 || this.clientInvalidState());
+    readonly pendingState = computed(() => this.resolve('pending', () => false));
     readonly disabledState = computed(() => this.resolve('disabled', () => this.disabled()));
     readonly requiredState = computed(() => this.resolve('required', () => this.required()));
     // `touched`/`dirty` also OR in the enclosing Form's per-name state (`rdxSignalForm` name-routing), so a
@@ -411,13 +419,21 @@ export class RdxFieldRoot {
         this.dirtyValue.set(false);
         this.focusedValue.set(false);
         const control = this.controlElement();
-        const value = control?.value ?? '';
+        const value = control && 'value' in control ? (control as HTMLInputElement).value : '';
         this.filledValue.set(value != null && value !== '');
     }
 
     /** Focus the field's control (used by the Form's first-invalid-focus on blocked submit). */
     private focusControl(): void {
-        this.controlElement()?.focus();
+        const control = this.controlElement();
+        if (!control) {
+            return;
+        }
+        control.focus();
+        // Base UI selects text after focusing an invalid input so the user can replace it immediately.
+        if (control.tagName === 'INPUT') {
+            (control as HTMLInputElement).select();
+        }
     }
 
     private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
@@ -427,8 +443,8 @@ export class RdxFieldRoot {
      * duplicate or consumer-reused id elsewhere on the page can't steal focus/reset. The control
      * registers its id through `setControlId`, so this matches the same element the labels point at.
      */
-    private controlElement(): HTMLInputElement | null {
-        return this.host.querySelector<HTMLInputElement>(`[id="${this.controlId()}"]`);
+    private controlElement(): HTMLElement | null {
+        return this.host.querySelector<HTMLElement>(`[id="${this.controlId()}"]`);
     }
 
     /**

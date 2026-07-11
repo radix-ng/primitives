@@ -243,7 +243,9 @@ export class RdxDateFieldRootDirective
      * else the date-field's own (parse + form) invalidity. Overrides the base (whose default uses only
      * `formUi.invalidState`) so the standalone path keeps the built-in range/availability check.
      */
-    override readonly displayValid = computed(() => resolveDisplayValid(this.fieldValidity, this.invalidState));
+    override readonly displayValid = computed(() =>
+        resolveDisplayValid(this.fieldValidity, this.invalidState, this.formUi.pendingState)
+    );
     /** @ignore */
     readonly touchedState = this.formUi.touchedState;
     /** @ignore */

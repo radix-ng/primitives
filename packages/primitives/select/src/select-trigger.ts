@@ -72,7 +72,13 @@ export class RdxSelectTrigger {
      * the trigger's own binary invalidity.
      */
     protected readonly displayValid = computed<boolean | null>(() =>
-        this.fieldRootContext ? this.fieldRootContext.validState() : this.invalidState() ? false : true
+        this.fieldRootContext
+            ? this.fieldRootContext.validState()
+            : this.rootContext.pendingState()
+              ? null
+              : this.invalidState()
+                ? false
+                : true
     );
     protected readonly requiredState = computed(
         () => this.rootContext.required() || Boolean(this.fieldRootContext?.requiredState())

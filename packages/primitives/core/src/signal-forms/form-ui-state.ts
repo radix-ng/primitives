@@ -17,7 +17,7 @@ import { BooleanInput } from '../types';
 import { RdxValidationError } from './form-control';
 
 /**
- * Optional form-control UI state derived from a control's `invalid`/`errors`/`touched`/`dirty`
+ * Optional form-control UI state derived from a control's `invalid`/`pending`/`errors`/`touched`/`dirty`
  * inputs (the optional members of Signal Forms' `FormUiControl`), plus the two mutators every
  * control needs.
  *
@@ -26,6 +26,8 @@ import { RdxValidationError } from './form-control';
 export interface RdxFormUiState {
     /** Invalid when the `invalid` input is set or the `errors` list is non-empty. */
     readonly invalidState: Signal<boolean>;
+    /** Whether asynchronous validation is still settling. Pending is neither valid nor invalid. */
+    readonly pendingState: Signal<boolean>;
     /** Whether the control has been touched (reflects the `touched` model). */
     readonly touchedState: Signal<boolean>;
     /** Whether the value changed from its initial value — external `dirty` OR internal tracking. */
@@ -44,6 +46,8 @@ export interface RdxFormUiTouchTarget {
 /** Inputs a control passes to {@link createFormUiState} — its own `FormUiControl` signals. */
 export interface RdxFormUiStateOptions {
     readonly invalid: Signal<boolean>;
+    /** Optional for backwards compatibility with custom controls authored before pending support. */
+    readonly pending?: Signal<boolean>;
     readonly errors: Signal<readonly RdxValidationError[]>;
     readonly touched: ModelSignal<boolean>;
     readonly touch: OutputEmitterRef<void>;
@@ -57,7 +61,7 @@ export interface RdxFormUiStateOptions {
 
 /**
  * Builds the shared form-UI state and its mutators from a control's input signals, removing the
- * per-control copy-paste of the `invalidState`/`touchedState`/`dirtyState` computeds and the
+ * per-control copy-paste of the `invalidState`/`pendingState`/`touchedState`/`dirtyState` computeds and the
  * `markAsTouched`/`markDirty` logic.
  *
  * **Why the inputs stay on the control (not in here):** Angular's compiler only discovers
@@ -73,6 +77,7 @@ export function createFormUiState(options: RdxFormUiStateOptions): RdxFormUiStat
 
     return {
         invalidState: computed(() => options.invalid() || (options.errors()?.length ?? 0) > 0),
+        pendingState: computed(() => options.pending?.() ?? false),
         touchedState: computed(() => options.touched()),
         dirtyState: computed(() => options.dirty() || dirtyValue()),
         markDirty: () => dirtyValue.set(true),
@@ -91,6 +96,7 @@ export function createFormUiState(options: RdxFormUiStateOptions): RdxFormUiStat
  */
 export interface RdxFormUiStateContext {
     invalidState: Signal<boolean>;
+    pendingState: Signal<boolean>;
     touchedState: Signal<boolean>;
     dirtyState: Signal<boolean>;
     markAsTouched: () => void;
@@ -100,6 +106,7 @@ export interface RdxFormUiStateContext {
 export function formUiStateContext(state: RdxFormUiState): RdxFormUiStateContext {
     return {
         invalidState: state.invalidState,
+        pendingState: state.pendingState,
         touchedState: state.touchedState,
         dirtyState: state.dirtyState,
         markAsTouched: () => state.markAsTouched()
@@ -122,7 +129,7 @@ export const RDX_FIELD_VALIDITY = new InjectionToken<Signal<boolean | null>>('Rd
 /**
  * Tri-state display validity: when inside a `Field` the field's gated `validState` is the **single
  * source** (the control reflects it, including its `validationMode` neutral state); standalone, the
- * control's own binary invalidity.
+ * control's own tri-state validity (pending is neutral).
  *
  * **Contract:** inside a `Field` a control's own `invalid` / `errors` inputs are **not** displayed — the
  * Field owns displayed validity. Drive validity through the Field instead: bind `rdxSignalField`
@@ -131,9 +138,16 @@ export const RDX_FIELD_VALIDITY = new InjectionToken<Signal<boolean | null>>('Rd
  */
 export function resolveDisplayValid(
     fieldValidity: Signal<boolean | null> | null,
-    ownInvalid: Signal<boolean>
+    ownInvalid: Signal<boolean>,
+    ownPending?: Signal<boolean>
 ): boolean | null {
-    return fieldValidity ? fieldValidity() : ownInvalid() ? false : true;
+    if (fieldValidity) {
+        return fieldValidity();
+    }
+    if (ownPending?.()) {
+        return null;
+    }
+    return ownInvalid() ? false : true;
 }
 
 /**
@@ -184,12 +198,14 @@ export class RdxFormUiStateHost {
     private readonly fieldValidity = inject(RDX_FIELD_VALIDITY, { optional: true });
 
     /** @ignore Tri-state display validity (enclosing Field's gated state, else own invalidity). */
-    protected readonly displayValid = computed(() => resolveDisplayValid(this.fieldValidity, this.formUi.invalidState));
+    protected readonly displayValid = computed(() =>
+        resolveDisplayValid(this.fieldValidity, this.formUi.invalidState, this.formUi.pendingState)
+    );
 }
 
 /**
  * Abstract base that declares the optional `FormUiControl` state inputs
- * (`invalid`/`errors`/`touched`/`dirty` + the `touch` output) once and builds the control's
+ * (`invalid`/`pending`/`errors`/`touched`/`dirty` + the `touch` output) once and builds the control's
  * {@link RdxFormUiState} from them, so a control directive can inherit the whole surface with a
  * single `extends` instead of re-declaring it.
  *
@@ -208,6 +224,9 @@ export abstract class RdxFormUiControlBase {
     /** Whether the control is invalid. A non-empty {@link errors} list also marks it invalid. */
     readonly invalid = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /** Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`. */
+    readonly pending = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
     /** Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out. */
     readonly touched = model<boolean>(false);
 
@@ -223,6 +242,7 @@ export abstract class RdxFormUiControlBase {
     /** The shared form-UI state derived from the inputs above. Call `formUi.markDirty()` on value change. */
     readonly formUi: RdxFormUiState = createFormUiState({
         invalid: this.invalid,
+        pending: this.pending,
         errors: this.errors,
         touched: this.touched,
         touch: this.touch,
@@ -238,12 +258,14 @@ export abstract class RdxFormUiControlBase {
     /**
      * Tri-state *displayed* validity for controls that bind their own host attributes (radio, switch,
      * number-field): the enclosing Field's gated state when inside a `rdxFieldRoot`, else this control's
-     * own binary invalidity (`formUi.invalidState`). Bind `data-valid`/`data-invalid`/`aria-invalid` to
+     * own validity (`formUi.pendingState` is neutral; otherwise `formUi.invalidState` is binary). Bind
+     * `data-valid`/`data-invalid`/`aria-invalid` to
      * this so a neutral field shows neither. Controls whose `invalidState` is richer than
-     * `formUi.invalidState` override this with `resolveDisplayValid(this.fieldValidity, this.invalidState)`.
+     * `formUi.invalidState` override this with
+     * `resolveDisplayValid(this.fieldValidity, this.invalidState, this.formUi.pendingState)`.
      */
     readonly displayValid: Signal<boolean | null> = computed(() =>
-        resolveDisplayValid(this.fieldValidity, this.formUi.invalidState)
+        resolveDisplayValid(this.fieldValidity, this.formUi.invalidState, this.formUi.pendingState)
     );
 
     /**

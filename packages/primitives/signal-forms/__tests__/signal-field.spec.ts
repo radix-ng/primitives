@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, resource, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { form, FormField, required } from '@angular/forms/signals';
+import { form, FormField, required, validateAsync } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { RdxFieldError, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormRoot } from '@radix-ng/primitives/form';
+import { RdxInputDirective } from '@radix-ng/primitives/input';
 import { RdxSignalField } from '../src/signal-field';
 
 @Component({
@@ -213,5 +214,73 @@ describe('RdxSignalField — a Form submit attempt reveals a neutral field witho
         expect(host.submitted).toBe(true);
         expect(root.getAttribute('data-valid')).toBe('');
         expect(error()).toBe('');
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [FormField, RdxFieldRoot, RdxInputDirective, RdxSignalField],
+    template: `
+        <div rdxFieldRoot validationMode="always">
+            <input [formField]="formTree.name" rdxInput rdxSignalField />
+        </div>
+    `
+})
+class PendingSignalFieldHost {
+    private releaseValidation: (() => void) | null = null;
+    readonly model = signal({ name: 'Ada' });
+    readonly formTree = form(this.model, (path) => {
+        validateAsync(path.name, {
+            params: ({ value }) => value(),
+            factory: (params) =>
+                resource({
+                    params: () => params(),
+                    loader: async () => {
+                        await new Promise<void>((resolve) => {
+                            this.releaseValidation = resolve;
+                        });
+                        return true;
+                    }
+                }),
+            onSuccess: () => undefined,
+            onError: () => ({ kind: 'validationUnavailable', message: 'Could not validate.' })
+        });
+    });
+
+    resolveValidation(): boolean {
+        if (!this.releaseValidation) {
+            return false;
+        }
+        this.releaseValidation?.();
+        this.releaseValidation = null;
+        return true;
+    }
+}
+
+describe('RdxSignalField — pending async validation stays tri-state neutral', () => {
+    it('publishes neither valid nor invalid while Angular reports pending, then becomes valid', async () => {
+        TestBed.configureTestingModule({ imports: [PendingSignalFieldHost] });
+        const fixture = TestBed.createComponent(PendingSignalFieldHost);
+        const host = fixture.componentInstance;
+        fixture.detectChanges();
+        await Promise.resolve();
+        fixture.detectChanges();
+
+        const root = fixture.debugElement.query(By.css('[rdxFieldRoot]')).nativeElement as HTMLElement;
+        const input = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
+        expect(host.formTree.name().pending()).toBe(true);
+        expect(root.getAttribute('data-valid')).toBeNull();
+        expect(root.getAttribute('data-invalid')).toBeNull();
+        expect(input.getAttribute('data-valid')).toBeNull();
+        expect(input.getAttribute('data-invalid')).toBeNull();
+
+        expect(host.resolveValidation()).toBe(true);
+        await vi.waitFor(() => expect(host.formTree.name().pending()).toBe(false));
+        fixture.detectChanges();
+
+        expect(root.getAttribute('data-valid')).toBe('');
+        expect(root.getAttribute('data-invalid')).toBeNull();
+        expect(input.getAttribute('data-valid')).toBe('');
+        expect(input.getAttribute('data-invalid')).toBeNull();
     });
 });

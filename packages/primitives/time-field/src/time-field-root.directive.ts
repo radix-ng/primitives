@@ -283,7 +283,9 @@ export class RdxTimeFieldRootDirective
      * @ignore Tri-state display validity: the enclosing Field's gated state when inside a `rdxFieldRoot`,
      * else the time-field's own (parse + form) invalidity. Overrides the base default (`formUi` only).
      */
-    override readonly displayValid = computed(() => resolveDisplayValid(this.fieldValidity, this.invalidState));
+    override readonly displayValid = computed(() =>
+        resolveDisplayValid(this.fieldValidity, this.invalidState, this.formUi.pendingState)
+    );
     /** @ignore */
     readonly touchedState = this.formUi.touchedState;
     /** @ignore */

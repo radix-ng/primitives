@@ -62,6 +62,13 @@ export interface RdxFormState {
     touched?: () => boolean;
     submitting?: () => boolean;
     /**
+     * Optional Angular-owned submission lifecycle. Returning `undefined` keeps the Form's Base UI-style
+     * synchronous submit path; returning a Promise delegates this submit to the adapter. Signal Forms
+     * uses this only when its opt-in `rdxSignalSubmit` input is present, and calls Angular's public
+     * `submit()` API so validation, touched state, concurrency, and submission errors stay Angular-owned.
+     */
+    submit?: () => Promise<boolean> | undefined;
+    /**
      * Per-name **client** validation errors (e.g. `rdxSignalForm`'s Signal Forms name-routing). Surfaced
      * through the Form's `clientErrorsFor` channel and gated by `validationMode` like any client validity.
      * Independent of the Form's `errors` input (server errors), which stays eager.
@@ -352,16 +359,52 @@ export class RdxFormRoot {
         // so a pristine invalid form is blocked and its errors revealed instead of submitting.
         this.submitAttempted.set(true);
 
+        // Preserve form-system-agnostic invalidity (notably `errors`) before handing control to an
+        // adapter. If the provider itself is invalid, let its submit lifecycle mark fields touched and
+        // run its own invalid callback; this early guard is only for invalidity outside that provider.
+        const stateProvider = this.stateProvider();
+        const hasRegistryOnlyInvalidity =
+            stateProvider !== null &&
+            stateProvider.submit !== undefined &&
+            !(stateProvider.invalid?.() ?? false) &&
+            this.fields().some((field) => field.invalid());
+        if (hasRegistryOnlyInvalidity) {
+            this.focusFirstInvalidField();
+            return;
+        }
+
+        // Angular-specific adapters may own the asynchronous submission lifecycle. This is opt-in: an
+        // adapter returns `undefined` to retain the Base UI-style path below. A delegated submit owns the
+        // action and therefore does not also emit `onFormSubmit` (which would run user side effects twice).
+        const delegatedSubmit = stateProvider?.submit?.();
+        if (delegatedSubmit) {
+            void this.finishDelegatedSubmit(delegatedSubmit);
+            return;
+        }
+
         if (this.aggregate('invalid')) {
-            // Focus the first invalid registered field (DOM order); provider-only invalid has none to focus.
-            this.fields()
-                .find((field) => field.invalid())
-                ?.focus();
+            this.focusFirstInvalidField();
             return;
         }
 
         const values = serializeFormData(new FormData(this.form));
         this.onFormSubmit.emit({ values, reason: 'none', event });
+    }
+
+    private async finishDelegatedSubmit(submission: Promise<boolean>): Promise<void> {
+        const succeeded = await submission;
+        if (!succeeded) {
+            // Matches Base UI Form: a blocked/failed submit focuses the first invalid registered field.
+            // Angular owns when the result becomes invalid (including returned submission errors).
+            this.focusFirstInvalidField();
+        }
+    }
+
+    private focusFirstInvalidField(): void {
+        // Registry order is DOM order; provider-only invalidity has no registered control to focus.
+        this.fields()
+            .find((field) => field.invalid())
+            ?.focus();
     }
 
     onReset(): void {

@@ -93,6 +93,8 @@ feeds authoritative Signal Forms state into the accessibility layer.
   and the error _content_ (`rdxFieldError.messages()`) from the bound Signal Forms field.
 - ✅ Aggregates form-level `data-invalid` / `data-dirty` / `data-touched` / `data-submitting` and routes
   field errors by `name`.
+- ✅ Optionally delegates submission to Angular's public `submit()` lifecycle — validation, touched state,
+  concurrent-submit protection, `submitting()`, and returned submission errors remain Angular-owned.
 - ✅ Leaves `@angular/forms` out of every other entry — install it only when you use this one.
 
 ## Import
@@ -253,10 +255,172 @@ onSubmit() {
 > Client validation is mode-gated whether it flows through the per-field `rdxSignalField` **or** the
 > form-level `rdxSignalForm` name-routing.
 
+### Angular-owned submission (`rdxSignalSubmit`)
+
+Add the opt-in `rdxSignalSubmit` input when the form created by `form()` defines a
+`submission.action`. The adapter delegates the native submit to Angular's public `submit()` API; it does
+not also emit `rdxFormRoot.onFormSubmit`, avoiding duplicate user side effects.
+
+```html
+<form rdxFormRoot [rdxSignalForm]="accountForm" rdxSignalSubmit>
+  <!-- fields -->
+  <button type="submit" [disabled]="accountForm().submitting()">
+    {{ accountForm().submitting() ? 'Saving…' : 'Save' }}
+  </button>
+</form>
+```
+
+```ts
+readonly accountForm = form(
+  this.model,
+  (path) => required(path.email, { message: 'Email is required.' }),
+  {
+    submission: {
+      action: async (field) => {
+        const result = await this.api.createAccount(field().value());
+        if (result.emailTaken) {
+          return {
+            kind: 'emailTaken',
+            message: 'This email is already registered.',
+            fieldTree: field.email
+          };
+        }
+      }
+    }
+  }
+);
+```
+
+Angular marks interactive fields touched, blocks invalid forms, guards concurrent submits, updates
+`submitting()`, and attaches returned errors to their `fieldTree`. Radix NG keeps the Base UI-facing
+responsibilities: error presentation, accessible relationships, and first-invalid focus.
+
+`rdxSignalSubmit` is deliberately opt-in in 1.x. Without it, `[rdxSignalForm]` remains a state adapter
+and `rdxFormRoot` keeps its existing `(onFormSubmit)` path.
+
+The separate `rdxFormRoot[errors]` channel remains Base UI-compatible in either mode: a visible external
+error blocks delegation until the field is edited and that error is cleared.
+
+```typescript
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { email as emailFormat, form, FormField, required } from '@angular/forms/signals';
+import {
+    RdxFieldControl,
+    RdxFieldDescription,
+    RdxFieldError,
+    RdxFieldLabel,
+    RdxFieldRoot
+} from '@radix-ng/primitives/field';
+import { RdxFormRoot } from '@radix-ng/primitives/form';
+import { cn, demoButton, demoInput } from '../../storybook/styles';
+import { RdxSignalField } from '../src/signal-field';
+import { RdxSignalForm } from '../src/signal-form';
+
+const takenEmail = 'taken@radix-ng.com';
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'signal-forms-submission-example',
+    imports: [
+        FormField,
+        RdxFormRoot,
+        RdxSignalForm,
+        RdxFieldRoot,
+        RdxSignalField,
+        RdxFieldLabel,
+        RdxFieldControl,
+        RdxFieldDescription,
+        RdxFieldError
+    ],
+    template: `
+        <form class="flex w-80 flex-col gap-3" [rdxSignalForm]="accountForm" rdxFormRoot rdxSignalSubmit>
+            <div class="flex flex-col gap-2" rdxFieldRoot>
+                <label [class]="labelClass" rdxFieldLabel>Email</label>
+                <input
+                    [class]="inputClass"
+                    [formField]="accountForm.email"
+                    rdxFieldControl
+                    rdxSignalField
+                    type="email"
+                />
+                <p [class]="descriptionClass" rdxFieldDescription>Use {{ takenEmail }} to preview a server error.</p>
+                <p #err="rdxFieldError" [class]="errorClass" rdxFieldError>{{ err.messages().join(' ') }}</p>
+            </div>
+
+            <button [class]="buttonClass" [disabled]="accountForm().submitting()" type="submit">
+                {{ accountForm().submitting() ? 'Creating account…' : 'Create account' }}
+            </button>
+
+            @if (submittedEmail(); as email) {
+                <p class="text-muted-foreground text-sm" role="status">Account created for {{ email }}.</p>
+            }
+        </form>
+    `
+})
+export class SignalFormsSubmissionExample {
+    protected readonly takenEmail = takenEmail;
+    protected readonly inputClass = cn(
+        demoInput,
+        'data-[invalid]:border-destructive data-[invalid]:ring-destructive/20'
+    );
+    protected readonly buttonClass = cn(
+        demoButton.base,
+        demoButton.primary,
+        demoButton.size.md,
+        'self-start disabled:cursor-wait disabled:opacity-60'
+    );
+    protected readonly labelClass = 'text-foreground text-sm font-medium data-[disabled]:opacity-50';
+    protected readonly descriptionClass = 'text-muted-foreground text-sm';
+    protected readonly errorClass = 'text-destructive text-sm';
+
+    protected readonly submittedEmail = signal<string | null>(null);
+    readonly model = signal({ email: '' });
+    readonly accountForm = form(
+        this.model,
+        (path) => {
+            required(path.email, { message: 'Email is required.' });
+            emailFormat(path.email, { message: 'Enter a valid email address.' });
+        },
+        {
+            submission: {
+                action: async (field) => {
+                    this.submittedEmail.set(null);
+                    await new Promise((resolve) => setTimeout(resolve, 600));
+
+                    const email = field.email().value();
+                    if (email.toLowerCase() === takenEmail) {
+                        return {
+                            kind: 'emailTaken',
+                            message: 'This email is already registered.',
+                            fieldTree: field.email
+                        };
+                    }
+
+                    this.submittedEmail.set(email);
+                    return undefined;
+                }
+            }
+        }
+    );
+}
+```
+
+### Pending async validation
+
+Signal Forms exposes `pending()` directly. Radix NG does not invent a `data-pending` attribute that Base
+UI does not publish; it uses pending internally only to preserve tri-state validity. While validation is
+pending, Field and control publish neither `data-valid` nor `data-invalid`.
+
+```html
+@if (accountForm.email().pending()) {
+  <p role="status">Checking email…</p>
+}
+```
+
 ## Control authoring — the shared state surface
 
 Every Radix NG form control exposes the optional Signal Forms `FormUiControl` state
-(`invalid` / `errors` / `touched` / `dirty` inputs + a `touch` output) so `[formField]` can write it and
+(`invalid` / `pending` / `errors` / `touched` / `dirty` inputs + a `touch` output) so `[formField]` can write it and
 the control can reflect it as `data-*` / `aria-invalid`. Instead of re-declaring that block on every
 primitive, three reusable pieces live in **`@radix-ng/primitives/core`** — controls inherit and compose
 them rather than copy-paste:
@@ -267,13 +431,13 @@ them rather than copy-paste:
 > disagree). To make a field invalid, drive it through the Field: `rdxSignalField` (Signal Forms) or
 > `[invalid]` on `rdxFieldRoot` — not the control's own `invalid` input.
 
-- **`RdxFormUiControlBase`** — an abstract `@Directive()` that declares the five members **once** and
+- **`RdxFormUiControlBase`** — an abstract `@Directive()` that declares the six members **once** and
   builds the derived state (`formUi`). A control gets the whole surface with a single `extends` and only
   adds its own `value` / `checked` model. The declarations have to stay on a directive class: Angular's
   compiler only discovers `input()` / `model()` as field initializers, and Signal Forms binds
   form-written state onto the **single directive that carries the value model** — so inheritance keeps
   them co-located there (a host directive could not).
-- **`createFormUiState(...)`** — derives `invalidState` / `touchedState` / `dirtyState` and the dual
+- **`createFormUiState(...)`** — derives `invalidState` / `pendingState` / `touchedState` / `dirtyState` and the dual
   `markAsTouched` (it bridges the control's `ControlValueAccessor` when it has one, so the same call
   notifies Reactive / template-driven forms too). The base calls it; a control that cannot extend the
   base calls it directly. Compound controls also get `formUiStateContext()` to surface the state to a
@@ -298,7 +462,7 @@ import {
 })
 export class MyControl extends RdxFormUiControlBase implements RdxFormValueControl<string> {
     readonly value = model<string>('');
-    // invalid / errors / touched / dirty / touch + formUi are inherited — nothing else to declare.
+    // invalid / pending / errors / touched / dirty / touch + formUi are inherited — nothing else to declare.
 }
 ```
 

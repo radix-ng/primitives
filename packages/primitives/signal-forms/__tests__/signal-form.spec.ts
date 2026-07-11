@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { form, FormField, required } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
-import { RdxFieldError, RdxFieldRoot } from '@radix-ng/primitives/field';
+import { RdxFieldControl, RdxFieldError, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormRoot } from '@radix-ng/primitives/form';
 import { RdxSignalField } from '../src/signal-field';
 import { RdxSignalForm } from '../src/signal-form';
@@ -380,5 +380,179 @@ describe('RdxSignalForm — a field validationMode override is not contradicted 
         fixture.detectChanges();
         expect(fieldEl.getAttribute('data-invalid')).toBe('');
         expect(formEl.getAttribute('data-invalid')).toBe('');
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [FormField, RdxFormRoot, RdxFieldRoot, RdxFieldControl, RdxFieldError, RdxSignalForm, RdxSignalField],
+    template: `
+        <form
+            [errors]="externalErrors"
+            [rdxSignalForm]="formTree"
+            (onFormSubmit)="onLegacySubmit()"
+            rdxFormRoot
+            rdxSignalSubmit
+        >
+            <div rdxFieldRoot name="email">
+                <input [formField]="formTree.email" rdxFieldControl rdxSignalField />
+                <p #err="rdxFieldError" rdxFieldError>{{ err.messages().join(' ') }}</p>
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+    `
+})
+class SignalSubmitHost {
+    actionCalls = 0;
+    legacySubmitCalls = 0;
+    externalErrors: Record<string, string> = {};
+    private releaseSlowAction: (() => void) | null = null;
+
+    readonly model = signal({ email: '' });
+    readonly formTree = form(
+        this.model,
+        (path) => {
+            required(path.email, { message: 'Email is required.' });
+        },
+        {
+            submission: {
+                action: async (field) => {
+                    this.actionCalls++;
+                    const email = field.email().value();
+
+                    if (email === 'slow@example.com') {
+                        await new Promise<void>((resolve) => {
+                            this.releaseSlowAction = resolve;
+                        });
+                    }
+
+                    if (email === 'taken@example.com') {
+                        return {
+                            kind: 'emailTaken',
+                            message: 'Email is already registered.',
+                            fieldTree: field.email
+                        };
+                    }
+
+                    return undefined;
+                }
+            }
+        }
+    );
+
+    releaseSubmission(): void {
+        this.releaseSlowAction?.();
+        this.releaseSlowAction = null;
+    }
+
+    onLegacySubmit(): void {
+        this.legacySubmitCalls++;
+    }
+}
+
+describe('RdxSignalForm — opt-in Angular submission lifecycle', () => {
+    let fixture: ComponentFixture<SignalSubmitHost>;
+    let host: SignalSubmitHost;
+    let formEl: HTMLFormElement;
+    let inputEl: HTMLInputElement;
+    let fieldEl: HTMLElement;
+
+    const error = () =>
+        (fixture.debugElement.query(By.css('[rdxFieldError]')).nativeElement as HTMLElement).textContent?.trim();
+
+    const flushSubmission = async () => {
+        // Angular `submit()` + the Form's delegated completion each cross an async boundary.
+        await Promise.resolve();
+        await Promise.resolve();
+        await Promise.resolve();
+        fixture.detectChanges();
+    };
+
+    const submitForm = () => {
+        formEl.dispatchEvent(new SubmitEvent('submit', { cancelable: true, bubbles: true }));
+        fixture.detectChanges();
+    };
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({ imports: [SignalSubmitHost] });
+        fixture = TestBed.createComponent(SignalSubmitHost);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+        formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+        inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+        fieldEl = fixture.debugElement.query(By.css('[rdxFieldRoot]')).nativeElement;
+    });
+
+    it('uses Angular submit for invalid forms, reveals the error, and focuses the first invalid control', async () => {
+        submitForm();
+        await flushSubmission();
+
+        expect(host.actionCalls).toBe(0);
+        expect(host.legacySubmitCalls).toBe(0);
+        expect(host.formTree.email().touched()).toBe(true);
+        expect(fieldEl.getAttribute('data-invalid')).toBe('');
+        expect(error()).toBe('Email is required.');
+        expect(document.activeElement).toBe(inputEl);
+    });
+
+    it('runs the configured Angular action exactly once and does not also emit onFormSubmit', async () => {
+        host.model.set({ email: 'ada@example.com' });
+        fixture.detectChanges();
+
+        submitForm();
+        await flushSubmission();
+
+        expect(host.actionCalls).toBe(1);
+        expect(host.legacySubmitCalls).toBe(0);
+    });
+
+    it('keeps Base UI external errors blocking even when the Angular model is valid', async () => {
+        host.model.set({ email: 'ada@example.com' });
+        host.externalErrors = { email: 'Email could not be verified.' };
+        fixture.detectChanges();
+
+        submitForm();
+        await flushSubmission();
+
+        expect(host.actionCalls).toBe(0);
+        expect(host.legacySubmitCalls).toBe(0);
+        expect(error()).toBe('Email could not be verified.');
+        expect(document.activeElement).toBe(inputEl);
+    });
+
+    it('reflects Angular submitting state and lets Angular reject a concurrent submit', async () => {
+        host.model.set({ email: 'slow@example.com' });
+        fixture.detectChanges();
+
+        submitForm();
+        expect(host.actionCalls).toBe(1);
+        expect(formEl.getAttribute('data-submitting')).toBe('');
+
+        submitForm();
+        await flushSubmission();
+        expect(host.actionCalls).toBe(1);
+
+        host.releaseSubmission();
+        await flushSubmission();
+        expect(formEl.getAttribute('data-submitting')).toBeNull();
+    });
+
+    it('routes Angular submission errors into Field and clears them when the value changes', async () => {
+        host.model.set({ email: 'taken@example.com' });
+        fixture.detectChanges();
+
+        submitForm();
+        await flushSubmission();
+
+        expect(fieldEl.getAttribute('data-invalid')).toBe('');
+        expect(error()).toBe('Email is already registered.');
+        expect(document.activeElement).toBe(inputEl);
+
+        host.model.set({ email: 'new@example.com' });
+        fixture.detectChanges();
+        await flushSubmission();
+
+        expect(fieldEl.getAttribute('data-invalid')).toBeNull();
+        expect(error()).toBe('');
     });
 });

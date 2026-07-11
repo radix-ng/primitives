@@ -31,7 +31,7 @@ Working examples built on `@radix-ng/primitives`. Full source is **bundled offli
 To style a primitive with a custom design system, pair an example with the data-attribute contract in
 the `radix-ng` skill (`references/styling-contract.json`).
 
-Total: **241 examples** across **43 components**.
+Total: **243 examples** across **43 components**.
 
 ## Components
 
@@ -387,6 +387,8 @@ Full source (all examples): [`references/components/signal-forms.md`](./referenc
 - **Field driven by Signal Forms**
 - **Two ways to surface field errors**
 - **When validity is displayed (`validationMode`)**
+- **Angular-owned submission (`rdxSignalSubmit`)**
+- **Pending async validation**
 
 ### Slider
 

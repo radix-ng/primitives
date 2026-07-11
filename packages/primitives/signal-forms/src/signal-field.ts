@@ -17,9 +17,9 @@ import { injectFieldRootContext, RdxFieldState } from '@radix-ng/primitives/fiel
  *
  * It owns no model and runs no validation — Signal Forms remains the source of truth. It only registers
  * an {@link RdxFieldState} provider on the ancestor Field context so the field's `invalid` / `disabled` /
- * `required` / `dirty` / `touched` data-attributes and the error *content* (`rdxFieldError.messages()`)
- * read authoritative Signal Forms state. `filled` / `focused` stay on Field's DOM heuristic (partial
- * ownership — the seam supports it).
+ * `required` / `dirty` / `touched` data-attributes, tri-state pending validity, and the error *content*
+ * (`rdxFieldError.messages()`) read authoritative Signal Forms state. `filled` / `focused` stay on
+ * Field's DOM heuristic (partial ownership — the seam supports it).
  *
  * It reports the **actual** Signal Forms state only; the `Field` decides *when* to display it from its
  * `validationMode` (default `'onBlur'` — neutral until the field is touched or the form submitted). So an
@@ -45,6 +45,7 @@ export class RdxSignalField {
         // adapter reports authoritative *actual* state; the Field gates the *display* by its validationMode.
         const state: RdxFieldState = {
             invalid: () => this.state().invalid(),
+            pending: () => this.state().pending(),
             disabled: () => this.state().disabled(),
             required: () => this.state().required(),
             dirty: () => this.state().dirty(),

@@ -13,6 +13,7 @@ import { RdxInputDirective, RdxInputValueChangeEvent } from '../src/input.direct
             [disabled]="disabled"
             [required]="required"
             [invalid]="invalid"
+            [pending]="pending"
             [readonly]="readonly"
             [name]="name"
             [errors]="errors"
@@ -35,6 +36,7 @@ class StandaloneHostComponent {
     disabled = false;
     required = false;
     invalid = false;
+    pending = false;
     readonly = false;
     name: string | undefined;
     errors: readonly RdxValidationError[] = [];
@@ -175,6 +177,18 @@ describe('Input', () => {
             fixture.detectChanges();
 
             expect(input.hasAttribute('data-invalid')).toBe(false);
+        });
+
+        it('keeps validity neutral while async validation is pending', () => {
+            expect(input.getAttribute('data-valid')).toBe('');
+
+            fixture.componentInstance.pending = true;
+            fixture.changeDetectorRef.markForCheck();
+            fixture.detectChanges();
+
+            expect(input.getAttribute('aria-invalid')).toBeNull();
+            expect(input.getAttribute('data-valid')).toBeNull();
+            expect(input.getAttribute('data-invalid')).toBeNull();
         });
 
         it('tracks touched and dirty state and emits touchedChange + touch on blur', () => {

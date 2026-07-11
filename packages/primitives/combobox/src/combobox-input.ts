@@ -87,9 +87,11 @@ export class RdxComboboxInput {
     protected readonly displayValid = computed<boolean | null>(() =>
         this.fieldRootContext
             ? this.fieldRootContext.validState()
-            : this.invalid() || this.rootContext.invalidState()
-              ? false
-              : true
+            : this.rootContext.pendingState()
+              ? null
+              : this.invalid() || this.rootContext.invalidState()
+                ? false
+                : true
     );
     protected readonly disabledState = computed(
         () => this.rootContext.disabledState() || Boolean(this.fieldRootContext?.disabledState())
