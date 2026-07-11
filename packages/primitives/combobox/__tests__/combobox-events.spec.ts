@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { _importsCombobox } from '../index';
 import { RdxComboboxOpenChange } from '../src/combobox-root';
 
@@ -8,8 +8,8 @@ import { RdxComboboxOpenChange } from '../src/combobox-root';
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox],
     template: `
-        <form>
-            <div [(open)]="open" submitOnItemClick rdxComboboxRoot>
+        <form (submit)="captureSubmit($event)">
+            <div [(open)]="open" name="fruit" submitOnItemClick rdxComboboxRoot>
                 <input rdxComboboxInput aria-label="Fruit" />
                 <div *rdxComboboxPortal rdxComboboxPositioner>
                     <div rdxComboboxPopup>
@@ -27,6 +27,12 @@ import { RdxComboboxOpenChange } from '../src/combobox-root';
 class SubmitHost {
     readonly open = signal(false);
     readonly fruits = ['Apple', 'Banana'];
+    readonly submittedValue = signal<FormDataEntryValue | null>(null);
+
+    captureSubmit(event: SubmitEvent): void {
+        event.preventDefault();
+        this.submittedValue.set(new FormData(event.currentTarget as HTMLFormElement).get('fruit'));
+    }
 }
 
 @Component({
@@ -113,17 +119,13 @@ describe('Combobox submitOnItemClick', () => {
         await settle();
     });
 
-    it('requests submit of the closest form when an item is selected', async () => {
-        const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
-        const submitSpy = vi.spyOn(input.form as HTMLFormElement, 'requestSubmit').mockImplementation(() => {});
-
+    it('submits the newly selected value synchronously', async () => {
         fixture.componentInstance.open.set(true);
         await settle();
         const items = Array.from(document.querySelectorAll('[rdxComboboxItem]')) as HTMLElement[];
         items[0].click();
-        await settle();
 
-        expect(submitSpy).toHaveBeenCalledTimes(1);
+        expect(fixture.componentInstance.submittedValue()).toBe('Apple');
     });
 });
 

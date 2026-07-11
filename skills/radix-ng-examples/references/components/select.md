@@ -124,7 +124,8 @@ export class SelectDefault {
 - ✅ Two positioning modes: Popper (Floating UI) and Item-aligned (native-like).
 - ✅ Scroll buttons appear automatically when the list overflows the viewport.
 - ✅ Typeahead: type a character to jump to matching items.
-- ✅ Custom comparison (`isItemEqualToValue`) and labels (`itemToStringLabel`) for object values.
+- ✅ Custom comparison (`isItemEqualToValue`), labels (`itemToStringLabel`), and native form serialization
+  (`itemToStringValue`) for object values.
 - ✅ Highlight-model navigation (`aria-activedescendant`) — focus stays on the listbox, not the items.
 - ✅ Full keyboard navigation: ArrowDown / ArrowUp, Home, End, Enter / Space, Escape.
 - ✅ Public interaction state via `openMethod`, `openInteractionType`, and `closeInteractionType`.

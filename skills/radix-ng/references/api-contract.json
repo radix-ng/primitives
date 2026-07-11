@@ -1946,6 +1946,11 @@
               "description": "Converts a value to its display label. Defaults to the matching item's text."
             },
             {
+              "name": "itemToStringValue",
+              "type": "(value: AcceptableValue) => string",
+              "description": "Converts an item value to the string submitted by a native form."
+            },
+            {
               "name": "keepHighlight",
               "default": "false",
               "description": "Whether a pointer-driven highlight is kept when the cursor leaves the list. `false` (default)\nclears the highlight on pointer-leave; `true` retains the last hovered item highlighted. Keyboard\nnavigation and auto-highlight are unaffected."
@@ -4882,7 +4887,7 @@
           "directive": "RdxNumberFieldHiddenInput",
           "selector": "input[rdxNumberFieldHiddenInput]",
           "exportAs": "rdxNumberFieldHiddenInput",
-          "description": "The hidden native `input[type=number]` that mirrors the field value for native form submission\nand browser constraint validation (min/max/step/required). Place it inside the root, alongside\nthe visible `[rdxNumberFieldInput]`.\n\nSee https://base-ui.com/react/components/number-field",
+          "description": "The optional hidden native `input[type=number]` that mirrors the field value for browser constraint\nvalidation (min/max/step/required) and autofill. When present it also owns native form serialization;\nwithout it the root generates a plain hidden entry. Place it inside the root, alongside the visible\n`[rdxNumberFieldInput]`.\n\nSee https://base-ui.com/react/components/number-field",
           "inputs": [],
           "outputs": []
         },
@@ -6568,6 +6573,11 @@
               "name": "itemToStringLabel",
               "type": "(value: AcceptableValue) => string",
               "description": "Converts a value to its display label (used by `RdxSelectValue`)."
+            },
+            {
+              "name": "itemToStringValue",
+              "type": "(value: AcceptableValue) => string",
+              "description": "Converts an item value to the string submitted by a native form."
             },
             {
               "name": "modal",

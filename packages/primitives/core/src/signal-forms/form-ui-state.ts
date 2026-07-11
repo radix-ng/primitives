@@ -358,6 +358,15 @@ export abstract class RdxFormUiControlBase {
     }
 
     /**
+     * Resets a same-host Reactive/template-driven control without reporting the reset as a user edit.
+     * Returns `false` when no Angular `NgControl` is connected, so a control can fall back to its CVA
+     * change callback for an unusually early native reset.
+     */
+    protected resetNgControl(value: unknown): boolean {
+        return this.ngControlState.reset(value);
+    }
+
+    /**
      * Reset control-owned interaction state. Angular Signal Forms calls this optional custom-control
      * hook from `FieldState.reset()` after restoring the field value.
      */

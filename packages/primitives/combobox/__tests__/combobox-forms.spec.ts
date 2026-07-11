@@ -21,24 +21,88 @@ const FRUITS: Fruit[] = [
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsCombobox, ReactiveFormsModule],
     template: `
-        <div [(open)]="open" [formControl]="control" rdxComboboxRoot>
-            <input rdxComboboxInput aria-label="Fruit" />
-            <div *rdxComboboxPortal rdxComboboxPositioner>
-                <div rdxComboboxPopup>
-                    <div rdxComboboxList aria-label="Fruits">
-                        @for (fruit of fruits; track fruit.value) {
-                            <div [value]="fruit.value" rdxComboboxItem>{{ fruit.label }}</div>
-                        }
+        <form id="reactive-native-form">
+            <div [(open)]="open" [formControl]="control" name="fruit" rdxComboboxRoot>
+                <input rdxComboboxInput aria-label="Fruit" />
+                <div *rdxComboboxPortal rdxComboboxPositioner>
+                    <div rdxComboboxPopup>
+                        <div rdxComboboxList aria-label="Fruits">
+                            @for (fruit of fruits; track fruit.value) {
+                                <div [value]="fruit.value" rdxComboboxItem>{{ fruit.label }}</div>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
     `
 })
 class ReactiveHost {
     readonly control = new FormControl<string | null>(null);
     readonly open = signal(false);
     readonly fruits = FRUITS;
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [_importsCombobox],
+    template: `
+        <form id="native-form">
+            <div
+                [(value)]="value"
+                [disabled]="disabled()"
+                [itemToStringValue]="serializeFruit"
+                multiple
+                name="fruit"
+                rdxComboboxRoot
+            >
+                <input rdxComboboxInput aria-label="Fruit" />
+            </div>
+        </form>
+        <form id="external-form"></form>
+        <div
+            [(value)]="externalValue"
+            [itemToStringValue]="serializeFruit"
+            form="external-form"
+            name="external"
+            rdxComboboxRoot
+        >
+            <input rdxComboboxInput aria-label="External fruit" />
+        </div>
+        <form id="filter-form">
+            <div [(inputValue)]="query" name="query" selectionMode="none" rdxComboboxRoot>
+                <input rdxComboboxInput aria-label="Query" />
+            </div>
+        </form>
+    `
+})
+class ComboboxNativeFormHost {
+    readonly value = signal<Fruit[]>(FRUITS);
+    readonly disabled = signal(false);
+    readonly externalValue = signal<Fruit | null>(FRUITS[1]);
+    readonly query = signal('angular');
+    readonly serializeFruit = (fruit: Fruit) => fruit.value;
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [_importsCombobox],
+    template: `
+        <form id="popup-form">
+            <div [(inputValue)]="query" [(open)]="open" name="query" selectionMode="none" rdxComboboxRoot>
+                <button rdxComboboxTrigger>Search</button>
+                <div *rdxComboboxPortal rdxComboboxPositioner>
+                    <div rdxComboboxPopup>
+                        <input rdxComboboxInput aria-label="Popup query" />
+                    </div>
+                </div>
+            </div>
+        </form>
+    `
+})
+class ComboboxPopupNativeFormHost {
+    readonly query = signal('angular');
+    readonly open = signal(true);
 }
 
 @Component({
@@ -129,6 +193,21 @@ describe('Combobox forms integration', () => {
             expect(input.getAttribute('data-valid')).toBeNull();
             expect(input.getAttribute('data-invalid')).toBeNull();
         });
+
+        it('resets the FormControl and interaction state from the native form', async () => {
+            host.control.setValue('banana');
+            host.control.markAsDirty();
+            host.control.markAsTouched();
+            await settle();
+
+            (fixture.nativeElement.querySelector('form') as HTMLFormElement).reset();
+            await Promise.resolve();
+            await settle();
+
+            expect(host.control.value).toBeNull();
+            expect(host.control.pristine).toBe(true);
+            expect(host.control.untouched).toBe(true);
+        });
     });
 
     describe('field integration', () => {
@@ -163,6 +242,45 @@ describe('Combobox forms integration', () => {
             expect(input.getAttribute('data-required')).toBe('');
             expect(input.getAttribute('aria-required')).toBe('true');
         });
+    });
+});
+
+describe('Combobox native form contract', () => {
+    it('serializes object values, supports external form ownership, and excludes disabled values', () => {
+        TestBed.configureTestingModule({ imports: [ComboboxNativeFormHost] });
+        const fixture = TestBed.createComponent(ComboboxNativeFormHost);
+        const host = fixture.componentInstance;
+        fixture.detectChanges();
+
+        const nativeForm = fixture.nativeElement.querySelector('#native-form') as HTMLFormElement;
+        const externalForm = fixture.nativeElement.querySelector('#external-form') as HTMLFormElement;
+        const filterForm = fixture.nativeElement.querySelector('#filter-form') as HTMLFormElement;
+        const inputs = fixture.nativeElement.querySelectorAll('[rdxComboboxInput]') as NodeListOf<HTMLInputElement>;
+
+        expect(new FormData(nativeForm).getAll('fruit')).toEqual(['apple', 'banana']);
+        expect(new FormData(externalForm).getAll('external')).toEqual(['banana']);
+        expect(new FormData(filterForm).get('query')).toBe('angular');
+        expect(inputs[0].name).toBe('');
+        expect(inputs[1].form).toBe(externalForm);
+        expect(inputs[2].name).toBe('query');
+
+        host.disabled.set(true);
+        fixture.detectChanges();
+        expect(new FormData(nativeForm).has('fruit')).toBe(false);
+    });
+
+    it('uses a hidden entry when the filter-only input is portalled outside the form', async () => {
+        TestBed.configureTestingModule({ imports: [ComboboxPopupNativeFormHost] });
+        const fixture = TestBed.createComponent(ComboboxPopupNativeFormHost);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        const form = fixture.nativeElement.querySelector('#popup-form') as HTMLFormElement;
+        const input = document.querySelector('[rdxComboboxInput]') as HTMLInputElement;
+        expect(input.name).toBe('');
+        expect(new FormData(form).get('query')).toBe('angular');
+        expect(form.querySelector('[data-rdx-native-form-control]')).not.toBeNull();
     });
 });
 

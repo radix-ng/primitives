@@ -20,6 +20,8 @@ export interface RdxNgControlState {
     readonly errors: Signal<readonly RdxValidationError[]>;
     readonly dirty: Signal<boolean>;
     readonly touched: Signal<boolean>;
+    /** Resets a connected Reactive/template-driven control; returns whether one was connected. */
+    reset(value: unknown): boolean;
 }
 
 function toValidationErrors(errors: ValidationErrors | null): readonly RdxValidationError[] {
@@ -66,6 +68,7 @@ export function injectNgControlState(): RdxNgControlState {
     const touched = signal(false, { debugName: 'RdxNgControlState.touched' });
     let destroyed = false;
     let unsubscribe: (() => void) | undefined;
+    let resetControl: ((value: unknown) => void) | undefined;
 
     const connect = () => {
         if (destroyed) {
@@ -79,6 +82,8 @@ export function injectNgControlState(): RdxNgControlState {
         if (!control || typeof control.events?.subscribe !== 'function') {
             return;
         }
+
+        resetControl = (nextValue) => control.reset(nextValue);
 
         const sync = () => {
             name.set(ngControl.name == null ? undefined : String(ngControl.name));
@@ -117,6 +122,13 @@ export function injectNgControlState(): RdxNgControlState {
         disabled: disabled.asReadonly(),
         errors,
         dirty: dirty.asReadonly(),
-        touched: touched.asReadonly()
+        touched: touched.asReadonly(),
+        reset: (nextValue) => {
+            if (!resetControl) {
+                return false;
+            }
+            resetControl(nextValue);
+            return true;
+        }
     };
 }

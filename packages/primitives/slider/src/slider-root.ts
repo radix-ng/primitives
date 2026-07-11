@@ -278,7 +278,9 @@ export class RdxSliderRoot extends RdxFormUiControlBase {
         defaultValue: () => this.cva.value() ?? this.defaultValue() ?? this.min(),
         onReset: (value) => {
             this.value.set(value);
-            this.cva.setValue(value);
+            if (!this.resetNgControl(value)) {
+                this.cva.setValue(value);
+            }
             this.formUi.resetInteractionState?.();
         }
     });

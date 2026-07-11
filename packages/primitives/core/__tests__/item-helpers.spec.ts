@@ -23,6 +23,19 @@ describe('itemToStringValue', () => {
         expect(itemToStringValue(null)).toBe('');
         expect(itemToStringValue(7)).toBe('7');
     });
+
+    it('serializes the value member of a conventional item object', () => {
+        expect(itemToStringValue({ value: 'angular', label: 'Angular' })).toBe('angular');
+        expect(itemToStringValue({ value: 14, label: 'Angular 14' })).toBe('14');
+    });
+
+    it('uses Base UI-compatible JSON serialization for other object shapes', () => {
+        expect(itemToStringValue({ value: 'angular' })).toBe('{"value":"angular"}');
+    });
+
+    it('falls back to String() when JSON serialization fails', () => {
+        expect(itemToStringValue(1n)).toBe('1');
+    });
 });
 
 describe('isItemEqualToValue', () => {

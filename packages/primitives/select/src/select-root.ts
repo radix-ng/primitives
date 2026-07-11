@@ -241,6 +241,9 @@ export class RdxSelectRoot
     /** Converts a value to its display label (used by `RdxSelectValue`). */
     readonly itemToStringLabel = input<(value: AcceptableValue) => string>();
 
+    /** Converts an item value to the string submitted by a native form. */
+    readonly itemToStringValue = input<(value: AcceptableValue) => string>();
+
     /** Emits before an open-state change is committed; call `eventDetails.cancel()` to veto it. */
     readonly onOpenChange = output<RdxSelectOpenChangeEvent>();
 
@@ -274,10 +277,21 @@ export class RdxSelectRoot
         form: this.form,
         disabled: this.disabledState,
         value: this.value,
-        serialize: serializeNativeFormValue,
-        defaultValue: () => this.defaultValue() ?? this.value(),
+        serialize: (value) => {
+            const itemToStringValue = this.itemToStringValue();
+            return itemToStringValue
+                ? serializeNativeFormValue(value, (entry) => itemToStringValue(entry as AcceptableValue))
+                : serializeNativeFormValue(value);
+        },
+        defaultValue: () => {
+            const defaultValue = this.defaultValue();
+            return defaultValue === undefined ? this.value() : defaultValue;
+        },
         onReset: (value) => {
             this.value.set(value);
+            if (!this.resetNgControl(value)) {
+                this.onChange?.(value);
+            }
             this.formUi.resetInteractionState?.();
         }
     });

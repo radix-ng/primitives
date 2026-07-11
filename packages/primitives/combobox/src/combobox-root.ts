@@ -123,6 +123,9 @@ const context = () => {
         dir: root.dir,
         value: root.value,
         inputValue: root.inputValue,
+        name: root.name,
+        form: root.form,
+        inputOwnsFormValue: root.inputOwnsFormValue,
         open: root.open,
         present: root.present,
         multiple: root.multiple,
@@ -282,6 +285,9 @@ export class RdxComboboxRoot
     /** Whether the combobox is in multiple-selection mode. */
     readonly multiple = computed(() => this.mode() === 'multiple');
 
+    /** Whether the visible text input owns native serialization in filter-only mode. */
+    readonly inputOwnsFormValue = computed(() => this.mode() === 'none' && this.engine.inputLayout() !== 'inside');
+
     /** In `'none'` mode, whether pressing an item fills the input with its label. */
     readonly fillInputOnItemPress = input(true, { transform: booleanAttribute });
 
@@ -392,6 +398,9 @@ export class RdxComboboxRoot
     /** Converts a value to its display label. Defaults to the matching item's text. */
     readonly itemToStringLabel = input<(value: AcceptableValue) => string>();
 
+    /** Converts an item value to the string submitted by a native form. */
+    readonly itemToStringValue = input<(value: AcceptableValue) => string>();
+
     /** Emits before the selection changes; call `eventDetails.cancel()` to veto it. */
     readonly onValueChange = output<RdxComboboxValueChange>();
 
@@ -413,15 +422,45 @@ export class RdxComboboxRoot
     private readonly cvaDisabled = signal(false);
     readonly disabledState = computed(() => this.disabled() || this.cvaDisabled());
 
+    private readonly nativeFormValue = computed<ComboboxValue | null>(() =>
+        this.mode() === 'none' ? this.inputValue() : this.value()
+    );
+
     private readonly nativeFormControl = useNativeFormControl({
         name: this.name,
         form: this.form,
         disabled: this.disabledState,
-        value: this.value,
-        serialize: serializeNativeFormValue,
-        defaultValue: () => this.defaultValue() ?? this.value(),
+        value: this.nativeFormValue,
+        serialize: (value) => {
+            const itemToStringValue = this.itemToStringValue();
+            return itemToStringValue
+                ? serializeNativeFormValue(value, (entry) => itemToStringValue(entry as AcceptableValue))
+                : serializeNativeFormValue(value);
+        },
+        hasNativeControl: this.inputOwnsFormValue,
+        syncNativeControl: () => {
+            const input = this.engine.inputElement();
+            if (input && this.inputOwnsFormValue()) {
+                input.value = this.inputValue();
+            }
+        },
+        defaultValue: () => {
+            if (this.mode() === 'none') {
+                return this.inputValue();
+            }
+            const defaultValue = this.defaultValue();
+            return defaultValue === undefined ? this.value() : defaultValue;
+        },
         onReset: (value) => {
+            if (this.mode() === 'none') {
+                this.setLabel(typeof value === 'string' ? value : '');
+                this.formUi.resetInteractionState?.();
+                return;
+            }
             this.writeValue(value);
+            if (!this.resetNgControl(value)) {
+                this.onChange?.(value);
+            }
             this.formUi.resetInteractionState?.();
         }
     });
@@ -796,7 +835,7 @@ export class RdxComboboxRoot
     /** Requests submit of the closest form when `submitOnItemClick` is enabled. */
     private maybeSubmit(): void {
         if (this.submitOnItemClick()) {
-            this.engine.inputElement()?.form?.requestSubmit?.();
+            this.nativeFormControl.requestSubmit();
         }
     }
 

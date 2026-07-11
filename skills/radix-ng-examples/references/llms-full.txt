@@ -1267,7 +1267,8 @@ export class AutocompleteDefault {
 - ✅ `onOpenChange` is cancellable and emits `{ open, reason, event, trigger, eventDetails }`; controlled autocomplete can inspect or reject close/open requests.
 - ✅ `limit` caps how many matches show; arrow-key navigation never fights a resting mouse cursor.
 - ✅ External virtualization: `virtualized` + `[items]` drives index navigation and exposes `filteredItems()`.
-- ✅ Forms: `ControlValueAccessor` on the root (value = input string), plus Field integration on the input.
+- ✅ Forms: `ControlValueAccessor` on the root (value = input string), Field integration, and native
+  `name` / `form` serialization through the visible input.
 - ✅ Headless — state via `data-popup-open`, `data-list-empty`, `data-highlighted`, `data-disabled` (no `data-selected` — autocomplete does not commit a selection).
 
 ## Import
@@ -5548,7 +5549,8 @@ export class ComboboxDefault {
 - ✅ `limit` caps how many matches show; arrow-key navigation never fights a resting mouse cursor.
 - ✅ Hover behavior: `highlightItemOnHover` (default `true`) and `keepHighlight` (keep the highlight when the pointer leaves the list).
 - ✅ External virtualization: `virtualized` + `[items]` drives index navigation and exposes `filteredItems()` for any virtualizer.
-- ✅ Forms: `ControlValueAccessor` on the root, plus Field integration on the input.
+- ✅ Forms: `ControlValueAccessor` on the root, Field integration on the input, and native `name` / `form`
+  serialization (including repeated entries and `itemToStringValue` for object selections).
 - ✅ Headless — state via `data-popup-open`, `data-list-empty`, `data-placeholder`, `data-selected`, `data-highlighted`.
 
 ## Import
@@ -15844,9 +15846,10 @@ input. It reads everything from the root context and has no inputs.
 
 ### Hidden Input
 
-`RdxNumberFieldHiddenInput` an optional hidden `input[type=number]` that mirrors the value for
-native form submission and browser constraint validation. Set `name` (and optionally `form`) on the
-root. Not needed when using Angular reactive or template-driven forms.
+`RdxNumberFieldHiddenInput` is an optional hidden `input[type=number]` that mirrors the value for
+browser constraint validation and autofill. Set `name` (and optionally `form`) on the root. When this
+part is present it owns native form serialization; otherwise the root generates a plain hidden entry,
+so it is not required for `FormData` alone.
 
 ### Increment / Decrement
 
@@ -18704,7 +18707,8 @@ export class SelectDefault {
 - ✅ Two positioning modes: Popper (Floating UI) and Item-aligned (native-like).
 - ✅ Scroll buttons appear automatically when the list overflows the viewport.
 - ✅ Typeahead: type a character to jump to matching items.
-- ✅ Custom comparison (`isItemEqualToValue`) and labels (`itemToStringLabel`) for object values.
+- ✅ Custom comparison (`isItemEqualToValue`), labels (`itemToStringLabel`), and native form serialization
+  (`itemToStringValue`) for object values.
 - ✅ Highlight-model navigation (`aria-activedescendant`) — focus stays on the listbox, not the items.
 - ✅ Full keyboard navigation: ArrowDown / ArrowUp, Home, End, Enter / Space, Escape.
 - ✅ Public interaction state via `openMethod`, `openInteractionType`, and `closeInteractionType`.

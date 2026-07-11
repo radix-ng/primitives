@@ -68,7 +68,8 @@ export class ComboboxDefault {
 - ✅ `limit` caps how many matches show; arrow-key navigation never fights a resting mouse cursor.
 - ✅ Hover behavior: `highlightItemOnHover` (default `true`) and `keepHighlight` (keep the highlight when the pointer leaves the list).
 - ✅ External virtualization: `virtualized` + `[items]` drives index navigation and exposes `filteredItems()` for any virtualizer.
-- ✅ Forms: `ControlValueAccessor` on the root, plus Field integration on the input.
+- ✅ Forms: `ControlValueAccessor` on the root, Field integration on the input, and native `name` / `form`
+  serialization (including repeated entries and `itemToStringValue` for object selections).
 - ✅ Headless — state via `data-popup-open`, `data-list-empty`, `data-placeholder`, `data-selected`, `data-highlighted`.
 
 ## Import

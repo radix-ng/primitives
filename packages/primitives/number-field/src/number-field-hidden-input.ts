@@ -1,10 +1,11 @@
-import { Directive } from '@angular/core';
+import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 import { injectNumberFieldRootContext } from './number-field-context';
 
 /**
- * The hidden native `input[type=number]` that mirrors the field value for native form submission
- * and browser constraint validation (min/max/step/required). Place it inside the root, alongside
- * the visible `[rdxNumberFieldInput]`.
+ * The optional hidden native `input[type=number]` that mirrors the field value for browser constraint
+ * validation (min/max/step/required) and autofill. When present it also owns native form serialization;
+ * without it the root generates a plain hidden entry. Place it inside the root, alongside the visible
+ * `[rdxNumberFieldInput]`.
  *
  * @see https://base-ui.com/react/components/number-field
  */
@@ -15,8 +16,7 @@ import { injectNumberFieldRootContext } from './number-field-context';
         type: 'number',
         tabindex: '-1',
         'aria-hidden': 'true',
-        // `useNativeFormControl` serializes the root. This optional input exists only for browser
-        // constraint validation and autofill, so a name here would duplicate the FormData entry.
+        '[attr.name]': 'rootContext.name()',
         '[attr.form]': 'rootContext.form()',
         '[value]': 'rootContext.currentValue() ?? ""',
         '[attr.min]': 'rootContext.min()',
@@ -31,6 +31,12 @@ import { injectNumberFieldRootContext } from './number-field-context';
 })
 export class RdxNumberFieldHiddenInput {
     protected readonly rootContext = injectNumberFieldRootContext();
+
+    constructor() {
+        const input = inject<ElementRef<HTMLInputElement>>(ElementRef).nativeElement;
+        this.rootContext.registerNativeInput(input);
+        inject(DestroyRef).onDestroy(() => this.rootContext.registerNativeInput(null));
+    }
 
     /** Move focus to the visible input when the hidden one is focused (e.g. via form validation). */
     onFocus(): void {

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
@@ -84,26 +85,28 @@ describe('slider utils', () => {
         RdxSliderValue
     ],
     template: `
-        <div
-            [(value)]="value"
-            [step]="step()"
-            [disabled]="disabled()"
-            [name]="name()"
-            (onValueChange)="onChange($event)"
-            rdxSliderRoot
-        >
-            <output rdxSliderValue></output>
-            <div rdxSliderControl>
-                <div rdxSliderTrack>
-                    <div rdxSliderIndicator></div>
-                    @for (v of thumbs(); track $index) {
-                        <div [index]="$index" rdxSliderThumb>
-                            <input rdxSliderThumbInput aria-label="value" />
-                        </div>
-                    }
+        <form>
+            <div
+                [(value)]="value"
+                [step]="step()"
+                [disabled]="disabled()"
+                [name]="name()"
+                (onValueChange)="onChange($event)"
+                rdxSliderRoot
+            >
+                <output rdxSliderValue></output>
+                <div rdxSliderControl>
+                    <div rdxSliderTrack>
+                        <div rdxSliderIndicator></div>
+                        @for (v of thumbs(); track $index) {
+                            <div [index]="$index" rdxSliderThumb>
+                                <input rdxSliderThumbInput aria-label="value" />
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
+        </form>
     `
 })
 class TestComponent {
@@ -165,6 +168,34 @@ class SingleExplicitIndexComponent {
     readonly value = signal<SliderValue>(40);
 }
 
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [
+        ReactiveFormsModule,
+        RdxSliderRoot,
+        RdxSliderControl,
+        RdxSliderTrack,
+        RdxSliderThumb,
+        RdxSliderThumbInput
+    ],
+    template: `
+        <form>
+            <div [formControl]="control" name="amount" rdxSliderRoot>
+                <div rdxSliderControl>
+                    <div rdxSliderTrack>
+                        <div rdxSliderThumb>
+                            <input rdxSliderThumbInput aria-label="amount" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    `
+})
+class SliderNativeReactiveFormHost {
+    readonly control = new FormControl<SliderValue>(40, { nonNullable: true });
+}
+
 function press(el: HTMLElement, key: string, shiftKey = false): void {
     el.dispatchEvent(new KeyboardEvent('keydown', { key, shiftKey, bubbles: true, cancelable: true }));
 }
@@ -206,6 +237,33 @@ describe('RdxSlider', () => {
         expect(inputs[0].value).toBe('40');
         expect(inputs[0].getAttribute('aria-valuenow')).toBe('40');
         expect(inputs[0].getAttribute('max')).toBe('100');
+    });
+
+    it('serializes scalar and range values through the native thumb inputs', () => {
+        const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+        component.name.set('volume');
+        fixture.detectChanges();
+
+        expect(new FormData(form).getAll('volume')).toEqual(['40']);
+
+        component.value.set([20, 80]);
+        component.thumbs.set([0, 1]);
+        fixture.detectChanges();
+
+        expect(new FormData(form).getAll('volume')).toEqual(['20', '80']);
+        expect(fixture.nativeElement.querySelector('[data-rdx-native-form-control]')).toBeNull();
+    });
+
+    it('restores the initial model value on native form reset', async () => {
+        component.value.set(75);
+        fixture.detectChanges();
+
+        (fixture.nativeElement.querySelector('form') as HTMLFormElement).reset();
+        await Promise.resolve();
+        fixture.detectChanges();
+
+        expect(component.value()).toBe(40);
+        expect(inputs[0].value).toBe('40');
     });
 
     it('ignores explicit thumb index for a single-value slider', () => {
@@ -399,6 +457,31 @@ describe('RdxSlider', () => {
 
         expect(thumb.style.insetInlineStart).toBe('50%');
         expect(indicator.style.width).toBe('50%');
+    });
+});
+
+describe('RdxSlider native reset with Reactive Forms', () => {
+    it('restores the FormControl value and interaction state', async () => {
+        TestBed.configureTestingModule({ imports: [SliderNativeReactiveFormHost] });
+        const fixture = TestBed.createComponent(SliderNativeReactiveFormHost);
+        const host = fixture.componentInstance;
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        host.control.setValue(75);
+        host.control.markAsDirty();
+        host.control.markAsTouched();
+        fixture.detectChanges();
+
+        (fixture.nativeElement.querySelector('form') as HTMLFormElement).reset();
+        await Promise.resolve();
+        fixture.detectChanges();
+
+        expect(host.control.value).toBe(40);
+        expect(host.control.pristine).toBe(true);
+        expect(host.control.untouched).toBe(true);
+        expect((fixture.nativeElement.querySelector('[rdxSliderThumbInput]') as HTMLInputElement).value).toBe('40');
     });
 });
 

@@ -27,11 +27,32 @@ export function itemToStringLabel(value: unknown): string {
 }
 
 /**
- * Converts an item value to the string used for form serialization. Defaults to the same rules as
- * {@link itemToStringLabel}; kept as a separate export so a primitive can diverge label vs. value.
+ * Converts an item value to the string used for form serialization. A conventional `{ value, label }`
+ * item serializes its `value` member; other non-string values use Base UI-compatible JSON serialization
+ * with `String()` as a fallback. Kept separate so a primitive can diverge label vs. value.
  */
 export function itemToStringValue(value: unknown): string {
-    return itemToStringLabel(value);
+    if (value !== null && typeof value === 'object' && 'value' in value && 'label' in value) {
+        return serializeValue((value as { value: unknown }).value);
+    }
+
+    return serializeValue(value);
+}
+
+/** Base UI-compatible serialization fallback for native form values. */
+function serializeValue(value: unknown): string {
+    if (isNullish(value)) {
+        return '';
+    }
+    if (typeof value === 'string') {
+        return value;
+    }
+
+    try {
+        return JSON.stringify(value) ?? String(value);
+    } catch {
+        return String(value);
+    }
 }
 
 /**

@@ -111,7 +111,8 @@ export class AutocompleteDefault {
 - ✅ `onOpenChange` is cancellable and emits `{ open, reason, event, trigger, eventDetails }`; controlled autocomplete can inspect or reject close/open requests.
 - ✅ `limit` caps how many matches show; arrow-key navigation never fights a resting mouse cursor.
 - ✅ External virtualization: `virtualized` + `[items]` drives index navigation and exposes `filteredItems()`.
-- ✅ Forms: `ControlValueAccessor` on the root (value = input string), plus Field integration on the input.
+- ✅ Forms: `ControlValueAccessor` on the root (value = input string), Field integration, and native
+  `name` / `form` serialization through the visible input.
 - ✅ Headless — state via `data-popup-open`, `data-list-empty`, `data-highlighted`, `data-disabled` (no `data-selected` — autocomplete does not commit a selection).
 
 ## Import

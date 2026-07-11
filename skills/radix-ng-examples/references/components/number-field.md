@@ -600,9 +600,10 @@ input. It reads everything from the root context and has no inputs.
 
 ### Hidden Input
 
-`RdxNumberFieldHiddenInput` an optional hidden `input[type=number]` that mirrors the value for
-native form submission and browser constraint validation. Set `name` (and optionally `form`) on the
-root. Not needed when using Angular reactive or template-driven forms.
+`RdxNumberFieldHiddenInput` is an optional hidden `input[type=number]` that mirrors the value for
+browser constraint validation and autofill. Set `name` (and optionally `form`) on the root. When this
+part is present it owns native form serialization; otherwise the root generates a plain hidden entry,
+so it is not required for `FormData` alone.
 
 ### Increment / Decrement
 

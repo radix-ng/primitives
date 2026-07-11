@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormsModule, NgModel, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
+import { AcceptableValue } from '@radix-ng/primitives/core';
 import { RdxFieldError, RdxFieldRoot, RdxNgControlField } from '@radix-ng/primitives/field';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { _importsSelect } from '../index';
@@ -139,24 +140,43 @@ class SelectFieldReactiveFormsHost {
     imports: [_importsSelect],
     template: `
         <form id="native-form">
-            <div
+            <ng-container
+                #nativeRoot="rdxSelectRoot"
                 [(value)]="value"
                 [defaultValue]="defaultValue()"
                 [disabled]="disabled()"
+                [itemToStringValue]="serializeItem"
                 [name]="name()"
                 rdxSelectRoot
-            ></div>
+            />
         </form>
         <form id="external-form"></form>
         <div [(value)]="externalValue" form="external-form" name="external" rdxSelectRoot></div>
     `
 })
 class SelectNativeFormHost {
-    readonly defaultValue = signal<string | string[]>('apple');
-    readonly value = signal<string | string[]>('apple');
+    readonly nativeRoot = viewChild.required<RdxSelectRoot>('nativeRoot');
+    readonly defaultValue = signal<AcceptableValue | AcceptableValue[]>('apple');
+    readonly value = signal<AcceptableValue | AcceptableValue[]>('apple');
     readonly name = signal<string | undefined>('fruit');
     readonly disabled = signal(false);
+    readonly serializeItem = (item: AcceptableValue) =>
+        item !== null && typeof item === 'object' && 'id' in item ? String(item.id) : String(item);
     externalValue = 'pear';
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [ReactiveFormsModule, _importsSelect],
+    template: `
+        <form id="reactive-native-form">
+            <ng-container #root="rdxSelectRoot" [formControl]="control" name="fruit" rdxSelectRoot />
+        </form>
+    `
+})
+class SelectNativeReactiveFormHost {
+    readonly control = new FormControl('apple', { nonNullable: true });
+    readonly root = viewChild.required<RdxSelectRoot>('root');
 }
 
 async function selectPreviousItem(fixture: ComponentFixture<unknown>, settle: () => Promise<void>): Promise<void> {
@@ -351,9 +371,21 @@ describe('Select native form contract', () => {
         expect(new FormData(nativeForm).has('fruit')).toBe(false);
     });
 
+    it('serializes object values with itemToStringValue instead of object coercion', () => {
+        const nativeForm = fixture.nativeElement.querySelector('#native-form') as HTMLFormElement;
+
+        host.value.set([
+            { id: 'angular', label: 'Angular' },
+            { id: 'vue', label: 'Vue' }
+        ]);
+        fixture.detectChanges();
+
+        expect(new FormData(nativeForm).getAll('fruit')).toEqual(['angular', 'vue']);
+    });
+
     it('restores the initial value and interaction state on native reset', async () => {
         const nativeForm = fixture.nativeElement.querySelector('#native-form') as HTMLFormElement;
-        const root = fixture.debugElement.query(By.directive(RdxSelectRoot)).injector.get(RdxSelectRoot);
+        const root = host.nativeRoot();
 
         host.value.set('banana');
         root.formUi.markDirty();
@@ -367,6 +399,44 @@ describe('Select native form contract', () => {
         expect(host.value()).toBe('apple');
         expect(root.formUi.dirtyState()).toBe(false);
         expect(root.formUi.touchedState()).toBe(false);
+    });
+
+    it('does not reset the model when the native reset event is canceled', async () => {
+        const nativeForm = fixture.nativeElement.querySelector('#native-form') as HTMLFormElement;
+        host.value.set('banana');
+        fixture.detectChanges();
+        nativeForm.addEventListener('reset', (event) => event.preventDefault(), { once: true });
+
+        nativeForm.reset();
+        await Promise.resolve();
+        fixture.detectChanges();
+
+        expect(host.value()).toBe('banana');
+    });
+});
+
+describe('Select native reset with Reactive Forms', () => {
+    it('resets the FormControl value and interaction state', async () => {
+        TestBed.configureTestingModule({ imports: [SelectNativeReactiveFormHost] });
+        const fixture = TestBed.createComponent(SelectNativeReactiveFormHost);
+        const host = fixture.componentInstance;
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        host.control.setValue('banana');
+        host.control.markAsDirty();
+        host.control.markAsTouched();
+        fixture.detectChanges();
+
+        (fixture.nativeElement.querySelector('form') as HTMLFormElement).reset();
+        await Promise.resolve();
+        fixture.detectChanges();
+
+        expect(host.control.value).toBe('apple');
+        expect(host.control.pristine).toBe(true);
+        expect(host.control.untouched).toBe(true);
+        expect(host.root().value()).toBe('apple');
     });
 });
 

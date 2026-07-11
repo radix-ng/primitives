@@ -44,6 +44,8 @@ const attr = (value: boolean) => (value ? '' : undefined);
         '[attr.disabled]': 'disabledState() ? "" : undefined',
         '[attr.readonly]': 'rootContext.readonly() ? "" : undefined',
         '[attr.required]': 'requiredState() ? "" : undefined',
+        '[attr.name]': 'rootContext.inputOwnsFormValue() ? rootContext.name() : undefined',
+        '[attr.form]': 'rootContext.form()',
         '[value]': 'rootContext.inputValue()',
         '[attr.data-popup-open]': 'dataAttr(rootContext.open())',
         '[attr.data-list-empty]': 'dataAttr(rootContext.visibleCount() === 0)',

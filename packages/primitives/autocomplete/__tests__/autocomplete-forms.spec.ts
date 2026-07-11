@@ -9,24 +9,100 @@ import { _importsAutocomplete } from '../index';
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsAutocomplete, ReactiveFormsModule],
     template: `
-        <div [(open)]="open" [formControl]="control" rdxAutocompleteRoot>
-            <input rdxAutocompleteInput aria-label="Fruit" />
-            <div *rdxAutocompletePortal rdxAutocompletePositioner>
-                <div rdxAutocompletePopup>
-                    <div rdxAutocompleteList aria-label="Fruits">
-                        @for (fruit of fruits(); track fruit) {
-                            <div rdxAutocompleteItem>{{ fruit }}</div>
-                        }
+        <form id="reactive-native-form">
+            <div [(open)]="open" [formControl]="control" name="query" rdxAutocompleteRoot>
+                <input rdxAutocompleteInput aria-label="Fruit" />
+                <div *rdxAutocompletePortal rdxAutocompletePositioner>
+                    <div rdxAutocompletePopup>
+                        <div rdxAutocompleteList aria-label="Fruits">
+                            @for (fruit of fruits(); track fruit) {
+                                <div rdxAutocompleteItem>{{ fruit }}</div>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
     `
 })
 class ReactiveHost {
     readonly control = new FormControl('');
     readonly open = signal(false);
     readonly fruits = signal(['Apple', 'Banana', 'Grape']);
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [_importsAutocomplete],
+    template: `
+        <form id="native-form">
+            <div [(value)]="value" [disabled]="disabled()" name="query" rdxAutocompleteRoot>
+                <input rdxAutocompleteInput aria-label="Query" />
+            </div>
+        </form>
+        <form id="external-form"></form>
+        <div [(value)]="externalValue" form="external-form" name="external" rdxAutocompleteRoot>
+            <input rdxAutocompleteInput aria-label="External query" />
+        </div>
+    `
+})
+class AutocompleteNativeFormHost {
+    readonly value = signal('Apple');
+    readonly externalValue = signal('Banana');
+    readonly disabled = signal(false);
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [_importsAutocomplete],
+    template: `
+        <form (submit)="captureSubmit($event)">
+            <div [(open)]="open" [(value)]="value" name="query" submitOnItemClick rdxAutocompleteRoot>
+                <input rdxAutocompleteInput aria-label="Fruit" />
+                <div *rdxAutocompletePortal rdxAutocompletePositioner>
+                    <div rdxAutocompletePopup>
+                        <div rdxAutocompleteList aria-label="Fruits">
+                            @for (fruit of fruits; track fruit) {
+                                <div rdxAutocompleteItem>{{ fruit }}</div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    `
+})
+class AutocompleteSubmitHost {
+    readonly open = signal(false);
+    readonly value = signal('');
+    readonly submittedValue = signal<FormDataEntryValue | null>(null);
+    readonly fruits = ['Apple', 'Banana'];
+
+    captureSubmit(event: SubmitEvent): void {
+        event.preventDefault();
+        this.submittedValue.set(new FormData(event.currentTarget as HTMLFormElement).get('query'));
+    }
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [_importsAutocomplete],
+    template: `
+        <form id="popup-form">
+            <div [(open)]="open" [(value)]="value" name="query" rdxAutocompleteRoot>
+                <button rdxAutocompleteTrigger>Search</button>
+                <div *rdxAutocompletePortal rdxAutocompletePositioner>
+                    <div rdxAutocompletePopup>
+                        <input rdxAutocompleteInput aria-label="Popup query" />
+                    </div>
+                </div>
+            </div>
+        </form>
+    `
+})
+class AutocompletePopupNativeFormHost {
+    readonly open = signal(true);
+    readonly value = signal('angular');
 }
 
 @Component({
@@ -132,6 +208,22 @@ describe('Autocomplete forms', () => {
             expect(inputOf(fixture).getAttribute('data-valid')).toBeNull();
             expect(inputOf(fixture).getAttribute('data-invalid')).toBeNull();
         });
+
+        it('resets the FormControl and interaction state from the native form', async () => {
+            host.control.setValue('Banana');
+            host.control.markAsDirty();
+            host.control.markAsTouched();
+            await settle();
+
+            (fixture.nativeElement.querySelector('form') as HTMLFormElement).reset();
+            await Promise.resolve();
+            await settle();
+
+            expect(host.control.value).toBe('');
+            expect(host.control.pristine).toBe(true);
+            expect(host.control.untouched).toBe(true);
+            expect(inputOf(fixture).value).toBe('');
+        });
     });
 
     describe('template-driven forms', () => {
@@ -156,6 +248,59 @@ describe('Autocomplete forms', () => {
             await settle();
             expect(host.value).toBe('gra');
         });
+    });
+});
+
+describe('Autocomplete native form contract', () => {
+    it('uses the visible input for native and external form serialization', () => {
+        TestBed.configureTestingModule({ imports: [AutocompleteNativeFormHost] });
+        const fixture = TestBed.createComponent(AutocompleteNativeFormHost);
+        const host = fixture.componentInstance;
+        fixture.detectChanges();
+
+        const nativeForm = fixture.nativeElement.querySelector('#native-form') as HTMLFormElement;
+        const externalForm = fixture.nativeElement.querySelector('#external-form') as HTMLFormElement;
+        const inputs = fixture.nativeElement.querySelectorAll('[rdxAutocompleteInput]') as NodeListOf<HTMLInputElement>;
+
+        expect(new FormData(nativeForm).get('query')).toBe('Apple');
+        expect(new FormData(externalForm).get('external')).toBe('Banana');
+        expect(inputs[0].name).toBe('query');
+        expect(inputs[1].form).toBe(externalForm);
+        expect(fixture.nativeElement.querySelector('[data-rdx-native-form-control]')).toBeNull();
+
+        host.disabled.set(true);
+        fixture.detectChanges();
+        expect(new FormData(nativeForm).has('query')).toBe(false);
+    });
+
+    it('submits the newly selected input value synchronously', async () => {
+        TestBed.configureTestingModule({ imports: [AutocompleteSubmitHost] });
+        const fixture = TestBed.createComponent(AutocompleteSubmitHost);
+        const host = fixture.componentInstance;
+        fixture.detectChanges();
+        host.open.set(true);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        const item = document.querySelector('[rdxAutocompleteItem]') as HTMLElement;
+        item.click();
+
+        expect(host.submittedValue()).toBe('Apple');
+    });
+
+    it('uses a hidden entry when the text input is portalled outside the form', async () => {
+        TestBed.configureTestingModule({ imports: [AutocompletePopupNativeFormHost] });
+        const fixture = TestBed.createComponent(AutocompletePopupNativeFormHost);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        const form = fixture.nativeElement.querySelector('#popup-form') as HTMLFormElement;
+        const input = document.querySelector('input[aria-label="Popup query"]') as HTMLInputElement;
+        expect(input.name).toBe('');
+        expect(new FormData(form).get('query')).toBe('angular');
+        expect(form.querySelector('[data-rdx-native-form-control]')).not.toBeNull();
     });
 });
 

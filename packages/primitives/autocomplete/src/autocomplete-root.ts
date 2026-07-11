@@ -111,6 +111,9 @@ const context = (): RdxComboboxRootContext => {
         dir: root.dir,
         value: root.value,
         inputValue: root.value,
+        name: root.name,
+        form: root.form,
+        inputOwnsFormValue: root.inputOwnsFormValue,
         open: root.open,
         present: root.present,
         multiple: root.alwaysFalse,
@@ -351,6 +354,7 @@ export class RdxAutocompleteRoot
 
     /** Constant signals exposed to the combobox context (autocomplete is always single-value). */
     readonly alwaysFalse = signal(false);
+    readonly inputOwnsFormValue = computed(() => this.engine.inputLayout() !== 'inside');
     readonly noneMode = signal<'none'>('none');
 
     private readonly cvaDisabled = signal(false);
@@ -362,9 +366,19 @@ export class RdxAutocompleteRoot
         disabled: this.disabledState,
         value: this.value,
         serialize: serializeNativeFormValue,
+        hasNativeControl: this.inputOwnsFormValue,
+        syncNativeControl: () => {
+            const input = this.engine.inputElement();
+            if (input && this.inputOwnsFormValue()) {
+                input.value = this.value();
+            }
+        },
         defaultValue: () => this.defaultValue() ?? this.value(),
         onReset: (value) => {
             this.writeValue(value);
+            if (!this.resetNgControl(value)) {
+                this.onChange?.(value);
+            }
             this.formUi.resetInteractionState?.();
         }
     });
@@ -684,7 +698,7 @@ export class RdxAutocompleteRoot
 
     private maybeSubmit(): void {
         if (this.submitOnItemClick()) {
-            this.engine.inputElement()?.form?.requestSubmit?.();
+            this.nativeFormControl.requestSubmit();
         }
     }
 

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
@@ -21,28 +22,30 @@ import { RdxNumberFieldRoot, RdxNumberFieldValueChangeEvent } from '../src/numbe
         RdxNumberFieldDecrement
     ],
     template: `
-        <div
-            [(value)]="value"
-            [defaultValue]="defaultValue()"
-            [min]="min()"
-            [max]="max()"
-            [step]="step()"
-            [name]="name()"
-            [disabled]="disabled()"
-            [readonly]="readonly()"
-            [required]="required()"
-            [format]="format()"
-            (onValueChange)="onValueChange($event)"
-            (onValueCommitted)="onValueCommitted($event)"
-            rdxNumberFieldRoot
-        >
-            <input rdxNumberFieldHiddenInput />
-            <div rdxNumberFieldGroup>
-                <button rdxNumberFieldDecrement>-</button>
-                <input rdxNumberFieldInput />
-                <button rdxNumberFieldIncrement>+</button>
+        <form>
+            <div
+                [(value)]="value"
+                [defaultValue]="defaultValue()"
+                [min]="min()"
+                [max]="max()"
+                [step]="step()"
+                [name]="name()"
+                [disabled]="disabled()"
+                [readonly]="readonly()"
+                [required]="required()"
+                [format]="format()"
+                (onValueChange)="onValueChange($event)"
+                (onValueCommitted)="onValueCommitted($event)"
+                rdxNumberFieldRoot
+            >
+                <input rdxNumberFieldHiddenInput />
+                <div rdxNumberFieldGroup>
+                    <button rdxNumberFieldDecrement>-</button>
+                    <input rdxNumberFieldInput />
+                    <button rdxNumberFieldIncrement>+</button>
+                </div>
             </div>
-        </div>
+        </form>
     `
 })
 class TestComponent {
@@ -59,6 +62,36 @@ class TestComponent {
 
     onValueChange = vi.fn<(change: RdxNumberFieldValueChangeEvent) => void>();
     onValueCommitted = vi.fn();
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [RdxNumberFieldRoot, RdxNumberFieldInput],
+    template: `
+        <form>
+            <div [(value)]="value" name="amount" rdxNumberFieldRoot>
+                <input rdxNumberFieldInput />
+            </div>
+        </form>
+    `
+})
+class GeneratedNativeInputHost {
+    readonly value = signal<number | null>(12);
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [ReactiveFormsModule, RdxNumberFieldRoot, RdxNumberFieldInput],
+    template: `
+        <form>
+            <div [formControl]="control" name="amount" rdxNumberFieldRoot>
+                <input rdxNumberFieldInput />
+            </div>
+        </form>
+    `
+})
+class NumberFieldNativeReactiveFormHost {
+    readonly control = new FormControl(5, { nonNullable: true });
 }
 
 describe('RdxNumberField', () => {
@@ -260,15 +293,37 @@ describe('RdxNumberField', () => {
 
         expect(hiddenInput.type).toBe('number');
         expect(hiddenInput.getAttribute('aria-hidden')).toBe('true');
-        expect(hiddenInput.hasAttribute('name')).toBe(false);
+        expect(hiddenInput.name).toBe('quantity');
         expect(hiddenInput.value).toBe('7');
         expect(hiddenInput.getAttribute('min')).toBe('1');
         expect(hiddenInput.getAttribute('max')).toBe('9');
         expect(hiddenInput.hasAttribute('required')).toBe(true);
 
-        const serializedInput = root.parentElement?.querySelector('[data-rdx-native-form-control]') as HTMLInputElement;
-        expect(serializedInput.name).toBe('quantity');
-        expect(serializedInput.value).toBe('7');
+        expect(root.parentElement?.querySelector('[data-rdx-native-form-control]')).toBeNull();
+        expect(root.parentElement?.querySelectorAll('[name="quantity"]')).toHaveLength(1);
+        expect(new FormData(fixture.nativeElement.querySelector('form')).getAll('quantity')).toEqual(['7']);
+    });
+
+    it('generates a native form entry when the optional number input is omitted', () => {
+        const generatedFixture = TestBed.createComponent(GeneratedNativeInputHost);
+        generatedFixture.detectChanges();
+
+        const form = generatedFixture.nativeElement.querySelector('form') as HTMLFormElement;
+        const serializedInput = form.querySelector('[data-rdx-native-form-control]') as HTMLInputElement;
+        expect(serializedInput.type).toBe('hidden');
+        expect(new FormData(form).getAll('amount')).toEqual(['12']);
+    });
+
+    it('restores the initial model value on native form reset', async () => {
+        component.value.set(7);
+        fixture.detectChanges();
+
+        (fixture.nativeElement.querySelector('form') as HTMLFormElement).reset();
+        await Promise.resolve();
+        fixture.detectChanges();
+
+        expect(component.value()).toBeNull();
+        expect(input.value).toBe('');
     });
 
     it('updates the value from a hidden input change (autofill)', () => {
@@ -277,6 +332,31 @@ describe('RdxNumberField', () => {
         fixture.detectChanges();
         expect(component.value()).toBe(8);
         expect(input.value).toBe('8');
+    });
+});
+
+describe('RdxNumberField native reset with Reactive Forms', () => {
+    it('restores the FormControl value and interaction state', async () => {
+        TestBed.configureTestingModule({ imports: [NumberFieldNativeReactiveFormHost] });
+        const fixture = TestBed.createComponent(NumberFieldNativeReactiveFormHost);
+        const host = fixture.componentInstance;
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        host.control.setValue(8);
+        host.control.markAsDirty();
+        host.control.markAsTouched();
+        fixture.detectChanges();
+
+        (fixture.nativeElement.querySelector('form') as HTMLFormElement).reset();
+        await Promise.resolve();
+        fixture.detectChanges();
+
+        expect(host.control.value).toBe(5);
+        expect(host.control.pristine).toBe(true);
+        expect(host.control.untouched).toBe(true);
+        expect((fixture.nativeElement.querySelector('[rdxNumberFieldInput]') as HTMLInputElement).value).toBe('5');
     });
 });
 

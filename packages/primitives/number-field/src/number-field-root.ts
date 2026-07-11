@@ -177,6 +177,9 @@ export class RdxNumberFieldRoot extends RdxFormUiControlBase implements RdxFormV
     /** @ignore The native input element, registered by `[rdxNumberFieldInput]`. */
     readonly inputEl = signal<HTMLInputElement | undefined>(undefined);
 
+    /** @ignore Optional native number input that owns constraints/autofill and form serialization. */
+    readonly nativeInputEl = signal<HTMLInputElement | null>(null);
+
     /**
      * @ignore Gate that prevents the formatted value from overwriting in-progress typing.
      * Plain field (not a signal): it is toggled imperatively inside event handlers.
@@ -203,18 +206,21 @@ export class RdxNumberFieldRoot extends RdxFormUiControlBase implements RdxFormV
     /** @ignore The current numeric value (`null` when empty). */
     readonly currentValue = computed<number | null>(() => this.cva.value() ?? null);
 
-    // The hidden number input remains an opt-in constraint-validation/autofill bridge. FormData itself
-    // is owned centrally so the normal anatomy needs no extra input and cannot serialize twice.
+    // The hidden number input remains an opt-in constraint-validation/autofill bridge and owns native
+    // serialization when present. Otherwise the shared layer supplies a plain hidden form control.
     private readonly nativeFormControl = useNativeFormControl({
         name: this.name,
         form: this.form,
         disabled: this.isDisabled,
         value: this.currentValue,
         serialize: serializeNativeFormValue,
+        hasNativeControl: computed(() => this.nativeInputEl() !== null),
         defaultValue: () => this.defaultValue() ?? this.cva.value() ?? null,
         onReset: (value) => {
             this.value.set(value);
-            this.cva.setValue(value);
+            if (!this.resetNgControl(value)) {
+                this.cva.setValue(value);
+            }
             this.allowInputSync = true;
             this.setInputValue(this.formatNumber(value));
             this.formUi.resetInteractionState?.();
@@ -304,6 +310,11 @@ export class RdxNumberFieldRoot extends RdxFormUiControlBase implements RdxFormV
     /** @ignore Registers the native input element. */
     registerInput(el: HTMLInputElement): void {
         this.inputEl.set(el);
+    }
+
+    /** @ignore Registers the optional native constraint/autofill input. */
+    registerNativeInput(el: HTMLInputElement | null): void {
+        this.nativeInputEl.set(el);
     }
 
     /** @ignore Sets the displayed text without changing the numeric value. */

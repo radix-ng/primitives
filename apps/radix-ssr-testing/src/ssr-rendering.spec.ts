@@ -1,10 +1,11 @@
 // `@angular/platform-server` ships partially-compiled code; load the compiler so JIT is available
 // as a fallback in the test environment (otherwise PlatformLocation fails to compile).
 import '@angular/compiler';
-import { provideZonelessChangeDetection, Type } from '@angular/core';
+import { Component, provideZonelessChangeDetection, Type } from '@angular/core';
 import { bootstrapApplication, BootstrapContext, provideClientHydration } from '@angular/platform-browser';
 import { provideServerRendering, renderApplication } from '@angular/platform-server';
-import { describe, expect, it } from 'vitest';
+import { RdxSelectRoot } from '@radix-ng/primitives/select';
+import { describe, expect, it, vi } from 'vitest';
 import AccordionPage from './app/components/accordion/page';
 import AvatarPage from './app/components/avatar/page';
 import CheckboxPage from './app/components/checkbox/page';
@@ -61,6 +62,17 @@ const cases: readonly SsrCase[] = [
     { selector: 'app-toggle-group', component: ToggleGroupPage, expects: ['Item 1', 'Item 2'] }
 ];
 
+@Component({
+    selector: 'app-native-select',
+    imports: [RdxSelectRoot],
+    template: `
+        <form>
+            <ng-container [value]="'apple'" name="fruit" rdxSelectRoot />
+        </form>
+    `
+})
+class NativeSelectPage {}
+
 function renderToString(selector: string, component: Type<unknown>): Promise<string> {
     return renderApplication(
         (context: BootstrapContext) =>
@@ -92,6 +104,21 @@ describe('SSR rendering', () => {
 
         // provideClientHydration() serializes hydration metadata into `ngh` attributes during SSR.
         expect(html).toMatch(/ngh=/);
+    });
+
+    it('supports a named Select root on ng-container without emitting imperative server DOM', async () => {
+        const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+        let html: string;
+
+        try {
+            html = await renderToString('app-native-select', NativeSelectPage);
+            expect(consoleError).not.toHaveBeenCalled();
+        } finally {
+            consoleError.mockRestore();
+        }
+
+        expect(html!).not.toContain('data-rdx-native-form-control');
+        expect(html!).toContain('<form><!--ng-container--></form>');
     });
 
     it('generates SSR-stable ids (deterministic prefixed counter, not random)', async () => {
