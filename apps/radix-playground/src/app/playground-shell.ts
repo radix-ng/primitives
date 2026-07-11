@@ -10,9 +10,11 @@ import { ThemeStore } from './shared/theme';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [RouterOutlet, RouterLink, RouterLinkActive, LucideMoon, LucideSun, PlaygroundMascot],
     template: `
-        <div class="bg-muted/30 text-foreground flex min-h-screen">
-            <aside class="border-border bg-background flex w-64 shrink-0 flex-col border-r">
-                <div class="flex h-14 items-center justify-between px-5">
+        <div class="bg-muted/30 text-foreground flex min-h-screen min-w-0 flex-col md:flex-row">
+            <aside
+                class="border-border bg-background sticky top-0 z-40 flex w-full min-w-0 shrink-0 flex-col border-b md:h-screen md:w-64 md:border-r md:border-b-0"
+            >
+                <div class="flex h-14 shrink-0 items-center justify-between px-4 sm:px-5">
                     <a
                         class="text-foreground text-sm font-semibold tracking-tight no-underline"
                         routerLink="/playground"
@@ -34,13 +36,17 @@ import { ThemeStore } from './shared/theme';
                     </button>
                 </div>
 
-                <nav class="flex flex-col gap-0.5 overflow-y-auto p-3">
-                    <span class="text-muted-foreground px-2 pb-1.5 text-xs font-semibold tracking-wide uppercase">
+                <nav
+                    class="flex min-w-0 gap-1 overflow-x-auto px-3 pb-3 md:flex-col md:gap-0.5 md:overflow-y-auto md:p-3"
+                >
+                    <span
+                        class="text-muted-foreground hidden px-2 pb-1.5 text-xs font-semibold tracking-wide uppercase md:block"
+                    >
                         Primitives
                     </span>
                     @for (item of primitives; track item.path) {
                         <a
-                            class="text-muted-foreground hover:bg-muted hover:text-foreground rounded-md px-2 py-1.5 text-sm no-underline transition-colors"
+                            class="text-muted-foreground hover:bg-muted hover:text-foreground shrink-0 rounded-md px-2.5 py-1.5 text-sm no-underline transition-colors md:px-2"
                             [routerLink]="['/playground', item.path]"
                             routerLinkActive="bg-muted !text-foreground font-medium"
                         >
@@ -50,7 +56,7 @@ import { ThemeStore } from './shared/theme';
                 </nav>
             </aside>
 
-            <main class="flex-1 overflow-y-auto p-8 lg:p-12">
+            <main class="min-w-0 flex-1 overflow-y-auto p-4 sm:p-6 lg:p-12">
                 <router-outlet />
             </main>
 

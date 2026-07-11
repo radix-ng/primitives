@@ -87,7 +87,7 @@ type CopyTarget = 'install' | 'skill';
                 }
             </button>
 
-            <section class="relative overflow-hidden px-6 py-20 lg:py-24">
+            <section class="relative overflow-hidden px-4 py-14 sm:px-6 sm:py-20 lg:py-24">
                 <div
                     class="pointer-events-none absolute -top-24 -right-32 z-0 size-[600px] rotate-[-6deg] text-[var(--landing-accent-text)] opacity-[0.06] dark:opacity-[0.1]"
                     aria-hidden="true"
@@ -95,8 +95,10 @@ type CopyTarget = 'install' | 'skill';
                     <ng-container [ngTemplateOutlet]="logoMark" />
                 </div>
 
-                <div class="relative z-10 mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-[1.05fr_0.95fr]">
-                    <div>
+                <div
+                    class="relative z-10 mx-auto grid max-w-6xl min-w-0 items-center gap-10 sm:gap-14 lg:grid-cols-[1.05fr_0.95fr]"
+                >
+                    <div class="min-w-0">
                         <span
                             class="text-muted-foreground mb-6 inline-flex items-center gap-2 rounded-full border border-[color:var(--landing-accent-border)] bg-[color:var(--landing-accent-tint)] px-3 py-1 text-xs font-medium whitespace-nowrap"
                         >
@@ -106,11 +108,11 @@ type CopyTarget = 'install' | 'skill';
                         </span>
 
                         <h1
-                            class="mb-5 max-w-3xl text-5xl leading-[1.02] font-bold tracking-normal text-balance lg:text-6xl"
+                            class="mb-5 max-w-3xl text-4xl leading-[1.04] font-bold tracking-normal text-balance sm:text-5xl sm:leading-[1.02] lg:text-6xl"
                         >
                             Headless UI
                             <em class="text-[var(--landing-accent-text)] not-italic">primitives</em>
-                            <span class="whitespace-nowrap">for Angular.</span>
+                            <span class="sm:whitespace-nowrap">for Angular.</span>
                         </h1>
 
                         <p class="text-muted-foreground mb-8 max-w-[30em] text-lg leading-8">
@@ -203,7 +205,7 @@ type CopyTarget = 'install' | 'skill';
                     </div>
 
                     <div
-                        class="bg-card overflow-hidden rounded-lg border border-[color:var(--landing-accent-border)] shadow-lg lg:rotate-[-1deg]"
+                        class="bg-card min-w-0 overflow-hidden rounded-lg border border-[color:var(--landing-accent-border)] shadow-lg lg:rotate-[-1deg]"
                     >
                         <div
                             class="border-border flex items-center gap-2 border-b bg-[color:var(--landing-accent-tint)] px-3.5 py-2.5"
@@ -243,7 +245,10 @@ type CopyTarget = 'install' | 'skill';
                 </div>
             </section>
 
-            <section class="border-border border-t bg-[color:var(--landing-accent-tint)]/35 px-6 py-20" id="try">
+            <section
+                class="border-border border-t bg-[color:var(--landing-accent-tint)]/35 px-4 py-14 sm:px-6 sm:py-20"
+                id="try"
+            >
                 <div class="mx-auto max-w-6xl">
                     <div class="mb-10">
                         <p
@@ -265,7 +270,7 @@ type CopyTarget = 'install' | 'skill';
 
                     <div class="grid gap-5 lg:grid-cols-2">
                         <div
-                            class="bg-card flex flex-col gap-5 rounded-lg border border-[color:var(--landing-accent-border)] p-6 shadow-sm"
+                            class="bg-card flex min-w-0 flex-col gap-5 rounded-lg border border-[color:var(--landing-accent-border)] p-4 shadow-sm sm:p-6"
                         >
                             <div class="flex items-center justify-between gap-3">
                                 <span class="text-sm font-semibold">State as data</span>
@@ -276,9 +281,9 @@ type CopyTarget = 'install' | 'skill';
                                 </span>
                             </div>
 
-                            <div class="flex items-center justify-between gap-4">
+                            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                                 <span class="text-sm">Email notifications</span>
-                                <div class="flex items-center gap-3">
+                                <div class="flex items-center justify-between gap-3 sm:justify-start">
                                     <span class="text-muted-foreground font-mono text-[0.72rem] whitespace-nowrap">
                                         data-checked=&quot;
                                         <b class="text-primary font-semibold">{{ emailEnabled() }}</b>
@@ -299,9 +304,9 @@ type CopyTarget = 'install' | 'skill';
                                 </div>
                             </div>
 
-                            <div class="flex items-center justify-between gap-4">
+                            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                                 <span class="text-sm">Accept the license terms</span>
-                                <div class="flex items-center gap-3">
+                                <div class="flex items-center justify-between gap-3 sm:justify-start">
                                     <span class="text-muted-foreground font-mono text-[0.72rem] whitespace-nowrap">
                                         data-state=&quot;
                                         <b class="text-primary font-semibold">{{ checkboxState() }}</b>
@@ -328,9 +333,9 @@ type CopyTarget = 'install' | 'skill';
                                 </div>
                             </div>
 
-                            <div class="flex items-center justify-between gap-4">
+                            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                                 <span class="text-sm">Marketing emails</span>
-                                <div class="flex items-center gap-3">
+                                <div class="flex items-center justify-between gap-3 sm:justify-start">
                                     <span class="text-muted-foreground font-mono text-[0.72rem] whitespace-nowrap">
                                         data-checked=&quot;
                                         <b class="text-primary font-semibold">{{ marketingEnabled() }}</b>
@@ -353,7 +358,7 @@ type CopyTarget = 'install' | 'skill';
                         </div>
 
                         <div
-                            class="bg-card flex flex-col gap-5 rounded-lg border border-[color:var(--landing-accent-border)] p-6 shadow-sm"
+                            class="bg-card flex min-w-0 flex-col gap-5 rounded-lg border border-[color:var(--landing-accent-border)] p-4 shadow-sm sm:p-6"
                         >
                             <div class="flex items-center justify-between gap-3">
                                 <span class="text-sm font-semibold">Accordion</span>
@@ -407,9 +412,9 @@ type CopyTarget = 'install' | 'skill';
                 </div>
             </section>
 
-            <section class="border-border border-t px-6 py-20" id="compose">
-                <div class="mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-[1fr_0.95fr]">
-                    <div>
+            <section class="border-border border-t px-4 py-14 sm:px-6 sm:py-20" id="compose">
+                <div class="mx-auto grid max-w-6xl min-w-0 items-center gap-10 sm:gap-14 lg:grid-cols-[1fr_0.95fr]">
+                    <div class="min-w-0">
                         <p
                             class="mb-3 text-xs font-semibold tracking-[0.08em] text-[var(--landing-accent-text)] uppercase"
                         >
@@ -488,7 +493,7 @@ type CopyTarget = 'install' | 'skill';
                         </div>
                     </div>
 
-                    <div class="flex flex-col gap-4">
+                    <div class="flex min-w-0 flex-col gap-4">
                         <p
                             class="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.06em] text-[var(--landing-accent-text)] uppercase"
                         >
@@ -574,7 +579,10 @@ type CopyTarget = 'install' | 'skill';
                 </div>
             </section>
 
-            <section class="border-border border-t bg-[color:var(--landing-blue)]/5 px-6 py-20" id="primitives">
+            <section
+                class="border-border border-t bg-[color:var(--landing-blue)]/5 px-4 py-14 sm:px-6 sm:py-20"
+                id="primitives"
+            >
                 <div class="mx-auto max-w-6xl">
                     <div class="mb-10">
                         <p
@@ -612,7 +620,7 @@ type CopyTarget = 'install' | 'skill';
                 </div>
             </section>
 
-            <section class="border-border bg-muted border-y px-6 py-20" id="contributors">
+            <section class="border-border bg-muted border-y px-4 py-14 sm:px-6 sm:py-20" id="contributors">
                 <div class="mx-auto max-w-6xl">
                     <div class="mb-10 flex flex-wrap items-end justify-between gap-6">
                         <div>
@@ -673,7 +681,7 @@ type CopyTarget = 'install' | 'skill';
                         }
                     </div>
 
-                    <div class="border-border bg-card rounded-lg border p-6 shadow-sm">
+                    <div class="border-border bg-card rounded-lg border p-4 shadow-sm sm:p-6">
                         <p class="text-muted-foreground mb-5 flex items-center gap-2 text-sm font-semibold">
                             <svg class="size-4" lucideUsers></svg>
                             Community contributors
@@ -737,7 +745,7 @@ type CopyTarget = 'install' | 'skill';
                 </div>
             </section>
 
-            <footer class="bg-[color:var(--landing-accent-tint)]/35 px-6 py-12">
+            <footer class="bg-[color:var(--landing-accent-tint)]/35 px-4 py-10 sm:px-6 sm:py-12">
                 <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-6">
                     <a class="inline-flex items-center gap-2 text-sm tracking-normal no-underline" href="/">
                         <span class="size-5 text-[var(--landing-accent-text)]">

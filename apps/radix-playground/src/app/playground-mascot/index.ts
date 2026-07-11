@@ -57,11 +57,11 @@ import { PlaygroundMascotPin } from './playground-mascot-pin';
 
         @if (visible()) {
             <section
-                class="pointer-events-auto fixed right-5 bottom-5 grid max-w-[calc(100vw-2.5rem)] grid-cols-[minmax(0,22rem)_auto] items-end gap-3"
+                class="pointer-events-auto fixed inset-x-3 bottom-3 grid min-w-0 grid-cols-1 items-end gap-3 sm:inset-x-auto sm:right-5 sm:bottom-5 sm:max-w-[calc(100vw-2.5rem)] sm:grid-cols-[minmax(0,22rem)_auto]"
                 aria-label="Playground mascot assistant"
             >
                 <div
-                    class="border-border bg-popover text-popover-foreground ring-border max-h-[min(44rem,calc(100vh-3rem))] w-[22rem] max-w-[calc(100vw-7rem)] overflow-y-auto rounded-lg border p-3 shadow-lg ring-1"
+                    class="border-border bg-popover text-popover-foreground ring-border max-h-[min(36rem,calc(100vh-2rem))] w-full min-w-0 overflow-y-auto rounded-lg border p-3 shadow-lg ring-1 sm:max-h-[min(44rem,calc(100vh-3rem))] sm:w-[22rem] sm:max-w-[calc(100vw-7rem)]"
                 >
                     <div class="flex items-start justify-between gap-3">
                         <div class="min-w-0">
@@ -268,7 +268,7 @@ import { PlaygroundMascotPin } from './playground-mascot-pin';
                 </div>
 
                 <button
-                    class="group focus-visible:ring-ring focus-visible:ring-offset-background relative mb-1 inline-flex size-16 shrink-0 items-center justify-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                    class="group focus-visible:ring-ring focus-visible:ring-offset-background relative mb-1 hidden size-16 shrink-0 items-center justify-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-offset-2 sm:inline-flex"
                     (click)="nextHint()"
                     type="button"
                     aria-label="Show next mascot hint"

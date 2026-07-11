@@ -8,13 +8,13 @@ import { PRIMITIVES } from '../shared/primitives';
     imports: [RouterLink],
     template: `
         <div class="mx-auto max-w-3xl">
-            <h1 class="text-foreground text-3xl font-semibold tracking-tight">Radix NG Playground</h1>
+            <h1 class="text-foreground text-2xl font-semibold tracking-tight sm:text-3xl">Radix NG Playground</h1>
             <p class="text-muted-foreground mt-2 max-w-prose text-sm">
                 A small sandbox for the headless Radix NG primitives. Each page renders a live, styled example. Pick a
                 primitive from the sidebar, or jump in below.
             </p>
 
-            <div class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <div class="mt-6 grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 sm:mt-8 sm:grid-cols-3">
                 @for (item of primitives; track item.path) {
                     <a
                         class="border-border bg-background text-foreground hover:bg-muted rounded-lg border p-4 text-sm font-medium no-underline shadow-xs transition-colors"
