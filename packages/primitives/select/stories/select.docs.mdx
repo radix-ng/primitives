@@ -24,6 +24,7 @@ native `<select>` behavior).
 - ✅ Controlled and uncontrolled value via `[(value)]`, with `defaultValue` / `defaultOpen` seeds.
 - ✅ `readOnly` and `required` state, reflected on the trigger as `aria-readonly` / `aria-required`.
 - ✅ Single and multiple selection with the `multiple` input.
+- ✅ Angular forms integration through `ControlValueAccessor`: Reactive Forms, `formControlName`, and `ngModel`.
 - ✅ Cancelable `onOpenChange` and `onValueChange` outputs with reason-aware `eventDetails`.
 - ✅ Two positioning modes: Popper (Floating UI) and Item-aligned (native-like).
 - ✅ Scroll buttons appear automatically when the list overflows the viewport.
@@ -153,6 +154,21 @@ items from the selected object.
 
 <Canvas of={Stories.ObjectValues} />
 
+### Reactive Forms
+
+Bind `formControl` directly on `rdxSelectRoot`. Angular owns programmatic writes, disabled state,
+dirty/touched tracking, and reset; Select keeps the visible value synchronized even before the popup
+has opened.
+
+<Canvas of={Stories.ReactiveForms} />
+
+### Template-driven Forms
+
+`[(ngModel)]` uses the same `ControlValueAccessor`. This example demonstrates the value round-trip,
+submission, touched/dirty state, and `NgForm.resetForm()` while keeping the same Field anatomy.
+
+<Canvas of={Stories.TemplateDrivenForms} />
+
 ### With scroll buttons
 
 When the list is taller than the available viewport, `rdxSelectScrollUpButton` and
@@ -197,9 +213,11 @@ validation policy independently from touch and mouse dismiss/open behavior.
 ### RdxSelectRoot
 
 The root context provider. Manages open state, selected value, dismiss/open lifecycle, and
-interaction-type tracking. Its `onOpenChange` and `onValueChange` outputs are cancelable and include
-reason-aware `eventDetails`, while `openMethod`, `openInteractionType`, and `closeInteractionType`
-expose how the popup was opened or closed. Exposes `data-disabled` on the host.
+interaction-type tracking. It implements Angular's `ControlValueAccessor` for Reactive and
+template-driven forms while keeping `value = model()` for two-way binding and Signal Forms. Its
+`onOpenChange` and `onValueChange` outputs are cancelable and include reason-aware `eventDetails`,
+while `openMethod`, `openInteractionType`, and `closeInteractionType` expose how the popup was opened
+or closed.
 
 <ArgTypes of={RdxSelectRoot} />
 
@@ -221,6 +239,8 @@ The button that opens the popup. Must be a `<button>` element.
 | `data-required`    | The select is required.                                                |
 | `data-invalid`     | The control is in an invalid state (via `Field`).                     |
 | `data-valid`       | The control is in a valid state.                                       |
+| `data-touched`     | The select has lost focus after interaction.                           |
+| `data-dirty`       | The selected value changed through user interaction.                  |
 | `data-focused`     | The trigger is focused (via `Field`).                                 |
 
 `aria-controls` points at the popup's id only while the popup is open; `aria-readonly` / `aria-required` / `aria-invalid` reflect the corresponding states.

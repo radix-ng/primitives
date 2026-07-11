@@ -47,7 +47,7 @@ visible control value, then returns both Angular and control-owned interaction s
 | Checkbox Group | `string[]`                           | ✅            | ✅ CVA               | ✅    |
 | Switch         | `boolean`                            | ✅            | ✅ CVA               | ✅    |
 | Radio Group    | `string \| null`                     | ✅            | ✅ CVA               | ✅    |
-| Select         | value / value array / `undefined`    | ✅            | —                    | ✅    |
+| Select         | value / value array / `undefined`    | ✅            | ✅ CVA               | ✅    |
 | Toggle Group   | `string[] \| undefined`              | ✅            | ✅ CVA               | ✅    |
 | Slider         | `number \| number[]`                 | ✅            | ✅ CVA               | ✅    |
 | Number Field   | `number \| null`                     | ✅            | ✅ CVA               | ✅    |
@@ -57,7 +57,7 @@ visible control value, then returns both Angular and control-owned interaction s
 | Time Field     | `TimeValue \| undefined`             | ✅            | —                    | ✅    |
 | Editable       | `string \| undefined`                | ✅            | —                    | ✅    |
 
-An em dash is intentional: `select`, `date-field`, `time-field`, and `editable` currently expose the
+An em dash is intentional: `date-field`, `time-field`, and `editable` currently expose the
 Angular-native `value = model()` contract but do not ship a `ControlValueAccessor`. The matrix makes
 that boundary explicit instead of implying parity that does not yet exist.
 
@@ -285,7 +285,7 @@ export class MyControl extends RdxFormUiControlBase implements RdxFormValueContr
 `radio`, `number-field`, `toggle-group`, `checkbox-group`, `slider`, `combobox`, `autocomplete`,
 `date-field`, `time-field`, `editable` — while `input` and `checkbox` keep their own equivalent inline.
 Dual controls (with a `ControlValueAccessor`) override `formUiTouchTarget()` to return their CVA;
-CVA-less controls (`select`, `date-field`, `time-field`, `editable`) bind via Signal Forms only. Slider
+CVA-less controls (`date-field`, `time-field`, `editable`) bind via Signal Forms only. Slider
 extends the base but skips the `implements FormValueControl` check (its `number | number[]` value
 collides with the shim's scalar `min`/`max`) — it still ships the same runtime surface.
 

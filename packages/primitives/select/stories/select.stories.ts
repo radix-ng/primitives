@@ -12,6 +12,10 @@ import { SelectMultiple } from './select-multiple';
 import multipleSource from './select-multiple?raw';
 import { SelectObjectValues } from './select-object-values';
 import objectValuesSource from './select-object-values?raw';
+import { SelectReactiveForms } from './select-reactive-forms';
+import reactiveFormsSource from './select-reactive-forms?raw';
+import { SelectTemplateDrivenForms } from './select-template-driven-forms';
+import templateDrivenFormsSource from './select-template-driven-forms?raw';
 import { SelectWithScroll } from './select-with-scroll';
 import withScrollSource from './select-with-scroll?raw';
 
@@ -30,6 +34,8 @@ export default {
                 SelectEvents,
                 SelectMultiple,
                 SelectObjectValues,
+                SelectReactiveForms,
+                SelectTemplateDrivenForms,
                 SelectWithScroll,
                 SelectAlignedPosition,
                 SelectAlignedPositionWithScroll
@@ -73,6 +79,24 @@ export const ObjectValues: Story = {
     render: () => ({
         template: html`
             <select-object-values />
+        `
+    })
+};
+
+export const ReactiveForms: Story = {
+    parameters: source(reactiveFormsSource),
+    render: () => ({
+        template: html`
+            <select-reactive-forms />
+        `
+    })
+};
+
+export const TemplateDrivenForms: Story = {
+    parameters: source(templateDrivenFormsSource),
+    render: () => ({
+        template: html`
+            <select-template-driven-forms />
         `
     })
 };

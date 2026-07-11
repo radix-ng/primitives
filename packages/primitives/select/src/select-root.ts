@@ -5,6 +5,7 @@ import {
     effect,
     ElementRef,
     inject,
+    Injector,
     input,
     model,
     output,
@@ -13,6 +14,7 @@ import {
     untracked,
     WritableSignal
 } from '@angular/core';
+import { ControlValueAccessor, NgControl } from '@angular/forms';
 import {
     AcceptableValue,
     createCancelableChangeEventDetails,
@@ -25,10 +27,12 @@ import {
     ItemValueComparator,
     provideFloatingRootContext,
     provideFloatingTree,
+    provideValueAccessor,
     RdxCancelableChangeEventDetails,
     RdxFloatingRootContext,
     RdxFormUiControlBase,
     RdxFormUiStateContext,
+    RdxFormUiTouchTarget,
     RdxFormValueControl,
     RdxTransitionStatus,
     useTransitionStatus
@@ -123,7 +127,7 @@ const context = (): RdxSelectRootContext => {
         openInteractionType: context.openInteractionType,
         closeInteractionType: context.closeInteractionType,
         ...formUiStateContext(context.formUi),
-        disabled: context.disabled,
+        disabled: context.disabledState,
         readOnly: context.readOnly,
         required: context.required,
         modal: context.modal,
@@ -167,6 +171,7 @@ export const [injectSelectRootContext, provideSelectRootContext] = createContext
     selector: '[rdxSelectRoot]',
     exportAs: 'rdxSelectRoot',
     providers: [
+        provideValueAccessor(RdxSelectRoot),
         provideSelectRootContext(context),
         // New floating foundation (ADR 0015/0017) — the dismissal capability reads this shared context.
         provideFloatingTree(),
@@ -176,8 +181,9 @@ export const [injectSelectRootContext, provideSelectRootContext] = createContext
 })
 export class RdxSelectRoot
     extends RdxFormUiControlBase
-    implements RdxFormValueControl<AcceptableValue | AcceptableValue[] | undefined>
+    implements ControlValueAccessor, RdxFormValueControl<AcceptableValue | AcceptableValue[] | undefined>
 {
+    private readonly injector = inject(Injector);
     readonly contentId = injectId('rdx-select-content-');
 
     readonly open = model<boolean>(false);
@@ -208,6 +214,8 @@ export class RdxSelectRoot
     readonly multiple = input(false, { transform: booleanAttribute });
 
     readonly disabled = input(false, { transform: booleanAttribute });
+    private readonly cvaDisabled = signal(false);
+    readonly disabledState = computed(() => this.disabled() || this.cvaDisabled());
 
     /** When `true`, the value cannot be changed by the user (the popup can still be opened to view it). */
     readonly readOnly = input(false, { transform: booleanAttribute });
@@ -264,7 +272,9 @@ export class RdxSelectRoot
             const defaultValue = this.defaultValue();
             if (!this.hasAppliedDefaultValue && defaultValue !== undefined) {
                 this.hasAppliedDefaultValue = true;
-                this.value.set(defaultValue);
+                if (untracked(this.value) === undefined) {
+                    this.value.set(defaultValue);
+                }
             }
         });
 
@@ -336,7 +346,7 @@ export class RdxSelectRoot
         reason: RdxSelectValueChangeReason = 'none',
         event: Event = new Event('select.value-change')
     ): boolean {
-        if (this.readOnly()) {
+        if (this.disabledState() || this.readOnly()) {
             return false;
         }
 
@@ -362,6 +372,7 @@ export class RdxSelectRoot
 
         this.value.set(nextValue);
         this.formUi.markDirty();
+        this.onChange?.(nextValue);
 
         return true;
     }
@@ -391,5 +402,51 @@ export class RdxSelectRoot
         }
 
         return true;
+    }
+
+    /** @ignore Bridge the CVA touched callback into the shared Signal Forms UI-state path. */
+    protected override formUiTouchTarget(): RdxFormUiTouchTarget {
+        return { markAsTouched: () => this.onTouched?.() };
+    }
+
+    /** @ignore Write a form-owned value without emitting a user change. */
+    writeValue(value: AcceptableValue | AcceptableValue[] | undefined): void {
+        untracked(() => this.value.set(value));
+        this.syncNgControlInteractionState();
+    }
+
+    /** @ignore Register the Reactive Forms / ngModel value callback. */
+    registerOnChange(fn: (value: AcceptableValue | AcceptableValue[] | undefined) => void): void {
+        this.onChange = fn;
+    }
+
+    /** @ignore Register the Reactive Forms / ngModel touched callback. */
+    registerOnTouched(fn: () => void): void {
+        this.onTouched = fn;
+    }
+
+    /** @ignore Merge form-owned disabled state with the public disabled input. */
+    setDisabledState(isDisabled: boolean): void {
+        this.cvaDisabled.set(isDisabled);
+    }
+
+    private onChange?: (value: AcceptableValue | AcceptableValue[] | undefined) => void;
+    private onTouched?: () => void;
+
+    /**
+     * Angular calls `writeValue` for both ordinary programmatic writes and reset. Wait until the
+     * co-located `NgControl` has applied its new flags, then mirror only pristine / untouched
+     * transitions into the control-owned UI state. Dirty or touched programmatic writes are preserved.
+     */
+    private syncNgControlInteractionState(): void {
+        queueMicrotask(() => {
+            const control = this.injector.get(NgControl, null, { self: true, optional: true })?.control;
+            if (control?.pristine) {
+                this.formUi.resetDirtyState?.();
+            }
+            if (control?.untouched) {
+                this.touched.set(false);
+            }
+        });
     }
 }

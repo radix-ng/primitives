@@ -1,5 +1,5 @@
 import { afterNextRender, computed, Directive, ElementRef, inject, input } from '@angular/core';
-import { AcceptableValue } from '@radix-ng/primitives/core';
+import { AcceptableValue, itemToStringLabel as defaultItemToStringLabel } from '@radix-ng/primitives/core';
 import { injectSelectRootContext } from './select-root';
 import { valueComparator } from './utils';
 
@@ -30,7 +30,7 @@ export class RdxSelectValue {
                 return customLabel(value);
             }
             const option = options.find((o) => valueComparator(value, o.value, this.rootContext.isItemEqualToValue()));
-            return option?.textContent ?? '';
+            return option?.textContent ?? defaultItemToStringLabel(value);
         };
 
         const value = this.rootContext.value();

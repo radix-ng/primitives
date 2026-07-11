@@ -21,8 +21,8 @@ Form support in Radix NG is split into independent layers. You can use any on it
 designed to compose into **Form → Field → Control**.
 
 1. **The control** — owns the value. Every form control exposes its value as a signal `model()`
-   (`value` for value controls, `checked` for toggles) and, where it is not a native element,
-   implements `ControlValueAccessor` so `formControl` / `ngModel` work. This is the value I/O layer.
+   (`value` for value controls, `checked` for toggles), and most non-native controls also implement
+   `ControlValueAccessor` so `formControl` / `ngModel` work. This is the value I/O layer.
 2. **[`Field`](?path=/docs/primitives-field--docs)** — owns presentation and accessibility. It wires a
    label, description, and error message to the control with `for` / `id` / `aria-describedby`, and
    reflects field state through `data-*` attributes. `Field` does **not** read or own validation; you
@@ -71,7 +71,7 @@ template-driven forms** do so through `ControlValueAccessor` (`formControl`, `fo
 | [Slider](?path=/docs/primitives-slider--docs)             | `value` (`number \| number[]`) | ✅                                 |
 | [Number Field](?path=/docs/primitives-number-field--docs) | `value`                        | ✅                                 |
 | [Toggle Group](?path=/docs/primitives-toggle-group--docs) | `value`                        | ✅                                 |
-| [Select](?path=/docs/primitives-select--docs)             | `value`                        | Two-way binding (`[(value)]`)      |
+| [Select](?path=/docs/primitives-select--docs)             | `value`                        | ✅                                 |
 | [Date Field](?path=/docs/primitives-date-field--docs)     | `value`                        | Two-way binding                    |
 | [Time Field](?path=/docs/primitives-time-field--docs)     | `value`                        | Two-way binding                    |
 | [Editable](?path=/docs/primitives-editable--docs)         | `value`                        | Two-way binding                    |
@@ -79,8 +79,9 @@ template-driven forms** do so through `ControlValueAccessor` (`formControl`, `fo
 ## Reactive Forms
 
 Bind a control with `formControl` or `formControlName`. Native inputs work through Angular's built-in
-`DefaultValueAccessor`; custom controls (Checkbox, Switch, Radio, Slider, Number Field, Toggle Group)
-provide their own `ControlValueAccessor`, so the binding is identical:
+`DefaultValueAccessor`; custom controls (Checkbox, Switch, Radio, Slider, Number Field, Toggle Group,
+Select, Combobox, and Autocomplete) provide their own `ControlValueAccessor`, so the binding is
+identical:
 
 ```ts
 @Component({
@@ -129,12 +130,16 @@ export class Example {
 }
 ```
 
-Controls without a `ControlValueAccessor` (Select, Date Field, Time Field, Editable) are not bound with
-`ngModel` / `formControl`; use two-way binding on their `value` model instead:
+Select now binds directly through `ngModel` on its root:
 
 ```html
-<button rdxSelectTrigger [(value)]="country">…</button>
+<div rdxSelectRoot [(ngModel)]="country" name="country">
+  <button rdxSelectTrigger>…</button>
+</div>
 ```
+
+Controls without a `ControlValueAccessor` (Date Field, Time Field, Editable) use two-way binding on
+their `value` model instead.
 
 ## Surfacing state with Field
 
@@ -196,7 +201,7 @@ import { RdxControlValueAccessor } from '@radix-ng/primitives/core';
 })
 export class MyControl {
   private readonly cva = inject(RdxControlValueAccessor);
-  // read this.cva.value(), call this.cva.writeValue(...) on user interaction
+  // read this.cva.value(), call this.cva.setValue(...) on user interaction
 }
 ```
 
@@ -207,8 +212,8 @@ accessors already handle it, as `rdxInput` relies on.
 
 [Signal Forms](https://angular.dev/guide/forms/signals) (`@angular/forms/signals`) is **stable since
 Angular 22**. It is a **parallel** mechanism to `ControlValueAccessor`, not a replacement: a control can
-satisfy both at once. Most Radix NG controls are dual; `select`, `date-field`, `time-field`, and
-`editable` currently expose only the Angular-native Signal Forms value contract. See the
+satisfy both at once. Most Radix NG controls are dual; `date-field`, `time-field`, and `editable`
+currently expose only the Angular-native Signal Forms value contract. See the
 [runtime-verified matrix](?path=/docs/primitives-signal-forms--docs#control-integration-matrix) for the
 exact boundary.
 

@@ -59,7 +59,7 @@ export interface RdxFormUiStateOptions {
     readonly dirty: Signal<boolean>;
     /**
      * The control's `ControlValueAccessor`, if it has one (dual controls — switch, number-field, …).
-     * Omit or pass `null` for Signal-Forms-only controls without a CVA (e.g. select).
+     * Omit or pass `null` for Signal-Forms-only controls without a CVA (e.g. date-field).
      */
     readonly cva?: RdxFormUiTouchTarget | null;
 }
@@ -293,7 +293,7 @@ export abstract class RdxFormUiControlBase {
     /**
      * Override to bridge the control's `ControlValueAccessor` into `markAsTouched` (dual controls —
      * return `injectControlValueAccessor()` or a `{ markAsTouched }` adapter). Default: no CVA
-     * (Signal-Forms-only controls such as select).
+     * (Signal-Forms-only controls such as date-field).
      */
     protected formUiTouchTarget(): RdxFormUiTouchTarget | null {
         return null;

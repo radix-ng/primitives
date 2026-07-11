@@ -5,8 +5,8 @@
 > **rejected**: maintaining an existing CVA **and** Signal Forms on the same control is technically cheap (a control
 > implements both contracts; `[formField]` precedence is CVA → custom-control → native, and the form still
 > writes the `FormUiControl` surface into the directive either way), so there is no reason to hard-break
-> the Reactive/template ecosystem for a one-month-old API. Existing CVAs stay **dual**; controls that
-> never shipped one (`select`, `date-field`, `time-field`, `editable`) remain explicitly Signal-only. The
+> the Reactive/template ecosystem for a one-month-old API. Existing CVAs stay **dual**; `select` gained
+> the same dual contract on 2026-07-11, while `date-field`, `time-field`, and `editable` remain explicitly Signal-only. The
 > core stays form-agnostic; Signal Forms ships as the **optional** adapter pair in
 > `@radix-ng/primitives/signal-forms`.
 
@@ -28,7 +28,9 @@
 > `provideFormUiState()` (a host directive for the `data-*` / `aria-invalid` / `focusout` reflection on
 > self/group controls). The stable Angular-22 runtime gate is complete. Every control is runtime-covered
 > for value binding and `FieldState.reset()`; reset restores the visible value and clears both Angular and
-> control-owned touched/dirty state. The public Storybook matrix records which controls also retain a CVA.
+> control-owned touched/dirty state. Select additionally ships a direct `ControlValueAccessor`, with
+> runtime coverage for Reactive Forms, `ngModel`, disabled state, reset, cancellation, and multiple object
+> values. The public Storybook matrix records which controls also retain a CVA.
 > Opt-in Angular-owned submission is specified separately in ADR 0020.
 
 ## Context
