@@ -4,17 +4,21 @@ import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from 
 import { RdxFieldsetLegend, RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
 import { RdxFormRoot } from '@radix-ng/primitives/form';
 import { RdxInputDirective } from '@radix-ng/primitives/input';
-import { cn, demoButton, demoInput } from '../../storybook/styles';
+import {
+    type AccountFormValue,
+    formError,
+    formField,
+    formInput,
+    formLabel,
+    formReset,
+    formSubmit,
+    initialAccountValue,
+    simulateFormRequest,
+    takenEmail,
+    unavailableUsername
+} from '../../form/stories/form.shared';
 import { RdxSignalField } from '../src/signal-field';
 import { RdxSignalForm } from '../src/signal-form';
-
-interface ProfileModel {
-    username: string;
-    email: string;
-}
-
-const initialProfile = (): ProfileModel => ({ username: '', email: '' });
-const unavailableUsernames = new Set(['admin', 'radix', 'angular']);
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -34,113 +38,110 @@ const unavailableUsernames = new Set(['admin', 'radix', 'angular']);
     ],
     template: `
         <form
-            class="flex w-80 flex-col gap-4"
-            [rdxSignalForm]="profileForm"
-            (reset)="resetProfile($event)"
+            class="flex w-full max-w-96 flex-col gap-4"
+            [rdxSignalForm]="accountForm"
+            (reset)="resetAccount($event)"
             rdxFormRoot
             rdxSignalSubmit
         >
             <fieldset
                 class="border-border flex flex-col gap-4 rounded-md border p-4"
-                [disabled]="profileForm().submitting()"
+                [disabled]="accountForm().submitting()"
                 rdxFieldsetRoot
             >
-                <legend class="text-foreground px-1 text-sm font-semibold" rdxFieldsetLegend>Public profile</legend>
+                <legend class="text-foreground px-1 text-sm font-semibold" rdxFieldsetLegend>Account</legend>
 
-                <div class="flex flex-col gap-2" rdxFieldRoot name="username" validationMode="onChange">
-                    <label [class]="labelClass" rdxFieldLabel>Username</label>
+                <div [class]="field" rdxFieldRoot required>
+                    <label [class]="label" rdxFieldLabel>Username</label>
                     <input
-                        [class]="inputClass"
-                        [formField]="profileForm.username"
+                        [class]="input"
+                        [formField]="accountForm.username"
                         autocomplete="username"
                         rdxInput
                         rdxSignalField
                     />
-                    @if (profileForm.username().pending()) {
+                    <p class="text-muted-foreground text-sm" rdxFieldDescription>
+                        Use
+                        <code>admin</code>
+                        to preview asynchronous validation.
+                    </p>
+                    @if (accountForm.username().pending()) {
                         <p class="text-muted-foreground text-sm" role="status">Checking availability…</p>
-                    } @else {
-                        <p [class]="descriptionClass" rdxFieldDescription>
-                            Try
-                            <span class="text-foreground font-medium">angular</span>
-                            to see an async error.
-                        </p>
                     }
-                    <p #usernameError="rdxFieldError" [class]="errorClass" rdxFieldError>
+                    <p #usernameError="rdxFieldError" [class]="error" rdxFieldError>
                         {{ usernameError.messages().join(' ') }}
                     </p>
                 </div>
 
-                <div class="flex flex-col gap-2" rdxFieldRoot name="email">
-                    <label [class]="labelClass" rdxFieldLabel>Email</label>
+                <div [class]="field" rdxFieldRoot required>
+                    <label [class]="label" rdxFieldLabel>Email</label>
                     <input
-                        [class]="inputClass"
-                        [formField]="profileForm.email"
+                        [class]="input"
+                        [formField]="accountForm.email"
                         autocomplete="email"
                         rdxInput
                         rdxSignalField
                         type="email"
                     />
-                    <p [class]="descriptionClass" rdxFieldDescription>Used only for account notifications.</p>
-                    <p #emailError="rdxFieldError" [class]="errorClass" rdxFieldError>
+                    <p class="text-muted-foreground text-sm" rdxFieldDescription>
+                        Use
+                        <code>taken@example.com</code>
+                        to preview a server error.
+                    </p>
+                    <p #emailError="rdxFieldError" [class]="error" rdxFieldError>
                         {{ emailError.messages().join(' ') }}
                     </p>
                 </div>
             </fieldset>
 
             <div class="flex items-center gap-2">
-                <button [class]="primaryButtonClass" [disabled]="profileForm().submitting()" type="submit">
-                    {{ profileForm().submitting() ? 'Saving…' : 'Save profile' }}
+                <button [class]="submitButton" [disabled]="accountForm().submitting()" type="submit">
+                    {{ accountForm().submitting() ? 'Submitting…' : 'Submit' }}
                 </button>
-                <button [class]="secondaryButtonClass" type="reset">Reset</button>
+                <button [class]="resetButton" [disabled]="accountForm().submitting()" type="reset">Reset</button>
             </div>
 
             <p class="text-muted-foreground text-xs" aria-live="polite">
-                {{ profileForm().dirty() ? 'Dirty' : 'Pristine' }} ·
-                {{ profileForm().touched() ? 'Touched' : 'Untouched' }}
+                {{ accountForm().dirty() ? 'Dirty' : 'Pristine' }} ·
+                {{ accountForm().touched() ? 'Touched' : 'Untouched' }}
             </p>
 
-            @if (savedProfile(); as profile) {
-                <p class="text-foreground text-sm" role="status">Saved {{ profile.username }}.</p>
+            @if (savedAccount(); as account) {
+                <p class="text-foreground text-sm" role="status">Submitted {{ account.username }}.</p>
             }
         </form>
     `
 })
 export class SignalFormsValidationLifecycleExample {
-    protected readonly inputClass = cn(
-        demoInput,
-        'data-[invalid]:border-destructive data-[invalid]:ring-destructive/20'
-    );
-    protected readonly primaryButtonClass = cn(
-        demoButton.base,
-        demoButton.primary,
-        demoButton.size.md,
-        'disabled:cursor-wait disabled:opacity-60'
-    );
-    protected readonly secondaryButtonClass = cn(demoButton.base, demoButton.secondary, demoButton.size.md);
-    protected readonly labelClass = 'text-foreground text-sm font-medium data-[disabled]:opacity-50';
-    protected readonly descriptionClass = 'text-muted-foreground text-sm';
-    protected readonly errorClass = 'text-destructive text-sm';
+    protected readonly field = formField;
+    protected readonly label = formLabel;
+    protected readonly input = formInput;
+    protected readonly error = formError;
+    protected readonly submitButton = formSubmit;
+    protected readonly resetButton = formReset;
 
-    protected readonly savedProfile = signal<ProfileModel | null>(null);
-    readonly model = signal<ProfileModel>(initialProfile());
-    readonly profileForm = form(
+    protected readonly savedAccount = signal<AccountFormValue | null>(null);
+    readonly model = signal<AccountFormValue>(initialAccountValue());
+    readonly accountForm = form(
         this.model,
         (path) => {
             required(path.username, { message: 'Username is required.' });
             minLength(path.username, 3, { message: 'Use at least 3 characters.' });
             validateAsync(path.username, {
-                params: ({ value }) => value(),
-                debounce: 250,
+                params: ({ value }) => {
+                    const username = value().trim();
+                    return username.length >= 3 ? username : undefined;
+                },
                 factory: (params) =>
                     resource({
                         params: () => params(),
                         loader: async ({ params }) => {
-                            await new Promise((resolve) => setTimeout(resolve, 650));
-                            return !unavailableUsernames.has(params.toLowerCase());
+                            await simulateFormRequest();
+                            return params.toLowerCase() !== unavailableUsername;
                         }
                     }),
                 onSuccess: (available) =>
-                    available ? undefined : { kind: 'usernameTaken', message: 'This username is already taken.' },
+                    available ? undefined : { kind: 'unavailable', message: 'That username is unavailable.' },
                 onError: () => ({ kind: 'availabilityUnavailable', message: 'Could not check this username.' })
             });
 
@@ -150,19 +151,29 @@ export class SignalFormsValidationLifecycleExample {
         {
             submission: {
                 action: async (field) => {
-                    await new Promise((resolve) => setTimeout(resolve, 500));
-                    this.savedProfile.set({ ...field().value() });
+                    this.savedAccount.set(null);
+                    await simulateFormRequest();
+
+                    if (field.email().value() === takenEmail) {
+                        return {
+                            kind: 'emailTaken',
+                            message: 'That email already has an account.',
+                            fieldTree: field.email
+                        };
+                    }
+
+                    this.savedAccount.set({ ...field().value() });
                     return undefined;
                 }
             }
         }
     );
 
-    protected resetProfile(event: Event): void {
+    protected resetAccount(event: Event): void {
         // Signal Forms owns the model and interaction state. Prevent the browser from independently
         // restoring DOM defaults, then reset Angular with the explicit application initial value.
         event.preventDefault();
-        this.savedProfile.set(null);
-        this.profileForm().reset(initialProfile());
+        this.savedAccount.set(null);
+        this.accountForm().reset(initialAccountValue());
     }
 }

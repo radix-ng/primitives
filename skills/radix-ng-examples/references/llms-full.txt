@@ -11810,12 +11810,15 @@ export class FormResetExample {
 The complete recipe composes Form → Fieldset → Field → Control with `rdxNgControlField`, async
 validation, error-key matching, server errors that clear on edit, submit reveal/focus, and reset.
 Reactive Forms remains the value/validation source of truth; Form never stops `(ngSubmit)` propagation.
+It is intentionally paired with the
+[Signal Forms account recipe](?path=/docs/primitives-signal-forms--docs#one-recipe-two-angular-apis):
+the UI and behavior stay the same while Angular's binding, validation, submission, and reset APIs
+change.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { AsyncValidatorFn, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
-    RdxFieldControl,
     RdxFieldDescription,
     RdxFieldError,
     RdxFieldLabel,
@@ -11823,8 +11826,20 @@ import {
     RdxNgControlField
 } from '@radix-ng/primitives/field';
 import { RdxFieldsetLegend, RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
+import { RdxInputDirective } from '@radix-ng/primitives/input';
 import { RdxFormErrors, RdxFormRoot } from '../index';
-import { formError, formField, formInput, formLabel, formReset, formSubmit } from './form.shared';
+import {
+    type AccountFormValue,
+    formError,
+    formField,
+    formInput,
+    formLabel,
+    formReset,
+    formSubmit,
+    simulateFormRequest,
+    takenEmail,
+    unavailableUsername
+} from './form.shared';
 
 /**
  * Complete Reactive Forms lifecycle: NgControl → Field state, async validation, server errors that
@@ -11840,22 +11855,26 @@ import { formError, formField, formInput, formLabel, formReset, formSubmit } fro
         RdxFieldsetLegend,
         RdxFieldRoot,
         RdxFieldLabel,
-        RdxFieldControl,
+        RdxInputDirective,
         RdxFieldDescription,
         RdxFieldError,
         RdxNgControlField
     ],
     template: `
         <form
-            class="flex w-96 flex-col gap-4"
+            class="flex w-full max-w-96 flex-col gap-4"
             [formGroup]="form"
             [errors]="serverErrors()"
             (onClearErrors)="clearServerErrors($event)"
             (ngSubmit)="submit()"
-            (reset)="successMessage.set('')"
+            (reset)="resetFeedback()"
             rdxFormRoot
         >
-            <fieldset class="border-border space-y-4 rounded-md border p-4" rdxFieldsetRoot>
+            <fieldset
+                class="border-border flex flex-col gap-4 rounded-md border p-4"
+                [disabled]="submitting()"
+                rdxFieldsetRoot
+            >
                 <legend class="text-foreground px-1 text-sm font-semibold" rdxFieldsetLegend>Account</legend>
 
                 <div [class]="field" rdxFieldRoot required>
@@ -11864,7 +11883,7 @@ import { formError, formField, formInput, formLabel, formReset, formSubmit } fro
                         [class]="input"
                         autocomplete="username"
                         formControlName="username"
-                        rdxFieldControl
+                        rdxInput
                         rdxNgControlField
                     />
                     <p class="text-muted-foreground text-sm" rdxFieldDescription>
@@ -11889,7 +11908,7 @@ import { formError, formField, formInput, formLabel, formReset, formSubmit } fro
                         autocomplete="email"
                         type="email"
                         formControlName="email"
-                        rdxFieldControl
+                        rdxInput
                         rdxNgControlField
                     />
                     <p class="text-muted-foreground text-sm" rdxFieldDescription>
@@ -11909,13 +11928,20 @@ import { formError, formField, formInput, formLabel, formReset, formSubmit } fro
                 </div>
             </fieldset>
 
-            <div class="flex gap-2">
-                <button [class]="submitButton" type="submit">Submit</button>
-                <button [class]="resetButton" type="reset">Reset</button>
+            <div class="flex items-center gap-2">
+                <button [class]="submitButton" [disabled]="submitting()" type="submit">
+                    {{ submitting() ? 'Submitting…' : 'Submit' }}
+                </button>
+                <button [class]="resetButton" [disabled]="submitting()" type="reset">Reset</button>
             </div>
 
-            @if (successMessage()) {
-                <p class="text-foreground text-sm" role="status">{{ successMessage() }}</p>
+            <p class="text-muted-foreground text-xs" aria-live="polite">
+                {{ form.dirty ? 'Dirty' : 'Pristine' }} ·
+                {{ form.touched ? 'Touched' : 'Untouched' }}
+            </p>
+
+            @if (savedAccount(); as account) {
+                <p class="text-foreground text-sm" role="status">Submitted {{ account.username }}.</p>
             }
         </form>
     `
@@ -11930,14 +11956,15 @@ export class FormReactiveFormsExample {
 
     private readonly formBuilder = inject(FormBuilder);
     private readonly usernameAvailability: AsyncValidatorFn = async (control) => {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        return String(control.value).trim().toLowerCase() === 'admin'
+        await simulateFormRequest();
+        return String(control.value).trim().toLowerCase() === unavailableUsername
             ? { unavailable: { message: 'That username is unavailable.' } }
             : null;
     };
 
     readonly serverErrors = signal<RdxFormErrors>({});
-    readonly successMessage = signal('');
+    readonly savedAccount = signal<AccountFormValue | null>(null);
+    readonly submitting = signal(false);
     readonly form = this.formBuilder.nonNullable.group({
         username: this.formBuilder.nonNullable.control('', {
             validators: [Validators.required, Validators.minLength(3)],
@@ -11956,24 +11983,41 @@ export class FormReactiveFormsExample {
 
     protected clearServerErrors(errors: RdxFormErrors): void {
         this.serverErrors.set(errors);
-        this.successMessage.set('');
+        this.savedAccount.set(null);
     }
 
-    protected submit(): void {
+    protected async submit(): Promise<void> {
         if (this.form.pending || this.form.invalid) {
             this.form.markAllAsTouched();
-            this.successMessage.set('');
+            this.savedAccount.set(null);
             return;
         }
 
-        if (this.email.value === 'taken@example.com') {
-            this.serverErrors.set({ email: 'That email already has an account.' });
-            this.successMessage.set('');
+        if (this.submitting()) {
             return;
         }
 
+        this.submitting.set(true);
+        this.savedAccount.set(null);
+
+        try {
+            await simulateFormRequest();
+
+            if (this.email.value === takenEmail) {
+                this.serverErrors.set({ email: 'That email already has an account.' });
+                return;
+            }
+
+            this.serverErrors.set({});
+            this.savedAccount.set(this.form.getRawValue());
+        } finally {
+            this.submitting.set(false);
+        }
+    }
+
+    protected resetFeedback(): void {
         this.serverErrors.set({});
-        this.successMessage.set(`Submitted ${this.username.value}.`);
+        this.savedAccount.set(null);
     }
 }
 ```
@@ -20407,6 +20451,420 @@ Reactive Forms and `ngModel` use the parallel `rdxNgControlField` adapter from
 </form>
 ```
 
+## One recipe, two Angular APIs
+
+The two account recipes below intentionally keep the same controls, `Form → Fieldset → Field →
+Control` anatomy, validation messages, async username check, backend email error, interaction status,
+submission feedback, and reset behavior. Only the Angular form API that owns value, validation, and
+submission changes.
+
+Try `admin` to see asynchronous validation and `taken@example.com` to see a submission error that
+clears when the field is edited.
+
+| Concern          | Reactive Forms                    | Signal Forms                               |
+| ---------------- | --------------------------------- | ------------------------------------------ |
+| Form binding     | `[formGroup]`                     | `form()` + `[rdxSignalForm]`                |
+| Control binding  | `formControlName`                 | `[formField]`                              |
+| Field adapter    | `rdxNgControlField`               | `rdxSignalField`                           |
+| Validation       | `Validators` + `AsyncValidatorFn` | `required` / `minLength` / `validateAsync` |
+| Submit lifecycle | `(ngSubmit)`                      | `rdxSignalSubmit` + `submission.action`    |
+| Backend error    | `rdxFormRoot[errors]`             | Targeted `ValidationError` from the action |
+| Pending state    | `control.pending`                 | `field().pending()`                        |
+| Reset            | `FormGroup` + native form reset   | `FieldState.reset(initialValue)`           |
+
+### Reactive Forms
+
+```typescript
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { AsyncValidatorFn, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+    RdxFieldDescription,
+    RdxFieldError,
+    RdxFieldLabel,
+    RdxFieldRoot,
+    RdxNgControlField
+} from '@radix-ng/primitives/field';
+import { RdxFieldsetLegend, RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
+import { RdxInputDirective } from '@radix-ng/primitives/input';
+import { RdxFormErrors, RdxFormRoot } from '../index';
+import {
+    type AccountFormValue,
+    formError,
+    formField,
+    formInput,
+    formLabel,
+    formReset,
+    formSubmit,
+    simulateFormRequest,
+    takenEmail,
+    unavailableUsername
+} from './form.shared';
+
+/**
+ * Complete Reactive Forms lifecycle: NgControl → Field state, async validation, server errors that
+ * clear on edit, submit reveal/focus, and Angular-owned reset.
+ */
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'form-reactive-forms-example',
+    imports: [
+        ReactiveFormsModule,
+        RdxFormRoot,
+        RdxFieldsetRoot,
+        RdxFieldsetLegend,
+        RdxFieldRoot,
+        RdxFieldLabel,
+        RdxInputDirective,
+        RdxFieldDescription,
+        RdxFieldError,
+        RdxNgControlField
+    ],
+    template: `
+        <form
+            class="flex w-full max-w-96 flex-col gap-4"
+            [formGroup]="form"
+            [errors]="serverErrors()"
+            (onClearErrors)="clearServerErrors($event)"
+            (ngSubmit)="submit()"
+            (reset)="resetFeedback()"
+            rdxFormRoot
+        >
+            <fieldset
+                class="border-border flex flex-col gap-4 rounded-md border p-4"
+                [disabled]="submitting()"
+                rdxFieldsetRoot
+            >
+                <legend class="text-foreground px-1 text-sm font-semibold" rdxFieldsetLegend>Account</legend>
+
+                <div [class]="field" rdxFieldRoot required>
+                    <label [class]="label" rdxFieldLabel>Username</label>
+                    <input
+                        [class]="input"
+                        autocomplete="username"
+                        formControlName="username"
+                        rdxInput
+                        rdxNgControlField
+                    />
+                    <p class="text-muted-foreground text-sm" rdxFieldDescription>
+                        Use
+                        <code>admin</code>
+                        to preview asynchronous validation.
+                    </p>
+                    @if (username.pending) {
+                        <p class="text-muted-foreground text-sm" role="status">Checking availability…</p>
+                    }
+                    <p [class]="error" match="required" rdxFieldError>Username is required.</p>
+                    <p [class]="error" match="minlength" rdxFieldError>Use at least 3 characters.</p>
+                    <p #usernameError="rdxFieldError" [class]="error" match="unavailable" rdxFieldError>
+                        {{ usernameError.messages().join(' ') }}
+                    </p>
+                </div>
+
+                <div [class]="field" rdxFieldRoot required>
+                    <label [class]="label" rdxFieldLabel>Email</label>
+                    <input
+                        [class]="input"
+                        autocomplete="email"
+                        type="email"
+                        formControlName="email"
+                        rdxInput
+                        rdxNgControlField
+                    />
+                    <p class="text-muted-foreground text-sm" rdxFieldDescription>
+                        Use
+                        <code>taken@example.com</code>
+                        to preview a server error.
+                    </p>
+                    <p #emailError="rdxFieldError" [class]="error" rdxFieldError>
+                        @if (email.hasError('required')) {
+                            Email is required.
+                        } @else if (email.hasError('email')) {
+                            Enter a valid email address.
+                        } @else {
+                            {{ emailError.messages().join(' ') }}
+                        }
+                    </p>
+                </div>
+            </fieldset>
+
+            <div class="flex items-center gap-2">
+                <button [class]="submitButton" [disabled]="submitting()" type="submit">
+                    {{ submitting() ? 'Submitting…' : 'Submit' }}
+                </button>
+                <button [class]="resetButton" [disabled]="submitting()" type="reset">Reset</button>
+            </div>
+
+            <p class="text-muted-foreground text-xs" aria-live="polite">
+                {{ form.dirty ? 'Dirty' : 'Pristine' }} ·
+                {{ form.touched ? 'Touched' : 'Untouched' }}
+            </p>
+
+            @if (savedAccount(); as account) {
+                <p class="text-foreground text-sm" role="status">Submitted {{ account.username }}.</p>
+            }
+        </form>
+    `
+})
+export class FormReactiveFormsExample {
+    protected readonly field = formField;
+    protected readonly label = formLabel;
+    protected readonly input = formInput;
+    protected readonly error = formError;
+    protected readonly submitButton = formSubmit;
+    protected readonly resetButton = formReset;
+
+    private readonly formBuilder = inject(FormBuilder);
+    private readonly usernameAvailability: AsyncValidatorFn = async (control) => {
+        await simulateFormRequest();
+        return String(control.value).trim().toLowerCase() === unavailableUsername
+            ? { unavailable: { message: 'That username is unavailable.' } }
+            : null;
+    };
+
+    readonly serverErrors = signal<RdxFormErrors>({});
+    readonly savedAccount = signal<AccountFormValue | null>(null);
+    readonly submitting = signal(false);
+    readonly form = this.formBuilder.nonNullable.group({
+        username: this.formBuilder.nonNullable.control('', {
+            validators: [Validators.required, Validators.minLength(3)],
+            asyncValidators: [this.usernameAvailability]
+        }),
+        email: this.formBuilder.nonNullable.control('', [Validators.required, Validators.email])
+    });
+
+    protected get username() {
+        return this.form.controls.username;
+    }
+
+    protected get email() {
+        return this.form.controls.email;
+    }
+
+    protected clearServerErrors(errors: RdxFormErrors): void {
+        this.serverErrors.set(errors);
+        this.savedAccount.set(null);
+    }
+
+    protected async submit(): Promise<void> {
+        if (this.form.pending || this.form.invalid) {
+            this.form.markAllAsTouched();
+            this.savedAccount.set(null);
+            return;
+        }
+
+        if (this.submitting()) {
+            return;
+        }
+
+        this.submitting.set(true);
+        this.savedAccount.set(null);
+
+        try {
+            await simulateFormRequest();
+
+            if (this.email.value === takenEmail) {
+                this.serverErrors.set({ email: 'That email already has an account.' });
+                return;
+            }
+
+            this.serverErrors.set({});
+            this.savedAccount.set(this.form.getRawValue());
+        } finally {
+            this.submitting.set(false);
+        }
+    }
+
+    protected resetFeedback(): void {
+        this.serverErrors.set({});
+        this.savedAccount.set(null);
+    }
+}
+```
+
+### Signal Forms
+
+```typescript
+import { ChangeDetectionStrategy, Component, resource, signal } from '@angular/core';
+import { email as emailFormat, form, FormField, minLength, required, validateAsync } from '@angular/forms/signals';
+import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
+import { RdxFieldsetLegend, RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
+import { RdxFormRoot } from '@radix-ng/primitives/form';
+import { RdxInputDirective } from '@radix-ng/primitives/input';
+import {
+    type AccountFormValue,
+    formError,
+    formField,
+    formInput,
+    formLabel,
+    formReset,
+    formSubmit,
+    initialAccountValue,
+    simulateFormRequest,
+    takenEmail,
+    unavailableUsername
+} from '../../form/stories/form.shared';
+import { RdxSignalField } from '../src/signal-field';
+import { RdxSignalForm } from '../src/signal-form';
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'signal-forms-validation-lifecycle-example',
+    imports: [
+        FormField,
+        RdxFormRoot,
+        RdxSignalForm,
+        RdxFieldsetRoot,
+        RdxFieldsetLegend,
+        RdxFieldRoot,
+        RdxSignalField,
+        RdxFieldLabel,
+        RdxInputDirective,
+        RdxFieldDescription,
+        RdxFieldError
+    ],
+    template: `
+        <form
+            class="flex w-full max-w-96 flex-col gap-4"
+            [rdxSignalForm]="accountForm"
+            (reset)="resetAccount($event)"
+            rdxFormRoot
+            rdxSignalSubmit
+        >
+            <fieldset
+                class="border-border flex flex-col gap-4 rounded-md border p-4"
+                [disabled]="accountForm().submitting()"
+                rdxFieldsetRoot
+            >
+                <legend class="text-foreground px-1 text-sm font-semibold" rdxFieldsetLegend>Account</legend>
+
+                <div [class]="field" rdxFieldRoot required>
+                    <label [class]="label" rdxFieldLabel>Username</label>
+                    <input
+                        [class]="input"
+                        [formField]="accountForm.username"
+                        autocomplete="username"
+                        rdxInput
+                        rdxSignalField
+                    />
+                    <p class="text-muted-foreground text-sm" rdxFieldDescription>
+                        Use
+                        <code>admin</code>
+                        to preview asynchronous validation.
+                    </p>
+                    @if (accountForm.username().pending()) {
+                        <p class="text-muted-foreground text-sm" role="status">Checking availability…</p>
+                    }
+                    <p #usernameError="rdxFieldError" [class]="error" rdxFieldError>
+                        {{ usernameError.messages().join(' ') }}
+                    </p>
+                </div>
+
+                <div [class]="field" rdxFieldRoot required>
+                    <label [class]="label" rdxFieldLabel>Email</label>
+                    <input
+                        [class]="input"
+                        [formField]="accountForm.email"
+                        autocomplete="email"
+                        rdxInput
+                        rdxSignalField
+                        type="email"
+                    />
+                    <p class="text-muted-foreground text-sm" rdxFieldDescription>
+                        Use
+                        <code>taken@example.com</code>
+                        to preview a server error.
+                    </p>
+                    <p #emailError="rdxFieldError" [class]="error" rdxFieldError>
+                        {{ emailError.messages().join(' ') }}
+                    </p>
+                </div>
+            </fieldset>
+
+            <div class="flex items-center gap-2">
+                <button [class]="submitButton" [disabled]="accountForm().submitting()" type="submit">
+                    {{ accountForm().submitting() ? 'Submitting…' : 'Submit' }}
+                </button>
+                <button [class]="resetButton" [disabled]="accountForm().submitting()" type="reset">Reset</button>
+            </div>
+
+            <p class="text-muted-foreground text-xs" aria-live="polite">
+                {{ accountForm().dirty() ? 'Dirty' : 'Pristine' }} ·
+                {{ accountForm().touched() ? 'Touched' : 'Untouched' }}
+            </p>
+
+            @if (savedAccount(); as account) {
+                <p class="text-foreground text-sm" role="status">Submitted {{ account.username }}.</p>
+            }
+        </form>
+    `
+})
+export class SignalFormsValidationLifecycleExample {
+    protected readonly field = formField;
+    protected readonly label = formLabel;
+    protected readonly input = formInput;
+    protected readonly error = formError;
+    protected readonly submitButton = formSubmit;
+    protected readonly resetButton = formReset;
+
+    protected readonly savedAccount = signal<AccountFormValue | null>(null);
+    readonly model = signal<AccountFormValue>(initialAccountValue());
+    readonly accountForm = form(
+        this.model,
+        (path) => {
+            required(path.username, { message: 'Username is required.' });
+            minLength(path.username, 3, { message: 'Use at least 3 characters.' });
+            validateAsync(path.username, {
+                params: ({ value }) => {
+                    const username = value().trim();
+                    return username.length >= 3 ? username : undefined;
+                },
+                factory: (params) =>
+                    resource({
+                        params: () => params(),
+                        loader: async ({ params }) => {
+                            await simulateFormRequest();
+                            return params.toLowerCase() !== unavailableUsername;
+                        }
+                    }),
+                onSuccess: (available) =>
+                    available ? undefined : { kind: 'unavailable', message: 'That username is unavailable.' },
+                onError: () => ({ kind: 'availabilityUnavailable', message: 'Could not check this username.' })
+            });
+
+            required(path.email, { message: 'Email is required.' });
+            emailFormat(path.email, { message: 'Enter a valid email address.' });
+        },
+        {
+            submission: {
+                action: async (field) => {
+                    this.savedAccount.set(null);
+                    await simulateFormRequest();
+
+                    if (field.email().value() === takenEmail) {
+                        return {
+                            kind: 'emailTaken',
+                            message: 'That email already has an account.',
+                            fieldTree: field.email
+                        };
+                    }
+
+                    this.savedAccount.set({ ...field().value() });
+                    return undefined;
+                }
+            }
+        }
+    );
+
+    protected resetAccount(event: Event): void {
+        // Signal Forms owns the model and interaction state. Prevent the browser from independently
+        // restoring DOM defaults, then reset Angular with the explicit application initial value.
+        event.preventDefault();
+        this.savedAccount.set(null);
+        this.accountForm().reset(initialAccountValue());
+    }
+}
+```
+
 ## Examples
 
 ### Field driven by Signal Forms
@@ -20707,180 +21165,9 @@ pending, Field and control publish neither `data-valid` nor `data-invalid`.
 
 ### Async validation and reset lifecycle
 
-This complete recipe composes `Form → Fieldset → Field → Input`, runs an Angular `validateAsync`
-resource, exposes `pending()` as progress UI, submits through `rdxSignalSubmit`, and restores both the
-model and interaction state from a native reset button.
-
-```typescript
-import { ChangeDetectionStrategy, Component, resource, signal } from '@angular/core';
-import { email as emailFormat, form, FormField, minLength, required, validateAsync } from '@angular/forms/signals';
-import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
-import { RdxFieldsetLegend, RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
-import { RdxFormRoot } from '@radix-ng/primitives/form';
-import { RdxInputDirective } from '@radix-ng/primitives/input';
-import { cn, demoButton, demoInput } from '../../storybook/styles';
-import { RdxSignalField } from '../src/signal-field';
-import { RdxSignalForm } from '../src/signal-form';
-
-interface ProfileModel {
-    username: string;
-    email: string;
-}
-
-const initialProfile = (): ProfileModel => ({ username: '', email: '' });
-const unavailableUsernames = new Set(['admin', 'radix', 'angular']);
-
-@Component({
-    changeDetection: ChangeDetectionStrategy.Eager,
-    selector: 'signal-forms-validation-lifecycle-example',
-    imports: [
-        FormField,
-        RdxFormRoot,
-        RdxSignalForm,
-        RdxFieldsetRoot,
-        RdxFieldsetLegend,
-        RdxFieldRoot,
-        RdxSignalField,
-        RdxFieldLabel,
-        RdxInputDirective,
-        RdxFieldDescription,
-        RdxFieldError
-    ],
-    template: `
-        <form
-            class="flex w-80 flex-col gap-4"
-            [rdxSignalForm]="profileForm"
-            (reset)="resetProfile($event)"
-            rdxFormRoot
-            rdxSignalSubmit
-        >
-            <fieldset
-                class="border-border flex flex-col gap-4 rounded-md border p-4"
-                [disabled]="profileForm().submitting()"
-                rdxFieldsetRoot
-            >
-                <legend class="text-foreground px-1 text-sm font-semibold" rdxFieldsetLegend>Public profile</legend>
-
-                <div class="flex flex-col gap-2" rdxFieldRoot name="username" validationMode="onChange">
-                    <label [class]="labelClass" rdxFieldLabel>Username</label>
-                    <input
-                        [class]="inputClass"
-                        [formField]="profileForm.username"
-                        autocomplete="username"
-                        rdxInput
-                        rdxSignalField
-                    />
-                    @if (profileForm.username().pending()) {
-                        <p class="text-muted-foreground text-sm" role="status">Checking availability…</p>
-                    } @else {
-                        <p [class]="descriptionClass" rdxFieldDescription>
-                            Try
-                            <span class="text-foreground font-medium">angular</span>
-                            to see an async error.
-                        </p>
-                    }
-                    <p #usernameError="rdxFieldError" [class]="errorClass" rdxFieldError>
-                        {{ usernameError.messages().join(' ') }}
-                    </p>
-                </div>
-
-                <div class="flex flex-col gap-2" rdxFieldRoot name="email">
-                    <label [class]="labelClass" rdxFieldLabel>Email</label>
-                    <input
-                        [class]="inputClass"
-                        [formField]="profileForm.email"
-                        autocomplete="email"
-                        rdxInput
-                        rdxSignalField
-                        type="email"
-                    />
-                    <p [class]="descriptionClass" rdxFieldDescription>Used only for account notifications.</p>
-                    <p #emailError="rdxFieldError" [class]="errorClass" rdxFieldError>
-                        {{ emailError.messages().join(' ') }}
-                    </p>
-                </div>
-            </fieldset>
-
-            <div class="flex items-center gap-2">
-                <button [class]="primaryButtonClass" [disabled]="profileForm().submitting()" type="submit">
-                    {{ profileForm().submitting() ? 'Saving…' : 'Save profile' }}
-                </button>
-                <button [class]="secondaryButtonClass" type="reset">Reset</button>
-            </div>
-
-            <p class="text-muted-foreground text-xs" aria-live="polite">
-                {{ profileForm().dirty() ? 'Dirty' : 'Pristine' }} ·
-                {{ profileForm().touched() ? 'Touched' : 'Untouched' }}
-            </p>
-
-            @if (savedProfile(); as profile) {
-                <p class="text-foreground text-sm" role="status">Saved {{ profile.username }}.</p>
-            }
-        </form>
-    `
-})
-export class SignalFormsValidationLifecycleExample {
-    protected readonly inputClass = cn(
-        demoInput,
-        'data-[invalid]:border-destructive data-[invalid]:ring-destructive/20'
-    );
-    protected readonly primaryButtonClass = cn(
-        demoButton.base,
-        demoButton.primary,
-        demoButton.size.md,
-        'disabled:cursor-wait disabled:opacity-60'
-    );
-    protected readonly secondaryButtonClass = cn(demoButton.base, demoButton.secondary, demoButton.size.md);
-    protected readonly labelClass = 'text-foreground text-sm font-medium data-[disabled]:opacity-50';
-    protected readonly descriptionClass = 'text-muted-foreground text-sm';
-    protected readonly errorClass = 'text-destructive text-sm';
-
-    protected readonly savedProfile = signal<ProfileModel | null>(null);
-    readonly model = signal<ProfileModel>(initialProfile());
-    readonly profileForm = form(
-        this.model,
-        (path) => {
-            required(path.username, { message: 'Username is required.' });
-            minLength(path.username, 3, { message: 'Use at least 3 characters.' });
-            validateAsync(path.username, {
-                params: ({ value }) => value(),
-                debounce: 250,
-                factory: (params) =>
-                    resource({
-                        params: () => params(),
-                        loader: async ({ params }) => {
-                            await new Promise((resolve) => setTimeout(resolve, 650));
-                            return !unavailableUsernames.has(params.toLowerCase());
-                        }
-                    }),
-                onSuccess: (available) =>
-                    available ? undefined : { kind: 'usernameTaken', message: 'This username is already taken.' },
-                onError: () => ({ kind: 'availabilityUnavailable', message: 'Could not check this username.' })
-            });
-
-            required(path.email, { message: 'Email is required.' });
-            emailFormat(path.email, { message: 'Enter a valid email address.' });
-        },
-        {
-            submission: {
-                action: async (field) => {
-                    await new Promise((resolve) => setTimeout(resolve, 500));
-                    this.savedProfile.set({ ...field().value() });
-                    return undefined;
-                }
-            }
-        }
-    );
-
-    protected resetProfile(event: Event): void {
-        // Signal Forms owns the model and interaction state. Prevent the browser from independently
-        // restoring DOM defaults, then reset Angular with the explicit application initial value.
-        event.preventDefault();
-        this.savedProfile.set(null);
-        this.profileForm().reset(initialProfile());
-    }
-}
-```
+The Signal Forms side of the paired recipe above runs an Angular `validateAsync` resource, exposes
+`pending()` as progress UI, submits through `rdxSignalSubmit`, and restores both the model and
+interaction state from a native reset button.
 
 Signal Forms deliberately does not guess an application's initial model. Handle the native reset event,
 prevent the browser from independently restoring DOM defaults, and pass the desired value to Angular:

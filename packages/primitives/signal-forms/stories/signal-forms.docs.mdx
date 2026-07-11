@@ -1,6 +1,7 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import { RdxSignalField } from '../src/signal-field';
 import { RdxSignalForm } from '../src/signal-form';
+import * as FormStories from '../../form/stories/form.stories';
 import * as SignalFormsStories from './signal-forms.stories';
 
 <Meta title="Primitives/Signal Forms" />
@@ -87,6 +88,35 @@ Reactive Forms and `ngModel` use the parallel `rdxNgControlField` adapter from
     </div>
 </form>
 ```
+
+## One recipe, two Angular APIs
+
+The two account recipes below intentionally keep the same controls, `Form → Fieldset → Field →
+Control` anatomy, validation messages, async username check, backend email error, interaction status,
+submission feedback, and reset behavior. Only the Angular form API that owns value, validation, and
+submission changes.
+
+Try `admin` to see asynchronous validation and `taken@example.com` to see a submission error that
+clears when the field is edited.
+
+| Concern          | Reactive Forms                    | Signal Forms                               |
+| ---------------- | --------------------------------- | ------------------------------------------ |
+| Form binding     | `[formGroup]`                     | `form()` + `[rdxSignalForm]`                |
+| Control binding  | `formControlName`                 | `[formField]`                              |
+| Field adapter    | `rdxNgControlField`               | `rdxSignalField`                           |
+| Validation       | `Validators` + `AsyncValidatorFn` | `required` / `minLength` / `validateAsync` |
+| Submit lifecycle | `(ngSubmit)`                      | `rdxSignalSubmit` + `submission.action`    |
+| Backend error    | `rdxFormRoot[errors]`             | Targeted `ValidationError` from the action |
+| Pending state    | `control.pending`                 | `field().pending()`                        |
+| Reset            | `FormGroup` + native form reset   | `FieldState.reset(initialValue)`           |
+
+### Reactive Forms
+
+<Canvas of={FormStories.ReactiveForms} />
+
+### Signal Forms
+
+<Canvas of={SignalFormsStories.ValidationLifecycle} />
 
 ## Examples
 
@@ -209,11 +239,9 @@ pending, Field and control publish neither `data-valid` nor `data-invalid`.
 
 ### Async validation and reset lifecycle
 
-This complete recipe composes `Form → Fieldset → Field → Input`, runs an Angular `validateAsync`
-resource, exposes `pending()` as progress UI, submits through `rdxSignalSubmit`, and restores both the
-model and interaction state from a native reset button.
-
-<Canvas of={SignalFormsStories.ValidationLifecycle} />
+The Signal Forms side of the paired recipe above runs an Angular `validateAsync` resource, exposes
+`pending()` as progress UI, submits through `rdxSignalSubmit`, and restores both the model and
+interaction state from a native reset button.
 
 Signal Forms deliberately does not guess an application's initial model. Handle the native reset event,
 prevent the browser from independently restoring DOM defaults, and pass the desired value to Angular:

@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { AsyncValidatorFn, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
-    RdxFieldControl,
     RdxFieldDescription,
     RdxFieldError,
     RdxFieldLabel,
@@ -9,8 +8,20 @@ import {
     RdxNgControlField
 } from '@radix-ng/primitives/field';
 import { RdxFieldsetLegend, RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
+import { RdxInputDirective } from '@radix-ng/primitives/input';
 import { RdxFormErrors, RdxFormRoot } from '../index';
-import { formError, formField, formInput, formLabel, formReset, formSubmit } from './form.shared';
+import {
+    type AccountFormValue,
+    formError,
+    formField,
+    formInput,
+    formLabel,
+    formReset,
+    formSubmit,
+    simulateFormRequest,
+    takenEmail,
+    unavailableUsername
+} from './form.shared';
 
 /**
  * Complete Reactive Forms lifecycle: NgControl → Field state, async validation, server errors that
@@ -26,22 +37,26 @@ import { formError, formField, formInput, formLabel, formReset, formSubmit } fro
         RdxFieldsetLegend,
         RdxFieldRoot,
         RdxFieldLabel,
-        RdxFieldControl,
+        RdxInputDirective,
         RdxFieldDescription,
         RdxFieldError,
         RdxNgControlField
     ],
     template: `
         <form
-            class="flex w-96 flex-col gap-4"
+            class="flex w-full max-w-96 flex-col gap-4"
             [formGroup]="form"
             [errors]="serverErrors()"
             (onClearErrors)="clearServerErrors($event)"
             (ngSubmit)="submit()"
-            (reset)="successMessage.set('')"
+            (reset)="resetFeedback()"
             rdxFormRoot
         >
-            <fieldset class="border-border space-y-4 rounded-md border p-4" rdxFieldsetRoot>
+            <fieldset
+                class="border-border flex flex-col gap-4 rounded-md border p-4"
+                [disabled]="submitting()"
+                rdxFieldsetRoot
+            >
                 <legend class="text-foreground px-1 text-sm font-semibold" rdxFieldsetLegend>Account</legend>
 
                 <div [class]="field" rdxFieldRoot required>
@@ -50,7 +65,7 @@ import { formError, formField, formInput, formLabel, formReset, formSubmit } fro
                         [class]="input"
                         autocomplete="username"
                         formControlName="username"
-                        rdxFieldControl
+                        rdxInput
                         rdxNgControlField
                     />
                     <p class="text-muted-foreground text-sm" rdxFieldDescription>
@@ -75,7 +90,7 @@ import { formError, formField, formInput, formLabel, formReset, formSubmit } fro
                         autocomplete="email"
                         type="email"
                         formControlName="email"
-                        rdxFieldControl
+                        rdxInput
                         rdxNgControlField
                     />
                     <p class="text-muted-foreground text-sm" rdxFieldDescription>
@@ -95,13 +110,20 @@ import { formError, formField, formInput, formLabel, formReset, formSubmit } fro
                 </div>
             </fieldset>
 
-            <div class="flex gap-2">
-                <button [class]="submitButton" type="submit">Submit</button>
-                <button [class]="resetButton" type="reset">Reset</button>
+            <div class="flex items-center gap-2">
+                <button [class]="submitButton" [disabled]="submitting()" type="submit">
+                    {{ submitting() ? 'Submitting…' : 'Submit' }}
+                </button>
+                <button [class]="resetButton" [disabled]="submitting()" type="reset">Reset</button>
             </div>
 
-            @if (successMessage()) {
-                <p class="text-foreground text-sm" role="status">{{ successMessage() }}</p>
+            <p class="text-muted-foreground text-xs" aria-live="polite">
+                {{ form.dirty ? 'Dirty' : 'Pristine' }} ·
+                {{ form.touched ? 'Touched' : 'Untouched' }}
+            </p>
+
+            @if (savedAccount(); as account) {
+                <p class="text-foreground text-sm" role="status">Submitted {{ account.username }}.</p>
             }
         </form>
     `
@@ -116,14 +138,15 @@ export class FormReactiveFormsExample {
 
     private readonly formBuilder = inject(FormBuilder);
     private readonly usernameAvailability: AsyncValidatorFn = async (control) => {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        return String(control.value).trim().toLowerCase() === 'admin'
+        await simulateFormRequest();
+        return String(control.value).trim().toLowerCase() === unavailableUsername
             ? { unavailable: { message: 'That username is unavailable.' } }
             : null;
     };
 
     readonly serverErrors = signal<RdxFormErrors>({});
-    readonly successMessage = signal('');
+    readonly savedAccount = signal<AccountFormValue | null>(null);
+    readonly submitting = signal(false);
     readonly form = this.formBuilder.nonNullable.group({
         username: this.formBuilder.nonNullable.control('', {
             validators: [Validators.required, Validators.minLength(3)],
@@ -142,23 +165,40 @@ export class FormReactiveFormsExample {
 
     protected clearServerErrors(errors: RdxFormErrors): void {
         this.serverErrors.set(errors);
-        this.successMessage.set('');
+        this.savedAccount.set(null);
     }
 
-    protected submit(): void {
+    protected async submit(): Promise<void> {
         if (this.form.pending || this.form.invalid) {
             this.form.markAllAsTouched();
-            this.successMessage.set('');
+            this.savedAccount.set(null);
             return;
         }
 
-        if (this.email.value === 'taken@example.com') {
-            this.serverErrors.set({ email: 'That email already has an account.' });
-            this.successMessage.set('');
+        if (this.submitting()) {
             return;
         }
 
+        this.submitting.set(true);
+        this.savedAccount.set(null);
+
+        try {
+            await simulateFormRequest();
+
+            if (this.email.value === takenEmail) {
+                this.serverErrors.set({ email: 'That email already has an account.' });
+                return;
+            }
+
+            this.serverErrors.set({});
+            this.savedAccount.set(this.form.getRawValue());
+        } finally {
+            this.submitting.set(false);
+        }
+    }
+
+    protected resetFeedback(): void {
         this.serverErrors.set({});
-        this.successMessage.set(`Submitted ${this.username.value}.`);
+        this.savedAccount.set(null);
     }
 }

@@ -300,6 +300,14 @@ is read directly from Angular's `field().pending()` signal when an application n
 whose `number | number[]` value collides with the shim's scalar `min`/`max` — it ships the same
 runtime surface.)
 
+### One recipe, two Angular APIs
+
+The [paired account recipes](?path=/docs/primitives-signal-forms--docs#one-recipe-two-angular-apis) keep
+the complete UI and behavior identical across Reactive Forms and Signal Forms: async validation,
+pending/submitting feedback, a backend field error, dirty/touched state, successful submission, and
+reset. The comparison isolates the Angular-native migration surface instead of introducing a separate
+Radix NG form model.
+
 ### The Signal Forms adapter
 
 Surfacing field state in `Field` is handled by the **optional** `@radix-ng/primitives/signal-forms`
