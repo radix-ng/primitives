@@ -269,7 +269,7 @@
       "description": "A numeric input with stepper buttons, drag-to-scrub, locale-aware formatting and keyboard control.",
       "doc": "radix-ng-examples/references/components/number-field.md",
       "storybook": "https://radix-ng.com/?path=/docs/primitives-number-field--docs",
-      "anatomy": "<div rdxNumberFieldRoot>\n  <input rdxNumberFieldHiddenInput />\n  <span rdxNumberFieldScrubArea>\n    <label>Label</label>\n    <span rdxNumberFieldScrubAreaCursor></span>\n  </span>\n  <div rdxNumberFieldGroup>\n    <button rdxNumberFieldDecrement></button>\n    <input rdxNumberFieldInput />\n    <button rdxNumberFieldIncrement></button>\n  </div>\n</div>",
+      "anatomy": "<div rdxNumberFieldRoot>\n  <span rdxNumberFieldScrubArea>\n    <label>Label</label>\n    <span rdxNumberFieldScrubAreaCursor></span>\n  </span>\n  <div rdxNumberFieldGroup>\n    <button rdxNumberFieldDecrement></button>\n    <input rdxNumberFieldInput />\n    <button rdxNumberFieldIncrement></button>\n  </div>\n</div>",
       "dataAttributes": []
     },
     {

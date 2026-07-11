@@ -637,6 +637,11 @@
               "description": "Filter applied to items against the input query (only when {@link mode} is `'list'` / `'both'`).\n`undefined` → locale-aware contains; a function → custom `(value, query, itemToString)`; `null` →\nbuilt-in filtering disabled."
             },
             {
+              "name": "form",
+              "type": "string",
+              "description": "Id of an external form that owns this control."
+            },
+            {
               "name": "grid",
               "default": "false",
               "description": "Whether the list is laid out as a 2D grid (enables row/column arrow navigation)."
@@ -691,6 +696,11 @@
               "type": "AutocompleteMode",
               "default": "'list'",
               "description": "Filtering / inline-completion behavior. See {@link AutocompleteMode}."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Name used when serializing this composite control into native `FormData`."
             },
             {
               "name": "open",
@@ -1900,6 +1910,11 @@
               "description": "Filter applied to items against the input query.\n- `undefined` (default): locale-aware \"contains\" via {@link useFilter};\n- a function: custom matching;\n- `null`: built-in filtering disabled (the consumer controls which items exist)."
             },
             {
+              "name": "form",
+              "type": "string",
+              "description": "Id of an external form that owns this control."
+            },
+            {
               "name": "grid",
               "default": "false",
               "description": "Whether the list is laid out as a 2D grid: `ArrowUp`/`ArrowDown` move between rows (keeping the\ncolumn), `ArrowLeft`/`ArrowRight` move within a row. Wrap items in `RdxComboboxRow`; the list\nswitches to `role=\"grid\"`. Not supported together with {@link virtualized}."
@@ -1959,6 +1974,11 @@
               "name": "multiple",
               "default": "false",
               "description": "Whether multiple values can be selected. Shorthand for `selectionMode=\"multiple\"`."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Name used when serializing the committed selection into native `FormData`."
             },
             {
               "name": "open",
@@ -4924,7 +4944,7 @@
             {
               "name": "form",
               "type": "string",
-              "description": "Id of the form the hidden input belongs to. Useful when it is rendered outside the form."
+              "description": "Id of an external form that owns this field."
             },
             {
               "name": "format",
@@ -4964,7 +4984,7 @@
             {
               "name": "name",
               "type": "string",
-              "description": "Name of the hidden input rendered by `[rdxNumberFieldHiddenInput]`, for form submission."
+              "description": "Name used when serializing this field into native `FormData`."
             },
             {
               "name": "readonly",
@@ -6535,6 +6555,11 @@
               "default": "false"
             },
             {
+              "name": "form",
+              "type": "string",
+              "description": "Id of an external form that owns this control."
+            },
+            {
               "name": "isItemEqualToValue",
               "type": "ItemValueComparator<AcceptableValue>",
               "description": "How item values are compared for equality — a function `(a, b) => boolean` or an object key."
@@ -6552,6 +6577,11 @@
             {
               "name": "multiple",
               "default": "false"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Name used when serializing this composite control into native `FormData`."
             },
             {
               "name": "open",
@@ -6856,7 +6886,7 @@
             {
               "name": "name",
               "type": "string",
-              "description": "Name of the hidden inputs rendered by each thumb, for form submission."
+              "description": "Name of the native range input rendered by each thumb, for form submission."
             },
             {
               "name": "orientation",

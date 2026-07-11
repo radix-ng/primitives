@@ -80,7 +80,6 @@ import {
   RdxNumberFieldRoot,
   RdxNumberFieldGroup,
   RdxNumberFieldInput,
-  RdxNumberFieldHiddenInput,
   RdxNumberFieldIncrement,
   RdxNumberFieldDecrement,
   RdxNumberFieldScrubArea,
@@ -94,7 +93,6 @@ Import all parts and piece them together.
 
 ```html
 <div rdxNumberFieldRoot>
-  <input rdxNumberFieldHiddenInput />
   <span rdxNumberFieldScrubArea>
     <label>Label</label>
     <span rdxNumberFieldScrubAreaCursor></span>
@@ -106,6 +104,10 @@ Import all parts and piece them together.
   </div>
 </div>
 ```
+
+Add `<input rdxNumberFieldHiddenInput />` only when browser-native numeric constraint validation
+(`min` / `max` / `step` / `required`) or autofill is required. Normal named form serialization is
+provided by the root, so it does not need an extra input.
 
 ## Change events
 
@@ -486,7 +488,6 @@ import { LucideDynamicIcon, LucideMinus as Minus, LucidePlus as Plus } from '@lu
 import {
     RdxNumberFieldDecrement,
     RdxNumberFieldGroup,
-    RdxNumberFieldHiddenInput,
     RdxNumberFieldIncrement,
     RdxNumberFieldInput,
     RdxNumberFieldRoot
@@ -501,7 +502,6 @@ import {
         RdxNumberFieldRoot,
         RdxNumberFieldGroup,
         RdxNumberFieldInput,
-        RdxNumberFieldHiddenInput,
         RdxNumberFieldIncrement,
         RdxNumberFieldDecrement
     ],
@@ -517,7 +517,6 @@ import {
                 rdxNumberFieldRoot
             >
                 <label class="text-foreground text-sm font-medium" for="guests">Guests</label>
-                <input rdxNumberFieldHiddenInput />
                 <div
                     class="border-border bg-background focus-within:ring-ring flex h-9 w-fit items-center rounded-md border shadow-sm focus-within:ring-2"
                     rdxNumberFieldGroup

@@ -4,7 +4,6 @@ import { LucideDynamicIcon, LucideMinus as Minus, LucidePlus as Plus } from '@lu
 import {
     RdxNumberFieldDecrement,
     RdxNumberFieldGroup,
-    RdxNumberFieldHiddenInput,
     RdxNumberFieldIncrement,
     RdxNumberFieldInput,
     RdxNumberFieldRoot
@@ -19,7 +18,6 @@ import {
         RdxNumberFieldRoot,
         RdxNumberFieldGroup,
         RdxNumberFieldInput,
-        RdxNumberFieldHiddenInput,
         RdxNumberFieldIncrement,
         RdxNumberFieldDecrement
     ],
@@ -35,7 +33,6 @@ import {
                 rdxNumberFieldRoot
             >
                 <label class="text-foreground text-sm font-medium" for="guests">Guests</label>
-                <input rdxNumberFieldHiddenInput />
                 <div
                     class="border-border bg-background focus-within:ring-ring flex h-9 w-fit items-center rounded-md border shadow-sm focus-within:ring-2"
                     rdxNumberFieldGroup

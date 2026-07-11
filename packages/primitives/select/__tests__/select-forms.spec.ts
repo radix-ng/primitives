@@ -134,6 +134,31 @@ class SelectFieldReactiveFormsHost {
     readonly control = new FormControl('Banana', { nonNullable: true });
 }
 
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [_importsSelect],
+    template: `
+        <form id="native-form">
+            <div
+                [(value)]="value"
+                [defaultValue]="defaultValue()"
+                [disabled]="disabled()"
+                [name]="name()"
+                rdxSelectRoot
+            ></div>
+        </form>
+        <form id="external-form"></form>
+        <div [(value)]="externalValue" form="external-form" name="external" rdxSelectRoot></div>
+    `
+})
+class SelectNativeFormHost {
+    readonly defaultValue = signal<string | string[]>('apple');
+    readonly value = signal<string | string[]>('apple');
+    readonly name = signal<string | undefined>('fruit');
+    readonly disabled = signal(false);
+    externalValue = 'pear';
+}
+
 async function selectPreviousItem(fixture: ComponentFixture<unknown>, settle: () => Promise<void>): Promise<void> {
     const trigger: HTMLButtonElement = fixture.nativeElement.querySelector('[rdxSelectTrigger]');
     trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
@@ -295,6 +320,53 @@ describe('Select with Reactive Forms', () => {
         await settle();
         expect(trigger.getAttribute('data-valid')).toBeNull();
         expect(trigger.getAttribute('data-invalid')).toBeNull();
+    });
+});
+
+describe('Select native form contract', () => {
+    let fixture: ComponentFixture<SelectNativeFormHost>;
+    let host: SelectNativeFormHost;
+
+    beforeEach(async () => {
+        TestBed.configureTestingModule({ imports: [SelectNativeFormHost] });
+        fixture = TestBed.createComponent(SelectNativeFormHost);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+        await fixture.whenStable();
+    });
+
+    it('serializes scalar and repeated values, honours disabled, and supports an external form', async () => {
+        const nativeForm = fixture.nativeElement.querySelector('#native-form') as HTMLFormElement;
+        const externalForm = fixture.nativeElement.querySelector('#external-form') as HTMLFormElement;
+
+        expect(new FormData(nativeForm).getAll('fruit')).toEqual(['apple']);
+        expect(new FormData(externalForm).getAll('external')).toEqual(['pear']);
+
+        host.value.set(['apple', 'banana']);
+        fixture.detectChanges();
+        expect(new FormData(nativeForm).getAll('fruit')).toEqual(['apple', 'banana']);
+
+        host.disabled.set(true);
+        fixture.detectChanges();
+        expect(new FormData(nativeForm).has('fruit')).toBe(false);
+    });
+
+    it('restores the initial value and interaction state on native reset', async () => {
+        const nativeForm = fixture.nativeElement.querySelector('#native-form') as HTMLFormElement;
+        const root = fixture.debugElement.query(By.directive(RdxSelectRoot)).injector.get(RdxSelectRoot);
+
+        host.value.set('banana');
+        root.formUi.markDirty();
+        root.touched.set(true);
+        fixture.detectChanges();
+
+        nativeForm.reset();
+        await Promise.resolve();
+        fixture.detectChanges();
+
+        expect(host.value()).toBe('apple');
+        expect(root.formUi.dirtyState()).toBe(false);
+        expect(root.formUi.touchedState()).toBe(false);
     });
 });
 

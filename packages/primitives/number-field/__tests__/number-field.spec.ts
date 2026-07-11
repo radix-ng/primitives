@@ -250,7 +250,7 @@ describe('RdxNumberField', () => {
         expect(input.required).toBe(true);
     });
 
-    it('mirrors the value, name and validation state on the hidden input', () => {
+    it('keeps the optional native input for validation and serializes the name only once', () => {
         component.name.set('quantity');
         component.value.set(7);
         component.min.set(1);
@@ -260,11 +260,15 @@ describe('RdxNumberField', () => {
 
         expect(hiddenInput.type).toBe('number');
         expect(hiddenInput.getAttribute('aria-hidden')).toBe('true');
-        expect(hiddenInput.getAttribute('name')).toBe('quantity');
+        expect(hiddenInput.hasAttribute('name')).toBe(false);
         expect(hiddenInput.value).toBe('7');
         expect(hiddenInput.getAttribute('min')).toBe('1');
         expect(hiddenInput.getAttribute('max')).toBe('9');
         expect(hiddenInput.hasAttribute('required')).toBe(true);
+
+        const serializedInput = root.parentElement?.querySelector('[data-rdx-native-form-control]') as HTMLInputElement;
+        expect(serializedInput.name).toBe('quantity');
+        expect(serializedInput.value).toBe('7');
     });
 
     it('updates the value from a hidden input change (autofill)', () => {

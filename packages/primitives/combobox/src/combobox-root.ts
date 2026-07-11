@@ -32,7 +32,9 @@ import {
     RdxFloatingRootContext,
     RdxFormUiControlBase,
     RdxFormUiTouchTarget,
-    RdxFormValueControl
+    RdxFormValueControl,
+    serializeNativeFormValue,
+    useNativeFormControl
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { RdxPopper } from '@radix-ng/primitives/popper';
@@ -296,6 +298,12 @@ export class RdxComboboxRoot
     /** Whether a value is required (for forms). */
     readonly required = input(false, { transform: booleanAttribute });
 
+    /** Name used when serializing the committed selection into native `FormData`. */
+    readonly name = input<string>();
+
+    /** Id of an external form that owns this control. */
+    readonly form = input<string>();
+
     /** Whether keyboard navigation wraps at the list boundaries. */
     readonly loopFocus = input(true, { transform: booleanAttribute });
 
@@ -404,6 +412,20 @@ export class RdxComboboxRoot
 
     private readonly cvaDisabled = signal(false);
     readonly disabledState = computed(() => this.disabled() || this.cvaDisabled());
+
+    private readonly nativeFormControl = useNativeFormControl({
+        name: this.name,
+        form: this.form,
+        disabled: this.disabledState,
+        value: this.value,
+        serialize: serializeNativeFormValue,
+        defaultValue: () => this.defaultValue() ?? this.value(),
+        onReset: (value) => {
+            this.writeValue(value);
+            this.formUi.resetInteractionState?.();
+        }
+    });
+
     readonly requiredState = computed(() => this.required());
     /** @ignore */
     readonly invalidState = this.formUi.invalidState;

@@ -55,9 +55,11 @@ rides the native `<form>`:
 - **Reset** — native `reset` clears external errors and re-syncs every field's touched/dirty/focused/filled.
 
 `onFormSubmit` vs `(ngSubmit)`: the Form never `stopPropagation`s, so Reactive Forms' `(ngSubmit)` keeps
-firing on the same element — **pick one as your source of truth**. `FormData` only sees native named
-controls; for headless composite widgets (Select, Slider) submit through Reactive Forms (`(ngSubmit)` +
-`form.value`) or render a hidden native input.
+firing on the same element — **pick one as your source of truth**. Named composite controls (Select,
+Combobox, Autocomplete, Number Field, and Slider) participate in `FormData` directly. Scalar values
+produce one entry; multiple Select and Combobox values produce repeated entries under the same name.
+Bind `[form]` to associate a control with an external form. Native reset restores a control's initial
+value and clears its control-owned touched/dirty state; Angular Forms remains the owner of validation.
 
 ## Control reference
 

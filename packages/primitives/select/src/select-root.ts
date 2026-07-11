@@ -34,6 +34,8 @@ import {
     RdxFormUiTouchTarget,
     RdxFormValueControl,
     RdxTransitionStatus,
+    serializeNativeFormValue,
+    useNativeFormControl,
     useTransitionStatus
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
@@ -221,6 +223,12 @@ export class RdxSelectRoot
     /** Marks the control as required — reflected on the trigger as `aria-required` / `data-required`. */
     readonly required = input(false, { transform: booleanAttribute });
 
+    /** Name used when serializing this composite control into native `FormData`. */
+    readonly name = input<string>();
+
+    /** Id of an external form that owns this control. */
+    readonly form = input<string>();
+
     /** Whether the popup is modal: locks page scroll and makes outside content inert while open. */
     readonly modal = input(true, { transform: booleanAttribute });
 
@@ -260,6 +268,19 @@ export class RdxSelectRoot
 
     private hasAppliedDefaultValue = false;
     private hasAppliedDefaultOpen = false;
+
+    private readonly nativeFormControl = useNativeFormControl({
+        name: this.name,
+        form: this.form,
+        disabled: this.disabledState,
+        value: this.value,
+        serialize: serializeNativeFormValue,
+        defaultValue: () => this.defaultValue() ?? this.value(),
+        onReset: (value) => {
+            this.value.set(value);
+            this.formUi.resetInteractionState?.();
+        }
+    });
 
     constructor() {
         super();

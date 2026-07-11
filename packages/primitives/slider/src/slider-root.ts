@@ -23,7 +23,8 @@ import {
     RdxControlValueAccessor,
     RdxFormUiControlBase,
     RdxFormUiStateHost,
-    RdxFormUiTouchTarget
+    RdxFormUiTouchTarget,
+    useNativeFormControl
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { provideSliderRootContext } from './slider-context';
@@ -214,7 +215,7 @@ export class RdxSliderRoot extends RdxFormUiControlBase {
     /** Locale used for value formatting. */
     readonly locale = input<string>();
 
-    /** Name of the hidden inputs rendered by each thumb, for form submission. */
+    /** Name of the native range input rendered by each thumb, for form submission. */
     readonly name = input<string>();
 
     /** Id of the form the slider belongs to. */
@@ -267,6 +268,20 @@ export class RdxSliderRoot extends RdxFormUiControlBase {
 
     /** @ignore */
     readonly isDisabled = computed(() => !!this.cva.disabled());
+
+    // Range thumbs already are native inputs and therefore serialize themselves. The shared layer
+    // owns only reset here, so the root model follows a native `<form>.reset()` as well.
+    private readonly nativeFormControl = useNativeFormControl({
+        name: this.name,
+        form: this.form,
+        disabled: this.isDisabled,
+        defaultValue: () => this.cva.value() ?? this.defaultValue() ?? this.min(),
+        onReset: (value) => {
+            this.value.set(value);
+            this.cva.setValue(value);
+            this.formUi.resetInteractionState?.();
+        }
+    });
     /** @ignore */
     readonly inset = computed(() => this.thumbAlignment() !== 'center');
     /** @ignore */

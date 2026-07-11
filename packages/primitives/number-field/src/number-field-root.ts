@@ -21,7 +21,9 @@ import {
     RdxControlValueAccessor,
     RdxFormUiControlBase,
     RdxFormUiTouchTarget,
-    RdxFormValueControl
+    RdxFormValueControl,
+    serializeNativeFormValue,
+    useNativeFormControl
 } from '@radix-ng/primitives/core';
 import { provideNumberFieldRootContext } from './number-field-context';
 import { numberOrUndefined, toValidatedNumber, useNumberFormatter, useNumberParser } from './number-field.utils';
@@ -145,10 +147,10 @@ export class RdxNumberFieldRoot extends RdxFormUiControlBase implements RdxFormV
      */
     readonly required = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    /** Name of the hidden input rendered by `[rdxNumberFieldHiddenInput]`, for form submission. */
+    /** Name used when serializing this field into native `FormData`. */
     readonly name = input<string>();
 
-    /** Id of the form the hidden input belongs to. Useful when it is rendered outside the form. */
+    /** Id of an external form that owns this field. */
     readonly form = input<string>();
 
     /** The uncontrolled value of the field when it is initially rendered. */
@@ -200,6 +202,24 @@ export class RdxNumberFieldRoot extends RdxFormUiControlBase implements RdxFormV
 
     /** @ignore The current numeric value (`null` when empty). */
     readonly currentValue = computed<number | null>(() => this.cva.value() ?? null);
+
+    // The hidden number input remains an opt-in constraint-validation/autofill bridge. FormData itself
+    // is owned centrally so the normal anatomy needs no extra input and cannot serialize twice.
+    private readonly nativeFormControl = useNativeFormControl({
+        name: this.name,
+        form: this.form,
+        disabled: this.isDisabled,
+        value: this.currentValue,
+        serialize: serializeNativeFormValue,
+        defaultValue: () => this.defaultValue() ?? this.cva.value() ?? null,
+        onReset: (value) => {
+            this.value.set(value);
+            this.cva.setValue(value);
+            this.allowInputSync = true;
+            this.setInputValue(this.formatNumber(value));
+            this.formUi.resetInteractionState?.();
+        }
+    });
 
     /** @ignore */
     readonly minWithDefault = computed(() => this.min() ?? Number.MIN_SAFE_INTEGER);

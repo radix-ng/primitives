@@ -34,7 +34,6 @@ import {
   RdxNumberFieldRoot,
   RdxNumberFieldGroup,
   RdxNumberFieldInput,
-  RdxNumberFieldHiddenInput,
   RdxNumberFieldIncrement,
   RdxNumberFieldDecrement,
   RdxNumberFieldScrubArea,
@@ -48,7 +47,6 @@ Import all parts and piece them together.
 
 ```html
 <div rdxNumberFieldRoot>
-  <input rdxNumberFieldHiddenInput />
   <span rdxNumberFieldScrubArea>
     <label>Label</label>
     <span rdxNumberFieldScrubAreaCursor></span>
@@ -60,6 +58,10 @@ Import all parts and piece them together.
   </div>
 </div>
 ```
+
+Add `<input rdxNumberFieldHiddenInput />` only when browser-native numeric constraint validation
+(`min` / `max` / `step` / `required`) or autofill is required. Normal named form serialization is
+provided by the root, so it does not need an extra input.
 
 ## Change events
 

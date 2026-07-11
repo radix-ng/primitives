@@ -15,7 +15,8 @@ import { injectNumberFieldRootContext } from './number-field-context';
         type: 'number',
         tabindex: '-1',
         'aria-hidden': 'true',
-        '[attr.name]': 'rootContext.name()',
+        // `useNativeFormControl` serializes the root. This optional input exists only for browser
+        // constraint validation and autofill, so a name here would duplicate the FormData entry.
         '[attr.form]': 'rootContext.form()',
         '[value]': 'rootContext.currentValue() ?? ""',
         '[attr.min]': 'rootContext.min()',
