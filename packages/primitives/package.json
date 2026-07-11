@@ -1,7 +1,7 @@
 {
     "name": "@radix-ng/primitives",
     "version": "1.0.10",
-    "description": "Headless, signals-first UI primitives for Angular.",
+    "description": "Headless, signals-first UI primitives with first-class Angular Forms support.",
     "license": "MIT",
     "publishConfig": {
         "access": "public"
@@ -15,8 +15,13 @@
         "components",
         "ui",
         "angular",
+        "angular-forms",
+        "signal-forms",
         "radix-ng",
-        "headless"
+        "headless",
+        "headless-ui",
+        "accessibility",
+        "base-ui"
     ],
     "peerDependencies": {
         "@angular/core": "^21.0.0 || ^22.0.0",

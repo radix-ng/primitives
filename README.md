@@ -7,7 +7,7 @@
 [![Angular](https://img.shields.io/badge/Angular-21+-000000?style=flat&logo=angular&logoColor=fff&colorA=000000&colorB=000000)](https://angular.dev)
 [![Discord Chat](https://img.shields.io/discord/1231525968586346567?style=flat&logo=discord&logoColor=fff&color=000)](https://discord.gg/NaJb2XRWX9)
 
-> **Headless, signals-first UI primitives for Angular.**
+> **Headless, signals-first UI primitives with first-class Angular Forms support.**
 
 Radix NG is a low-level UI primitive library for Angular with a focus on accessibility, customization,
 and developer experience. The primitives are **headless** — they ship no styles and expose state via
@@ -22,6 +22,8 @@ now align primarily with [Base UI](https://base-ui.com/).
 - 🎯 **Headless** — no styles, full control. State is exposed through `data-*` attributes.
 - ♿ **Accessible** — built to the [WAI-ARIA authoring practices](https://www.w3.org/WAI/ARIA/apg/), with keyboard navigation and focus management.
 - ⚡ **Signals-first** — modern Angular API (`input()`, `model()`, `computed()`, `signal()`).
+- 📝 **Angular-native forms** — the same controls and Field anatomy work with Reactive Forms,
+  `ngModel`, and Signal Forms.
 - 🧩 **Composable** — primitives compose via `hostDirectives` and shared building blocks.
 - 🌗 **Theme-ready** — state-driven styling works with light/dark and any design tokens.
 - 📦 **Tree-shakeable** — granular secondary entry points (`@radix-ng/primitives/<name>`).
@@ -65,6 +67,28 @@ export class DemoComponent {}
 
 Primitives are headless: style them via the `data-*` attributes they expose (e.g.
 `[data-open]`, `[data-disabled]`) with the tooling of your choice.
+
+## Angular forms, one Field contract
+
+Angular remains the source of truth for values, validation, submission, and reset. Radix NG connects
+that state to the same headless controls, accessible Field parts, and `data-*` styling contract on
+every form path:
+
+```html
+<!-- Reactive Forms and ngModel use the Angular Forms adapter. -->
+<input rdxInput formControlName="email" rdxNgControlField />
+
+<!-- Signal Forms uses the structural field adapter. -->
+<input rdxInput [formField]="accountForm.email" rdxSignalField />
+```
+
+Existing ControlValueAccessors stay available for Reactive and template-driven forms. The optional
+`@radix-ng/primitives/signal-forms` entry adds Angular Signal Forms without introducing a parallel
+Radix NG form model. Signal Forms is stable in Angular 22; the Reactive and template-driven paths
+remain supported on Angular 21 and 22. See the [paired recipes and executable control
+matrix](https://radix-ng.com/docs/?path=/docs/primitives-signal-forms--docs#one-recipe-two-angular-apis),
+or the [migration guide](https://radix-ng.com/docs/?path=/docs/guides-forms-migration--docs) when
+upgrading from 1.0.10.
 
 ## Documentation
 

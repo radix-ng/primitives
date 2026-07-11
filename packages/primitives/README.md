@@ -1,6 +1,6 @@
 # @radix-ng/primitives
 
-> **Headless, signals-first UI primitives for Angular.**
+> **Headless, signals-first UI primitives with first-class Angular Forms support.**
 
 Radix NG is a low-level UI primitive library for Angular with a focus on accessibility,
 customization, and developer experience. The primitives are **headless** — they ship no styles and
@@ -30,18 +30,18 @@ Each primitive is its own secondary entry point — import only what you use:
 ```ts
 import { Component } from '@angular/core';
 import {
+  RdxCollapsiblePanelDirective,
   RdxCollapsibleRootDirective,
-  RdxCollapsibleTriggerDirective,
-  RdxCollapsibleContentDirective
+  RdxCollapsibleTriggerDirective
 } from '@radix-ng/primitives/collapsible';
 
 @Component({
   selector: 'app-demo',
-  imports: [RdxCollapsibleRootDirective, RdxCollapsibleTriggerDirective, RdxCollapsibleContentDirective],
+  imports: [RdxCollapsibleRootDirective, RdxCollapsibleTriggerDirective, RdxCollapsiblePanelDirective],
   template: `
     <div rdxCollapsibleRoot>
       <button rdxCollapsibleTrigger>Toggle</button>
-      <div rdxCollapsibleContent>Content</div>
+      <div rdxCollapsiblePanel>Content</div>
     </div>
   `
 })
@@ -50,6 +50,27 @@ export class DemoComponent {}
 
 Style the parts via the `data-*` attributes they expose (e.g. `[data-state="open"]`,
 `[data-disabled]`) with any CSS approach — Tailwind, CSS modules, vanilla CSS.
+
+## Angular forms, one Field contract
+
+The same controls and accessible Field parts work across every Angular form API while Angular owns
+the model and validation:
+
+```html
+<!-- Reactive Forms / ngModel -->
+<input rdxInput formControlName="email" rdxNgControlField />
+
+<!-- Signal Forms -->
+<input rdxInput [formField]="accountForm.email" rdxSignalField />
+```
+
+ControlValueAccessors remain available for Reactive and template-driven forms. The optional
+`@radix-ng/primitives/signal-forms` entry adds Angular Signal Forms without a separate Radix NG form
+model. Signal Forms is stable in Angular 22; Reactive Forms and `ngModel` remain supported on Angular
+21 and 22. Compare the [paired recipes and runtime-verified
+matrix](https://radix-ng.com/docs/?path=/docs/primitives-signal-forms--docs#one-recipe-two-angular-apis),
+and see the [migration guide](https://radix-ng.com/docs/?path=/docs/guides-forms-migration--docs) when
+upgrading from 1.0.10.
 
 ## Documentation
 

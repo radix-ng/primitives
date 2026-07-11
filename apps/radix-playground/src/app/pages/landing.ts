@@ -75,7 +75,7 @@ type CopyTarget = 'install' | 'skill';
     template: `
         <main class="bg-background text-foreground min-h-screen">
             <button
-                class="border-border bg-card hover:bg-muted fixed top-4 right-4 z-50 inline-flex size-10 items-center justify-center rounded-full border text-[var(--landing-accent-text)] shadow-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--landing-accent-text)]"
+                class="border-border bg-card hover:bg-muted absolute top-4 right-4 z-50 inline-flex size-10 items-center justify-center rounded-full border text-[var(--landing-accent-text)] shadow-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--landing-accent-text)] sm:fixed"
                 [attr.aria-label]="'Switch to ' + (theme.theme() === 'light' ? 'dark' : 'light') + ' theme'"
                 (click)="theme.toggle()"
                 type="button"
@@ -104,7 +104,7 @@ type CopyTarget = 'install' | 'skill';
                         >
                             <svg class="size-3.5 text-[var(--landing-accent-text)]" lucideZap></svg>
                             Signals-first ·
-                            <b class="font-semibold text-[var(--landing-accent-text)]">built for Angular</b>
+                            <b class="font-semibold text-[var(--landing-accent-text)]">Angular-native forms</b>
                         </span>
 
                         <h1
@@ -116,10 +116,9 @@ type CopyTarget = 'install' | 'skill';
                         </h1>
 
                         <p class="text-muted-foreground mb-8 max-w-[30em] text-lg leading-8">
-                            A low-level, accessible component library that adapts
+                            A low-level, accessible component library that adapts the architecture and behavior of
                             <strong class="text-foreground font-semibold whitespace-nowrap">Base UI</strong>
-                            's architecture and behavior to Angular. Primitives ship no styles and expose their state
-                            through
+                            to Angular. Primitives ship no styles and expose their state through
                             <code
                                 class="rounded bg-[color:var(--landing-accent-tint)] px-1.5 py-0.5 font-mono text-[0.85em] text-[var(--landing-accent-text)]"
                             >
@@ -128,6 +127,11 @@ type CopyTarget = 'install' | 'skill';
                             attributes. Use them as the base layer of your
                             <span class="whitespace-nowrap">design system</span>
                             or adopt them incrementally.
+                            <span class="mt-3 block">
+                                Reactive Forms,
+                                <code class="font-mono text-[0.85em]">ngModel</code>
+                                and Signal Forms share the same controls, Field anatomy and accessibility contract.
+                            </span>
                         </p>
 
                         <div class="mb-6 flex flex-wrap gap-3">
@@ -406,6 +410,138 @@ type CopyTarget = 'install' | 'skill';
                                         </div>
                                     </div>
                                 }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section
+                class="border-border border-t bg-[color:var(--landing-green)]/5 px-4 py-14 sm:px-6 sm:py-20"
+                id="forms"
+            >
+                <div class="mx-auto grid max-w-6xl min-w-0 items-center gap-10 sm:gap-14 lg:grid-cols-[0.9fr_1.1fr]">
+                    <div class="min-w-0">
+                        <p
+                            class="mb-3 text-xs font-semibold tracking-[0.08em] text-[var(--landing-accent-text)] uppercase"
+                        >
+                            Angular-native forms
+                        </p>
+                        <h2 class="mb-3 text-3xl leading-tight font-bold tracking-normal text-balance">
+                            One Field contract.
+                            <span class="text-[var(--landing-accent-text)]">Every Angular form API.</span>
+                        </h2>
+                        <p class="text-muted-foreground max-w-2xl text-base leading-7 text-pretty">
+                            Angular owns the model, validation, submission and reset.
+                            <span class="whitespace-nowrap">Radix NG</span>
+                            connects that state to the same headless controls, accessible Field parts and
+                            <code class="font-mono text-[0.9em] text-[var(--landing-accent-text)]">data-*</code>
+                            styling contract; it does not add a parallel form engine.
+                        </p>
+
+                        <ul class="mt-6 flex flex-col gap-3">
+                            <li class="text-muted-foreground flex items-start gap-3 text-sm leading-6">
+                                <span
+                                    class="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-[color:var(--landing-green)]/10 text-[var(--landing-green)]"
+                                >
+                                    <svg class="size-3.5" lucideCheck></svg>
+                                </span>
+                                <span>
+                                    <b class="text-foreground font-semibold">11 dual controls</b>
+                                    keep their ControlValueAccessor path for Reactive and template-driven forms.
+                                </span>
+                            </li>
+                            <li class="text-muted-foreground flex items-start gap-3 text-sm leading-6">
+                                <span
+                                    class="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-[color:var(--landing-green)]/10 text-[var(--landing-green)]"
+                                >
+                                    <svg class="size-3.5" lucideCheck></svg>
+                                </span>
+                                <span>
+                                    <b class="text-foreground font-semibold">All 14 form controls</b>
+                                    support Signal Forms values, validation state and reset.
+                                </span>
+                            </li>
+                            <li class="text-muted-foreground flex items-start gap-3 text-sm leading-6">
+                                <span
+                                    class="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-[color:var(--landing-green)]/10 text-[var(--landing-green)]"
+                                >
+                                    <svg class="size-3.5" lucideCheck></svg>
+                                </span>
+                                <span>
+                                    Async validation, backend errors, touched / dirty, submitting and reset follow
+                                    Angular's lifecycle.
+                                </span>
+                            </li>
+                        </ul>
+
+                        <div class="mt-7 flex flex-wrap gap-3">
+                            <a
+                                class="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 items-center gap-2 rounded-md px-4 text-sm font-medium no-underline transition-colors"
+                                href="/docs/?path=/docs/primitives-signal-forms--docs"
+                                rdxButton
+                            >
+                                Explore Signal Forms
+                                <svg class="size-4" lucideArrowRight></svg>
+                            </a>
+                            <a
+                                class="inline-flex h-10 items-center gap-2 rounded-md border border-[color:var(--landing-accent-border)] px-4 text-sm font-medium text-[var(--landing-accent-text)] no-underline transition-colors hover:bg-[color:var(--landing-accent-tint)]"
+                                href="/docs/?path=/docs/guides-forms-migration--docs"
+                                rdxButton
+                            >
+                                Migration guide
+                            </a>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-card min-w-0 overflow-hidden rounded-lg border border-[color:var(--landing-accent-border)] shadow-lg lg:rotate-[1deg]"
+                    >
+                        <div
+                            class="border-border flex items-center gap-2 border-b bg-[color:var(--landing-accent-tint)] px-3.5 py-2.5"
+                        >
+                            <span class="flex gap-1.5" aria-hidden="true">
+                                <i class="block size-2.5 rounded-full bg-[color:var(--landing-red)]"></i>
+                                <i class="block size-2.5 rounded-full bg-[color:var(--landing-accent-fill)]"></i>
+                                <i class="block size-2.5 rounded-full bg-[color:var(--landing-green)]"></i>
+                            </span>
+                            <span class="text-muted-foreground ml-2 font-mono text-xs">account-form.html</span>
+                            <span
+                                class="ml-auto rounded-full border border-[color:var(--landing-green)]/30 bg-[color:var(--landing-green)]/10 px-2 py-0.5 font-mono text-[0.68rem] text-[var(--landing-green)]"
+                            >
+                                same UI
+                            </span>
+                        </div>
+                        <pre
+                            class="text-foreground m-0 overflow-x-auto p-5 font-mono text-[0.78rem] leading-7 sm:text-[0.8125rem]"
+                        ><span class="text-muted-foreground">&lt;!-- Reactive Forms / ngModel --&gt;</span>
+<span class="text-[var(--landing-red)]">&lt;input</span> <span class="text-[var(--landing-accent-text)] font-semibold">rdxInput</span>
+  <span class="text-[var(--landing-blue)]">formControlName</span>=<span class="text-[var(--landing-green)]">"email"</span>
+  <span class="text-[var(--landing-accent-text)] font-semibold">rdxNgControlField</span> <span class="text-[var(--landing-red)]">/&gt;</span>
+
+<span class="text-muted-foreground">&lt;!-- Signal Forms --&gt;</span>
+<span class="text-[var(--landing-red)]">&lt;input</span> <span class="text-[var(--landing-accent-text)] font-semibold">rdxInput</span>
+  <span class="text-[var(--landing-blue)]">[formField]</span>=<span class="text-[var(--landing-green)]">"accountForm.email"</span>
+  <span class="text-[var(--landing-accent-text)] font-semibold">rdxSignalField</span> <span class="text-[var(--landing-red)]">/&gt;</span></pre>
+
+                        <div
+                            class="border-border grid gap-4 border-t bg-[color:var(--landing-accent-tint)] px-5 py-4 sm:grid-cols-3"
+                        >
+                            <div>
+                                <p class="text-foreground text-sm font-semibold">Angular Forms</p>
+                                <p class="text-muted-foreground mt-1 text-xs leading-5">
+                                    CVA and NgControl stay native.
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-foreground text-sm font-semibold">Signal Forms</p>
+                                <p class="text-muted-foreground mt-1 text-xs leading-5">
+                                    One structural field binding.
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-foreground text-sm font-semibold">Radix NG</p>
+                                <p class="text-muted-foreground mt-1 text-xs leading-5">Same ARIA and visible state.</p>
                             </div>
                         </div>
                     </div>
@@ -790,6 +926,7 @@ type CopyTarget = 'install' | 'skill';
                     <nav class="text-muted-foreground flex flex-wrap gap-5 text-sm">
                         <a class="hover:text-foreground no-underline" href="/docs/">Documentation</a>
                         <a class="hover:text-foreground no-underline" routerLink="/playground">Playground</a>
+                        <a class="hover:text-foreground no-underline" href="#forms">Angular Forms</a>
                         <a class="hover:text-foreground no-underline" href="#primitives">Primitives</a>
                         <a class="hover:text-foreground no-underline" href="/docs/?path=/docs/guides-forms--docs">
                             Guides

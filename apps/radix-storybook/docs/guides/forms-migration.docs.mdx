@@ -1,0 +1,155 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Guides/Forms migration" />
+
+# Forms migration after 1.0.10
+
+Adopt the unified Reactive Forms, template-driven forms, and Signal Forms integration without moving
+validation or model ownership out of Angular.
+
+Most of this forms release is additive. Existing ControlValueAccessors and two-way model bindings stay
+available. The only required migration is for Date Field and Time Field consumers that use
+`undefined` as the empty value.
+
+Angular Signal Forms is stable in Angular 22. The package continues to support Angular 21 and 22 for
+Reactive Forms and `ngModel`; `@angular/forms` remains an optional peer dependency.
+
+## What changed
+
+- **All 14 form controls support Signal Forms** value, visible validation state, touched / dirty state,
+  and `FieldState.reset()` through the Angular-native `value` / `checked` model contract.
+- **All 11 dual controls keep their Angular Forms path** and now mirror `NgControl` validity, pending,
+  disabled, touched, dirty, pristine, and reset state.
+- **`rdxNgControlField`** connects a Reactive Forms or `ngModel` control to its enclosing `Field`,
+  including normalized validation errors and inferred server-error names.
+- **`rdxSignalField` and `rdxSignalForm`** connect Signal Forms state to the same Field / Form
+  presentation contract without duplicate state bindings.
+- **`rdxSignalSubmit`** optionally delegates a native submit to Angular's `submission.action`, including
+  touched state, concurrent-submit protection, `submitting()`, and targeted returned errors.
+- **Select now implements ControlValueAccessor**, including single / multiple values, object values,
+  disabled state, canceled changes, Reactive Forms, and `ngModel`.
+
+See the [runtime-verified integration matrix](?path=/docs/primitives-signal-forms--docs#control-integration-matrix)
+for the exact per-control boundary.
+
+## Required: use `null` for empty Date and Time Fields
+
+Date Field and Time Field now expose `DateValue | null` and `TimeValue | null`. An `undefined` property
+is an absent optional child in Angular's Signal Forms `FieldTree`, so Angular cannot bind, validate, or
+reset that leaf. A `null` property is a present field with an empty value.
+
+```ts
+// Before
+readonly model = signal<{
+  startsOn: DateValue | undefined;
+  startsAt: TimeValue | undefined;
+}>({
+  startsOn: undefined,
+  startsAt: undefined
+});
+
+// After
+readonly model = signal<{
+  startsOn: DateValue | null;
+  startsAt: TimeValue | null;
+}>({
+  startsOn: null,
+  startsAt: null
+});
+```
+
+Update two-way bindings, event handlers, and reset values to accept `null`:
+
+```ts
+this.scheduleForm.startsOn().reset(null);
+this.scheduleForm.startsAt().reset(null);
+```
+
+`placeholder` remains optional and still uses `undefined`; only the public form value changes.
+
+## Optional: replace manual Reactive Forms state wiring
+
+Existing Reactive Forms bindings continue to work. Add `rdxNgControlField` when a wrapping Field should
+read the same Angular state and errors:
+
+```html
+<!-- Before: repeated AbstractControl state bindings -->
+<div
+  rdxFieldRoot
+  [invalid]="email.invalid"
+  [touched]="email.touched"
+  [dirty]="email.dirty"
+>
+  <input rdxInput formControlName="email" />
+</div>
+
+<!-- After: the Angular control is still the source of truth -->
+<div rdxFieldRoot>
+  <input rdxInput formControlName="email" rdxNgControlField />
+  <p rdxFieldError match="required">Email is required.</p>
+</div>
+```
+
+The adapter must sit on the same control host as `formControl`, `formControlName`, or `ngModel`. It is
+exported from `@radix-ng/primitives/field` and does not create another form model.
+
+The adapter reports Angular's actual state; the Field still decides when to display validity through
+`validationMode` (`onBlur` by default). Set `validationMode="always"` on the Field or Form only when
+preserving eager manual-invalid presentation is intentional.
+
+## Optional: connect Signal Forms presentation
+
+Keep the existing `[formField]` value binding and add the Field adapter beside it. Add the form adapter
+only when aggregate state or name-based error routing is needed:
+
+```html
+<form rdxFormRoot [rdxSignalForm]="accountForm">
+  <div rdxFieldRoot>
+    <label rdxFieldLabel>Email</label>
+    <input rdxInput [formField]="accountForm.email" rdxSignalField />
+    <p rdxFieldError #error="rdxFieldError">
+      {{ error.messages().join(' ') }}
+    </p>
+  </div>
+</form>
+```
+
+There is still a single field expression: `[formField]` owns the control binding, and `rdxSignalField`
+reads that co-located Angular field state.
+
+## Optional: delegate submission to Signal Forms
+
+`rdxSignalSubmit` is opt-in. Without it, `rdxFormRoot` keeps its existing `onFormSubmit` path. Use the
+input only when the `form()` definition has a `submission.action`:
+
+```html
+<form rdxFormRoot [rdxSignalForm]="accountForm" rdxSignalSubmit>
+  <!-- fields -->
+  <button type="submit" [disabled]="accountForm().submitting()">Submit</button>
+</form>
+```
+
+Return a targeted Angular `ValidationError` from the action for a backend field error. The existing
+`rdxFormRoot[errors]` channel remains available for eager external errors on both form paths.
+
+## Reset ownership
+
+Reactive Forms continues to use its normal `FormGroup` / native form reset lifecycle. For Signal Forms,
+prevent the browser from independently restoring DOM defaults and reset Angular with an explicit
+application value:
+
+```ts
+resetAccount(event: Event): void {
+  event.preventDefault();
+  this.accountForm().reset({ username: '', email: '' });
+}
+```
+
+Angular then restores values and marks the descendants pristine and untouched; Radix NG clears its
+control-owned interaction tracking through the same reset lifecycle.
+
+## Compare the complete recipes
+
+The [paired account recipes](?path=/docs/primitives-signal-forms--docs#one-recipe-two-angular-apis) keep
+the controls, Field anatomy, messages, async validation, backend error, submission feedback, and reset
+behavior identical. Only the Angular binding, validation, submission, and reset APIs differ.

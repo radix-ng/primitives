@@ -5,7 +5,7 @@ import packageJson from '../../../../packages/primitives/package.json';
 
 # Introduction
 
-**Headless, signals-first UI primitives for Angular.**
+**Headless, signals-first UI primitives with first-class Angular Forms support.**
 
 Radix NG is a headless, signals-first UI primitive library for Angular, focused on accessibility,
 customization, and developer experience. It ships unstyled, composable primitives that expose state
@@ -17,6 +17,10 @@ signals, and dependency injection.
 
 Use the primitives as the foundation of a design system or adopt them incrementally in an existing
 application.
+
+Forms are a first-class Angular-native integration rather than a separate form engine. Reactive Forms,
+`ngModel`, and Signal Forms use the same controls, accessible Field anatomy, and `data-*` contract;
+Angular continues to own values, validation, submission, and reset.
 
 <div className="not-prose my-6 grid gap-3 sm:grid-cols-2">
   <a
@@ -47,6 +51,8 @@ application.
   with keyboard navigation, focus management, and correct `role` / `aria-*` attributes.
 - **Signals-first** — modern Angular API throughout: `input()`, `model()`, `computed()`,
   `signal()`, `effect()`.
+- **Angular-native forms** — one Field and control contract across Reactive Forms, `ngModel`, and
+  [Signal Forms](?path=/docs/primitives-signal-forms--docs), backed by an executable integration matrix.
 - **Composable** — primitives compose via Angular's
   [Directive Composition API](https://angular.dev/guide/directives/directive-composition-api)
   (`hostDirectives`) and shared building blocks (Popper, Dismissable Layer, Focus Scope, …).

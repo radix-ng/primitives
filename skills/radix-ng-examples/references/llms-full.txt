@@ -20379,6 +20379,9 @@ export class SignalFormsFieldExample {
 available where a control already has one; Signal Forms adds a structural binding path without coupling
 the accessibility layer to Angular. The full support matrix is below.
 
+Upgrading from 1.0.10? See the [forms migration guide](?path=/docs/guides-forms-migration--docs) for the
+adapter adoption path and the Date / Time Field `undefined` → `null` empty-value change.
+
 ## Features
 
 - ✅ Reads state from the **same `[formField]` binding** — the field is written once, not twice.
