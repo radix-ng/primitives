@@ -87,6 +87,26 @@ const config: StorybookConfig = {
     async viteFinal(config: UserConfig) {
         return mergeConfig(config, {
             resolve: { tsconfigPaths: true },
+            // Storybook's Angular ArgTypes tables match a component to its compodoc entry by the
+            // runtime class `.name` (`findComponentByName`). The production build minifies with
+            // Rolldown/Oxc, whose name mangling renames every directive class (`RdxSwitchRoot` → `k`)
+            // and leaves `.name` mangled, so *every* `<ArgTypes of={Directive} />` silently resolves to
+            // nothing on the built/deployed site (the dev server doesn't minify, so it looks fine
+            // locally — hence "compodoc generated nothing" is a false lead). The AnalogJS builder's
+            // `oxc: { keepNames: true }` only covers the per-file transform pass, not this output-minify
+            // pass, so we pin the Oxc minifier to keep class/function names. `compress`/`codegen` stay
+            // on so only the identifier renaming of names is relaxed.
+            build: {
+                rollupOptions: {
+                    output: {
+                        minify: {
+                            compress: true,
+                            codegen: true,
+                            mangle: { keepNames: { function: true, class: true } }
+                        }
+                    }
+                }
+            },
             plugins: [rawTsPlugin()]
         });
     },
