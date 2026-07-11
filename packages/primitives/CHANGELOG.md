@@ -1,3 +1,37 @@
+## 1.1.0 (2026-07-11)
+
+### 🚀 Features
+
+- ⚠️  **signal-forms:** complete the form control matrix ([4551d771](https://github.com/radix-ng/primitives/commit/4551d771))
+- **field:** add Angular Forms adapter ([619019a8](https://github.com/radix-ng/primitives/commit/619019a8))
+- **forms:** sync Angular validation state ([82e9de3a](https://github.com/radix-ng/primitives/commit/82e9de3a))
+- **forms:** sync Angular control interaction state ([9219fd1a](https://github.com/radix-ng/primitives/commit/9219fd1a))
+- **select:** add Angular forms integration ([1471471a](https://github.com/radix-ng/primitives/commit/1471471a))
+- **signal-forms:** add reset lifecycle and integration matrix ([1ae8e926](https://github.com/radix-ng/primitives/commit/1ae8e926))
+- **signal-forms:** add Angular-owned submit lifecycle ([b31d3837](https://github.com/radix-ng/primitives/commit/b31d3837))
+- **combobox,autocomplete:** locale-aware default filtering ([838dd3f5](https://github.com/radix-ng/primitives/commit/838dd3f5))
+- **popper:** logical sides with direction-aware data-side echo ([e93adaf5](https://github.com/radix-ng/primitives/commit/e93adaf5))
+
+### 🩹 Fixes
+
+- **composite:** always skip natively disabled items during list navigation ([16be5bbc](https://github.com/radix-ng/primitives/commit/16be5bbc))
+- **menu,scroll-area:** port upstream behavioral fixes and menu physical-side geometry ([481a7ee8](https://github.com/radix-ng/primitives/commit/481a7ee8))
+- **composite:** align scroll edge order and disabled revalidation ([9eddce17](https://github.com/radix-ng/primitives/commit/9eddce17))
+- **composite:** re-sort items on in-place DOM reorder ([3ea548e9](https://github.com/radix-ng/primitives/commit/3ea548e9))
+
+### 🔥 Performance
+
+- **composite:** O(1) item registration and index lookup ([acf6da96](https://github.com/radix-ng/primitives/commit/acf6da96))
+
+### ⚠️  Breaking Changes
+
+- **signal-forms:** complete the form control matrix  ([4551d771](https://github.com/radix-ng/primitives/commit/4551d771))
+  Date Field and Time Field now use null instead of undefined for empty values.
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 1.0.10 (2026-07-05)
 
 ### 🚀 Features
