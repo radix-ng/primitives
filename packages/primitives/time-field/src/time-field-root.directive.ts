@@ -299,6 +299,12 @@ export class RdxTimeFieldRootDirective
         this.formUi.markAsTouched();
     }
 
+    /** Reset segment interaction so the form-owned value write remains pristine. */
+    override reset(): void {
+        this.userInteracted.set(false);
+        super.reset();
+    }
+
     /**
      * @ignore
      */

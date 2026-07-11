@@ -288,4 +288,23 @@ describe('Combobox with Signal Forms', () => {
         )!;
         expect(banana.getAttribute('aria-selected')).toBe('true');
     });
+
+    it('resets the value and interaction state through Signal Forms', async () => {
+        const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+        host.open.set(true);
+        await settle();
+        (Array.from(document.querySelectorAll('[rdxComboboxItem]')) as HTMLElement[])[0].click();
+        await settle();
+        expect(input.getAttribute('data-dirty')).toBe('');
+
+        host.formTree().reset({ fruit: null });
+        await settle();
+
+        expect(host.model().fruit).toBeNull();
+        expect(host.fruit().dirty()).toBe(false);
+        expect(host.fruit().touched()).toBe(false);
+        expect(input.value).toBe('');
+        expect(input.getAttribute('data-dirty')).toBeNull();
+        expect(input.getAttribute('data-touched')).toBeNull();
+    });
 });

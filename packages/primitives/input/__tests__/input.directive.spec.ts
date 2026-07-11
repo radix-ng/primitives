@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { form, FormField } from '@angular/forms/signals';
 import { RdxValidationError } from '@radix-ng/primitives/core';
 import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxInputDirective, RdxInputValueChangeEvent } from '../src/input.directive';
@@ -67,6 +68,22 @@ class StandaloneHostComponent {
     imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldDescription, RdxFieldError, RdxInputDirective]
 })
 class FieldHostComponent {}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [FormField, RdxInputDirective],
+    template: `
+        <input [formField]="name" rdxInput />
+    `
+})
+class InputSignalFormHost {
+    readonly model = signal({ name: 'Ada' });
+    readonly formTree = form(this.model);
+
+    get name() {
+        return this.formTree.name;
+    }
+}
 
 describe('Input', () => {
     describe('standalone', () => {
@@ -260,6 +277,37 @@ describe('Input', () => {
             fixture.detectChanges();
             expect(root.getAttribute('data-touched')).toBe('');
             expect(root.hasAttribute('data-focused')).toBe(false);
+        });
+    });
+
+    describe('with Signal Forms', () => {
+        it('resets the value and control-owned interaction state', async () => {
+            TestBed.configureTestingModule({ imports: [InputSignalFormHost] });
+            const fixture = TestBed.createComponent(InputSignalFormHost);
+            const host = fixture.componentInstance;
+            fixture.detectChanges();
+            const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+            input.value = 'Grace';
+            input.dispatchEvent(new Event('input'));
+            input.dispatchEvent(new FocusEvent('blur'));
+            fixture.detectChanges();
+            expect(host.name().dirty()).toBe(true);
+            expect(host.name().touched()).toBe(true);
+            expect(input.getAttribute('data-dirty')).toBe('');
+            expect(input.getAttribute('data-touched')).toBe('');
+
+            host.formTree().reset({ name: 'Ada' });
+            fixture.detectChanges();
+            await Promise.resolve();
+            fixture.detectChanges();
+
+            expect(host.model().name).toBe('Ada');
+            expect(host.name().dirty()).toBe(false);
+            expect(host.name().touched()).toBe(false);
+            expect(input.value).toBe('Ada');
+            expect(input.getAttribute('data-dirty')).toBeNull();
+            expect(input.getAttribute('data-touched')).toBeNull();
         });
     });
 });

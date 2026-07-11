@@ -207,13 +207,15 @@ accessors already handle it, as `rdxInput` relies on.
 
 [Signal Forms](https://angular.dev/guide/forms/signals) (`@angular/forms/signals`) is **stable since
 Angular 22**. It is a **parallel** mechanism to `ControlValueAccessor`, not a replacement: a control can
-satisfy both at once, so adopting Signal Forms is additive — Reactive and template-driven forms keep
-working unchanged.
+satisfy both at once. Most Radix NG controls are dual; `select`, `date-field`, `time-field`, and
+`editable` currently expose only the Angular-native Signal Forms value contract. See the
+[runtime-verified matrix](?path=/docs/primitives-signal-forms--docs#control-integration-matrix) for the
+exact boundary.
 
 Radix NG controls already expose the structural contract Signal Forms binds to:
 
 - **`FormValueControl<T>`** — a `value = model<T>()` member (Input, Radio, Select, Slider, Number /
-  Date / Time Field, Editable, Toggle Group).
+  Date / Time Field, Editable, Toggle / Checkbox Group, Combobox, Autocomplete).
 - **`FormCheckboxControl`** — a `checked = model<boolean>()` member, with no `value` member (Checkbox,
   Switch).
 
@@ -221,7 +223,8 @@ Beyond the required `value` / `checked` model, **every** form control also expos
 `FormUiControl` surface — `invalid`, `pending`, `errors`, `touched` (a `model()` plus a `touch` output),
 and `dirty` — and reflects the Base UI validity/interaction contract as `data-invalid` / `data-valid` /
 `data-touched` / `data-dirty` and `aria-invalid`. Pending stays neutral (neither valid nor invalid) and
-is read directly from Angular's `field().pending()` signal when an application needs progress UI.
+is read directly from Angular's `field().pending()` signal when an application needs progress UI. All
+14 controls also participate in `FieldState.reset()`, restoring the value and clearing touched/dirty.
 
 ```html
 <input rdxInput [formField]="form.email" />
@@ -282,14 +285,34 @@ own `errors` input remains a separate Base UI-compatible eager server-error chan
 Those external errors continue to block submission until they are cleared on edit.
 See ADR 0018 and ADR 0020 for the adapter boundaries.
 
+For reset, let Angular own both the model and interaction state. Prevent the browser from separately
+restoring DOM defaults and pass the application initial value to the root field:
+
+```html
+<form rdxFormRoot [rdxSignalForm]="profileForm" (reset)="resetProfile($event)">
+  <!-- fields -->
+  <button type="reset">Reset</button>
+</form>
+```
+
+```ts
+resetProfile(event: Event) {
+  event.preventDefault();
+  this.profileForm().reset(this.initialProfile);
+}
+```
+
+The [full lifecycle recipe](?path=/docs/primitives-signal-forms--docs#async-validation-and-reset-lifecycle)
+combines this with `validateAsync`, pending UI, Fieldset composition, and Angular-owned submission.
+
 ## Why this is forward-compatible
 
 The two-layer split is what keeps your form code stable as Angular's form APIs evolve:
 
 - **The control's value contract does not change.** `value` / `checked` signal `model()`s are the same
   members Signal Forms binds to, so existing controls are already contract-ready.
-- **`ControlValueAccessor` stays.** Signal Forms is parallel to it; Reactive and template-driven forms
-  remain first-class, and a single control can serve both.
+- **Existing `ControlValueAccessor`s stay.** Signal Forms is parallel to them; dual controls keep their
+  Reactive and template-driven path, while Signal-only controls are called out explicitly in the matrix.
 - **`Field` stays form-agnostic.** It maps state via inputs onto `data-*` regardless of which form
   system produced that state, so the presentation and accessibility layer is untouched by a migration.
 

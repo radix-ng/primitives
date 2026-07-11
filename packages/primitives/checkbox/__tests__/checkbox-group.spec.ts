@@ -365,4 +365,22 @@ describe('RdxCheckboxGroup with Signal Forms', () => {
         fixture.detectChanges();
         expect(host.model().picks).toEqual(['b', 'a']);
     });
+
+    it('resets the value and interaction state through Signal Forms', () => {
+        buttons[0].click();
+        fixture.detectChanges();
+        const group = fixture.debugElement.query(By.css('[rdxCheckboxGroup]')).nativeElement as HTMLElement;
+        expect(group.getAttribute('data-dirty')).toBe('');
+
+        host.formTree().reset({ picks: ['b'] });
+        fixture.detectChanges();
+
+        expect(host.model().picks).toEqual(['b']);
+        expect(host.picks().dirty()).toBe(false);
+        expect(host.picks().touched()).toBe(false);
+        expect(buttons[0].getAttribute('aria-checked')).toBe('false');
+        expect(buttons[1].getAttribute('aria-checked')).toBe('true');
+        expect(group.getAttribute('data-dirty')).toBeNull();
+        expect(group.getAttribute('data-touched')).toBeNull();
+    });
 });

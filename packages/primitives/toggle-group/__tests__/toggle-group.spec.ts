@@ -487,4 +487,22 @@ describe('RdxToggleGroup with Signal Forms', () => {
         fixture.detectChanges();
         expect(host.model().alignment).toEqual(['left']);
     });
+
+    it('resets the value and interaction state through Signal Forms', () => {
+        const group = fixture.debugElement.query(By.css('[rdxToggleGroup]')).nativeElement as HTMLElement;
+        items[0].click();
+        fixture.detectChanges();
+        expect(group.getAttribute('data-dirty')).toBe('');
+
+        host.formTree().reset({ alignment: ['right'] });
+        fixture.detectChanges();
+
+        expect(host.model().alignment).toEqual(['right']);
+        expect(host.alignment().dirty()).toBe(false);
+        expect(host.alignment().touched()).toBe(false);
+        expect(items[0].getAttribute('aria-pressed')).toBe('false');
+        expect(items[1].getAttribute('aria-pressed')).toBe('true');
+        expect(group.getAttribute('data-dirty')).toBeNull();
+        expect(group.getAttribute('data-touched')).toBeNull();
+    });
 });

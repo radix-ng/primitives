@@ -230,6 +230,7 @@ class PendingSignalFieldHost {
     private releaseValidation: (() => void) | null = null;
     readonly model = signal({ name: 'Ada' });
     readonly formTree = form(this.model, (path) => {
+        required(path.name, { message: 'Name is required.' });
         validateAsync(path.name, {
             params: ({ value }) => value(),
             factory: (params) =>
@@ -282,5 +283,39 @@ describe('RdxSignalField — pending async validation stays tri-state neutral', 
         expect(root.getAttribute('data-invalid')).toBeNull();
         expect(input.getAttribute('data-valid')).toBe('');
         expect(input.getAttribute('data-invalid')).toBeNull();
+    });
+
+    it('aborts pending validation and restores pristine untouched state on reset', async () => {
+        TestBed.configureTestingModule({ imports: [PendingSignalFieldHost] });
+        const fixture = TestBed.createComponent(PendingSignalFieldHost);
+        const host = fixture.componentInstance;
+        fixture.detectChanges();
+        await Promise.resolve();
+        fixture.detectChanges();
+
+        expect(host.formTree.name().pending()).toBe(true);
+        host.formTree.name().markAsDirty();
+        host.formTree.name().markAsTouched();
+
+        host.formTree().reset({ name: '' });
+        fixture.detectChanges();
+        await vi.waitFor(() => expect(host.formTree.name().pending()).toBe(false));
+        fixture.detectChanges();
+
+        const root = fixture.debugElement.query(By.css('[rdxFieldRoot]')).nativeElement as HTMLElement;
+        const input = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
+        expect(host.model().name).toBe('');
+        expect(host.formTree.name().dirty()).toBe(false);
+        expect(host.formTree.name().touched()).toBe(false);
+        expect(root.getAttribute('data-invalid')).toBe('');
+        expect(root.getAttribute('data-dirty')).toBeNull();
+        expect(root.getAttribute('data-touched')).toBeNull();
+        expect(input.value).toBe('');
+
+        // Let the superseded loader finish; its stale success must not clear the reset value's required error.
+        host.resolveValidation();
+        await Promise.resolve();
+        fixture.detectChanges();
+        expect(root.getAttribute('data-invalid')).toBe('');
     });
 });

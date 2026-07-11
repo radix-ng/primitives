@@ -282,6 +282,15 @@ export class RdxInputDirective implements RdxFormValueControl<RdxInputValue | un
             this.fieldRootContext?.setControlId(this.id());
         });
 
+        // Signal Forms writes `dirty=false` when resetting the field. The input's own edit tracking
+        // must return to pristine as well; standalone inputs keep their internal state because this
+        // input signal does not change after user edits.
+        effect(() => {
+            if (!this.dirty()) {
+                this.dirtyValue.set(false);
+            }
+        });
+
         afterNextRender(() => {
             this.initialValue = this.element.value;
             this.syncFieldState();
@@ -322,6 +331,26 @@ export class RdxInputDirective implements RdxFormValueControl<RdxInputValue | un
 
         this.value.set(nextValue);
         this.syncFieldState();
+    }
+
+    /** Reset the interaction baseline; Angular Signal Forms calls this from `FieldState.reset()`. */
+    reset(): void {
+        this.touched.set(false);
+        this.dirtyValue.set(false);
+        this.focusedValue.set(false);
+        this.fieldRootContext?.setTouched(false);
+        this.fieldRootContext?.setDirty(false);
+        this.fieldRootContext?.setFocused(false);
+
+        // The form writes the reset value through `value` after invoking this hook. Capture that final
+        // rendered value as the next dirty baseline, rather than the value that happened to be present
+        // when reset started.
+        queueMicrotask(() => {
+            this.initialValue = this.element.value;
+            this.dirtyValue.set(false);
+            this.fieldRootContext?.setDirty(false);
+            this.syncFieldState();
+        });
     }
 
     syncFieldState(): void {

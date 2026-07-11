@@ -328,6 +328,27 @@ describe('Select with Signal Forms', () => {
         await settle();
         expect(host.model().city).toBe('Apple');
     });
+
+    it('resets the value and control-owned interaction state through Signal Forms', async () => {
+        trigger().dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+        await settle();
+        popup()?.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
+        await settle();
+        popup()?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+        await settle();
+        expect(host.city().dirty()).toBe(true);
+        expect(trigger().getAttribute('data-dirty')).toBe('');
+
+        host.formTree().reset({ city: 'Banana' });
+        await settle();
+
+        expect(host.model().city).toBe('Banana');
+        expect(host.city().dirty()).toBe(false);
+        expect(host.city().touched()).toBe(false);
+        expect(root().value()).toBe('Banana');
+        expect(trigger().getAttribute('data-dirty')).toBeNull();
+        expect(trigger().getAttribute('data-touched')).toBeNull();
+    });
 });
 
 describe('Select structural portal', () => {

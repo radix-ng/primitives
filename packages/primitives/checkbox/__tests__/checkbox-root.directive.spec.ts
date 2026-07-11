@@ -503,4 +503,21 @@ describe('RdxCheckboxRoot with Signal Forms', () => {
         expect(button.getAttribute('data-checked')).toBe('');
         expect(button.getAttribute('aria-checked')).toBe('true');
     });
+
+    it('resets the value and control-owned interaction state through Signal Forms', () => {
+        button.click();
+        fixture.detectChanges();
+        expect(host.terms().dirty()).toBe(true);
+        expect(button.getAttribute('data-dirty')).toBe('');
+
+        host.formTree().reset({ terms: false });
+        fixture.detectChanges();
+
+        expect(host.model().terms).toBe(false);
+        expect(host.terms().dirty()).toBe(false);
+        expect(host.terms().touched()).toBe(false);
+        expect(button.getAttribute('aria-checked')).toBe('false');
+        expect(button.getAttribute('data-dirty')).toBeNull();
+        expect(button.getAttribute('data-touched')).toBeNull();
+    });
 });

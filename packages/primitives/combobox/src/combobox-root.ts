@@ -910,7 +910,13 @@ export class RdxComboboxRoot
 
     // ControlValueAccessor
     writeValue(value: ComboboxValue | null): void {
-        untracked(() => this.value.set(value));
+        untracked(() => {
+            this.value.set(value);
+            // A programmatic form write (including reset) must keep the visible text aligned with the
+            // committed selection. User commits already set the exact item text and do not echo through
+            // this CVA callback; this path handles form-owned writes only.
+            this.revertInputValue();
+        });
     }
 
     registerOnChange(fn: (value: ComboboxValue | null) => void): void {

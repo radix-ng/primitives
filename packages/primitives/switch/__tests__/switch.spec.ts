@@ -372,4 +372,20 @@ describe('RdxSwitch with Signal Forms', () => {
         fixture.detectChanges();
         expect(host.enabled().touched()).toBe(true);
     });
+
+    it('resets the value and control-owned interaction state through Signal Forms', () => {
+        root.click();
+        fixture.detectChanges();
+        expect(root.getAttribute('data-dirty')).toBe('');
+
+        host.formTree().reset({ enabled: false });
+        fixture.detectChanges();
+
+        expect(host.model().enabled).toBe(false);
+        expect(host.enabled().dirty()).toBe(false);
+        expect(host.enabled().touched()).toBe(false);
+        expect(root.getAttribute('aria-checked')).toBe('false');
+        expect(root.getAttribute('data-dirty')).toBeNull();
+        expect(root.getAttribute('data-touched')).toBeNull();
+    });
 });

@@ -535,4 +535,22 @@ describe('RdxSlider with Signal Forms', () => {
         fixture.detectChanges();
         expect(host.model().amount).toBe(41);
     });
+
+    it('resets the value and interaction state through Signal Forms', () => {
+        const root = fixture.debugElement.query(By.css('[rdxSliderRoot]')).nativeElement as HTMLElement;
+        input.focus();
+        press(input, 'ArrowRight');
+        fixture.detectChanges();
+        expect(root.getAttribute('data-dirty')).toBe('');
+
+        host.formTree().reset({ amount: 40 });
+        fixture.detectChanges();
+
+        expect(host.model().amount).toBe(40);
+        expect(host.amount().dirty()).toBe(false);
+        expect(host.amount().touched()).toBe(false);
+        expect(input.value).toBe('40');
+        expect(root.getAttribute('data-dirty')).toBeNull();
+        expect(root.getAttribute('data-touched')).toBeNull();
+    });
 });

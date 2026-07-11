@@ -357,6 +357,14 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
             this.syncUncheckedInput();
         });
 
+        // The Signal Forms CVA path does not call the optional custom-control reset hook. Its
+        // `dirty=false` write is therefore the authoritative signal to clear internal tracking.
+        effect(() => {
+            if (!this.dirty()) {
+                this.dirtyValue.set(false);
+            }
+        });
+
         inject(DestroyRef).onDestroy(() => {
             this.removeUncheckedInput();
         });
@@ -407,6 +415,12 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
         this.controlValueAccessor.markAsTouched();
         this.touched.set(true);
         this.touch.emit();
+    }
+
+    /** Reset control-owned interaction state; Angular Signal Forms calls this from `FieldState.reset()`. */
+    reset(): void {
+        this.touched.set(false);
+        this.dirtyValue.set(false);
     }
 
     private syncUncheckedInput(): void {

@@ -4,20 +4,20 @@ import { InputSignal, InputSignalWithTransform, ModelSignal, OutputRef } from '@
  * Local mirror of Angular Signal Forms' control contracts
  * (`@angular/forms/signals`, stable in Angular 22).
  *
- * These interfaces intentionally do **not** import from `@angular/forms/signals`
- * so primitives can declare `implements RdxFormValueControl<T>` /
- * `implements RdxFormCheckboxControl` while the library baseline is still on
- * Angular 21, where the real API is experimental. They mirror Angular's contract
- * closely enough to lock the public surface (the required `value` / `checked`
- * signal) and catch naming regressions on CI — e.g. a rewrite renaming
- * `value` → `modelValue` (as the slider once had) would no longer type-check.
+ * These interfaces intentionally do **not** import from `@angular/forms/signals`,
+ * so control entries do not pull that optional integration into their public
+ * dependency graph. Primitives can still declare `implements RdxFormValueControl<T>` /
+ * `implements RdxFormCheckboxControl`; the mirror locks the public surface (the
+ * required `value` / `checked` signal) and catches naming regressions on CI — e.g.
+ * a rewrite renaming `value` → `modelValue` (as the slider once had) would no
+ * longer type-check.
  *
  * Optional state types are widened only where Radix NG controls legitimately
  * differ from Angular's exact types (e.g. `input<string>()` produces
  * `string | undefined`, and boolean inputs carry a coercion transform).
  *
- * Replace with the real imports once the baseline moves to Angular 22.
- * See `.claude/skills/project-knowledge/references/signal-forms-readiness.md`.
+ * The real Angular types stay isolated in `@radix-ng/primitives/signal-forms`.
+ * See ADR 0018 and `.claude/skills/project-knowledge/references/signal-forms-readiness.md`.
  */
 
 /** An optional control-state member exposed as an Angular input signal (with or without a coercion transform). */

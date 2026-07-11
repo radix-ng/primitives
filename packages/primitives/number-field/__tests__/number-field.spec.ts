@@ -389,4 +389,21 @@ describe('RdxNumberField with Signal Forms', () => {
         fixture.detectChanges();
         expect(host.model().amount).toBe(6);
     });
+
+    it('resets the value and interaction state through Signal Forms', () => {
+        const root = fixture.debugElement.query(By.css('[rdxNumberFieldRoot]')).nativeElement as HTMLElement;
+        increment.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        fixture.detectChanges();
+        expect(root.getAttribute('data-dirty')).toBe('');
+
+        host.formTree().reset({ amount: 5 });
+        fixture.detectChanges();
+
+        expect(host.model().amount).toBe(5);
+        expect(host.amount().dirty()).toBe(false);
+        expect(host.amount().touched()).toBe(false);
+        expect(input.value).toBe('5');
+        expect(root.getAttribute('data-dirty')).toBeNull();
+        expect(root.getAttribute('data-touched')).toBeNull();
+    });
 });

@@ -4,6 +4,8 @@ import { SignalFormsFieldExample } from './signal-forms-field';
 import fieldSource from './signal-forms-field?raw';
 import { SignalFormsSubmissionExample } from './signal-forms-submission';
 import submissionSource from './signal-forms-submission?raw';
+import { SignalFormsValidationLifecycleExample } from './signal-forms-validation-lifecycle';
+import validationLifecycleSource from './signal-forms-validation-lifecycle?raw';
 
 const html = String.raw;
 
@@ -12,7 +14,9 @@ const source = (code: string) => ({ docs: { source: { code, language: 'typescrip
 export default {
     title: 'Primitives/Signal Forms',
     decorators: [
-        moduleMetadata({ imports: [SignalFormsFieldExample, SignalFormsSubmissionExample] }),
+        moduleMetadata({
+            imports: [SignalFormsFieldExample, SignalFormsSubmissionExample, SignalFormsValidationLifecycleExample]
+        }),
         tailwindDemoDecorator()
     ]
 } as Meta;
@@ -33,6 +37,15 @@ export const Submission: Story = {
     render: () => ({
         template: html`
             <signal-forms-submission-example />
+        `
+    })
+};
+
+export const ValidationLifecycle: Story = {
+    parameters: source(validationLifecycleSource),
+    render: () => ({
+        template: html`
+            <signal-forms-validation-lifecycle-example />
         `
     })
 };

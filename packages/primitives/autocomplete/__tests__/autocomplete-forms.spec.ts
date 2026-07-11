@@ -271,4 +271,22 @@ describe('Autocomplete with Signal Forms', () => {
         await settle();
         expect(host.model().query).toBe('app');
     });
+
+    it('resets the value and interaction state through Signal Forms', async () => {
+        type(inputOf(fixture), 'app');
+        inputOf(fixture).dispatchEvent(new FocusEvent('blur'));
+        await settle();
+        expect(inputOf(fixture).getAttribute('data-dirty')).toBe('');
+        expect(inputOf(fixture).getAttribute('data-touched')).toBe('');
+
+        host.formTree().reset({ query: '' });
+        await settle();
+
+        expect(host.model().query).toBe('');
+        expect(host.query().dirty()).toBe(false);
+        expect(host.query().touched()).toBe(false);
+        expect(inputOf(fixture).value).toBe('');
+        expect(inputOf(fixture).getAttribute('data-dirty')).toBeNull();
+        expect(inputOf(fixture).getAttribute('data-touched')).toBeNull();
+    });
 });

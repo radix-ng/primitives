@@ -447,4 +447,26 @@ describe('RdxEditable with Signal Forms', () => {
         fixture.detectChanges();
         expect(host.model().name).toBe('Grace');
     });
+
+    it('resets the value and interaction state through Signal Forms', () => {
+        const area = fixture.debugElement.query(By.css('[rdxEditableArea]')).nativeElement as HTMLElement;
+        editTrigger().click();
+        fixture.detectChanges();
+        input().value = 'Grace';
+        input().dispatchEvent(new Event('input'));
+        fixture.detectChanges();
+        submitTrigger().click();
+        fixture.detectChanges();
+        expect(area.getAttribute('data-dirty')).toBe('');
+
+        host.formTree().reset({ name: 'Ada' });
+        fixture.detectChanges();
+
+        expect(host.model().name).toBe('Ada');
+        expect(host.name().dirty()).toBe(false);
+        expect(host.name().touched()).toBe(false);
+        expect(rootValue()).toBe('Ada');
+        expect(area.getAttribute('data-dirty')).toBeNull();
+        expect(area.getAttribute('data-touched')).toBeNull();
+    });
 });

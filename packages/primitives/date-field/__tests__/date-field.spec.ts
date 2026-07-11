@@ -307,4 +307,26 @@ describe('RdxDateField with Signal Forms', () => {
         fixture.detectChanges();
         expect(rootValue()?.toString()).toBe('2027-06-20');
     });
+
+    it('resets the value and interaction state through Signal Forms', () => {
+        const root = fixture.debugElement.query(By.css('[rdxDateFieldRoot]')).nativeElement as HTMLElement;
+        const day = fixture.nativeElement.querySelector('[data-rdx-date-field-segment="day"]') as HTMLElement;
+        day.focus();
+        day.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', code: 'ArrowUp', bubbles: true }));
+        root.dispatchEvent(new FocusEvent('focusout'));
+        fixture.detectChanges();
+        expect(host.date().dirty()).toBe(true);
+        expect(host.date().touched()).toBe(true);
+        expect(root.getAttribute('data-dirty')).toBe('');
+
+        host.formTree().reset({ date: new CalendarDate(2026, 1, 15) });
+        fixture.detectChanges();
+
+        expect(host.model().date?.toString()).toBe('2026-01-15');
+        expect(host.date().dirty()).toBe(false);
+        expect(host.date().touched()).toBe(false);
+        expect(rootValue()?.toString()).toBe('2026-01-15');
+        expect(root.getAttribute('data-dirty')).toBeNull();
+        expect(root.getAttribute('data-touched')).toBeNull();
+    });
 });

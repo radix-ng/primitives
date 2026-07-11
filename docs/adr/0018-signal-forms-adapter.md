@@ -2,11 +2,13 @@
 
 > **Live decision (reaffirmed 2026-06-21).** The full-transition alternative — drop CVA / Reactive /
 > template support and retire `RdxFormRoot` — was explored in [ADR 0019](0019-signal-forms-only.md) and
-> **rejected**: maintaining CVA **and** Signal Forms on the same control is technically cheap (a control
+> **rejected**: maintaining an existing CVA **and** Signal Forms on the same control is technically cheap (a control
 > implements both contracts; `[formField]` precedence is CVA → custom-control → native, and the form still
 > writes the `FormUiControl` surface into the directive either way), so there is no reason to hard-break
-> the Reactive/template ecosystem for a one-month-old API. Controls stay **dual**; the core stays
-> form-agnostic; Signal Forms ships as the **optional** adapter pair in `@radix-ng/primitives/signal-forms`.
+> the Reactive/template ecosystem for a one-month-old API. Existing CVAs stay **dual**; controls that
+> never shipped one (`select`, `date-field`, `time-field`, `editable`) remain explicitly Signal-only. The
+> core stays form-agnostic; Signal Forms ships as the **optional** adapter pair in
+> `@radix-ng/primitives/signal-forms`.
 
 - Status: Accepted (implemented; batch-#4 complete across all controls)
 - Date: 2026-06-20 (implementation completed 2026-06-22)
@@ -14,20 +16,20 @@
 - Related packages: `packages/primitives/{field,form,core}`, new `packages/primitives/signal-forms`
 - Supersedes the "defer" decision of **ADR 0004** (its revisit triggers are now met)
 
-> **Implementation complete (2026-06-22).** Both adapters shipped, and the optional `FormUiControl`
-> surface (`invalid` / `errors` / `touched` model + `touch` / `dirty`) now lands on **all 14 form
+> **Implementation complete (updated 2026-07-11).** Both adapters shipped, and the optional `FormUiControl`
+> surface (`invalid` / `pending` / `errors` / `touched` model + `touch` / `dirty`) now lands on **all 14 form
 > controls** — input, radio, checkbox, switch, number-field, select, toggle-group, checkbox-group,
 > slider, combobox, autocomplete, date-field, time-field, editable — not just the pilot five. The
 > per-control duplication was factored into three reusable pieces in `@radix-ng/primitives/core`
-> (`src/signal-forms/`): **`RdxFormUiControlBase`** (an abstract `@Directive()` that declares the five
+> (`src/signal-forms/`): **`RdxFormUiControlBase`** (an abstract `@Directive()` that declares the shared
 > members once and builds `formUi`; controls `extends` it — inheritance keeps the inputs on the same
 > directive as the `value`/`checked` model, which a host directive could not), **`createFormUiState()`**
 > (the derivation + dual `markAsTouched` with an optional CVA bridge), and **`RdxFormUiStateHost`** +
 > `provideFormUiState()` (a host directive for the `data-*` / `aria-invalid` / `focusout` reflection on
-> self/group controls). The only remaining forms work is the **Angular-22 gate** (re-run the spike, swap
-> the `core` shim for real `@angular/forms/signals` imports) and the optional secondary surface
-> (`name` / `required` / `readonly` / `min`/`max` where a control still lacks it). See
-> `signal-forms-readiness.md` for the per-control matrix.
+> self/group controls). The stable Angular-22 runtime gate is complete. Every control is runtime-covered
+> for value binding and `FieldState.reset()`; reset restores the visible value and clears both Angular and
+> control-owned touched/dirty state. The public Storybook matrix records which controls also retain a CVA.
+> Opt-in Angular-owned submission is specified separately in ADR 0020.
 
 ## Context
 
@@ -61,7 +63,7 @@ ADR 0004 kept `Field` form-agnostic and **deferred** a Signal Forms adapter whil
   set on interaction **plus** a `touch` output emitted alongside) so both API generations work.
 - `errors` — `input<readonly ValidationError[]>`; `disabled`, `readonly`, `required`, `invalid`,
   `hidden`, `pending`, `dirty`, `name`, `min`, `max`, `minLength`, `maxLength`, `pattern` — all `input()`.
-- Optional methods `focus(options?)` and `reset()`.
+- Optional methods `focus(options?)` and `reset()`; every Radix NG control now participates in reset.
 - Binding directive is `[formField]`; it detects the implemented interface and binds the signals.
 - A control implementing only `FormValueControl` / `FormCheckboxControl` is **not** usable with Reactive /
   template-driven forms — those still require `ControlValueAccessor`, so controls keep CVA (dual).

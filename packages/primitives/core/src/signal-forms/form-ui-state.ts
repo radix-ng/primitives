@@ -2,6 +2,7 @@ import {
     booleanAttribute,
     computed,
     Directive,
+    effect,
     inject,
     InjectionToken,
     input,
@@ -36,6 +37,10 @@ export interface RdxFormUiState {
     markAsTouched(): void;
     /** Flag the control dirty after a value change (feeds {@link dirtyState}). */
     markDirty(): void;
+    /** Clear control-owned touched/dirty state when a form resets it. */
+    resetInteractionState?(): void;
+    /** Clear only control-owned dirty state when the form marks the field pristine. */
+    resetDirtyState?(): void;
 }
 
 /** Minimal `ControlValueAccessor` surface the form-UI state bridges for the dual (Reactive/template) path. */
@@ -85,7 +90,12 @@ export function createFormUiState(options: RdxFormUiStateOptions): RdxFormUiStat
             options.cva?.markAsTouched();
             options.touched.set(true);
             options.touch.emit();
-        }
+        },
+        resetInteractionState: () => {
+            options.touched.set(false);
+            dirtyValue.set(false);
+        },
+        resetDirtyState: () => dirtyValue.set(false)
     };
 }
 
@@ -250,6 +260,18 @@ export abstract class RdxFormUiControlBase {
         cva: this.formUiTouchTarget()
     });
 
+    constructor() {
+        // Signal Forms writes `dirty=false` on reset/markAsPristine. Dual controls are bound through
+        // their CVA path (which does not invoke the optional custom-control `reset()` hook), so this
+        // transition is also the reset signal for control-owned dirty tracking. A standalone control's
+        // dirty input stays false and does not re-run this effect after user interaction.
+        effect(() => {
+            if (!this.dirty()) {
+                this.formUi.resetDirtyState?.();
+            }
+        });
+    }
+
     /** The enclosing Field's tri-state display validity, if any. `protected` so a control whose own
      * invalidity is richer than `formUi.invalidState` (e.g. date/time-field add a parse check) can build
      * its own `displayValid` from it. */
@@ -275,5 +297,13 @@ export abstract class RdxFormUiControlBase {
      */
     protected formUiTouchTarget(): RdxFormUiTouchTarget | null {
         return null;
+    }
+
+    /**
+     * Reset control-owned interaction state. Angular Signal Forms calls this optional custom-control
+     * hook from `FieldState.reset()` after restoring the field value.
+     */
+    reset(): void {
+        this.formUi.resetInteractionState?.();
     }
 }

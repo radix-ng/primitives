@@ -328,4 +328,26 @@ describe('RdxTimeField with Signal Forms', () => {
         fixture.detectChanges();
         expect(rootValue()?.toString()).toBe('14:45:00');
     });
+
+    it('resets the value and interaction state through Signal Forms', () => {
+        const root = fixture.debugElement.query(By.css('[rdxTimeFieldRoot]')).nativeElement as HTMLElement;
+        const hour = fixture.nativeElement.querySelector('[data-rdx-date-field-segment="hour"]') as HTMLElement;
+        hour.focus();
+        hour.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', code: 'ArrowUp', bubbles: true }));
+        root.dispatchEvent(new FocusEvent('focusout'));
+        fixture.detectChanges();
+        expect(host.time().dirty()).toBe(true);
+        expect(host.time().touched()).toBe(true);
+        expect(root.getAttribute('data-dirty')).toBe('');
+
+        host.formTree().reset({ time: new Time(10, 30) });
+        fixture.detectChanges();
+
+        expect(host.model().time?.toString()).toBe('10:30:00');
+        expect(host.time().dirty()).toBe(false);
+        expect(host.time().touched()).toBe(false);
+        expect(rootValue()?.toString()).toBe('10:30:00');
+        expect(root.getAttribute('data-dirty')).toBeNull();
+        expect(root.getAttribute('data-touched')).toBeNull();
+    });
 });

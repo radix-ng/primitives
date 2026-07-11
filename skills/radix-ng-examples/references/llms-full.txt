@@ -19926,9 +19926,9 @@ export class SignalFormsFieldExample {
 ```
 
 `@radix-ng/primitives/signal-forms` is the **optional** integration entry: it imports
-`@angular/forms/signals` so the headless `field` / `form` primitives don't have to. Controls stay dual
-(they also work with Reactive / template-driven forms via `ControlValueAccessor`) — this entry only
-feeds authoritative Signal Forms state into the accessibility layer.
+`@angular/forms/signals` so the headless `field` / `form` primitives don't have to. Existing CVAs stay
+available where a control already has one; Signal Forms adds a structural binding path without coupling
+the accessibility layer to Angular. The full support matrix is below.
 
 ## Features
 
@@ -19939,6 +19939,7 @@ feeds authoritative Signal Forms state into the accessibility layer.
   field errors by `name`.
 - ✅ Optionally delegates submission to Angular's public `submit()` lifecycle — validation, touched state,
   concurrent-submit protection, `submitting()`, and returned submission errors remain Angular-owned.
+- ✅ Resets values and control-owned touched/dirty state through Angular's `FieldState.reset()`.
 - ✅ Leaves `@angular/forms` out of every other entry — install it only when you use this one.
 
 ## Import
@@ -19946,6 +19947,33 @@ feeds authoritative Signal Forms state into the accessibility layer.
 ```ts
 import { RdxSignalField, RdxSignalForm } from '@radix-ng/primitives/signal-forms';
 ```
+
+## Control integration matrix
+
+Every Signal Forms and reset check below is covered by a runtime spec in the control's package — not
+only by structural TypeScript compatibility. Reset means `field().reset(value)` restores the model and
+visible control value, then returns both Angular and control-owned interaction state to untouched / pristine.
+
+| Control        | Signal value                         | `[formField]` | Reactive / `ngModel` | `FieldState.reset()` |
+| -------------- | ------------------------------------ | ------------- | -------------------- | -------------------- |
+| Input          | `string \| undefined`                | ✅            | ✅ native            | ✅    |
+| Checkbox       | `boolean`                            | ✅            | ✅ CVA               | ✅    |
+| Checkbox Group | `string[]`                           | ✅            | ✅ CVA               | ✅    |
+| Switch         | `boolean`                            | ✅            | ✅ CVA               | ✅    |
+| Radio Group    | `string \| null`                     | ✅            | ✅ CVA               | ✅    |
+| Select         | value / value array / `undefined`    | ✅            | —                    | ✅    |
+| Toggle Group   | `string[] \| undefined`              | ✅            | ✅ CVA               | ✅    |
+| Slider         | `number \| number[]`                 | ✅            | ✅ CVA               | ✅    |
+| Number Field   | `number \| null`                     | ✅            | ✅ CVA               | ✅    |
+| Combobox       | value / value array / `null`         | ✅            | ✅ CVA               | ✅    |
+| Autocomplete   | `string`                             | ✅            | ✅ CVA               | ✅    |
+| Date Field     | `DateValue \| undefined`             | ✅            | —                    | ✅    |
+| Time Field     | `TimeValue \| undefined`             | ✅            | —                    | ✅    |
+| Editable       | `string \| undefined`                | ✅            | —                    | ✅    |
+
+An em dash is intentional: `select`, `date-field`, `time-field`, and `editable` currently expose the
+Angular-native `value = model()` contract but do not ship a `ControlValueAccessor`. The matrix makes
+that boundary explicit instead of implying parity that does not yet exist.
 
 ## Anatomy
 
@@ -20261,6 +20289,210 @@ pending, Field and control publish neither `data-valid` nor `data-invalid`.
 }
 ```
 
+### Async validation and reset lifecycle
+
+This complete recipe composes `Form → Fieldset → Field → Input`, runs an Angular `validateAsync`
+resource, exposes `pending()` as progress UI, submits through `rdxSignalSubmit`, and restores both the
+model and interaction state from a native reset button.
+
+```typescript
+import { ChangeDetectionStrategy, Component, resource, signal } from '@angular/core';
+import { email as emailFormat, form, FormField, minLength, required, validateAsync } from '@angular/forms/signals';
+import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
+import { RdxFieldsetLegend, RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
+import { RdxFormRoot } from '@radix-ng/primitives/form';
+import { RdxInputDirective } from '@radix-ng/primitives/input';
+import { cn, demoButton, demoInput } from '../../storybook/styles';
+import { RdxSignalField } from '../src/signal-field';
+import { RdxSignalForm } from '../src/signal-form';
+
+interface ProfileModel {
+    username: string;
+    email: string;
+}
+
+const initialProfile = (): ProfileModel => ({ username: '', email: '' });
+const unavailableUsernames = new Set(['admin', 'radix', 'angular']);
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'signal-forms-validation-lifecycle-example',
+    imports: [
+        FormField,
+        RdxFormRoot,
+        RdxSignalForm,
+        RdxFieldsetRoot,
+        RdxFieldsetLegend,
+        RdxFieldRoot,
+        RdxSignalField,
+        RdxFieldLabel,
+        RdxInputDirective,
+        RdxFieldDescription,
+        RdxFieldError
+    ],
+    template: `
+        <form
+            class="flex w-80 flex-col gap-4"
+            [rdxSignalForm]="profileForm"
+            (reset)="resetProfile($event)"
+            rdxFormRoot
+            rdxSignalSubmit
+        >
+            <fieldset
+                class="border-border flex flex-col gap-4 rounded-md border p-4"
+                [disabled]="profileForm().submitting()"
+                rdxFieldsetRoot
+            >
+                <legend class="text-foreground px-1 text-sm font-semibold" rdxFieldsetLegend>Public profile</legend>
+
+                <div class="flex flex-col gap-2" rdxFieldRoot name="username" validationMode="onChange">
+                    <label [class]="labelClass" rdxFieldLabel>Username</label>
+                    <input
+                        [class]="inputClass"
+                        [formField]="profileForm.username"
+                        autocomplete="username"
+                        rdxInput
+                        rdxSignalField
+                    />
+                    @if (profileForm.username().pending()) {
+                        <p class="text-muted-foreground text-sm" role="status">Checking availability…</p>
+                    } @else {
+                        <p [class]="descriptionClass" rdxFieldDescription>
+                            Try
+                            <span class="text-foreground font-medium">angular</span>
+                            to see an async error.
+                        </p>
+                    }
+                    <p #usernameError="rdxFieldError" [class]="errorClass" rdxFieldError>
+                        {{ usernameError.messages().join(' ') }}
+                    </p>
+                </div>
+
+                <div class="flex flex-col gap-2" rdxFieldRoot name="email">
+                    <label [class]="labelClass" rdxFieldLabel>Email</label>
+                    <input
+                        [class]="inputClass"
+                        [formField]="profileForm.email"
+                        autocomplete="email"
+                        rdxInput
+                        rdxSignalField
+                        type="email"
+                    />
+                    <p [class]="descriptionClass" rdxFieldDescription>Used only for account notifications.</p>
+                    <p #emailError="rdxFieldError" [class]="errorClass" rdxFieldError>
+                        {{ emailError.messages().join(' ') }}
+                    </p>
+                </div>
+            </fieldset>
+
+            <div class="flex items-center gap-2">
+                <button [class]="primaryButtonClass" [disabled]="profileForm().submitting()" type="submit">
+                    {{ profileForm().submitting() ? 'Saving…' : 'Save profile' }}
+                </button>
+                <button [class]="secondaryButtonClass" type="reset">Reset</button>
+            </div>
+
+            <p class="text-muted-foreground text-xs" aria-live="polite">
+                {{ profileForm().dirty() ? 'Dirty' : 'Pristine' }} ·
+                {{ profileForm().touched() ? 'Touched' : 'Untouched' }}
+            </p>
+
+            @if (savedProfile(); as profile) {
+                <p class="text-foreground text-sm" role="status">Saved {{ profile.username }}.</p>
+            }
+        </form>
+    `
+})
+export class SignalFormsValidationLifecycleExample {
+    protected readonly inputClass = cn(
+        demoInput,
+        'data-[invalid]:border-destructive data-[invalid]:ring-destructive/20'
+    );
+    protected readonly primaryButtonClass = cn(
+        demoButton.base,
+        demoButton.primary,
+        demoButton.size.md,
+        'disabled:cursor-wait disabled:opacity-60'
+    );
+    protected readonly secondaryButtonClass = cn(demoButton.base, demoButton.secondary, demoButton.size.md);
+    protected readonly labelClass = 'text-foreground text-sm font-medium data-[disabled]:opacity-50';
+    protected readonly descriptionClass = 'text-muted-foreground text-sm';
+    protected readonly errorClass = 'text-destructive text-sm';
+
+    protected readonly savedProfile = signal<ProfileModel | null>(null);
+    readonly model = signal<ProfileModel>(initialProfile());
+    readonly profileForm = form(
+        this.model,
+        (path) => {
+            required(path.username, { message: 'Username is required.' });
+            minLength(path.username, 3, { message: 'Use at least 3 characters.' });
+            validateAsync(path.username, {
+                params: ({ value }) => value(),
+                debounce: 250,
+                factory: (params) =>
+                    resource({
+                        params: () => params(),
+                        loader: async ({ params }) => {
+                            await new Promise((resolve) => setTimeout(resolve, 650));
+                            return !unavailableUsernames.has(params.toLowerCase());
+                        }
+                    }),
+                onSuccess: (available) =>
+                    available ? undefined : { kind: 'usernameTaken', message: 'This username is already taken.' },
+                onError: () => ({ kind: 'availabilityUnavailable', message: 'Could not check this username.' })
+            });
+
+            required(path.email, { message: 'Email is required.' });
+            emailFormat(path.email, { message: 'Enter a valid email address.' });
+        },
+        {
+            submission: {
+                action: async (field) => {
+                    await new Promise((resolve) => setTimeout(resolve, 500));
+                    this.savedProfile.set({ ...field().value() });
+                    return undefined;
+                }
+            }
+        }
+    );
+
+    protected resetProfile(event: Event): void {
+        // Signal Forms owns the model and interaction state. Prevent the browser from independently
+        // restoring DOM defaults, then reset Angular with the explicit application initial value.
+        event.preventDefault();
+        this.savedProfile.set(null);
+        this.profileForm().reset(initialProfile());
+    }
+}
+```
+
+Signal Forms deliberately does not guess an application's initial model. Handle the native reset event,
+prevent the browser from independently restoring DOM defaults, and pass the desired value to Angular:
+
+```html
+<form
+  rdxFormRoot
+  [rdxSignalForm]="profileForm"
+  (reset)="resetProfile($event)"
+  rdxSignalSubmit
+>
+  <!-- Fieldset → Field → Control -->
+  <button type="reset">Reset</button>
+</form>
+```
+
+```ts
+resetProfile(event: Event) {
+  event.preventDefault();
+  this.profileForm().reset({ username: '', email: '' });
+}
+```
+
+Angular aborts pending field validation, restores the supplied values, and marks descendants untouched
+and pristine. Each Radix NG control's reset integration clears its own interaction tracking as part of
+the same lifecycle; `rdxFormRoot` also clears submit-attempt and external-error presentation on the reset
+event.
+
 ## Control authoring — the shared state surface
 
 Every Radix NG form control exposes the optional Signal Forms `FormUiControl` state
@@ -20275,9 +20507,10 @@ them rather than copy-paste:
 > disagree). To make a field invalid, drive it through the Field: `rdxSignalField` (Signal Forms) or
 > `[invalid]` on `rdxFieldRoot` — not the control's own `invalid` input.
 
-- **`RdxFormUiControlBase`** — an abstract `@Directive()` that declares the six members **once** and
+- **`RdxFormUiControlBase`** — an abstract `@Directive()` that declares the six state members **once** and
   builds the derived state (`formUi`). A control gets the whole surface with a single `extends` and only
-  adds its own `value` / `checked` model. The declarations have to stay on a directive class: Angular's
+  adds its own `value` / `checked` model; its inherited `reset()` clears control-owned interaction state.
+  The declarations have to stay on a directive class: Angular's
   compiler only discovers `input()` / `model()` as field initializers, and Signal Forms binds
   form-written state onto the **single directive that carries the value model** — so inheritance keeps
   them co-located there (a host directive could not).

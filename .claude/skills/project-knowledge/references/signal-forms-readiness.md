@@ -72,6 +72,13 @@ through the internal state seams as neutral validity (neither `data-valid` nor
 `data-invalid`); applications render progress directly from Angular's
 `field().pending()` signal. See ADR 0018 and ADR 0020.
 
+All 14 controls are runtime-covered for `FieldState.reset(value)`: the model and
+visible control value are restored, Angular touched/dirty return to false, and
+control-owned interaction tracking is cleared. Dual controls receive reset
+through Angular's CVA path plus the form-owned `dirty=false` write; Signal-only
+controls also expose the optional custom-control `reset()` hook. The public
+support matrix lives in `packages/primitives/signal-forms/stories/signal-forms.docs.mdx`.
+
 ## Conformance matrix
 
 | Control (file)                                                      | Target interface                          | Required signal                    | Optional already present                                                                                                                                               | Missing                                                            | Collisions / risk                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |

@@ -392,4 +392,22 @@ describe('RdxRadioGroup with Signal Forms', () => {
         fixture.detectChanges();
         expect(host.plan().value()).toBe('free');
     });
+
+    it('resets the value and interaction state through Signal Forms', () => {
+        const pro = fixture.debugElement.query(By.css('#pro')).nativeElement as HTMLElement;
+        const group = fixture.debugElement.query(By.css('[rdxRadioRoot]')).nativeElement as HTMLElement;
+        pro.click();
+        fixture.detectChanges();
+        expect(group.getAttribute('data-dirty')).toBe('');
+
+        host.formTree().reset({ plan: null });
+        fixture.detectChanges();
+
+        expect(host.model().plan).toBeNull();
+        expect(host.plan().dirty()).toBe(false);
+        expect(host.plan().touched()).toBe(false);
+        expect(pro.getAttribute('aria-checked')).toBe('false');
+        expect(group.getAttribute('data-dirty')).toBeNull();
+        expect(group.getAttribute('data-touched')).toBeNull();
+    });
 });
