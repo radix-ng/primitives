@@ -66,12 +66,15 @@ template-driven forms** do so through `ControlValueAccessor` (`formControl`, `fo
 | --------------------------------------------------------- | ------------------------------ | ---------------------------------- |
 | [Input](?path=/docs/primitives-input--docs)               | `value`                        | ✅ native (`DefaultValueAccessor`) |
 | [Checkbox](?path=/docs/primitives-checkbox--docs)         | `checked` (+ `indeterminate`)  | ✅                                 |
+| [Checkbox Group](?path=/docs/primitives-checkbox--docs)   | `value` (`string[]`)           | ✅                                 |
 | [Switch](?path=/docs/primitives-switch--docs)             | `checked`                      | ✅                                 |
 | [Radio Group](?path=/docs/primitives-radio--docs)         | `value`                        | ✅                                 |
 | [Slider](?path=/docs/primitives-slider--docs)             | `value` (`number \| number[]`) | ✅                                 |
 | [Number Field](?path=/docs/primitives-number-field--docs) | `value`                        | ✅                                 |
 | [Toggle Group](?path=/docs/primitives-toggle-group--docs) | `value`                        | ✅                                 |
 | [Select](?path=/docs/primitives-select--docs)             | `value`                        | ✅                                 |
+| [Combobox](?path=/docs/primitives-combobox--docs)         | `value`                        | ✅                                 |
+| [Autocomplete](?path=/docs/primitives-autocomplete--docs) | `value`                        | ✅                                 |
 | [Date Field](?path=/docs/primitives-date-field--docs)     | `value`                        | Two-way binding                    |
 | [Time Field](?path=/docs/primitives-time-field--docs)     | `value`                        | Two-way binding                    |
 | [Editable](?path=/docs/primitives-editable--docs)         | `value`                        | Two-way binding                    |
@@ -112,6 +115,18 @@ export class SignupForm {
 
 Angular owns validation and submission. To surface the resulting state to the user, wrap the control
 in a `Field` (next section).
+
+### Interaction state and reset
+
+Every control in the table with Reactive Forms support also mirrors its same-host `NgControl`
+interaction state. `control.dirty` and `control.touched` appear as `data-dirty` and `data-touched` on
+the control's state-bearing part (the root, trigger, or input, depending on the primitive). Angular's
+default `reset()`, `markAsPristine()`, and `markAsUntouched()` transitions remove those attributes
+again. The same bridge is used by `ngModel`.
+
+This keeps the control itself synchronized without manual `[dirty]` / `[touched]` bindings. A wrapping
+`rdxFieldRoot` remains form-agnostic: map the `FormControl` state onto the Field as shown below when the
+whole label / description / error group should reflect it.
 
 ## Template-driven Forms
 

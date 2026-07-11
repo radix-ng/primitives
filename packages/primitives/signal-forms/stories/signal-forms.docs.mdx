@@ -26,6 +26,8 @@ the accessibility layer to Angular. The full support matrix is below.
 - ✅ Optionally delegates submission to Angular's public `submit()` lifecycle — validation, touched state,
   concurrent-submit protection, `submitting()`, and returned submission errors remain Angular-owned.
 - ✅ Resets values and control-owned touched/dirty state through Angular's `FieldState.reset()`.
+- ✅ Mirrors classic `NgControl` dirty/touched state — including reset, pristine, and untouched
+  transitions — on every dual Reactive/template-driven control.
 - ✅ Leaves `@angular/forms` out of every other entry — install it only when you use this one.
 
 ## Import
@@ -40,22 +42,26 @@ Every Signal Forms and reset check below is covered by a runtime spec in the con
 only by structural TypeScript compatibility. Reset means `field().reset(value)` restores the model and
 visible control value, then returns both Angular and control-owned interaction state to untouched / pristine.
 
-| Control        | Signal value                         | `[formField]` | Reactive / `ngModel` | `FieldState.reset()` |
-| -------------- | ------------------------------------ | ------------- | -------------------- | -------------------- |
-| Input          | `string \| undefined`                | ✅            | ✅ native            | ✅    |
-| Checkbox       | `boolean`                            | ✅            | ✅ CVA               | ✅    |
-| Checkbox Group | `string[]`                           | ✅            | ✅ CVA               | ✅    |
-| Switch         | `boolean`                            | ✅            | ✅ CVA               | ✅    |
-| Radio Group    | `string \| null`                     | ✅            | ✅ CVA               | ✅    |
-| Select         | value / value array / `undefined`    | ✅            | ✅ CVA               | ✅    |
-| Toggle Group   | `string[] \| undefined`              | ✅            | ✅ CVA               | ✅    |
-| Slider         | `number \| number[]`                 | ✅            | ✅ CVA               | ✅    |
-| Number Field   | `number \| null`                     | ✅            | ✅ CVA               | ✅    |
-| Combobox       | value / value array / `null`         | ✅            | ✅ CVA               | ✅    |
-| Autocomplete   | `string`                             | ✅            | ✅ CVA               | ✅    |
-| Date Field     | `DateValue \| undefined`             | ✅            | —                    | ✅    |
-| Time Field     | `TimeValue \| undefined`             | ✅            | —                    | ✅    |
-| Editable       | `string \| undefined`                | ✅            | —                    | ✅    |
+`NgControl state` means the control reflects `dirty` / `touched` and reacts to Angular's default
+`reset()`, `markAsPristine()`, and `markAsUntouched()` lifecycle. It applies to both Reactive Forms and
+`ngModel`; Signal-only controls use `FieldState.reset()` instead.
+
+| Control        | Signal value                      | `[formField]` | Reactive / `ngModel` | `NgControl` state | `FieldState.reset()` |
+| -------------- | --------------------------------- | ------------- | -------------------- | ----------------- | -------------------- |
+| Input          | `string \| undefined`             | ✅            | ✅ native            | ✅                | ✅                   |
+| Checkbox       | `boolean`                         | ✅            | ✅ CVA               | ✅                | ✅                   |
+| Checkbox Group | `string[]`                        | ✅            | ✅ CVA               | ✅                | ✅                   |
+| Switch         | `boolean`                         | ✅            | ✅ CVA               | ✅                | ✅                   |
+| Radio Group    | `string \| null`                  | ✅            | ✅ CVA               | ✅                | ✅                   |
+| Select         | value / value array / `undefined` | ✅            | ✅ CVA               | ✅                | ✅                   |
+| Toggle Group   | `string[] \| undefined`           | ✅            | ✅ CVA               | ✅                | ✅                   |
+| Slider         | `number \| number[]`              | ✅            | ✅ CVA               | ✅                | ✅                   |
+| Number Field   | `number \| null`                  | ✅            | ✅ CVA               | ✅                | ✅                   |
+| Combobox       | value / value array / `null`      | ✅            | ✅ CVA               | ✅                | ✅                   |
+| Autocomplete   | `string`                          | ✅            | ✅ CVA               | ✅                | ✅                   |
+| Date Field     | `DateValue \| undefined`          | ✅            | —                    | —                 | ✅                   |
+| Time Field     | `TimeValue \| undefined`          | ✅            | —                    | —                 | ✅                   |
+| Editable       | `string \| undefined`             | ✅            | —                    | —                 | ✅                   |
 
 An em dash is intentional: `date-field`, `time-field`, and `editable` currently expose the
 Angular-native `value = model()` contract but do not ship a `ControlValueAccessor`. The matrix makes
@@ -248,6 +254,8 @@ them rather than copy-paste:
 - **`RdxFormUiControlBase`** — an abstract `@Directive()` that declares the six state members **once** and
   builds the derived state (`formUi`). A control gets the whole surface with a single `extends` and only
   adds its own `value` / `checked` model; its inherited `reset()` clears control-owned interaction state.
+  When the host also has a classic `NgControl`, the base automatically treats Angular's `dirty` and
+  `touched` flags as authoritative and follows their reset / pristine / untouched transitions.
   The declarations have to stay on a directive class: Angular's
   compiler only discovers `input()` / `model()` as field initializers, and Signal Forms binds
   form-written state onto the **single directive that carries the value model** — so inheritance keeps

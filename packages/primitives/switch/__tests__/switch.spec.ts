@@ -223,6 +223,25 @@ describe('RdxSwitch with ReactiveForms', () => {
         fixture.detectChanges();
         expect(component.form.valid).toBe(true);
     });
+
+    it('mirrors programmatic dirty and touched transitions from Reactive Forms', async () => {
+        await fixture.whenStable();
+        const control = component.form.get('airplaneMode');
+
+        control?.markAsDirty();
+        control?.markAsTouched();
+        fixture.detectChanges();
+
+        expect(root.getAttribute('data-dirty')).toBe('');
+        expect(root.getAttribute('data-touched')).toBe('');
+
+        control?.markAsPristine();
+        control?.markAsUntouched();
+        fixture.detectChanges();
+
+        expect(root.getAttribute('data-dirty')).toBeNull();
+        expect(root.getAttribute('data-touched')).toBeNull();
+    });
 });
 
 @Component({

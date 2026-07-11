@@ -14,6 +14,7 @@ import {
     signal,
     Signal
 } from '@angular/core';
+import { injectNgControlState, RdxNgControlState } from '../accessor/ng-control-state';
 import { BooleanInput } from '../types';
 import { RdxValidationError } from './form-control';
 
@@ -57,6 +58,8 @@ export interface RdxFormUiStateOptions {
     readonly touched: ModelSignal<boolean>;
     readonly touch: OutputEmitterRef<void>;
     readonly dirty: Signal<boolean>;
+    /** Same-host Reactive/template-driven form interaction state, when one is present. */
+    readonly ngControlState?: RdxNgControlState | null;
     /**
      * The control's `ControlValueAccessor`, if it has one (dual controls — switch, number-field, …).
      * Omit or pass `null` for Signal-Forms-only controls without a CVA (e.g. date-field).
@@ -83,8 +86,12 @@ export function createFormUiState(options: RdxFormUiStateOptions): RdxFormUiStat
     return {
         invalidState: computed(() => options.invalid() || (options.errors()?.length ?? 0) > 0),
         pendingState: computed(() => options.pending?.() ?? false),
-        touchedState: computed(() => options.touched()),
-        dirtyState: computed(() => options.dirty() || dirtyValue()),
+        touchedState: computed(() =>
+            options.ngControlState?.connected() ? options.ngControlState.touched() : options.touched()
+        ),
+        dirtyState: computed(() =>
+            options.ngControlState?.connected() ? options.ngControlState.dirty() : options.dirty() || dirtyValue()
+        ),
         markDirty: () => dirtyValue.set(true),
         markAsTouched: () => {
             options.cva?.markAsTouched();
@@ -249,6 +256,8 @@ export abstract class RdxFormUiControlBase {
     /** Emits when the control is touched, notifying Signal Forms (stable Angular 22 contract). */
     readonly touch = output<void>();
 
+    private readonly ngControlState = injectNgControlState();
+
     /** The shared form-UI state derived from the inputs above. Call `formUi.markDirty()` on value change. */
     readonly formUi: RdxFormUiState = createFormUiState({
         invalid: this.invalid,
@@ -257,19 +266,29 @@ export abstract class RdxFormUiControlBase {
         touched: this.touched,
         touch: this.touch,
         dirty: this.dirty,
+        ngControlState: this.ngControlState,
         cva: this.formUiTouchTarget()
     });
 
     constructor() {
-        // Signal Forms writes `dirty=false` on reset/markAsPristine. Dual controls are bound through
-        // their CVA path (which does not invoke the optional custom-control `reset()` hook), so this
-        // transition is also the reset signal for control-owned dirty tracking. A standalone control's
-        // dirty input stays false and does not re-run this effect after user interaction.
-        effect(() => {
-            if (!this.dirty()) {
-                this.formUi.resetDirtyState?.();
-            }
-        });
+        // Reactive/template-driven forms own their NgControl interaction state. Signal Forms instead
+        // writes the public touched/dirty members, so standalone controls retain the existing fallback.
+        effect(
+            () => {
+                if (this.ngControlState.connected()) {
+                    this.touched.set(this.ngControlState.touched());
+                    if (!this.ngControlState.dirty()) {
+                        this.formUi.resetDirtyState?.();
+                    }
+                    return;
+                }
+
+                if (!this.dirty()) {
+                    this.formUi.resetDirtyState?.();
+                }
+            },
+            { debugName: 'RdxFormUiControlBase.syncInteractionState' }
+        );
     }
 
     /** The enclosing Field's tri-state display validity, if any. `protected` so a control whose own

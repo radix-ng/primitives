@@ -17,6 +17,7 @@ import {
     BooleanInput,
     createCancelableChangeEventDetails,
     createContext,
+    injectNgControlState,
     RDX_FIELD_VALIDITY,
     RdxCancelableChangeEventDetails,
     RdxControlValueAccessor,
@@ -128,6 +129,7 @@ export const [injectCheckboxRootContext, provideCheckboxRootContext] = createCon
 })
 export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
     private readonly controlValueAccessor = inject(RdxControlValueAccessor);
+    private readonly ngControlState = injectNgControlState();
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly renderer = inject(Renderer2);
     private uncheckedInputElement: HTMLInputElement | null = null;
@@ -324,9 +326,13 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
                 : true
     );
     /** @ignore */
-    readonly touchedState = computed(() => this.touched());
+    readonly touchedState = computed(() =>
+        this.ngControlState.connected() ? this.ngControlState.touched() : this.touched()
+    );
     /** @ignore */
-    readonly dirtyState = computed(() => this.dirty() || this.dirtyValue());
+    readonly dirtyState = computed(() =>
+        this.ngControlState.connected() ? this.ngControlState.dirty() : this.dirty() || this.dirtyValue()
+    );
 
     readonly state = computed(() =>
         this.indeterminateState() ? 'indeterminate' : this.checkedState() ? 'checked' : 'unchecked'
@@ -357,13 +363,24 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
             this.syncUncheckedInput();
         });
 
-        // The Signal Forms CVA path does not call the optional custom-control reset hook. Its
-        // `dirty=false` write is therefore the authoritative signal to clear internal tracking.
-        effect(() => {
-            if (!this.dirty()) {
-                this.dirtyValue.set(false);
-            }
-        });
+        // Reactive/template-driven forms own their NgControl interaction state. Signal Forms instead
+        // writes the public touched/dirty members, so standalone controls retain the existing fallback.
+        effect(
+            () => {
+                if (this.ngControlState.connected()) {
+                    this.touched.set(this.ngControlState.touched());
+                    if (!this.ngControlState.dirty()) {
+                        this.dirtyValue.set(false);
+                    }
+                    return;
+                }
+
+                if (!this.dirty()) {
+                    this.dirtyValue.set(false);
+                }
+            },
+            { debugName: 'RdxCheckboxRoot.syncInteractionState' }
+        );
 
         inject(DestroyRef).onDestroy(() => {
             this.removeUncheckedInput();

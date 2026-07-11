@@ -20,15 +20,17 @@
 > surface (`invalid` / `pending` / `errors` / `touched` model + `touch` / `dirty`) now lands on **all 14 form
 > controls** — input, radio, checkbox, switch, number-field, select, toggle-group, checkbox-group,
 > slider, combobox, autocomplete, date-field, time-field, editable — not just the pilot five. The
-> per-control duplication was factored into three reusable pieces in `@radix-ng/primitives/core`
-> (`src/signal-forms/`): **`RdxFormUiControlBase`** (an abstract `@Directive()` that declares the shared
+> per-control duplication was factored into four reusable pieces in `@radix-ng/primitives/core`
+> (`src/signal-forms/` + `src/accessor/`): **`RdxFormUiControlBase`** (an abstract `@Directive()` that declares the shared
 > members once and builds `formUi`; controls `extends` it — inheritance keeps the inputs on the same
-> directive as the `value`/`checked` model, which a host directive could not), **`createFormUiState()`**
+> directive as the `value`/`checked` model, which a host directive could not), **`injectNgControlState()`**
+> (a lazy same-host Reactive/template-driven `NgControl` bridge over `AbstractControl.events`), **`createFormUiState()`**
 > (the derivation + dual `markAsTouched` with an optional CVA bridge), and **`RdxFormUiStateHost`** +
 > `provideFormUiState()` (a host directive for the `data-*` / `aria-invalid` / `focusout` reflection on
 > self/group controls). The stable Angular-22 runtime gate is complete. Every control is runtime-covered
 > for value binding and `FieldState.reset()`; reset restores the visible value and clears both Angular and
-> control-owned touched/dirty state. Select additionally ships a direct `ControlValueAccessor`, with
+> control-owned touched/dirty state. All 11 Reactive/template-driven controls also reflect Angular-owned
+> dirty/touched state, including reset, pristine, and untouched transitions. Select additionally ships a direct `ControlValueAccessor`, with
 > runtime coverage for Reactive Forms, `ngModel`, disabled state, reset, cancellation, and multiple object
 > values. The public Storybook matrix records which controls also retain a CVA.
 > Opt-in Angular-owned submission is specified separately in ADR 0020.

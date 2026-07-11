@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
@@ -100,6 +101,19 @@ class CheckboxDefaultCheckedHost {}
     `
 })
 class CheckboxReadOnlyAliasHost {}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [ReactiveFormsModule, RdxCheckboxRootDirective, RdxCheckboxButtonDirective],
+    template: `
+        <div [formControl]="control" rdxCheckboxRoot>
+            <button rdxCheckboxButton>Terms</button>
+        </div>
+    `
+})
+class CheckboxReactiveFormsHost {
+    readonly control = new FormControl(false, { nonNullable: true });
+}
 
 describe('RdxCheckbox', () => {
     let fixture: ComponentFixture<CheckboxHost>;
@@ -476,6 +490,45 @@ class CheckboxSignalFormHost {
         return this.formTree.terms;
     }
 }
+
+describe('RdxCheckboxRoot with Reactive Forms', () => {
+    it('mirrors dirty, touched, pristine, untouched, and reset state', async () => {
+        TestBed.configureTestingModule({ imports: [CheckboxReactiveFormsHost] });
+        const fixture = TestBed.createComponent(CheckboxReactiveFormsHost);
+        const host = fixture.componentInstance;
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        const root = fixture.debugElement.query(By.css('[rdxCheckboxRoot]')).nativeElement as HTMLElement;
+        const button = fixture.debugElement.query(By.css('[rdxCheckboxButton]')).nativeElement as HTMLButtonElement;
+
+        host.control.markAsDirty();
+        host.control.markAsTouched();
+        fixture.detectChanges();
+        expect(root.getAttribute('data-dirty')).toBe('');
+        expect(button.getAttribute('data-touched')).toBe('');
+
+        host.control.markAsPristine();
+        host.control.markAsUntouched();
+        fixture.detectChanges();
+        expect(root.getAttribute('data-dirty')).toBeNull();
+        expect(button.getAttribute('data-touched')).toBeNull();
+
+        button.click();
+        fixture.detectChanges();
+        expect(host.control.value).toBe(true);
+        expect(root.getAttribute('data-dirty')).toBe('');
+
+        host.control.reset(false);
+        fixture.detectChanges();
+        expect(host.control.pristine).toBe(true);
+        expect(host.control.untouched).toBe(true);
+        expect(button.getAttribute('aria-checked')).toBe('false');
+        expect(root.getAttribute('data-dirty')).toBeNull();
+        expect(root.getAttribute('data-touched')).toBeNull();
+    });
+});
 
 describe('RdxCheckboxRoot with Signal Forms', () => {
     let fixture: ComponentFixture<CheckboxSignalFormHost>;

@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { form, FormField } from '@angular/forms/signals';
+import { By } from '@angular/platform-browser';
 import { RdxValidationError } from '@radix-ng/primitives/core';
 import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxInputDirective, RdxInputValueChangeEvent } from '../src/input.directive';
@@ -83,6 +85,17 @@ class InputSignalFormHost {
     get name() {
         return this.formTree.name;
     }
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [ReactiveFormsModule, RdxInputDirective],
+    template: `
+        <input [formControl]="control" rdxInput />
+    `
+})
+class InputReactiveFormsHost {
+    readonly control = new FormControl('Ada', { nonNullable: true });
 }
 
 describe('Input', () => {
@@ -305,6 +318,55 @@ describe('Input', () => {
             expect(host.model().name).toBe('Ada');
             expect(host.name().dirty()).toBe(false);
             expect(host.name().touched()).toBe(false);
+            expect(input.value).toBe('Ada');
+            expect(input.getAttribute('data-dirty')).toBeNull();
+            expect(input.getAttribute('data-touched')).toBeNull();
+        });
+    });
+
+    describe('with Reactive Forms', () => {
+        it('mirrors dirty, touched, pristine, untouched, and reset state', async () => {
+            TestBed.configureTestingModule({ imports: [InputReactiveFormsHost] });
+            const fixture = TestBed.createComponent(InputReactiveFormsHost);
+            const host = fixture.componentInstance;
+            fixture.detectChanges();
+            await fixture.whenStable();
+            fixture.detectChanges();
+            const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+            const directive = fixture.debugElement
+                .query(By.directive(RdxInputDirective))
+                .injector.get(RdxInputDirective);
+
+            expect(input.value).toBe('Ada');
+            expect(directive.value()).toBe('Ada');
+
+            host.control.setValue('Lin');
+            fixture.detectChanges();
+            expect(input.value).toBe('Lin');
+            expect(directive.value()).toBe('Lin');
+
+            host.control.markAsDirty();
+            host.control.markAsTouched();
+            fixture.detectChanges();
+            expect(input.getAttribute('data-dirty')).toBe('');
+            expect(input.getAttribute('data-touched')).toBe('');
+
+            host.control.markAsPristine();
+            host.control.markAsUntouched();
+            fixture.detectChanges();
+            expect(input.getAttribute('data-dirty')).toBeNull();
+            expect(input.getAttribute('data-touched')).toBeNull();
+
+            input.value = 'Grace';
+            input.dispatchEvent(new Event('input'));
+            input.dispatchEvent(new FocusEvent('blur'));
+            fixture.detectChanges();
+            expect(host.control.value).toBe('Grace');
+            expect(input.getAttribute('data-dirty')).toBe('');
+            expect(input.getAttribute('data-touched')).toBe('');
+
+            host.control.reset('Ada');
+            fixture.detectChanges();
             expect(input.value).toBe('Ada');
             expect(input.getAttribute('data-dirty')).toBeNull();
             expect(input.getAttribute('data-touched')).toBeNull();

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, NgModel, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { _importsSelect } from '../index';
@@ -231,6 +231,24 @@ describe('Select with Reactive Forms', () => {
         expect(trigger.getAttribute('data-dirty')).toBeNull();
         expect(trigger.getAttribute('data-touched')).toBeNull();
     });
+
+    it('mirrors programmatic dirty and touched transitions from the FormControl', async () => {
+        const trigger: HTMLButtonElement = fixture.nativeElement.querySelector('[rdxSelectTrigger]');
+
+        host.control.markAsDirty();
+        host.control.markAsTouched();
+        await settle();
+
+        expect(trigger.getAttribute('data-dirty')).toBe('');
+        expect(trigger.getAttribute('data-touched')).toBe('');
+
+        host.control.markAsPristine();
+        host.control.markAsUntouched();
+        await settle();
+
+        expect(trigger.getAttribute('data-dirty')).toBeNull();
+        expect(trigger.getAttribute('data-touched')).toBeNull();
+    });
 });
 
 describe('Select with template-driven forms', () => {
@@ -260,6 +278,23 @@ describe('Select with template-driven forms', () => {
         fixture.changeDetectorRef.markForCheck();
         await settle();
         expect(selectRoot(fixture).value()).toBe('Banana');
+    });
+
+    it('mirrors dirty and touched transitions from ngModel', async () => {
+        const control = fixture.debugElement.query(By.directive(NgModel)).injector.get(NgModel).control;
+        const trigger: HTMLButtonElement = fixture.nativeElement.querySelector('[rdxSelectTrigger]');
+
+        control.markAsDirty();
+        control.markAsTouched();
+        await settle();
+        expect(trigger.getAttribute('data-dirty')).toBe('');
+        expect(trigger.getAttribute('data-touched')).toBe('');
+
+        control.markAsPristine();
+        control.markAsUntouched();
+        await settle();
+        expect(trigger.getAttribute('data-dirty')).toBeNull();
+        expect(trigger.getAttribute('data-touched')).toBeNull();
     });
 });
 

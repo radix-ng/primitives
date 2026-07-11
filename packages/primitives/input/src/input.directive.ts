@@ -11,7 +11,13 @@ import {
     output,
     signal
 } from '@angular/core';
-import { BooleanInput, NumberInput, RdxFormValueControl, RdxValidationError } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    injectNgControlState,
+    NumberInput,
+    RdxFormValueControl,
+    RdxValidationError
+} from '@radix-ng/primitives/core';
 import { injectFieldRootContext } from '@radix-ng/primitives/field';
 
 let inputId = 0;
@@ -79,6 +85,7 @@ export interface RdxInputValueChangeEvent {
 export class RdxInputDirective implements RdxFormValueControl<RdxInputValue | undefined> {
     private readonly element = inject<ElementRef<HTMLInputElement>>(ElementRef).nativeElement;
     private readonly fieldRootContext = injectFieldRootContext(true);
+    private readonly ngControlState = injectNgControlState();
     private initialValue = '';
     private defaultValueApplied = false;
     private readonly filledValue = signal(false);
@@ -237,9 +244,15 @@ export class RdxInputDirective implements RdxFormValueControl<RdxInputValue | un
     protected readonly focusedState = computed(
         () => this.focusedValue() || Boolean(this.fieldRootContext?.focusedState())
     );
-    protected readonly touchedState = computed(() => this.touched() || Boolean(this.fieldRootContext?.touchedState()));
+    protected readonly touchedState = computed(
+        () =>
+            (this.ngControlState.connected() ? this.ngControlState.touched() : this.touched()) ||
+            Boolean(this.fieldRootContext?.touchedState())
+    );
     protected readonly dirtyState = computed(
-        () => this.dirty() || this.dirtyValue() || Boolean(this.fieldRootContext?.dirtyState())
+        () =>
+            (this.ngControlState.connected() ? this.ngControlState.dirty() : this.dirty() || this.dirtyValue()) ||
+            Boolean(this.fieldRootContext?.dirtyState())
     );
 
     protected readonly patternAttr = computed(() => {
@@ -264,7 +277,7 @@ export class RdxInputDirective implements RdxFormValueControl<RdxInputValue | un
         effect(() => {
             const value = this.value();
 
-            if (value !== undefined) {
+            if (!this.ngControlState.connected() && value !== undefined) {
                 this.writeValue(value);
             }
         });
@@ -282,14 +295,33 @@ export class RdxInputDirective implements RdxFormValueControl<RdxInputValue | un
             this.fieldRootContext?.setControlId(this.id());
         });
 
-        // Signal Forms writes `dirty=false` when resetting the field. The input's own edit tracking
-        // must return to pristine as well; standalone inputs keep their internal state because this
-        // input signal does not change after user edits.
-        effect(() => {
-            if (!this.dirty()) {
-                this.dirtyValue.set(false);
-            }
-        });
+        // Reactive/template-driven forms own their NgControl interaction state. Keep the enclosing
+        // Field in sync too, including programmatic markAsPristine/markAsUntouched transitions.
+        effect(
+            () => {
+                if (this.ngControlState.connected()) {
+                    // Angular's DefaultValueAccessor has already written the latest form-owned value to
+                    // the native element before `AbstractControl.events` emits. Mirror that DOM string
+                    // into the directive model without letting its standalone value effect write back.
+                    this.ngControlState.value();
+                    const touched = this.ngControlState.touched();
+                    const dirty = this.ngControlState.dirty();
+                    this.value.set(this.element.value);
+                    this.touched.set(touched);
+                    this.dirtyValue.set(dirty);
+                    this.fieldRootContext?.setTouched(touched);
+                    this.fieldRootContext?.setDirty(dirty);
+                    return;
+                }
+
+                // Signal Forms writes `dirty=false` when resetting the field. A standalone input's dirty
+                // input stays false and does not re-run this effect after ordinary user edits.
+                if (!this.dirty()) {
+                    this.dirtyValue.set(false);
+                }
+            },
+            { debugName: 'RdxInput.syncInteractionState' }
+        );
 
         afterNextRender(() => {
             this.initialValue = this.element.value;
@@ -355,11 +387,12 @@ export class RdxInputDirective implements RdxFormValueControl<RdxInputValue | un
 
     syncFieldState(): void {
         const value = this.element.value;
+        const dirty = this.ngControlState.connected() ? this.ngControlState.dirty() : value !== this.initialValue;
 
         this.filledValue.set(value !== '');
-        this.dirtyValue.set(value !== this.initialValue);
+        this.dirtyValue.set(dirty);
         this.fieldRootContext?.setFilled(value !== '');
-        this.fieldRootContext?.setDirty(value !== this.initialValue);
+        this.fieldRootContext?.setDirty(dirty);
     }
 
     private writeValue(value: RdxInputValue): void {

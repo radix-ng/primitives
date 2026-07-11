@@ -5,7 +5,6 @@ import {
     effect,
     ElementRef,
     inject,
-    Injector,
     input,
     model,
     output,
@@ -14,7 +13,7 @@ import {
     untracked,
     WritableSignal
 } from '@angular/core';
-import { ControlValueAccessor, NgControl } from '@angular/forms';
+import { ControlValueAccessor } from '@angular/forms';
 import {
     AcceptableValue,
     createCancelableChangeEventDetails,
@@ -183,7 +182,6 @@ export class RdxSelectRoot
     extends RdxFormUiControlBase
     implements ControlValueAccessor, RdxFormValueControl<AcceptableValue | AcceptableValue[] | undefined>
 {
-    private readonly injector = inject(Injector);
     readonly contentId = injectId('rdx-select-content-');
 
     readonly open = model<boolean>(false);
@@ -412,7 +410,6 @@ export class RdxSelectRoot
     /** @ignore Write a form-owned value without emitting a user change. */
     writeValue(value: AcceptableValue | AcceptableValue[] | undefined): void {
         untracked(() => this.value.set(value));
-        this.syncNgControlInteractionState();
     }
 
     /** @ignore Register the Reactive Forms / ngModel value callback. */
@@ -432,21 +429,4 @@ export class RdxSelectRoot
 
     private onChange?: (value: AcceptableValue | AcceptableValue[] | undefined) => void;
     private onTouched?: () => void;
-
-    /**
-     * Angular calls `writeValue` for both ordinary programmatic writes and reset. Wait until the
-     * co-located `NgControl` has applied its new flags, then mirror only pristine / untouched
-     * transitions into the control-owned UI state. Dirty or touched programmatic writes are preserved.
-     */
-    private syncNgControlInteractionState(): void {
-        queueMicrotask(() => {
-            const control = this.injector.get(NgControl, null, { self: true, optional: true })?.control;
-            if (control?.pristine) {
-                this.formUi.resetDirtyState?.();
-            }
-            if (control?.untouched) {
-                this.touched.set(false);
-            }
-        });
-    }
 }

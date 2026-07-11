@@ -74,10 +74,13 @@ through the internal state seams as neutral validity (neither `data-valid` nor
 
 All 14 controls are runtime-covered for `FieldState.reset(value)`: the model and
 visible control value are restored, Angular touched/dirty return to false, and
-control-owned interaction tracking is cleared. Dual controls receive reset
-through Angular's CVA path plus the form-owned `dirty=false` write; Signal-only
-controls also expose the optional custom-control `reset()` hook. The public
-support matrix lives in `packages/primitives/signal-forms/stories/signal-forms.docs.mdx`.
+control-owned interaction tracking is cleared. The 11 controls with Reactive /
+template-driven support additionally mirror the same-host `NgControl` through
+`AbstractControl.events`: dirty/touched changes are authoritative, including
+default `reset()`, `markAsPristine()`, and `markAsUntouched()` transitions.
+Signal-only controls expose the optional custom-control `reset()` hook. The
+public support matrix lives in
+`packages/primitives/signal-forms/stories/signal-forms.docs.mdx`.
 
 ## Conformance matrix
 
@@ -259,7 +262,7 @@ secondary surface (`name` / `required` / `readonly` / `min`/`max` where a contro
 
 ### Shared batch-#4 mechanisms (`@radix-ng/primitives/core`)
 
-Three reusable pieces remove the per-control duplication. **On the base `@Directive()`, June 2026:**
+Four reusable pieces remove the per-control duplication. **On the base `@Directive()`, June 2026:**
 **select, switch, radio, number-field, toggle-group, checkbox-group, slider, combobox, autocomplete,
 date-field, time-field, editable** all `extends RdxFormUiControlBase` (compodoc resolves the inherited
 inputs, so ArgTypes/api-contract are intact). slider extends the base but skips the `implements` check
@@ -275,7 +278,11 @@ inputs, so ArgTypes/api-contract are intact). slider extends the base but skips 
   Limitation: one `extends` slot — fine for the form roots (most extend nothing); toggle-group already
   had a base, so it is a 3-level chain (`RdxToggleGroup → RdxToggleGroupBase → RdxFormUiControlBase`),
   which works.
-- **`createFormUiState({ invalid, pending, errors, touched, touch, dirty, cva? })`** → `{ invalidState,
+- **`injectNgControlState()`** — lazily discovers a same-host Reactive/template-driven `NgControl`
+  after value-accessor construction, then mirrors value/dirty/touched through Angular's unified
+  `AbstractControl.events` stream. Signal Forms' DI-compatible `FormField` is deliberately ignored
+  because it owns state through signals and has no events stream.
+- **`createFormUiState({ invalid, pending, errors, touched, touch, dirty, ngControlState?, cva? })`** → `{ invalidState,
 pendingState, touchedState, dirtyState, markAsTouched, markDirty }`. The derivation + dual `markAsTouched` engine
   the base calls (also usable directly by a control that cannot extend the base). Compound controls
   also get `RdxFormUiStateContext` + `formUiStateContext()` to spread the five state fields into their
@@ -288,8 +295,8 @@ pendingState, touchedState, dirtyState, markAsTouched, markDirty }`. The derivat
   blur, radio's `relatedTarget` guard). **Not** for compound controls that reflect on a child part via
   context (select → trigger). `providers`/`hostDirectives` are not inherited, so for the
   inheritance-based toggle-group both concrete subclasses wire it.
-- 🔴 none of the structural blockers remain — what's left is the homogeneous
-  `invalid/errors/touched/dirty` batch (collisions #4) across the 🟡 controls.
+- 🟢 No structural blockers remain. Remaining conformance work is the optional secondary surface
+  (`name` / `required` / `readonly` / `min` / `max`) where individual controls still lack it.
 
 ## Open question — ANSWERED by the runtime spike (2026-06-11, vs 21.2.9)
 
