@@ -5,6 +5,10 @@
 > **build** the optional `[rdxSignalField]` + `[rdxSignalForm]` adapter pair while **keeping** this ADR's
 > form-agnostic-core principle and dual CVA + Signal Forms controls. (The full-transition alternative —
 > ADR 0019 — was explored and rejected; see its banner.) Only the "defer" stance here is closed.
+>
+> **Reactive/template-driven follow-up (2026-07-11):** [ADR 0021](0021-ng-control-field-adapter.md)
+> ships the explicit same-host `rdxNgControlField` adapter. The manual Reactive Forms example below is
+> retained as historical context, not current recommended usage.
 
 - Status: Superseded by ADR 0018
 - Date: 2026-06-03

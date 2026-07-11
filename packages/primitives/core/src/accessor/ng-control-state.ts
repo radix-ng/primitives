@@ -11,6 +11,7 @@ import type { RdxValidationError } from '../signal-forms/form-control';
  */
 export interface RdxNgControlState {
     readonly connected: Signal<boolean>;
+    readonly name: Signal<string | undefined>;
     readonly value: Signal<unknown>;
     readonly valid: Signal<boolean>;
     readonly invalid: Signal<boolean>;
@@ -51,6 +52,7 @@ export function injectNgControlState(): RdxNgControlState {
     const injector = inject(Injector);
     const destroyRef = inject(DestroyRef);
     const connected = signal(false, { debugName: 'RdxNgControlState.connected' });
+    const name = signal<string | undefined>(undefined, { debugName: 'RdxNgControlState.name' });
     const value = signal<unknown>(undefined, { debugName: 'RdxNgControlState.value' });
     const valid = signal(false, { debugName: 'RdxNgControlState.valid' });
     const invalid = signal(false, { debugName: 'RdxNgControlState.invalid' });
@@ -70,7 +72,8 @@ export function injectNgControlState(): RdxNgControlState {
             return;
         }
 
-        const control = injector.get(NgControl, null, { self: true, optional: true })?.control;
+        const ngControl = injector.get(NgControl, null, { self: true, optional: true });
+        const control = ngControl?.control;
         // Signal Forms' `FormField` is also discoverable through Angular's forms DI integration, but
         // it is not an `AbstractControl` and owns state through signals instead of `control.events`.
         if (!control || typeof control.events?.subscribe !== 'function') {
@@ -78,6 +81,7 @@ export function injectNgControlState(): RdxNgControlState {
         }
 
         const sync = () => {
+            name.set(ngControl.name == null ? undefined : String(ngControl.name));
             value.set(control.value);
             valid.set(control.valid);
             invalid.set(control.invalid);
@@ -105,6 +109,7 @@ export function injectNgControlState(): RdxNgControlState {
 
     return {
         connected: connected.asReadonly(),
+        name: name.asReadonly(),
         value: value.asReadonly(),
         valid: valid.asReadonly(),
         invalid: invalid.asReadonly(),

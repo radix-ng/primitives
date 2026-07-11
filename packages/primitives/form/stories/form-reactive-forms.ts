@@ -1,41 +1,108 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
-import { RdxFormRoot } from '../index';
-import { formError, formField, formInput, formLabel, formSubmit } from './form.shared';
+import { AsyncValidatorFn, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+    RdxFieldControl,
+    RdxFieldDescription,
+    RdxFieldError,
+    RdxFieldLabel,
+    RdxFieldRoot,
+    RdxNgControlField
+} from '@radix-ng/primitives/field';
+import { RdxFieldsetLegend, RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
+import { RdxFormErrors, RdxFormRoot } from '../index';
+import { formError, formField, formInput, formLabel, formReset, formSubmit } from './form.shared';
 
 /**
- * Reactive Forms owns validity; `RdxFormRoot` adds the aggregate `data-*` attributes and submit/reset
- * handling on the same `<form>`. Use `(ngSubmit)` as the source of truth here — `RdxFormRoot` never
- * stops propagation, so both fire — and map each `FormControl`'s validity into the Field's `invalid`.
+ * Complete Reactive Forms lifecycle: NgControl → Field state, async validation, server errors that
+ * clear on edit, submit reveal/focus, and Angular-owned reset.
  */
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'form-reactive-forms-example',
-    imports: [ReactiveFormsModule, RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldError],
+    imports: [
+        ReactiveFormsModule,
+        RdxFormRoot,
+        RdxFieldsetRoot,
+        RdxFieldsetLegend,
+        RdxFieldRoot,
+        RdxFieldLabel,
+        RdxFieldControl,
+        RdxFieldDescription,
+        RdxFieldError,
+        RdxNgControlField
+    ],
     template: `
-        <form class="flex w-80 flex-col gap-4" [formGroup]="form" (ngSubmit)="submit()" rdxFormRoot>
-            <div
-                [class]="field"
-                [invalid]="email.invalid && (email.touched || submitted())"
-                [touched]="email.touched"
-                [dirty]="email.dirty"
-                name="email"
-                rdxFieldRoot
-                required
-            >
-                <label [class]="label" rdxFieldLabel>Email</label>
-                <input [class]="input" type="email" formControlName="email" rdxFieldControl />
-                <p [class]="error" rdxFieldError>
-                    @if (email.hasError('required')) {
-                        Email is required.
-                    } @else {
-                        Enter a valid email address.
+        <form
+            class="flex w-96 flex-col gap-4"
+            [formGroup]="form"
+            [errors]="serverErrors()"
+            (onClearErrors)="clearServerErrors($event)"
+            (ngSubmit)="submit()"
+            (reset)="successMessage.set('')"
+            rdxFormRoot
+        >
+            <fieldset class="border-border space-y-4 rounded-md border p-4" rdxFieldsetRoot>
+                <legend class="text-foreground px-1 text-sm font-semibold" rdxFieldsetLegend>Account</legend>
+
+                <div [class]="field" rdxFieldRoot required>
+                    <label [class]="label" rdxFieldLabel>Username</label>
+                    <input
+                        [class]="input"
+                        autocomplete="username"
+                        formControlName="username"
+                        rdxFieldControl
+                        rdxNgControlField
+                    />
+                    <p class="text-muted-foreground text-sm" rdxFieldDescription>
+                        Use
+                        <code>admin</code>
+                        to preview asynchronous validation.
+                    </p>
+                    @if (username.pending) {
+                        <p class="text-muted-foreground text-sm" role="status">Checking availability…</p>
                     }
-                </p>
+                    <p [class]="error" match="required" rdxFieldError>Username is required.</p>
+                    <p [class]="error" match="minlength" rdxFieldError>Use at least 3 characters.</p>
+                    <p #usernameError="rdxFieldError" [class]="error" match="unavailable" rdxFieldError>
+                        {{ usernameError.messages().join(' ') }}
+                    </p>
+                </div>
+
+                <div [class]="field" rdxFieldRoot required>
+                    <label [class]="label" rdxFieldLabel>Email</label>
+                    <input
+                        [class]="input"
+                        autocomplete="email"
+                        type="email"
+                        formControlName="email"
+                        rdxFieldControl
+                        rdxNgControlField
+                    />
+                    <p class="text-muted-foreground text-sm" rdxFieldDescription>
+                        Use
+                        <code>taken@example.com</code>
+                        to preview a server error.
+                    </p>
+                    <p #emailError="rdxFieldError" [class]="error" rdxFieldError>
+                        @if (email.hasError('required')) {
+                            Email is required.
+                        } @else if (email.hasError('email')) {
+                            Enter a valid email address.
+                        } @else {
+                            {{ emailError.messages().join(' ') }}
+                        }
+                    </p>
+                </div>
+            </fieldset>
+
+            <div class="flex gap-2">
+                <button [class]="submitButton" type="submit">Submit</button>
+                <button [class]="resetButton" type="reset">Reset</button>
             </div>
 
-            <button [class]="submitButton" type="submit">Submit</button>
+            @if (successMessage()) {
+                <p class="text-foreground text-sm" role="status">{{ successMessage() }}</p>
+            }
         </form>
     `
 })
@@ -45,20 +112,53 @@ export class FormReactiveFormsExample {
     protected readonly input = formInput;
     protected readonly error = formError;
     protected readonly submitButton = formSubmit;
+    protected readonly resetButton = formReset;
 
     private readonly formBuilder = inject(FormBuilder);
+    private readonly usernameAvailability: AsyncValidatorFn = async (control) => {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        return String(control.value).trim().toLowerCase() === 'admin'
+            ? { unavailable: { message: 'That username is unavailable.' } }
+            : null;
+    };
 
-    readonly submitted = signal(false);
-    readonly form = this.formBuilder.group({
-        email: this.formBuilder.control('', [Validators.required, Validators.email])
+    readonly serverErrors = signal<RdxFormErrors>({});
+    readonly successMessage = signal('');
+    readonly form = this.formBuilder.nonNullable.group({
+        username: this.formBuilder.nonNullable.control('', {
+            validators: [Validators.required, Validators.minLength(3)],
+            asyncValidators: [this.usernameAvailability]
+        }),
+        email: this.formBuilder.nonNullable.control('', [Validators.required, Validators.email])
     });
 
-    get email() {
+    protected get username() {
+        return this.form.controls.username;
+    }
+
+    protected get email() {
         return this.form.controls.email;
     }
 
-    submit(): void {
-        this.submitted.set(true);
-        this.form.markAllAsTouched();
+    protected clearServerErrors(errors: RdxFormErrors): void {
+        this.serverErrors.set(errors);
+        this.successMessage.set('');
+    }
+
+    protected submit(): void {
+        if (this.form.pending || this.form.invalid) {
+            this.form.markAllAsTouched();
+            this.successMessage.set('');
+            return;
+        }
+
+        if (this.email.value === 'taken@example.com') {
+            this.serverErrors.set({ email: 'That email already has an account.' });
+            this.successMessage.set('');
+            return;
+        }
+
+        this.serverErrors.set({});
+        this.successMessage.set(`Submitted ${this.username.value}.`);
     }
 }

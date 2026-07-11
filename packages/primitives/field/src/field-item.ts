@@ -20,10 +20,11 @@ const fieldItemContext = (): RdxFieldRootContext => {
 
     return {
         controlId: item.controlId,
-        name: root.name,
+        name: root.effectiveName,
         descriptionIds: item.descriptionIds,
         errorIds: root.errorIds,
         messages: root.messages,
+        matchesError: (kind: string) => root.matchesError(kind),
         notifyEdited: () => root.notifyEdited(),
         validState: root.validState,
         formSubmitAttempted: root.formSubmitAttempted,

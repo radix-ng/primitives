@@ -13,8 +13,8 @@ import * as FieldStories from './field.stories';
 
 #### Groups a control with accessible label, description, error message, and field state.
 
-Field is form-agnostic. It does not replace Angular Forms; pass validation state from Reactive
-Forms, template-driven forms, or Signal Forms when using them.
+Field is form-agnostic. It does not replace Angular Forms; pass custom state through root inputs or use
+the small `rdxNgControlField` / `rdxSignalField` adapters.
 
 <Canvas sourceState="hidden" of={FieldStories.Default} />
 
@@ -24,6 +24,8 @@ Forms, template-driven forms, or Signal Forms when using them.
 - ✅ Wires descriptions and errors with `aria-describedby`.
 - ✅ Exposes state via `data-invalid`, `data-disabled`, `data-required`, `data-dirty`, `data-touched`, `data-filled`, and `data-focused`.
 - ✅ Works with native controls and custom controls.
+- ✅ Bridges Reactive Forms and `ngModel` without repeated state bindings.
+- ✅ Matches individual validation errors by Angular error key.
 - ✅ Leaves validation and form submission to Angular Forms.
 
 ## Import
@@ -34,7 +36,8 @@ import {
     RdxFieldLabel,
     RdxFieldControl,
     RdxFieldDescription,
-    RdxFieldError
+    RdxFieldError,
+    RdxNgControlField
 } from '@radix-ng/primitives/field';
 ```
 
@@ -84,8 +87,18 @@ Pass invalid, dirty, and touched state from your form model.
 
 ### Reactive Forms
 
-Angular Forms remains responsible for validation. Field reflects the resulting state and ARIA
-relationships.
+Place `rdxNgControlField` next to `formControl`, `formControlName`, or `ngModel`. Angular Forms remains
+responsible for validation; the adapter reports actual state while Field's `validationMode` controls when
+it becomes visible. Use `rdxFieldError[match]` for a specific Angular error key.
+
+```html
+<div rdxFieldRoot required>
+    <label rdxFieldLabel>Email</label>
+    <input formControlName="email" rdxFieldControl rdxNgControlField />
+    <p match="required" rdxFieldError>Email is required.</p>
+    <p match="email" rdxFieldError>Enter a valid email address.</p>
+</div>
+```
 
 <Canvas of={FieldStories.ReactiveForms} />
 

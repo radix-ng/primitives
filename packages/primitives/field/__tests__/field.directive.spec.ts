@@ -22,7 +22,7 @@ import { RdxFieldRoot } from '../src/field-root';
             <label rdxFieldLabel>Email</label>
             <input id="email" rdxFieldControl />
             <p id="email-description" rdxFieldDescription>Enter your work email.</p>
-            <p id="email-error" rdxFieldError>Email is required.</p>
+            <p id="email-error" [match]="match" rdxFieldError>Email is required.</p>
         </div>
     `,
     imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError]
@@ -33,6 +33,7 @@ class TestHostComponent {
     required = false;
     dirty = false;
     touched = false;
+    match: boolean | string | undefined;
 }
 
 describe('Field', () => {
@@ -75,6 +76,16 @@ describe('Field', () => {
         expect(input.getAttribute('aria-invalid')).toBe('true');
         expect(input.getAttribute('aria-describedby')).toBe('email-description email-error');
         expect(error.hasAttribute('hidden')).toBe(false);
+    });
+
+    it('lets match=true keep an externally controlled message visible and described', () => {
+        fixture.componentInstance.match = true;
+        fixture.changeDetectorRef.markForCheck();
+        fixture.detectChanges();
+
+        expect(root.hasAttribute('data-invalid')).toBe(false);
+        expect(error.hasAttribute('hidden')).toBe(false);
+        expect(input.getAttribute('aria-describedby')).toBe('email-description email-error');
     });
 
     it('reflects required, disabled, dirty, and touched states', () => {

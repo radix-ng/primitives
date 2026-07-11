@@ -796,7 +796,7 @@ has opened.
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
-import { RdxFieldDescription, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
+import { RdxFieldDescription, RdxFieldLabel, RdxFieldRoot, RdxNgControlField } from '@radix-ng/primitives/field';
 import { cn, demoButton, demoFocusRing } from '../../storybook/styles';
 import {
     RdxSelectItem,
@@ -821,6 +821,7 @@ import {
         RdxFieldRoot,
         RdxFieldLabel,
         RdxFieldDescription,
+        RdxNgControlField,
         RdxSelectRoot,
         RdxSelectTrigger,
         RdxSelectValue,
@@ -837,7 +838,7 @@ import {
             <div class="flex flex-col gap-1.5" rdxFieldRoot>
                 <label class="text-foreground text-sm font-medium" rdxFieldLabel>Fruit</label>
 
-                <div [formControl]="fruit" rdxSelectRoot>
+                <div [formControl]="fruit" rdxSelectRoot rdxNgControlField>
                     <button [class]="triggerClass" rdxSelectTrigger>
                         <span #selectedValue="rdxSelectedValue" rdxSelectValue placeholder="Select a fruit…">
                             {{ selectedValue.slotText() }}
@@ -929,7 +930,7 @@ submission, touched/dirty state, and `NgForm.resetForm()` while keeping the same
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
-import { RdxFieldDescription, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
+import { RdxFieldDescription, RdxFieldLabel, RdxFieldRoot, RdxNgControlField } from '@radix-ng/primitives/field';
 import { cn, demoButton, demoFocusRing } from '../../storybook/styles';
 import {
     RdxSelectItem,
@@ -954,6 +955,7 @@ import {
         RdxFieldRoot,
         RdxFieldLabel,
         RdxFieldDescription,
+        RdxNgControlField,
         RdxSelectRoot,
         RdxSelectTrigger,
         RdxSelectValue,
@@ -970,7 +972,7 @@ import {
             <div class="flex flex-col gap-1.5" rdxFieldRoot>
                 <label class="text-foreground text-sm font-medium" rdxFieldLabel>Fruit</label>
 
-                <div #fruitModel="ngModel" [(ngModel)]="fruit" name="fruit" rdxSelectRoot>
+                <div #fruitModel="ngModel" [(ngModel)]="fruit" name="fruit" rdxSelectRoot rdxNgControlField>
                     <button [class]="triggerClass" rdxSelectTrigger>
                         <span #selectedValue="rdxSelectedValue" rdxSelectValue placeholder="Select a fruit…">
                             {{ selectedValue.slotText() }}

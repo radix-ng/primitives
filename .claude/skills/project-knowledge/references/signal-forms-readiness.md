@@ -67,6 +67,13 @@ entry now ships both adapters:
   `submit()` lifecycle. Without it, the existing Base UI-style
   `(onFormSubmit)` path is unchanged.
 
+The stable Reactive/template-driven path now has the parallel explicit
+`rdxNgControlField` adapter in `@radix-ng/primitives/field`. It sits beside
+`formControl`, `formControlName`, or `ngModel`, registers the already-shared
+`NgControl` state/errors through `RdxFieldState`, and infers a Form server-error
+key from `NgControl.name` when the Field has no explicit name. It owns no value
+or validation and leaves `validationMode` gating to Field (ADR 0021).
+
 All controls expose Angular's optional `pending` input. Pending is carried
 through the internal state seams as neutral validity (neither `data-valid` nor
 `data-invalid`); applications render progress directly from Angular's
@@ -281,7 +288,7 @@ inputs, so ArgTypes/api-contract are intact). slider extends the base but skips 
   had a base, so it is a 3-level chain (`RdxToggleGroup → RdxToggleGroupBase → RdxFormUiControlBase`),
   which works.
 - **`injectNgControlState()`** — lazily discovers a same-host Reactive/template-driven `NgControl`
-  after value-accessor construction, then mirrors value, dirty/touched, valid/invalid/pending/disabled,
+  after value-accessor construction, then mirrors name, value, dirty/touched, valid/invalid/pending/disabled,
   and normalized errors through Angular's unified `AbstractControl.events` stream. Signal Forms'
   DI-compatible `FormField` is deliberately ignored because it owns state through signals and has no
   events stream.

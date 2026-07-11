@@ -117,10 +117,7 @@ export class RdxAutocompleteInput {
         if (!this.fieldRootContext) {
             return undefined;
         }
-        const ids = [
-            ...this.fieldRootContext.descriptionIds(),
-            ...(this.fieldRootContext.invalidState() ? this.fieldRootContext.errorIds() : [])
-        ];
+        const ids = [...this.fieldRootContext.descriptionIds(), ...this.fieldRootContext.errorIds()];
         return ids.length ? ids.join(' ') : undefined;
     });
 

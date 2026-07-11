@@ -11032,8 +11032,8 @@ call `edit` / `submit` / `cancel`. Each accepts `aria-label` (defaults to `"edit
 
 #### Groups a control with accessible label, description, error message, and field state.
 
-Field is form-agnostic. It does not replace Angular Forms; pass validation state from Reactive
-Forms, template-driven forms, or Signal Forms when using them.
+Field is form-agnostic. It does not replace Angular Forms; pass custom state through root inputs or use
+the small `rdxNgControlField` / `rdxSignalField` adapters.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
@@ -11072,6 +11072,8 @@ export class FieldDefaultExample {
 - ✅ Wires descriptions and errors with `aria-describedby`.
 - ✅ Exposes state via `data-invalid`, `data-disabled`, `data-required`, `data-dirty`, `data-touched`, `data-filled`, and `data-focused`.
 - ✅ Works with native controls and custom controls.
+- ✅ Bridges Reactive Forms and `ngModel` without repeated state bindings.
+- ✅ Matches individual validation errors by Angular error key.
 - ✅ Leaves validation and form submission to Angular Forms.
 
 ## Import
@@ -11082,7 +11084,8 @@ import {
     RdxFieldLabel,
     RdxFieldControl,
     RdxFieldDescription,
-    RdxFieldError
+    RdxFieldError,
+    RdxNgControlField
 } from '@radix-ng/primitives/field';
 ```
 
@@ -11195,44 +11198,50 @@ export class FieldInvalidExample {
 
 ### Reactive Forms
 
-Angular Forms remains responsible for validation. Field reflects the resulting state and ARIA
-relationships.
+Place `rdxNgControlField` next to `formControl`, `formControlName`, or `ngModel`. Angular Forms remains
+responsible for validation; the adapter reports actual state while Field's `validationMode` controls when
+it becomes visible. Use `rdxFieldError[match]` for a specific Angular error key.
+
+```html
+<div rdxFieldRoot required>
+    <label rdxFieldLabel>Email</label>
+    <input formControlName="email" rdxFieldControl rdxNgControlField />
+    <p match="required" rdxFieldError>Email is required.</p>
+    <p match="email" rdxFieldError>Enter a valid email address.</p>
+</div>
+```
 
 ```typescript
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RdxFieldControl } from '../src/field-control';
 import { RdxFieldDescription } from '../src/field-description';
 import { RdxFieldError } from '../src/field-error';
 import { RdxFieldLabel } from '../src/field-label';
 import { RdxFieldRoot } from '../src/field-root';
+import { RdxNgControlField } from '../src/ng-control-field';
 import { fieldDescription, fieldError, fieldInputInvalid, fieldLabel, fieldSubmitButton } from './field.shared';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'field-reactive-forms-example',
-    imports: [ReactiveFormsModule, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
+    imports: [
+        ReactiveFormsModule,
+        RdxFieldRoot,
+        RdxFieldLabel,
+        RdxFieldControl,
+        RdxFieldDescription,
+        RdxFieldError,
+        RdxNgControlField
+    ],
     template: `
         <form class="flex w-80 flex-col gap-3" [formGroup]="form" (ngSubmit)="submit()">
-            <div
-                class="flex flex-col gap-2"
-                [invalid]="email.invalid && (email.touched || submitted())"
-                [dirty]="email.dirty"
-                [touched]="email.touched"
-                [disabled]="email.disabled"
-                rdxFieldRoot
-                required
-            >
+            <div class="flex flex-col gap-2" rdxFieldRoot required>
                 <label [class]="labelClass" rdxFieldLabel>Email</label>
-                <input [class]="inputClass" rdxFieldControl type="email" formControlName="email" />
+                <input [class]="inputClass" rdxFieldControl rdxNgControlField type="email" formControlName="email" />
                 <p [class]="descriptionClass" rdxFieldDescription>Use the email connected to your account.</p>
-                <p [class]="errorClass" rdxFieldError>
-                    @if (email.hasError('required')) {
-                        Email is required.
-                    } @else {
-                        Enter a valid email address.
-                    }
-                </p>
+                <p [class]="errorClass" match="required" rdxFieldError>Email is required.</p>
+                <p [class]="errorClass" match="email" rdxFieldError>Enter a valid email address.</p>
             </div>
 
             <button [class]="buttonClass" type="submit">Submit</button>
@@ -11248,7 +11257,6 @@ export class FieldReactiveFormsExample {
 
     private readonly formBuilder = inject(FormBuilder);
 
-    readonly submitted = signal(false);
     readonly form = this.formBuilder.group({
         email: this.formBuilder.control('', [Validators.required, Validators.email])
     });
@@ -11258,7 +11266,6 @@ export class FieldReactiveFormsExample {
     }
 
     submit(): void {
-        this.submitted.set(true);
         this.form.markAllAsTouched();
     }
 }
@@ -11402,7 +11409,13 @@ A larger form groups account details and submits values from fields inside the f
 ```typescript
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
+import {
+    RdxFieldDescription,
+    RdxFieldError,
+    RdxFieldLabel,
+    RdxFieldRoot,
+    RdxNgControlField
+} from '@radix-ng/primitives/field';
 import { RdxFieldsetLegend, RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
 import { RdxInputDirective } from '@radix-ng/primitives/input';
 import { cn, demoButton, demoInput } from '../../storybook/styles';
@@ -11418,6 +11431,7 @@ import { cn, demoButton, demoInput } from '../../storybook/styles';
         RdxFieldLabel,
         RdxFieldDescription,
         RdxFieldError,
+        RdxNgControlField,
         RdxInputDirective
     ],
     template: `
@@ -11427,16 +11441,29 @@ import { cn, demoButton, demoInput } from '../../storybook/styles';
                     Account details
                 </legend>
 
-                <div class="space-y-2" [invalid]="isInvalid('firstName')" [disabled]="submitting" rdxFieldRoot required>
+                <div class="space-y-2" rdxFieldRoot required>
                     <label class="text-foreground text-sm font-medium" rdxFieldLabel>First name</label>
-                    <input [class]="inputClass" rdxInput autocomplete="given-name" formControlName="firstName" />
+                    <input
+                        [class]="inputClass"
+                        rdxInput
+                        rdxNgControlField
+                        autocomplete="given-name"
+                        formControlName="firstName"
+                    />
                     <p class="text-muted-foreground text-sm" rdxFieldDescription>Used in your workspace profile.</p>
                     <p class="text-destructive text-sm" rdxFieldError>First name is required.</p>
                 </div>
 
-                <div class="space-y-2" [invalid]="isInvalid('email')" [disabled]="submitting" rdxFieldRoot required>
+                <div class="space-y-2" rdxFieldRoot required>
                     <label class="text-foreground text-sm font-medium" rdxFieldLabel>Email</label>
-                    <input [class]="inputClass" rdxInput autocomplete="email" formControlName="email" type="email" />
+                    <input
+                        [class]="inputClass"
+                        rdxInput
+                        rdxNgControlField
+                        autocomplete="email"
+                        formControlName="email"
+                        type="email"
+                    />
                     <p class="text-muted-foreground text-sm" rdxFieldDescription>
                         We'll send the invite confirmation here.
                     </p>
@@ -11485,11 +11512,6 @@ export class FieldsetSignupFormExample {
         updates: [true]
     });
 
-    protected isInvalid(controlName: 'firstName' | 'email'): boolean {
-        const control = this.form.controls[controlName];
-        return control.invalid && (control.touched || control.dirty);
-    }
-
     protected submit(): void {
         if (this.form.invalid) {
             this.form.markAllAsTouched();
@@ -11498,6 +11520,7 @@ export class FieldsetSignupFormExample {
 
         this.submitting = true;
         this.submittedEmail = this.form.controls.email.value;
+        this.form.disable();
     }
 }
 ```
@@ -11599,6 +11622,7 @@ export class FormDefaultExample {
 - ✅ Handles native `reset`: clears errors and re-syncs each field's touched/dirty/focused/filled state.
 - ✅ Aggregate state via `data-invalid`, `data-dirty`, `data-touched`, and `data-submitting`.
 - ✅ Form-system-agnostic: works with plain native controls, Reactive Forms (`(ngSubmit)` still fires), and template-driven forms.
+- ✅ `rdxNgControlField` connects Reactive / template-driven controls to registered Fields without manual validity bindings.
 - ✅ Signal Forms integration: an `RdxFormState` provider seam lets `[rdxSignalForm]` own the form's aggregate validity / dirty / touched / submitting and route per-field **client** errors by `name` (gated by `validationMode`). The `errors` input stays a separate eager **server** channel.
 
 ## Import
@@ -11768,48 +11792,116 @@ export class FormResetExample {
 
 ### Reactive Forms
 
-Reactive Forms owns validity; Form adds the aggregate attributes and submit handling on the same
-`<form>`. `(ngSubmit)` is the source of truth — Form never stops propagation.
+The complete recipe composes Form → Fieldset → Field → Control with `rdxNgControlField`, async
+validation, error-key matching, server errors that clear on edit, submit reveal/focus, and reset.
+Reactive Forms remains the value/validation source of truth; Form never stops `(ngSubmit)` propagation.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
-import { RdxFormRoot } from '../index';
-import { formError, formField, formInput, formLabel, formSubmit } from './form.shared';
+import { AsyncValidatorFn, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+    RdxFieldControl,
+    RdxFieldDescription,
+    RdxFieldError,
+    RdxFieldLabel,
+    RdxFieldRoot,
+    RdxNgControlField
+} from '@radix-ng/primitives/field';
+import { RdxFieldsetLegend, RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
+import { RdxFormErrors, RdxFormRoot } from '../index';
+import { formError, formField, formInput, formLabel, formReset, formSubmit } from './form.shared';
 
 /**
- * Reactive Forms owns validity; `RdxFormRoot` adds the aggregate `data-*` attributes and submit/reset
- * handling on the same `<form>`. Use `(ngSubmit)` as the source of truth here — `RdxFormRoot` never
- * stops propagation, so both fire — and map each `FormControl`'s validity into the Field's `invalid`.
+ * Complete Reactive Forms lifecycle: NgControl → Field state, async validation, server errors that
+ * clear on edit, submit reveal/focus, and Angular-owned reset.
  */
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'form-reactive-forms-example',
-    imports: [ReactiveFormsModule, RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldError],
+    imports: [
+        ReactiveFormsModule,
+        RdxFormRoot,
+        RdxFieldsetRoot,
+        RdxFieldsetLegend,
+        RdxFieldRoot,
+        RdxFieldLabel,
+        RdxFieldControl,
+        RdxFieldDescription,
+        RdxFieldError,
+        RdxNgControlField
+    ],
     template: `
-        <form class="flex w-80 flex-col gap-4" [formGroup]="form" (ngSubmit)="submit()" rdxFormRoot>
-            <div
-                [class]="field"
-                [invalid]="email.invalid && (email.touched || submitted())"
-                [touched]="email.touched"
-                [dirty]="email.dirty"
-                name="email"
-                rdxFieldRoot
-                required
-            >
-                <label [class]="label" rdxFieldLabel>Email</label>
-                <input [class]="input" type="email" formControlName="email" rdxFieldControl />
-                <p [class]="error" rdxFieldError>
-                    @if (email.hasError('required')) {
-                        Email is required.
-                    } @else {
-                        Enter a valid email address.
+        <form
+            class="flex w-96 flex-col gap-4"
+            [formGroup]="form"
+            [errors]="serverErrors()"
+            (onClearErrors)="clearServerErrors($event)"
+            (ngSubmit)="submit()"
+            (reset)="successMessage.set('')"
+            rdxFormRoot
+        >
+            <fieldset class="border-border space-y-4 rounded-md border p-4" rdxFieldsetRoot>
+                <legend class="text-foreground px-1 text-sm font-semibold" rdxFieldsetLegend>Account</legend>
+
+                <div [class]="field" rdxFieldRoot required>
+                    <label [class]="label" rdxFieldLabel>Username</label>
+                    <input
+                        [class]="input"
+                        autocomplete="username"
+                        formControlName="username"
+                        rdxFieldControl
+                        rdxNgControlField
+                    />
+                    <p class="text-muted-foreground text-sm" rdxFieldDescription>
+                        Use
+                        <code>admin</code>
+                        to preview asynchronous validation.
+                    </p>
+                    @if (username.pending) {
+                        <p class="text-muted-foreground text-sm" role="status">Checking availability…</p>
                     }
-                </p>
+                    <p [class]="error" match="required" rdxFieldError>Username is required.</p>
+                    <p [class]="error" match="minlength" rdxFieldError>Use at least 3 characters.</p>
+                    <p #usernameError="rdxFieldError" [class]="error" match="unavailable" rdxFieldError>
+                        {{ usernameError.messages().join(' ') }}
+                    </p>
+                </div>
+
+                <div [class]="field" rdxFieldRoot required>
+                    <label [class]="label" rdxFieldLabel>Email</label>
+                    <input
+                        [class]="input"
+                        autocomplete="email"
+                        type="email"
+                        formControlName="email"
+                        rdxFieldControl
+                        rdxNgControlField
+                    />
+                    <p class="text-muted-foreground text-sm" rdxFieldDescription>
+                        Use
+                        <code>taken@example.com</code>
+                        to preview a server error.
+                    </p>
+                    <p #emailError="rdxFieldError" [class]="error" rdxFieldError>
+                        @if (email.hasError('required')) {
+                            Email is required.
+                        } @else if (email.hasError('email')) {
+                            Enter a valid email address.
+                        } @else {
+                            {{ emailError.messages().join(' ') }}
+                        }
+                    </p>
+                </div>
+            </fieldset>
+
+            <div class="flex gap-2">
+                <button [class]="submitButton" type="submit">Submit</button>
+                <button [class]="resetButton" type="reset">Reset</button>
             </div>
 
-            <button [class]="submitButton" type="submit">Submit</button>
+            @if (successMessage()) {
+                <p class="text-foreground text-sm" role="status">{{ successMessage() }}</p>
+            }
         </form>
     `
 })
@@ -11819,21 +11911,54 @@ export class FormReactiveFormsExample {
     protected readonly input = formInput;
     protected readonly error = formError;
     protected readonly submitButton = formSubmit;
+    protected readonly resetButton = formReset;
 
     private readonly formBuilder = inject(FormBuilder);
+    private readonly usernameAvailability: AsyncValidatorFn = async (control) => {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        return String(control.value).trim().toLowerCase() === 'admin'
+            ? { unavailable: { message: 'That username is unavailable.' } }
+            : null;
+    };
 
-    readonly submitted = signal(false);
-    readonly form = this.formBuilder.group({
-        email: this.formBuilder.control('', [Validators.required, Validators.email])
+    readonly serverErrors = signal<RdxFormErrors>({});
+    readonly successMessage = signal('');
+    readonly form = this.formBuilder.nonNullable.group({
+        username: this.formBuilder.nonNullable.control('', {
+            validators: [Validators.required, Validators.minLength(3)],
+            asyncValidators: [this.usernameAvailability]
+        }),
+        email: this.formBuilder.nonNullable.control('', [Validators.required, Validators.email])
     });
 
-    get email() {
+    protected get username() {
+        return this.form.controls.username;
+    }
+
+    protected get email() {
         return this.form.controls.email;
     }
 
-    submit(): void {
-        this.submitted.set(true);
-        this.form.markAllAsTouched();
+    protected clearServerErrors(errors: RdxFormErrors): void {
+        this.serverErrors.set(errors);
+        this.successMessage.set('');
+    }
+
+    protected submit(): void {
+        if (this.form.pending || this.form.invalid) {
+            this.form.markAllAsTouched();
+            this.successMessage.set('');
+            return;
+        }
+
+        if (this.email.value === 'taken@example.com') {
+            this.serverErrors.set({ email: 'That email already has an account.' });
+            this.successMessage.set('');
+            return;
+        }
+
+        this.serverErrors.set({});
+        this.successMessage.set(`Submitted ${this.username.value}.`);
     }
 }
 ```
@@ -11992,27 +12117,42 @@ Uses Angular reactive forms while Field reflects validation state.
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
+import {
+    RdxFieldDescription,
+    RdxFieldError,
+    RdxFieldLabel,
+    RdxFieldRoot,
+    RdxNgControlField
+} from '@radix-ng/primitives/field';
 import { demoInput } from '../../storybook/styles';
 import { RdxInputDirective } from '../src/input.directive';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'input-reactive-forms-example',
-    imports: [ReactiveFormsModule, RdxFieldRoot, RdxFieldLabel, RdxFieldDescription, RdxFieldError, RdxInputDirective],
+    imports: [
+        ReactiveFormsModule,
+        RdxFieldRoot,
+        RdxFieldLabel,
+        RdxFieldDescription,
+        RdxFieldError,
+        RdxNgControlField,
+        RdxInputDirective
+    ],
     template: `
-        <div
-            class="flex w-80 flex-col gap-2"
-            [invalid]="email.invalid && (email.dirty || email.touched)"
-            [dirty]="email.dirty"
-            [touched]="email.touched"
-            rdxFieldRoot
-            required
-        >
+        <div class="flex w-80 flex-col gap-2" rdxFieldRoot required>
             <label class="text-foreground text-sm font-medium" rdxFieldLabel>Email</label>
-            <input [class]="inputClass" [formControl]="email" rdxInput type="email" placeholder="name@example.com" />
+            <input
+                [class]="inputClass"
+                [formControl]="email"
+                rdxInput
+                rdxNgControlField
+                type="email"
+                placeholder="name@example.com"
+            />
             <p class="text-muted-foreground text-sm" rdxFieldDescription>Use the email connected to your account.</p>
-            <p class="text-destructive text-sm" rdxFieldError>Email must be valid.</p>
+            <p class="text-destructive text-sm" match="required" rdxFieldError>Email is required.</p>
+            <p class="text-destructive text-sm" match="email" rdxFieldError>Enter a valid email address.</p>
         </div>
     `
 })
@@ -12037,7 +12177,13 @@ import {
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
-import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
+import {
+    RdxFieldDescription,
+    RdxFieldError,
+    RdxFieldLabel,
+    RdxFieldRoot,
+    RdxNgControlField
+} from '@radix-ng/primitives/field';
 import { cn, demoButton, demoCheckbox, demoInput } from '../../storybook/styles';
 import { RdxInputDirective } from '../src/input.directive';
 
@@ -12056,50 +12202,43 @@ import { RdxInputDirective } from '../src/input.directive';
         RdxFieldLabel,
         RdxFieldDescription,
         RdxFieldError,
+        RdxNgControlField,
         RdxInputDirective
     ],
     template: `
         <form class="flex w-[24rem] flex-col gap-5" [formGroup]="form" (ngSubmit)="submit()">
             <div class="grid grid-cols-2 gap-3">
-                <div
-                    class="flex flex-col gap-2"
-                    [invalid]="firstName.invalid && (firstName.dirty || firstName.touched)"
-                    [dirty]="firstName.dirty"
-                    [touched]="firstName.touched"
-                    rdxFieldRoot
-                    required
-                >
+                <div class="flex flex-col gap-2" rdxFieldRoot required>
                     <label class="text-foreground text-sm font-medium" rdxFieldLabel>First name</label>
-                    <input [class]="inputClass" rdxInput autocomplete="given-name" formControlName="firstName" />
+                    <input
+                        [class]="inputClass"
+                        rdxInput
+                        rdxNgControlField
+                        autocomplete="given-name"
+                        formControlName="firstName"
+                    />
                     <p class="text-destructive text-sm" rdxFieldError>Enter your first name.</p>
                 </div>
 
-                <div
-                    class="flex flex-col gap-2"
-                    [invalid]="lastName.invalid && (lastName.dirty || lastName.touched)"
-                    [dirty]="lastName.dirty"
-                    [touched]="lastName.touched"
-                    rdxFieldRoot
-                    required
-                >
+                <div class="flex flex-col gap-2" rdxFieldRoot required>
                     <label class="text-foreground text-sm font-medium" rdxFieldLabel>Last name</label>
-                    <input [class]="inputClass" rdxInput autocomplete="family-name" formControlName="lastName" />
+                    <input
+                        [class]="inputClass"
+                        rdxInput
+                        rdxNgControlField
+                        autocomplete="family-name"
+                        formControlName="lastName"
+                    />
                     <p class="text-destructive text-sm" rdxFieldError>Enter your last name.</p>
                 </div>
             </div>
 
-            <div
-                class="flex flex-col gap-2"
-                [invalid]="email.invalid && (email.dirty || email.touched)"
-                [dirty]="email.dirty"
-                [touched]="email.touched"
-                rdxFieldRoot
-                required
-            >
+            <div class="flex flex-col gap-2" rdxFieldRoot required>
                 <label class="text-foreground text-sm font-medium" rdxFieldLabel>Email</label>
                 <input
                     [class]="inputClass"
                     rdxInput
+                    rdxNgControlField
                     type="email"
                     autocomplete="email"
                     placeholder="name@example.com"
@@ -12111,18 +12250,12 @@ import { RdxInputDirective } from '../src/input.directive';
                 <p class="text-destructive text-sm" rdxFieldError>Enter a valid email address.</p>
             </div>
 
-            <div
-                class="flex flex-col gap-2"
-                [invalid]="password.invalid && (password.dirty || password.touched)"
-                [dirty]="password.dirty"
-                [touched]="password.touched"
-                rdxFieldRoot
-                required
-            >
+            <div class="flex flex-col gap-2" rdxFieldRoot required>
                 <label class="text-foreground text-sm font-medium" rdxFieldLabel>Password</label>
                 <input
                     [class]="inputClass"
                     rdxInput
+                    rdxNgControlField
                     type="password"
                     autocomplete="new-password"
                     formControlName="password"
@@ -12163,22 +12296,6 @@ export class InputSignupFormExample {
     protected readonly inputClass = demoInput;
     protected readonly checkbox = demoCheckbox;
     protected readonly submitClass = cn(demoButton.base, demoButton.primary, demoButton.size.md, 'w-full');
-
-    protected get firstName() {
-        return this.form.controls.firstName;
-    }
-
-    protected get lastName() {
-        return this.form.controls.lastName;
-    }
-
-    protected get email() {
-        return this.form.controls.email;
-    }
-
-    protected get password() {
-        return this.form.controls.password;
-    }
 
     submit(): void {
         this.form.markAllAsTouched();
@@ -19201,7 +19318,7 @@ has opened.
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
-import { RdxFieldDescription, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
+import { RdxFieldDescription, RdxFieldLabel, RdxFieldRoot, RdxNgControlField } from '@radix-ng/primitives/field';
 import { cn, demoButton, demoFocusRing } from '../../storybook/styles';
 import {
     RdxSelectItem,
@@ -19226,6 +19343,7 @@ import {
         RdxFieldRoot,
         RdxFieldLabel,
         RdxFieldDescription,
+        RdxNgControlField,
         RdxSelectRoot,
         RdxSelectTrigger,
         RdxSelectValue,
@@ -19242,7 +19360,7 @@ import {
             <div class="flex flex-col gap-1.5" rdxFieldRoot>
                 <label class="text-foreground text-sm font-medium" rdxFieldLabel>Fruit</label>
 
-                <div [formControl]="fruit" rdxSelectRoot>
+                <div [formControl]="fruit" rdxSelectRoot rdxNgControlField>
                     <button [class]="triggerClass" rdxSelectTrigger>
                         <span #selectedValue="rdxSelectedValue" rdxSelectValue placeholder="Select a fruit…">
                             {{ selectedValue.slotText() }}
@@ -19334,7 +19452,7 @@ submission, touched/dirty state, and `NgForm.resetForm()` while keeping the same
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
-import { RdxFieldDescription, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
+import { RdxFieldDescription, RdxFieldLabel, RdxFieldRoot, RdxNgControlField } from '@radix-ng/primitives/field';
 import { cn, demoButton, demoFocusRing } from '../../storybook/styles';
 import {
     RdxSelectItem,
@@ -19359,6 +19477,7 @@ import {
         RdxFieldRoot,
         RdxFieldLabel,
         RdxFieldDescription,
+        RdxNgControlField,
         RdxSelectRoot,
         RdxSelectTrigger,
         RdxSelectValue,
@@ -19375,7 +19494,7 @@ import {
             <div class="flex flex-col gap-1.5" rdxFieldRoot>
                 <label class="text-foreground text-sm font-medium" rdxFieldLabel>Fruit</label>
 
-                <div #fruitModel="ngModel" [(ngModel)]="fruit" name="fruit" rdxSelectRoot>
+                <div #fruitModel="ngModel" [(ngModel)]="fruit" name="fruit" rdxSelectRoot rdxNgControlField>
                     <button [class]="triggerClass" rdxSelectTrigger>
                         <span #selectedValue="rdxSelectedValue" rdxSelectValue placeholder="Select a fruit…">
                             {{ selectedValue.slotText() }}
@@ -20258,6 +20377,9 @@ that boundary explicit instead of implying parity that does not yet exist.
 
 `rdxSignalField` sits on the control next to `[formField]`; `rdxSignalForm` sits on the form root next to
 `rdxFormRoot`. No state is bound by hand — both read it from Signal Forms.
+
+Reactive Forms and `ngModel` use the parallel `rdxNgControlField` adapter from
+`@radix-ng/primitives/field`; the Field presentation contract is identical on both paths.
 
 ```html
 <form rdxFormRoot [rdxSignalForm]="loginForm">

@@ -1,6 +1,12 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
+import {
+    RdxFieldDescription,
+    RdxFieldError,
+    RdxFieldLabel,
+    RdxFieldRoot,
+    RdxNgControlField
+} from '@radix-ng/primitives/field';
 import { RdxFieldsetLegend, RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
 import { RdxInputDirective } from '@radix-ng/primitives/input';
 import { cn, demoButton, demoInput } from '../../storybook/styles';
@@ -16,6 +22,7 @@ import { cn, demoButton, demoInput } from '../../storybook/styles';
         RdxFieldLabel,
         RdxFieldDescription,
         RdxFieldError,
+        RdxNgControlField,
         RdxInputDirective
     ],
     template: `
@@ -25,16 +32,29 @@ import { cn, demoButton, demoInput } from '../../storybook/styles';
                     Account details
                 </legend>
 
-                <div class="space-y-2" [invalid]="isInvalid('firstName')" [disabled]="submitting" rdxFieldRoot required>
+                <div class="space-y-2" rdxFieldRoot required>
                     <label class="text-foreground text-sm font-medium" rdxFieldLabel>First name</label>
-                    <input [class]="inputClass" rdxInput autocomplete="given-name" formControlName="firstName" />
+                    <input
+                        [class]="inputClass"
+                        rdxInput
+                        rdxNgControlField
+                        autocomplete="given-name"
+                        formControlName="firstName"
+                    />
                     <p class="text-muted-foreground text-sm" rdxFieldDescription>Used in your workspace profile.</p>
                     <p class="text-destructive text-sm" rdxFieldError>First name is required.</p>
                 </div>
 
-                <div class="space-y-2" [invalid]="isInvalid('email')" [disabled]="submitting" rdxFieldRoot required>
+                <div class="space-y-2" rdxFieldRoot required>
                     <label class="text-foreground text-sm font-medium" rdxFieldLabel>Email</label>
-                    <input [class]="inputClass" rdxInput autocomplete="email" formControlName="email" type="email" />
+                    <input
+                        [class]="inputClass"
+                        rdxInput
+                        rdxNgControlField
+                        autocomplete="email"
+                        formControlName="email"
+                        type="email"
+                    />
                     <p class="text-muted-foreground text-sm" rdxFieldDescription>
                         We'll send the invite confirmation here.
                     </p>
@@ -83,11 +103,6 @@ export class FieldsetSignupFormExample {
         updates: [true]
     });
 
-    protected isInvalid(controlName: 'firstName' | 'email'): boolean {
-        const control = this.form.controls[controlName];
-        return control.invalid && (control.touched || control.dirty);
-    }
-
     protected submit(): void {
         if (this.form.invalid) {
             this.form.markAllAsTouched();
@@ -96,5 +111,6 @@ export class FieldsetSignupFormExample {
 
         this.submitting = true;
         this.submittedEmail = this.form.controls.email.value;
+        this.form.disable();
     }
 }

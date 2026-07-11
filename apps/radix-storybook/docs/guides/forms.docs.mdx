@@ -25,8 +25,8 @@ designed to compose into **Form → Field → Control**.
    `ControlValueAccessor` so `formControl` / `ngModel` work. This is the value I/O layer.
 2. **[`Field`](?path=/docs/primitives-field--docs)** — owns presentation and accessibility. It wires a
    label, description, and error message to the control with `for` / `id` / `aria-describedby`, and
-   reflects field state through `data-*` attributes. `Field` does **not** read or own validation; you
-   pass state into it from your form model.
+   reflects field state through `data-*` attributes. `Field` does not run validation; state reaches it
+   through explicit inputs or the small Angular Forms / Signal Forms adapters.
 3. **[`Form`](?path=/docs/primitives-form--docs)** — owns the `<form>`. It maps server/external errors
    onto fields by `name`, clears them as the user edits, intercepts submit (serialized values, focus the
    first invalid field), and resets field state on native reset. Like Field, it owns no values and runs
@@ -42,7 +42,8 @@ handling across the whole form.
 [`Form`](?path=/docs/primitives-form--docs) (`form[rdxFormRoot]`, entry `@radix-ng/primitives/form`)
 rides the native `<form>`:
 
-- **Server errors** — bind `[errors]="{ email: 'Already taken' }"`. Each key matches a `Field`'s `name`;
+- **Server errors** — bind `[errors]="{ email: 'Already taken' }"`. Each key matches a `Field`'s `name`
+  (explicit or inferred by `rdxNgControlField` from `formControlName` / `ngModel`);
   the matched field becomes invalid and its messages flow to `rdxFieldError` (`err.messages()`). Editing
   the field clears its error and `onClearErrors` emits the remaining map (treat it like any `*Change`).
 - **Submit** — `onFormSubmit` fires with the form's values serialized from `FormData`
@@ -131,11 +132,10 @@ Validation status follows the same path. `VALID` emits `data-valid`, `INVALID` e
 preserved. Explicit `[invalid]`, `[pending]`, and `[errors]` inputs are merged with the Angular state.
 No `data-pending` attribute is added because Base UI does not publish one.
 
-This keeps the control itself synchronized without manual state bindings. A wrapping `rdxFieldRoot`
-remains form-agnostic and owns displayed validity when present, so its `validationMode` is still the
-single gate. Map the `FormControl` state onto the Field as shown below when the whole label / description /
-error group should reflect it; Radix NG does not invent human-readable messages for Angular's built-in
-validator keys.
+This keeps the control itself synchronized without manual state bindings. To make a wrapping
+`rdxFieldRoot` read that same state, add `rdxNgControlField` next to `formControl`, `formControlName`, or
+`ngModel` as shown below. The adapter reports actual Angular state; Field's `validationMode` remains the
+single display gate. Radix NG does not invent localized messages for Angular's built-in validator keys.
 
 ## Template-driven Forms
 
@@ -144,9 +144,11 @@ template-driven forms — they share the `ControlValueAccessor` mechanism:
 
 ```ts
 @Component({
-  imports: [FormsModule, RdxInputDirective],
+  imports: [FormsModule, RdxFieldRoot, RdxNgControlField, RdxInputDirective],
   template: `
-    <input [(ngModel)]="email" rdxInput name="email" required />
+    <div rdxFieldRoot required>
+      <input [(ngModel)]="email" rdxInput rdxNgControlField name="email" required />
+    </div>
   `
 })
 export class Example {
@@ -165,44 +167,73 @@ Select now binds directly through `ngModel` on its root:
 Controls without a `ControlValueAccessor` (Date Field, Time Field, Editable) use two-way binding on
 their `value` model instead.
 
-## Surfacing state with Field
+## Surfacing Angular Forms state with Field
 
 `Field` reflects form state as `data-*` attributes for styling and wires accessibility relationships.
-Because it is form-agnostic, you map state from your form model onto its inputs explicitly:
+Use the explicit `rdxNgControlField` adapter on the control that already carries `formControl`,
+`formControlName`, or `ngModel`. It maps `invalid`, `pending`, `disabled`, `dirty`, `touched`, and
+normalized validation errors into the enclosing Field without repeating the form-control expression or
+state bindings:
 
 > **Validation is owned by Angular's form systems, not by `Field`.** Unlike Base UI's Field — which
 > ships its own validation (`validate`, `validationMode`, a `Validity` part over the native
 > `ValidityState`) — Radix NG deliberately does **not** port that surface. Reactive, template-driven, and
-> Signal Forms already own validation in Angular; `Field` only reflects the result and wires ARIA. This
-> divergence from Base UI is intentional — see [ADR 0004](https://github.com/radix-ng/primitives/blob/main/docs/adr/0004-field-signal-forms-adapter.md).
+> Signal Forms already own validation in Angular; `Field` only gates and reflects the result and wires
+> ARIA. Its tri-state validity and error matching still follow Base UI semantics.
 
 ```html
-<div
-  rdxFieldRoot
-  required
-  [invalid]="email.invalid && (email.touched || submitted())"
-  [dirty]="email.dirty"
-  [touched]="email.touched"
-  [disabled]="email.disabled"
->
+<div rdxFieldRoot required>
   <label rdxFieldLabel>Email</label>
-  <input rdxFieldControl type="email" formControlName="email" />
+  <input rdxFieldControl rdxNgControlField type="email" formControlName="email" />
   <p rdxFieldDescription>Use the email connected to your account.</p>
-  <p rdxFieldError>@if (email.hasError('required')) { Email is required. } @else { Enter a valid email address. }</p>
+  <p rdxFieldError match="required">Email is required.</p>
+  <p rdxFieldError match="email">Enter a valid email address.</p>
 </div>
 ```
 
+The directive is exported from the existing Field entry:
+
+```ts
+import { RdxNgControlField } from '@radix-ng/primitives/field';
+```
+
+- `validationMode` (`onBlur` by default) decides when actual client invalidity becomes visible. A submit
+  through `rdxFormRoot` reveals pristine invalid fields and focuses the first one.
+- `PENDING` and `DISABLED` stay tri-state neutral. Explicit/server invalidity still wins, matching Base
+  UI's controlled-invalid precedence.
+- `rdxFieldError[match]` selects an Angular error key (`required`, `email`, `minlength`, or a custom key).
+  Only the visible error id is added to `aria-describedby`.
+- Custom validators can return `{ key: { message: '…' } }`; render normalized messages through
+  `#error="rdxFieldError"` and `error.messages()`. Form-level server errors use the same messages channel.
+- `formControlName` and named `ngModel` infer the Field name for `rdxFormRoot[errors]`. An explicit
+  `rdxFieldRoot[name]` wins for nested or remapped server keys. Standalone `[formControl]` has no name, so
+  set one on Field when server routing is needed.
+
+The same adapter works on compound-control roots:
+
+```html
+<div rdxFieldRoot>
+  <label rdxFieldLabel>Country</label>
+  <div rdxSelectRoot rdxNgControlField formControlName="country">
+    <button rdxSelectTrigger>…</button>
+  </div>
+</div>
+```
+
+For custom form systems, or when intentionally avoiding the adapter, Field's explicit state inputs remain
+available:
+
 `Field` inputs and the attributes they project:
 
-| Input                | Attribute       | Meaning                                      |
-| -------------------- | --------------- | -------------------------------------------- |
-| `invalid`            | `data-invalid`  | Control failed validation (you decide when). |
-| `disabled`           | `data-disabled` | Control is disabled.                         |
-| `required`           | `data-required` | Control is required.                         |
-| `dirty`              | `data-dirty`    | Value changed from its initial value.        |
-| `touched`            | `data-touched`  | Control was blurred after focus.             |
-| `filled` (override)  | `data-filled`   | Control has a non-empty value.               |
-| `focused` (override) | `data-focused`  | Control is focused.                          |
+| Input                | Attribute       | Meaning                               |
+| -------------------- | --------------- | ------------------------------------- |
+| `invalid`            | `data-invalid`  | Form model reports client invalidity. |
+| `disabled`           | `data-disabled` | Control is disabled.                  |
+| `required`           | `data-required` | Control is required.                  |
+| `dirty`              | `data-dirty`    | Value changed from its initial value. |
+| `touched`            | `data-touched`  | Control was blurred after focus.      |
+| `filled` (override)  | `data-filled`   | Control has a non-empty value.        |
+| `focused` (override) | `data-focused`  | Control is focused.                   |
 
 `filled` and `focused` are derived automatically for native controls. Override them only when a custom
 control's DOM events are not enough for `Field` to infer the state.
@@ -345,7 +376,7 @@ The two-layer split is what keeps your form code stable as Angular's form APIs e
 - **`Field` stays form-agnostic.** It maps state via inputs onto `data-*` regardless of which form
   system produced that state, so the presentation and accessibility layer is untouched by a migration.
 
-In practice, moving a form to Signal Forms changes only the **binding expression** on the control
-(`formControlName="email"` → `[formField]="form.email"`) and the **source** of the state `Field` reads
-(a `FormControl` → a Signal Forms field, via `rdxSignalField`). The control inventory, the `Field`
-anatomy, the `data-*` styling contract, and your accessibility wiring all carry over unchanged.
+In practice, moving a form to Signal Forms changes the binding + adapter pair on the control
+(`formControlName="email" rdxNgControlField` → `[formField]="form.email" rdxSignalField`). The control
+inventory, Field anatomy, `validationMode`, error parts, `data-*` styling contract, and accessibility
+wiring all carry over unchanged.

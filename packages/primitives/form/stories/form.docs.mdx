@@ -24,6 +24,7 @@ and resets field interaction state on native reset.
 - ✅ Handles native `reset`: clears errors and re-syncs each field's touched/dirty/focused/filled state.
 - ✅ Aggregate state via `data-invalid`, `data-dirty`, `data-touched`, and `data-submitting`.
 - ✅ Form-system-agnostic: works with plain native controls, Reactive Forms (`(ngSubmit)` still fires), and template-driven forms.
+- ✅ `rdxNgControlField` connects Reactive / template-driven controls to registered Fields without manual validity bindings.
 - ✅ Signal Forms integration: an `RdxFormState` provider seam lets `[rdxSignalForm]` own the form's aggregate validity / dirty / touched / submitting and route per-field **client** errors by `name` (gated by `validationMode`). The `errors` input stays a separate eager **server** channel.
 
 ## Import
@@ -74,8 +75,9 @@ reverted values.
 
 ### Reactive Forms
 
-Reactive Forms owns validity; Form adds the aggregate attributes and submit handling on the same
-`<form>`. `(ngSubmit)` is the source of truth — Form never stops propagation.
+The complete recipe composes Form → Fieldset → Field → Control with `rdxNgControlField`, async
+validation, error-key matching, server errors that clear on edit, submit reveal/focus, and reset.
+Reactive Forms remains the value/validation source of truth; Form never stops `(ngSubmit)` propagation.
 
 <Canvas of={FormStories.ReactiveForms} />
 

@@ -8,7 +8,13 @@ import {
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
-import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
+import {
+    RdxFieldDescription,
+    RdxFieldError,
+    RdxFieldLabel,
+    RdxFieldRoot,
+    RdxNgControlField
+} from '@radix-ng/primitives/field';
 import { cn, demoButton, demoCheckbox, demoInput } from '../../storybook/styles';
 import { RdxInputDirective } from '../src/input.directive';
 
@@ -27,50 +33,43 @@ import { RdxInputDirective } from '../src/input.directive';
         RdxFieldLabel,
         RdxFieldDescription,
         RdxFieldError,
+        RdxNgControlField,
         RdxInputDirective
     ],
     template: `
         <form class="flex w-[24rem] flex-col gap-5" [formGroup]="form" (ngSubmit)="submit()">
             <div class="grid grid-cols-2 gap-3">
-                <div
-                    class="flex flex-col gap-2"
-                    [invalid]="firstName.invalid && (firstName.dirty || firstName.touched)"
-                    [dirty]="firstName.dirty"
-                    [touched]="firstName.touched"
-                    rdxFieldRoot
-                    required
-                >
+                <div class="flex flex-col gap-2" rdxFieldRoot required>
                     <label class="text-foreground text-sm font-medium" rdxFieldLabel>First name</label>
-                    <input [class]="inputClass" rdxInput autocomplete="given-name" formControlName="firstName" />
+                    <input
+                        [class]="inputClass"
+                        rdxInput
+                        rdxNgControlField
+                        autocomplete="given-name"
+                        formControlName="firstName"
+                    />
                     <p class="text-destructive text-sm" rdxFieldError>Enter your first name.</p>
                 </div>
 
-                <div
-                    class="flex flex-col gap-2"
-                    [invalid]="lastName.invalid && (lastName.dirty || lastName.touched)"
-                    [dirty]="lastName.dirty"
-                    [touched]="lastName.touched"
-                    rdxFieldRoot
-                    required
-                >
+                <div class="flex flex-col gap-2" rdxFieldRoot required>
                     <label class="text-foreground text-sm font-medium" rdxFieldLabel>Last name</label>
-                    <input [class]="inputClass" rdxInput autocomplete="family-name" formControlName="lastName" />
+                    <input
+                        [class]="inputClass"
+                        rdxInput
+                        rdxNgControlField
+                        autocomplete="family-name"
+                        formControlName="lastName"
+                    />
                     <p class="text-destructive text-sm" rdxFieldError>Enter your last name.</p>
                 </div>
             </div>
 
-            <div
-                class="flex flex-col gap-2"
-                [invalid]="email.invalid && (email.dirty || email.touched)"
-                [dirty]="email.dirty"
-                [touched]="email.touched"
-                rdxFieldRoot
-                required
-            >
+            <div class="flex flex-col gap-2" rdxFieldRoot required>
                 <label class="text-foreground text-sm font-medium" rdxFieldLabel>Email</label>
                 <input
                     [class]="inputClass"
                     rdxInput
+                    rdxNgControlField
                     type="email"
                     autocomplete="email"
                     placeholder="name@example.com"
@@ -82,18 +81,12 @@ import { RdxInputDirective } from '../src/input.directive';
                 <p class="text-destructive text-sm" rdxFieldError>Enter a valid email address.</p>
             </div>
 
-            <div
-                class="flex flex-col gap-2"
-                [invalid]="password.invalid && (password.dirty || password.touched)"
-                [dirty]="password.dirty"
-                [touched]="password.touched"
-                rdxFieldRoot
-                required
-            >
+            <div class="flex flex-col gap-2" rdxFieldRoot required>
                 <label class="text-foreground text-sm font-medium" rdxFieldLabel>Password</label>
                 <input
                     [class]="inputClass"
                     rdxInput
+                    rdxNgControlField
                     type="password"
                     autocomplete="new-password"
                     formControlName="password"
@@ -134,22 +127,6 @@ export class InputSignupFormExample {
     protected readonly inputClass = demoInput;
     protected readonly checkbox = demoCheckbox;
     protected readonly submitClass = cn(demoButton.base, demoButton.primary, demoButton.size.md, 'w-full');
-
-    protected get firstName() {
-        return this.form.controls.firstName;
-    }
-
-    protected get lastName() {
-        return this.form.controls.lastName;
-    }
-
-    protected get email() {
-        return this.form.controls.email;
-    }
-
-    protected get password() {
-        return this.form.controls.password;
-    }
 
     submit(): void {
         this.form.markAllAsTouched();

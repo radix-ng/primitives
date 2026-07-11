@@ -144,6 +144,9 @@ that boundary explicit instead of implying parity that does not yet exist.
 `rdxSignalField` sits on the control next to `[formField]`; `rdxSignalForm` sits on the form root next to
 `rdxFormRoot`. No state is bound by hand — both read it from Signal Forms.
 
+Reactive Forms and `ngModel` use the parallel `rdxNgControlField` adapter from
+`@radix-ng/primitives/field`; the Field presentation contract is identical on both paths.
+
 ```html
 <form rdxFormRoot [rdxSignalForm]="loginForm">
     <div rdxFieldRoot>

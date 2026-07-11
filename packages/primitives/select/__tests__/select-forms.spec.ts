@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormsModule, NgModel, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
+import { RdxFieldError, RdxFieldRoot, RdxNgControlField } from '@radix-ng/primitives/field';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { _importsSelect } from '../index';
 import { RdxSelectRoot, RdxSelectValueChangeEvent } from '../src/select-root';
@@ -113,6 +114,24 @@ class SelectMultipleReactiveFormsHost {
     ];
     readonly control = new FormControl<Framework[]>([this.frameworks[0]], { nonNullable: true });
     readonly itemToStringLabel = (framework: Framework) => framework.label;
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [ReactiveFormsModule, RdxFieldRoot, RdxFieldError, RdxNgControlField, _importsSelect],
+    template: `
+        <div validationMode="always" rdxFieldRoot>
+            <div [formControl]="control" rdxSelectRoot rdxNgControlField>
+                <button rdxSelectTrigger>
+                    <span #selectedValue="rdxSelectedValue" rdxSelectValue>{{ selectedValue.slotText() }}</span>
+                </button>
+            </div>
+            <p #error="rdxFieldError" rdxFieldError>{{ error.messages().join(' ') }}</p>
+        </div>
+    `
+})
+class SelectFieldReactiveFormsHost {
+    readonly control = new FormControl('Banana', { nonNullable: true });
 }
 
 async function selectPreviousItem(fixture: ComponentFixture<unknown>, settle: () => Promise<void>): Promise<void> {
@@ -375,5 +394,28 @@ describe('Select multiple object values with Reactive Forms', () => {
         host.control.setValue([host.frameworks[1]]);
         await settle();
         expect(selectRoot(fixture).value()).toEqual([host.frameworks[1]]);
+    });
+});
+
+describe('Select with the NgControl Field adapter', () => {
+    it('projects compound-root validation state onto Field and its trigger', async () => {
+        TestBed.configureTestingModule({ imports: [SelectFieldReactiveFormsHost] });
+        const fixture = TestBed.createComponent(SelectFieldReactiveFormsHost);
+        const host = fixture.componentInstance;
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        const field = fixture.nativeElement.querySelector('[rdxFieldRoot]') as HTMLElement;
+        const trigger = fixture.nativeElement.querySelector('[rdxSelectTrigger]') as HTMLButtonElement;
+        const error = fixture.nativeElement.querySelector('[rdxFieldError]') as HTMLElement;
+
+        host.control.setErrors({ server: { message: 'Choose another fruit.' } });
+        fixture.detectChanges();
+
+        expect(field.getAttribute('data-invalid')).toBe('');
+        expect(trigger.getAttribute('data-invalid')).toBe('');
+        expect(trigger.getAttribute('aria-invalid')).toBe('true');
+        expect(error.textContent?.trim()).toBe('Choose another fruit.');
     });
 });

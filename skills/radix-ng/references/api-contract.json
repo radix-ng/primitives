@@ -3290,6 +3290,11 @@
               "name": "id",
               "default": "injectId('rdx-field-error-')",
               "description": "Error message id."
+            },
+            {
+              "name": "match",
+              "type": "boolean | string",
+              "description": "Shows this error only for a matching validation-error key. Bind `true` to keep it visible under\nexternal control; omit it for the field's default error behavior."
             }
           ],
           "outputs": []
@@ -3380,6 +3385,14 @@
               "description": "Overrides when this field reveals its validity (error styling + message). Falls back to the\nenclosing `rdxFormRoot`'s `validationMode`, then `'onBlur'`. Server errors always show regardless."
             }
           ],
+          "outputs": []
+        },
+        {
+          "directive": "RdxNgControlField",
+          "selector": "[formControl][rdxNgControlField], [formControlName][rdxNgControlField], [ngModel][rdxNgControlField]",
+          "exportAs": "rdxNgControlField",
+          "description": "Bridges a same-host Reactive Forms or template-driven `NgControl` into an enclosing `rdxFieldRoot`.\nPlace it next to `formControl`, `formControlName`, or `ngModel`; Angular remains the source of value,\nvalidation, and interaction state while Field owns when that state is displayed.\n\n```html\n<div rdxFieldRoot>\n  <label rdxFieldLabel>Email</label>\n  <input formControlName=\"email\" rdxFieldControl rdxNgControlField />\n  <p match=\"required\" rdxFieldError>Email is required.</p>\n</div>\n```\n\nThe adapter also infers the Field name from `formControlName` / `ngModel` for Form-level server-error\nrouting. An explicit `name` on `rdxFieldRoot` takes precedence (useful for nested or remapped keys).",
+          "inputs": [],
           "outputs": []
         }
       ]

@@ -52,10 +52,7 @@ export class RdxFieldControl {
     readonly id = input(injectId('rdx-field-control-'));
 
     protected readonly describedBy = computed(() => {
-        const ids = [
-            ...this.rootContext.descriptionIds(),
-            ...(this.rootContext.invalidState() ? this.rootContext.errorIds() : [])
-        ];
+        const ids = [...this.rootContext.descriptionIds(), ...this.rootContext.errorIds()];
 
         return ids.length ? ids.join(' ') : undefined;
     });
