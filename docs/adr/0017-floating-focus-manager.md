@@ -1,7 +1,7 @@
 # ADR 0017: Floating focus manager (`RdxFloatingFocusManager`)
 
-- Status: Proposed
-- Date: 2026-06-14
+- Status: Accepted (core landed & in production; remaining items de-scoped to ADR 0023 — see "Implementation status" + "Follow-up (de-scoped)")
+- Date: 2026-06-14 (accepted 2026-07-12)
 - Decision owners: Radix NG maintainers
 - Related: ADR 0015 (dismissal engine — **reads** the marker this ADR produces), ADR 0016 (scroll-lock
   parity — sibling concern, owns no focus/a11y), ADR 0005 (owned floating stack),
@@ -11,18 +11,28 @@
 > focus-policy set. Architectural decisions are settled below; Phase 0 fills two parity-characterization
 > tables before implementation.
 
-> **Implementation status (2026-06-16): core landed; a few parity items open.** `RdxFloatingFocusManager`
-> (entry `@radix-ng/primitives/floating-focus-manager`) composes the reworked `RdxFocusScope` and owns the
-> independent policies — `enabled`/`modal`→trap, the `markOthers` aria-hidden + `inert` passes (§3),
-> close-on-focus-out (§3), `initialFocus` (§2), and now **`returnFocus` (§2) — DONE**: the manager owns the
-> return _target_ (resolving `true`/`false`/element/callback against the close interaction) via the focus
-> scope's `returnFocus` config seam, while the scope owns the _timing_ (its queued post-unmount frame).
-> Used by Dialog / Popover / Menu. **Still open (none blocking day-to-day use):** the **`aria-modal`
-> attribute** AT-review (we set it only for `modal === true`; Base UI emits none and relies on `inert` — see
-> the Dialog parity notes); the **Select `aria-activedescendant` focus-out divergence** (recorded breaking
-> change, needs real-AT confirmation); the `markOthers` **`inert` internal variant** (deferred — no Base UI
-> consumer passes it); and the **Phase-5 WebKit / screen-reader matrices** (Tier-B confirmations before
-> Acceptance). The portal-focus bridge / focus-guards toolkit exist; full portal tab-order is a later phase.
+> **Implementation status (2026-07-12): core Accepted; the rest de-scoped to follow-up.**
+> `RdxFloatingFocusManager` (entry `@radix-ng/primitives/floating-focus-manager`) is built and **in
+> production** for **Dialog, Popover, Menu, Select** (via `provideFloatingFocusManagerConfig`), and by
+> transitivity **Context Menu + Menubar** (through `menu-popup`). It composes the reworked `RdxFocusScope`
+> and owns the independent policies — `enabled`, `modal`→trap, the two `markOthers` passes (aria-hidden +
+> marker, §3), `closeOnFocusOut` (§3), `initialFocus` and `returnFocus` (§2, both DONE). The
+> `RdxInternalBackdrop` primitive (§5) lives in `core/src/floating/internal-backdrop.ts` and is wired into
+> Dialog, Menu, Select, Combobox, Autocomplete; the `disableOutsidePointerEvents` /
+> `DocumentPointerEventsState` body toggle is gone.
+>
+> **De-scoped to follow-up (see "Follow-up (de-scoped)" below) — the core is Accepted without them:**
+> (1) **Combobox / Autocomplete do not yet consume the focus manager** (they wire only the internal
+> backdrop), so the §1 marker / aria-hidden rows for them are unmet; (2) **Popover does not wire an internal
+> backdrop**; (3) the **full §6a portal-focus bridge / scoped registry** (two hierarchies, `ownRootElements`
+> / `focusRootElements` / `contentRootElements` / `descendantPortalRoots` / `portalParent`, guard-driven
+> portal tab-order) is not built — only a partial bridge exists; (4) the **Phase-5 verification matrix**
+> (multi-root Dialog guards, nested-portal keep-sets, tab-order via guards, custom-container child, inline
+> modal) is not written; (5) **Select ships `closeOnFocusOut: false`** (keeps the Radix divergence — the
+> listbox owns DOM focus and navigates virtually via `aria-activedescendant`), so the Phase-0 "adopt Base UI
+> parity" flip is **not** shipped and moves to follow-up pending real-AT confirmation; (6) the **`aria-modal`
+> AT-review**, the `markOthers` **`inert` internal variant** (no Base UI consumer passes it), and the
+> **WebKit / screen-reader (Tier-B) matrices** remain open.
 
 > **Naming correction (2026-06-28).** This ADR uses the name `RdxFocusGuards` for two different things;
 > the implemented reality has since diverged from both, so read every later mention with this mapping:
@@ -129,8 +139,11 @@ guards, inside-elements, pointer-down state, and modal mode. So this column is t
 > manager. Re-wiring it is a task of the **ADR 0015 migration** (Phase 4), not 0017.
 
 **Divergence flagged for the Phase 0 focus-out parity table:** Base UI Select has
-`closeOnFocusOut` default `true` (it **closes** on focus-out), but our Radix Select `preventDefault()`s
-focus-out (does not close). That is a real Radix-vs-Base-UI divergence the parity table must record.
+`closeOnFocusOut` default `true` (it **closes** on focus-out), but our Radix Select does **not** close.
+**Shipped resolution:** Radix Select keeps the divergence — `select-popup.ts:161` sets
+`closeOnFocusOut: () => false` because the listbox owns DOM focus and items are navigated virtually via
+`aria-activedescendant`. Adopting Base UI's close-on-focus-out is **de-scoped to follow-up** pending
+real-AT confirmation (see "Follow-up (de-scoped)").
 
 ### 2. The independent policies (each owned, none derived from `modal`)
 
@@ -808,13 +821,14 @@ trigger registry, `children({onlyOpen})`, and `createFloatingRootContext`.
     | Combobox input-outside                         | `inputInsidePopup=false` → `focusManagerModal=true` **even when `modal=false`** (`ComboboxPopup:117`); role `presentation`, `resolvedFinalFocus=false` (`:114`) → **modal, trapped**                                         | stays (`FFM:466` + dismiss buttons inside, `ComboboxPopup:127`) | suppressed — modal (`FFM:532`)                                                         | suppressed                 | `restoreFocus=false` → none (focus stays in external input)  | manager enabled; trap persists; close moot                                                        | n/a                                         | **No** (modal) — closes via outside-press, not focus-out |
     | Autocomplete                                   | = Combobox per its `inputInsidePopup` (config-dependent ‡): input-inside ⇒ non-modal/untrapped; input-outside ⇒ modal/trapped                                                                                                | stays (`FFM:466`)                                               | input-inside ⇒ **closes** (`FFM:543`); input-outside ⇒ suppressed (`FFM:532`)          | suppressed                 | `restoreFocus=false` → none                                  | manager enabled; close moot                                                                       | n/a                                         | input-inside **Yes**; input-outside **No** ‡             |
 
-    **Resolution — Select focus-out divergence (gate).** Base UI Select **closes** on focus-out
-    (`modal=false`, `closeOnFocusOut` defaults `true`, `FFM:260` → the `!modal` close branch `FFM:531`);
-    Radix Select currently `preventDefault()`s focus-out and stays open. **Decision: adopt Base UI parity —
-    `RdxFloatingFocusManager` for Select uses `closeOnFocusOut` default `true` and closes on focus-out to an
-    unrelated node.** This is a deliberate breaking change for Radix Select, recorded here; the Phase 3
-    focus-out implementation drops the Radix `preventDefault()`. (Focus returning to the trigger, staying in
-    the popup, a pointer-induced move, or a null `relatedTarget` still do **not** close — `FFM:454/535`.)
+    **Resolution — Select focus-out divergence (SHIPPED: Radix behavior kept; parity flip de-scoped).**
+    Base UI Select **closes** on focus-out (`modal=false`, `closeOnFocusOut` defaults `true`, `FFM:260` →
+    the `!modal` close branch `FFM:531`). **Radix Select ships `closeOnFocusOut: () => false`**
+    (`select-popup.ts:161`): the listbox owns DOM focus and items are navigated **virtually** via
+    `aria-activedescendant`, so a focus-out is not a selection event and must not close the listbox. The
+    Phase-0 "adopt Base UI parity" decision is therefore **not shipped**; flipping it is a **follow-up**
+    pending real-AT confirmation (see "Follow-up (de-scoped)"). (Focus returning to the trigger, staying in
+    the popup, a pointer-induced move, or a null `relatedTarget` would not close either — `FFM:454/535`.)
 
     **Browser-verify pending (‡ cells):** every `restoreFocus` / `restoreFocusFrame` final-landing outcome
     depends on real layout (`isElementVisible`, `activeElement===body`, `FFM:488`) and animation-frame
@@ -1142,7 +1156,37 @@ primitive migration (Phase 4). It is the home for the Phase 0 #0 / §6 rework, w
 - **Absorb this into ADR 0016.** Rejected — that would make the "scroll-lock" ADR silently own a focus
   engine; the boundary is cleaner as three ADRs.
 
+## Follow-up (de-scoped 2026-07-12)
+
+The core above is **Accepted** and in production (Dialog, Popover, Menu, Select, and Context Menu + Menubar
+via `menu-popup`). The following are explicitly **out of this ADR's Accepted scope** and tracked in
+**ADR 0023** (_Complete the floating focus manager rollout_) as workstreams **WS1–WS6**, listed below in the
+same order. Each maps to the Acceptance Criteria it leaves partially open:
+
+- **Migrate Combobox + Autocomplete onto `RdxFloatingFocusManager`.** Today they wire only
+  `setupInternalBackdrop` and run no focus manager, so the §1 marker / aria-hidden rows for the
+  `input-inside` / `input-outside` modes are unmet. — Criteria #1, #9.
+- **Wire an `RdxInternalBackdrop` for modal Popover** from the positioner with a trigger cutout (§5 row);
+  Popover wires none today. — Criterion #7.
+- **Build the full §6a portal-focus bridge + scoped portal registry** — two independent hierarchies
+  (`portalParent` / `floatingNode`), the three root roles (`ownRootElements` / `focusRootElements` /
+  `contentRootElements`), `descendantPortalRoots`, and guard-driven portal **tab order**. Only a partial
+  bridge exists today. — Criterion #5, §6a.
+- **Write the Phase-5 verification matrix** — multi-root Dialog guards, nested-portal keep-sets, tab-order
+  via guards, custom-container child, backdrop-not-focus-boundary, inline (non-portaled) modal, SSR. — Phase 5.
+- **Select focus-out parity** — decide whether to flip Radix Select from the shipped
+  `closeOnFocusOut: false` (listbox owns DOM focus + `aria-activedescendant`) to Base UI's
+  close-on-focus-out, pending real-AT confirmation. — Criterion #4.
+- **`aria-modal` AT-review**, the `markOthers` **`inert` internal variant** (no Base UI consumer passes it),
+  and the **WebKit / screen-reader (Tier-B) matrices**. — Criteria #2/#3/#6 AT gates.
+
 ## Acceptance Criteria
+
+> **Scope note (2026-07-12):** the criteria below are met for the **Accepted core** (Dialog / Popover /
+> Menu / Select + Context Menu / Menubar). The parts left open by the de-scoped follow-up above —
+> Combobox/Autocomplete adoption (#1, #9), Popover internal backdrop (#7), the full §6a portal
+> bridge/registry and guard-driven tab order (#5), the Phase-5 matrix, the Select focus-out flip (#4), and
+> the AT gates (#2/#3/#6) — are **not** required for this Accepted status and are tracked as follow-up.
 
 1. `RdxFloatingFocusManager` is the **sole executor** of the independent policy set (enabled,
    modal/trapped, initial/return/restore focus, close-on-focus-out, aria-hidden, marker, inside-elements),
