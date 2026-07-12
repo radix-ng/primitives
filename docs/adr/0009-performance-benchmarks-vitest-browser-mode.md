@@ -5,7 +5,7 @@
   scope here; track it as separate future work, not under this ADR.
 - Date: 2026-06-12
 - Decision owners: Radix NG maintainers
-- Related: project `apps/radix-perf-testing` (harness + `checkbox`/`select` pilots),
+- Related: project `apps/radix-perf-testing` (harness + Checkbox / Composite / Select / Combobox rows),
   `.github/workflows/benchmark.yml`, `tools/scripts/benchmark/compare.mjs`,
   `apps/radix-storybook/docs/guides/performance.docs.mdx` (Guides/Performance)
 
@@ -116,6 +116,8 @@ apps/radix-perf-testing/
       reporter.ts            # writes bench-results.json (BENCH_OUTPUT_PATH env)
     tests/
       checkbox.bench.ts      # pilot: mount 500, toggle interaction
+      composite.bench.ts     # mount/reorder DOM-ordered composite items
+      combobox.bench.ts      # mount 50/500/2000 registered options
       select.bench.ts        # pilot: open popup with 1000 options
 tools/scripts/benchmark/
   compare.mjs                # head.json + base.json → markdown table + noise verdict
@@ -233,6 +235,12 @@ CD-cycle counts prove too coarse).
   - `Select open (1000 options)` — mount closed (`[open]` bound to a signal), interaction sets it
     true; covers collection (DOM-order `contentChildren`), popper positioning, and portal cost — our
     highest-risk path (~49 ms, renders 7 — the open path runs multiple CD passes, deterministically).
+- `composite.bench.ts` — **done**:
+  - mounts 50 / 1000 DOM-ordered items and reorders 1000 reused views, covering the stable Map registry,
+    index map, sort, and reorder observer.
+- `combobox.bench.ts` — **done**:
+  - mounts 50 / 500 / 2000 grouped options inline, isolating the shared Combobox / Autocomplete engine's
+    item registry, group membership, DOM-order derivation, filtering state, and item host bindings.
 
 Local stability (Phase 2 acceptance): within a run stdDev is ~4% of the median; run-to-run medians
 vary ~10–14% on a busy dev machine — under base-ui's ±20% noise threshold and the reason same-runner
@@ -327,7 +335,8 @@ Negative / accepted costs:
 2. **Harness + pilots — ✅ DONE.** `benchmark()` with warmup(10)/runs(20)/IQR in
    `src/harness/{benchmark,metrics,mount,reporter}.ts`; `afterEveryRender` render counter; Element
    Timing paint; JSON reporter via a `vitest/browser` command that also prints a terminal table;
-   `checkbox.bench.ts` (mount + toggle) and `select.bench.ts` (open 1000); `primitives:bench` script.
+   `checkbox.bench.ts` (mount + toggle), `select.bench.ts` (open 1000), and later follow-up rows for
+   Composite mount/reorder and Combobox large-list registration; `primitives:bench` script.
    Local medians reviewed for stability (within-run ~4%, run-to-run ~10–14%).
 3. **CI — ✅ DONE.** `.github/workflows/benchmark.yml` (paths-triggered + `workflow_dispatch`,
    pinned actions) benchmarks head, then the merge-base in a `git worktree` on the **same runner**,
@@ -337,7 +346,7 @@ Negative / accepted costs:
    the job summary; reports upload as artifacts. Handles `new` / `removed` tests and
    `baseline unavailable` (perf app absent at merge-base, or base run failed). Sticky comment via
    `actions/github-script` (find-by-marker, update-or-create). **Non-blocking** (informational status).
-4. **Later (separate decisions)**: more primitives (Autocomplete virtualized, Menu, Slider drag),
+4. **Later (separate decisions)**: more interaction scenarios (Autocomplete typing, Menu, Slider drag),
    profiler-hook render timings, blocking thresholds once variance is known, historical tracking.
 
 ## References

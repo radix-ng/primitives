@@ -39,16 +39,36 @@ export class RdxComboboxGroup {
 
     readonly labelId = signal<string | undefined>(undefined);
 
-    private readonly items = signal<readonly ComboboxItemRef[]>([]);
+    // Group membership is unordered, so a stable Set avoids copying a growing array for every child
+    // registration. The tick keeps the two derived host states reactive.
+    private readonly items = new Set<ComboboxItemRef>();
+    private readonly itemsTick = signal(0);
 
-    protected readonly hasItems = computed(() => this.items().length > 0);
-    protected readonly hasVisibleItems = computed(() => this.items().some((item) => this.rootContext.isVisible(item)));
+    protected readonly hasItems = computed(() => {
+        this.itemsTick();
+        return this.items.size > 0;
+    });
+    protected readonly hasVisibleItems = computed(() => {
+        this.itemsTick();
+        for (const item of this.items) {
+            if (this.rootContext.isVisible(item)) {
+                return true;
+            }
+        }
+        return false;
+    });
 
     registerItem(item: ComboboxItemRef): void {
-        this.items.update((items) => [...items, item]);
+        if (this.items.has(item)) {
+            return;
+        }
+        this.items.add(item);
+        this.itemsTick.update((tick) => tick + 1);
     }
 
     unregisterItem(item: ComboboxItemRef): void {
-        this.items.update((items) => items.filter((i) => i !== item));
+        if (this.items.delete(item)) {
+            this.itemsTick.update((tick) => tick + 1);
+        }
     }
 }

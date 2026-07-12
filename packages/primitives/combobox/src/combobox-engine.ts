@@ -145,11 +145,19 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
     // the cursor happens to rest on when arrow-key navigation scrolls the list under a still pointer.
     let keyboardActive = false;
 
-    const _items = signal<readonly ComboboxItemRef[]>([]);
+    // Keep registrations in a stable map. Copying the growing array on every item mount/unmount makes
+    // registering N options O(n²) before filtering or DOM-order sorting even begins. The numeric tick is
+    // only the reactive invalidation channel; Angular batches the registrations from one render, so
+    // `orderedItems` materializes and sorts the final collection once for that batch. This is the same
+    // stable-map pattern used by Base UI and our CompositeList.
+    const itemRegistry = new Map<HTMLElement, ComboboxItemRef>();
+    const itemRegistryTick = signal(0);
 
     const orderedItems = computed(() => {
-        const items = [..._items()];
-        return items.sort((a, b) => domOrder(a.element, b.element));
+        itemRegistryTick();
+        return [...itemRegistry.values()]
+            .filter((item) => item.element.isConnected)
+            .sort((a, b) => domOrder(a.element, b.element));
     });
 
     const matchesFilter = (item: ComboboxItemRef): boolean => {
@@ -546,10 +554,19 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
         filteredItems,
         isVisible,
         registerItem(item: ComboboxItemRef): void {
-            _items.update((items) => [...items, item]);
+            if (itemRegistry.get(item.element) === item) {
+                return;
+            }
+            itemRegistry.set(item.element, item);
+            itemRegistryTick.update((tick) => tick + 1);
         },
         unregisterItem(item: ComboboxItemRef): void {
-            _items.update((items) => items.filter((i) => i !== item));
+            // A stale cleanup must not delete a newer registration for the same host element.
+            if (itemRegistry.get(item.element) !== item) {
+                return;
+            }
+            itemRegistry.delete(item.element);
+            itemRegistryTick.update((tick) => tick + 1);
         },
 
         highlight,
