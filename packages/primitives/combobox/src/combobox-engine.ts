@@ -160,27 +160,53 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
             .sort((a, b) => domOrder(a.element, b.element));
     });
 
-    const matchesFilter = (item: ComboboxItemRef): boolean => {
-        if (!config.filteringEnabled()) {
-            return true;
-        }
-        const filter = config.filter();
-        if (filter === null) {
-            return true;
-        }
-        const query = config.query();
-        // Custom filter: Base UI shape `(value, query, itemToString)`. Default: locale-aware contains
-        // on the item's own text (the element content), no value→text round-trip.
-        return filter
-            ? filter(item.value(), query, config.itemToString)
-            : defaultFilter().contains(item.textValue(), query);
-    };
+    const visibleItems = computed<readonly ComboboxItemRef[]>(
+        () => {
+            const items = orderedItems();
+            const limit = config.limit();
+            if (limit === 0) {
+                return [];
+            }
 
-    const visibleItems = computed(() => {
-        const matching = orderedItems().filter((item) => matchesFilter(item));
-        const limit = config.limit();
-        return limit >= 0 ? matching.slice(0, limit) : matching;
-    });
+            // Read root signals once per query, not once per item. The early paths also avoid
+            // allocating/filtering when every registered item is known to be visible.
+            if (!config.filteringEnabled()) {
+                return limit >= 0 ? items.slice(0, limit) : items;
+            }
+            const filter = config.filter();
+            if (filter === null) {
+                return limit >= 0 ? items.slice(0, limit) : items;
+            }
+            const query = config.query();
+            if (!filter && query.length === 0) {
+                return limit >= 0 ? items.slice(0, limit) : items;
+            }
+
+            const matching: ComboboxItemRef[] = [];
+            const contains = filter ? null : defaultFilter().contains;
+
+            for (const item of items) {
+                // Custom filter: Base UI shape `(value, query, itemToString)`. Default: locale-aware
+                // contains on the item's own text (the element content), no value→text round-trip.
+                const matches = filter
+                    ? filter(item.value(), query, config.itemToString)
+                    : contains!(item.textValue(), query);
+                if (!matches) {
+                    continue;
+                }
+                matching.push(item);
+                if (limit >= 0 && matching.length >= limit) {
+                    break;
+                }
+            }
+
+            return matching;
+        },
+        // Queries such as R → Ro → Row → "Row " can produce the exact same visible item
+        // sequence. Preserve the previous collection in that case so 500 item-level `isVisible`
+        // computeds and their host bindings stay cached while the input itself still updates.
+        { equal: sameItemOrder }
+    );
 
     const visibleSet = computed(() => new Set(visibleItems()));
     const isVisible = (item: ComboboxItemRef): boolean => visibleSet().has(item);
@@ -397,12 +423,15 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
         { injector }
     );
 
-    // Inline completion: mirror the active item's label into the input. Tracks the DOM-ref highlight,
-    // the virtualized index, the query, the reason, and `inlineMode` — so virtualized navigation and a
-    // `both → list` mode switch both recompute (and clear) the preview. No-op (null) when off (combobox).
+    // Inline completion: mirror the active item's label into the input. When inline mode is off, stop
+    // before reading query/highlight state so Combobox and list-mode Autocomplete do not subscribe this
+    // effect to the typing hot path. A `both → list` switch still clears the previous preview.
     effect(
         () => {
-            config.inlineMode();
+            if (!config.inlineMode()) {
+                untracked(() => inlinePreview.set(null));
+                return;
+            }
             highlightedItem();
             highlightedIndex();
             const query = config.query();
@@ -709,4 +738,20 @@ function domOrder(a: HTMLElement, b: HTMLElement): number {
         return 1;
     }
     return 0;
+}
+
+/** Referential item-sequence equality used to keep unchanged filtering results stable across queries. */
+function sameItemOrder(previous: readonly ComboboxItemRef[], next: readonly ComboboxItemRef[]): boolean {
+    if (previous === next) {
+        return true;
+    }
+    if (previous.length !== next.length) {
+        return false;
+    }
+    for (let index = 0; index < previous.length; index++) {
+        if (previous[index] !== next[index]) {
+            return false;
+        }
+    }
+    return true;
 }

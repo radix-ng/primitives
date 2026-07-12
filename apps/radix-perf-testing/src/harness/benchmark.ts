@@ -9,6 +9,14 @@ export interface BenchmarkOptions {
     warmupRuns?: number;
 }
 
+export interface BenchInteractionContext {
+    /**
+     * Flush one explicit change-detection pass inside a multi-step interaction. Once called, the
+     * harness skips its automatic final tick, so the interaction owns every measured render.
+     */
+    tick(): void;
+}
+
 /**
  * One benchmark scenario.
  *
@@ -22,7 +30,7 @@ export interface BenchScenario<T> {
     /** Configure the instance before the mount tick (e.g. set item count). Untimed for mount runs. */
     prepare?: (instance: T) => void;
     /** Mutate the instance to trigger the measured re-render. Presence switches to interaction mode. */
-    interact?: (instance: T) => void;
+    interact?: (instance: T, context: BenchInteractionContext) => void;
 }
 
 export type BenchSetup<T> = () => BenchScenario<T>;
@@ -64,8 +72,16 @@ async function runIteration<T>(scenario: BenchScenario<T>): Promise<Sample> {
             const paintPromise = observePaint(id);
             const t0 = performance.now();
             sentinel = appendSentinel(id);
-            scenario.interact(handle.instance);
-            handle.tick();
+            let interactionOwnsTicks = false;
+            scenario.interact(handle.instance, {
+                tick: () => {
+                    interactionOwnsTicks = true;
+                    handle.tick();
+                }
+            });
+            if (!interactionOwnsTicks) {
+                handle.tick();
+            }
             const t1 = performance.now();
             const paintAbs = await paintPromise;
 

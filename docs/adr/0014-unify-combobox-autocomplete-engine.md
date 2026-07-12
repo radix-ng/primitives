@@ -279,9 +279,14 @@ Home/End, group-label cleanup, backdrop `role="presentation"`, arrow `aria-hidde
    menubar); plus dead pass-through methods and byte-identical `openForBrowse`/`labelFor`/
    `coerceAutoHighlight` across the two roots. Extract a shared comparator + move shared root plumbing
    into the engine.
-8. **The inline-preview effect runs on every keystroke/navigation even when `inlineMode` is permanently
-   `false`** (combobox). Gate the effect's work on `inlineMode()` to avoid re-subscribing + resolving on
-   the hottest paths.
+8. **Done (2026-07-12): sequential filtering.** The inline-preview effect now exits before reading
+   query/highlight state while inline mode is off, removing it from the Combobox and list-mode
+   Autocomplete typing path. DOM filtering reads root signals once per query, stops as soon as `limit`
+   is filled, bypasses the scan when every item is known to be visible, and preserves the previous
+   visible collection when a longer query produces the same item sequence. The Chromium benchmark
+   dispatches a real `InputEvent` plus one Angular tick per character over 500 mounted options; a
+   representative same-machine comparison moved `"Row "` from 3.7 ms to 3.4 ms and `"Row 25"` from
+   5.8 ms to 5.4 ms with the 4 / 6 render counts unchanged (directional, within the ±20% noise band).
 
 Suggested next batch: **#4–#5** (visible inline-completion divergence); the remaining cleanup items are
 lower-value polish.

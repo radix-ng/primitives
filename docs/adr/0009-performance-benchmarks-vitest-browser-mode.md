@@ -117,7 +117,7 @@ apps/radix-perf-testing/
     tests/
       checkbox.bench.ts      # pilot: mount 500, toggle interaction
       composite.bench.ts     # mount/reorder DOM-ordered composite items
-      combobox.bench.ts      # mount 50/500/2000 registered options
+      combobox.bench.ts      # mount 50/500/2000 + sequential filtering over 500 options
       select.bench.ts        # pilot: open popup with 1000 options
 tools/scripts/benchmark/
   compare.mjs                # head.json + base.json → markdown table + noise verdict
@@ -181,12 +181,21 @@ export interface BenchmarkResult {
   paint?: Stats; // ms, time to sentinel paint (Element Timing)
 }
 
+export interface BenchInteractionContext {
+  tick(): void; // explicit per-step CD for multi-step interactions
+}
+
+export interface BenchScenario<T> {
+  component: Type<T>;
+  prepare?: (instance: T) => void;
+  interact?: (instance: T, context: BenchInteractionContext) => void;
+}
+
 export async function benchmark(
   name: string,
   setup: () => BenchScenario, // fresh component/app per iteration
-  interaction?: (ctx: BenchContext) => Promise<void>, // optional re-render scenario
   options?: BenchmarkOptions
-): Promise<void>;
+): Promise<BenchmarkResult>;
 ```
 
 Per iteration:
@@ -197,8 +206,9 @@ Per iteration:
    constraints on that element).
 2. `performance.mark()` before mount; `ApplicationRef.tick()` (wrapped to count CD cycles); await the
    sentinel's `PerformanceObserver` entry (type `element`) for the paint timestamp.
-3. If `interaction` is provided, measure it as a separate named section (mutate signals, await
-   stabilization + a fresh sentinel paint).
+3. If `interact` is provided, measure it as a separate named section. Simple interactions mutate state
+   and receive one automatic final tick. Multi-step interactions call `context.tick()` after each step;
+   doing so makes them own every measured render and suppresses the automatic final tick.
 4. Destroy the `ApplicationRef`, remove the host element, `performance.clearMarks()`.
 
 After all iterations: drop outliers outside `[Q1 - 1.5·IQR, Q3 + 1.5·IQR]`, compute stats, and
@@ -241,6 +251,8 @@ CD-cycle counts prove too coarse).
 - `combobox.bench.ts` — **done**:
   - mounts 50 / 500 / 2000 grouped options inline, isolating the shared Combobox / Autocomplete engine's
     item registry, group membership, DOM-order derivation, filtering state, and item host bindings.
+  - types `"Row "` and `"Row 25"` into 500 already-mounted options with a real `InputEvent` and an
+    explicit Angular tick per character, matching Base UI's keep-all-visible and narrow-to-~11 rows.
 
 Local stability (Phase 2 acceptance): within a run stdDev is ~4% of the median; run-to-run medians
 vary ~10–14% on a busy dev machine — under base-ui's ±20% noise threshold and the reason same-runner
@@ -336,7 +348,8 @@ Negative / accepted costs:
    `src/harness/{benchmark,metrics,mount,reporter}.ts`; `afterEveryRender` render counter; Element
    Timing paint; JSON reporter via a `vitest/browser` command that also prints a terminal table;
    `checkbox.bench.ts` (mount + toggle), `select.bench.ts` (open 1000), and later follow-up rows for
-   Composite mount/reorder and Combobox large-list registration; `primitives:bench` script.
+   Composite mount/reorder and Combobox large-list registration / sequential filtering;
+   `primitives:bench` script.
    Local medians reviewed for stability (within-run ~4%, run-to-run ~10–14%).
 3. **CI — ✅ DONE.** `.github/workflows/benchmark.yml` (paths-triggered + `workflow_dispatch`,
    pinned actions) benchmarks head, then the merge-base in a `git worktree` on the **same runner**,
@@ -346,7 +359,7 @@ Negative / accepted costs:
    the job summary; reports upload as artifacts. Handles `new` / `removed` tests and
    `baseline unavailable` (perf app absent at merge-base, or base run failed). Sticky comment via
    `actions/github-script` (find-by-marker, update-or-create). **Non-blocking** (informational status).
-4. **Later (separate decisions)**: more interaction scenarios (Autocomplete typing, Menu, Slider drag),
+4. **Later (separate decisions)**: more interaction scenarios (Autocomplete inline typing, Menu, Slider drag),
    profiler-hook render timings, blocking thresholds once variance is known, historical tracking.
 
 ## References
