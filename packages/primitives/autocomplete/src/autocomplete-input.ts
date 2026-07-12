@@ -169,11 +169,20 @@ export class RdxAutocompleteInput {
     }
 
     private commitInput(value: string, event: Event): void {
+        // The edit itself is authoritative. Mobile keyboards, context-menu cut/paste, drag edits and
+        // IME commits may have no useful keydown, so carrying suppression from the previous key makes
+        // inline completion stale in either direction.
+        const suppressInline = shouldSuppressInlineCompletion(event, value, this.root.value());
         // Base UI opens on input only for a non-empty trimmed value — whitespace alone won't open it.
         if (!this.root.open() && value.trim() !== '') {
             this.root.setOpen(true, 'input-change', event);
         }
         this.root.setQuery(value);
+        // `onValueChange` is cancelable. Only attach this edit's suppression state if the requested
+        // value actually committed; a vetoed edit must leave the previous preview semantics intact.
+        if (this.root.value() === value) {
+            this.root.setSuppressInline(suppressInline);
+        }
     }
 
     onClick(event: MouseEvent): void {
@@ -197,8 +206,6 @@ export class RdxAutocompleteInput {
         if (event.isComposing || this.composing) {
             return;
         }
-        // Backspace / Delete must never re-add an inline completion for the resulting edit.
-        this.root.setSuppressInline(event.key === 'Backspace' || event.key === 'Delete');
 
         if (event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) {
             return;
@@ -293,4 +300,24 @@ export class RdxAutocompleteInput {
     }
 
     protected readonly dataAttr = attr;
+}
+
+/** Whether this concrete edit should keep inline completion hidden for its resulting value. */
+function shouldSuppressInlineCompletion(event: Event, nextValue: string, previousValue: string): boolean {
+    // A committed composition inserts text even though CompositionEvent has no `inputType`.
+    if (event.type === 'compositionend') {
+        return false;
+    }
+
+    const inputType = (event as InputEvent).inputType;
+    if (inputType?.startsWith('delete')) {
+        return true;
+    }
+    if (inputType?.startsWith('insert')) {
+        return false;
+    }
+
+    // Synthetic/programmatic input and history edits may omit an inputType. Length is the safest
+    // fallback: shrinking must not immediately restore the suffix; equal/growing replacements may.
+    return nextValue.length < previousValue.length;
 }

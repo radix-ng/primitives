@@ -262,9 +262,12 @@ Home/End, group-label cleanup, backdrop `role="presentation"`, arrow `aria-hidde
 4. **Casing + non-prefix matches.** We preserve the user's typed casing (`ap` → `apple`) and only inline
    on a prefix match; Base UI shows the highlighted label verbatim (`Apple`) and inlines any keyboard-
    highlighted item. A fuzzy non-prefix match shows no inline preview here. Minor UX divergence.
-5. **`setSuppressInline` keyed only off Backspace/Delete keydown.** A non-keydown edit (paste, cut, IME
-   commit, Android soft keyboard) runs with the previous key's suppress flag, so inline can appear or be
-   suppressed at the wrong time. Reset it at input time, not only on keydown.
+5. **Done (2026-07-12): edit-driven inline suppression.** Suppression is derived from the concrete
+   `InputEvent.inputType`, not a preceding keydown: `delete*` edits (including cut and mobile Backspace)
+   suppress completion, while `insert*`, paste, and `compositionend` clear stale suppression. Synthetic
+   events without `inputType` fall back to whether the committed value shrank. Explicit keyboard
+   navigation is a new interaction and still mirrors its highlighted label after a deletion. Regression
+   coverage includes mobile delete without keydown, cut, paste-after-delete, and IME-after-delete.
 
 **Cleanup / performance (not correctness):**
 
@@ -288,5 +291,5 @@ Home/End, group-label cleanup, backdrop `role="presentation"`, arrow `aria-hidde
    representative same-machine comparison moved `"Row "` from 3.7 ms to 3.4 ms and `"Row 25"` from
    5.8 ms to 5.4 ms with the 4 / 6 render counts unchanged (directional, within the ±20% noise band).
 
-Suggested next batch: **#4–#5** (visible inline-completion divergence); the remaining cleanup items are
-lower-value polish.
+Suggested next batch: **#4** (visible inline-completion casing / non-prefix divergence); the remaining
+cleanup items are lower-value polish.

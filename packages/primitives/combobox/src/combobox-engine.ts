@@ -320,7 +320,13 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
 
     const recomputeInlinePreview = (label: string | null, query: string, reason: ComboboxHighlightReason): void => {
         // Pointer hover must not rewrite the input (matches Base UI); only typing / keyboard nav complete it.
-        if (!config.inlineMode() || suppressInline || !label || reason === 'pointer') {
+        if (!config.inlineMode() || !label || reason === 'pointer') {
+            inlinePreview.set(null);
+            return;
+        }
+        // Suppression belongs to the current edit only. Explicit keyboard navigation starts a new
+        // interaction and must still mirror the navigated label after a delete/cut edit.
+        if (suppressInline && reason !== 'keyboard') {
             inlinePreview.set(null);
             return;
         }

@@ -56,6 +56,18 @@ describe('Autocomplete modes', () => {
         el.value = text;
         el.dispatchEvent(new Event('input', { bubbles: true }));
     }
+    function edit(text: string, inputType: string, isComposing = false): void {
+        const el = inputEl();
+        el.value = text;
+        el.dispatchEvent(
+            new InputEvent('input', {
+                bubbles: true,
+                inputType,
+                isComposing,
+                data: inputType.startsWith('insert') ? text.at(-1) : null
+            })
+        );
+    }
 
     beforeEach(async () => {
         TestBed.configureTestingModule({ imports: [HostComponent] });
@@ -141,7 +153,7 @@ describe('Autocomplete modes', () => {
             expect(root().displayValue()).toBe('apple');
         });
 
-        it('clears the inline preview on a deleting keystroke', async () => {
+        it('infers deletion when a synthetic input event has no inputType', async () => {
             host.mode.set('inline');
             host.autoHighlight.set(true);
             await settle();
@@ -153,6 +165,78 @@ describe('Autocomplete modes', () => {
             type('ba');
             await settle();
             expect(root().inlinePreview()).toBeNull();
+        });
+
+        it('suppresses completion for a mobile delete InputEvent without keydown', async () => {
+            host.mode.set('inline');
+            host.autoHighlight.set(true);
+            await settle();
+            edit('ban', 'insertText');
+            await settle();
+            expect(root().inlinePreview()).toBe('banana');
+
+            // Soft keyboards commonly emit only `input`, with no preceding Backspace keydown.
+            edit('ba', 'deleteContentBackward');
+            await settle();
+            expect(root().inlinePreview()).toBeNull();
+            expect(root().displayValue()).toBe('ba');
+
+            inputEl().dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+            await settle();
+            expect(root().displayValue()).toBe('Grape');
+        });
+
+        it('suppresses completion when text is removed through cut', async () => {
+            host.mode.set('inline');
+            host.autoHighlight.set(true);
+            await settle();
+            edit('ban', 'insertText');
+            await settle();
+            expect(root().inlinePreview()).toBe('banana');
+
+            edit('ba', 'deleteByCut');
+            await settle();
+            expect(root().inlinePreview()).toBeNull();
+        });
+
+        it('clears stale delete suppression when the next edit is a paste', async () => {
+            host.mode.set('inline');
+            host.autoHighlight.set(true);
+            await settle();
+            edit('ban', 'insertText');
+            await settle();
+
+            inputEl().dispatchEvent(new KeyboardEvent('keydown', { key: 'Backspace', bubbles: true }));
+            edit('ba', 'deleteContentBackward');
+            await settle();
+            expect(root().inlinePreview()).toBeNull();
+
+            edit('ban', 'insertFromPaste');
+            await settle();
+            expect(root().inlinePreview()).toBe('banana');
+        });
+
+        it('clears stale delete suppression when an IME composition commits', async () => {
+            host.mode.set('inline');
+            host.autoHighlight.set(true);
+            await settle();
+            edit('ban', 'insertText');
+            await settle();
+
+            inputEl().dispatchEvent(new KeyboardEvent('keydown', { key: 'Backspace', bubbles: true }));
+            edit('ba', 'deleteContentBackward');
+            await settle();
+            expect(root().inlinePreview()).toBeNull();
+
+            inputEl().dispatchEvent(new CompositionEvent('compositionstart', { bubbles: true }));
+            edit('ban', 'insertCompositionText', true);
+            await settle();
+            expect(root().value()).toBe('ba');
+
+            inputEl().dispatchEvent(new CompositionEvent('compositionend', { bubbles: true, data: 'n' }));
+            await settle();
+            expect(root().value()).toBe('ban');
+            expect(root().inlinePreview()).toBe('banana');
         });
 
         it('reflects the highlighted item in the input while navigating, even without a prefix match', async () => {
