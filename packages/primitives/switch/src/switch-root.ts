@@ -1,4 +1,4 @@
-import { booleanAttribute, computed, Directive, effect, inject, input, model, output } from '@angular/core';
+import { booleanAttribute, computed, Directive, effect, inject, input, model, output, signal } from '@angular/core';
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
@@ -8,7 +8,8 @@ import {
     RdxControlValueAccessor,
     RdxFormCheckboxControl,
     RdxFormUiControlBase,
-    RdxFormUiTouchTarget
+    RdxFormUiTouchTarget,
+    useNativeFormControl
 } from '@radix-ng/primitives/core';
 import { provideSwitchContext, RdxSwitchContext } from './switch-context';
 
@@ -30,9 +31,11 @@ const context = (): RdxSwitchContext => {
         readonly: root.readonly,
         required: root.required,
         name: root.name,
+        form: root.form,
         value: root.submitValue,
         ariaLabel: root.ariaLabel,
         ariaLabelledBy: root.ariaLabelledBy,
+        registerNativeInput: (input) => root.registerNativeInput(input),
         markAsTouched: () => root.markAsTouched()
     };
 };
@@ -117,8 +120,11 @@ export class RdxSwitchRoot extends RdxFormUiControlBase implements RdxFormCheckb
      */
     readonly required = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    /** Name of the hidden form input rendered by `[rdxSwitchInput]`. */
+    /** Native form field name. */
     readonly name = input<string>();
+
+    /** Associates the switch with an external form by id. */
+    readonly form = input<string>();
 
     /**
      * Value submitted with the form when the switch is on.
@@ -132,6 +138,12 @@ export class RdxSwitchRoot extends RdxFormUiControlBase implements RdxFormCheckb
      */
     readonly submitValue = input<string>('on', { alias: 'value' });
 
+    /**
+     * Value submitted while the switch is off. When omitted, the off state contributes no entry,
+     * matching native checkbox behavior.
+     */
+    readonly uncheckedValue = input<string>();
+
     readonly ariaLabelledBy = input<string | undefined>(undefined, { alias: 'aria-labelledby' });
     readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
 
@@ -142,6 +154,10 @@ export class RdxSwitchRoot extends RdxFormUiControlBase implements RdxFormCheckb
     readonly checkedState = computed(() => !!this.cva.value());
     /** @ignore */
     protected readonly isDisabled = computed(() => !!this.cva.disabled());
+    private readonly nativeInput = signal<HTMLInputElement | null>(null);
+    private readonly nativeInputOwnsValue = computed(
+        () => this.nativeInput() !== null && (this.checkedState() || this.uncheckedValue() === undefined)
+    );
 
     /** @ignore */
     readonly invalidState = this.formUi.invalidState;
@@ -152,6 +168,32 @@ export class RdxSwitchRoot extends RdxFormUiControlBase implements RdxFormCheckb
 
     constructor() {
         super();
+
+        useNativeFormControl({
+            name: this.name,
+            form: this.form,
+            disabled: this.isDisabled,
+            value: this.checkedState,
+            serialize: (checked) => {
+                const value = checked ? this.submitValue() : this.uncheckedValue();
+                return value === undefined ? [] : [value];
+            },
+            hasNativeControl: this.nativeInputOwnsValue,
+            syncNativeControl: () => {
+                const input = this.nativeInput();
+                if (input) {
+                    input.checked = this.checkedState();
+                }
+            },
+            defaultValue: () => this.defaultChecked() ?? this.checkedState(),
+            onReset: (value) => {
+                this.checked.set(value);
+                if (!this.resetNgControl(value)) {
+                    this.cva.writeValue(value);
+                }
+                this.formUi.resetInteractionState?.();
+            }
+        });
 
         // Apply the uncontrolled `defaultChecked` once. `input()` values are not bound at field-init,
         // so the on state must be seeded here — into both the `checked` model and the CVA value, which
@@ -201,5 +243,15 @@ export class RdxSwitchRoot extends RdxFormUiControlBase implements RdxFormCheckb
         this.checked.set(next);
         this.cva.setValue(next);
         this.formUi.markDirty();
+    }
+
+    /** @ignore Register the optional native checkbox so it owns checked-value serialization. */
+    registerNativeInput(input: HTMLInputElement): () => void {
+        this.nativeInput.set(input);
+        return () => {
+            if (this.nativeInput() === input) {
+                this.nativeInput.set(null);
+            }
+        };
     }
 }

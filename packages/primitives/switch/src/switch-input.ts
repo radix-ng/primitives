@@ -1,4 +1,4 @@
-import { Directive } from '@angular/core';
+import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 import { injectSwitchContext } from './switch-context';
 
 /**
@@ -14,6 +14,7 @@ import { injectSwitchContext } from './switch-context';
         tabindex: '-1',
         'aria-hidden': 'true',
         '[attr.name]': 'rootContext.name()',
+        '[attr.form]': 'rootContext.form()',
         '[attr.value]': 'rootContext.value()',
         '[checked]': 'rootContext.checked()',
         '[disabled]': 'rootContext.disabled()',
@@ -28,4 +29,10 @@ import { injectSwitchContext } from './switch-context';
 })
 export class RdxSwitchInput {
     protected readonly rootContext = injectSwitchContext();
+    private readonly input = inject<ElementRef<HTMLInputElement>>(ElementRef).nativeElement;
+
+    constructor() {
+        const unregister = this.rootContext.registerNativeInput(this.input);
+        inject(DestroyRef).onDestroy(unregister);
+    }
 }

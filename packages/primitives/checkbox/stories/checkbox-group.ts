@@ -8,7 +8,7 @@ import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 /**
- * `rdxCheckboxGroup` holds the array of checked names. Each child participates by its `name`, and
+ * `rdxCheckboxGroup` holds the array of checked values. Each child participates by its `value`, and
  * the checkbox marked `parent` becomes a "select all" whose state (checked / indeterminate /
  * unchecked) is derived from `allValues` — no manual wiring.
  *
@@ -44,14 +44,14 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
             </div>
 
             <div class="ml-6 flex flex-col gap-3">
-                @for (item of items; track item.name) {
+                @for (item of items; track item.value) {
                     <div class="flex items-center gap-3">
-                        <div [name]="item.name" rdxCheckboxRoot>
-                            <button [class]="c.button" [id]="item.name" rdxCheckboxButton>
+                        <div [value]="item.value" rdxCheckboxRoot>
+                            <button [class]="c.button" [id]="item.value" rdxCheckboxButton>
                                 <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
                             </button>
                         </div>
-                        <label class="text-foreground text-sm font-medium" [htmlFor]="item.name" rdxLabel>
+                        <label class="text-foreground text-sm font-medium" [htmlFor]="item.value" rdxLabel>
                             {{ item.label }}
                         </label>
                     </div>
@@ -64,12 +64,12 @@ export class CheckboxGroupExample {
     protected readonly c = demoCheckbox;
 
     protected readonly items = [
-        { name: 'apples', label: 'Apples' },
-        { name: 'bananas', label: 'Bananas' },
-        { name: 'cherries', label: 'Cherries' }
+        { value: 'apples', label: 'Apples' },
+        { value: 'bananas', label: 'Bananas' },
+        { value: 'cherries', label: 'Cherries' }
     ];
 
-    protected readonly all = this.items.map((item) => item.name);
+    protected readonly all = this.items.map((item) => item.value);
 
     value = signal<string[]>(['apples']);
 }

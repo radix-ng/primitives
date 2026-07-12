@@ -21,7 +21,7 @@
 - ✅ Full keyboard navigation.
 - ✅ Supports indeterminate state.
 - ✅ Can be controlled or uncontrolled.
-- ✅ Hidden native input for form submission and validation.
+- ✅ Native form submission with an optional native input for constraint validation.
 - ✅ Base UI state hooks: `data-checked`, `data-unchecked`, and `data-indeterminate`.
 
 ## Import
@@ -37,7 +37,7 @@ import {
 
 ## Anatomy
 
-Assemble the parts: a root, a button trigger, the indicator, and a hidden input for forms.
+Assemble the root, button trigger, and indicator. The native input is optional.
 
 ```html
 <div rdxCheckboxRoot>
@@ -47,6 +47,9 @@ Assemble the parts: a root, a button trigger, the indicator, and a hidden input 
   <input rdxCheckboxInput />
 </div>
 ```
+
+A named root participates in `FormData` even without `[rdxCheckboxInput]`. Include the input when you
+also need native constraint validation or mirrored native input/change events.
 
 ## Examples
 
@@ -448,7 +451,7 @@ There are two ways to build a "select all" parent. Pick by how much you want to 
 
 |                                  | **Select all** (below)                | **Checkbox group**                                                  |
 | -------------------------------- | ------------------------------------- | ------------------------------------------------------------------- |
-| Source of truth                  | your own model (one boolean per item) | the group's `string[]` value (the checked `name`s)                  |
+| Source of truth                  | your own model (one boolean per item) | the group's `string[]` value (the checked child values)            |
 | Parent / indeterminate logic     | written by hand in the component      | built in (`parent` + `allValues`)                                   |
 | Parent click                     | flat toggle: all ↔ none               | remembers the partial selection: partial → all → none → partial     |
 | Disabled child during select-all | you handle it                         | preserved automatically                                             |
@@ -568,11 +571,13 @@ export class CheckboxSelectAllExample {
 
 ### Checkbox group
 
-The same UI, but `rdxCheckboxGroup` owns it. It manages a single array value — the `name`s of the
+The same UI, but `rdxCheckboxGroup` owns it. It manages a single array value — the `value`s of the
 checked checkboxes — and a child marked `parent` becomes the "select all", with its state derived
 from `allValues`. Clicking the parent **remembers the partial selection** (partial → all → none →
 back to the partial), disabled-but-checked children are preserved, and the group is itself a form
-control, so `[(value)]`, `ngModel`, and reactive forms bind to the `string[]` value.
+control, so `[(value)]`, `ngModel`, and reactive forms bind to the `string[]` value. For native forms,
+put `name` on the group; selected children become repeated entries under that name. A child `name`
+still works as a compatibility fallback when its `value` is omitted.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
@@ -585,7 +590,7 @@ import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 /**
- * `rdxCheckboxGroup` holds the array of checked names. Each child participates by its `name`, and
+ * `rdxCheckboxGroup` holds the array of checked values. Each child participates by its `value`, and
  * the checkbox marked `parent` becomes a "select all" whose state (checked / indeterminate /
  * unchecked) is derived from `allValues` — no manual wiring.
  *
@@ -621,14 +626,14 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
             </div>
 
             <div class="ml-6 flex flex-col gap-3">
-                @for (item of items; track item.name) {
+                @for (item of items; track item.value) {
                     <div class="flex items-center gap-3">
-                        <div [name]="item.name" rdxCheckboxRoot>
-                            <button [class]="c.button" [id]="item.name" rdxCheckboxButton>
+                        <div [value]="item.value" rdxCheckboxRoot>
+                            <button [class]="c.button" [id]="item.value" rdxCheckboxButton>
                                 <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
                             </button>
                         </div>
-                        <label class="text-foreground text-sm font-medium" [htmlFor]="item.name" rdxLabel>
+                        <label class="text-foreground text-sm font-medium" [htmlFor]="item.value" rdxLabel>
                             {{ item.label }}
                         </label>
                     </div>
@@ -641,12 +646,12 @@ export class CheckboxGroupExample {
     protected readonly c = demoCheckbox;
 
     protected readonly items = [
-        { name: 'apples', label: 'Apples' },
-        { name: 'bananas', label: 'Bananas' },
-        { name: 'cherries', label: 'Cherries' }
+        { value: 'apples', label: 'Apples' },
+        { value: 'bananas', label: 'Bananas' },
+        { value: 'cherries', label: 'Cherries' }
     ];
 
-    protected readonly all = this.items.map((item) => item.name);
+    protected readonly all = this.items.map((item) => item.value);
 
     value = signal<string[]>(['apples']);
 }
@@ -703,11 +708,15 @@ export class CheckboxGroupExample {
 
 ### Input
 
-`RdxCheckboxInputDirective` — the hidden native input for form submission and validation; reads everything from the root context, so it takes no inputs. Apply to a native `<input>` element (the selector requires `input`).
+`RdxCheckboxInputDirective` — an optional hidden native input for constraint validation and mirrored
+native input/change events. FormData serialization works from a named root without it. The directive
+reads everything from the root context and takes no inputs.
 
 ### Checkbox Group
 
-`RdxCheckboxGroupDirective` (`rdxCheckboxGroup`) — a `role="group"` container holding the array of checked `name`s. Mark a child checkbox `parent` to make it select/deselect every name in `allValues`. Apply to a container element (typically a `<div>`).
+`RdxCheckboxGroupDirective` (`rdxCheckboxGroup`) — a `role="group"` container holding the array of
+checked child values. Mark a child checkbox `parent` to make it select/deselect every value in
+`allValues`. A named group serializes selected values as repeated native form entries.
 
 **Data attributes**
 

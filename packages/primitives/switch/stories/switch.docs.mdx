@@ -15,7 +15,7 @@ import * as SwitchStories from './switch.stories';
 - ✅ Can be controlled or uncontrolled.
 - ✅ Full keyboard navigation.
 - ✅ Supports disabled, read-only and required states.
-- ✅ Hidden native input for form submission and screen readers.
+- ✅ Native form submission with an optional native input for constraint validation.
 
 ## Import
 
@@ -24,7 +24,7 @@ import { RdxSwitchRoot, RdxSwitchThumb, RdxSwitchInput } from '@radix-ng/primiti
 ```
 
 The API follows [Base UI Switch](https://base-ui.com/react/components/switch): a `Root` with a
-`Thumb`, plus an optional hidden `Input` for native form submission.
+`Thumb`, plus an optional hidden `Input` for native browser behavior.
 
 ## Anatomy
 
@@ -35,7 +35,9 @@ The API follows [Base UI Switch](https://base-ui.com/react/components/switch): a
 </button>
 ```
 
-The `[rdxSwitchInput]` is optional — include it when the switch must submit a value with a native form.
+A named root submits without `[rdxSwitchInput]`. Include the optional input when you also need native
+constraint validation. Use `uncheckedValue` when the off state should submit a value; otherwise it is
+omitted like a native unchecked checkbox.
 
 ## Examples
 
@@ -121,8 +123,9 @@ has no inputs.
 
 ### Input
 
-`RdxSwitchInput` — the hidden native checkbox for form submission. Apply to an `<input>` element inside
-the root. Reads everything from context (carries `name` / `value`); it has no inputs or `data-*`.
+`RdxSwitchInput` — the optional hidden native checkbox for constraint validation. Apply it inside the
+root. It reads everything from context (including `name`, `form`, and `value`) and has no inputs or
+`data-*`.
 
 ## Accessibility
 

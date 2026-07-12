@@ -88,10 +88,10 @@ import {
 </div>
 ```
 
-Add the optional `input[rdxRadioItemInput]` part inside each item to render the hidden native radio
-input, so native form submission, validation, and `<label>` activation work. Selection through the
-group (click, keyboard, `ngModel`/reactive forms) works without it — include it only when you need
-native `<form>` integration.
+A named group participates in native `FormData` without item inputs. Add the optional
+`input[rdxRadioItemInput]` part inside each item when you also need native constraint validation,
+`<label>` activation, or native input/change events. Selection through the group (click, keyboard,
+`ngModel`/reactive forms) works with or without it.
 
 The item can attach to any element. When the host is a native `<button>` it is detected automatically:
 `type="button"` and the native `disabled` attribute are applied for you — there is no `nativeButton`
@@ -244,7 +244,8 @@ export class RadioDisabledComponent {
 
 ### Template-driven forms
 
-Radio group works with `ngModel`, native form submission, and a submit button via the hidden `rdxRadioItemInput`.
+Radio group works with `ngModel`, native form submission, and a submit button. This example keeps
+`rdxRadioItemInput` for native `required` validation and label activation.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
@@ -353,9 +354,9 @@ Exposes `role="radio"` and `aria-checked`.
 
 ### RadioGroupItemInput
 
-`RdxRadioItemInputDirective` — optional hidden native radio input for native form submission,
-validation, and `<label>` activation. Apply to an `<input>` element placed inside an item. Reads
-everything from the item and group — it has no public inputs and sets no `data-*` attributes.
+`RdxRadioItemInputDirective` — optional hidden native radio input for constraint validation,
+`<label>` activation, and native input/change events. FormData serialization works from the named
+group without it. Apply it inside an item; it has no public inputs or `data-*` attributes.
 
 ### RadioIndicator
 

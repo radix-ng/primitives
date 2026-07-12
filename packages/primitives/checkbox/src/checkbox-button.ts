@@ -50,16 +50,16 @@ export class RdxCheckboxButtonDirective {
         // `aria-controls`. Use the consumer's id when present, otherwise derive a stable one.
         effect((onCleanup) => {
             const group = this.group;
-            const name = this.rootContext.name();
-            if (!group || this.rootContext.parent() || name === undefined) {
+            const value = this.rootContext.itemValue();
+            if (!group || this.rootContext.parent() || value === undefined) {
                 return;
             }
 
             const el = this.elementRef.nativeElement;
             if (!el.id) {
-                el.id = group.controlId(name);
+                el.id = group.controlId(value);
             }
-            onCleanup(group.registerControl(name, el.id));
+            onCleanup(group.registerControl(value, el.id));
         });
     }
 

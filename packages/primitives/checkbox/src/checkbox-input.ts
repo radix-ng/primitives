@@ -1,4 +1,4 @@
-import { Directive, effect, ElementRef, inject } from '@angular/core';
+import { DestroyRef, Directive, effect, ElementRef, inject } from '@angular/core';
 import { injectCheckboxRootContext } from './checkbox-root';
 
 @Directive({
@@ -32,6 +32,9 @@ export class RdxCheckboxInputDirective {
     private readonly input = inject<ElementRef<HTMLInputElement>>(ElementRef).nativeElement;
 
     constructor() {
+        const unregister = this.rootContext.registerNativeInput(this.input);
+        inject(DestroyRef).onDestroy(unregister);
+
         let isInitial = true;
 
         /**

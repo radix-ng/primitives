@@ -1219,7 +1219,7 @@
           "directive": "RdxCheckboxGroupDirective",
           "selector": "[rdxCheckboxGroup]",
           "exportAs": "rdxCheckboxGroup",
-          "description": "Groups a set of checkboxes that share a single array value (the names of the checked boxes).\n\nEach child `rdxCheckboxRoot` participates by its `name`. A child marked `parent` becomes a\n\"select all\" checkbox whose state is derived from `allValues`.",
+          "description": "Groups a set of checkboxes that share a single array value (the values of the checked boxes).\n\nEach child `rdxCheckboxRoot` participates by its `value` (falling back to `name`). A child marked\n`parent` becomes a \"select all\" checkbox whose state is derived from `allValues`.",
           "hostDirectives": [
             "RdxFormUiStateHost"
           ],
@@ -1228,12 +1228,12 @@
               "name": "allValues",
               "type": "string[]",
               "default": "[]",
-              "description": "All checkbox names in the group. Required for a `parent` (select-all) checkbox."
+              "description": "All checkbox values in the group. Required for a `parent` (select-all) checkbox."
             },
             {
               "name": "defaultValue",
               "type": "string[]",
-              "description": "The names checked initially when the group is uncontrolled."
+              "description": "The values checked initially when the group is uncontrolled."
             },
             {
               "name": "disabled",
@@ -1242,10 +1242,20 @@
               "description": "Whether the whole group is disabled."
             },
             {
+              "name": "form",
+              "type": "string",
+              "description": "Associates the group with an external form by id."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Native form field name. Selected values are submitted as repeated entries under this name."
+            },
+            {
               "name": "value",
               "type": "string[]",
               "default": "[]",
-              "description": "The names of the currently checked checkboxes. Use with `onValueChange` or `[(value)]`."
+              "description": "The values of the currently checked checkboxes. Use with `onValueChange` or `[(value)]`."
             },
             {
               "name": "dirty",
@@ -1282,7 +1292,7 @@
             {
               "name": "onValueChange",
               "type": "RdxCheckboxGroupValueChangeEvent",
-              "description": "Emits the new array of checked names whenever the value changes."
+              "description": "Emits the new array of checked values whenever the value changes."
             },
             {
               "name": "touch",
@@ -1371,7 +1381,7 @@
             {
               "name": "name",
               "type": "string",
-              "description": "Name of the form control. Submitted with the form as part of a name/value pair. Inside a\n`rdxCheckboxGroup` this also identifies the checkbox in the group's value array."
+              "description": "Name of a standalone form control. Inside a `rdxCheckboxGroup`, prefer `[value]` to identify\nthe item; `name` remains a compatibility fallback for existing group templates."
             },
             {
               "name": "parent",
@@ -1399,9 +1409,9 @@
             },
             {
               "name": "value",
-              "type": "string",
-              "default": "'on'",
-              "description": "The value of the checkbox. This is what is submitted with the form when the checkbox is checked.\n\nBound publicly as `[value]`; the TS member is named `submitValue` so the\ndirective can satisfy `RdxFormCheckboxControl`, whose contract reserves a\n`value` member for `RdxFormValueControl` and forbids it on checkbox-style\ncontrols. (Checkbox is not yet marked `implements` — its `checked` is still\n`CheckedState`; see the `indeterminate` half of collision #1.)"
+              "type": "string | undefined",
+              "default": "undefined",
+              "description": "The value of the checkbox. This is what is submitted with the form when the checkbox is checked.\n\nBound publicly as `[value]`; the TS member is named `submitValue` so the\ndirective can satisfy `RdxFormCheckboxControl`, whose contract reserves a\n`value` member for `RdxFormValueControl` and forbids it on checkbox-style\ncontrols.\nWhen omitted, native submission uses the browser checkbox default (`on`). Inside a\n`rdxCheckboxGroup`, the child's `name` is used as a compatibility fallback."
             },
             {
               "name": "touched",
@@ -7201,6 +7211,11 @@
               "description": "When `true`, prevents the user from interacting with the switch."
             },
             {
+              "name": "form",
+              "type": "string",
+              "description": "Associates the switch with an external form by id."
+            },
+            {
               "name": "id",
               "type": "string",
               "default": "injectId('rdx-switch-')"
@@ -7208,7 +7223,7 @@
             {
               "name": "name",
               "type": "string",
-              "description": "Name of the hidden form input rendered by `[rdxSwitchInput]`."
+              "description": "Native form field name."
             },
             {
               "name": "readonly",
@@ -7227,6 +7242,11 @@
               "type": "string",
               "default": "'on'",
               "description": "Value submitted with the form when the switch is on.\n\nBound publicly as `[value]`; the TS member is named `submitValue` so the\ndirective can satisfy `RdxFormCheckboxControl`, whose contract reserves a\n`value` member for `RdxFormValueControl` and forbids it on checkbox-style\ncontrols."
+            },
+            {
+              "name": "uncheckedValue",
+              "type": "string",
+              "description": "Value submitted while the switch is off. When omitted, the off state contributes no entry,\nmatching native checkbox behavior."
             },
             {
               "name": "dirty",
@@ -7854,10 +7874,20 @@
               "description": "Whether the whole group is disabled."
             },
             {
+              "name": "form",
+              "type": "string",
+              "description": "Associates the group with an external form by id."
+            },
+            {
               "name": "multiple",
               "type": "boolean",
               "default": "false",
               "description": "Whether multiple items can be pressed at the same time."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Native form field name. Pressed values are submitted as repeated entries under this name."
             },
             {
               "name": "orientation",
@@ -7952,10 +7982,20 @@
               "description": "Whether the whole group is disabled."
             },
             {
+              "name": "form",
+              "type": "string",
+              "description": "Associates the group with an external form by id."
+            },
+            {
               "name": "multiple",
               "type": "boolean",
               "default": "false",
               "description": "Whether multiple items can be pressed at the same time."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Native form field name. Pressed values are submitted as repeated entries under this name."
             },
             {
               "name": "orientation",

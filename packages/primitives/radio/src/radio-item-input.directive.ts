@@ -33,12 +33,16 @@ export class RdxRadioItemInputDirective {
 
     readonly name = computed(() => this.rootContext.name());
     readonly form = computed(() => this.rootContext.form());
-    readonly value = computed(() => this.itemContext.value() || undefined);
+    readonly value = computed(() => this.itemContext.value() ?? undefined);
     readonly checked = computed(() => this.itemContext.checkedState());
     readonly required = computed(() => this.itemContext.requiredState());
     readonly disabled = computed(() => this.itemContext.disabledState());
 
     constructor() {
+        effect((onCleanup) => {
+            onCleanup(this.rootContext.registerNativeInput(this.itemContext.value(), this.input));
+        });
+
         let isInitial = true;
 
         effect(() => {

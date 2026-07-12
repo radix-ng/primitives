@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { RdxCheckboxModule } from '../index';
@@ -8,23 +9,26 @@ import { RdxCheckboxModule } from '../index';
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxCheckboxModule],
     template: `
-        <div
-            [(value)]="value"
-            [allValues]="all"
-            [disabled]="disabled"
-            (onValueChange)="onValueChange($event)"
-            rdxCheckboxGroup
-        >
-            <div parent rdxCheckboxRoot>
-                <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
+        <form>
+            <div
+                [(value)]="value"
+                [allValues]="all"
+                [disabled]="disabled"
+                (onValueChange)="onValueChange($event)"
+                rdxCheckboxGroup
+                name="features"
+            >
+                <div parent rdxCheckboxRoot>
+                    <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
+                </div>
+                <div rdxCheckboxRoot value="fizz">
+                    <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
+                </div>
+                <div rdxCheckboxRoot value="buzz">
+                    <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
+                </div>
             </div>
-            <div name="fizz" rdxCheckboxRoot>
-                <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
-            </div>
-            <div name="buzz" rdxCheckboxRoot>
-                <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
-            </div>
-        </div>
+        </form>
     `
 })
 class GroupHost {
@@ -100,6 +104,14 @@ describe('RdxCheckboxGroup', () => {
         expect(group.getAttribute('role')).toBe('group');
     });
 
+    it('submits selected child values as repeated entries under the group name', () => {
+        setup({ value: ['fizz', 'buzz'] });
+        const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+
+        expect(new FormData(form).getAll('features')).toEqual(['fizz', 'buzz']);
+        expect(form.querySelectorAll('input[name="features"]')).toHaveLength(2);
+    });
+
     it('parent exposes aria-controls listing the child control ids', () => {
         setup();
         const [parent, fizz, buzz] = buttons();
@@ -173,6 +185,7 @@ describe('RdxCheckboxGroup', () => {
         expect(buttons()[1].hasAttribute('disabled')).toBe(false);
         expect(buttons()[1].getAttribute('aria-disabled')).toBe('true');
         expect(state(1)).toBe('unchecked');
+        expect(new FormData(fixture.nativeElement.querySelector('form')).has('features')).toBe(false);
     });
 
     it('allows canceling child changes before state updates', () => {
@@ -241,6 +254,51 @@ describe('RdxCheckboxGroup', () => {
         parent.click();
         f.detectChanges();
         expect(f.componentInstance.value).toEqual(['b']);
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [ReactiveFormsModule, RdxCheckboxModule],
+    template: `
+        <form id="preferences"></form>
+        <div [formControl]="control" rdxCheckboxGroup name="features" form="preferences">
+            <div rdxCheckboxRoot value="a"><button rdxCheckboxButton>A</button></div>
+            <div rdxCheckboxRoot value="b"><button rdxCheckboxButton>B</button></div>
+        </div>
+    `
+})
+class NativeResetCheckboxGroupHost {
+    readonly control = new FormControl<string[]>(['b'], { nonNullable: true });
+}
+
+describe('RdxCheckboxGroup native form contract', () => {
+    it('associates with an external form and resets the Angular control to its initial value', async () => {
+        TestBed.configureTestingModule({ imports: [NativeResetCheckboxGroupHost] });
+        const fixture = TestBed.createComponent(NativeResetCheckboxGroupHost);
+        const host = fixture.componentInstance;
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+        const buttons = Array.from(fixture.nativeElement.querySelectorAll('button')) as HTMLButtonElement[];
+
+        expect(new FormData(form).getAll('features')).toEqual(['b']);
+
+        buttons[0].click();
+        fixture.detectChanges();
+        expect(host.control.value).toEqual(['b', 'a']);
+        expect(host.control.dirty).toBe(true);
+
+        form.reset();
+        await Promise.resolve();
+        fixture.detectChanges();
+
+        expect(host.control.value).toEqual(['b']);
+        expect(host.control.pristine).toBe(true);
+        expect(host.control.untouched).toBe(true);
+        expect(new FormData(form).getAll('features')).toEqual(['b']);
     });
 });
 

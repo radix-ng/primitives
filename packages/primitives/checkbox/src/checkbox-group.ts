@@ -21,7 +21,9 @@ import {
     RdxFormUiControlBase,
     RdxFormUiStateHost,
     RdxFormUiTouchTarget,
-    RdxFormValueControl
+    RdxFormValueControl,
+    serializeNativeFormValue,
+    useNativeFormControl
 } from '@radix-ng/primitives/core';
 import type { CheckedState } from './checkbox-root';
 
@@ -35,26 +37,28 @@ export interface RdxCheckboxGroupValueChangeEvent {
 }
 
 export interface RdxCheckboxGroupContext {
-    /** The names of the currently checked checkboxes. */
+    /** The values of the currently checked checkboxes. */
     value: Signal<string[]>;
-    /** All checkbox names, used by a `parent` checkbox to check/uncheck every child. */
+    /** All checkbox values, used by a `parent` checkbox to check/uncheck every child. */
     allValues: Signal<string[]>;
+    /** External owning form id inherited by optional child native inputs. */
+    form: Signal<string | undefined>;
     /** Whether the whole group is disabled. */
     disabled: Signal<boolean>;
     /** The derived state of a `parent` checkbox: all / none / some checked. */
     parentState: Signal<CheckedState>;
     /** The space-separated control ids the `parent` checkbox controls (for `aria-controls`). */
     controlledIds: Signal<string | undefined>;
-    /** A stable id for a child's control element, derived from the group id and the child name. */
-    controlId: (name: string) => string;
-    /** Toggle a single child by name. */
-    toggleValue: (name: string, event?: Event) => void;
+    /** A stable id for a child's control element, derived from the group id and item value. */
+    controlId: (value: string) => string;
+    /** Toggle a single child by value. */
+    toggleValue: (value: string, event?: Event) => void;
     /** Toggle every child on or off (used by a `parent` checkbox). */
     toggleAll: (event?: Event) => void;
-    /** Register a child's name and disabled state so the parent can preserve disabled items. */
-    registerChild: (name: string, disabled: Signal<boolean>) => () => void;
+    /** Register a child's value and disabled state so the parent can preserve disabled items. */
+    registerChild: (value: string, disabled: Signal<boolean>) => () => void;
     /** Register a child's control element id so the parent can reference it via `aria-controls`. */
-    registerControl: (name: string, id: string) => () => void;
+    registerControl: (value: string, id: string) => () => void;
 }
 
 export const [injectCheckboxGroupContext, provideCheckboxGroupContext] = createContext<RdxCheckboxGroupContext>(
@@ -67,24 +71,25 @@ const groupContext = (): RdxCheckboxGroupContext => {
     return {
         value: group.value,
         allValues: group.allValues,
+        form: group.form,
         disabled: group.disabledState,
         parentState: group.parentState,
         controlledIds: group.controlledIds,
-        controlId: (name) => group.controlId(name),
-        toggleValue: (name, event) => group.toggleValue(name, event),
+        controlId: (value) => group.controlId(value),
+        toggleValue: (value, event) => group.toggleValue(value, event),
         toggleAll: (event) => group.toggleAll(event),
-        registerChild: (name, disabled) => group.registerChild(name, disabled),
-        registerControl: (name, id) => group.registerControl(name, id)
+        registerChild: (value, disabled) => group.registerChild(value, disabled),
+        registerControl: (value, id) => group.registerControl(value, id)
     };
 };
 
 let nextCheckboxGroupId = 0;
 
 /**
- * Groups a set of checkboxes that share a single array value (the names of the checked boxes).
+ * Groups a set of checkboxes that share a single array value (the values of the checked boxes).
  *
- * Each child `rdxCheckboxRoot` participates by its `name`. A child marked `parent` becomes a
- * "select all" checkbox whose state is derived from `allValues`.
+ * Each child `rdxCheckboxRoot` participates by its `value` (falling back to `name`). A child marked
+ * `parent` becomes a "select all" checkbox whose state is derived from `allValues`.
  */
 @Directive({
     selector: '[rdxCheckboxGroup]',
@@ -104,19 +109,25 @@ export class RdxCheckboxGroupDirective
     extends RdxFormUiControlBase
     implements ControlValueAccessor, RdxFormValueControl<string[]>
 {
-    /** The names of the currently checked checkboxes. Use with `onValueChange` or `[(value)]`. */
+    /** The values of the currently checked checkboxes. Use with `onValueChange` or `[(value)]`. */
     readonly value = model<string[]>([]);
 
-    /** The names checked initially when the group is uncontrolled. */
+    /** The values checked initially when the group is uncontrolled. */
     readonly defaultValue = input<string[]>();
 
-    /** All checkbox names in the group. Required for a `parent` (select-all) checkbox. */
+    /** All checkbox values in the group. Required for a `parent` (select-all) checkbox. */
     readonly allValues = input<string[]>([]);
+
+    /** Native form field name. Selected values are submitted as repeated entries under this name. */
+    readonly name = input<string>();
+
+    /** Associates the group with an external form by id. */
+    readonly form = input<string>();
 
     /** Whether the whole group is disabled. */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    /** Emits the new array of checked names whenever the value changes. */
+    /** Emits the new array of checked values whenever the value changes. */
     readonly onValueChange = output<RdxCheckboxGroupValueChangeEvent>();
 
     private readonly disabledByCva = signal(false);
@@ -140,19 +151,19 @@ export class RdxCheckboxGroupDirective
     private seeded = false;
     /** Where the parent is in its mixed → on → off cycle. Reset to `mixed` on any direct child change. */
     private parentStatus: 'on' | 'off' | 'mixed' = 'mixed';
-    /** Per-name disabled signals, so the parent can preserve disabled-but-checked children. */
-    private readonly disabledByName = new Map<string, Signal<boolean>>();
+    /** Per-value disabled signals, so the parent can preserve disabled-but-checked children. */
+    private readonly disabledByValue = new Map<string, Signal<boolean>>();
 
     /** Stable group id used to derive child control ids when the consumer sets none. */
     private readonly elementId = `rdx-checkbox-group-${nextCheckboxGroupId++}`;
-    /** Registered control element ids, keyed by child name. */
+    /** Registered control element ids, keyed by child value. */
     private readonly controlIds = signal<Record<string, string>>({});
 
     /** The space-separated control ids in `allValues` order, for the parent's `aria-controls`. */
     readonly controlledIds = computed<string | undefined>(() => {
         const ids = this.controlIds();
         const list = this.allValues()
-            .map((name) => ids[name])
+            .map((value) => ids[value])
             .filter((id): id is string => id !== undefined);
         return list.length > 0 ? list.join(' ') : undefined;
     });
@@ -168,6 +179,26 @@ export class RdxCheckboxGroupDirective
     constructor() {
         super();
 
+        useNativeFormControl({
+            name: this.name,
+            form: this.form,
+            disabled: this.disabledState,
+            value: this.value,
+            serialize: serializeNativeFormValue,
+            defaultValue: () => [...(this.defaultValue() ?? this.value())],
+            onReset: (value) => {
+                const next = [...value];
+                this.value.set(next);
+                if (!this.resetNgControl(next)) {
+                    this.onChange(next);
+                }
+                this.seeded = false;
+                this.uncontrolledState = next;
+                this.parentStatus = 'mixed';
+                this.formUi.resetInteractionState?.();
+            }
+        });
+
         effect(() => {
             const defaultValue = this.defaultValue();
             if (!this.hasAppliedDefault && defaultValue !== undefined) {
@@ -182,44 +213,44 @@ export class RdxCheckboxGroupDirective
         return { markAsTouched: () => this.onTouched() };
     }
 
-    /** @ignore Register a child's disabled signal keyed by its name. */
-    registerChild(name: string, disabled: Signal<boolean>): () => void {
-        this.disabledByName.set(name, disabled);
+    /** @ignore Register a child's disabled signal keyed by its value. */
+    registerChild(value: string, disabled: Signal<boolean>): () => void {
+        this.disabledByValue.set(value, disabled);
         return () => {
-            if (this.disabledByName.get(name) === disabled) {
-                this.disabledByName.delete(name);
+            if (this.disabledByValue.get(value) === disabled) {
+                this.disabledByValue.delete(value);
             }
         };
     }
 
-    /** A stable control id for a child, derived from the group id and the child name. */
-    controlId(name: string): string {
-        return `${this.elementId}-${name}`;
+    /** A stable control id for a child, derived from the group id and item value. */
+    controlId(value: string): string {
+        return `${this.elementId}-${value}`;
     }
 
     /** @ignore Register a child's control element id so the parent can list it in `aria-controls`. */
-    registerControl(name: string, id: string): () => void {
-        this.controlIds.update((ids) => ({ ...ids, [name]: id }));
+    registerControl(value: string, id: string): () => void {
+        this.controlIds.update((ids) => ({ ...ids, [value]: id }));
         return () => {
             this.controlIds.update((ids) => {
-                if (ids[name] !== id) {
+                if (ids[value] !== id) {
                     return ids;
                 }
                 const next = { ...ids };
-                delete next[name];
+                delete next[value];
                 return next;
             });
         };
     }
 
-    /** Add/remove a single child name from the value (a direct child change). */
-    toggleValue(name: string, event?: Event): void {
+    /** Add/remove a single child value from the group value (a direct child change). */
+    toggleValue(value: string, event?: Event): void {
         if (this.disabledState()) {
             return;
         }
 
         const current = this.value();
-        const next = current.includes(name) ? current.filter((v) => v !== name) : [...current, name];
+        const next = current.includes(value) ? current.filter((item) => item !== value) : [...current, value];
         if (!this.emit(next, event)) {
             return;
         }
@@ -250,8 +281,8 @@ export class RdxCheckboxGroupDirective
         const remembered = this.uncontrolledState;
 
         // Disabled children that were checked stay checked through every transition.
-        const none = allValues.filter((name) => this.isNameDisabled(name) && remembered.includes(name));
-        const all = allValues.filter((name) => !this.isNameDisabled(name) || remembered.includes(name));
+        const none = allValues.filter((value) => this.isValueDisabled(value) && remembered.includes(value));
+        const all = allValues.filter((value) => !this.isValueDisabled(value) || remembered.includes(value));
 
         const rememberedIsAllOrNone = remembered.length === all.length || remembered.length === 0;
         if (rememberedIsAllOrNone) {
@@ -275,8 +306,8 @@ export class RdxCheckboxGroupDirective
         this.parentStatus = nextStatus;
     }
 
-    private isNameDisabled(name: string): boolean {
-        return this.disabledByName.get(name)?.() ?? false;
+    private isValueDisabled(value: string): boolean {
+        return this.disabledByValue.get(value)?.() ?? false;
     }
 
     /** Seed the remembered selection from the current value the first time the parent is used. */

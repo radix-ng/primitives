@@ -22,6 +22,7 @@
 - ✅ Supports horizontal and vertical orientation.
 - ✅ Single or multiple pressed items.
 - ✅ Can be controlled or uncontrolled.
+- ✅ Native form serialization for named groups.
 
 ## Import
 
@@ -66,6 +67,19 @@ setValue(change: RdxToggleGroupValueChangeEvent) {
 ```
 
 ## Examples
+
+### Native forms
+
+Set `name` to serialize pressed item values. Multiple values become repeated entries under the same
+name; `form` can associate the group with an external form. This is an Angular-native extension of
+the Base UI API because Toggle Group is already a CVA/Signal Forms value control in Radix NG.
+
+```html
+<div rdxToggleGroup multiple name="format">
+  <button rdxToggle value="bold">Bold</button>
+  <button rdxToggle value="italic">Italic</button>
+</div>
+```
 
 ### Multiple
 

@@ -14,8 +14,11 @@ export interface RdxSwitchContext {
     /** Whether the switch must be on to submit the owning form. */
     readonly required: Signal<boolean>;
 
-    /** Name of the hidden form input. */
+    /** Native form field name. */
     readonly name: Signal<string | undefined>;
+
+    /** Optional id of an external owning form. */
+    readonly form: Signal<string | undefined>;
 
     /** Value submitted with the form when the switch is on. */
     readonly value: Signal<string>;
@@ -23,6 +26,7 @@ export interface RdxSwitchContext {
     readonly ariaLabel: Signal<string | undefined>;
     readonly ariaLabelledBy: Signal<string | undefined>;
 
+    registerNativeInput(input: HTMLInputElement): () => void;
     markAsTouched(): void;
 }
 

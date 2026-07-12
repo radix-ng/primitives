@@ -280,6 +280,60 @@ describe('RdxSwitch submit value (`value` alias)', () => {
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [ReactiveFormsModule, RdxSwitchRoot, RdxSwitchThumb],
+    template: `
+        <form id="settings"></form>
+        <button
+            [formControl]="control"
+            rdxSwitchRoot
+            name="notifications"
+            form="settings"
+            value="enabled"
+            uncheckedValue="disabled"
+        >
+            <span rdxSwitchThumb></span>
+        </button>
+    `
+})
+class NativeFormSwitchHost {
+    readonly control = new FormControl(false, { nonNullable: true });
+}
+
+describe('RdxSwitch native form contract', () => {
+    it('serializes without the optional input, supports an external form, disabled, and native reset', async () => {
+        TestBed.configureTestingModule({ imports: [NativeFormSwitchHost] });
+        const fixture = TestBed.createComponent(NativeFormSwitchHost);
+        const host = fixture.componentInstance;
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+        const root = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
+
+        expect(new FormData(form).get('notifications')).toBe('disabled');
+
+        root.click();
+        fixture.detectChanges();
+        expect(host.control.value).toBe(true);
+        expect(new FormData(form).get('notifications')).toBe('enabled');
+
+        form.reset();
+        await Promise.resolve();
+        fixture.detectChanges();
+        expect(host.control.value).toBe(false);
+        expect(host.control.pristine).toBe(true);
+        expect(host.control.untouched).toBe(true);
+        expect(new FormData(form).get('notifications')).toBe('disabled');
+
+        host.control.disable();
+        fixture.detectChanges();
+        expect(new FormData(form).has('notifications')).toBe(false);
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
     template: `
         <button [invalid]="invalid()" [errors]="errors()" rdxSwitchRoot>

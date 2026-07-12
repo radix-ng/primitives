@@ -4573,7 +4573,7 @@ export class CalendarNumberOfMonths {
 - ✅ Full keyboard navigation.
 - ✅ Supports indeterminate state.
 - ✅ Can be controlled or uncontrolled.
-- ✅ Hidden native input for form submission and validation.
+- ✅ Native form submission with an optional native input for constraint validation.
 - ✅ Base UI state hooks: `data-checked`, `data-unchecked`, and `data-indeterminate`.
 
 ## Import
@@ -4589,7 +4589,7 @@ import {
 
 ## Anatomy
 
-Assemble the parts: a root, a button trigger, the indicator, and a hidden input for forms.
+Assemble the root, button trigger, and indicator. The native input is optional.
 
 ```html
 <div rdxCheckboxRoot>
@@ -4599,6 +4599,9 @@ Assemble the parts: a root, a button trigger, the indicator, and a hidden input 
   <input rdxCheckboxInput />
 </div>
 ```
+
+A named root participates in `FormData` even without `[rdxCheckboxInput]`. Include the input when you
+also need native constraint validation or mirrored native input/change events.
 
 ## Examples
 
@@ -5000,7 +5003,7 @@ There are two ways to build a "select all" parent. Pick by how much you want to 
 
 |                                  | **Select all** (below)                | **Checkbox group**                                                  |
 | -------------------------------- | ------------------------------------- | ------------------------------------------------------------------- |
-| Source of truth                  | your own model (one boolean per item) | the group's `string[]` value (the checked `name`s)                  |
+| Source of truth                  | your own model (one boolean per item) | the group's `string[]` value (the checked child values)            |
 | Parent / indeterminate logic     | written by hand in the component      | built in (`parent` + `allValues`)                                   |
 | Parent click                     | flat toggle: all ↔ none               | remembers the partial selection: partial → all → none → partial     |
 | Disabled child during select-all | you handle it                         | preserved automatically                                             |
@@ -5120,11 +5123,13 @@ export class CheckboxSelectAllExample {
 
 ### Checkbox group
 
-The same UI, but `rdxCheckboxGroup` owns it. It manages a single array value — the `name`s of the
+The same UI, but `rdxCheckboxGroup` owns it. It manages a single array value — the `value`s of the
 checked checkboxes — and a child marked `parent` becomes the "select all", with its state derived
 from `allValues`. Clicking the parent **remembers the partial selection** (partial → all → none →
 back to the partial), disabled-but-checked children are preserved, and the group is itself a form
-control, so `[(value)]`, `ngModel`, and reactive forms bind to the `string[]` value.
+control, so `[(value)]`, `ngModel`, and reactive forms bind to the `string[]` value. For native forms,
+put `name` on the group; selected children become repeated entries under that name. A child `name`
+still works as a compatibility fallback when its `value` is omitted.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
@@ -5137,7 +5142,7 @@ import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 /**
- * `rdxCheckboxGroup` holds the array of checked names. Each child participates by its `name`, and
+ * `rdxCheckboxGroup` holds the array of checked values. Each child participates by its `value`, and
  * the checkbox marked `parent` becomes a "select all" whose state (checked / indeterminate /
  * unchecked) is derived from `allValues` — no manual wiring.
  *
@@ -5173,14 +5178,14 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
             </div>
 
             <div class="ml-6 flex flex-col gap-3">
-                @for (item of items; track item.name) {
+                @for (item of items; track item.value) {
                     <div class="flex items-center gap-3">
-                        <div [name]="item.name" rdxCheckboxRoot>
-                            <button [class]="c.button" [id]="item.name" rdxCheckboxButton>
+                        <div [value]="item.value" rdxCheckboxRoot>
+                            <button [class]="c.button" [id]="item.value" rdxCheckboxButton>
                                 <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
                             </button>
                         </div>
-                        <label class="text-foreground text-sm font-medium" [htmlFor]="item.name" rdxLabel>
+                        <label class="text-foreground text-sm font-medium" [htmlFor]="item.value" rdxLabel>
                             {{ item.label }}
                         </label>
                     </div>
@@ -5193,12 +5198,12 @@ export class CheckboxGroupExample {
     protected readonly c = demoCheckbox;
 
     protected readonly items = [
-        { name: 'apples', label: 'Apples' },
-        { name: 'bananas', label: 'Bananas' },
-        { name: 'cherries', label: 'Cherries' }
+        { value: 'apples', label: 'Apples' },
+        { value: 'bananas', label: 'Bananas' },
+        { value: 'cherries', label: 'Cherries' }
     ];
 
-    protected readonly all = this.items.map((item) => item.name);
+    protected readonly all = this.items.map((item) => item.value);
 
     value = signal<string[]>(['apples']);
 }
@@ -5255,11 +5260,15 @@ export class CheckboxGroupExample {
 
 ### Input
 
-`RdxCheckboxInputDirective` — the hidden native input for form submission and validation; reads everything from the root context, so it takes no inputs. Apply to a native `<input>` element (the selector requires `input`).
+`RdxCheckboxInputDirective` — an optional hidden native input for constraint validation and mirrored
+native input/change events. FormData serialization works from a named root without it. The directive
+reads everything from the root context and takes no inputs.
 
 ### Checkbox Group
 
-`RdxCheckboxGroupDirective` (`rdxCheckboxGroup`) — a `role="group"` container holding the array of checked `name`s. Mark a child checkbox `parent` to make it select/deselect every name in `allValues`. Apply to a container element (typically a `<div>`).
+`RdxCheckboxGroupDirective` (`rdxCheckboxGroup`) — a `role="group"` container holding the array of
+checked child values. Mark a child checkbox `parent` to make it select/deselect every value in
+`allValues`. A named group serializes selected values as repeated native form entries.
 
 **Data attributes**
 
@@ -17845,10 +17854,10 @@ import {
 </div>
 ```
 
-Add the optional `input[rdxRadioItemInput]` part inside each item to render the hidden native radio
-input, so native form submission, validation, and `<label>` activation work. Selection through the
-group (click, keyboard, `ngModel`/reactive forms) works without it — include it only when you need
-native `<form>` integration.
+A named group participates in native `FormData` without item inputs. Add the optional
+`input[rdxRadioItemInput]` part inside each item when you also need native constraint validation,
+`<label>` activation, or native input/change events. Selection through the group (click, keyboard,
+`ngModel`/reactive forms) works with or without it.
 
 The item can attach to any element. When the host is a native `<button>` it is detected automatically:
 `type="button"` and the native `disabled` attribute are applied for you — there is no `nativeButton`
@@ -18001,7 +18010,8 @@ export class RadioDisabledComponent {
 
 ### Template-driven forms
 
-Radio group works with `ngModel`, native form submission, and a submit button via the hidden `rdxRadioItemInput`.
+Radio group works with `ngModel`, native form submission, and a submit button. This example keeps
+`rdxRadioItemInput` for native `required` validation and label activation.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
@@ -18110,9 +18120,9 @@ Exposes `role="radio"` and `aria-checked`.
 
 ### RadioGroupItemInput
 
-`RdxRadioItemInputDirective` — optional hidden native radio input for native form submission,
-validation, and `<label>` activation. Apply to an `<input>` element placed inside an item. Reads
-everything from the item and group — it has no public inputs and sets no `data-*` attributes.
+`RdxRadioItemInputDirective` — optional hidden native radio input for constraint validation,
+`<label>` activation, and native input/change events. FormData serialization works from the named
+group without it. Apply it inside an item; it has no public inputs or `data-*` attributes.
 
 ### RadioIndicator
 
@@ -22103,7 +22113,7 @@ export class SwitchDefaultExample {}
 - ✅ Can be controlled or uncontrolled.
 - ✅ Full keyboard navigation.
 - ✅ Supports disabled, read-only and required states.
-- ✅ Hidden native input for form submission and screen readers.
+- ✅ Native form submission with an optional native input for constraint validation.
 
 ## Import
 
@@ -22112,7 +22122,7 @@ import { RdxSwitchRoot, RdxSwitchThumb, RdxSwitchInput } from '@radix-ng/primiti
 ```
 
 The API follows [Base UI Switch](https://base-ui.com/react/components/switch): a `Root` with a
-`Thumb`, plus an optional hidden `Input` for native form submission.
+`Thumb`, plus an optional hidden `Input` for native browser behavior.
 
 ## Anatomy
 
@@ -22123,7 +22133,9 @@ The API follows [Base UI Switch](https://base-ui.com/react/components/switch): a
 </button>
 ```
 
-The `[rdxSwitchInput]` is optional — include it when the switch must submit a value with a native form.
+A named root submits without `[rdxSwitchInput]`. Include the optional input when you also need native
+constraint validation. Use `uncheckedValue` when the off state should submit a value; otherwise it is
+omitted like a native unchecked checkbox.
 
 ## Examples
 
@@ -22372,8 +22384,9 @@ has no inputs.
 
 ### Input
 
-`RdxSwitchInput` — the hidden native checkbox for form submission. Apply to an `<input>` element inside
-the root. Reads everything from context (carries `name` / `value`); it has no inputs or `data-*`.
+`RdxSwitchInput` — the optional hidden native checkbox for constraint validation. Apply it inside the
+root. It reads everything from context (including `name`, `form`, and `value`) and has no inputs or
+`data-*`.
 
 ## Accessibility
 
@@ -24374,6 +24387,7 @@ When `disabled` is present the toggle cannot be activated.
 - ✅ Supports horizontal and vertical orientation.
 - ✅ Single or multiple pressed items.
 - ✅ Can be controlled or uncontrolled.
+- ✅ Native form serialization for named groups.
 
 ## Import
 
@@ -24418,6 +24432,19 @@ setValue(change: RdxToggleGroupValueChangeEvent) {
 ```
 
 ## Examples
+
+### Native forms
+
+Set `name` to serialize pressed item values. Multiple values become repeated entries under the same
+name; `form` can associate the group with an external form. This is an Angular-native extension of
+the Base UI API because Toggle Group is already a CVA/Signal Forms value control in Radix NG.
+
+```html
+<div rdxToggleGroup multiple name="format">
+  <button rdxToggle value="bold">Bold</button>
+  <button rdxToggle value="italic">Italic</button>
+</div>
+```
 
 ### Multiple
 

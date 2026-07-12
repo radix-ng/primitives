@@ -106,9 +106,11 @@ class CheckboxReadOnlyAliasHost {}
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [ReactiveFormsModule, RdxCheckboxRootDirective, RdxCheckboxButtonDirective],
     template: `
-        <div [formControl]="control" rdxCheckboxRoot>
-            <button rdxCheckboxButton>Terms</button>
-        </div>
+        <form>
+            <div [formControl]="control" rdxCheckboxRoot name="terms">
+                <button rdxCheckboxButton>Terms</button>
+            </div>
+        </form>
     `
 })
 class CheckboxReactiveFormsHost {
@@ -398,13 +400,51 @@ describe('RdxCheckboxRoot uncheckedValue', () => {
     const button = () => fixture.debugElement.query(By.css('button')).nativeElement as HTMLButtonElement;
 
     it('submits uncheckedValue when unchecked and the checked value when checked', () => {
-        expect(new FormData(form()).get('terms')).toBe('no');
+        expect(new FormData(form()).getAll('terms')).toEqual(['no']);
 
         button().click();
         fixture.detectChanges();
 
         expect(host.checked).toBe(true);
-        expect(new FormData(form()).get('terms')).toBe('yes');
+        expect(new FormData(form()).getAll('terms')).toEqual(['yes']);
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective],
+    template: `
+        <form id="consent"></form>
+        <div [(checked)]="checked" [disabled]="disabled" rdxCheckboxRoot name="terms" form="consent" value="yes">
+            <button rdxCheckboxButton>Terms</button>
+        </div>
+    `
+})
+class CheckboxNativeFormHost {
+    checked = false;
+    disabled = false;
+}
+
+describe('RdxCheckboxRoot native form contract', () => {
+    it('serializes without the optional input, supports an external form, and excludes disabled state', () => {
+        TestBed.configureTestingModule({ imports: [CheckboxNativeFormHost] });
+        const fixture = TestBed.createComponent(CheckboxNativeFormHost);
+        const host = fixture.componentInstance;
+        fixture.detectChanges();
+
+        const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+        const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
+
+        expect(new FormData(form).has('terms')).toBe(false);
+
+        button.click();
+        fixture.detectChanges();
+        expect(new FormData(form).get('terms')).toBe('yes');
+
+        host.disabled = true;
+        fixture.changeDetectorRef.markForCheck();
+        fixture.detectChanges();
+        expect(new FormData(form).has('terms')).toBe(false);
     });
 });
 
@@ -566,6 +606,32 @@ describe('RdxCheckboxRoot with Reactive Forms', () => {
         expect(root.getAttribute('data-valid')).toBeNull();
         expect(root.getAttribute('data-invalid')).toBeNull();
         expect(root.getAttribute('data-disabled')).toBe('');
+    });
+
+    it('follows native form reset through AbstractControl.reset', async () => {
+        TestBed.configureTestingModule({ imports: [CheckboxReactiveFormsHost] });
+        const fixture = TestBed.createComponent(CheckboxReactiveFormsHost);
+        const host = fixture.componentInstance;
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+        const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
+
+        button.click();
+        fixture.detectChanges();
+        expect(host.control.value).toBe(true);
+        expect(host.control.dirty).toBe(true);
+
+        form.reset();
+        await Promise.resolve();
+        fixture.detectChanges();
+
+        expect(host.control.value).toBe(false);
+        expect(host.control.pristine).toBe(true);
+        expect(host.control.untouched).toBe(true);
+        expect(button.getAttribute('aria-checked')).toBe('false');
     });
 });
 

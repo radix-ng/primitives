@@ -7,7 +7,9 @@ import {
     RdxCancelableChangeEventDetails,
     RdxFormUiControlBase,
     RdxFormUiTouchTarget,
-    RdxFormValueControl
+    RdxFormValueControl,
+    serializeNativeFormValue,
+    useNativeFormControl
 } from '@radix-ng/primitives/core';
 import { RdxToggleGroupContext } from './toggle-group-context';
 
@@ -56,6 +58,12 @@ export abstract class RdxToggleGroupBase
     /** The values pressed when the group is initially rendered (uncontrolled). */
     readonly defaultValue = input<string[]>();
 
+    /** Native form field name. Pressed values are submitted as repeated entries under this name. */
+    readonly name = input<string>();
+
+    /** Associates the group with an external form by id. */
+    readonly form = input<string>();
+
     /**
      * Whether multiple items can be pressed at the same time.
      *
@@ -94,6 +102,23 @@ export abstract class RdxToggleGroupBase
 
     constructor() {
         super();
+
+        useNativeFormControl({
+            name: this.name,
+            form: this.form,
+            disabled: this.isDisabled,
+            value: this.pressedValues,
+            serialize: serializeNativeFormValue,
+            defaultValue: () => [...(this.defaultValue() ?? this.pressedValues())],
+            onReset: (value) => {
+                const next = [...value];
+                this.value.set(next);
+                if (!this.resetNgControl(next)) {
+                    this.onChange?.(next);
+                }
+                this.formUi.resetInteractionState?.();
+            }
+        });
 
         effect(() => {
             const initial = this.defaultValue();

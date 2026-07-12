@@ -1,15 +1,12 @@
 import {
     booleanAttribute,
     computed,
-    DestroyRef,
     Directive,
     effect,
-    ElementRef,
     inject,
     input,
     model,
     output,
-    Renderer2,
     signal,
     Signal
 } from '@angular/core';
@@ -22,7 +19,8 @@ import {
     RdxCancelableChangeEventDetails,
     RdxControlValueAccessor,
     RdxFormCheckboxControl,
-    RdxValidationError
+    RdxValidationError,
+    useNativeFormControl
 } from '@radix-ng/primitives/core';
 import { injectCheckboxGroupContext } from './checkbox-group';
 
@@ -57,6 +55,7 @@ export interface CheckboxRootContext {
     required: Signal<boolean>;
     value: Signal<string>;
     name: Signal<string | undefined>;
+    itemValue: Signal<string | undefined>;
     parent: Signal<boolean>;
     form: Signal<string | undefined>;
     readonly: Signal<boolean>;
@@ -67,6 +66,7 @@ export interface CheckboxRootContext {
     touchedState: Signal<boolean>;
     dirtyState: Signal<boolean>;
     uncheckedValue: Signal<string | undefined>;
+    registerNativeInput: (input: HTMLInputElement) => () => void;
     toggle: (event?: Event) => void;
 }
 
@@ -80,10 +80,11 @@ const rootContext = (): CheckboxRootContext => {
         indeterminate: checkbox.indeterminateState,
         disabled: checkbox.disabledState,
         required: checkbox.required,
-        value: checkbox.submitValue,
-        name: checkbox.name,
+        value: checkbox.nativeValue,
+        name: checkbox.nativeName,
+        itemValue: checkbox.itemValue,
         parent: checkbox.parent,
-        form: checkbox.form,
+        form: checkbox.nativeForm,
         readonly: checkbox.readOnlyState,
         state: checkbox.state,
         invalidState: checkbox.invalidState,
@@ -91,6 +92,7 @@ const rootContext = (): CheckboxRootContext => {
         touchedState: checkbox.touchedState,
         dirtyState: checkbox.dirtyState,
         uncheckedValue: checkbox.uncheckedValue,
+        registerNativeInput: (input) => checkbox.registerNativeInput(input),
         toggle(event?: Event) {
             checkbox.toggle(event);
         }
@@ -130,12 +132,10 @@ export const [injectCheckboxRootContext, provideCheckboxRootContext] = createCon
 export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
     private readonly controlValueAccessor = inject(RdxControlValueAccessor);
     private readonly ngControlState = injectNgControlState();
-    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
-    private readonly renderer = inject(Renderer2);
-    private uncheckedInputElement: HTMLInputElement | null = null;
 
     /** The group this checkbox belongs to, if it is rendered inside a `rdxCheckboxGroup`. */
     private readonly group = injectCheckboxGroupContext(true);
+    private readonly nativeInput = signal<HTMLInputElement | null>(null);
 
     /**
      * The controlled checked state of the checkbox. Must be used in conjunction with onCheckedChange.
@@ -171,11 +171,12 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
      * Bound publicly as `[value]`; the TS member is named `submitValue` so the
      * directive can satisfy `RdxFormCheckboxControl`, whose contract reserves a
      * `value` member for `RdxFormValueControl` and forbids it on checkbox-style
-     * controls. (Checkbox is not yet marked `implements` — its `checked` is still
-     * `CheckedState`; see the `indeterminate` half of collision #1.)
+     * controls.
+     * When omitted, native submission uses the browser checkbox default (`on`). Inside a
+     * `rdxCheckboxGroup`, the child's `name` is used as a compatibility fallback.
      * @group Props
      */
-    readonly submitValue = input<string>('on', { alias: 'value' });
+    readonly submitValue = input<string | undefined>(undefined, { alias: 'value' });
 
     /**
      * The value submitted with the form when the checkbox is unchecked.
@@ -233,8 +234,8 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
     readonly errors = input<readonly RdxValidationError[]>([]);
 
     /**
-     * Name of the form control. Submitted with the form as part of a name/value pair. Inside a
-     * `rdxCheckboxGroup` this also identifies the checkbox in the group's value array.
+     * Name of a standalone form control. Inside a `rdxCheckboxGroup`, prefer `[value]` to identify
+     * the item; `name` remains a compatibility fallback for existing group templates.
      * @group Props
      */
     readonly name = input<string>();
@@ -252,6 +253,15 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
      */
     readonly form = input<string>();
 
+    /** @ignore Item identity inside a checkbox group (`value`, falling back to the legacy child name). */
+    readonly itemValue = computed(() => this.submitValue() ?? this.name());
+    /** @ignore Native checkbox value; browsers default an omitted checkbox value to `on`. */
+    readonly nativeValue = computed(() => this.submitValue() ?? 'on');
+    /** @ignore A checkbox group owns the successful-control name and serializes its children centrally. */
+    readonly nativeName = computed(() => (this.group || this.parent() ? undefined : this.name()));
+    /** @ignore Child native inputs inherit an external form association from their checkbox group. */
+    readonly nativeForm = computed(() => this.group?.form() ?? this.form());
+
     /**
      * Event emitted when the checkbox checked state changes.
      * @group Emits
@@ -267,8 +277,8 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
     /**
      * @ignore
      * The effective checked state as a `boolean`. Inside a `rdxCheckboxGroup` it is derived from the
-     * group (a `parent` checkbox is checked only when every child is; a child from whether its `name`
-     * is in the group value); standalone it reads the CVA value.
+     * group (a `parent` checkbox is checked only when every child is; a child from whether its item
+     * value is in the group value); standalone it reads the CVA value.
      */
     readonly checkedState = computed<boolean>(() => {
         const group = this.group;
@@ -277,9 +287,9 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
                 return group.parentState() === true;
             }
 
-            const name = this.name();
-            if (name !== undefined) {
-                return group.value().includes(name);
+            const value = this.itemValue();
+            if (value !== undefined) {
+                return group.value().includes(value);
             }
         }
 
@@ -359,14 +369,50 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
         this.indeterminateState() ? 'indeterminate' : this.checkedState() ? 'checked' : 'unchecked'
     );
 
+    private readonly nativeInputOwnsValue = computed(
+        () => this.nativeInput() !== null && (this.checkedState() || this.uncheckedValue() === undefined)
+    );
+
     constructor() {
-        // Inside a group, register this child's name and its own disabled state so a `parent`
+        useNativeFormControl({
+            name: this.nativeName,
+            form: this.nativeForm,
+            disabled: this.disabledState,
+            value: this.checkedState,
+            serialize: (checked) => {
+                const value = checked ? this.nativeValue() : this.uncheckedValue();
+                return value === undefined ? [] : [value];
+            },
+            hasNativeControl: this.nativeInputOwnsValue,
+            syncNativeControl: () => {
+                const input = this.nativeInput();
+                if (input) {
+                    input.checked = this.checkedState();
+                    input.indeterminate = this.indeterminateState();
+                }
+            },
+            defaultValue: () => this.defaultChecked() ?? this.checkedState(),
+            onReset: (value) => {
+                if (this.group || this.parent()) {
+                    return;
+                }
+
+                this.indeterminate.set(false);
+                this.checked.set(value);
+                if (!this.ngControlState.reset(value)) {
+                    this.controlValueAccessor.writeValue(value);
+                }
+                this.reset();
+            }
+        });
+
+        // Inside a group, register this child's item value and its own disabled state so a `parent`
         // checkbox can preserve disabled-but-checked children when selecting/deselecting all.
         effect((onCleanup) => {
             const group = this.group;
-            const name = this.name();
-            if (group && !this.parent() && name !== undefined) {
-                onCleanup(group.registerChild(name, this.controlValueAccessor.disabled));
+            const value = this.itemValue();
+            if (group && !this.parent() && value !== undefined) {
+                onCleanup(group.registerChild(value, this.controlValueAccessor.disabled));
             }
         });
 
@@ -378,10 +424,6 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
                 this.checked.set(defaultChecked);
                 this.controlValueAccessor.setValue(defaultChecked);
             }
-        });
-
-        effect(() => {
-            this.syncUncheckedInput();
         });
 
         // Reactive/template-driven forms own their NgControl interaction state. Signal Forms instead
@@ -402,10 +444,6 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
             },
             { debugName: 'RdxCheckboxRoot.syncInteractionState' }
         );
-
-        inject(DestroyRef).onDestroy(() => {
-            this.removeUncheckedInput();
-        });
     }
 
     toggle(event?: Event) {
@@ -420,9 +458,9 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
                 return;
             }
 
-            const name = this.name();
-            if (name !== undefined) {
-                group.toggleValue(name, event);
+            const value = this.itemValue();
+            if (value !== undefined) {
+                group.toggleValue(value, event);
                 return;
             }
         }
@@ -461,66 +499,13 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl {
         this.dirtyValue.set(false);
     }
 
-    private syncUncheckedInput(): void {
-        const name = this.name();
-        const uncheckedValue = this.uncheckedValue();
-        const shouldRender =
-            !this.checkedState() && !this.group && !this.parent() && name !== undefined && uncheckedValue !== undefined;
-
-        if (!shouldRender) {
-            this.removeUncheckedInput();
-            return;
-        }
-
-        const input = this.ensureUncheckedInput();
-        this.renderer.setAttribute(input, 'type', 'hidden');
-        this.renderer.setAttribute(input, 'name', name);
-        this.renderer.setAttribute(input, 'value', uncheckedValue);
-        this.setOptionalAttribute(input, 'form', this.form());
-        this.setBooleanAttribute(input, 'disabled', this.disabledState());
-    }
-
-    private ensureUncheckedInput(): HTMLInputElement {
-        if (this.uncheckedInputElement) {
-            return this.uncheckedInputElement;
-        }
-
-        const host = this.elementRef.nativeElement;
-        const parent = host.parentNode;
-        const input = this.renderer.createElement('input') as HTMLInputElement;
-        if (parent) {
-            this.renderer.insertBefore(parent, input, host.nextSibling);
-        }
-        this.uncheckedInputElement = input;
-        return input;
-    }
-
-    private removeUncheckedInput(): void {
-        const input = this.uncheckedInputElement;
-        if (!input) {
-            return;
-        }
-
-        const parent = input.parentNode;
-        if (parent) {
-            this.renderer.removeChild(parent, input);
-        }
-        this.uncheckedInputElement = null;
-    }
-
-    private setOptionalAttribute(element: HTMLElement, name: string, value: string | undefined): void {
-        if (value) {
-            this.renderer.setAttribute(element, name, value);
-        } else {
-            this.renderer.removeAttribute(element, name);
-        }
-    }
-
-    private setBooleanAttribute(element: HTMLElement, name: string, value: boolean): void {
-        if (value) {
-            this.renderer.setAttribute(element, name, '');
-        } else {
-            this.renderer.removeAttribute(element, name);
-        }
+    /** @ignore Register the optional native checkbox so it owns checked-value serialization. */
+    registerNativeInput(input: HTMLInputElement): () => void {
+        this.nativeInput.set(input);
+        return () => {
+            if (this.nativeInput() === input) {
+                this.nativeInput.set(null);
+            }
+        };
     }
 }

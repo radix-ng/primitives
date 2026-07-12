@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { form, FormField, required } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import {
@@ -120,7 +121,7 @@ describe('RdxRadio', () => {
         expect(inputs()[1].checked).toBe(false);
 
         const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
-        expect(new FormData(form).get('density')).toBe('default');
+        expect(new FormData(form).getAll('density')).toEqual(['default']);
     });
 
     it('does not change value when an unchecked item receives focus', () => {
@@ -282,6 +283,56 @@ describe('RdxRadio', () => {
 
         expect(labelHost.value).toBe('hdd');
         expect(labelHost.changes).toEqual(['hdd']);
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [ReactiveFormsModule, RdxRadioGroupDirective, RdxRadioItemDirective],
+    template: `
+        <form id="checkout"></form>
+        <div [formControl]="control" rdxRadioRoot name="plan" form="checkout">
+            <button rdxRadioItem value="free">Free</button>
+            <button rdxRadioItem value="pro">Pro</button>
+        </div>
+    `
+})
+class NativeFormRadioHost {
+    readonly control = new FormControl<string | null>('free');
+}
+
+describe('RdxRadioGroup native form contract', () => {
+    it('serializes without item inputs and supports external form, disabled, and native reset', async () => {
+        TestBed.configureTestingModule({ imports: [NativeFormRadioHost] });
+        const fixture = TestBed.createComponent(NativeFormRadioHost);
+        const host = fixture.componentInstance;
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+        const items = Array.from(fixture.nativeElement.querySelectorAll('button')) as HTMLButtonElement[];
+
+        expect(new FormData(form).get('plan')).toBe('free');
+        expect(fixture.nativeElement.querySelectorAll('input[type="radio"]')).toHaveLength(0);
+
+        items[1].click();
+        fixture.detectChanges();
+        expect(host.control.value).toBe('pro');
+        expect(host.control.dirty).toBe(true);
+        expect(new FormData(form).get('plan')).toBe('pro');
+
+        form.reset();
+        await Promise.resolve();
+        fixture.detectChanges();
+        expect(host.control.value).toBe('free');
+        expect(host.control.pristine).toBe(true);
+        expect(host.control.untouched).toBe(true);
+        expect(new FormData(form).get('plan')).toBe('free');
+
+        host.control.disable();
+        fixture.detectChanges();
+        expect(new FormData(form).has('plan')).toBe(false);
     });
 });
 

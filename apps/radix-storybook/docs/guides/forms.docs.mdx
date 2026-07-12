@@ -55,16 +55,23 @@ rides the native `<form>`:
 - **Reset** — native `reset` clears external errors and re-syncs every field's touched/dirty/focused/filled.
 
 `onFormSubmit` vs `(ngSubmit)`: the Form never `stopPropagation`s, so Reactive Forms' `(ngSubmit)` keeps
-firing on the same element — **pick one as your source of truth**. Named composite controls (Select,
-Combobox, Autocomplete, Number Field, and Slider) participate in `FormData` directly. Scalar values
-produce one entry; multiple Select and Combobox values produce repeated entries under the same name.
+firing on the same element — **pick one as your source of truth**. Named composite controls (Checkbox,
+Checkbox Group, Switch, Radio Group, Toggle Group, Select, Combobox, Autocomplete, Number Field, and
+Slider) participate in `FormData` directly. Scalar values produce one entry; array controls produce
+repeated entries under the same name. Checkbox and Switch follow native checkbox semantics: the off
+state contributes no entry unless `uncheckedValue` is set. For Checkbox Group, put `name` on the group
+and `value` on each child.
+
 Bind `[form]` to associate a control with an external form. Native reset restores a control's initial
-value and clears its control-owned touched/dirty state; Angular Forms remains the owner of validation.
-For object selections, pass `itemToStringValue` to Select or Combobox; conventional
-`{ value, label }` items serialize their `value` member by default. Autocomplete normally submits
-through its visible text input (and falls back to a hidden entry when that input is portalled), Slider
-through its range inputs, and Number Field generates a hidden entry only when its optional native
-number input is absent.
+value through the connected Angular control and clears touched/dirty state; Angular Forms remains the
+owner of the model, validation, and interaction state. Optional native Checkbox, Switch, and Radio
+input parts are not required for `FormData`; keep them when you need native constraint validation.
+Radio item inputs additionally support `<label>` activation and native input/change events.
+
+For object selections, pass `itemToStringValue` to Select or Combobox; conventional `{ value, label }`
+items serialize their `value` member by default. Autocomplete normally submits through its visible
+text input (and falls back to a hidden entry when that input is portalled), Slider through its range
+inputs, and Number Field generates a hidden entry only when its optional native number input is absent.
 
 ## Control reference
 

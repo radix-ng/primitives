@@ -22,7 +22,9 @@ import {
     RdxCancelableChangeEventDetails,
     RdxFormUiControlBase,
     RdxFormUiTouchTarget,
-    RdxFormValueControl
+    RdxFormValueControl,
+    serializeNativeFormValue,
+    useNativeFormControl
 } from '@radix-ng/primitives/core';
 import { RdxRadioValueChangeReason } from './radio-tokens';
 
@@ -42,6 +44,7 @@ export interface RadioRootContext {
     required: Signal<boolean>;
     name: Signal<string | undefined>;
     form: Signal<string | undefined>;
+    registerNativeInput(value: string, input: HTMLInputElement): () => void;
     select(value: string | null, event?: Event, reason?: RdxRadioValueChangeReason): void;
     setArrowNavigation(value: boolean): void;
     isArrowNavigation(): boolean;
@@ -57,6 +60,7 @@ const rootContext = (): RadioRootContext => {
         required: root.required,
         name: root.name,
         form: root.form,
+        registerNativeInput: (value, input) => root.registerNativeInput(value, input),
         select: (value, event, reason) => root.select(value, event, reason),
         setArrowNavigation: (value) => root.setArrowNavigation(value),
         isArrowNavigation: () => root.isArrowNavigation()
@@ -128,6 +132,11 @@ export class RdxRadioGroupDirective
     readonly touchedState = this.formUi.touchedState;
     readonly dirtyState = this.formUi.dirtyState;
     private readonly arrowNavigation = signal(false);
+    private readonly nativeInputs = signal<ReadonlyMap<string, HTMLInputElement>>(new Map());
+    private readonly selectedItemHasNativeInput = computed(() => {
+        const value = this.value();
+        return value !== null && this.nativeInputs().has(value);
+    });
     private readonly itemMetadata = computed(() =>
         Array.from(this.compositeRoot.itemMap().values()).filter(isRadioItemMetadata)
     );
@@ -162,6 +171,29 @@ export class RdxRadioGroupDirective
 
     constructor() {
         super();
+
+        useNativeFormControl({
+            name: this.name,
+            form: this.form,
+            disabled: this.disabledState,
+            value: this.value,
+            serialize: serializeNativeFormValue,
+            hasNativeControl: this.selectedItemHasNativeInput,
+            syncNativeControl: () => {
+                const selectedValue = this.value();
+                for (const [value, input] of this.nativeInputs()) {
+                    input.checked = value === selectedValue;
+                }
+            },
+            defaultValue: () => this.defaultValue() ?? this.value(),
+            onReset: (value) => {
+                this.value.set(value);
+                if (!this.resetNgControl(value)) {
+                    this.onChange(value);
+                }
+                this.formUi.resetInteractionState?.();
+            }
+        });
 
         let hasAppliedDefault = false;
         effect(() => {
@@ -273,6 +305,22 @@ export class RdxRadioGroupDirective
 
     isArrowNavigation(): boolean {
         return this.arrowNavigation();
+    }
+
+    /** @ignore Register an optional native radio input by its item value. */
+    registerNativeInput(value: string, input: HTMLInputElement): () => void {
+        this.nativeInputs.update((inputs) => new Map(inputs).set(value, input));
+        return () => {
+            this.nativeInputs.update((inputs) => {
+                if (inputs.get(value) !== input) {
+                    return inputs;
+                }
+
+                const next = new Map(inputs);
+                next.delete(value);
+                return next;
+            });
+        };
     }
 
     /**

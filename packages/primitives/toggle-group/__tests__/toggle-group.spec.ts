@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { resetRdxDevWarnings } from '@radix-ng/primitives/core';
@@ -217,6 +217,54 @@ describe('RdxToggleGroup', () => {
         items[2].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
         await Promise.resolve();
         expect(document.activeElement).toBe(items[2]);
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [ReactiveFormsModule, RdxToggleGroup, RdxToggle],
+    template: `
+        <form id="editor"></form>
+        <div [formControl]="control" rdxToggleGroup multiple name="style" form="editor">
+            <button rdxToggle value="bold">Bold</button>
+            <button rdxToggle value="italic">Italic</button>
+        </div>
+    `
+})
+class NativeFormToggleGroupHost {
+    readonly control = new FormControl<string[]>(['bold'], { nonNullable: true });
+}
+
+describe('RdxToggleGroup native form contract', () => {
+    it('submits repeated entries and supports external form, disabled, and native reset', async () => {
+        TestBed.configureTestingModule({ imports: [NativeFormToggleGroupHost] });
+        const fixture = TestBed.createComponent(NativeFormToggleGroupHost);
+        const host = fixture.componentInstance;
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+        const items = Array.from(fixture.nativeElement.querySelectorAll('button')) as HTMLButtonElement[];
+
+        expect(new FormData(form).getAll('style')).toEqual(['bold']);
+
+        items[1].click();
+        fixture.detectChanges();
+        expect(host.control.value).toEqual(['bold', 'italic']);
+        expect(new FormData(form).getAll('style')).toEqual(['bold', 'italic']);
+
+        form.reset();
+        await Promise.resolve();
+        fixture.detectChanges();
+        expect(host.control.value).toEqual(['bold']);
+        expect(host.control.pristine).toBe(true);
+        expect(host.control.untouched).toBe(true);
+        expect(new FormData(form).getAll('style')).toEqual(['bold']);
+
+        host.control.disable();
+        fixture.detectChanges();
+        expect(new FormData(form).has('style')).toBe(false);
     });
 });
 
