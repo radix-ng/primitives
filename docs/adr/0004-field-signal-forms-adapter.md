@@ -10,14 +10,14 @@
 > ships the explicit same-host `rdxNgControlField` adapter. The manual Reactive Forms example below is
 > retained as historical context, not current recommended usage.
 
-- Status: Superseded by ADR 0018
+- Status: Superseded by ADR-0018
 - Date: 2026-06-03
 - Amended: 2026-06-10 — adapter mechanism corrected to the implemented `RdxFieldState` provider seam
   (prep #4); `[formField]` discovery risk and the CVA fallback (Plan B) documented; the runtime spike
   promoted from optional to a **mandatory gate** before claiming Angular 22 / Signal Forms support;
   error-message flow gap recorded (picked up by the `add-form-root` change).
 - Decision owners: Radix NG maintainers
-- Related package: `packages/primitives/field`
+- Related: `packages/primitives/field`
 
 ## Context
 

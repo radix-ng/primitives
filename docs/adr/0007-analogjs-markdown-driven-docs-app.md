@@ -1,9 +1,14 @@
 # ADR 0007: Author Documentation as Markdown in a New AnalogJS App (instead of MDX, a hand-built Angular app, or staying on Astro)
 
-- Status: Proposed
+- Status: Rejected
 - Date: 2026-06-07
 - Decision owners: Radix NG maintainers
-- Related apps: new `apps/<docs-app>` (Angular/AnalogJS); existing `apps/radix-docs` (Astro), `apps/radix-storybook`
+- Related: `apps/radix-storybook` (now serves the docs + generated LLM routes); removed `apps/radix-docs` (Astro); `CLAUDE.md` and `.claude/skills/project-knowledge/references/architecture.md` record the Storybook-as-docs decision
+
+> **Rejected (2026-07-12).** The proposed AnalogJS docs app was never built, and the Astro `apps/radix-docs`
+> it aimed to replace was removed. Storybook (`apps/radix-storybook`) now serves the public docs and the
+> generated `llms.txt` / `.md` routes. That replacement decision is recorded in `CLAUDE.md` /
+> `architecture.md`, not in a dedicated ADR — hence Rejected rather than Superseded.
 
 ## Context
 

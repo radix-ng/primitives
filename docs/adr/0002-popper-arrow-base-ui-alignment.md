@@ -3,7 +3,7 @@
 - Status: Proposed
 - Date: 2026-06-02
 - Decision owners: Radix NG maintainers
-- Related package: `packages/primitives/popper` (consumers: `tooltip`, `popover`, and any future Popper user)
+- Related: `packages/primitives/popper` (consumers: `tooltip`, `popover`, and any future Popper user)
 
 ## Context
 

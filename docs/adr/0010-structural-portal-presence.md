@@ -1,14 +1,16 @@
 # ADR 0010: Structural `*rdxXxxPortal` (portal + presence merged) — anatomy flattening to Base UI parity
 
-- Status: Implemented — all phases shipped (presence machine extraction, `RdxPortalPresence`,
-  popover pilot, full roll-out incl. drawer/alert-dialog/recipes, select §6 restructure). Left out
-  intentionally: menubar's always-rendered `data-[closed]:hidden` pattern (works as-is) and the
-  WAAPI presence upgrade (now ADR 0011).
+- Status: Accepted
 - Date: 2026-06-12 (implemented 2026-06-13)
 - Decision owners: Radix NG maintainers
-- Related: ADR 0003 (popover Base UI-like anatomy), `packages/primitives/portal/src/portal.ts`,
+- Related: ADR 0003 (popover Base UI-like anatomy — superseded by this ADR), `packages/primitives/portal/src/portal.ts`,
   `packages/primitives/presence/src/presence.directive.ts`, every `<name>-portal.ts` /
   `<name>-portal-presence.ts` pair under `packages/primitives/*/src/`
+
+> **Implementation status (2026-06-13): all phases shipped** — presence-machine extraction,
+> `RdxPortalPresence`, popover pilot, full roll-out (drawer / alert-dialog / recipes), select §6
+> restructure. Intentionally left out: menubar's always-rendered `data-[closed]:hidden` pattern (works
+> as-is) and the WAAPI presence upgrade (now ADR 0011).
 
 ## Context
 

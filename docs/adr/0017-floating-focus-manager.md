@@ -1,6 +1,6 @@
 # ADR 0017: Floating focus manager (`RdxFloatingFocusManager`)
 
-- Status: Accepted (core landed & in production; remaining items de-scoped to ADR 0023 — see "Implementation status" + "Follow-up (de-scoped)")
+- Status: Accepted
 - Date: 2026-06-14 (accepted 2026-07-12)
 - Decision owners: Radix NG maintainers
 - Related: ADR 0015 (dismissal engine — **reads** the marker this ADR produces), ADR 0016 (scroll-lock

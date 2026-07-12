@@ -10,10 +10,10 @@
 > core stays form-agnostic; Signal Forms ships as the **optional** adapter pair in
 > `@radix-ng/primitives/signal-forms`.
 
-- Status: Accepted (implemented; batch-#4 complete across all controls)
+- Status: Accepted
 - Date: 2026-06-20 (implementation completed 2026-06-22)
 - Decision owners: Radix NG maintainers
-- Related packages: `packages/primitives/{field,form,core}`, new `packages/primitives/signal-forms`
+- Related: `packages/primitives/{field,form,core}`, new `packages/primitives/signal-forms`
 - Supersedes the "defer" decision of **ADR 0004** (its revisit triggers are now met)
 
 > **Implementation complete (updated 2026-07-11).** Both adapters shipped, and the optional `FormUiControl`

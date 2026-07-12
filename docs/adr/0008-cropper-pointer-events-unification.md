@@ -3,7 +3,7 @@
 - Status: Proposed
 - Date: 2026-06-10
 - Decision owners: Radix NG maintainers
-- Related packages: `packages/primitives/cropper`, `packages/primitives/core`
+- Related: `packages/primitives/cropper`, `packages/primitives/core`
 
 ## Context
 

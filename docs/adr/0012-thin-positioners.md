@@ -1,6 +1,6 @@
 # ADR 0012: Thin positioners — single-source popper inputs, unified CSS variables, z-index decoupling
 
-- Status: Accepted — all phases landed (1 spike, 2 wrapper unification, 3 inheritance ×9, 4 z-index decoupling)
+- Status: Accepted
 - Date: 2026-06-13
 - Decision owners: Radix NG maintainers
 - Related: ADR 0002 (popper arrow Base UI alignment), ADR 0010 (anatomy flattening),

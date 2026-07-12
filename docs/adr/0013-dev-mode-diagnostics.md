@@ -1,6 +1,6 @@
 # ADR 0013: Dev-mode diagnostics & debuggability — one warning system, tag-aware checks, named signals
 
-- Status: Accepted (Phases 1–2 implemented; Phase 3 `debugName` rolling — see "Implementation notes")
+- Status: Accepted
 - Date: 2026-06-13
 - Decision owners: Radix NG maintainers
 - Related: `packages/primitives/core/src/create-context.ts` (missing-context error + docs link),

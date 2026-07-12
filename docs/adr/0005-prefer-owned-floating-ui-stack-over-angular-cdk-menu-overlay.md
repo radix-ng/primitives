@@ -1,9 +1,9 @@
 # ADR 0005: Prefer the Owned Floating UI Stack over Angular CDK Menu and Overlay
 
-- Status: Accepted — implemented (2026-06-07)
-- Date: 2026-06-03
+- Status: Accepted
+- Date: 2026-06-03 (implemented 2026-06-07)
 - Decision owners: Radix NG maintainers
-- Related packages: `packages/primitives/menu`, `packages/primitives/dropdown-menu`, `packages/primitives/popper`,
+- Related: `packages/primitives/menu`, `packages/primitives/dropdown-menu`, `packages/primitives/popper`,
   `packages/primitives/dismissable-layer`, `packages/primitives/portal`, `packages/primitives/focus-scope`
 
 ## Outcome (2026-06-07)

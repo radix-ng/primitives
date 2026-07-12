@@ -10,10 +10,10 @@
 > real. The form-family disposition below (keep `field`/`fieldset`, `form` overlaps Signal Forms) remains
 > accurate regardless and informs the thin-`[rdxForm]` discussion.
 
-- Status: Rejected (superseded by reaffirming ADR 0018)
+- Status: Rejected
 - Date: 2026-06-20
 - Decision owners: Radix NG maintainers
-- Related packages: every form control entry, `packages/primitives/{field,form,core,signal-forms}`
+- Related: every form control entry, `packages/primitives/{field,form,core,signal-forms}`
 - **Supersedes ADR 0004** (form-agnostic Field) and **re-scopes ADR 0018** (which assumed Signal Forms
   as an _optional, isolated_ adapter alongside CVA/Reactive support)
 

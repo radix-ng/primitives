@@ -3,7 +3,7 @@
 - Status: Proposed
 - Date: 2026-06-06
 - Decision owners: Radix NG maintainers
-- Related package: `packages/primitives/core` (consumers: all primitives; pilot: `packages/primitives/collapsible`)
+- Related: `packages/primitives/core` (consumers: all primitives; pilot: `packages/primitives/collapsible`)
 
 ## Context
 

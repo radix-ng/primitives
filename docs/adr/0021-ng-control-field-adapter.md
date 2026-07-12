@@ -3,7 +3,7 @@
 - Status: Accepted
 - Date: 2026-07-11
 - Decision owners: Radix NG maintainers
-- Related packages: `core`, `field`, `form`
+- Related: `core`, `field`, `form`
 
 ## Context
 

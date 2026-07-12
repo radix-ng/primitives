@@ -2,6 +2,7 @@
 
 - Status: Accepted
 - Date: 2026-07-11
+- Decision owners: Radix NG maintainers
 - Related: ADR 0018, `packages/primitives/{form,field,signal-forms,core}`
 
 ## Context

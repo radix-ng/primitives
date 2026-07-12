@@ -1,10 +1,9 @@
 # ADR 0001: Use Angular Composite as the Shared Navigation Layer
 
 - Status: Accepted
-- Date: 2026-06-02
-- Updated: 2026-06-19
+- Date: 2026-06-02 (updated 2026-06-19)
 - Decision owners: Radix NG maintainers
-- Related package: `packages/primitives/composite`
+- Related: `packages/primitives/composite`
 
 ## Context
 

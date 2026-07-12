@@ -1,9 +1,14 @@
 # ADR 0003: Prefer a Base UI-like Popover Anatomy with a Template Portal Directive
 
-- Status: Proposed
+- Status: Superseded by ADR-0010
 - Date: 2026-06-03
 - Decision owners: Radix NG maintainers
-- Related package: `packages/primitives/popover`
+- Related: ADR 0010 (structural portal presence — shipped popover's Base UI anatomy under its redesign), `packages/primitives/popover`
+
+> **Superseded by [ADR 0010](0010-structural-portal-presence.md) (2026-06-13).** The Base UI-like popover
+> anatomy and template portal directive proposed here shipped — but under ADR 0010's structural
+> `*rdxPopoverPortal` redesign, which removed the low-level `rdxPopoverPortalPresence` / element-portal
+> split this ADR meant to preserve. ADR 0010 lists this ADR as Related and used popover as its pilot.
 
 ## Context
 

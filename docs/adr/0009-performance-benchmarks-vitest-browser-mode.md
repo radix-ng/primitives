@@ -1,13 +1,15 @@
 # ADR 0009: Performance Benchmarks via Vitest Browser Mode (base-ui–style harness, Angular-native metrics)
 
-- Status: Implemented — Phases 1 (spike), 2 (harness + pilots) & 3 (CI) shipped. Phase 4 (more
-  primitives / profiler-hook render timings / blocking thresholds / history) is deliberately out of
-  scope here; track it as separate future work, not under this ADR.
+- Status: Accepted
 - Date: 2026-06-12
 - Decision owners: Radix NG maintainers
 - Related: project `apps/radix-perf-testing` (harness + Checkbox / Composite / Select / Combobox rows),
   `.github/workflows/benchmark.yml`, `tools/scripts/benchmark/compare.mjs`,
   `apps/radix-storybook/docs/guides/performance.docs.mdx` (Guides/Performance)
+
+> **Implementation status (2026-06-12): Phases 1–3 (spike, harness + pilots, CI) shipped.** Phase 4
+> (more primitives / profiler-hook render timings / blocking thresholds / history) is intentionally out
+> of scope for this ADR — track it as separate future work.
 
 ## Context
 

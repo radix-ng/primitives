@@ -1,6 +1,6 @@
 # ADR 0014: Unify Combobox & Autocomplete on one engine (combobox is the engine for autocomplete)
 
-- Status: Accepted (P0–P6 done — shared engine, both roots thin, parts parity, native forms)
+- Status: Accepted
 - Date: 2026-06-13
 - Decision owners: Radix NG maintainers
 - Related: `packages/primitives/combobox/src/combobox-root.ts`,
