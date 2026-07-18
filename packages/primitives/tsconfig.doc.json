@@ -1,4 +1,11 @@
 {
     "include": ["**/*.ts"],
-    "exclude": ["**/*.spec.ts", "test-setup.ts", "**/*.test.ts", "**/*.stories.ts", "**/*.stories.js"]
+    "exclude": ["**/*.spec.ts", "test-setup.ts", "**/*.test.ts", "**/*.stories.ts", "**/*.stories.js"],
+    "compilerOptions": {
+        "strict": false,
+        "noUncheckedSideEffectImports": false,
+        "types": ["*"],
+        "esModuleInterop": false,
+        "ignoreDeprecations": "6.0"
+    }
 }

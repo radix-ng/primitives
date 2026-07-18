@@ -10,7 +10,8 @@
         "module": "preserve",
         "moduleResolution": "bundler",
         "lib": ["dom", "es2022"],
-        "types": ["vitest/globals", "node"]
+        "types": ["vitest/globals", "node"],
+        "ignoreDeprecations": "6.0"
     },
     "files": [],
     "include": ["src/**/*.ts"],

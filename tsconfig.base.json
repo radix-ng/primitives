@@ -72,7 +72,11 @@
             "@radix-ng/primitives/toolbar": ["packages/primitives/toolbar/index.ts"],
             "@radix-ng/primitives/tooltip": ["packages/primitives/tooltip/index.ts"],
             "@radix-ng/primitives/visually-hidden": ["packages/primitives/visually-hidden/index.ts"]
-        }
+        },
+        "strict": false,
+        "noUncheckedSideEffectImports": false,
+        "types": ["*"],
+        "esModuleInterop": false
     },
     "exclude": ["node_modules", "tmp"]
 }
