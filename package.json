@@ -75,6 +75,7 @@
         "@analogjs/vite-plugin-angular": "2.6.3",
         "@angular-devkit/core": "22.0.2",
         "@angular-devkit/schematics": "22.0.2",
+        "@angular/animations": "22.0.2",
         "@angular/build": "22.0.2",
         "@angular/cli": "22.0.2",
         "@angular/compiler-cli": "22.0.2",

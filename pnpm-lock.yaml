@@ -75,6 +75,9 @@ importers:
       '@angular-devkit/schematics':
         specifier: 22.0.2
         version: 22.0.2(chokidar@5.0.0)
+      '@angular/animations':
+        specifier: 22.0.2
+        version: 22.0.2(@angular/core@22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2)(zone.js@0.16.2))
       '@angular/build':
         specifier: 22.0.2
         version: 22.0.2(cb20252f8762522e35d557cf933ac451)
@@ -12941,7 +12944,6 @@ snapshots:
     dependencies:
       '@angular/core': 22.0.2(@angular/compiler@22.0.2)(rxjs@7.8.2)(zone.js@0.16.2)
       tslib: 2.8.1
-    optional: true
 
   '@angular/build@22.0.2(a60c0ac65cdcb9b695799a5f9b27e3d1)':
     dependencies:
