@@ -1,0 +1,258 @@
+{
+  "version": "1.1.0",
+  "slug": "slider",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxSliderControl",
+      "selector": "div[rdxSliderControl]",
+      "exportAs": "rdxSliderControl",
+      "description": "The interactive area of the slider. Handles pointer presses and drags on the\ntrack, mapping pointer position to a value and moving the closest thumb.\n\nSee https://base-ui.com/react/components/slider",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxSliderIndicator",
+      "selector": "div[rdxSliderIndicator]",
+      "exportAs": "rdxSliderIndicator",
+      "description": "Visualises the portion of the track between the slider's minimum (or the first\nthumb in a range) and the active value.\n\nSee https://base-ui.com/react/components/slider",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxSliderRoot",
+      "selector": "div[rdxSliderRoot]",
+      "exportAs": "rdxSliderRoot",
+      "description": "Groups all parts of the slider and owns its state, value-change logic and\nthumb registration. A single directive drives both orientations — there are no\nseparate horizontal/vertical components.\n\nSee https://base-ui.com/react/components/slider",
+      "hostDirectives": [
+        "RdxCompositeList",
+        "RdxFormUiStateHost",
+        "RdxControlValueAccessor"
+      ],
+      "inputs": [
+        {
+          "name": "aria-labelledby",
+          "type": "string | undefined",
+          "default": "undefined"
+        },
+        {
+          "name": "defaultValue",
+          "type": "SliderValue",
+          "description": "The uncontrolled value of the slider when it is initially rendered."
+        },
+        {
+          "name": "dir",
+          "type": "'ltr' | 'rtl' | undefined",
+          "default": "undefined",
+          "description": "The reading direction. Mirrors the horizontal axis when set to `'rtl'`."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "When `true`, the user cannot interact with the slider."
+        },
+        {
+          "name": "form",
+          "type": "string",
+          "description": "Id of the form the slider belongs to."
+        },
+        {
+          "name": "format",
+          "type": "Intl.NumberFormatOptions",
+          "description": "Options forwarded to `Intl.NumberFormat` when displaying and announcing values."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "default": "injectId('rdx-slider-')"
+        },
+        {
+          "name": "largeStep",
+          "type": "number",
+          "default": "10",
+          "description": "The granularity with which the value changes on Page Up / Page Down keys and Shift + Arrow keys."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "description": "Locale used for value formatting."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "default": "100",
+          "description": "The maximum value of the slider."
+        },
+        {
+          "name": "min",
+          "type": "number",
+          "default": "0",
+          "description": "The minimum value of the slider."
+        },
+        {
+          "name": "minStepsBetweenValues",
+          "type": "number",
+          "default": "0",
+          "description": "The minimum number of steps that must separate two thumbs in a range slider."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "Name of the native range input rendered by each thumb, for form submission."
+        },
+        {
+          "name": "orientation",
+          "type": "SliderOrientation",
+          "default": "'horizontal'",
+          "description": "The orientation of the slider."
+        },
+        {
+          "name": "step",
+          "type": "number",
+          "default": "1",
+          "description": "The granularity with which the value can change through user interaction."
+        },
+        {
+          "name": "thumbAlignment",
+          "type": "RdxSliderThumbAlignment",
+          "default": "'center'",
+          "description": "How the thumbs align with the control when the value is at min/max.\n`center` aligns the thumb center to the control edge; `edge`/`edge-client-only`\ninset thumbs so their outer edge aligns to the control edge."
+        },
+        {
+          "name": "thumbCollisionBehavior",
+          "type": "ThumbCollisionBehavior",
+          "default": "'push'",
+          "description": "How thumbs behave when they meet in a range slider."
+        },
+        {
+          "name": "value",
+          "type": "SliderValue",
+          "description": "The controlled value of the slider. Use with `(onValueChange)` or two-way `[(value)]`."
+        },
+        {
+          "name": "dirty",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the value changed from its initial value. Merged with internal tracking."
+        },
+        {
+          "name": "errors",
+          "type": "readonly RdxValidationError[]",
+          "default": "[]",
+          "description": "Validation errors for the control. A non-empty list marks it invalid."
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+        },
+        {
+          "name": "pending",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
+        },
+        {
+          "name": "touched",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onValueChange",
+          "type": "RdxSliderValueChangeEvent",
+          "description": "Emitted when the value changes (during interaction)."
+        },
+        {
+          "name": "onValueCommitted",
+          "type": "RdxSliderValueCommitEvent",
+          "description": "Emitted when interaction ends, with the final value — useful for committing to a backend."
+        },
+        {
+          "name": "touch",
+          "type": "void",
+          "description": "Emits when the control is touched, notifying Signal Forms (stable Angular 22 contract)."
+        }
+      ],
+      "twoWay": [
+        "value",
+        "touched"
+      ]
+    },
+    {
+      "directive": "RdxSliderThumbInput",
+      "selector": "input[rdxSliderThumbInput]",
+      "exportAs": "rdxSliderThumbInput",
+      "description": "The native `input[type=range]` nested inside a thumb. It is visually hidden but\nremains the focusable element that drives keyboard interaction, accessibility\nand form submission.\n\nSee https://base-ui.com/react/components/slider",
+      "inputs": [
+        {
+          "name": "aria-label",
+          "type": "string | undefined",
+          "default": "undefined"
+        },
+        {
+          "name": "aria-valuetext",
+          "type": "string | undefined",
+          "default": "undefined"
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "default": "injectId('rdx-slider-thumb-input-')"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxSliderThumb",
+      "selector": "div[rdxSliderThumb]",
+      "exportAs": "rdxSliderThumb",
+      "description": "A draggable handle. Render one per value; place an `input[rdxSliderThumbInput]`\ninside it for keyboard, accessibility and form submission.\n\nSee https://base-ui.com/react/components/slider",
+      "hostDirectives": [
+        "RdxCompositeListItem"
+      ],
+      "inputs": [
+        {
+          "name": "index",
+          "type": "number | undefined",
+          "default": "undefined",
+          "description": "Explicit index for this thumb (required for SSR range sliders)."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Disables this individual thumb."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxSliderTrack",
+      "selector": "div[rdxSliderTrack]",
+      "exportAs": "rdxSliderTrack",
+      "description": "The track of the slider — the positioning context for the indicator and thumbs.\n\nSee https://base-ui.com/react/components/slider",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxSliderValue",
+      "selector": "output[rdxSliderValue]",
+      "exportAs": "rdxSliderValue",
+      "description": "Displays the slider's current value(s) as formatted text. Renders into an\n`output` element; the displayed value honours the root `format` and `locale`.\n\nSee https://base-ui.com/react/components/slider",
+      "inputs": [
+        {
+          "name": "separator",
+          "type": "string",
+          "default": "' – '",
+          "description": "The separator placed between values of a range slider."
+        }
+      ],
+      "outputs": []
+    }
+  ]
+}

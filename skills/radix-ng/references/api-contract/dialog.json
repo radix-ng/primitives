@@ -1,0 +1,204 @@
+{
+  "version": "1.1.0",
+  "slug": "dialog",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxDialogBackdrop",
+      "selector": "[rdxDialogBackdrop]",
+      "exportAs": "rdxDialogBackdrop",
+      "description": "An overlay displayed beneath the dialog popup.\n\nDecorative-only, so it carries `role=\"presentation\"` (Base UI `DialogBackdrop`). By default a **nested**\ndialog renders no backdrop — the parent's already dims the page; stacking a second one double-darkens\nand intercepts the parent's outside-press. Set `forceRender` to opt back in.",
+      "inputs": [
+        {
+          "name": "forceRender",
+          "type": "boolean",
+          "default": "false",
+          "description": "Render the backdrop even for a nested dialog (off by default, matching Base UI)."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxDialogClose",
+      "selector": "button[rdxDialogClose]",
+      "exportAs": "rdxDialogClose",
+      "description": "A button that closes the dialog.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxDialogDescription",
+      "selector": "[rdxDialogDescription]",
+      "exportAs": "rdxDialogDescription",
+      "description": "An accessible description for the dialog.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxDialogPopup",
+      "selector": "[rdxDialogPopup]",
+      "exportAs": "rdxDialogPopup",
+      "description": "A container for the dialog contents.\n\n**ADR 0015/0017 Phase-4 migration — Dialog is the PILOT cutover onto the new floating dismissal +\nfocus engine. Browser-verified** by `apps/visual-regression/tests/dialog.behavior.spec.ts` (trap,\ninitial / return focus, Escape / outside-press / focus-out dismissal, nested-Escape deepest-first,\nbackdrop-not-marked).\n\n**Mapping (legacy → new):**\n- `RdxDismissableLayer` (legacy) → `RdxFloatingNodeRegistration` (registers the tree node) +\n  `RdxDismiss` (Escape / outside-press; reads the root context + node).\n- `RdxFocusScope` (direct) → `RdxFloatingFocusManager` (composes the reworked focus scope; trap +\n  markOthers + close-on-focus-out), driven by `provideFloatingFocusManagerConfig`.\n- `disableOutsidePointerEvents` → the focus manager's `inert` pass marks outside elements\n  non-interactive for a modal (finding #4), scoped to siblings of the popup's ancestor chain instead\n  of a global `body { pointer-events: none }` lock — so the popup needs no `pointer-events: auto`.\n- focus-out close moved from the dismissal capability (`focusOutside: () => false`) to the manager\n  (`manager.focusOut`), per ADR 0017 §3.\n- `isEventOnTrigger` preventDefault → removed: the trigger is in `context.triggers`, so the engine\n  treats a press/focus on it as **inside** (no close-then-reopen).\n\n**Parity notes:**\n- **Lifecycle split (resolved 2026-06-16):** `enabled` is `open || transitionStatus === 'ending'`, so\n  the trap / return-focus machinery survives the exit animation, while the manager's marker + isolation\n  passes additionally key off `open` and release at close-start (Base UI `markOthers` gating).\n- **`trap-focus` split:** the manager traps focus for `modal === true` and `'trap-focus'`, but applies\n  real `inert` isolation only for `modal === true`, matching Base UI's public contract that\n  `modal=\"trap-focus\"` leaves outside pointer interaction enabled.\n- **`returnFocus` orchestration (resolved 2026-06-16):** the manager now owns the return-focus *target*\n  via the focus scope's `returnFocus` config seam (the scope owns the *timing* — its queued post-unmount\n  frame). Dialog leaves it at the default (`returnFocus: true` → return to the element focused before\n  open), so behavior is unchanged; a consumer can now also pass `false` / an element / a callback.",
+      "hostDirectives": [
+        "RdxFloatingNodeRegistration",
+        "RdxFloatingFocusManager"
+      ],
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "escapeKeyDown",
+          "type": "KeyboardEvent",
+          "description": "Event handler called when the escape key is down. Can be prevented."
+        },
+        {
+          "name": "focusOutside",
+          "type": "FocusEvent",
+          "description": "Event handler called when focus moves outside of the popup. Can be prevented."
+        },
+        {
+          "name": "interactOutside",
+          "type": "RdxOutsidePressDomEvent | FocusEvent",
+          "description": "Event handler called when an interaction (pointer / focus) happens outside of the popup."
+        },
+        {
+          "name": "pointerDownOutside",
+          "type": "RdxOutsidePressDomEvent",
+          "description": "Event handler called when a pointerdown event happens outside of the popup. Can be prevented."
+        }
+      ]
+    },
+    {
+      "directive": "RdxDialogPortal",
+      "selector": "ng-template[rdxDialogPortal]",
+      "exportAs": "rdxDialogPortal",
+      "description": "Structural directive that teleports the dialog content (backdrop + popup) into a container (default\n`document.body`) while the dialog is open, and keeps it mounted until the CSS exit `@keyframes` on\nevery root element finish.\n\nDialog has two root nodes (backdrop + popup), so use the explicit `<ng-template rdxDialogPortal>`\nform. Pass `[container]` to portal into a different element.",
+      "hostDirectives": [
+        "RdxPortalPresence"
+      ],
+      "inputs": [
+        {
+          "name": "container",
+          "type": "RdxPortalContainer",
+          "description": "Optional container to portal the content into. Defaults to `document.body`. Declared here (and\nforwarded to the composed {@link RdxPortalPresence}) so that the drawer and alert-dialog portals\ncan re-expose it through their own `hostDirectives`."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxDialogPortalMisuseGuard",
+      "selector": "[rdxDialogPortal]:not(ng-template)",
+      "description": "Dev-mode guard: `rdxDialogPortal` used to be an attribute directive on a `<div>`. It is now\nstructural, so the old `<div rdxDialogPortal>` markup would silently stop portaling — fail loudly\ninstead.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxDialogRoot",
+      "selector": "[rdxDialogRoot]",
+      "exportAs": "rdxDialogRoot",
+      "description": "Groups all parts of the dialog.",
+      "inputs": [
+        {
+          "name": "defaultOpen",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the dialog is initially open."
+        },
+        {
+          "name": "defaultTriggerId",
+          "type": "string | null",
+          "default": "null",
+          "description": "ID of the trigger associated with an initially open uncontrolled dialog."
+        },
+        {
+          "name": "disablePointerDismissal",
+          "type": "boolean",
+          "default": "false",
+          "description": "Determines whether the dialog should close on outside clicks. For a non-modal dialog this also\nprevents the dialog from closing when focus moves outside of it."
+        },
+        {
+          "name": "handle",
+          "type": "RdxDialogHandle<unknown>",
+          "description": "Associates this root with detached trigger elements rendered outside of it."
+        },
+        {
+          "name": "modal",
+          "type": "RdxDialogModal",
+          "default": "true",
+          "description": "Determines if the dialog enters a modal state when open.\n- `true`: focus is trapped, page scroll is locked, outside pointer events are disabled.\n- `false`: interaction with the rest of the document is allowed.\n- `'trap-focus'`: focus is trapped, but scroll is not locked and outside pointer events remain enabled."
+        },
+        {
+          "name": "open",
+          "default": "false",
+          "description": "Whether the dialog is currently open."
+        },
+        {
+          "name": "triggerId",
+          "type": "string | null",
+          "default": "null",
+          "description": "ID of the trigger associated with a controlled dialog."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onOpenChange",
+          "type": "RdxDialogOpenChange",
+          "description": "Event handler called when the dialog is opened or closed."
+        },
+        {
+          "name": "onOpenChangeComplete",
+          "type": "boolean",
+          "description": "Event handler called after any animations complete when the dialog is opened or closed."
+        }
+      ],
+      "twoWay": [
+        "open",
+        "triggerId"
+      ]
+    },
+    {
+      "directive": "RdxDialogTitle",
+      "selector": "[rdxDialogTitle]",
+      "exportAs": "rdxDialogTitle",
+      "description": "An accessible title for the dialog.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxDialogTrigger",
+      "selector": "button[rdxDialogTrigger]",
+      "exportAs": "rdxDialogTrigger",
+      "description": "A button that opens the dialog.",
+      "inputs": [
+        {
+          "name": "disabled",
+          "default": "false",
+          "description": "Whether the trigger should ignore user interaction."
+        },
+        {
+          "name": "handle",
+          "type": "RdxDialogHandle<unknown>",
+          "description": "Associates this trigger with a detached dialog root."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "description": "ID used to identify this trigger when opening a detached or controlled dialog."
+        },
+        {
+          "name": "payload",
+          "type": "unknown",
+          "description": "Data associated with this trigger while it is active."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxDialogViewport",
+      "selector": "[rdxDialogViewport]",
+      "exportAs": "rdxDialogViewport",
+      "description": "A positioning container for the dialog popup that can be made scrollable.\n\nPlace it inside the portal, around the popup, to scroll the popup when it is taller than the\nviewport (outside scroll). Pointer events pass through while the dialog is closed.",
+      "inputs": [],
+      "outputs": []
+    }
+  ]
+}

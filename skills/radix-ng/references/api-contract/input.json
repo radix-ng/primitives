@@ -1,0 +1,119 @@
+{
+  "version": "1.1.0",
+  "slug": "input",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxInputDirective",
+      "selector": "input[rdxInput]",
+      "exportAs": "rdxInput",
+      "description": "A headless text input that can integrate with Field for accessible labeling,\ndescriptions, validation state, and data attributes.",
+      "inputs": [
+        {
+          "name": "defaultValue",
+          "type": "RdxInputValue | undefined",
+          "default": "undefined",
+          "description": "The initial value when the input is uncontrolled."
+        },
+        {
+          "name": "dirty",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the input value has changed from its initial value. Merged with the\ninternally tracked state; a form system can own it through this input."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the input is disabled."
+        },
+        {
+          "name": "errors",
+          "type": "readonly RdxValidationError[]",
+          "default": "[]",
+          "description": "Validation errors for the input. A non-empty list marks the input invalid."
+        },
+        {
+          "name": "id",
+          "default": "`rdx-input-${inputId++}`",
+          "description": "The input id. Field labels and descriptions use this value for accessible relationships."
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the input is invalid."
+        },
+        {
+          "name": "maxLength",
+          "type": "number | undefined",
+          "default": "undefined",
+          "description": "Maximum number of characters."
+        },
+        {
+          "name": "minLength",
+          "type": "number | undefined",
+          "default": "undefined",
+          "description": "Minimum number of characters."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "The name of the input, submitted with the form data and used by Form-level\nerror matching."
+        },
+        {
+          "name": "pattern",
+          "type": "readonly RegExp[]",
+          "default": "[]",
+          "description": "Patterns the value must match. Reflected to the native `pattern` attribute\nonly when exactly one pattern is provided (the attribute holds a single regex)."
+        },
+        {
+          "name": "pending",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether async validation is pending. Pending inputs publish neither valid nor invalid state."
+        },
+        {
+          "name": "readonly",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the input is read-only."
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the input is required."
+        },
+        {
+          "name": "touched",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the input has been touched. A two-way model: the input sets it on\nblur (emitting `touchedChange`, which Signal Forms' `[formField]` listens\nto), and a form system can write it back."
+        },
+        {
+          "name": "value",
+          "type": "RdxInputValue | undefined",
+          "default": "undefined",
+          "description": "The controlled input value."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onValueChange",
+          "type": "RdxInputValueChangeEvent",
+          "description": "Emits when the input value changes."
+        },
+        {
+          "name": "touch",
+          "type": "void",
+          "description": "Emits on blur, notifying a form system the input was touched. Stable\nAngular 22 Signal Forms listens to this `touch` output; the 21.x\nexperimental implementation listens to the `touched` model's\n`touchedChange` instead — both are emitted, covering either version."
+        }
+      ],
+      "twoWay": [
+        "touched",
+        "value"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "version": "1.1.0",
+  "slug": "collapsible",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxCollapsiblePanelDirective",
+      "selector": "[rdxCollapsiblePanel]",
+      "description": "A panel with the collapsible contents.",
+      "inputs": [
+        {
+          "name": "hiddenUntilFound",
+          "type": "boolean | undefined",
+          "default": "undefined",
+          "description": "Allows the browser's built-in page search to find and expand the panel contents.\nWhen `true`, the closed panel uses `hidden=\"until-found\"` instead of plain `hidden`."
+        },
+        {
+          "name": "id",
+          "type": "string | undefined",
+          "default": "undefined",
+          "description": "Optional explicit panel id. When set, the trigger's `aria-controls` points to this id."
+        },
+        {
+          "name": "keepMounted",
+          "type": "boolean | undefined",
+          "default": "undefined",
+          "description": "Whether to keep the element in the DOM while the panel is closed.\nWhen `true`, the closed panel keeps its element and receives the `hidden` attribute once the\nclose transition finishes."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxCollapsibleRootDirective",
+      "selector": "[rdxCollapsibleRoot]",
+      "exportAs": "rdxCollapsibleRoot",
+      "description": "Groups all parts of the collapsible.",
+      "inputs": [
+        {
+          "name": "defaultOpen",
+          "type": "boolean",
+          "default": "false",
+          "description": "The open state of the collapsible when it is initially rendered.\nUse when you do not need to control its open state."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the component should ignore user interaction."
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "default": "false",
+          "description": "The controlled open state of the collapsible.\n`true` - expanded, `false` - collapsed."
+        },
+        {
+          "name": "panelId",
+          "type": "string | undefined",
+          "default": "undefined",
+          "description": "Stable id linking the trigger's `aria-controls` to the panel."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onOpenChange",
+          "type": "RdxCollapsibleOpenChangeEvent",
+          "description": "Event handler called when the open state of the collapsible changes."
+        },
+        {
+          "name": "onOpenChangeComplete",
+          "type": "boolean",
+          "description": "Event handler called after the open/close transition has finished."
+        }
+      ],
+      "twoWay": [
+        "open"
+      ]
+    },
+    {
+      "directive": "RdxCollapsibleTriggerDirective",
+      "selector": "[rdxCollapsibleTrigger]",
+      "description": "A button that opens and closes the collapsible panel.",
+      "inputs": [],
+      "outputs": []
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Presence",
+  "slug": "presence",
+  "section": "utils",
+  "description": "Presence",
+  "doc": "radix-ng-examples/references/utils/presence.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-presence--docs",
+  "anatomy": "",
+  "dataAttributes": []
+}

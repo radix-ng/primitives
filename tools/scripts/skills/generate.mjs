@@ -151,6 +151,41 @@ const splitRenderedExamples = (body) => {
     return blocks.map(({ name, lines }) => ({ name, slug: titleToSlug(name), block: lines.join('\n').trim() }));
 };
 
+// Component docs become a lightweight INDEX (ADR: progressive disclosure): description +
+// Features + Import + Anatomy, then links to each example's full-source shard and to the
+// per-primitive API/styling contract shards. The full source is NOT inlined here — it lives
+// in the example shards; the whole-doc dump stays in llms-full.txt. Stable public URL, no
+// accidental full-source load.
+const buildComponentIndex = (doc, meta) => {
+    const section = (heading) => {
+        const body = sectionBody(doc.body, heading);
+        return body ? `## ${heading}\n\n${body}` : '';
+    };
+    const examples = (meta.examples ?? [])
+        .map((ex) => {
+            const description = ex.description ? ` — ${ex.description}` : '';
+            return `- [${ex.name}](../examples/${doc.slug}--${titleToSlug(ex.name)}.md)${description}`;
+        })
+        .join('\n');
+
+    return [
+        `# ${doc.title}`,
+        doc.description,
+        `> Index — full source of each example is one click away in \`../examples/${doc.slug}--*.md\`; the whole-doc dump is in \`../llms-full.txt\`.`,
+        `> ${versionLine}`,
+        section('Features'),
+        section('Import'),
+        section('Anatomy'),
+        examples ? `## Examples\n\n${examples}` : '',
+        '## API & styling contract',
+        `Machine-readable contracts for this primitive live in the \`radix-ng\` skill:\n` +
+            `- API (selectors, inputs, outputs, two-way bindings): \`references/api-contract/${doc.slug}.json\`\n` +
+            `- Styling (parts + \`data-*\`): \`references/styling-contract/${doc.slug}.json\``
+    ]
+        .filter(Boolean)
+        .join('\n\n');
+};
+
 const mdxMeta = new Map(
     findMdx(primitivesRoot).map((filePath) => {
         const content = fs.readFileSync(filePath, 'utf8');
@@ -187,7 +222,8 @@ for (const section of ['components', 'utils', 'guides', 'recipes', 'examples']) 
 }
 
 for (const doc of docs) {
-    write(path.join(refsRoot, doc.section, `${doc.slug}.md`), `${doc.body}\n`);
+    const content = doc.section === 'components' ? buildComponentIndex(doc, metaFor(doc)) : doc.body;
+    write(path.join(refsRoot, doc.section, `${doc.slug}.md`), `${content}\n`);
 }
 
 // 1b. Per-example shards: references/examples/<slug>--<example>.md — one file per
@@ -208,7 +244,7 @@ for (const doc of docs.filter((entry) => entry.section === 'components')) {
         seen.add(slug);
         const shard = [
             `# ${doc.title} — ${name}`,
-            `> One example from the [${doc.title}](../components/${doc.slug}.md) docs — imports, anatomy, and the data-attribute styling contract live there.`,
+            `> One example from the [${doc.title}](../components/${doc.slug}.md) index — imports, anatomy, and links to the API and styling contracts are there.`,
             `> ${versionLine}`,
             block
         ].join('\n\n');
@@ -266,9 +302,28 @@ const contract = docs
             dataAttributes: meta.dataAttributes ?? []
         };
     });
+// Per-primitive shards (progressive disclosure) — rebuild the dir so a removed primitive
+// leaves no orphan behind. The monolith is kept one release, flagged deprecated.
+const stylingShardDir = path.join(skillsRoot, 'radix-ng/references/styling-contract');
+fs.rmSync(stylingShardDir, { recursive: true, force: true });
+for (const primitive of contract) {
+    write(
+        path.join(stylingShardDir, `${primitive.slug}.json`),
+        JSON.stringify({ version: VERSION, ...primitive }, null, 2) + '\n'
+    );
+}
 write(
     path.join(skillsRoot, 'radix-ng/references/styling-contract.json'),
-    JSON.stringify({ version: VERSION, primitives: contract }, null, 2) + '\n'
+    JSON.stringify(
+        {
+            version: VERSION,
+            deprecated:
+                'Superseded by per-primitive styling-contract/<slug>.json shards; this monolith will be removed in the next release.',
+            primitives: contract
+        },
+        null,
+        2
+    ) + '\n'
 );
 
 // 3. examples index skill
@@ -292,7 +347,7 @@ name: radix-ng-examples
 description: |
   Index of every documented @radix-ng/primitives example. Use when implementing a UI
   feature to find a working, copy-paste-ready Angular pattern built on the primitives.
-  Each component links to a bundled .md file containing the full source of all its examples.
+  Each component has an index doc linking to per-example source shards you can copy-paste.
 compatibility: Requires @radix-ng/primitives installed in an Angular 21 project.
 license: MIT
 metadata:
@@ -312,13 +367,13 @@ Working examples built on \`@radix-ng/primitives\`. Full source is **bundled off
 
 1. Describe the UI you want to build (e.g. "a multi-select combobox", "a form field with validation").
 2. Find the matching component below by name and description.
-3. Open that component's bundled \`references/components/<slug>.md\` — it lists every example by name
-   and has the **full Angular source** of each.
-4. Adapt it: keep the primitive directives and \`data-*\` styling hooks, swap in the project's own
-   design-system classes/tokens.
+3. Open that component's bundled \`references/components/<slug>.md\` — an index with the import,
+   anatomy, and a link to each example's full source (\`references/examples/<slug>--<example>.md\`).
+4. Open the example shard you need and adapt it: keep the primitive directives and \`data-*\` styling
+   hooks, swap in the project's own design-system classes/tokens.
 
-To style a primitive with a custom design system, pair an example with the data-attribute contract in
-the \`radix-ng\` skill (\`references/styling-contract.json\`).
+To style a primitive with a custom design system, pair an example with its per-primitive data-attribute
+contract in the \`radix-ng\` skill (\`references/styling-contract/<slug>.json\`).
 
 **Reload a single example** (e.g. after your context is compacted): open
 \`references/examples/<component>--<example>.md\` — one file per example, just that example's source,
@@ -335,6 +390,62 @@ write(path.join(skillsRoot, 'radix-ng-examples/SKILL.md'), examplesSkill);
 
 // 4. API contract (selectors + inputs/outputs per part, from compodoc metadata)
 const api = generateApiContract({ workspaceRoot, primitivesRoot, skillsRoot, version: VERSION, write });
+
+// 4b. Integrity guards — CI surfaces any failure through the `pnpm skills:build` step. They keep the
+// progressive-disclosure structure honest: version stamps, component ↔ contract ↔ example correspondence,
+// no orphan shards after a rename, and no dangling relative links in the router or the component indexes.
+const errors = [];
+const warnings = [];
+const componentSlugs = docs.filter((doc) => doc.section === 'components').map((doc) => doc.slug);
+const stylingSlugs = new Set(contract.map((primitive) => primitive.slug));
+const apiSlugs = new Set(api.slugs);
+const docSlugs = new Set(docs.map((doc) => doc.slug));
+const exampleShardSlugs = new Set(
+    fs.readdirSync(path.join(refsRoot, 'examples')).map((file) => file.replace(/--.*$/, ''))
+);
+
+for (const dir of ['radix-ng/references/api-contract', 'radix-ng/references/styling-contract']) {
+    for (const file of fs.readdirSync(path.join(skillsRoot, dir))) {
+        const json = JSON.parse(fs.readFileSync(path.join(skillsRoot, dir, file), 'utf8'));
+        if (json.version !== VERSION) errors.push(`${dir}/${file}: version "${json.version}" != "${VERSION}"`);
+    }
+}
+
+for (const slug of componentSlugs) {
+    if (!apiSlugs.has(slug)) errors.push(`component "${slug}": no api-contract shard`);
+    if (!stylingSlugs.has(slug)) errors.push(`component "${slug}": no styling-contract shard`);
+    // A doc whose Examples section has no `###`-headed examples yields no shards — a doc-completeness
+    // gap, not a bundle defect. Surface it (never silently), but don't fail the build on it.
+    if (!exampleShardSlugs.has(slug))
+        warnings.push(`component "${slug}": no example shards (no \`###\`-headed examples)`);
+}
+
+for (const slug of exampleShardSlugs) {
+    if (!componentSlugs.includes(slug)) errors.push(`orphan example shards "${slug}--*.md": no component doc`);
+}
+for (const file of fs.readdirSync(path.join(skillsRoot, 'radix-ng/references/styling-contract'))) {
+    const slug = file.replace(/\.json$/, '');
+    if (!docSlugs.has(slug)) errors.push(`orphan styling-contract/${file}: no doc "${slug}"`);
+}
+
+const checkLinks = (fileAbs) => {
+    for (const match of fs.readFileSync(fileAbs, 'utf8').matchAll(/\]\((\.[^)]+\.md)\)/g)) {
+        if (!fs.existsSync(path.resolve(path.dirname(fileAbs), match[1]))) {
+            errors.push(`${path.relative(skillsRoot, fileAbs)}: broken link ${match[1]}`);
+        }
+    }
+};
+checkLinks(path.join(skillsRoot, 'radix-ng-examples/SKILL.md'));
+for (const slug of componentSlugs) checkLinks(path.join(refsRoot, 'components', `${slug}.md`));
+
+if (warnings.length) {
+    console.warn(
+        `⚠ ${warnings.length} component(s) without example shards:\n${warnings.map((w) => `  ${w}`).join('\n')}`
+    );
+}
+if (errors.length) {
+    throw new Error(`Skills bundle integrity check failed:\n${errors.map((error) => `  ${error}`).join('\n')}`);
+}
 
 // 5. Eager-load budget. A SKILL.md is the ONLY file pulled into a consumer agent's context on
 // skill activation — everything under references/ loads on demand. Oversized SKILL.md files are
@@ -366,6 +477,7 @@ if (budgetErrors.length) {
 console.log(`✓ ${docs.length} docs rendered → ${path.relative(workspaceRoot, refsRoot)}/<section>/`);
 console.log(`✓ ${exampleShardCount} example shards → ${path.relative(workspaceRoot, refsRoot)}/examples/`);
 console.log(`✓ llms.txt + llms-full.txt (${docs.length} docs)`);
-console.log(`✓ styling-contract.json (${contract.length} primitives)`);
-console.log(`✓ api-contract.json (${api.parts} parts / ${api.primitives} primitives)`);
+console.log(`✓ styling-contract: ${contract.length} shards + deprecated monolith`);
+console.log(`✓ api-contract: ${api.primitives} shards + deprecated monolith (${api.parts} parts)`);
+console.log(`✓ integrity guards passed (version, correspondence, orphans, links)`);
 console.log(`✓ radix-ng-examples/SKILL.md (${totalExamples} examples / ${componentDocs.length} components)`);

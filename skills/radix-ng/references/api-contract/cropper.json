@@ -1,0 +1,106 @@
+{
+  "version": "1.1.0",
+  "slug": "cropper",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxCropperCropAreaDirective",
+      "selector": "[rdxCropperCropArea]",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxCropperDescriptionDirective",
+      "selector": "[rdxCropperDescription]",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxCropperImageComponent",
+      "selector": "[rdxCropperImage]",
+      "inputs": [
+        {
+          "name": "imgAlt",
+          "default": "''",
+          "description": "`alt` text for the rendered image. Defaults to `''` (decorative — screen readers skip it, since\nthe cropper widget describes itself via the root's label/description). Set a non-empty value to\ngive the image a meaningful accessible name."
+        },
+        {
+          "name": "imgClass",
+          "type": "string"
+        },
+        {
+          "name": "imgStyles",
+          "type": "string"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxCropperRootDirective",
+      "selector": "[rdxCropperRoot]",
+      "inputs": [
+        {
+          "name": "ariaLabel",
+          "default": "'Interactive image cropper'",
+          "description": "Accessible name for the cropper widget."
+        },
+        {
+          "name": "aspectRatio",
+          "default": "1"
+        },
+        {
+          "name": "cropPadding",
+          "default": "25"
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Disables all interaction (drag, wheel/pinch zoom, keyboard); exposed as `data-disabled`."
+        },
+        {
+          "name": "image",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "keyboardStep",
+          "default": "10",
+          "description": "Pan distance (px) per arrow-key press."
+        },
+        {
+          "name": "maxZoom",
+          "default": "3"
+        },
+        {
+          "name": "minZoom",
+          "default": "1"
+        },
+        {
+          "name": "zoom",
+          "type": "number",
+          "default": "undefined"
+        },
+        {
+          "name": "zoomKeyboardStep",
+          "default": "0.1",
+          "description": "Zoom delta per `+` / `-` / `PageUp` / `PageDown` press."
+        },
+        {
+          "name": "zoomSensitivity",
+          "default": "0.005"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onCropChange",
+          "type": "Area | null"
+        },
+        {
+          "name": "onZoomChange",
+          "type": "number"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "version": "1.1.0",
+  "slug": "tabs",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxTabsIndicator",
+      "selector": "[rdxTabsIndicator]",
+      "exportAs": "rdxTabsIndicator",
+      "description": "A visual element that tracks the position and size of the active tab. Exposes the active tab\ngeometry as CSS variables (`--active-tab-{top,right,bottom,left,width,height}`) so it can be\nanimated with CSS.\n\nSee https://base-ui.com/react/components/tabs",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxTabsList",
+      "selector": "[rdxTabsList]",
+      "exportAs": "rdxTabsList",
+      "description": "Groups the individual tab buttons and manages keyboard navigation.\n\nSee https://base-ui.com/react/components/tabs",
+      "hostDirectives": [
+        "RdxCompositeRoot"
+      ],
+      "inputs": [
+        {
+          "name": "activateOnFocus",
+          "default": "false",
+          "description": "Whether a tab is activated when it receives focus (automatic activation).\nWhen `false`, tabs are only activated on click or Enter/Space."
+        },
+        {
+          "name": "loopFocus",
+          "default": "true",
+          "description": "Whether keyboard navigation should loop from the last tab back to the first."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxTabsPanelPresence",
+      "selector": "ng-template[rdxTabsPanelPresence]",
+      "description": "Structural directive that mounts the tab panel contents only while the panel is active,\nunmounting them once the exit animation finishes. Apply it inside an `[rdxTabsPanel]` to get\nBase UI's default unmounting behavior; combine with `keepMounted` on the panel to keep the\ncontents mounted instead.\n\nThe presence state is read from the parent panel through {@link RdxPresenceDirective}.",
+      "hostDirectives": [
+        "RdxPresenceDirective"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxTabsPanel",
+      "selector": "[rdxTabsPanel]",
+      "exportAs": "rdxTabsPanel",
+      "description": "A panel displayed when its corresponding tab is active.\n\nBy default the panel stays in the DOM and is toggled with the `hidden` attribute. To unmount the\ncontents while inactive (Base UI's default `keepMounted: false`), nest a `*rdxTabsPanelPresence`\nstructural directive inside it; set `keepMounted` to keep the contents mounted regardless.\n\nSee https://base-ui.com/react/components/tabs",
+      "hostDirectives": [
+        "RdxCompositeListItem"
+      ],
+      "inputs": [
+        {
+          "name": "keepMounted",
+          "default": "false",
+          "description": "Keep the panel contents mounted in the DOM while inactive (the contents are still hidden).\nOnly relevant together with `*rdxTabsPanelPresence`, which otherwise unmounts them."
+        },
+        {
+          "name": "value",
+          "type": "RdxTabsValue",
+          "required": true,
+          "description": "A unique value that associates the panel with a tab."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxTabsRoot",
+      "selector": "[rdxTabsRoot]",
+      "exportAs": "rdxTabsRoot",
+      "description": "Groups the tabs and the corresponding panels.\n\nSee https://base-ui.com/react/components/tabs",
+      "hostDirectives": [
+        "RdxCompositeList"
+      ],
+      "inputs": [
+        {
+          "name": "defaultValue",
+          "type": "RdxTabsValue | undefined",
+          "default": "undefined",
+          "description": "The value of the tab that should be initially selected when uncontrolled.\nWhen omitted, Base UI parity uses `0` as the implicit default and falls back to the first enabled tab."
+        },
+        {
+          "name": "orientation",
+          "type": "DataOrientation",
+          "default": "'horizontal'",
+          "description": "The orientation the tabs are laid out. Controls arrow-key navigation\n(left/right vs. up/down)."
+        },
+        {
+          "name": "value",
+          "type": "RdxTabsValue | undefined",
+          "description": "The value of the currently selected tab. Use together with `(onValueChange)` for controlled state."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onValueChange",
+          "type": "RdxTabsValueChangeEvent",
+          "description": "Event emitted when the selected tab changes.\n\n`eventDetails.reason` is `'none'` for user-initiated changes, `'initial'` for the first automatic\nuncontrolled selection, `'disabled'` when an uncontrolled selection falls back from a disabled tab,\nand `'missing'` when it falls back from a removed tab. Automatic changes are not cancelable."
+        }
+      ],
+      "twoWay": [
+        "value"
+      ]
+    },
+    {
+      "directive": "RdxTabsTab",
+      "selector": "[rdxTabsTab]",
+      "exportAs": "rdxTabsTab",
+      "description": "An individual interactive tab button that activates its corresponding panel.\n\nSee https://base-ui.com/react/components/tabs",
+      "hostDirectives": [
+        "RdxCompositeItem"
+      ],
+      "inputs": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "When `true`, prevents the user from interacting with the tab.\nDisabled tabs remain focusable during composite keyboard navigation, matching Base UI."
+        },
+        {
+          "name": "id",
+          "type": "string | undefined",
+          "default": "undefined",
+          "description": "Optional id for the tab element. When omitted, an id is derived from the root id and tab value."
+        },
+        {
+          "name": "nativeButton",
+          "type": "boolean",
+          "default": "true",
+          "description": "Whether the host element is a native button. When `true`, `type=\"button\"` is applied."
+        },
+        {
+          "name": "value",
+          "type": "RdxTabsValue",
+          "required": true,
+          "description": "A unique value that associates the tab with a panel."
+        }
+      ],
+      "outputs": []
+    }
+  ]
+}

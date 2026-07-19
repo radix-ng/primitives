@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Tabs",
+  "slug": "tabs",
+  "section": "components",
+  "description": "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
+  "doc": "radix-ng-examples/references/components/tabs.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-tabs--docs",
+  "anatomy": "<div rdxTabsRoot>\n    <div rdxTabsList>\n        <button rdxTabsTab value=\"1\"></button>\n        <button rdxTabsTab value=\"2\"></button>\n        <span rdxTabsIndicator></span>\n    </div>\n    <div rdxTabsPanel value=\"1\"></div>\n    <div rdxTabsPanel value=\"2\"></div>\n</div>",
+  "dataAttributes": []
+}

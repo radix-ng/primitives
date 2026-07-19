@@ -1,0 +1,30 @@
+{
+  "version": "1.1.0",
+  "slug": "fieldset",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxFieldsetLegend",
+      "selector": "legend[rdxFieldsetLegend]",
+      "exportAs": "rdxFieldsetLegend",
+      "description": "Labels the fieldset.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxFieldsetRoot",
+      "selector": "fieldset[rdxFieldsetRoot]",
+      "exportAs": "rdxFieldsetRoot",
+      "description": "Groups related form controls and disables them as a set.",
+      "inputs": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether all controls in the fieldset are disabled."
+        }
+      ],
+      "outputs": []
+    }
+  ]
+}

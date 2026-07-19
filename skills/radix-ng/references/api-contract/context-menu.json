@@ -1,0 +1,39 @@
+{
+  "version": "1.1.0",
+  "slug": "context-menu",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxContextMenuRoot",
+      "selector": "[rdxContextMenuRoot]",
+      "exportAs": "rdxContextMenuRoot",
+      "description": "Groups all parts of a context menu. Composes the Menu primitive but, instead of anchoring the\npopup to a trigger element, anchors it to the pointer position captured by `rdxContextMenuTrigger`.\n\nReuse the Menu popup parts inside it — `rdxMenuPositioner`, `rdxMenuPopup`, `rdxMenuItem`,\n`rdxMenuCheckboxItem`, `rdxMenuRadioGroup`, `rdxMenuSubTrigger`, `rdxMenuSeparator`, … all behave\nidentically here.",
+      "hostDirectives": [
+        "RdxMenuRoot"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxContextMenuTrigger",
+      "selector": "[rdxContextMenuTrigger]",
+      "exportAs": "rdxContextMenuTrigger",
+      "description": "An area that opens the context menu on right click (or a touch long-press).\n\nApply it to the element that should respond to the context-menu gesture; the popup is positioned\nat the pointer, not against this element.",
+      "inputs": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the trigger is disabled."
+        },
+        {
+          "name": "longPressDelay",
+          "type": "number",
+          "default": "500",
+          "description": "How long (ms) a touch must be held before the menu opens."
+        }
+      ],
+      "outputs": []
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Navigation Menu",
+  "slug": "navigation-menu",
+  "section": "components",
+  "description": "A collection of links and menus for website navigation.",
+  "doc": "radix-ng-examples/references/components/navigation-menu.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-navigation-menu--docs",
+  "anatomy": "<nav rdxNavigationMenuRoot>\n    <ul rdxNavigationMenuList>\n        <li rdxNavigationMenuItem value=\"products\">\n            <button rdxNavigationMenuTrigger>\n                Products\n                <svg rdxNavigationMenuIcon></svg>\n            </button>\n\n            <ng-container *rdxNavigationMenuContent>\n                <a rdxNavigationMenuLink href=\"#\">Analytics</a>\n            </ng-container>\n        </li>\n\n        <li rdxNavigationMenuItem>\n            <a rdxNavigationMenuLink href=\"#\">Pricing</a>\n        </li>\n    </ul>\n\n    <ng-template rdxNavigationMenuPortal>\n        <div rdxNavigationMenuBackdrop></div>\n        <div sideOffset=\"8\" rdxNavigationMenuPositioner>\n            <div rdxNavigationMenuPopup>\n                <svg rdxNavigationMenuArrow></svg>\n                <div rdxNavigationMenuViewport></div>\n            </div>\n        </div>\n    </ng-template>\n</nav>",
+  "dataAttributes": []
+}

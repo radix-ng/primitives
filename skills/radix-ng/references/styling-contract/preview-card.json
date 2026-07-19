@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Preview Card",
+  "slug": "preview-card",
+  "section": "components",
+  "description": "A popup that appears when a link is hovered or focused, showing a visual preview.",
+  "doc": "radix-ng-examples/references/components/preview-card.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-preview-card--docs",
+  "anatomy": "<ng-container rdxPreviewCardRoot>\n  <a href=\"#\" rdxPreviewCardTrigger>Preview link</a>\n\n  <div *rdxPreviewCardPortal rdxPreviewCardPositioner>\n    <div rdxPreviewCardPopup>\n      <span rdxPreviewCardArrow></span>\n      <div rdxPreviewCardViewport>Preview content</div>\n    </div>\n  </div>\n</ng-container>",
+  "dataAttributes": []
+}

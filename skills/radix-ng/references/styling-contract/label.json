@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Label",
+  "slug": "label",
+  "section": "components",
+  "description": "Renders an accessible label associated with controls.",
+  "doc": "radix-ng-examples/references/components/label.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-label--docs",
+  "anatomy": "",
+  "dataAttributes": []
+}

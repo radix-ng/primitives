@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Aspect Ratio",
+  "slug": "aspect-ratio",
+  "section": "components",
+  "description": "Displays content within a desired ratio.",
+  "doc": "radix-ng-examples/references/components/aspect-ratio.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-aspect-ratio--docs",
+  "anatomy": "",
+  "dataAttributes": []
+}

@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Toggle",
+  "slug": "toggle",
+  "section": "components",
+  "description": "A two-state button that can be either on or off.",
+  "doc": "radix-ng-examples/references/components/toggle.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-toggle--docs",
+  "anatomy": "<button rdxToggle aria-label=\"Toggle italic\">\n    <icon />\n</button>",
+  "dataAttributes": []
+}

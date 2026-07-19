@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Context Menu",
+  "slug": "context-menu",
+  "section": "components",
+  "description": "A menu that appears at the pointer on right click (or touch long-press), built on the Menu primitive.",
+  "doc": "radix-ng-examples/references/components/context-menu.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-context-menu--docs",
+  "anatomy": "<ng-container #root=\"rdxContextMenuRoot\" rdxContextMenuRoot>\n  <div rdxContextMenuTrigger>Right click here</div>\n\n  <div *rdxMenuPortal rdxMenuPositioner>\n    <div rdxMenuPopup>\n      <button rdxMenuItem>Back</button>\n      <button rdxMenuItem>Reload</button>\n\n      <div rdxMenuSeparator></div>\n\n      <!-- submenu -->\n      <ng-container #sub=\"rdxMenuRoot\" rdxMenuRoot>\n        <button rdxMenuSubTrigger>More Tools ›</button>\n        <div *rdxMenuPortal side=\"right\" align=\"start\" rdxMenuPositioner>\n          <div rdxMenuPopup>\n            <button rdxMenuItem>Save Page As…</button>\n          </div>\n        </div>\n      </ng-container>\n    </div>\n  </div>\n</ng-container>",
+  "dataAttributes": []
+}

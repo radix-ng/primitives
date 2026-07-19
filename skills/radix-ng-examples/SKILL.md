@@ -3,7 +3,7 @@ name: radix-ng-examples
 description: |
   Index of every documented @radix-ng/primitives example. Use when implementing a UI
   feature to find a working, copy-paste-ready Angular pattern built on the primitives.
-  Each component links to a bundled .md file containing the full source of all its examples.
+  Each component has an index doc linking to per-example source shards you can copy-paste.
 compatibility: Requires @radix-ng/primitives installed in an Angular 21 project.
 license: MIT
 metadata:
@@ -23,13 +23,13 @@ Working examples built on `@radix-ng/primitives`. Full source is **bundled offli
 
 1. Describe the UI you want to build (e.g. "a multi-select combobox", "a form field with validation").
 2. Find the matching component below by name and description.
-3. Open that component's bundled `references/components/<slug>.md` — it lists every example by name
-   and has the **full Angular source** of each.
-4. Adapt it: keep the primitive directives and `data-*` styling hooks, swap in the project's own
-   design-system classes/tokens.
+3. Open that component's bundled `references/components/<slug>.md` — an index with the import,
+   anatomy, and a link to each example's full source (`references/examples/<slug>--<example>.md`).
+4. Open the example shard you need and adapt it: keep the primitive directives and `data-*` styling
+   hooks, swap in the project's own design-system classes/tokens.
 
-To style a primitive with a custom design system, pair an example with the data-attribute contract in
-the `radix-ng` skill (`references/styling-contract.json`).
+To style a primitive with a custom design system, pair an example with its per-primitive data-attribute
+contract in the `radix-ng` skill (`references/styling-contract/<slug>.json`).
 
 **Reload a single example** (e.g. after your context is compacted): open
 `references/examples/<component>--<example>.md` — one file per example, just that example's source,

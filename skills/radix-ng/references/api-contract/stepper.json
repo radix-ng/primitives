@@ -1,0 +1,99 @@
+{
+  "version": "1.1.0",
+  "slug": "stepper",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxStepperDescriptionDirective",
+      "selector": "[rdxStepperDescription]",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxStepperIndicatorDirective",
+      "selector": "[rdxStepperIndicator]",
+      "exportAs": "rdxStepperIndicator",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxStepperItemDirective",
+      "selector": "[rdxStepperItem]",
+      "inputs": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "step",
+          "type": "number",
+          "default": "NaN"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxStepperRootDirective",
+      "selector": "[rdxStepperRoot]",
+      "exportAs": "rdxStepperRoot",
+      "inputs": [
+        {
+          "name": "defaultValue",
+          "type": "number",
+          "default": "undefined"
+        },
+        {
+          "name": "dir",
+          "type": "Direction | undefined",
+          "default": "undefined"
+        },
+        {
+          "name": "linear",
+          "type": "boolean",
+          "default": "true"
+        },
+        {
+          "name": "orientation",
+          "type": "\"vertical\" | \"horizontal\"",
+          "default": "'horizontal'"
+        },
+        {
+          "name": "value",
+          "type": "number | undefined",
+          "default": "this.defaultValue()"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onValueChange",
+          "type": "RdxStepperValueChangeEvent"
+        }
+      ],
+      "twoWay": [
+        "value"
+      ]
+    },
+    {
+      "directive": "RdxStepperSeparatorDirective",
+      "selector": "[rdxStepperSeparator]",
+      "hostDirectives": [
+        "RdxSeparatorRootDirective"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxStepperTitleDirective",
+      "selector": "[rdxStepperTitle]",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxStepperTriggerDirective",
+      "selector": "button[rdxStepperTrigger]",
+      "inputs": [],
+      "outputs": []
+    }
+  ]
+}

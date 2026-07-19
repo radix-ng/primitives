@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Stepper",
+  "slug": "stepper",
+  "section": "components",
+  "description": "A set of steps that are used to indicate progress through a multi-step process.",
+  "doc": "radix-ng-examples/references/components/stepper.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-stepper--docs",
+  "anatomy": "<div rdxStepperRoot >\n    <div rdxStepperItem >\n        <div rdxStepperSeparator></div>\n        <button rdxStepperTrigger>\n            <div rdxStepperIndicator></div>\n        </button>\n\n        <h4 rdxStepperTitle></h4>\n        <p rdxStepperDescription></p>\n    </div>\n</div>",
+  "dataAttributes": []
+}

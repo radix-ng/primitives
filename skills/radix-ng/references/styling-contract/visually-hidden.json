@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Visually Hidden",
+  "slug": "visually-hidden",
+  "section": "utils",
+  "description": "Hides content visually while keeping it available to assistive technology.",
+  "doc": "radix-ng-examples/references/utils/visually-hidden.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-visually-hidden--docs",
+  "anatomy": "<button>\n  <icon aria-hidden=\"true\" />\n  <span rdxVisuallyHidden>Add to favorites</span>\n</button>",
+  "dataAttributes": []
+}

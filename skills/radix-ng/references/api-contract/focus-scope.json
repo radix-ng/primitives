@@ -1,0 +1,37 @@
+{
+  "version": "1.1.0",
+  "slug": "focus-scope",
+  "section": "utils",
+  "parts": [
+    {
+      "directive": "RdxFocusScope",
+      "selector": "[rdxFocusScope]",
+      "inputs": [
+        {
+          "name": "loop",
+          "type": "boolean",
+          "default": "false",
+          "description": "When `true`, tabbing from last item will focus first tabbable\nand shift+tab from first item will focus last tababble."
+        },
+        {
+          "name": "trapped",
+          "type": "boolean | undefined",
+          "default": "undefined",
+          "description": "When `true`, focus cannot escape the focus scope via keyboard,\npointer, or a programmatic focus."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mountAutoFocus",
+          "type": "Event",
+          "description": "Event handler called when auto-focusing on mount.\nCan be prevented."
+        },
+        {
+          "name": "unmountAutoFocus",
+          "type": "Event",
+          "description": "Event handler called when auto-focusing on unmount.\nCan be prevented."
+        }
+      ]
+    }
+  ]
+}

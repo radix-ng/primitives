@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Input",
+  "slug": "input",
+  "section": "components",
+  "description": "A native text input with headless state attributes and Field integration.",
+  "doc": "radix-ng-examples/references/components/input.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-input--docs",
+  "anatomy": "<div rdxFieldRoot>\n    <label rdxFieldLabel>Email</label>\n    <input rdxInput />\n    <p rdxFieldDescription>Used for account notifications.</p>\n    <p rdxFieldError>Enter a valid email address.</p>\n</div>",
+  "dataAttributes": []
+}

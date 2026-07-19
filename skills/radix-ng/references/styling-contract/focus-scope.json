@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Focus Scope",
+  "slug": "focus-scope",
+  "section": "utils",
+  "description": "Manages focus within a component boundary with support for trapping and looping focus navigation.",
+  "doc": "radix-ng-examples/references/utils/focus-scope.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-focus-scope--docs",
+  "anatomy": "<div rdxFocusScope trapped loop>\n  <input type=\"text\" />\n  <button type=\"button\">Save</button>\n  <button type=\"button\">Close</button>\n</div>",
+  "dataAttributes": []
+}

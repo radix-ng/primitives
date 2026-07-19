@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Fieldset",
+  "slug": "fieldset",
+  "section": "components",
+  "description": "Groups related form controls with a legend and shared disabled state.",
+  "doc": "radix-ng-examples/references/components/fieldset.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-fieldset--docs",
+  "anatomy": "<fieldset rdxFieldsetRoot>\n  <legend rdxFieldsetLegend>Shipping address</legend>\n  <!-- fields -->\n</fieldset>",
+  "dataAttributes": []
+}

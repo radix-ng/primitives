@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Meter",
+  "slug": "meter",
+  "section": "components",
+  "description": "A graphical display of a numeric value within a range.",
+  "doc": "radix-ng-examples/references/components/meter.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-meter--docs",
+  "anatomy": "<div rdxMeterRoot [value]=\"24\">\n  <span rdxMeterLabel>Storage used</span>\n  <div rdxMeterTrack>\n    <div rdxMeterIndicator></div>\n  </div>\n  <span rdxMeterValue></span>\n</div>",
+  "dataAttributes": []
+}

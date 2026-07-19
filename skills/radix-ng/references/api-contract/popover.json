@@ -1,0 +1,323 @@
+{
+  "version": "1.1.0",
+  "slug": "popover",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxPopoverArrow",
+      "selector": "[rdxPopoverArrow]",
+      "description": "An optional arrow element rendered alongside the popover.",
+      "hostDirectives": [
+        "RdxPopperArrow"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxPopoverBackdrop",
+      "selector": "[rdxPopoverBackdrop]",
+      "description": "An optional backdrop rendered behind the popup.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxPopoverClose",
+      "selector": "button[rdxPopoverClose]",
+      "description": "A button that closes the popover.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxPopoverDescription",
+      "selector": "[rdxPopoverDescription]",
+      "description": "An accessible description for the popover.",
+      "inputs": [
+        {
+          "name": "id",
+          "type": "string | undefined",
+          "default": "undefined"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxPopoverPopup",
+      "selector": "[rdxPopoverPopup]",
+      "description": "A container for the popover contents.\n\n**ADR 0015/0017 Phase-4 migration** onto the new floating dismissal + focus engine (same pattern as\nDialog; browser-verified via `popover.behavior` Playwright). Popover-specific:\n- **Hover-open disables the manager** (`enabled = isOpen && !isHoverActive`) — Base UI parity\n  (`disabled={!mounted || openReason === triggerHover}`); a hover-opened popover does not trap / mark.\n  (The legacy only suppressed auto-focus while still trapping — that Radix divergence is dropped.)\n- Trap = `'trap-focus' || (modal === true && hasPopupClose())`; scroll lock + real outside `inert`\n  isolation key off the full modal (`modal === true`).\n- No `disablePointerDismissal` — outside-press + focus-out always close.\n\nNote: a positioned popover does **not** auto-focus into the popup on open (pre-existing — the legacy\nbehaved the same; verified). The trap holds focus once it is inside; portal tab-order handoff is owned\nby `RdxFloatingFocusManager` and anchored to the active trigger below.",
+      "hostDirectives": [
+        "RdxPopperContent",
+        "RdxFloatingNodeRegistration",
+        "RdxFloatingFocusManager"
+      ],
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "escapeKeyDown",
+          "type": "KeyboardEvent",
+          "description": "Event handler called when the escape key is down. Can be prevented."
+        },
+        {
+          "name": "focusOutside",
+          "type": "FocusEvent",
+          "description": "Event handler called when focus moves outside of the popup. Can be prevented."
+        },
+        {
+          "name": "interactOutside",
+          "type": "RdxOutsidePressDomEvent | FocusEvent",
+          "description": "Event handler called when an interaction (pointer / focus) happens outside of the popup."
+        },
+        {
+          "name": "pointerDownOutside",
+          "type": "RdxOutsidePressDomEvent",
+          "description": "Event handler called when a pointerdown event happens outside of the popup. Can be prevented."
+        }
+      ]
+    },
+    {
+      "directive": "RdxPopoverPortal",
+      "selector": "ng-template[rdxPopoverPortal]",
+      "exportAs": "rdxPopoverPortal",
+      "description": "Structural directive that teleports the popover content into a container (default `document.body`)\nwhile the popover is open, and keeps it mounted until any CSS exit `@keyframes` finishes.\n\nApply it with the `*` microsyntax on the positioner — `<div *rdxPopoverPortal rdxPopoverPositioner>`\n— or as an explicit `<ng-template rdxPopoverPortal>`. For a custom container use the explicit form\nwith `[container]`.",
+      "hostDirectives": [
+        "RdxPortalPresence"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxPopoverPortalMisuseGuard",
+      "selector": "[rdxPopoverPortal]:not(ng-template)",
+      "description": "Dev-mode guard: `rdxPopoverPortal` used to be an attribute directive on a `<div>`. It is now\nstructural, so the old `<div rdxPopoverPortal>` markup would silently stop portaling — fail loudly\ninstead.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxPopoverPositioner",
+      "selector": "[rdxPopoverPositioner]",
+      "description": "Positions the popover against its trigger.\n\nA \"thin\" positioner (ADR 0012): it inherits the popper positioning surface (inputs, `placed`\noutput, unified vars + placement attrs) from {@link RdxPopperContentWrapper} and adds popover's own\nconcerns — Base UI-aligned defaults via the config provider, the open/closed/instant state\nattributes, the deprecated `--radix-popover-*` aliases, and the grace-area hover bridge.",
+      "inputs": [
+        {
+          "name": "align",
+          "type": "Align",
+          "default": "'center'",
+          "description": "How to align the popup relative to the specified side. May change when collisions occur."
+        },
+        {
+          "name": "alignOffset",
+          "default": "0",
+          "description": "An offset in pixels from the `start` or `end` alignment options. Also accepts an\n{@link OffsetFunction} (same signature as `sideOffset`)."
+        },
+        {
+          "name": "anchor",
+          "type": "RdxPopperAnchorElement",
+          "description": "An element to position the popup against. Defaults to the popper anchor."
+        },
+        {
+          "name": "arrowPadding",
+          "type": "number",
+          "default": "5",
+          "description": "Minimum distance to maintain between the arrow and the edges of the popup.\nIf your content has border-radius, this will prevent it from overflowing the corners."
+        },
+        {
+          "name": "avoidCollisions",
+          "type": "boolean",
+          "default": "true",
+          "deprecated": true,
+          "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges.\n\n`false` disables all avoidance (unless a `collisionAvoidance` object is provided, which wins)."
+        },
+        {
+          "name": "collisionAvoidance",
+          "type": "RdxCollisionAvoidance | undefined",
+          "default": "undefined",
+          "description": "How the popup avoids colliding with the boundary edges, per axis (Base UI `collisionAvoidance`).\nOverrides the deprecated `avoidCollisions` and any per-primitive preset. An object here **fully\nreplaces** the preset — omitted fields fall back to `side: 'flip'`, `align: 'flip'`,\n`fallbackAxisSide: 'end'`, never to the preset. See {@link RdxCollisionAvoidance}."
+        },
+        {
+          "name": "collisionBoundary",
+          "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
+          "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
+        },
+        {
+          "name": "collisionPadding",
+          "type": "number | Partial<Record<Side, number>>",
+          "default": "5",
+          "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
+        },
+        {
+          "name": "dir",
+          "type": "Direction | undefined",
+          "default": "undefined",
+          "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
+        },
+        {
+          "name": "hideWhenDetached",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether to hide the content when the trigger becomes fully occluded."
+        },
+        {
+          "name": "positionStrategy",
+          "type": "\"fixed\" | \"absolute\"",
+          "default": "'fixed'",
+          "description": "The type of CSS position property to use."
+        },
+        {
+          "name": "side",
+          "type": "SideOrLogical",
+          "default": "'bottom'",
+          "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled.\n\nAccepts the logical `'inline-start'` / `'inline-end'` in addition to the physical sides; those\nresolve to `left` / `right` for the text direction (Base UI parity). The placed side reported via\n`data-side` / `placedSide()` echoes the requested kind: logical in → logical out (even after a\ncollision flip), physical in → physical out."
+        },
+        {
+          "name": "sideOffset",
+          "default": "0",
+          "description": "Distance between the anchor and the popup in pixels. Also accepts an {@link OffsetFunction} that\nreads the anchor / positioner dimensions and the resolved side / align."
+        },
+        {
+          "name": "sticky",
+          "type": "\"partial\" | \"always\"",
+          "default": "'partial'",
+          "description": "The sticky behavior on the align axis. `partial` will keep the\ncontent in the boundary as long as the trigger is at least partially\nin the boundary whilst \"always\" will keep the content in the boundary\nregardless."
+        },
+        {
+          "name": "updatePositionStrategy",
+          "type": "\"optimized\" | \"always\"",
+          "default": "'always'",
+          "description": "Strategy to update the position of the floating element on every animation frame."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "placed",
+          "type": "void",
+          "description": "Emits when the element is placed."
+        }
+      ]
+    },
+    {
+      "directive": "RdxPopoverRoot",
+      "selector": "[rdxPopoverRoot]",
+      "exportAs": "rdxPopoverRoot",
+      "description": "Groups all parts of the popover.",
+      "hostDirectives": [
+        "RdxPopper"
+      ],
+      "inputs": [
+        {
+          "name": "defaultOpen",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the popover is initially open."
+        },
+        {
+          "name": "defaultTriggerId",
+          "type": "string | null",
+          "default": "null",
+          "description": "ID of the trigger associated with an initially open uncontrolled popover."
+        },
+        {
+          "name": "handle",
+          "type": "RdxPopoverHandle<unknown>",
+          "description": "Associates this root with detached trigger elements."
+        },
+        {
+          "name": "modal",
+          "type": "RdxPopoverModal",
+          "default": "false",
+          "description": "Determines whether the popover blocks outside interaction or only traps focus."
+        },
+        {
+          "name": "open",
+          "default": "false",
+          "description": "Whether the popover is currently open."
+        },
+        {
+          "name": "triggerId",
+          "type": "string | null",
+          "default": "null",
+          "description": "ID of the trigger associated with a controlled popover."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onOpenChange",
+          "type": "RdxPopoverOpenChange"
+        },
+        {
+          "name": "onOpenChangeComplete",
+          "type": "boolean"
+        }
+      ],
+      "twoWay": [
+        "open",
+        "triggerId"
+      ]
+    },
+    {
+      "directive": "RdxPopoverTitle",
+      "selector": "[rdxPopoverTitle]",
+      "description": "An accessible title for the popover.",
+      "inputs": [
+        {
+          "name": "id",
+          "type": "string | undefined",
+          "default": "undefined"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxPopoverTrigger",
+      "selector": "button[rdxPopoverTrigger]",
+      "description": "A button that opens the popover.",
+      "hostDirectives": [
+        "RdxPopperAnchor"
+      ],
+      "inputs": [
+        {
+          "name": "closeDelay",
+          "type": "number",
+          "default": "0",
+          "description": "How long to wait before closing a hover-opened popover, in milliseconds."
+        },
+        {
+          "name": "delay",
+          "type": "number",
+          "default": "300",
+          "description": "How long to wait before opening the popover on hover, in milliseconds."
+        },
+        {
+          "name": "disabled",
+          "default": "false",
+          "description": "Whether the trigger should ignore user interaction."
+        },
+        {
+          "name": "handle",
+          "type": "RdxPopoverHandle<unknown>",
+          "description": "Associates this trigger with a detached popover root."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "description": "ID used to identify this trigger when opening a detached popover imperatively."
+        },
+        {
+          "name": "openOnHover",
+          "default": "false",
+          "description": "Whether the popover should also open when this trigger is hovered."
+        },
+        {
+          "name": "payload",
+          "type": "unknown",
+          "description": "Data associated with this trigger while it is active."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxPopoverViewport",
+      "selector": "[rdxPopoverViewport]",
+      "description": "A viewport for animating content changes when a popover moves between triggers.\n\nRender one direct child inside the viewport. It is marked with `data-current`;\nwhen the active trigger changes, a DOM snapshot is retained as `data-previous`\nuntil its CSS animation or transition completes.",
+      "inputs": [],
+      "outputs": []
+    }
+  ]
+}

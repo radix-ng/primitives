@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Calendar",
+  "slug": "calendar",
+  "section": "components",
+  "description": "Displays dates and days of the week, facilitating date-related interactions.",
+  "doc": "radix-ng-examples/references/components/calendar.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-calendar--docs",
+  "anatomy": "<div rdxCalendarRoot #root=\"rdxCalendarRoot\">\n  <div rdxCalendarHeader>\n    <button type=\"button\" rdxCalendarPrev></button>\n    <div #head=\"rdxCalendarHeading\" rdxCalendarHeading>{{ head.headingValue() }}</div>\n    <button type=\"button\" rdxCalendarNext></button>\n  </div>\n\n  <table rdxCalendarGrid>\n    @for (month of root.months(); track $index) {\n    <thead rdxCalendarGridHead>\n      <tr rdxCalendarGridRow>\n        @for (day of root.weekDays(); track $index) {\n        <th rdxCalendarHeadCell>{{ day }}</th>\n        }\n      </tr>\n    </thead>\n    <tbody rdxCalendarGridBody>\n      @for (weekDates of month.weeks; track $index) {\n      <tr rdxCalendarGridRow>\n        @for (weekDate of weekDates; track $index) {\n        <td rdxCalendarCell>\n          <div #cell=\"rdxCalendarCellTrigger\" rdxCalendarCellTrigger>{{ cell.dayValue() }}</div>\n        </td>\n        }\n      </tr>\n      }\n    </tbody>\n    }\n  </table>\n</div>",
+  "dataAttributes": []
+}

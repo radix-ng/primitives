@@ -1,0 +1,150 @@
+{
+  "version": "1.1.0",
+  "slug": "field",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxFieldControl",
+      "selector": "[rdxFieldControl]",
+      "exportAs": "rdxFieldControl",
+      "description": "Connects a form control to the field label, description, error, and state.",
+      "inputs": [
+        {
+          "name": "id",
+          "default": "injectId('rdx-field-control-')",
+          "description": "Control id. Labels and descriptions use this value for accessible relationships."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxFieldDescription",
+      "selector": "[rdxFieldDescription]",
+      "exportAs": "rdxFieldDescription",
+      "description": "Describes the field control.",
+      "inputs": [
+        {
+          "name": "id",
+          "default": "injectId('rdx-field-description-')",
+          "description": "Description id."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxFieldError",
+      "selector": "[rdxFieldError]",
+      "exportAs": "rdxFieldError",
+      "description": "Describes an invalid field control.",
+      "inputs": [
+        {
+          "name": "id",
+          "default": "injectId('rdx-field-error-')",
+          "description": "Error message id."
+        },
+        {
+          "name": "match",
+          "type": "boolean | string",
+          "description": "Shows this error only for a matching validation-error key. Bind `true` to keep it visible under\nexternal control; omit it for the field's default error behavior."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxFieldItem",
+      "selector": "[rdxFieldItem]",
+      "exportAs": "rdxFieldItem",
+      "description": "Groups an individual item in a checkbox group or radio group with its own label and description.\n\nUse inside a `rdxFieldRoot` (typically wrapping a group) when each control needs its own label /\ndescription: the item scopes those associations to its control while reflecting the field's validation\nstate. Mirrors Base UI's `Field.Item`.",
+      "inputs": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the wrapped control should ignore user interaction. The `disabled` on `rdxFieldRoot` takes\nprecedence (it is OR'd in)."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxFieldLabel",
+      "selector": "[rdxFieldLabel]",
+      "exportAs": "rdxFieldLabel",
+      "description": "Labels the field control.",
+      "inputs": [
+        {
+          "name": "id",
+          "default": "injectId('rdx-field-label-')",
+          "description": "Label id."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxFieldRoot",
+      "selector": "[rdxFieldRoot]",
+      "exportAs": "rdxFieldRoot",
+      "description": "Groups a form control with its label, description, error message, and field state.",
+      "inputs": [
+        {
+          "name": "dirty",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the field value has changed from its initial value."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the field is disabled."
+        },
+        {
+          "name": "filled",
+          "type": "boolean",
+          "description": "Overrides whether the control has a non-empty value."
+        },
+        {
+          "name": "focused",
+          "type": "boolean",
+          "description": "Overrides whether the control is focused."
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the field is invalid."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "Identifies the field to an enclosing Form for external (server) error matching. Fields without a\n`name` never match external errors."
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the field is required."
+        },
+        {
+          "name": "touched",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the field has been blurred after receiving focus."
+        },
+        {
+          "name": "validationMode",
+          "type": "RdxValidationMode",
+          "description": "Overrides when this field reveals its validity (error styling + message). Falls back to the\nenclosing `rdxFormRoot`'s `validationMode`, then `'onBlur'`. Server errors always show regardless."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxNgControlField",
+      "selector": "[formControl][rdxNgControlField], [formControlName][rdxNgControlField], [ngModel][rdxNgControlField]",
+      "exportAs": "rdxNgControlField",
+      "description": "Bridges a same-host Reactive Forms or template-driven `NgControl` into an enclosing `rdxFieldRoot`.\nPlace it next to `formControl`, `formControlName`, or `ngModel`; Angular remains the source of value,\nvalidation, and interaction state while Field owns when that state is displayed.\n\n```html\n<div rdxFieldRoot>\n  <label rdxFieldLabel>Email</label>\n  <input formControlName=\"email\" rdxFieldControl rdxNgControlField />\n  <p match=\"required\" rdxFieldError>Email is required.</p>\n</div>\n```\n\nThe adapter also infers the Field name from `formControlName` / `ngModel` for Form-level server-error\nrouting. An explicit `name` on `rdxFieldRoot` takes precedence (useful for nested or remapped keys).",
+      "inputs": [],
+      "outputs": []
+    }
+  ]
+}

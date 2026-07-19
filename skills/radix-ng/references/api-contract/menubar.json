@@ -1,0 +1,43 @@
+{
+  "version": "1.1.0",
+  "slug": "menubar",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxMenubarRoot",
+      "selector": "[rdxMenubarRoot]",
+      "exportAs": "rdxMenubarRoot",
+      "description": "Container for a horizontal application menu bar.\nCoordinates open/close state across multiple menus and provides arrow-key navigation.",
+      "hostDirectives": [
+        "RdxCompositeRoot"
+      ],
+      "inputs": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether every menubar trigger is disabled."
+        },
+        {
+          "name": "loopFocus",
+          "type": "boolean",
+          "default": "true",
+          "description": "Whether arrow-key navigation wraps at the first/last trigger."
+        },
+        {
+          "name": "modal",
+          "type": "boolean",
+          "default": "true",
+          "description": "Whether the child menus block outside interaction and lock scroll while open (Base UI default `true`)."
+        },
+        {
+          "name": "orientation",
+          "type": "RdxMenubarOrientation",
+          "default": "'horizontal'",
+          "description": "The menubar orientation."
+        }
+      ],
+      "outputs": []
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "version": "1.1.0",
+  "name": "Toast",
+  "slug": "toast",
+  "section": "components",
+  "description": "A succinct, low-priority message that appears temporarily, stacks, and can be swiped away.",
+  "doc": "radix-ng-examples/references/components/toast.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-toast--docs",
+  "anatomy": "<div rdxToastProvider>\n    <div rdxToastPortal>\n        <div rdxToastViewport>\n            <!-- @for (toast of manager.toasts(); track toast.id) -->\n            <div rdxToastRoot [toast]=\"toast\">\n                <div rdxToastContent>\n                    <p rdxToastTitle></p>\n                    <p rdxToastDescription></p>\n                    <button rdxToastAction></button>\n                    <button rdxToastClose></button>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>",
+  "dataAttributes": [
+    {
+      "attribute": "data-state",
+      "parts": "Root",
+      "values": "open while visible, closed once dismissal begins"
+    },
+    {
+      "attribute": "data-front",
+      "parts": "Root",
+      "values": "this is the frontmost toast (--toast-index is 0)"
+    },
+    {
+      "attribute": "data-expanded",
+      "parts": "Root",
+      "values": "the viewport is hovered or focused"
+    },
+    {
+      "attribute": "data-type",
+      "parts": "Root",
+      "values": "the toast has a type"
+    },
+    {
+      "attribute": "data-swiping",
+      "parts": "Root",
+      "values": "a swipe gesture is active"
+    },
+    {
+      "attribute": "data-swipe-direction",
+      "parts": "Root",
+      "values": "the active swipe direction (up/down/left/right)"
+    },
+    {
+      "attribute": "data-swipe-dismiss",
+      "parts": "Root",
+      "values": "a release committed to dismissal"
+    }
+  ]
+}

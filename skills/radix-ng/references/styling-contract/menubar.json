@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Menubar",
+  "slug": "menubar",
+  "section": "components",
+  "description": "A visually persistent menu common in desktop applications that provides quick access to a consistent set of commands.",
+  "doc": "radix-ng-examples/references/components/menubar.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-menubar--docs",
+  "anatomy": "<div rdxMenubarRoot>\n  <!-- File -->\n  <ng-container #fileMenu=\"rdxMenuRoot\" rdxMenuRoot>\n    <button rdxMenuTrigger>File</button>\n\n    <div class=\"data-[closed]:hidden\" align=\"start\" sideOffset=\"4\" rdxMenuPositioner>\n      <div rdxMenuPopup>\n        <button rdxMenuItem>New Tab</button>\n        <div rdxMenuSeparator></div>\n\n        <!-- submenu -->\n        <ng-container #shareSub=\"rdxMenuRoot\" rdxMenuRoot>\n          <button rdxMenuSubTrigger>Share ›</button>\n          @if (shareSub.open()) {\n          <div side=\"right\" align=\"start\" rdxMenuPositioner>\n            <div rdxMenuPopup>\n              <button rdxMenuItem>Email Link</button>\n            </div>\n          </div>\n          }\n        </ng-container>\n\n        <button rdxMenuItem>Print…</button>\n      </div>\n    </div>\n  </ng-container>\n\n  <!-- Edit -->\n  <ng-container #editMenu=\"rdxMenuRoot\" rdxMenuRoot>\n    <button rdxMenuTrigger>Edit</button>\n\n    <div class=\"data-[closed]:hidden\" align=\"start\" sideOffset=\"4\" rdxMenuPositioner>\n      <div rdxMenuPopup>\n        <button rdxMenuItem>Undo</button>\n        <button rdxMenuItem>Redo</button>\n      </div>\n    </div>\n  </ng-container>\n</div>",
+  "dataAttributes": []
+}

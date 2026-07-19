@@ -1,0 +1,615 @@
+{
+  "version": "1.1.0",
+  "slug": "menu",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxMenuArrow",
+      "selector": "[rdxMenuArrow]",
+      "exportAs": "rdxMenuArrow",
+      "description": "An optional visual arrow connecting the popup to its trigger.\nPlace it inside `rdxMenuPopup`. Positioning is handled by the shared Popper Arrow primitive.",
+      "hostDirectives": [
+        "RdxPopperArrow"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxMenuBackdrop",
+      "selector": "[rdxMenuBackdrop]",
+      "exportAs": "rdxMenuBackdrop",
+      "description": "An optional overlay rendered behind the menu popup.\nStyle it with `position: fixed; inset: 0` and use `data-open` / `data-closed`\nfor CSS animations.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxMenuCheckboxItemIndicator",
+      "selector": "[rdxMenuCheckboxItemIndicator]",
+      "exportAs": "rdxMenuCheckboxItemIndicator",
+      "description": "Renders when the parent checkbox item is checked or indeterminate.\nSet `keepMounted` to keep the element in the DOM when unchecked (enables CSS animations).",
+      "inputs": [
+        {
+          "name": "keepMounted",
+          "type": "boolean",
+          "default": "false",
+          "description": "Keep the indicator in the DOM when unchecked so CSS exit animations can play."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxMenuCheckboxItem",
+      "selector": "[rdxMenuCheckboxItem]",
+      "exportAs": "rdxMenuCheckboxItem",
+      "description": "A menu item that can be checked or unchecked.",
+      "hostDirectives": [
+        "RdxCompositeListItem"
+      ],
+      "inputs": [
+        {
+          "name": "checked",
+          "type": "CheckedState",
+          "default": "false",
+          "description": "The checked state of the item."
+        },
+        {
+          "name": "closeOnClick",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether toggling closes the menu. Defaults to false — checkbox items stay open."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether this item is disabled."
+        },
+        {
+          "name": "label",
+          "type": "string | undefined",
+          "default": "undefined",
+          "description": "Explicit typeahead label. When set, overrides textContent for character search."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onCheckedChange",
+          "type": "RdxMenuCheckboxChangeEvent",
+          "description": "Emits before the checked state changes; call `eventDetails.cancel()` to veto it."
+        }
+      ],
+      "twoWay": [
+        "checked"
+      ]
+    },
+    {
+      "directive": "RdxMenuGroupLabel",
+      "selector": "[rdxMenuGroupLabel]",
+      "exportAs": "rdxMenuGroupLabel",
+      "description": "A label for a menu group.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxMenuGroup",
+      "selector": "[rdxMenuGroup]",
+      "exportAs": "rdxMenuGroup",
+      "description": "Groups related menu items together.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxMenuItem",
+      "selector": "[rdxMenuItem]",
+      "exportAs": "rdxMenuItem",
+      "description": "An individual menu item.",
+      "hostDirectives": [
+        "RdxCompositeListItem"
+      ],
+      "inputs": [
+        {
+          "name": "closeOnClick",
+          "type": "boolean",
+          "default": "true",
+          "description": "Whether selecting this item closes the menu."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether this item is disabled."
+        },
+        {
+          "name": "label",
+          "type": "string | undefined",
+          "default": "undefined",
+          "description": "Explicit typeahead label. When set, overrides textContent for character search."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onSelect",
+          "type": "void",
+          "description": "Emits when the item is selected."
+        }
+      ]
+    },
+    {
+      "directive": "RdxMenuLinkItem",
+      "selector": "a[rdxMenuLinkItem]",
+      "exportAs": "rdxMenuLinkItem",
+      "description": "A menu item that renders as a link.",
+      "hostDirectives": [
+        "RdxCompositeListItem"
+      ],
+      "inputs": [
+        {
+          "name": "closeOnClick",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether selecting this item closes the menu. Defaults to false — links navigate by default."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether this item is disabled."
+        },
+        {
+          "name": "label",
+          "type": "string | undefined",
+          "default": "undefined",
+          "description": "Explicit typeahead label. When set, overrides textContent for character search."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onSelect",
+          "type": "void",
+          "description": "Emits when the item is selected."
+        }
+      ]
+    },
+    {
+      "directive": "RdxMenuPopup",
+      "selector": "[rdxMenuPopup]",
+      "exportAs": "rdxMenuPopup",
+      "description": "A container for the menu contents.",
+      "hostDirectives": [
+        "RdxPopperContent",
+        "RdxFloatingNodeRegistration",
+        "RdxFloatingFocusManager",
+        "RdxCompositeList"
+      ],
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "escapeKeyDown",
+          "type": "KeyboardEvent",
+          "description": "Event handler called when the escape key is pressed. Can be prevented."
+        },
+        {
+          "name": "focusOutside",
+          "type": "FocusEvent",
+          "description": "Event handler called when focus moves outside of the popup. Can be prevented."
+        },
+        {
+          "name": "interactOutside",
+          "type": "RdxOutsidePressDomEvent | FocusEvent",
+          "description": "Event handler called when an interaction happens outside of the popup. Can be prevented."
+        },
+        {
+          "name": "pointerDownOutside",
+          "type": "RdxOutsidePressDomEvent",
+          "description": "Event handler called when a pointerdown event happens outside of the popup. Can be prevented."
+        }
+      ]
+    },
+    {
+      "directive": "RdxMenuPortal",
+      "selector": "ng-template[rdxMenuPortal]",
+      "exportAs": "rdxMenuPortal",
+      "description": "Structural directive that teleports the menu popup into a container (default `document.body`) while\nthe menu is open, and keeps it mounted until any CSS exit `@keyframes` finishes.\n\nThis replaces the consumer-owned `@if (root.open())` mount: it adds both teleporting *and*\nexit-animation support. Apply it with the `*` microsyntax on the positioner —\n`<div *rdxMenuPortal rdxMenuPositioner>` — or as an explicit `<ng-template rdxMenuPortal>`. For a\ncustom container, a backdrop alongside the positioner (multi-root), or `[keepMounted]`, use the\nexplicit form.\n\nSet `[keepMounted]=\"true\"` to keep the popup mounted while the menu is closed (the positioner's\n`data-closed` state hides it) — inherited from {@link RdxPortalPresence}.",
+      "hostDirectives": [
+        "RdxPortalPresence"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxMenuPortalMisuseGuard",
+      "selector": "[rdxMenuPortal]:not(ng-template)",
+      "description": "Dev-mode guard: `rdxMenuPortal` is a structural directive. The old `<div rdxMenuPortal>` markup\nwould silently stop portaling — fail loudly instead.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxMenuPositioner",
+      "selector": "[rdxMenuPositioner]",
+      "exportAs": "rdxMenuPositioner",
+      "description": "Positions the menu against its trigger.\n\nA \"thin\" positioner (ADR 0012): it inherits the popper positioning surface (inputs, `placed`\noutput, unified vars + placement attrs) from {@link RdxPopperContentWrapper} and adds the menu\ndefaults, the open/closed state attributes, and the deprecated `--radix-menu-*` aliases.",
+      "inputs": [
+        {
+          "name": "align",
+          "type": "Align",
+          "default": "'center'",
+          "description": "How to align the popup relative to the specified side. May change when collisions occur."
+        },
+        {
+          "name": "alignOffset",
+          "default": "0",
+          "description": "An offset in pixels from the `start` or `end` alignment options. Also accepts an\n{@link OffsetFunction} (same signature as `sideOffset`)."
+        },
+        {
+          "name": "anchor",
+          "type": "RdxPopperAnchorElement",
+          "description": "An element to position the popup against. Defaults to the popper anchor."
+        },
+        {
+          "name": "arrowPadding",
+          "type": "number",
+          "default": "5",
+          "description": "Minimum distance to maintain between the arrow and the edges of the popup.\nIf your content has border-radius, this will prevent it from overflowing the corners."
+        },
+        {
+          "name": "avoidCollisions",
+          "type": "boolean",
+          "default": "true",
+          "deprecated": true,
+          "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges.\n\n`false` disables all avoidance (unless a `collisionAvoidance` object is provided, which wins)."
+        },
+        {
+          "name": "collisionAvoidance",
+          "type": "RdxCollisionAvoidance | undefined",
+          "default": "undefined",
+          "description": "How the popup avoids colliding with the boundary edges, per axis (Base UI `collisionAvoidance`).\nOverrides the deprecated `avoidCollisions` and any per-primitive preset. An object here **fully\nreplaces** the preset — omitted fields fall back to `side: 'flip'`, `align: 'flip'`,\n`fallbackAxisSide: 'end'`, never to the preset. See {@link RdxCollisionAvoidance}."
+        },
+        {
+          "name": "collisionBoundary",
+          "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
+          "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
+        },
+        {
+          "name": "collisionPadding",
+          "type": "number | Partial<Record<Side, number>>",
+          "default": "5",
+          "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
+        },
+        {
+          "name": "dir",
+          "type": "Direction | undefined",
+          "default": "undefined",
+          "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
+        },
+        {
+          "name": "hideWhenDetached",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether to hide the content when the trigger becomes fully occluded."
+        },
+        {
+          "name": "positionStrategy",
+          "type": "\"fixed\" | \"absolute\"",
+          "default": "'fixed'",
+          "description": "The type of CSS position property to use."
+        },
+        {
+          "name": "side",
+          "type": "SideOrLogical",
+          "default": "'bottom'",
+          "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled.\n\nAccepts the logical `'inline-start'` / `'inline-end'` in addition to the physical sides; those\nresolve to `left` / `right` for the text direction (Base UI parity). The placed side reported via\n`data-side` / `placedSide()` echoes the requested kind: logical in → logical out (even after a\ncollision flip), physical in → physical out."
+        },
+        {
+          "name": "sideOffset",
+          "default": "0",
+          "description": "Distance between the anchor and the popup in pixels. Also accepts an {@link OffsetFunction} that\nreads the anchor / positioner dimensions and the resolved side / align."
+        },
+        {
+          "name": "sticky",
+          "type": "\"partial\" | \"always\"",
+          "default": "'partial'",
+          "description": "The sticky behavior on the align axis. `partial` will keep the\ncontent in the boundary as long as the trigger is at least partially\nin the boundary whilst \"always\" will keep the content in the boundary\nregardless."
+        },
+        {
+          "name": "updatePositionStrategy",
+          "type": "\"optimized\" | \"always\"",
+          "default": "'always'",
+          "description": "Strategy to update the position of the floating element on every animation frame."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "placed",
+          "type": "void",
+          "description": "Emits when the element is placed."
+        }
+      ]
+    },
+    {
+      "directive": "RdxMenuRadioGroup",
+      "selector": "[rdxMenuRadioGroup]",
+      "exportAs": "rdxMenuRadioGroup",
+      "description": "Groups radio items in a menu.",
+      "inputs": [
+        {
+          "name": "defaultValue",
+          "type": "T | undefined",
+          "default": "undefined",
+          "description": "The initially selected value for uncontrolled usage."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether all radio items in the group are disabled."
+        },
+        {
+          "name": "value",
+          "type": "T | undefined",
+          "default": "undefined",
+          "description": "The currently selected value."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onValueChange",
+          "type": "RdxMenuRadioGroupValueChangeEvent<T>",
+          "description": "Emits before the selected value changes; call `eventDetails.cancel()` to veto it."
+        }
+      ],
+      "twoWay": [
+        "value"
+      ]
+    },
+    {
+      "directive": "RdxMenuRadioItemIndicator",
+      "selector": "[rdxMenuRadioItemIndicator]",
+      "exportAs": "rdxMenuRadioItemIndicator",
+      "description": "Renders when the parent radio item is selected.\nSet `keepMounted` to keep the element in the DOM when unselected (enables CSS animations).",
+      "inputs": [
+        {
+          "name": "keepMounted",
+          "type": "boolean",
+          "default": "false",
+          "description": "Keep the indicator in the DOM when unselected so CSS exit animations can play."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxMenuRadioItem",
+      "selector": "[rdxMenuRadioItem]",
+      "exportAs": "rdxMenuRadioItem",
+      "description": "A radio item within a menu radio group.",
+      "hostDirectives": [
+        "RdxCompositeListItem"
+      ],
+      "inputs": [
+        {
+          "name": "closeOnClick",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether selecting closes the menu. Defaults to false — radio items stay open."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether this item is disabled."
+        },
+        {
+          "name": "label",
+          "type": "string | undefined",
+          "default": "undefined",
+          "description": "Explicit typeahead label. When set, overrides textContent for character search."
+        },
+        {
+          "name": "value",
+          "type": "T",
+          "required": true,
+          "description": "The value of this radio item."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onSelect",
+          "type": "T",
+          "description": "Emits when this item is selected."
+        }
+      ]
+    },
+    {
+      "directive": "RdxMenuRoot",
+      "selector": "[rdxMenuRoot],[rdxMenuSubmenuRoot]",
+      "exportAs": "rdxMenuRoot",
+      "description": "Groups all parts of a menu.",
+      "hostDirectives": [
+        "RdxPopper"
+      ],
+      "inputs": [
+        {
+          "name": "closeParentOnEsc",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether pressing Escape inside a submenu closes the whole menu chain."
+        },
+        {
+          "name": "defaultOpen",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the menu is initially open."
+        },
+        {
+          "name": "dir",
+          "type": "Direction | undefined",
+          "default": "undefined",
+          "description": "Text direction for submenu arrow-key behavior. Inherited by nested submenu roots."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether interactions with the menu are disabled."
+        },
+        {
+          "name": "highlightItemOnHover",
+          "type": "boolean",
+          "default": "true",
+          "description": "Whether moving the pointer over items should highlight them."
+        },
+        {
+          "name": "loopFocus",
+          "type": "boolean",
+          "default": "true",
+          "description": "Whether keyboard navigation wraps at list boundaries."
+        },
+        {
+          "name": "modal",
+          "type": "boolean",
+          "default": "true",
+          "description": "Whether the menu should block outside interactions and page scrolling.\nNested menus are always non-modal."
+        },
+        {
+          "name": "open",
+          "default": "false",
+          "description": "Whether the menu is currently open."
+        },
+        {
+          "name": "orientation",
+          "type": "RdxMenuOrientation",
+          "default": "'vertical'",
+          "description": "The menu orientation."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onOpenChange",
+          "type": "RdxMenuOpenChange",
+          "description": "Emits when the open state changes."
+        },
+        {
+          "name": "onOpenChangeComplete",
+          "type": "boolean",
+          "description": "Emits when the open/close CSS transition or animation finishes."
+        }
+      ],
+      "twoWay": [
+        "open"
+      ]
+    },
+    {
+      "directive": "RdxMenuSeparator",
+      "selector": "[rdxMenuSeparator]",
+      "exportAs": "rdxMenuSeparator",
+      "description": "A visual separator between groups of menu items.",
+      "inputs": [
+        {
+          "name": "orientation",
+          "type": "DataOrientation",
+          "default": "'horizontal'",
+          "description": "The orientation of the separator. Matches Base UI's `Separator.orientation`."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxMenuSubTrigger",
+      "selector": "[rdxMenuSubTrigger]",
+      "exportAs": "rdxMenuSubTrigger",
+      "description": "An item inside a parent menu that opens a nested submenu.\n\nPlace this inside `ng-container rdxMenuRoot` that wraps both the trigger\nand the submenu positioner. The inner root provides the submenu context;\nthe outer popup discovers this element via `[rdxMenuSubTrigger]` in its\nITEM_SELECTOR and includes it in keyboard navigation.",
+      "hostDirectives": [
+        "RdxPopperAnchor",
+        "RdxCompositeListItem"
+      ],
+      "inputs": [
+        {
+          "name": "closeDelay",
+          "type": "number | undefined",
+          "default": "0",
+          "description": "Delay before a pending hover close runs, in milliseconds."
+        },
+        {
+          "name": "delay",
+          "type": "number | undefined",
+          "default": "100",
+          "description": "Delay before hover opens the submenu, in milliseconds."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether this trigger (and therefore the submenu) is disabled."
+        },
+        {
+          "name": "label",
+          "type": "string | undefined",
+          "default": "undefined",
+          "description": "Explicit typeahead label. When set, overrides textContent for character search."
+        },
+        {
+          "name": "nativeButton",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether this trigger should be treated as a native button. Auto-detected for `<button>`."
+        },
+        {
+          "name": "openOnHover",
+          "type": "boolean",
+          "default": "true",
+          "description": "Whether hovering the trigger opens the submenu."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxMenuTrigger",
+      "selector": "[rdxMenuTrigger]",
+      "exportAs": "rdxMenuTrigger",
+      "description": "A button that opens the menu.",
+      "hostDirectives": [
+        "RdxPopperAnchor"
+      ],
+      "inputs": [
+        {
+          "name": "closeDelay",
+          "type": "number | undefined",
+          "default": "undefined",
+          "description": "Delay before hover leave closes the menu, in milliseconds."
+        },
+        {
+          "name": "delay",
+          "type": "number | undefined",
+          "default": "100",
+          "description": "Delay before hover opens the menu, in milliseconds."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether this trigger is disabled."
+        },
+        {
+          "name": "nativeButton",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether this trigger should be treated as a native button. Auto-detected for `<button>`."
+        },
+        {
+          "name": "openOnHover",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether hovering the trigger opens the menu."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxMenuViewport",
+      "selector": "[rdxMenuViewport]",
+      "exportAs": "rdxMenuViewport",
+      "description": "A viewport that smoothly animates the popup size when its content changes\n(e.g. switching menubar menus of different sizes, or expanding a section).\n\nIt measures its content with a `ResizeObserver` and exposes the current size\nas `--popup-width` / `--popup-height` CSS variables on the host. Drive the\nanimation from the consumer side, for example:\n\n```css\n[rdxMenuPopup] {\n    width: var(--popup-width);\n    height: var(--popup-height);\n    transition: width 200ms, height 200ms;\n}\n```\n\n`data-transitioning` is present while a size change is in flight.",
+      "inputs": [],
+      "outputs": []
+    }
+  ]
+}

@@ -1,0 +1,242 @@
+{
+  "version": "1.1.0",
+  "slug": "checkbox",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxCheckboxButtonDirective",
+      "selector": "button[rdxCheckboxButton]",
+      "description": "Directive: rdxCheckboxButton\nPurpose: Turns a native <button> into an accessible checkbox control bound to the Radix Checkbox context.\nIt mirrors the checkbox state via ARIA/data attributes, toggles on click, and prevents Enter activation per WAI-ARIA.\nIn forms, it stops the button's click from bubbling so only the hidden input emits the native event used for form/validator integration.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxCheckboxGroupDirective",
+      "selector": "[rdxCheckboxGroup]",
+      "exportAs": "rdxCheckboxGroup",
+      "description": "Groups a set of checkboxes that share a single array value (the values of the checked boxes).\n\nEach child `rdxCheckboxRoot` participates by its `value` (falling back to `name`). A child marked\n`parent` becomes a \"select all\" checkbox whose state is derived from `allValues`.",
+      "hostDirectives": [
+        "RdxFormUiStateHost"
+      ],
+      "inputs": [
+        {
+          "name": "allValues",
+          "type": "string[]",
+          "default": "[]",
+          "description": "All checkbox values in the group. Required for a `parent` (select-all) checkbox."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string[]",
+          "description": "The values checked initially when the group is uncontrolled."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the whole group is disabled."
+        },
+        {
+          "name": "form",
+          "type": "string",
+          "description": "Associates the group with an external form by id."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "Native form field name. Selected values are submitted as repeated entries under this name."
+        },
+        {
+          "name": "value",
+          "type": "string[]",
+          "default": "[]",
+          "description": "The values of the currently checked checkboxes. Use with `onValueChange` or `[(value)]`."
+        },
+        {
+          "name": "dirty",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the value changed from its initial value. Merged with internal tracking."
+        },
+        {
+          "name": "errors",
+          "type": "readonly RdxValidationError[]",
+          "default": "[]",
+          "description": "Validation errors for the control. A non-empty list marks it invalid."
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+        },
+        {
+          "name": "pending",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
+        },
+        {
+          "name": "touched",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onValueChange",
+          "type": "RdxCheckboxGroupValueChangeEvent",
+          "description": "Emits the new array of checked values whenever the value changes."
+        },
+        {
+          "name": "touch",
+          "type": "void",
+          "description": "Emits when the control is touched, notifying Signal Forms (stable Angular 22 contract)."
+        }
+      ],
+      "twoWay": [
+        "value",
+        "touched"
+      ]
+    },
+    {
+      "directive": "RdxCheckboxIndicatorDirective",
+      "selector": "[rdxCheckboxIndicator]",
+      "inputs": [
+        {
+          "name": "keepMounted",
+          "type": "boolean",
+          "default": "false",
+          "description": "Keep the indicator in the DOM when unchecked so CSS exit animations can play."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxCheckboxInputDirective",
+      "selector": "input[rdxCheckboxInput]",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxCheckboxRootDirective",
+      "selector": "[rdxCheckboxRoot]",
+      "hostDirectives": [
+        "RdxControlValueAccessor"
+      ],
+      "inputs": [
+        {
+          "name": "checked",
+          "type": "boolean",
+          "default": "false",
+          "description": "The controlled checked state of the checkbox. Must be used in conjunction with onCheckedChange.\n\nMixed state is no longer expressed through `checked` — use the separate\n`indeterminate` input (Base UI shape). This `boolean` model is what\n`RdxFormCheckboxControl` / Angular Signal Forms bind to."
+        },
+        {
+          "name": "defaultChecked",
+          "type": "boolean | undefined",
+          "default": "undefined",
+          "description": "The state of the checkbox when it is initially rendered."
+        },
+        {
+          "name": "dirty",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the checked state changed from its initial value. Merged with internal tracking."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether or not the checkbox button is disabled. This prevents the user from interacting with it."
+        },
+        {
+          "name": "errors",
+          "type": "readonly RdxValidationError[]",
+          "default": "[]",
+          "description": "Validation errors for the checkbox. A non-empty list marks it invalid."
+        },
+        {
+          "name": "form",
+          "type": "string",
+          "description": "Associates the control with a form element."
+        },
+        {
+          "name": "indeterminate",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the checkbox is in a mixed state: neither ticked nor unticked.\nOrthogonal to `checked` and not part of the submitted form value. A user\nclick resolves the checkbox to `checked` and clears `indeterminate`."
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the checkbox is invalid. A non-empty {@link errors} list also marks it invalid."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "Name of a standalone form control. Inside a `rdxCheckboxGroup`, prefer `[value]` to identify\nthe item; `name` remains a compatibility fallback for existing group templates."
+        },
+        {
+          "name": "parent",
+          "type": "boolean",
+          "default": "false",
+          "description": "When inside a `rdxCheckboxGroup`, marks this as the \"select all\" checkbox: its state is\nderived from the group's `allValues`, and toggling it checks or unchecks every child."
+        },
+        {
+          "name": "pending",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether async validation is pending. Pending checkboxes publish neither valid nor invalid state."
+        },
+        {
+          "name": "readOnly",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the user should be unable to tick or untick the checkbox. Bound in templates as\n`readOnly` (Base UI spelling); the TS member stays `readonly` to satisfy `RdxFormCheckboxControl`."
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether or not the checkbox is required."
+        },
+        {
+          "name": "value",
+          "type": "string | undefined",
+          "default": "undefined",
+          "description": "The value of the checkbox. This is what is submitted with the form when the checkbox is checked.\n\nBound publicly as `[value]`; the TS member is named `submitValue` so the\ndirective can satisfy `RdxFormCheckboxControl`, whose contract reserves a\n`value` member for `RdxFormValueControl` and forbids it on checkbox-style\ncontrols.\nWhen omitted, native submission uses the browser checkbox default (`on`). Inside a\n`rdxCheckboxGroup`, the child's `name` is used as a compatibility fallback."
+        },
+        {
+          "name": "touched",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the checkbox has been touched. A `model()` so Signal Forms can write it; the checkbox\nalso sets it on toggle (and emits {@link touch})."
+        },
+        {
+          "name": "uncheckedValue",
+          "type": "string",
+          "description": "The value submitted with the form when the checkbox is unchecked.\nBy default, unchecked checkboxes do not submit any value, matching native checkbox behavior."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onCheckedChange",
+          "type": "RdxCheckboxCheckedChangeEvent",
+          "description": "Event emitted when the checkbox checked state changes."
+        },
+        {
+          "name": "touch",
+          "type": "void",
+          "description": "Emits on interaction, notifying Signal Forms the checkbox was touched."
+        }
+      ],
+      "twoWay": [
+        "checked",
+        "indeterminate",
+        "touched"
+      ]
+    }
+  ]
+}

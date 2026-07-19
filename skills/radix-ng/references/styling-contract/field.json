@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Field",
+  "slug": "field",
+  "section": "components",
+  "description": "Groups a control with accessible label, description, error message, and field state.",
+  "doc": "radix-ng-examples/references/components/field.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-field--docs",
+  "anatomy": "<div rdxFieldRoot>\n    <label rdxFieldLabel>Label</label>\n    <input rdxFieldControl />\n    <p rdxFieldDescription>Description</p>\n    <p rdxFieldError>Error</p>\n</div>",
+  "dataAttributes": []
+}

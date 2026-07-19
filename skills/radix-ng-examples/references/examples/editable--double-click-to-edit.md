@@ -1,6 +1,6 @@
 # Editable — Double-click to edit
 
-> One example from the [Editable](../components/editable.md) docs — imports, anatomy, and the data-attribute styling contract live there.
+> One example from the [Editable](../components/editable.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
 > Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
 

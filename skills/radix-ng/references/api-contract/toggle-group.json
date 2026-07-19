@@ -1,0 +1,210 @@
+{
+  "version": "1.1.0",
+  "slug": "toggle-group",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxToggleGroupWithoutFocus",
+      "selector": "[rdxToggleGroupWithoutFocus]",
+      "exportAs": "rdxToggleGroupWithoutFocus",
+      "description": "A toggle group that does NOT create its own composite root, for use inside a container that\nalready owns keyboard focus (e.g. a toolbar). The `[rdxToggle]` children register with the nearest\nancestor composite root instead. Mirrors Base UI's behavior of skipping its composite root\nwhen nested in a toolbar.",
+      "hostDirectives": [
+        "RdxFormUiStateHost"
+      ],
+      "inputs": [
+        {
+          "name": "defaultValue",
+          "type": "string[]",
+          "description": "The values pressed when the group is initially rendered (uncontrolled)."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the whole group is disabled."
+        },
+        {
+          "name": "form",
+          "type": "string",
+          "description": "Associates the group with an external form by id."
+        },
+        {
+          "name": "multiple",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether multiple items can be pressed at the same time."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "Native form field name. Pressed values are submitted as repeated entries under this name."
+        },
+        {
+          "name": "orientation",
+          "type": "DataOrientation",
+          "default": "'horizontal'",
+          "description": "The orientation of the group, controlling arrow-key navigation."
+        },
+        {
+          "name": "value",
+          "type": "string[]",
+          "description": "The pressed values. Always an array — a single value is `[value]`. Use with `(onValueChange)`\nfor controlled state."
+        },
+        {
+          "name": "dirty",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the value changed from its initial value. Merged with internal tracking."
+        },
+        {
+          "name": "errors",
+          "type": "readonly RdxValidationError[]",
+          "default": "[]",
+          "description": "Validation errors for the control. A non-empty list marks it invalid."
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+        },
+        {
+          "name": "pending",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
+        },
+        {
+          "name": "touched",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onValueChange",
+          "type": "RdxToggleGroupValueChangeEvent",
+          "description": "Event emitted when the pressed values change."
+        },
+        {
+          "name": "touch",
+          "type": "void",
+          "description": "Emits when the control is touched, notifying Signal Forms (stable Angular 22 contract)."
+        }
+      ],
+      "twoWay": [
+        "value",
+        "touched"
+      ]
+    },
+    {
+      "directive": "RdxToggleGroup",
+      "selector": "[rdxToggleGroup]",
+      "exportAs": "rdxToggleGroup",
+      "description": "A set of two-state buttons that can be toggled on or off. Owns composite keyboard focus over its\n`[rdxToggle]` children.\n\nSee https://base-ui.com/react/components/toggle-group",
+      "hostDirectives": [
+        "RdxCompositeRoot",
+        "RdxFormUiStateHost"
+      ],
+      "inputs": [
+        {
+          "name": "dir",
+          "type": "Direction | undefined",
+          "default": "undefined",
+          "description": "Text direction for arrow-key navigation."
+        },
+        {
+          "name": "loopFocus",
+          "type": "boolean",
+          "default": "true",
+          "description": "Whether keyboard navigation should loop from the last item back to the first."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string[]",
+          "description": "The values pressed when the group is initially rendered (uncontrolled)."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the whole group is disabled."
+        },
+        {
+          "name": "form",
+          "type": "string",
+          "description": "Associates the group with an external form by id."
+        },
+        {
+          "name": "multiple",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether multiple items can be pressed at the same time."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "Native form field name. Pressed values are submitted as repeated entries under this name."
+        },
+        {
+          "name": "orientation",
+          "type": "DataOrientation",
+          "default": "'horizontal'",
+          "description": "The orientation of the group, controlling arrow-key navigation."
+        },
+        {
+          "name": "value",
+          "type": "string[]",
+          "description": "The pressed values. Always an array — a single value is `[value]`. Use with `(onValueChange)`\nfor controlled state."
+        },
+        {
+          "name": "dirty",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the value changed from its initial value. Merged with internal tracking."
+        },
+        {
+          "name": "errors",
+          "type": "readonly RdxValidationError[]",
+          "default": "[]",
+          "description": "Validation errors for the control. A non-empty list marks it invalid."
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+        },
+        {
+          "name": "pending",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
+        },
+        {
+          "name": "touched",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onValueChange",
+          "type": "RdxToggleGroupValueChangeEvent",
+          "description": "Event emitted when the pressed values change."
+        },
+        {
+          "name": "touch",
+          "type": "void",
+          "description": "Emits when the control is touched, notifying Signal Forms (stable Angular 22 contract)."
+        }
+      ],
+      "twoWay": [
+        "value",
+        "touched"
+      ]
+    }
+  ]
+}

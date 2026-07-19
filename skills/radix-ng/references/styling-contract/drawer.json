@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Drawer",
+  "slug": "drawer",
+  "section": "components",
+  "description": "An edge-anchored sheet that opens over the page and dismisses with a swipe.",
+  "doc": "radix-ng-examples/references/components/drawer.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-drawer--docs",
+  "anatomy": "<div rdxDrawerRoot>\n    <button rdxDrawerTrigger>Open</button>\n\n    <ng-template rdxDrawerPortal>\n        <div rdxDrawerBackdrop></div>\n        <div rdxDrawerViewport>\n            <div rdxDrawerPopup>\n                <h2 rdxDrawerTitle>Title</h2>\n                <p rdxDrawerDescription>Description</p>\n                <div rdxDrawerContent>…scrollable body…</div>\n                <button rdxDrawerClose>Close</button>\n            </div>\n        </div>\n    </ng-template>\n</div>",
+  "dataAttributes": []
+}

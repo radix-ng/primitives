@@ -1,0 +1,248 @@
+{
+  "version": "1.1.0",
+  "slug": "calendar",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxCalendarCellTriggerDirective",
+      "selector": "[rdxCalendarCellTrigger]",
+      "exportAs": "rdxCalendarCellTrigger",
+      "inputs": [
+        {
+          "name": "day",
+          "type": "DateValue",
+          "description": "The date value provided to the cell trigger"
+        },
+        {
+          "name": "month",
+          "type": "DateValue",
+          "description": "The month in which the cell is rendered"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxCalendarCellDirective",
+      "selector": "td[rdxCalendarCell]",
+      "inputs": [
+        {
+          "name": "date",
+          "type": "DateValue",
+          "description": "The date of the cell"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxCalendarGridBodyDirective",
+      "selector": "tbody[rdxCalendarGridBody]",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxCalendarGridHeadDirective",
+      "selector": "thead[rdxCalendarGridHead]",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxCalendarGridRowDirective",
+      "selector": "tr[rdxCalendarGridRow]",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxCalendarGridDirective",
+      "selector": "table[rdxCalendarGrid]",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxCalendarHeadCellDirective",
+      "selector": "th[rdxCalendarHeadCell]",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxCalendarHeaderDirective",
+      "selector": "div[rdxCalendarHeader]",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxCalendarHeadingDirective",
+      "selector": "div[rdxCalendarHeading]",
+      "exportAs": "rdxCalendarHeading",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxCalendarNextDirective",
+      "selector": "button[rdxCalendarNext]",
+      "exportAs": "rdxCalendarNext",
+      "inputs": [
+        {
+          "name": "nextPage",
+          "type": "(placeholder: DateValue) => DateValue",
+          "description": "The function to be used for the `next page`. Overwrites the nextPage function set on the `CalendarRoot`."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxCalendarPrevDirective",
+      "selector": "button[rdxCalendarPrev]",
+      "exportAs": "rdxCalendarPrev",
+      "inputs": [
+        {
+          "name": "prevPage",
+          "type": "(placeholder: DateValue) => DateValue",
+          "description": "The function to be used for the `prev page`. Overwrites the prevPage function set on the `CalendarRoot`."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxCalendarRootDirective",
+      "selector": "[rdxCalendarRoot]",
+      "exportAs": "rdxCalendarRoot",
+      "inputs": [
+        {
+          "name": "calendarLabel",
+          "type": "string",
+          "description": "The accessible label for the calendar"
+        },
+        {
+          "name": "defaultPlaceholder",
+          "type": "DateValue",
+          "description": "The default placeholder date"
+        },
+        {
+          "name": "dir",
+          "type": "'ltr' | 'rtl' | undefined",
+          "default": "undefined",
+          "description": "The reading direction of the calendar when applicable."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the calendar is disabled"
+        },
+        {
+          "name": "fixedWeeks",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether to always display 6 weeks in the calendar"
+        },
+        {
+          "name": "initialFocus",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "isDateDisabled",
+          "type": "DateMatcher",
+          "description": "A function that returns whether a date is disabled"
+        },
+        {
+          "name": "isDateUnavailable",
+          "type": "DateMatcher",
+          "description": "A function that returns whether a date is unavailable"
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "default": "'en'"
+        },
+        {
+          "name": "maxValue",
+          "type": "DateValue",
+          "description": "The maximum date that can be selected"
+        },
+        {
+          "name": "minValue",
+          "type": "DateValue",
+          "description": "The minimum date that can be selected"
+        },
+        {
+          "name": "months",
+          "type": "Month<DateValue>[]"
+        },
+        {
+          "name": "multiple",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "numberOfMonths",
+          "type": "number",
+          "default": "1",
+          "description": "The number of months to display at once"
+        },
+        {
+          "name": "pagedNavigation",
+          "type": "boolean",
+          "default": "false",
+          "description": "This property causes the previous and next buttons to navigate by the number of months displayed at once, rather than one month"
+        },
+        {
+          "name": "placeholder",
+          "type": "DateValue",
+          "default": "this.defaultPlaceholder() ?? this.defaultDate().copy()",
+          "description": "The placeholder date, which is used to determine what month to display when no date is selected.\nThis updates as the user navigates the calendar and can be used to programmatically control the calendar view"
+        },
+        {
+          "name": "preventDeselect",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether to prevent the user from deselecting a date without selecting another date first"
+        },
+        {
+          "name": "propsNextPage",
+          "type": "(placeholder: DateValue) => DateValue"
+        },
+        {
+          "name": "propsPrevPage",
+          "type": "(placeholder: DateValue) => DateValue"
+        },
+        {
+          "name": "readonly",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the calendar is readonly"
+        },
+        {
+          "name": "value",
+          "type": "DateValue | DateValue[] | undefined",
+          "description": "The controlled checked state of the calendar"
+        },
+        {
+          "name": "weekdayFormat",
+          "type": "Intl.DateTimeFormatOptions['weekday']",
+          "default": "'narrow'",
+          "description": "The format to use for the weekday strings provided via the weekdays slot prop"
+        },
+        {
+          "name": "weekDays",
+          "type": "string[]",
+          "description": "The days of the week"
+        },
+        {
+          "name": "weekStartsOn",
+          "type": "0 | 1 | 2 | 3 | 4 | 5 | 6",
+          "default": "1",
+          "description": "The day of the week to start the calendar on"
+        }
+      ],
+      "outputs": [],
+      "twoWay": [
+        "defaultPlaceholder",
+        "months",
+        "placeholder",
+        "value",
+        "weekDays"
+      ]
+    }
+  ]
+}

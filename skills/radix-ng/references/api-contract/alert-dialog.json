@@ -1,0 +1,113 @@
+{
+  "version": "1.1.0",
+  "slug": "alert-dialog",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxAlertDialogBackdrop",
+      "selector": "[rdxAlertDialogBackdrop]",
+      "exportAs": "rdxAlertDialogBackdrop",
+      "description": "An overlay displayed beneath the alert dialog popup.",
+      "hostDirectives": [
+        "RdxDialogBackdrop"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAlertDialogClose",
+      "selector": "button[rdxAlertDialogClose]",
+      "exportAs": "rdxAlertDialogClose",
+      "description": "A button that closes the alert dialog.",
+      "hostDirectives": [
+        "RdxDialogClose"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAlertDialogDescription",
+      "selector": "[rdxAlertDialogDescription]",
+      "exportAs": "rdxAlertDialogDescription",
+      "description": "An accessible description for the alert dialog.",
+      "hostDirectives": [
+        "RdxDialogDescription"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAlertDialogPopup",
+      "selector": "[rdxAlertDialogPopup]",
+      "exportAs": "rdxAlertDialogPopup",
+      "description": "A container for the alert dialog contents. Wraps the dialog popup, which reads alert semantics\n(role, modal, dismissal) from the alert root's variant.",
+      "hostDirectives": [
+        "RdxDialogPopup"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAlertDialogPortal",
+      "selector": "ng-template[rdxAlertDialogPortal]",
+      "exportAs": "rdxAlertDialogPortal",
+      "description": "Structural directive that teleports the alert dialog content (backdrop + popup) into a container\n(default `document.body`) while the dialog is open, keeping it mounted until its CSS exit\n`@keyframes` finish. It composes the structural {@link RdxDialogPortal}, inheriting the dialog\npresence context.\n\nUse the explicit `<ng-template rdxAlertDialogPortal>` form; pass `[container]` for a custom target.",
+      "hostDirectives": [
+        "RdxDialogPortal"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAlertDialogPortalMisuseGuard",
+      "selector": "[rdxAlertDialogPortal]:not(ng-template)",
+      "description": "Dev-mode guard: `rdxAlertDialogPortal` is now structural, so the old `<div rdxAlertDialogPortal>`\nmarkup would silently stop portaling — fail loudly instead.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAlertDialogRoot",
+      "selector": "[rdxAlertDialogRoot]",
+      "exportAs": "rdxAlertDialogRoot",
+      "description": "Groups all parts of the alert dialog.\n\nComposes the Dialog primitive and forces alert-dialog semantics: it is always modal, never\ndismisses on outside pointer / focus-out interactions (Escape still closes), and renders its\npopup with `role=\"alertdialog\"`. Assemble it from the `rdxAlertDialog*` parts (Popup, Backdrop,\nTitle, Description, Close, Portal, Viewport), which are thin wrappers around the dialog parts.",
+      "hostDirectives": [
+        "RdxDialogRoot"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAlertDialogTitle",
+      "selector": "[rdxAlertDialogTitle]",
+      "exportAs": "rdxAlertDialogTitle",
+      "description": "An accessible title for the alert dialog.",
+      "hostDirectives": [
+        "RdxDialogTitle"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAlertDialogTrigger",
+      "selector": "button[rdxAlertDialogTrigger]",
+      "exportAs": "rdxAlertDialogTrigger",
+      "description": "A button that opens the alert dialog. Behaves exactly like the dialog trigger.",
+      "hostDirectives": [
+        "RdxDialogTrigger"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAlertDialogViewport",
+      "selector": "[rdxAlertDialogViewport]",
+      "exportAs": "rdxAlertDialogViewport",
+      "description": "A scrollable positioning container for the alert dialog popup.",
+      "hostDirectives": [
+        "RdxDialogViewport"
+      ],
+      "inputs": [],
+      "outputs": []
+    }
+  ]
+}

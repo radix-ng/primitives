@@ -1,0 +1,125 @@
+{
+  "version": "1.1.0",
+  "slug": "accordion",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxAccordionHeaderDirective",
+      "selector": "[rdxAccordionHeader]",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAccordionItemDirective",
+      "selector": "[rdxAccordionItem]",
+      "exportAs": "rdxAccordionItem",
+      "hostDirectives": [
+        "RdxCollapsibleRootDirective",
+        "RdxCompositeListItem"
+      ],
+      "inputs": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether or not an accordion item is disabled from user interaction.\nWhen `true`, prevents the user from interacting with the item."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "description": "A string value for the accordion item. All items within an accordion should use a unique value."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onOpenChange",
+          "type": "RdxAccordionItemOpenChangeEvent",
+          "description": "Event handler called when the panel open state changes. Emits `{ open, eventDetails }`\n(Base UI parity)."
+        }
+      ]
+    },
+    {
+      "directive": "RdxAccordionPanelDirective",
+      "selector": "[rdxAccordionPanel]",
+      "hostDirectives": [
+        "RdxCollapsiblePanelDirective"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAccordionRootDirective",
+      "selector": "[rdxAccordionRoot]",
+      "exportAs": "rdxAccordionRoot",
+      "hostDirectives": [
+        "RdxCompositeList"
+      ],
+      "inputs": [
+        {
+          "name": "defaultValue",
+          "type": "string | string[]",
+          "description": "The default active value of the item(s).\n\nUse when you do not need to control the state of the item(s)."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the Accordion is disabled."
+        },
+        {
+          "name": "hiddenUntilFound",
+          "type": "boolean",
+          "default": "false",
+          "description": "Allow collapsed panels to remain mounted (but hidden) so the browser's in-page search\ncan find and reveal them. Mirrors Base UI's `hiddenUntilFound`."
+        },
+        {
+          "name": "keepMounted",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether to keep the content of collapsed items mounted in the DOM.\nWhen `true`, closed panels keep their element in the DOM while hidden."
+        },
+        {
+          "name": "loopFocus",
+          "type": "boolean",
+          "default": "true",
+          "deprecated": true,
+          "description": "Deprecated following the APG guidance update to remove roving focus.\nThis prop no longer affects keyboard focus behavior."
+        },
+        {
+          "name": "multiple",
+          "type": "boolean",
+          "default": "false",
+          "description": "Allow multiple panels to be open simultaneously. In single mode an open item can always be\nclosed by clicking its trigger again (Base UI parity — there is no separate `collapsible`)."
+        },
+        {
+          "name": "orientation",
+          "type": "DataOrientation",
+          "default": "'vertical'",
+          "deprecated": true,
+          "description": "The orientation of the accordion.\n\nDeprecated following the APG guidance update to remove roving focus.\nThis prop no longer affects keyboard focus behavior."
+        },
+        {
+          "name": "value",
+          "type": "AcceptableValue | AcceptableValue[]",
+          "description": "The controlled value of the item to expand."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onValueChange",
+          "type": "RdxAccordionValueChangeEvent",
+          "description": "Event handler called when the expanded value changes. Emits the next value plus a cancelable\n`eventDetails` (Base UI parity); call `eventDetails.cancel()` to reject the change."
+        }
+      ],
+      "twoWay": [
+        "value"
+      ]
+    },
+    {
+      "directive": "RdxAccordionTriggerDirective",
+      "selector": "[rdxAccordionTrigger]",
+      "inputs": [],
+      "outputs": []
+    }
+  ]
+}

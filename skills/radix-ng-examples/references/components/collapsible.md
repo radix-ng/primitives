@@ -1,38 +1,10 @@
 # Collapsible
 
-#### A collapsible panel controlled by a button.
+A collapsible panel controlled by a button.
 
-```html
-<div class="w-full max-w-sm" rdxCollapsibleRoot [open]="true" #collapsibleRoot="rdxCollapsibleRoot">
-    <div class="flex items-center justify-between gap-3">
-        <span class="text-foreground text-sm font-medium">&#64;peduarte starred 3 repositories</span>
-        <button
-            class="bg-muted text-primary hover:bg-muted/80 focus-visible:ring-ring border-border inline-flex size-6 items-center justify-center rounded-full border shadow-sm transition-colors outline-none focus-visible:ring-2"
-            type="button"
-            rdxCollapsibleTrigger
-        >
-            @if (collapsibleRoot.open()) {
-            <svg class="flex" size="16" lucideX></svg>
-            } @else {
-            <svg class="flex" size="16" lucideUnfoldVertical></svg>
-            }
-        </button>
-    </div>
+> Index — full source of each example is one click away in `../examples/collapsible--*.md`; the whole-doc dump is in `../llms-full.txt`.
 
-    <div class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm">
-        <span class="text-sm">&#64;radix-ui/primitives</span>
-    </div>
-
-    <div rdxCollapsiblePanel>
-        <div class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm">
-            <span class="text-sm">&#64;radix-ui/colors</span>
-        </div>
-        <div class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm">
-            <span class="text-sm">&#64;stitches/react</span>
-        </div>
-    </div>
-</div>
-```
+> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
 
 ## Features
 
@@ -74,124 +46,12 @@ discoverable by browser find-in-page.
 
 ## Examples
 
-### Keep mounted
+- [Keep mounted](../examples/collapsible--keep-mounted.md)
+- [Animation](../examples/collapsible--animation.md)
+- [External trigger](../examples/collapsible--external-trigger.md)
 
-With `keepMounted`, the closed panel stays in the DOM and receives `hidden` after the close
-transition. During enter and exit, `data-starting-style` / `data-ending-style` can drive CSS motion.
+## API & styling contract
 
-```html
-<div class="w-full max-w-sm" rdxCollapsibleRoot #collapsibleRoot="rdxCollapsibleRoot">
-    <div class="flex items-center justify-between gap-3">
-        <span class="text-foreground text-sm font-medium">&#64;peduarte starred 3 repositories</span>
-        <button
-            class="bg-muted text-primary hover:bg-muted/80 focus-visible:ring-ring border-border inline-flex size-6 items-center justify-center rounded-full border shadow-sm transition-colors outline-none focus-visible:ring-2"
-            type="button"
-            rdxCollapsibleTrigger
-        >
-            @if (collapsibleRoot.open()) {
-            <svg class="flex" size="16" lucideX></svg>
-            } @else {
-            <svg class="flex" size="16" lucideUnfoldVertical></svg>
-            }
-        </button>
-    </div>
-
-    <div class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm">
-        <span class="text-sm">&#64;radix-ui/primitives</span>
-    </div>
-
-    <div
-        class="grid transition-[grid-template-rows] duration-300 ease-out data-[closed]:grid-rows-[0fr] data-[open]:grid-rows-[1fr]"
-        rdxCollapsiblePanel
-        [keepMounted]="true"
-    >
-        <div class="overflow-hidden">
-            <div
-                class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm"
-            >
-                <span class="text-sm">&#64;radix-ui/colors</span>
-            </div>
-            <div
-                class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm"
-            >
-                <span class="text-sm">&#64;stitches/react</span>
-            </div>
-        </div>
-    </div>
-</div>
-```
-
-### Animation
-
-The panel exposes `--collapsible-panel-height` so its contents can animate open and closed.
-
-```html
-<rdx-collapsible-animation></rdx-collapsible-animation>
-```
-
-### External trigger
-
-The open state can be controlled from outside the collapsible via the `open` model.
-
-```html
-<rdx-collapsible-external-triggering></rdx-collapsible-external-triggering>
-```
-
-## API Reference
-
-### Root
-
-`RdxCollapsibleRootDirective` — groups the trigger and panel and manages the open state. Apply to a container element (typically a `<div>`).
-
-**Data attributes**
-
-| Attribute       | Present when                  |
-| --------------- | ----------------------------- |
-| `data-open`     | The collapsible is open.      |
-| `data-closed`   | The collapsible is closed.    |
-| `data-disabled` | The collapsible is disabled.  |
-
-### Trigger
-
-`RdxCollapsibleTriggerDirective` — a button that toggles the panel. Apply to a native `<button>` element.
-
-Reads everything from the root context; it exposes `aria-expanded` and, while open, `aria-controls`.
-Disabled triggers remain focusable and expose `aria-disabled`.
-
-**Data attributes**
-
-| Attribute         | Present when                  |
-| ----------------- | ----------------------------- |
-| `data-panel-open`     | The panel is open.            |
-| `data-disabled`       | The collapsible is disabled.  |
-| `data-starting-style` | The panel is in the enter transition. |
-| `data-ending-style`   | The panel is in the exit transition.  |
-
-### Panel
-
-`RdxCollapsiblePanelDirective` — the collapsible content. Unmounts when closed by default; `keepMounted` / `hiddenUntilFound` keep it in the DOM. Apply to a container element (typically a `<div>`).
-
-**Data attributes**
-
-| Attribute             | Present when                  |
-| --------------------- | ----------------------------- |
-| `data-open`           | The panel is open.            |
-| `data-closed`         | The panel is closed.          |
-| `data-starting-style` | The panel is in the enter transition. |
-| `data-ending-style`   | The panel is in the exit transition.  |
-
-**CSS variables**
-
-| Variable                     | Description                                          |
-| ---------------------------- | ---------------------------------------------------- |
-| `--collapsible-panel-height` | The panel's measured height, for height animations.  |
-| `--collapsible-panel-width`  | The panel's measured width, for width animations.    |
-
-## Accessibility
-
-### Keyboard Interactions
-
-| Key     | Description                              |
-| ------- | ---------------------------------------- |
-| `Space` | Toggles the collapsible panel open/closed. |
-| `Enter` | Toggles the collapsible panel open/closed. |
+Machine-readable contracts for this primitive live in the `radix-ng` skill:
+- API (selectors, inputs, outputs, two-way bindings): `references/api-contract/collapsible.json`
+- Styling (parts + `data-*`): `references/styling-contract/collapsible.json`

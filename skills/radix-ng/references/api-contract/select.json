@@ -1,0 +1,443 @@
+{
+  "version": "1.1.0",
+  "slug": "select",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxSelectBackdrop",
+      "selector": "[rdxSelectBackdrop]",
+      "exportAs": "rdxSelectBackdrop",
+      "description": "An overlay rendered beneath the popup in `modal` mode. Place it inside the portal/presence; style\nit `position: fixed; inset: 0`. Exposes `data-open` / `data-closed` for animation.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxSelectGroupLabel",
+      "selector": "[rdxSelectGroupLabel]",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxSelectGroup",
+      "selector": "[rdxSelectGroup]",
+      "exportAs": "rdxSelectGroup",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxSelectIcon",
+      "selector": "[rdxSelectIcon]",
+      "exportAs": "rdxSelectIcon",
+      "description": "Decorative icon inside the trigger (e.g. a chevron). Hidden from assistive technology.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxSelectItemAlignedPositionContent",
+      "selector": "[rdxSelectItemAlignedPositionContent]",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxSelectItemAlignedPosition",
+      "selector": "[rdxSelectItemAlignedPosition]",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "placed"
+        }
+      ]
+    },
+    {
+      "directive": "RdxSelectItemIndicator",
+      "selector": "[rdxSelectItemIndicator]",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxSelectItemText",
+      "selector": "[rdxSelectItemText]",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxSelectItem",
+      "selector": "[rdxSelectItem]",
+      "exportAs": "rdxSelectItem",
+      "hostDirectives": [
+        "RdxCompositeListItem"
+      ],
+      "inputs": [
+        {
+          "name": "disabled",
+          "default": "false"
+        },
+        {
+          "name": "textValue",
+          "type": "string",
+          "default": "''"
+        },
+        {
+          "name": "value",
+          "type": "AcceptableValue"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxSelectList",
+      "selector": "[rdxSelectList]",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxSelectPopup",
+      "selector": "[rdxSelectPopup]",
+      "description": "The popup listbox. Holds DOM focus while open and navigates with the highlight model\n(`aria-activedescendant`) — items are not individually focusable.\n\nSince ADR 0010 §6 the popup is the **inner** element (the positioner is its ancestor): it carries\n`role=\"listbox\"`, the `contentId`, and — via the composed {@link RdxPopperContent} — the\n`data-side` / `data-align` attributes and the until-positioned animation guard previously held by\nthe deleted `rdxSelectPositionerContent`. `RdxPopperContent` also makes the popup the element the\n`RdxPopperContentWrapper` ancestor reads its content z-index from. In item-aligned mode there is no\nwrapper, so `RdxPopperContent` no-ops.",
+      "hostDirectives": [
+        "RdxPopperContent",
+        "RdxFloatingFocusManager",
+        "RdxFloatingNodeRegistration",
+        "RdxCompositeList"
+      ],
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "escapeKeyDown",
+          "type": "KeyboardEvent",
+          "description": "Event handler called when the escape key is down.\nCan be prevented."
+        },
+        {
+          "name": "pointerDownOutside",
+          "type": "RdxOutsidePressDomEvent",
+          "description": "Event handler called when a `pointerdown` event happens outside of the popup.\nCan be prevented."
+        }
+      ]
+    },
+    {
+      "directive": "RdxSelectPortal",
+      "selector": "ng-template[rdxSelectPortal]",
+      "exportAs": "rdxSelectPortal",
+      "description": "Structural directive that teleports the select popup into a container (default `document.body`)\nwhile the select is open, and keeps it mounted until any CSS exit `@keyframes` finishes.\n\nApply it with the `*` microsyntax on the popup — `<div *rdxSelectPortal rdxSelectPopup>` — or as an\nexplicit `<ng-template rdxSelectPortal>`. For a custom container use the explicit form with\n`[container]`. Unlike the previous attribute portal it no longer parks an empty wrapper `<div>` in\n`document.body` while the select is closed.",
+      "hostDirectives": [
+        "RdxPortalPresence"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxSelectPortalMisuseGuard",
+      "selector": "[rdxSelectPortal]:not(ng-template)",
+      "description": "Dev-mode guard: `rdxSelectPortal` used to be an attribute directive on a `<div>`. It is now\nstructural, so the old `<div rdxSelectPortal>` markup would silently stop portaling — fail loudly\ninstead.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxSelectPositioner",
+      "selector": "[rdxSelectPositioner]",
+      "description": "Positions the select popup against the trigger using the popper engine.\n\nA \"thin\" positioner (ADR 0012): it inherits the full popper positioning surface — the inputs\n(`side`, `sideOffset`, `align`, …), the `placed` output, and the host bindings — from\n{@link RdxPopperContentWrapper}, and declares select's Base UI-aligned defaults via the config\nprovider. It also satisfies {@link RdxPositionerImpl} (via the inherited `placed`) so the popup can\nresolve it through {@link RDX_SELECT_POSITIONER_TOKEN}, the same as the item-aligned positioner.",
+      "inputs": [
+        {
+          "name": "align",
+          "type": "Align",
+          "default": "'start'",
+          "description": "How to align the popup relative to the specified side. May change when collisions occur."
+        },
+        {
+          "name": "alignOffset",
+          "default": "0",
+          "description": "An offset in pixels from the `start` or `end` alignment options. Also accepts an\n{@link OffsetFunction} (same signature as `sideOffset`)."
+        },
+        {
+          "name": "anchor",
+          "type": "RdxPopperAnchorElement",
+          "description": "An element to position the popup against. Defaults to the popper anchor."
+        },
+        {
+          "name": "arrowPadding",
+          "type": "number",
+          "default": "0",
+          "description": "Minimum distance to maintain between the arrow and the edges of the popup.\nIf your content has border-radius, this will prevent it from overflowing the corners."
+        },
+        {
+          "name": "avoidCollisions",
+          "type": "boolean",
+          "default": "true",
+          "deprecated": true,
+          "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges.\n\n`false` disables all avoidance (unless a `collisionAvoidance` object is provided, which wins)."
+        },
+        {
+          "name": "collisionAvoidance",
+          "type": "RdxCollisionAvoidance | undefined",
+          "default": "undefined",
+          "description": "How the popup avoids colliding with the boundary edges, per axis (Base UI `collisionAvoidance`).\nOverrides the deprecated `avoidCollisions` and any per-primitive preset. An object here **fully\nreplaces** the preset — omitted fields fall back to `side: 'flip'`, `align: 'flip'`,\n`fallbackAxisSide: 'end'`, never to the preset. See {@link RdxCollisionAvoidance}."
+        },
+        {
+          "name": "collisionBoundary",
+          "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
+          "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
+        },
+        {
+          "name": "collisionPadding",
+          "type": "number | Partial<Record<Side, number>>",
+          "default": "0",
+          "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
+        },
+        {
+          "name": "dir",
+          "type": "Direction | undefined",
+          "default": "undefined",
+          "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
+        },
+        {
+          "name": "hideWhenDetached",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether to hide the content when the trigger becomes fully occluded."
+        },
+        {
+          "name": "positionStrategy",
+          "type": "\"fixed\" | \"absolute\"",
+          "default": "'fixed'",
+          "description": "The type of CSS position property to use."
+        },
+        {
+          "name": "side",
+          "type": "SideOrLogical",
+          "default": "'bottom'",
+          "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled.\n\nAccepts the logical `'inline-start'` / `'inline-end'` in addition to the physical sides; those\nresolve to `left` / `right` for the text direction (Base UI parity). The placed side reported via\n`data-side` / `placedSide()` echoes the requested kind: logical in → logical out (even after a\ncollision flip), physical in → physical out."
+        },
+        {
+          "name": "sideOffset",
+          "default": "0",
+          "description": "Distance between the anchor and the popup in pixels. Also accepts an {@link OffsetFunction} that\nreads the anchor / positioner dimensions and the resolved side / align."
+        },
+        {
+          "name": "sticky",
+          "type": "\"partial\" | \"always\"",
+          "default": "'partial'",
+          "description": "The sticky behavior on the align axis. `partial` will keep the\ncontent in the boundary as long as the trigger is at least partially\nin the boundary whilst \"always\" will keep the content in the boundary\nregardless."
+        },
+        {
+          "name": "updatePositionStrategy",
+          "type": "\"optimized\" | \"always\"",
+          "default": "'always'",
+          "description": "Strategy to update the position of the floating element on every animation frame."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "placed",
+          "type": "void",
+          "description": "Emits when the element is placed."
+        }
+      ]
+    },
+    {
+      "directive": "RdxSelectRoot",
+      "selector": "[rdxSelectRoot]",
+      "exportAs": "rdxSelectRoot",
+      "hostDirectives": [
+        "RdxPopper"
+      ],
+      "inputs": [
+        {
+          "name": "defaultOpen",
+          "default": "false",
+          "description": "Whether the select is initially open (uncontrolled). Applied once on init."
+        },
+        {
+          "name": "defaultValue",
+          "type": "AcceptableValue | AcceptableValue[]",
+          "description": "Initial value for the uncontrolled case. Applied once on init; `value`/`[(value)]` take over after."
+        },
+        {
+          "name": "dir",
+          "type": "Direction | undefined",
+          "default": "undefined"
+        },
+        {
+          "name": "disabled",
+          "default": "false"
+        },
+        {
+          "name": "form",
+          "type": "string",
+          "description": "Id of an external form that owns this control."
+        },
+        {
+          "name": "isItemEqualToValue",
+          "type": "ItemValueComparator<AcceptableValue>",
+          "description": "How item values are compared for equality — a function `(a, b) => boolean` or an object key."
+        },
+        {
+          "name": "itemToStringLabel",
+          "type": "(value: AcceptableValue) => string",
+          "description": "Converts a value to its display label (used by `RdxSelectValue`)."
+        },
+        {
+          "name": "itemToStringValue",
+          "type": "(value: AcceptableValue) => string",
+          "description": "Converts an item value to the string submitted by a native form."
+        },
+        {
+          "name": "modal",
+          "default": "true",
+          "description": "Whether the popup is modal: locks page scroll and makes outside content inert while open."
+        },
+        {
+          "name": "multiple",
+          "default": "false"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "Name used when serializing this composite control into native `FormData`."
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "readOnly",
+          "default": "false",
+          "description": "When `true`, the value cannot be changed by the user (the popup can still be opened to view it)."
+        },
+        {
+          "name": "required",
+          "default": "false",
+          "description": "Marks the control as required — reflected on the trigger as `aria-required` / `data-required`."
+        },
+        {
+          "name": "value",
+          "type": "AcceptableValue | AcceptableValue[]"
+        },
+        {
+          "name": "dirty",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the value changed from its initial value. Merged with internal tracking."
+        },
+        {
+          "name": "errors",
+          "type": "readonly RdxValidationError[]",
+          "default": "[]",
+          "description": "Validation errors for the control. A non-empty list marks it invalid."
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+        },
+        {
+          "name": "pending",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
+        },
+        {
+          "name": "touched",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onOpenChange",
+          "type": "RdxSelectOpenChangeEvent",
+          "description": "Emits before an open-state change is committed; call `eventDetails.cancel()` to veto it."
+        },
+        {
+          "name": "onOpenChangeComplete",
+          "type": "boolean",
+          "description": "Emits after the open/close transition (including any exit animation) finishes."
+        },
+        {
+          "name": "onValueChange",
+          "type": "RdxSelectValueChangeEvent",
+          "description": "Emits before a value change is committed; call `eventDetails.cancel()` to veto it."
+        },
+        {
+          "name": "touch",
+          "type": "void",
+          "description": "Emits when the control is touched, notifying Signal Forms (stable Angular 22 contract)."
+        }
+      ],
+      "twoWay": [
+        "open",
+        "value",
+        "touched"
+      ]
+    },
+    {
+      "directive": "RdxSelectScrollButtonBase",
+      "selector": "[rdxSelectScrollButtonBase]",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "autoScroll"
+        }
+      ]
+    },
+    {
+      "directive": "RdxSelectScrollDownButton",
+      "selector": "[rdxSelectScrollDownButton]",
+      "hostDirectives": [
+        "RdxSelectScrollButtonBase"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxSelectScrollUpButton",
+      "selector": "[rdxSelectScrollUpButton]",
+      "hostDirectives": [
+        "RdxSelectScrollButtonBase"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxSelectSeparator",
+      "selector": "[rdxSelectSeparator]",
+      "exportAs": "rdxSelectSeparator",
+      "description": "A visual divider between groups of items.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxSelectTrigger",
+      "selector": "button[rdxSelectTrigger]",
+      "hostDirectives": [
+        "RdxPopperAnchor"
+      ],
+      "inputs": [
+        {
+          "name": "disabled",
+          "default": "false"
+        },
+        {
+          "name": "id",
+          "default": "injectId('rdx-select-trigger-')",
+          "description": "The trigger id; Field labels and descriptions reference it for accessible relationships."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxSelectValue",
+      "selector": "span[rdxSelectValue]",
+      "exportAs": "rdxSelectedValue",
+      "inputs": [
+        {
+          "name": "placeholder",
+          "type": "string"
+        }
+      ],
+      "outputs": []
+    }
+  ]
+}

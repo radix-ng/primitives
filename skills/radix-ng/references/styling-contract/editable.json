@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Editable",
+  "slug": "editable",
+  "section": "components",
+  "description": "An inline text field that swaps a read-only preview for an editable input.",
+  "doc": "radix-ng-examples/references/components/editable.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-editable--docs",
+  "anatomy": "<div rdxEditableRoot>\n    <div rdxEditableArea>\n        <span rdxEditablePreview></span>\n        <input rdxEditableInput />\n    </div>\n\n    <button rdxEditableEditTrigger></button>\n    <button rdxEditableSubmitTrigger></button>\n    <button rdxEditableCancelTrigger></button>\n</div>",
+  "dataAttributes": []
+}

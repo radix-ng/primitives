@@ -1,0 +1,65 @@
+{
+  "version": "1.1.0",
+  "slug": "dismissable-layer",
+  "section": "utils",
+  "parts": [
+    {
+      "directive": "RdxFloatingInsideElement",
+      "selector": "[rdxFloatingInside]",
+      "exportAs": "rdxFloatingInside",
+      "description": "Marks its host as **inside** the enclosing floating layer (ADR 0015): a pointer / focus interaction on\nit does not count as \"outside\", so it never dismisses the popup. It registers the host into the\nfloating root context's trigger registry — {@link RdxDismiss}'s `isInside` check reads it.\n\nUse it for an element that lives **outside** the popup DOM but logically belongs to the layer — e.g. a\nCombobox input / trigger / chips / clear button that keeps focus (or is clicked) while the listbox is\nopen.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxEscapeKeyDown",
+      "selector": "[rdxEscapeKeyDown]",
+      "exportAs": "rdxEscapeKeyDown",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "escapeKeyDown",
+          "type": "KeyboardEvent"
+        }
+      ]
+    },
+    {
+      "directive": "RdxFocusOutside",
+      "selector": "[rdxFocusOutside]",
+      "exportAs": "rdxFocusOutside",
+      "description": "Listens for when focus happens outside a DOM subtree.\nReturns props to pass to the root (node) of the subtree we want to check.",
+      "inputs": [
+        {
+          "name": "enabled",
+          "type": "boolean",
+          "default": "true"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "focusOutside",
+          "type": "FocusEvent"
+        }
+      ]
+    },
+    {
+      "directive": "RdxPointerDownOutside",
+      "selector": "[rdxPointerDownOutside]",
+      "exportAs": "rdxPointerDownOutside",
+      "description": "Listens for `pointerdown` outside a DOM subtree. We use `pointerdown` rather than `pointerup`\nto mimic layer dismissing behavior present in OS.\nReturns props to pass to the node we want to check for outside events.",
+      "inputs": [
+        {
+          "name": "enabled",
+          "type": "boolean",
+          "default": "true"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "pointerDownOutside",
+          "type": "PointerEvent"
+        }
+      ]
+    }
+  ]
+}

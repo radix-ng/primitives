@@ -18,7 +18,9 @@ CHANGELOG.md
 # Storybook docs, so it must not be reformatted (would drift from the generator output).
 skills/radix-ng-examples/
 skills/radix-ng/references/styling-contract.json
+skills/radix-ng/references/styling-contract/
 skills/radix-ng/references/api-contract.json
+skills/radix-ng/references/api-contract/
 
 # Generated self-hosted fonts (tools/scripts/fonts/generate.mjs)
 apps/radix-storybook/public/fonts.css

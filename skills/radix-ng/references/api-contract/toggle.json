@@ -1,0 +1,57 @@
+{
+  "version": "1.1.0",
+  "slug": "toggle",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxToggle",
+      "selector": "[rdxToggle]",
+      "exportAs": "rdxToggle",
+      "description": "A two-state button that can be either on (pressed) or off.\n\nWorks standalone or as an item of a `[rdxToggleGroup]`: inside a group it derives its pressed\nstate from the group's value (matched by `value`) and participates in the group's composite focus.\n\nSee https://base-ui.com/react/components/toggle",
+      "hostDirectives": [
+        "RdxCompositeItem"
+      ],
+      "inputs": [
+        {
+          "name": "defaultPressed",
+          "type": "boolean",
+          "default": "false",
+          "description": "The pressed state when initially rendered (uncontrolled, standalone only)."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the toggle is disabled."
+        },
+        {
+          "name": "nativeButton",
+          "type": "boolean",
+          "default": "true",
+          "description": "Whether the host is a native `<button>`. When `false`, the toggle adds `role=\"button\"` and\nhandles Enter/Space itself."
+        },
+        {
+          "name": "pressed",
+          "type": "boolean | undefined",
+          "default": "undefined",
+          "description": "The controlled pressed state (standalone). Use with `(onPressedChange)` or two-way `[(pressed)]`."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "description": "A value identifying this toggle inside a `[rdxToggleGroup]`. Required when used in a group."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onPressedChange",
+          "type": "RdxTogglePressedChangeEvent",
+          "description": "Event emitted when the pressed state changes (standalone)."
+        }
+      ],
+      "twoWay": [
+        "pressed"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Pagination",
+  "slug": "pagination",
+  "section": "components",
+  "description": "Displays data in paged format and provides navigation between pages.",
+  "doc": "radix-ng-examples/references/components/pagination.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-pagination--docs",
+  "anatomy": "<div rdxPaginationRoot>\n    <div rdxPaginationList #list=\"rdxPaginationList\">\n        <button rdxPaginationFirst></button>\n        <button rdxPaginationPrev></button>\n\n        @for (item of list.transformedRange(); track item) {\n            <button rdxPaginationListItem [value]=\"item.value\">{{ item.value }}</button>\n        }\n\n        <button rdxPaginationNext></button>\n        <button rdxPaginationLast></button>\n    </div>\n</div>",
+  "dataAttributes": []
+}

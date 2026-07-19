@@ -1,0 +1,127 @@
+{
+  "version": "1.1.0",
+  "slug": "composite",
+  "section": "utils",
+  "parts": [
+    {
+      "directive": "RdxCompositeItem",
+      "selector": "[rdxCompositeItem]",
+      "exportAs": "rdxCompositeItem",
+      "description": "Internal Base UI-style composite item. Registers itself with the nearest composite root and\nreceives the roving `tabindex` from the root's highlighted index.",
+      "hostDirectives": [
+        "RdxCompositeListItem"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxCompositeListItem",
+      "selector": "[rdxCompositeListItem]",
+      "exportAs": "rdxCompositeListItem",
+      "description": "Registers the host with the nearest composite list without changing focus behavior.",
+      "inputs": [
+        {
+          "name": "metadata",
+          "type": "RdxCompositeItemMetadata | null | undefined",
+          "default": "undefined",
+          "description": "Arbitrary metadata included in the list's ordered item map."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxCompositeList",
+      "selector": "[rdxCompositeList]",
+      "exportAs": "rdxCompositeList",
+      "description": "Base UI-style composite list. Owns item registration and DOM-order metadata without applying\nroving tabindex or keyboard navigation.",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "onMapChange",
+          "type": "Map<HTMLElement, RdxCompositeMetadata>",
+          "description": "Emits when the ordered item map changes."
+        }
+      ]
+    },
+    {
+      "directive": "RdxCompositeRoot",
+      "selector": "[rdxCompositeRoot]",
+      "exportAs": "rdxCompositeRoot",
+      "description": "Internal Base UI-style composite root for roving index and arrow-key navigation.",
+      "hostDirectives": [
+        "RdxCompositeList"
+      ],
+      "inputs": [
+        {
+          "name": "dir",
+          "type": "Direction | undefined",
+          "default": "undefined",
+          "description": "Text direction for horizontal arrow-key navigation."
+        },
+        {
+          "name": "disabledIndices",
+          "type": "readonly number[] | undefined",
+          "default": "undefined",
+          "description": "Indices that are skipped by keyboard navigation."
+        },
+        {
+          "name": "enableHomeAndEndKeys",
+          "type": "boolean",
+          "default": "false",
+          "description": "Enables Home and End keys."
+        },
+        {
+          "name": "highlightedIndex",
+          "type": "number",
+          "default": "0",
+          "description": "The currently highlighted item index."
+        },
+        {
+          "name": "highlightItemOnHover",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether hovering an item should focus it."
+        },
+        {
+          "name": "loopFocus",
+          "type": "boolean",
+          "default": "true",
+          "description": "Whether arrow-key navigation wraps at the first/last item."
+        },
+        {
+          "name": "modifierKeys",
+          "type": "readonly RdxCompositeModifierKey[]",
+          "default": "[]",
+          "description": "Modifier keys that should not block composite navigation."
+        },
+        {
+          "name": "orientation",
+          "type": "RdxCompositeOrientation",
+          "default": "'both'",
+          "description": "The composite orientation."
+        },
+        {
+          "name": "stopEventPropagation",
+          "type": "boolean",
+          "default": "true",
+          "description": "Whether handled navigation keys stop propagation."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onHighlightedIndexChange",
+          "type": "number",
+          "description": "Emits when this root changes the highlighted index."
+        },
+        {
+          "name": "onMapChange",
+          "type": "Map<HTMLElement, RdxCompositeMetadata>",
+          "description": "Emits when the ordered item map changes."
+        }
+      ],
+      "twoWay": [
+        "highlightedIndex"
+      ]
+    }
+  ]
+}

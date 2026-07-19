@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Combobox",
+  "slug": "combobox",
+  "section": "components",
+  "description": "A filterable select: a text input that filters a list of options, with the highlighted option tracked via `aria-activedescendant`.",
+  "doc": "radix-ng-examples/references/components/combobox.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-combobox--docs",
+  "anatomy": "<div rdxComboboxRoot>\n  <input rdxComboboxInput placeholder=\"Search…\" />\n  <button rdxComboboxClear><!-- clear icon --></button>\n  <button rdxComboboxTrigger><!-- chevron icon --></button>\n\n  <div *rdxComboboxPortal rdxComboboxPositioner>\n    <div rdxComboboxPopup>\n      <div rdxComboboxList>\n        <div rdxComboboxGroup>\n          <div rdxComboboxGroupLabel>Group</div>\n          <div value=\"apple\" rdxComboboxItem>\n            <span rdxComboboxItemIndicator><!-- check icon --></span>\n            Apple\n          </div>\n        </div>\n      </div>\n      <div rdxComboboxEmpty>No results.</div>\n    </div>\n  </div>\n</div>",
+  "dataAttributes": []
+}

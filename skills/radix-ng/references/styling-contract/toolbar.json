@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Toolbar",
+  "slug": "toolbar",
+  "section": "components",
+  "description": "A container for grouping a set of controls, such as buttons, toggle groups or menus.",
+  "doc": "radix-ng-examples/references/components/toolbar.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-toolbar--docs",
+  "anatomy": "<div rdxToolbarRoot>\n    <div rdxToolbarGroup>\n        <button rdxToolbarButton></button>\n        <button rdxToolbarButton></button>\n    </div>\n    <div rdxToolbarSeparator></div>\n    <input rdxToolbarInput />\n    <a rdxToolbarLink></a>\n</div>",
+  "dataAttributes": []
+}

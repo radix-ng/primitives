@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Slider",
+  "slug": "slider",
+  "section": "components",
+  "description": "An input where the user selects a value, or a range of values, from within a given range.",
+  "doc": "radix-ng-examples/references/components/slider.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-slider--docs",
+  "anatomy": "<div rdxSliderRoot>\n    <output rdxSliderValue></output>\n    <div rdxSliderControl>\n        <div rdxSliderTrack>\n            <div rdxSliderIndicator></div>\n            <div rdxSliderThumb>\n                <input rdxSliderThumbInput />\n            </div>\n        </div>\n    </div>\n</div>",
+  "dataAttributes": []
+}

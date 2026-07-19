@@ -1,0 +1,94 @@
+{
+  "version": "1.1.0",
+  "slug": "meter",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxMeterIndicatorDirective",
+      "selector": "[rdxMeterIndicator]",
+      "exportAs": "rdxMeterIndicator",
+      "description": "Displays the visual meter fill.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxMeterLabelDirective",
+      "selector": "[rdxMeterLabel]",
+      "exportAs": "rdxMeterLabel",
+      "description": "Labels the meter.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxMeterRootDirective",
+      "selector": "[rdxMeterRoot]",
+      "exportAs": "rdxMeterRoot",
+      "description": "Provides meter state and accessibility attributes.",
+      "inputs": [
+        {
+          "name": "aria-valuetext",
+          "type": "string | undefined",
+          "default": "undefined",
+          "description": "Human-readable text alternative for the current value."
+        },
+        {
+          "name": "format",
+          "type": "Intl.NumberFormatOptions",
+          "description": "Number formatting options for the displayed value."
+        },
+        {
+          "name": "getAriaValueText",
+          "type": "MeterValueFormatter",
+          "description": "Formats a human-readable text alternative for the current value."
+        },
+        {
+          "name": "labelId",
+          "default": "`rdx-meter-label-${meterId++}`"
+        },
+        {
+          "name": "locale",
+          "type": "Intl.LocalesArgument",
+          "description": "Locale used by `Intl.NumberFormat` when formatting the displayed value."
+        },
+        {
+          "name": "max",
+          "default": "DEFAULT_MAX",
+          "description": "Maximum meter value."
+        },
+        {
+          "name": "min",
+          "default": "DEFAULT_MIN",
+          "description": "Minimum meter value."
+        },
+        {
+          "name": "value",
+          "type": "number, unknown",
+          "default": "{ transform: numberAttribute }",
+          "required": true,
+          "description": "Current meter value."
+        },
+        {
+          "name": "valueId",
+          "default": "`rdx-meter-value-${meterId++}`"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxMeterTrackDirective",
+      "selector": "[rdxMeterTrack]",
+      "exportAs": "rdxMeterTrack",
+      "description": "Contains the visual meter indicator.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxMeterValueDirective",
+      "selector": "[rdxMeterValue]",
+      "exportAs": "rdxMeterValue",
+      "description": "Displays the formatted meter value.",
+      "inputs": [],
+      "outputs": []
+    }
+  ]
+}

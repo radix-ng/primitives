@@ -1,6 +1,6 @@
 # Tabs — Unmount with `@keyframes`
 
-> One example from the [Tabs](../components/tabs.md) docs — imports, anatomy, and the data-attribute styling contract live there.
+> One example from the [Tabs](../components/tabs.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
 > Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
 

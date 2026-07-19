@@ -1,0 +1,155 @@
+{
+  "version": "1.1.0",
+  "slug": "radio",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxRadioIndicatorDirective",
+      "selector": "[rdxRadioIndicator]",
+      "exportAs": "rdxRadioIndicator",
+      "inputs": [
+        {
+          "name": "keepMounted",
+          "type": "boolean",
+          "default": "false",
+          "description": "Keep the indicator in the DOM when unchecked so CSS exit animations can play."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxRadioItemInputDirective",
+      "selector": "input[rdxRadioItemInput]",
+      "exportAs": "rdxRadioItemInput",
+      "description": "The hidden native radio input that mirrors the item state for form submission, native validation,\nand `<label>` activation. Place it inside an `rdxRadioItem`.\n\nSee https://base-ui.com/react/components/radio",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxRadioItemDirective",
+      "selector": "[rdxRadioItem]",
+      "exportAs": "rdxRadioItem",
+      "hostDirectives": [
+        "RdxCompositeItem"
+      ],
+      "inputs": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "id",
+          "type": "string"
+        },
+        {
+          "name": "readOnly",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the user should be unable to select this radio button. Bound in templates as\n`readOnly` (Base UI spelling); the TS member stays `readonly` for cross-primitive consistency."
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxRadioGroupDirective",
+      "selector": "[rdxRadioRoot]",
+      "exportAs": "rdxRadioRoot",
+      "hostDirectives": [
+        "RdxCompositeRoot"
+      ],
+      "inputs": [
+        {
+          "name": "defaultValue",
+          "type": "string"
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "form",
+          "type": "string"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "readOnly",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the user should be unable to select a different radio button. Bound in templates as\n`readOnly` (Base UI spelling); the TS member stays `readonly` for cross-primitive consistency."
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "value",
+          "type": "string | null",
+          "default": "null",
+          "description": "The selected value. Deliberately typed as `string` (not Base UI's generic `Value`):\na radio group maps onto native radio inputs whose form value is a string, so values are\nthe option identifiers. Use the string key of your option as the value."
+        },
+        {
+          "name": "dirty",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the value changed from its initial value. Merged with internal tracking."
+        },
+        {
+          "name": "errors",
+          "type": "readonly RdxValidationError[]",
+          "default": "[]",
+          "description": "Validation errors for the control. A non-empty list marks it invalid."
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+        },
+        {
+          "name": "pending",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
+        },
+        {
+          "name": "touched",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onValueChange",
+          "type": "RdxRadioValueChangeEvent",
+          "description": "Event handler called when the value changes."
+        },
+        {
+          "name": "touch",
+          "type": "void",
+          "description": "Emits when the control is touched, notifying Signal Forms (stable Angular 22 contract)."
+        }
+      ],
+      "twoWay": [
+        "value",
+        "touched"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Portal",
+  "slug": "portal",
+  "section": "utils",
+  "description": "Renders its host element into a different part of the DOM (`document.body` by default).",
+  "doc": "radix-ng-examples/references/utils/portal.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-portal--docs",
+  "anatomy": "<div rdxPortal>This content is moved to the document body.</div>",
+  "dataAttributes": []
+}
