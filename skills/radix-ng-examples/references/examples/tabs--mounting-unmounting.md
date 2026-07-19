@@ -2,7 +2,7 @@
 
 > One example from the [Tabs](../components/tabs.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.2` — if the installed version differs, verify the API against the installed package.
 
 By default an inactive `rdxTabsPanel` stays in the DOM and is toggled with the `hidden` attribute. To
 unmount the contents while inactive (Base UI's default `keepMounted: false`), nest a

@@ -2,7 +2,7 @@
 
 > One example from the [Drawer](../components/drawer.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.2` — if the installed version differs, verify the API against the installed package.
 
 A bottom sheet you can swipe down to dismiss, with an accessible title, description, and close buttons.
 

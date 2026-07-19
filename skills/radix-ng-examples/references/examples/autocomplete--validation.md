@@ -2,7 +2,7 @@
 
 > One example from the [Autocomplete](../components/autocomplete.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.2` — if the installed version differs, verify the API against the installed package.
 
 Bind the control's validity to `[invalid]` so the input reflects `data-invalid` / `aria-invalid`; the
 error message and submit guard follow the standard reactive-forms pattern.

@@ -2,7 +2,7 @@
 
 > One example from the [Select](../components/select.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.2` — if the installed version differs, verify the API against the installed package.
 
 Each item's `value` is an object. Set `[isItemEqualToValue]="'id'"` so items are matched by a stable
 key (here `id`) instead of reference, and render rich, two-line content in both the trigger and the

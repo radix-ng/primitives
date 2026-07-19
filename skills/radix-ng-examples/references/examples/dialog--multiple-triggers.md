@@ -2,7 +2,7 @@
 
 > One example from the [Dialog](../components/dialog.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.2` — if the installed version differs, verify the API against the installed package.
 
 Several `rdxDialogTrigger` buttons can open the same dialog. The active trigger and its `payload` are
 exposed on the root so the content can adapt.

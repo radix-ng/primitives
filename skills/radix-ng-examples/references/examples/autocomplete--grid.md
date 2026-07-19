@@ -2,7 +2,7 @@
 
 > One example from the [Autocomplete](../components/autocomplete.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.2` — if the installed version differs, verify the API against the installed package.
 
 An emoji picker: enable `grid` and wrap each row in `rdxAutocompleteRow` for two-dimensional arrow
 navigation. The search input lives **inside** the popup (opened by the trigger) and auto-focuses on

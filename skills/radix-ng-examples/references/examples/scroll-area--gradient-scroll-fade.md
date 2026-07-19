@@ -2,7 +2,7 @@
 
 > One example from the [Scroll Area](../components/scroll-area.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.2` — if the installed version differs, verify the API against the installed package.
 
 Feed the viewport's `--scroll-area-overflow-y-start` / `--scroll-area-overflow-y-end` variables (the
 pixel distance to each edge) into a `mask-image` gradient. Each fade disappears as you reach the

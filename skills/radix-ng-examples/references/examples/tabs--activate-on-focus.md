@@ -2,7 +2,7 @@
 
 > One example from the [Tabs](../components/tabs.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.2` — if the installed version differs, verify the API against the installed package.
 
 Set `activateOnFocus` on the list to activate a tab as soon as it receives keyboard focus (automatic
 activation). By default activation is manual — tabs activate on click or `Enter` / `Space`.

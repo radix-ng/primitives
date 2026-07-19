@@ -2,7 +2,7 @@
 
 > One example from the [Tabs](../components/tabs.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.2` — if the installed version differs, verify the API against the installed package.
 
 With `*rdxTabsPanelPresence`, the presence directive waits for the contents' exit **animation**
 (`@keyframes`, detected via `animationend`) before removing them. Mark the panel as a `group` so the

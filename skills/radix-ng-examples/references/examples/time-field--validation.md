@@ -2,7 +2,7 @@
 
 > One example from the [Time Field](../components/time-field.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.2` — if the installed version differs, verify the API against the installed package.
 
 `minValue` / `maxValue` mark out-of-range values with `data-invalid` on the root and each segment.
 

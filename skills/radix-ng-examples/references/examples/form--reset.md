@@ -2,7 +2,7 @@
 
 > One example from the [Form](../components/form.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.2` — if the installed version differs, verify the API against the installed package.
 
 Native `reset` clears external errors and every field's interaction state, and re-syncs `filled` to the
 reverted values.

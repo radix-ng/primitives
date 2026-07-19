@@ -2,7 +2,7 @@
 
 > One example from the [Combobox](../components/combobox.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.2` — if the installed version differs, verify the API against the installed package.
 
 `selectionMode="none"` filters without committing a value — selecting an item emits `onValueChange`
 as an activation signal and (by default) fills the input. Paired with `autoHighlight="always"` so the

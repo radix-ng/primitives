@@ -2,7 +2,7 @@
 
 > One example from the [Radio Group](../components/radio.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.2` — if the installed version differs, verify the API against the installed package.
 
 A disabled radio group ignores user interaction and exposes disabled state attributes to all items.
 

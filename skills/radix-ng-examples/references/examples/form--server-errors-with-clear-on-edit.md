@@ -2,7 +2,7 @@
 
 > One example from the [Form](../components/form.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.2` — if the installed version differs, verify the API against the installed package.
 
 The submit handler simulates a backend rejecting a taken email (try `taken@example.com`); the returned
 error maps onto the field by `name` and clears when you edit it.

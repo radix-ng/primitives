@@ -2,7 +2,7 @@
 
 > One example from the [Popover](../components/popover.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.2` — if the installed version differs, verify the API against the installed package.
 
 Add `openOnHover` to a trigger when pointer users should be able to open its popup without clicking.
 Use `delay` and `closeDelay` on the same trigger to configure the timing.

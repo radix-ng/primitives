@@ -2,7 +2,7 @@
 
 > One example from the [Radio Group](../components/radio.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.2` — if the installed version differs, verify the API against the installed package.
 
 Radio group works with `ngModel`, native form submission, and a submit button. This example keeps
 `rdxRadioItemInput` for native `required` validation and label activation.

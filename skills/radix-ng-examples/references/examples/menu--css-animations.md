@@ -2,7 +2,7 @@
 
 > One example from the [Menu](../components/menu.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.2` — if the installed version differs, verify the API against the installed package.
 
 The structural `*rdxMenuPortal` keeps the popup mounted until the closed-state exit keyframes on its
 root element (the positioner) finish, so the menu now has real exit animations. `rdxMenuPopup` also

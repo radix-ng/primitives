@@ -2,7 +2,7 @@
 
 > One example from the [Toolbar](../components/toolbar.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.2` — if the installed version differs, verify the API against the installed package.
 
 Stack `[rdxToolbarInput]` on a `[rdxNumberFieldInput]` to embed a number field. The input keeps native
 text editing — the arrow keys move the caret and only move toolbar focus once the caret reaches the

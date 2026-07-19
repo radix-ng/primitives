@@ -2,7 +2,7 @@
 
 > One example from the [Drawer](../components/drawer.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.2` — if the installed version differs, verify the API against the installed package.
 
 Add `rdxDrawerVirtualKeyboardProvider` to the drawer viewport for mobile bottom-sheet forms. It writes
 `--drawer-keyboard-inset` on the viewport, keeps the focused keyboard input visible as

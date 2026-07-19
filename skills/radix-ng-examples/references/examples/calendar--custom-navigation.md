@@ -2,7 +2,7 @@
 
 > One example from the [Calendar](../components/calendar.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.2` — if the installed version differs, verify the API against the installed package.
 
 Override how the previous/next buttons move the view with `propsPrevPage` / `propsNextPage` — each a
 `(placeholder) => DateValue` callback. This example jumps a whole year per click.

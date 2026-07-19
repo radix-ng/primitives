@@ -2,7 +2,7 @@
 
 > One example from the [Switch](../components/switch.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.2` — if the installed version differs, verify the API against the installed package.
 
 When `disabled` is present the switch cannot be focused or toggled.
 
