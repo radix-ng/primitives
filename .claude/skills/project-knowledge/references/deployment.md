@@ -17,7 +17,7 @@ All workflows are in `.github/workflows/`.
 2. `lint` — prettier check + stylelint + eslint (all `--max-warnings=0`). The same `--max-warnings=0` eslint/stylelint run is also wired into the **pre-commit hook** (husky + lint-staged), so a `warn` behaves like an `error` locally and in CI — see the "Linting — zero-warning policy" gotchas in patterns.md before touching lint config.
 3. `unit` — `pnpm primitives:test` (Vitest)
 4. `builds` — `pnpm primitives:build` + `pnpm primitives:build:schematics`
-5. `skills` — regenerates the LLM skills bundle (`pnpm skills:build`) and fails if the committed output drifts from the Storybook docs, keeping the bundle in sync (see architecture.md)
+5. `skills` — regenerates the LLM skills bundle (`pnpm skills:build`) and fails if the committed output drifts from the Storybook docs, or if the generator's own eager-load budget or integrity guards throw — keeping the bundle in sync and self-consistent (see architecture.md)
 6. `summary` — gate job; fails if any of lint/unit/builds/skills fails
 
 **`chromatic.yml`** — visual regression on push to `main` via Chromaui action. `exitZeroOnChanges: true` — changes are flagged but don't fail the build; review happens in Chromatic dashboard.
@@ -52,7 +52,7 @@ Storybook now serves the public documentation site on the main domain `https://r
 
 ## LLM consumer skills
 
-`pnpm skills:build` regenerates the Agent Skills bundle under `skills/` from the Storybook docs (generator in `tools/scripts/skills/`). Run it after changing any `*.docs.mdx`. The output is committed, CI-verified (the `skills` job above), and excluded from Prettier via `.prettierignore` so it isn't reformatted into drift. Contents and architecture: see architecture.md. Published via skills.sh: `npx skills add radix-ng/primitives/skills`.
+`pnpm skills:build` regenerates the Agent Skills bundle under `skills/` from the Storybook docs (generator in `tools/scripts/skills/`). Run it after changing any `*.docs.mdx`. The output is committed, CI-verified (the `skills` job above), and excluded from Prettier via `.prettierignore` so it isn't reformatted into drift — a new generated output directory must be added there too. Contents and architecture: see architecture.md. Published via skills.sh: `npx skills add radix-ng/primitives/skills`.
 
 ## SSR testing app
 
