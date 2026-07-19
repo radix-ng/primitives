@@ -31,6 +31,11 @@ Working examples built on `@radix-ng/primitives`. Full source is **bundled offli
 To style a primitive with a custom design system, pair an example with the data-attribute contract in
 the `radix-ng` skill (`references/styling-contract.json`).
 
+**Reload a single example** (e.g. after your context is compacted): open
+`references/examples/<component>--<example>.md` — one file per example, just that example's source,
+addressed by the component slug and the kebab-cased example name. Cheaper than re-reading the whole
+component doc.
+
 Total: **247 examples** across **43 components**.
 
 ## Components

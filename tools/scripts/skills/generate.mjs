@@ -129,6 +129,28 @@ const parseExamples = (content) => {
     return examples;
 };
 
+// Split a rendered doc body's "## Examples" section into one block per example,
+// fence-aware so a "###"-looking line inside example source never splits a block.
+const splitRenderedExamples = (body) => {
+    const section = sectionBody(body, 'Examples');
+    if (!section) return [];
+
+    const blocks = [];
+    let current = null;
+    let inFence = false;
+    for (const line of section.split('\n')) {
+        if (line.trim().startsWith('```')) inFence = !inFence;
+        const heading = !inFence && /^###\s+(.+?)\s*$/.exec(line);
+        if (heading) {
+            current = { name: heading[1].trim(), lines: [] };
+            blocks.push(current);
+        } else if (current) {
+            current.lines.push(line);
+        }
+    }
+    return blocks.map(({ name, lines }) => ({ name, slug: titleToSlug(name), block: lines.join('\n').trim() }));
+};
+
 const mdxMeta = new Map(
     findMdx(primitivesRoot).map((filePath) => {
         const content = fs.readFileSync(filePath, 'utf8');
@@ -166,6 +188,33 @@ for (const section of ['components', 'utils', 'guides', 'recipes', 'examples']) 
 
 for (const doc of docs) {
     write(path.join(refsRoot, doc.section, `${doc.slug}.md`), `${doc.body}\n`);
+}
+
+// 1b. Per-example shards: references/examples/<slug>--<example>.md — one file per
+// documented example (that example's source + a pointer back to its component doc).
+// A consumer agent can (re)load a single example (~few KB) instead of the whole
+// component doc; this is the granular unit the recovery protocol reaches for after a
+// context compaction. Non-breaking: the full components/<slug>.md doc is unchanged.
+let exampleShardCount = 0;
+for (const doc of docs.filter((entry) => entry.section === 'components')) {
+    const seen = new Set();
+    for (const { name, slug, block } of splitRenderedExamples(doc.body)) {
+        if (seen.has(slug)) {
+            throw new Error(
+                `Duplicate example slug "${slug}" in component "${doc.slug}" — two example headings ` +
+                    `resolve to the same shard filename. Rename one heading in its .docs.mdx.`
+            );
+        }
+        seen.add(slug);
+        const shard = [
+            `# ${doc.title} — ${name}`,
+            `> One example from the [${doc.title}](../components/${doc.slug}.md) docs — imports, anatomy, and the data-attribute styling contract live there.`,
+            `> ${versionLine}`,
+            block
+        ].join('\n\n');
+        write(path.join(refsRoot, 'examples', `${doc.slug}--${slug}.md`), `${shard}\n`);
+        exampleShardCount++;
+    }
 }
 
 const llmsFull = [
@@ -271,6 +320,11 @@ Working examples built on \`@radix-ng/primitives\`. Full source is **bundled off
 To style a primitive with a custom design system, pair an example with the data-attribute contract in
 the \`radix-ng\` skill (\`references/styling-contract.json\`).
 
+**Reload a single example** (e.g. after your context is compacted): open
+\`references/examples/<component>--<example>.md\` — one file per example, just that example's source,
+addressed by the component slug and the kebab-cased example name. Cheaper than re-reading the whole
+component doc.
+
 Total: **${totalExamples} examples** across **${componentDocs.length} components**.
 
 ## Components
@@ -310,6 +364,7 @@ if (budgetErrors.length) {
 }
 
 console.log(`✓ ${docs.length} docs rendered → ${path.relative(workspaceRoot, refsRoot)}/<section>/`);
+console.log(`✓ ${exampleShardCount} example shards → ${path.relative(workspaceRoot, refsRoot)}/examples/`);
 console.log(`✓ llms.txt + llms-full.txt (${docs.length} docs)`);
 console.log(`✓ styling-contract.json (${contract.length} primitives)`);
 console.log(`✓ api-contract.json (${api.parts} parts / ${api.primitives} primitives)`);
