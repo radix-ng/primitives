@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Toggle Group",
+  "slug": "toggle-group",
+  "section": "components",
+  "description": "A set of two-state buttons that can be toggled on or off.",
+  "doc": "radix-ng-examples/references/components/toggle-group.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-toggle-group--docs",
+  "anatomy": "<div rdxToggleGroup [value]=\"['center']\" aria-label=\"Text alignment\">\n    <button rdxToggle value=\"left\"></button>\n    <button rdxToggle value=\"center\"></button>\n    <button rdxToggle value=\"right\"></button>\n</div>",
+  "dataAttributes": []
+}

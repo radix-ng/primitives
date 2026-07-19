@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Accordion",
+  "slug": "accordion",
+  "section": "components",
+  "description": "A vertically stacked set of interactive headings that each reveal an associated section of content.",
+  "doc": "radix-ng-examples/references/components/accordion.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-accordion--docs",
+  "anatomy": "<div rdxAccordionRoot>\n  <div rdxAccordionItem>\n    <div rdxAccordionHeader>\n      <button rdxAccordionTrigger></button>\n    </div>\n    <div rdxAccordionPanel></div>\n  </div>\n</div>",
+  "dataAttributes": []
+}

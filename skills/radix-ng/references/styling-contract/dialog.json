@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Dialog",
+  "slug": "dialog",
+  "section": "components",
+  "description": "A window overlaid on the page, rendering the content underneath inert.",
+  "doc": "radix-ng-examples/references/components/dialog.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-dialog--docs",
+  "anatomy": "<div rdxDialogRoot>\n    <button rdxDialogTrigger>Open</button>\n\n    <ng-template rdxDialogPortal>\n        <div rdxDialogBackdrop></div>\n        <div rdxDialogPopup>\n            <h2 rdxDialogTitle>Edit profile</h2>\n            <p rdxDialogDescription>Make changes to your profile.</p>\n            <button rdxDialogClose>Close</button>\n        </div>\n    </ng-template>\n</div>",
+  "dataAttributes": []
+}

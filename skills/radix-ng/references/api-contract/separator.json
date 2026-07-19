@@ -1,0 +1,21 @@
+{
+  "version": "1.1.0",
+  "slug": "separator",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxSeparatorRootDirective",
+      "selector": "[rdxSeparatorRoot]",
+      "description": "Directive that adds accessible and configurable separator element to the DOM.\nThis can be either horizontal or vertical.",
+      "inputs": [
+        {
+          "name": "orientation",
+          "type": "Orientation",
+          "default": "DEFAULT_ORIENTATION",
+          "description": "Orientation of the separator, can be either 'horizontal' or 'vertical'."
+        }
+      ],
+      "outputs": []
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Form",
+  "slug": "form",
+  "section": "components",
+  "description": "The top of the forms layer cake: aggregates fields, maps server errors by name, and intercepts submit and reset.",
+  "doc": "radix-ng-examples/references/components/form.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-form--docs",
+  "anatomy": "<form rdxFormRoot [errors]=\"serverErrors\">\n    <fieldset rdxFieldsetRoot>\n        <legend rdxFieldsetLegend>Account</legend>\n        <div rdxFieldRoot name=\"email\">\n            <label rdxFieldLabel>Email</label>\n            <input rdxFieldControl name=\"email\" type=\"email\" />\n            <p rdxFieldError #err=\"rdxFieldError\">{{ err.messages().join(' ') }}</p>\n        </div>\n    </fieldset>\n    <button type=\"submit\">Submit</button>\n</form>",
+  "dataAttributes": []
+}

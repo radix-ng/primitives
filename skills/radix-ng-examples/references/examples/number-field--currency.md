@@ -1,0 +1,68 @@
+# Number Field — Currency
+
+> One example from the [Number Field](../components/number-field.md) index — imports, anatomy, and links to the API and styling contracts are there.
+
+> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+
+`format: { style: 'currency', currency: 'EUR' }` renders a currency value.
+
+```typescript
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { LucideDynamicIcon, LucideMinus as Minus, LucidePlus as Plus } from '@lucide/angular';
+import {
+    RdxNumberFieldDecrement,
+    RdxNumberFieldGroup,
+    RdxNumberFieldIncrement,
+    RdxNumberFieldInput,
+    RdxNumberFieldRoot
+} from '@radix-ng/primitives/number-field';
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'number-field-currency-example',
+    imports: [
+        LucideDynamicIcon,
+        RdxNumberFieldRoot,
+        RdxNumberFieldGroup,
+        RdxNumberFieldInput,
+        RdxNumberFieldIncrement,
+        RdxNumberFieldDecrement
+    ],
+    template: `
+        <div class="flex flex-col gap-1.5" [id]="'currency'" [defaultValue]="5" [format]="format" rdxNumberFieldRoot>
+            <label class="text-foreground text-sm font-medium" for="currency">Price</label>
+            <div
+                class="border-border bg-background focus-within:ring-ring flex h-9 w-fit items-center rounded-md border shadow-sm focus-within:ring-2"
+                rdxNumberFieldGroup
+            >
+                <button
+                    class="text-foreground hover:bg-muted flex size-9 items-center justify-center rounded-l-md outline-none select-none disabled:pointer-events-none disabled:opacity-40"
+                    rdxNumberFieldDecrement
+                >
+                    <svg class="flex" [lucideIcon]="Minus" size="16" />
+                </button>
+                <input
+                    class="text-foreground h-9 w-28 bg-transparent text-center tabular-nums outline-none"
+                    rdxNumberFieldInput
+                />
+                <button
+                    class="text-foreground hover:bg-muted flex size-9 items-center justify-center rounded-r-md outline-none select-none disabled:pointer-events-none disabled:opacity-40"
+                    rdxNumberFieldIncrement
+                >
+                    <svg class="flex" [lucideIcon]="Plus" size="16" />
+                </button>
+            </div>
+        </div>
+    `
+})
+export class NumberFieldCurrencyExample {
+    protected readonly format: Intl.NumberFormatOptions = {
+        style: 'currency',
+        currency: 'EUR',
+        currencyDisplay: 'symbol'
+    };
+
+    protected readonly Minus = Minus;
+    protected readonly Plus = Plus;
+}
+```

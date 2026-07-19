@@ -1,12 +1,10 @@
 # Toggle
 
-#### A two-state button that can be either on or off.
+A two-state button that can be either on or off.
 
-```html
-<button class="${toggleClass}" rdxToggle aria-label="Toggle italic">
-    <svg class="flex" lucideItalic size="12"></svg>
-</button>
-```
+> Index — full source of each example is one click away in `../examples/toggle--*.md`; the whole-doc dump is in `../llms-full.txt`.
+
+> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
 
 ## Features
 
@@ -35,79 +33,14 @@ When placed inside a `[rdxToggleGroup]`, give each toggle a stable `value` — i
 derived from the group's value and it joins the group's composite focus. In dev mode, a grouped toggle
 without `value` emits a warning because it cannot participate in group value changes.
 
-## Change events
-
-Standalone `onPressedChange` emits `{ pressed, eventDetails }`. Call `eventDetails.cancel()` to
-reject a press before state updates.
-
-```html
-<button [pressed]="pressed()" (onPressedChange)="setPressed($event)" rdxToggle>
-    Toggle
-</button>
-```
-
-```ts
-setPressed(change: RdxTogglePressedChangeEvent) {
-    if (this.preventToggle()) {
-        change.eventDetails.cancel();
-        return;
-    }
-
-    this.pressed.set(change.pressed);
-}
-```
-
 ## Examples
 
-### Pressed by default
+- [Pressed by default](../examples/toggle--pressed-by-default.md)
+- [Controlled](../examples/toggle--controlled.md)
+- [Disabled](../examples/toggle--disabled.md)
 
-Use `defaultPressed` for an uncontrolled toggle that starts pressed.
+## API & styling contract
 
-```html
-<button class="${toggleClass}" rdxToggle defaultPressed aria-label="Toggle italic">
-    <svg class="flex" lucideItalic size="12"></svg>
-</button>
-```
-
-### Controlled
-
-Bind `[(pressed)]` (or `[pressed]` + `(onPressedChange)`) to control the state.
-
-```html
-<div class="flex flex-col items-center gap-3">
-    <button class="${toggleClass}" [(pressed)]="pressed" rdxToggle aria-label="Toggle italic">
-        <svg class="flex" lucideItalic size="12"></svg>
-    </button>
-    <span class="text-muted-foreground text-sm">pressed: {{ pressed }}</span>
-</div>
-```
-
-### Disabled
-
-When `disabled` is present the toggle cannot be activated.
-
-```html
-<button class="${toggleClass}" rdxToggle disabled aria-label="Toggle italic">
-    <svg class="flex" lucideItalic size="12"></svg>
-</button>
-```
-
-## API Reference
-
-### Toggle
-
-`RdxToggle`
-
-| Data attribute    | Value                          |
-| ----------------- | ------------------------------ |
-| `[data-pressed]`  | Present when the toggle is on. |
-| `[data-disabled]` | Present when disabled.         |
-
-## Accessibility
-
-### Keyboard Interactions
-
-| Key     | Description                       |
-| ------- | --------------------------------- |
-| `Space` | Activates/deactivates the toggle. |
-| `Enter` | Activates/deactivates the toggle. |
+Machine-readable contracts for this primitive live in the `radix-ng` skill:
+- API (selectors, inputs, outputs, two-way bindings): `references/api-contract/toggle.json`
+- Styling (parts + `data-*`): `references/styling-contract/toggle.json`

@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Popover",
+  "slug": "popover",
+  "section": "components",
+  "description": "An accessible popup anchored to a button.",
+  "doc": "radix-ng-examples/references/components/popover.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-popover--docs",
+  "anatomy": "<ng-container rdxPopoverRoot>\n    <button rdxPopoverTrigger>Open</button>\n\n    <div *rdxPopoverPortal sideOffset=\"8\" rdxPopoverPositioner>\n        <div rdxPopoverPopup>\n            <span rdxPopoverArrow></span>\n            <div rdxPopoverViewport>\n                <div>\n                    <h2 rdxPopoverTitle>Notifications</h2>\n                    <p rdxPopoverDescription>You are all caught up.</p>\n                    <button rdxPopoverClose>Close</button>\n                </div>\n            </div>\n        </div>\n    </div>\n</ng-container>",
+  "dataAttributes": []
+}

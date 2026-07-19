@@ -1,0 +1,38 @@
+{
+  "version": "1.1.0",
+  "slug": "form",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxFormRoot",
+      "selector": "form[rdxFormRoot]",
+      "exportAs": "rdxFormRoot",
+      "description": "The top of the forms layer cake: a single directive on the native `<form>` element that aggregates\nfield state, maps external (server) errors onto fields by `name`, intercepts submit (values-as-object,\nfocus the first invalid field), and resets field interaction state on native `reset`. It owns no\nvalues and runs no validation — Angular form systems (or Field inputs) remain the source of validity.",
+      "inputs": [
+        {
+          "name": "errors",
+          "type": "RdxFormErrors | null | undefined",
+          "description": "External/server validation errors keyed by `Field.Root` `name`."
+        },
+        {
+          "name": "validationMode",
+          "type": "RdxValidationMode",
+          "default": "RDX_DEFAULT_VALIDATION_MODE",
+          "description": "When fields reveal their validity (error styling + message). The control/adapter always reports the\nactual state; this decides *when* the Field surfaces it. A `rdxFieldRoot` can override it per field.\nServer errors (`errors` above) always show regardless. Defaults to `'onBlur'`."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onClearErrors",
+          "type": "RdxFormErrors",
+          "description": "Emits the remaining error map after a field's external error is cleared by a user edit (or reset)."
+        },
+        {
+          "name": "onFormSubmit",
+          "type": "RdxFormSubmitEvent",
+          "description": "Emits the serialized form values when a valid form is submitted."
+        }
+      ]
+    }
+  ]
+}

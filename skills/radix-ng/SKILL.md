@@ -24,14 +24,17 @@ and expose state through `data-*` attributes that you style with any design syst
 
 Everything is **bundled offline** — no live site required.
 
-- **Examples** — the `radix-ng-examples` skill indexes every documented example and bundles the full,
-  copy-paste-ready Angular source under its `references/`. The Storybook stories are authoritative.
-- **API contract** — `references/api-contract.json`: per primitive part, the selector,
-  `exportAs`, inputs (binding name, type, default, required), outputs, and two-way bindings.
+- **Examples** — the `radix-ng-examples` skill: a compact index of every documented example, each with a
+  per-example source shard (`references/examples/<component>--<example>.md`). The Storybook stories are
+  authoritative.
+- **API contract** — `references/api-contract/<slug>.json` (one shard per primitive): each part's
+  selector, `exportAs`, inputs (binding name, type, default, required), outputs, and two-way bindings.
   **Use it to write and verify bindings — anything not listed there does not exist.**
-- **Styling contract** — `references/styling-contract.json`: per primitive, the parts, anatomy,
-  and every `data-*` attribute (with its values) you can style. **This is how you theme headless
-  primitives with a custom design system.**
+- **Styling contract** — `references/styling-contract/<slug>.json` (one shard per primitive): the
+  parts, anatomy, and every `data-*` attribute (with its values) you can style. **This is how you theme
+  headless primitives with a custom design system.**
+- The whole-library `api-contract.json` / `styling-contract.json` monoliths still ship but are
+  **deprecated** (removed next release) — always prefer the per-primitive shards.
 - **Full docs in one file** — `radix-ng-examples/references/llms-full.txt`.
 - **Reference rules** in this skill: `references/styling.md`, `references/composition.md`,
   `references/forms.md`.
@@ -40,7 +43,7 @@ Everything is **bundled offline** — no live site required.
 ## Critical rules
 
 1. **Never invent an API.** If an input, output, selector, or part isn't in
-   `references/api-contract.json` for that primitive, it doesn't exist — look it up, don't
+   `references/api-contract/<slug>.json` for that primitive, it doesn't exist — look it up, don't
    assume. Validate generated code against the contract: selectors, input names/types,
    outputs, and two-way (`[(…)]`) bindings are all listed per part.
 2. **Headless: no styles ship with the primitive.** You provide all visuals. Drive them from
@@ -72,11 +75,31 @@ Everything is **bundled offline** — no live site required.
    See `references/styling.md`.
 6. **Validate** — labels associated, keyboard works, the part hierarchy is intact.
 
+## Recovering after context loss
+
+If your context was compacted, or you're resuming and no longer trust what you remember about the
+API, re-ground yourself from the bundled files before writing more code. These files — never a
+conversation summary — are the source of truth; treat the summary as navigation only.
+
+1. **Re-establish the primitive and version.** Identify which primitive(s) the task uses, then check
+   the consumer's installed `@radix-ng/primitives` version against the `version` field in that
+   primitive's `references/api-contract/<slug>.json`. If they differ, trust the installed package's
+   `.d.ts` over this bundle.
+2. **Reload the contracts, not your memory.** Re-read that primitive's shards —
+   `references/api-contract/<slug>.json` (selectors, inputs, outputs, two-way bindings) and
+   `references/styling-contract/<slug>.json` (parts + `data-*`). Anything you "remember" that isn't
+   there does not exist.
+3. **Reload the nearest example cheaply.** Open a single shard from the `radix-ng-examples` skill —
+   `references/examples/<component>--<example>.md` (one example each, a few KB) — instead of
+   re-reading the whole component doc.
+4. **Re-read your own work.** The code, diff, and tests you already produced are ground truth for
+   where you are — reconcile against them, not against a remembered plan.
+
 ## Styling with a custom design system
 
 These primitives are made for this. The recipe:
 
-1. Look up the primitive's parts and `data-*` attributes in `references/styling-contract.json`.
+1. Look up the primitive's parts and `data-*` attributes in `references/styling-contract/<slug>.json`.
 2. Put the project's own classes/tokens on each part.
 3. Express state visually through the data attributes, e.g.
    `[&[data-state=open]]:bg-accent`, `[data-disabled]:opacity-50`,
@@ -110,9 +133,12 @@ presence, portal, popper, visually-hidden, injectId, live-announcer.
 - `references/forms.md` — Field / Fieldset / Input and form integration.
 - `references/common-mistakes.md` — stale/hallucinated API patterns to avoid (React habits,
   renamed parts, removed dependencies). Read when generated code fails or looks React-flavored.
-- `references/api-contract.json` — machine-readable API per part: selector, `exportAs`, inputs
+- `references/api-contract/<slug>.json` — machine-readable API per part: selector, `exportAs`, inputs
   with types/defaults, outputs, two-way bindings (generated from the same compodoc metadata
-  that powers the Storybook props tables).
-- `references/styling-contract.json` — machine-readable parts + `data-*` per primitive (generated).
-  Both contracts carry a `version` field recording the `@radix-ng/primitives` version they were
-  generated from — compare against the consumer's installed version when behavior doesn't match.
+  that powers the Storybook props tables). One shard per primitive.
+- `references/styling-contract/<slug>.json` — machine-readable parts + `data-*` per primitive
+  (generated), one shard per primitive. Every shard carries a `version` field recording the
+  `@radix-ng/primitives` version it was generated from — compare against the consumer's installed
+  version when behavior doesn't match.
+- `references/api-contract.json` / `references/styling-contract.json` — the pre-shard whole-library
+  monoliths, kept one release and **deprecated**; prefer the per-primitive shards above.

@@ -1,0 +1,354 @@
+{
+  "version": "1.1.0",
+  "slug": "navigation-menu",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxNavigationMenuArrow",
+      "selector": "[rdxNavigationMenuArrow]",
+      "description": "An optional arrow element pointing toward the active trigger.",
+      "hostDirectives": [
+        "RdxPopperArrow"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxNavigationMenuBackdrop",
+      "selector": "[rdxNavigationMenuBackdrop]",
+      "description": "An optional backdrop rendered behind the popup.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxNavigationMenuContent",
+      "selector": "[rdxNavigationMenuContent]",
+      "description": "The content shown when its item is open. Used as a structural directive; its template is rendered\ninto the shared {@link RdxNavigationMenuViewport}.\n\n```html\n<ng-container *rdxNavigationMenuContent>…</ng-container>\n```",
+      "inputs": [
+        {
+          "name": "forceMount",
+          "default": "false",
+          "description": "Keep the content mounted in the viewport even when its item is closed."
+        },
+        {
+          "name": "rdxNavigationMenuContent",
+          "default": "false",
+          "description": "Required by the structural directive syntax; the value is unused."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxNavigationMenuIcon",
+      "selector": "[rdxNavigationMenuIcon]",
+      "description": "A visual indicator (e.g. a caret) rendered inside a trigger. Exposes the open state so the icon\ncan rotate when its item opens.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxNavigationMenuItem",
+      "selector": "[rdxNavigationMenuItem]",
+      "exportAs": "rdxNavigationMenuItem",
+      "description": "A single navigation menu item. Holds a trigger + content pair, or a standalone link.",
+      "inputs": [
+        {
+          "name": "value",
+          "type": "string | undefined",
+          "default": "undefined",
+          "description": "A unique value that identifies the item. Falls back to a stable generated id."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxNavigationMenuLink",
+      "selector": "[rdxNavigationMenuLink]",
+      "description": "A navigation link. Can close the menu on selection when `closeOnClick` is enabled.\n\nUsed both as a top-level navigation item and inside content. Top-level links join the list's\ncomposite collection, matching Base UI's CompositeItem-backed NavigationMenu.Link.",
+      "hostDirectives": [
+        "RdxCompositeItem"
+      ],
+      "inputs": [
+        {
+          "name": "active",
+          "default": "false",
+          "description": "Whether the link represents the current page."
+        },
+        {
+          "name": "closeOnClick",
+          "default": "false",
+          "description": "Whether selecting the link should close the menu."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onSelect",
+          "type": "Event",
+          "description": "Emits when the link is selected. Call `preventDefault()` to keep the menu open."
+        }
+      ]
+    },
+    {
+      "directive": "RdxNavigationMenuList",
+      "selector": "[rdxNavigationMenuList]",
+      "description": "Contains the navigation menu items and coordinates composite keyboard focus between triggers.",
+      "hostDirectives": [
+        "RdxCompositeRoot"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxNavigationMenuPopup",
+      "selector": "[rdxNavigationMenuPopup]",
+      "description": "The shared container for the active item's content.",
+      "hostDirectives": [
+        "RdxPopperContent"
+      ],
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "escapeKeyDown",
+          "type": "KeyboardEvent",
+          "description": "Event handler called when the escape key is down. Can be prevented."
+        },
+        {
+          "name": "focusOutside",
+          "type": "FocusEvent",
+          "description": "Event handler called when focus moves outside the popup. Can be prevented."
+        },
+        {
+          "name": "pointerDownOutside",
+          "type": "RdxOutsidePressDomEvent",
+          "description": "Event handler called when a pointerdown event happens outside the popup. Can be prevented."
+        }
+      ]
+    },
+    {
+      "directive": "RdxNavigationMenuPortal",
+      "selector": "ng-template[rdxNavigationMenuPortal]",
+      "exportAs": "rdxNavigationMenuPortal",
+      "description": "Structural directive that teleports the navigation menu popup into a container (default\n`document.body`) while the menu is open, and keeps it mounted until any CSS exit `@keyframes`\nfinishes. Set `[keepMounted]=\"true\"` to keep the portal mounted while closed.\n\nApply it with the `*` microsyntax on the positioner —\n`<div *rdxNavigationMenuPortal rdxNavigationMenuPositioner>` — or as an explicit\n`<ng-template rdxNavigationMenuPortal>`. For a custom container use the explicit form with\n`[container]`.",
+      "hostDirectives": [
+        "RdxPortalPresence"
+      ],
+      "inputs": [
+        {
+          "name": "keepMounted",
+          "default": "false",
+          "description": "Keep the portal mounted while the menu is closed."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxNavigationMenuPortalMisuseGuard",
+      "selector": "[rdxNavigationMenuPortal]:not(ng-template)",
+      "description": "Dev-mode guard: `rdxNavigationMenuPortal` used to be an attribute directive on a `<div>`. It is now\nstructural, so the old `<div rdxNavigationMenuPortal>` markup would silently stop portaling — fail\nloudly instead.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxNavigationMenuPositioner",
+      "selector": "[rdxNavigationMenuPositioner]",
+      "description": "Positions the shared popup against the active trigger.\n\nA \"thin\" positioner (ADR 0012): it inherits the popper positioning surface (inputs, `placed`\noutput, unified vars + placement attrs) from {@link RdxPopperContentWrapper} and adds the\nnavigation-menu defaults, the open/closed/instant state attributes, and the grace-area hover\nbridge. It exposes no legacy `--radix-*` aliases.",
+      "inputs": [
+        {
+          "name": "align",
+          "type": "Align",
+          "default": "'center'",
+          "description": "How to align the popup relative to the specified side. May change when collisions occur."
+        },
+        {
+          "name": "alignOffset",
+          "default": "0",
+          "description": "An offset in pixels from the `start` or `end` alignment options. Also accepts an\n{@link OffsetFunction} (same signature as `sideOffset`)."
+        },
+        {
+          "name": "anchor",
+          "type": "RdxPopperAnchorElement",
+          "description": "An element to position the popup against. Defaults to the popper anchor."
+        },
+        {
+          "name": "arrowPadding",
+          "type": "number",
+          "default": "5",
+          "description": "Minimum distance to maintain between the arrow and the edges of the popup.\nIf your content has border-radius, this will prevent it from overflowing the corners."
+        },
+        {
+          "name": "avoidCollisions",
+          "type": "boolean",
+          "default": "true",
+          "deprecated": true,
+          "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges.\n\n`false` disables all avoidance (unless a `collisionAvoidance` object is provided, which wins)."
+        },
+        {
+          "name": "collisionAvoidance",
+          "type": "RdxCollisionAvoidance | undefined",
+          "default": "undefined",
+          "description": "How the popup avoids colliding with the boundary edges, per axis (Base UI `collisionAvoidance`).\nOverrides the deprecated `avoidCollisions` and any per-primitive preset. An object here **fully\nreplaces** the preset — omitted fields fall back to `side: 'flip'`, `align: 'flip'`,\n`fallbackAxisSide: 'end'`, never to the preset. See {@link RdxCollisionAvoidance}."
+        },
+        {
+          "name": "collisionBoundary",
+          "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
+          "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
+        },
+        {
+          "name": "collisionPadding",
+          "type": "number | Partial<Record<Side, number>>",
+          "default": "5",
+          "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
+        },
+        {
+          "name": "dir",
+          "type": "Direction | undefined",
+          "default": "undefined",
+          "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
+        },
+        {
+          "name": "hideWhenDetached",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether to hide the content when the trigger becomes fully occluded."
+        },
+        {
+          "name": "positionStrategy",
+          "type": "\"fixed\" | \"absolute\"",
+          "default": "'fixed'",
+          "description": "The type of CSS position property to use."
+        },
+        {
+          "name": "side",
+          "type": "SideOrLogical",
+          "default": "'bottom'",
+          "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled.\n\nAccepts the logical `'inline-start'` / `'inline-end'` in addition to the physical sides; those\nresolve to `left` / `right` for the text direction (Base UI parity). The placed side reported via\n`data-side` / `placedSide()` echoes the requested kind: logical in → logical out (even after a\ncollision flip), physical in → physical out."
+        },
+        {
+          "name": "sideOffset",
+          "default": "0",
+          "description": "Distance between the anchor and the popup in pixels. Also accepts an {@link OffsetFunction} that\nreads the anchor / positioner dimensions and the resolved side / align."
+        },
+        {
+          "name": "sticky",
+          "type": "\"partial\" | \"always\"",
+          "default": "'partial'",
+          "description": "The sticky behavior on the align axis. `partial` will keep the\ncontent in the boundary as long as the trigger is at least partially\nin the boundary whilst \"always\" will keep the content in the boundary\nregardless."
+        },
+        {
+          "name": "updatePositionStrategy",
+          "type": "\"optimized\" | \"always\"",
+          "default": "'always'",
+          "description": "Strategy to update the position of the floating element on every animation frame."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "placed",
+          "type": "void",
+          "description": "Emits when the element is placed."
+        }
+      ]
+    },
+    {
+      "directive": "RdxNavigationMenuRoot",
+      "selector": "[rdxNavigationMenuRoot]",
+      "exportAs": "rdxNavigationMenuRoot",
+      "description": "Groups all parts of the navigation menu.\n\nHolds the shared open state: `value` identifies the currently open item, and the menu is open\nwhenever `value` is non-null. A single popup (Portal → Positioner → Popup → Viewport) is shared\nbetween every item and anchored to the active trigger.",
+      "hostDirectives": [
+        "RdxPopper",
+        "RdxFloatingNodeRegistration"
+      ],
+      "inputs": [
+        {
+          "name": "closeDelay",
+          "type": "number",
+          "default": "50",
+          "description": "How long to wait before closing the menu after the pointer leaves, in milliseconds."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string | null",
+          "default": "null",
+          "description": "The uncontrolled value of the item that should be initially open."
+        },
+        {
+          "name": "delay",
+          "type": "number",
+          "default": "50",
+          "description": "How long to wait before opening the menu on hover, in milliseconds."
+        },
+        {
+          "name": "dir",
+          "type": "NavigationMenuDirection | undefined",
+          "default": "undefined",
+          "description": "The reading direction of the navigation menu."
+        },
+        {
+          "name": "orientation",
+          "type": "NavigationMenuOrientation",
+          "default": "'horizontal'",
+          "description": "The orientation of the navigation menu."
+        },
+        {
+          "name": "value",
+          "type": "string | null",
+          "default": "null",
+          "description": "The value of the navigation menu item that should be currently open."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onOpenChange",
+          "type": "RdxNavigationMenuOpenChange",
+          "description": "Emits whenever the menu opens or closes."
+        },
+        {
+          "name": "onOpenChangeComplete",
+          "type": "boolean",
+          "description": "Emits after any enter/exit transition completes."
+        },
+        {
+          "name": "onValueChange",
+          "type": "string | null",
+          "description": "Emits when the open item changes."
+        }
+      ],
+      "twoWay": [
+        "value"
+      ]
+    },
+    {
+      "directive": "RdxNavigationMenuTrigger",
+      "selector": "button[rdxNavigationMenuTrigger]",
+      "description": "A button that opens its item's content in the shared popup.",
+      "hostDirectives": [
+        "RdxCompositeItem"
+      ],
+      "inputs": [
+        {
+          "name": "disabled",
+          "default": "false",
+          "description": "Whether the trigger should ignore user interaction."
+        },
+        {
+          "name": "openOnHover",
+          "default": "true",
+          "description": "Whether the content should also open when the trigger is hovered."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxNavigationMenuViewport",
+      "selector": "[rdxNavigationMenuViewport]",
+      "description": "Clips and animates the active item's content. A single viewport is shared between all items; when\nthe active item changes the outgoing content is retained as `data-previous` until its CSS\nanimation/transition completes, and the new content is marked `data-current`.",
+      "inputs": [
+        {
+          "name": "forceMount",
+          "default": "false",
+          "description": "Keep the viewport mounted even when the menu is closed."
+        }
+      ],
+      "outputs": []
+    }
+  ]
+}

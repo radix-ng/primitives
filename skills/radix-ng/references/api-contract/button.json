@@ -1,0 +1,34 @@
+{
+  "version": "1.1.0",
+  "slug": "button",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxButtonDirective",
+      "selector": "[rdxButton]",
+      "exportAs": "rdxButton",
+      "description": "Headless button behavior, modeled on Base UI's `useButton`.\n\nRenders accessible button semantics on a native `<button>` or on any other\nelement (e.g. `<a>`, `<span>`). Carries no styles — state is exposed via\n`data-disabled` for consumers to style.",
+      "inputs": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the button is disabled."
+        },
+        {
+          "name": "focusableWhenDisabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Keep the button focusable while disabled (uses `aria-disabled`)."
+        },
+        {
+          "name": "type",
+          "type": "RdxButtonType",
+          "default": "'button'",
+          "description": "The `type` attribute applied to native `<button>` hosts."
+        }
+      ],
+      "outputs": []
+    }
+  ]
+}

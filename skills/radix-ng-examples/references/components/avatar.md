@@ -1,10 +1,10 @@
 # Avatar
 
-#### An image element with a fallback for representing the user.
+An image element with a fallback for representing the user.
 
-```html
-<rdx-avatar-demo />
-```
+> Index — full source of each example is one click away in `../examples/avatar--*.md`; the whole-doc dump is in `../llms-full.txt`.
+
+> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
 
 ## Features
 
@@ -33,64 +33,14 @@ Assemble the parts: a root, the image, and a fallback shown until the image load
 </span>
 ```
 
-## Global configuration
-
-Configure the default options for all avatars with `provideRdxAvatarConfig` in a providers array.
-
-```ts
-import { provideRdxAvatarConfig } from '@radix-ng/primitives/avatar';
-
-bootstrapApplication(AppComponent, {
-  providers: [provideRdxAvatarConfig({ delayMs: 1000 })]
-});
-```
-
 ## Examples
 
-### Sizes
+- [Sizes](../examples/avatar--sizes.md)
+- [Fallback](../examples/avatar--fallback.md)
+- [Delayed fallback](../examples/avatar--delayed-fallback.md)
 
-`sm`, `md`, and `lg` from the demo style layer.
+## API & styling contract
 
-```html
-<rdx-avatar-sizes />
-```
-
-### Fallback
-
-The fallback renders when there is no image or the image fails to load.
-
-```html
-<rdx-avatar-fallback />
-```
-
-### Delayed fallback
-
-`delayMs` waits before showing the fallback, so it only appears for slower connections.
-
-```html
-<rdx-avatar-delay />
-```
-
-## API Reference
-
-### Root
-
-`RdxAvatarRootDirective` — provides the shared image loading status. Apply to a `<span>`. It takes no
-inputs and exposes no data attributes (matching Base UI, which surfaces the loading status through the
-context, not the DOM).
-
-### Image
-
-`RdxAvatarImageDirective` — apply to an `<img>`. It loads the image off-DOM and reveals it only once
-loaded; it carries no role (the native `<img>` role is used) and no data attributes.
-
-### Fallback
-
-`RdxAvatarFallbackDirective` — apply to a `<span>`. Shown until the image loads (optionally after
-`delayMs`). It exposes no data attributes.
-
-## Accessibility
-
-Give the `<img rdxAvatarImage>` a meaningful `alt`, and put a meaningful label in the fallback (e.g.
-the person's name rather than bare initials) so it remains understandable to assistive technology when
-the image fails to load.
+Machine-readable contracts for this primitive live in the `radix-ng` skill:
+- API (selectors, inputs, outputs, two-way bindings): `references/api-contract/avatar.json`
+- Styling (parts + `data-*`): `references/styling-contract/avatar.json`

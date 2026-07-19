@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Time Field",
+  "slug": "time-field",
+  "section": "components",
+  "description": "A segmented time input that lets users enter a time hour-by-hour with full keyboard control and localization.",
+  "doc": "radix-ng-examples/references/components/time-field.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-time-field--docs",
+  "anatomy": "<div rdxTimeFieldRoot>\n  @for (item of root.segmentContents(); track $index) {\n  <div rdxTimeFieldInput [part]=\"item.part\">{{ item.value }}</div>\n  }\n  <input rdxVisuallyHiddenInput feature=\"focusable\" />\n</div>",
+  "dataAttributes": []
+}

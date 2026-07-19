@@ -1,0 +1,211 @@
+{
+  "version": "1.1.0",
+  "slug": "drawer",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxDrawerBackdrop",
+      "selector": "[rdxDrawerBackdrop]",
+      "exportAs": "rdxDrawerBackdrop",
+      "description": "An overlay displayed beneath the drawer popup.\n\nComposes the dialog backdrop and additionally exposes `--drawer-swipe-progress` (0..1) so the\nconsumer can fade it in step with the dismiss gesture.",
+      "hostDirectives": [
+        "RdxDialogBackdrop"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxDrawerClose",
+      "selector": "button[rdxDrawerClose]",
+      "exportAs": "rdxDrawerClose",
+      "description": "A button that closes the drawer.",
+      "hostDirectives": [
+        "RdxDialogClose"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxDrawerContent",
+      "selector": "[rdxDrawerContent]",
+      "exportAs": "rdxDrawerContent",
+      "description": "The scrollable body of the drawer.\n\nA structural marker so the anatomy matches Base UI. The popup's swipe engine yields to scrolling\ninside this region automatically (it only starts a dismiss gesture when the scroll is at its\nedge), so no extra wiring is needed. Opt individual elements out of swiping with the\n`data-base-ui-swipe-ignore` attribute.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxDrawerDescription",
+      "selector": "[rdxDrawerDescription]",
+      "exportAs": "rdxDrawerDescription",
+      "description": "An accessible description announced when the drawer is opened.",
+      "hostDirectives": [
+        "RdxDialogDescription"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxDrawerIndentBackground",
+      "selector": "[rdxDrawerIndentBackground]",
+      "exportAs": "rdxDrawerIndentBackground",
+      "description": "The page background layer that scales/indents while any drawer is open.\n\nBehaves like {@link RdxDrawerIndent} (same `[data-active]` / `--drawer-swipe-progress` /\n`--nested-drawers` / `--drawer-frontmost-height` contract); kept as a distinct part so the page\nbackdrop and the indented content can be styled independently, mirroring Base UI.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxDrawerIndent",
+      "selector": "[rdxDrawerIndent]",
+      "exportAs": "rdxDrawerIndent",
+      "description": "Background content that scales/indents while any drawer is open.\n\nReads the nearest {@link RdxDrawerProvider} and exposes styling hooks; the visual transform is\nconsumer CSS (headless):\n- `[data-active]` — present while at least one drawer is open.\n- `--drawer-swipe-progress` — 0..1 live dismiss progress of the frontmost drawer.\n- `--nested-drawers` — the number of open drawers.\n- `--drawer-frontmost-height` — the frontmost drawer's measured size, in pixels.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxDrawerPopup",
+      "selector": "[rdxDrawerPopup]",
+      "exportAs": "rdxDrawerPopup",
+      "description": "A container for the drawer contents.\n\nComposes the dialog popup (focus trap, dismissal, scroll lock, a11y wiring) and owns the drawer\ngesture on top of it: swipe-to-dismiss, snap-back, and movement between snap points. The gesture\npublishes a CSS-variable / data-attribute contract (see {@link useDrawerSwipe}); the consumer\nstyles the actual transform and snap-back transition off it, keeping the primitive headless.",
+      "hostDirectives": [
+        "RdxDialogPopup"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxDrawerPortal",
+      "selector": "ng-template[rdxDrawerPortal]",
+      "exportAs": "rdxDrawerPortal",
+      "description": "Structural directive that teleports the drawer content (backdrop + popup) into a container (default\n`document.body`) while the drawer is open, keeping it mounted until its CSS exit `@keyframes`\nfinish. It composes the structural {@link RdxDialogPortal}, inheriting the dialog presence context.\n\nUse the explicit `<ng-template rdxDrawerPortal>` form; pass `[container]` for a custom target.",
+      "hostDirectives": [
+        "RdxDialogPortal"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxDrawerPortalMisuseGuard",
+      "selector": "[rdxDrawerPortal]:not(ng-template)",
+      "description": "Dev-mode guard: `rdxDrawerPortal` is now structural, so the old `<div rdxDrawerPortal>` markup would\nsilently stop portaling — fail loudly instead.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxDrawerProviderDirective",
+      "selector": "[rdxDrawerProvider]",
+      "exportAs": "rdxDrawerProvider",
+      "description": "Hosts a {@link RdxDrawerProvider} for its subtree. Put it on a wrapping element so descendant\ndrawer roots and `rdxDrawerIndent*` parts share one coordinator.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxDrawerRoot",
+      "selector": "[rdxDrawerRoot]",
+      "exportAs": "rdxDrawerRoot",
+      "description": "Groups all parts of the drawer.\n\nComposes the Dialog primitive directly (modal-by-default but user-overridable) and layers the\ndrawer-specific swipe and snap-point contract on top via {@link RdxDrawerRootContext}. Modality,\ndismissal and detached-trigger handling are the dialog's: the `modal`, `disablePointerDismissal`\nand `handle` inputs are proxied straight through, so a drawer is a modal dialog the user can make\nnon-modal.",
+      "hostDirectives": [
+        "RdxDialogRoot"
+      ],
+      "inputs": [
+        {
+          "name": "defaultSnapPoint",
+          "type": "RdxDrawerSnapPoint",
+          "description": "The snap point the drawer opens to when uncontrolled; defaults to the first point."
+        },
+        {
+          "name": "snapPoint",
+          "type": "RdxDrawerSnapPoint | null",
+          "default": "null",
+          "description": "The active snap point (controlled / uncontrolled with `[(snapPoint)]`)."
+        },
+        {
+          "name": "snapPoints",
+          "type": "readonly RdxDrawerSnapPoint[]",
+          "description": "Resting positions the drawer snaps to along the dismiss axis. Order ascending by openness; the\nfirst entry is the default the drawer opens to. Omit for a plain open/closed drawer."
+        },
+        {
+          "name": "snapToSequentialPoints",
+          "type": "boolean",
+          "default": "false",
+          "description": "Step at most one snap point per release instead of letting velocity skip points."
+        },
+        {
+          "name": "swipeDirection",
+          "type": "RdxDrawerSwipeDirection",
+          "default": "'down'",
+          "description": "Direction a swipe travels to dismiss the drawer. The visual side of the drawer is consumer\nCSS; this controls the dismiss gesture and the `data-swipe-direction` styling hook."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onSnapPointChange",
+          "type": "RdxDrawerSnapPoint",
+          "description": "Emits when the active snap point changes through a gesture."
+        }
+      ],
+      "twoWay": [
+        "snapPoint"
+      ]
+    },
+    {
+      "directive": "RdxDrawerSwipeArea",
+      "selector": "[rdxDrawerSwipeArea]",
+      "exportAs": "rdxDrawerSwipeArea",
+      "description": "An off-canvas region (typically pinned to a screen edge) that opens the drawer when swiped inward.\n\nOpens the drawer at the start of a drag so its popup can follow the pointer live. Releasing past\nthe threshold settles open; releasing before it or cancelling animates the drawer back out.",
+      "inputs": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the swipe area should ignore user interaction."
+        },
+        {
+          "name": "swipeDirection",
+          "type": "RdxDrawerSwipeDirection",
+          "description": "Direction the opening gesture travels; defaults to the opposite of the root's dismiss direction."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxDrawerTitle",
+      "selector": "[rdxDrawerTitle]",
+      "exportAs": "rdxDrawerTitle",
+      "description": "An accessible title announced when the drawer is opened.",
+      "hostDirectives": [
+        "RdxDialogTitle"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxDrawerTrigger",
+      "selector": "button[rdxDrawerTrigger]",
+      "exportAs": "rdxDrawerTrigger",
+      "description": "A button that opens the drawer. Behaves exactly like the dialog trigger.",
+      "hostDirectives": [
+        "RdxDialogTrigger"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxDrawerViewport",
+      "selector": "[rdxDrawerViewport]",
+      "exportAs": "rdxDrawerViewport",
+      "description": "A positioning container for the drawer popup that can be made scrollable.\n\nExposes the dialog viewport's `data-nested` / `data-nested-dialog-open` state for styling.",
+      "hostDirectives": [
+        "RdxDialogViewport"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxDrawerVirtualKeyboardProvider",
+      "selector": "[rdxDrawerVirtualKeyboardProvider]",
+      "exportAs": "rdxDrawerVirtualKeyboardProvider",
+      "description": "Provides mobile virtual-keyboard handling for bottom-sheet drawers with form fields.\n\nPut it on the drawer viewport that contains the popup. The directive writes\n`--drawer-keyboard-inset` to the host, keeps the focused keyboard input visible when\n`visualViewport` shrinks, adds temporary scroll slack to the nearest drawer scroller, and uses\nsynchronous tap-to-focus on touch devices so iOS opens the software keyboard reliably.",
+      "inputs": [],
+      "outputs": []
+    }
+  ]
+}

@@ -1,17 +1,10 @@
 # Label
 
-#### Renders an accessible label associated with controls.
+Renders an accessible label associated with controls.
 
-```html
-<div class="flex items-center gap-3">
-    <label class="text-foreground text-sm font-medium leading-9" rdxLabel htmlFor="uniqId">First Name</label>
-    <input
-        id="uniqId"
-        type="text"
-        class="bg-background text-foreground border-border focus-visible:ring-ring h-9 w-52 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2"
-    />
-</div>
-```
+> Index — full source of each example is one click away in `../examples/label--*.md`; the whole-doc dump is in `../llms-full.txt`.
+
+> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
 
 ## Features
 
@@ -25,17 +18,8 @@ Get started with importing the directive:
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 ```
 
-## Examples
+## API & styling contract
 
-```html
-<label rdxLabel htmlFor="uniqId">First name</label>
-<input class="Input" id="uniqId" type="text" />
-```
-
-## API Reference
-
-## Accessibility
-
-This component is based on the native `label` element, it will automatically apply the correct labelling
-when wrapping controls or using the `for` attribute. For your own custom controls
-to work correctly, ensure they use native elements such as `button` or `input` as a base.
+Machine-readable contracts for this primitive live in the `radix-ng` skill:
+- API (selectors, inputs, outputs, two-way bindings): `references/api-contract/label.json`
+- Styling (parts + `data-*`): `references/styling-contract/label.json`

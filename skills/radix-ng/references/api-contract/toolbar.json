@@ -1,0 +1,146 @@
+{
+  "version": "1.1.0",
+  "slug": "toolbar",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxToolbarButton",
+      "selector": "[rdxToolbarButton]",
+      "exportAs": "rdxToolbarButton",
+      "description": "A button within a toolbar.\n\nSee https://base-ui.com/react/components/toolbar",
+      "hostDirectives": [
+        "RdxCompositeItem"
+      ],
+      "inputs": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the button is disabled."
+        },
+        {
+          "name": "focusableWhenDisabled",
+          "type": "boolean",
+          "default": "true",
+          "description": "Whether the button stays focusable while disabled (so it remains discoverable for keyboard\nand screen-reader users)."
+        },
+        {
+          "name": "nativeButton",
+          "type": "boolean",
+          "default": "true",
+          "description": "Whether the host is a native `<button>`. When `false`, adds `role=\"button\"`."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxToolbarGroup",
+      "selector": "[rdxToolbarGroup]",
+      "exportAs": "rdxToolbarGroup",
+      "description": "Groups several toolbar items together. Disabling the group disables all of its items.\n\nSee https://base-ui.com/react/components/toolbar",
+      "inputs": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the group is disabled."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxToolbarInput",
+      "selector": "input[rdxToolbarInput]",
+      "exportAs": "rdxToolbarInput",
+      "description": "A native input within a toolbar. Participates in the toolbar's composite focus while keeping native\ntext-editing: the arrow keys move the caret within the text and only move focus to the\nneighbouring toolbar item once the caret is at the corresponding edge (Base UI \"composite\" input).\n\nSee https://base-ui.com/react/components/toolbar",
+      "hostDirectives": [
+        "RdxCompositeItem"
+      ],
+      "inputs": [
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "description": "The initial value of the uncontrolled input."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the input is disabled."
+        },
+        {
+          "name": "focusableWhenDisabled",
+          "type": "boolean",
+          "default": "true",
+          "description": "Whether the input stays focusable while disabled."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxToolbarLink",
+      "selector": "[rdxToolbarLink]",
+      "exportAs": "rdxToolbarLink",
+      "description": "A link within a toolbar.\n\nSee https://base-ui.com/react/components/toolbar",
+      "hostDirectives": [
+        "RdxCompositeItem"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxToolbarRoot",
+      "selector": "[rdxToolbarRoot]",
+      "exportAs": "rdxToolbarRoot",
+      "description": "A container for grouping a set of controls, such as buttons, toggle groups or menus.\nOwns composite keyboard focus over its items.\n\nSee https://base-ui.com/react/components/toolbar",
+      "hostDirectives": [
+        "RdxCompositeRoot"
+      ],
+      "inputs": [
+        {
+          "name": "dir",
+          "type": "Direction | undefined",
+          "default": "undefined",
+          "description": "Text direction for arrow-key navigation."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the whole toolbar is disabled."
+        },
+        {
+          "name": "loopFocus",
+          "type": "boolean",
+          "default": "true",
+          "description": "Whether keyboard navigation should loop from the last item back to the first."
+        },
+        {
+          "name": "orientation",
+          "type": "DataOrientation",
+          "default": "'horizontal'",
+          "description": "The orientation of the toolbar."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxToolbarSeparator",
+      "selector": "[rdxToolbarSeparator]",
+      "exportAs": "rdxToolbarSeparator",
+      "description": "A separator between toolbar items or groups.\n\nSee https://base-ui.com/react/components/toolbar",
+      "hostDirectives": [
+        "RdxSeparatorRootDirective"
+      ],
+      "inputs": [
+        {
+          "name": "orientation",
+          "type": "Orientation | undefined",
+          "default": "undefined",
+          "description": "The separator orientation. Defaults to the opposite of the toolbar orientation."
+        }
+      ],
+      "outputs": []
+    }
+  ]
+}

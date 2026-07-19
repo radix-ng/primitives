@@ -1,0 +1,106 @@
+{
+  "version": "1.1.0",
+  "slug": "pagination",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxPaginationEllipsisDirective",
+      "selector": "[rdxPaginationEllipsis]",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxPaginationFirstDirective",
+      "selector": "[rdxPaginationFirst]",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxPaginationLastDirective",
+      "selector": "[rdxPaginationLast]",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxPaginationListItemDirective",
+      "selector": "[rdxPaginationListItem]",
+      "inputs": [
+        {
+          "name": "value",
+          "type": "number"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxPaginationListDirective",
+      "selector": "[rdxPaginationList]",
+      "exportAs": "rdxPaginationList",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxPaginationNextDirective",
+      "selector": "[rdxPaginationNext]",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxPaginationPrevDirective",
+      "selector": "[rdxPaginationPrev]",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxPaginationRootDirective",
+      "selector": "[rdxPaginationRoot]",
+      "exportAs": "rdxPaginationRoot",
+      "inputs": [
+        {
+          "name": "defaultPage",
+          "type": "number",
+          "default": "1"
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "itemsPerPage",
+          "type": "number",
+          "default": "undefined"
+        },
+        {
+          "name": "page",
+          "type": "number",
+          "default": "this.defaultPage()"
+        },
+        {
+          "name": "showEdges",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "siblingCount",
+          "type": "number",
+          "default": "2"
+        },
+        {
+          "name": "total",
+          "type": "number",
+          "default": "0"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "updatePage",
+          "type": "number"
+        }
+      ],
+      "twoWay": [
+        "page"
+      ]
+    }
+  ]
+}

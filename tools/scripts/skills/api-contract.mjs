@@ -185,8 +185,25 @@ export function generateApiContract({ workspaceRoot, primitivesRoot, skillsRoot,
         bySlug.get(slug).parts.push(part);
     }
 
-    const contract = { version, primitives: [...bySlug.values()] };
-    write(path.join(skillsRoot, 'radix-ng/references/api-contract.json'), JSON.stringify(contract, null, 2) + '\n');
+    const primitives = [...bySlug.values()];
 
-    return { primitives: bySlug.size, parts: parts.length };
+    // Per-primitive shards (progressive disclosure): an agent loads one primitive's contract
+    // instead of the whole 370KB monolith. Rebuild the dir from scratch so a renamed/removed
+    // primitive leaves no orphan shard behind.
+    const shardDir = path.join(skillsRoot, 'radix-ng/references/api-contract');
+    fs.rmSync(shardDir, { recursive: true, force: true });
+    for (const primitive of primitives) {
+        write(path.join(shardDir, `${primitive.slug}.json`), JSON.stringify({ version, ...primitive }, null, 2) + '\n');
+    }
+
+    // The monolith is kept one release for backward compatibility, flagged deprecated.
+    const monolith = {
+        version,
+        deprecated:
+            'Superseded by per-primitive api-contract/<slug>.json shards; this monolith will be removed in the next release.',
+        primitives
+    };
+    write(path.join(skillsRoot, 'radix-ng/references/api-contract.json'), JSON.stringify(monolith, null, 2) + '\n');
+
+    return { primitives: bySlug.size, parts: parts.length, slugs: primitives.map((primitive) => primitive.slug) };
 }

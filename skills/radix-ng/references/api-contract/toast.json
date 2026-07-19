@@ -1,0 +1,213 @@
+{
+  "version": "1.1.0",
+  "slug": "toast",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxToastAction",
+      "selector": "[rdxToastAction]",
+      "exportAs": "rdxToastAction",
+      "description": "An action button inside a toast (e.g. \"Undo\"). Unlike {@link RdxToastClose} it does not dismiss\non its own — wire your handler with `(click)` and call `close()` from the exposed context when\nthe action should also close the toast.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxToastClose",
+      "selector": "[rdxToastClose]",
+      "exportAs": "rdxToastClose",
+      "description": "Button that dismisses its toast. Put it on a native `<button>` for built-in semantics.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxToastContent",
+      "selector": "[rdxToastContent]",
+      "exportAs": "rdxToastContent",
+      "description": "Wraps a toast's inner parts (title, description, actions) — the Angular counterpart of\n`<Toast.Content>`. Headless: it carries no styles; consumers apply `overflow: hidden` to clip\ntaller toasts during the stack/expand animation. It mirrors the root's `data-state` so content\ncan transition together with the root.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxToastDescription",
+      "selector": "[rdxToastDescription]",
+      "exportAs": "rdxToastDescription",
+      "description": "Supporting body text for a toast; registers so `aria-describedby` only targets a real node.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxToastPortal",
+      "selector": "[rdxToastPortal]",
+      "exportAs": "rdxToastPortal",
+      "description": "Moves the toast viewport to a different part of the DOM — the Angular counterpart of\n`<Toast.Portal>`. Defaults to `document.body`; pass `container` to target another element.",
+      "hostDirectives": [
+        "RdxPortal"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxToastPositioner",
+      "selector": "[rdxToastPositioner]",
+      "exportAs": "rdxToastPositioner",
+      "description": "Positions an anchored toast against an element — the Angular counterpart of `<Toast.Positioner>`.\n\nA \"thin\" positioner (ADR 0012): it inherits the popper positioning surface (inputs, `placed`\noutput, unified vars + placement attrs) from {@link RdxPopperContentWrapper}. Bind `anchor` (and\noptionally `side`/`align`/offsets) — typically from a toast's `positionerProps`. It also composes\nits own {@link RdxPopper} so it is self-contained (no surrounding `rdxPopperRoot` needed), and\nmirrors the anchor width / transform origin as friendlier `--toast-*` CSS variables.",
+      "hostDirectives": [
+        "RdxPopper"
+      ],
+      "inputs": [
+        {
+          "name": "align",
+          "type": "Align",
+          "default": "'center'",
+          "description": "How to align the popup relative to the specified side. May change when collisions occur."
+        },
+        {
+          "name": "alignOffset",
+          "default": "0",
+          "description": "An offset in pixels from the `start` or `end` alignment options. Also accepts an\n{@link OffsetFunction} (same signature as `sideOffset`)."
+        },
+        {
+          "name": "anchor",
+          "type": "RdxPopperAnchorElement",
+          "description": "An element to position the popup against. Defaults to the popper anchor."
+        },
+        {
+          "name": "arrowPadding",
+          "type": "number",
+          "default": "6",
+          "description": "Minimum distance to maintain between the arrow and the edges of the popup.\nIf your content has border-radius, this will prevent it from overflowing the corners."
+        },
+        {
+          "name": "avoidCollisions",
+          "type": "boolean",
+          "default": "true",
+          "deprecated": true,
+          "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges.\n\n`false` disables all avoidance (unless a `collisionAvoidance` object is provided, which wins)."
+        },
+        {
+          "name": "collisionAvoidance",
+          "type": "RdxCollisionAvoidance | undefined",
+          "default": "undefined",
+          "description": "How the popup avoids colliding with the boundary edges, per axis (Base UI `collisionAvoidance`).\nOverrides the deprecated `avoidCollisions` and any per-primitive preset. An object here **fully\nreplaces** the preset — omitted fields fall back to `side: 'flip'`, `align: 'flip'`,\n`fallbackAxisSide: 'end'`, never to the preset. See {@link RdxCollisionAvoidance}."
+        },
+        {
+          "name": "collisionBoundary",
+          "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
+          "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
+        },
+        {
+          "name": "collisionPadding",
+          "type": "number | Partial<Record<Side, number>>",
+          "default": "8",
+          "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
+        },
+        {
+          "name": "dir",
+          "type": "Direction | undefined",
+          "default": "undefined",
+          "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
+        },
+        {
+          "name": "hideWhenDetached",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether to hide the content when the trigger becomes fully occluded."
+        },
+        {
+          "name": "positionStrategy",
+          "type": "\"fixed\" | \"absolute\"",
+          "default": "'fixed'",
+          "description": "The type of CSS position property to use."
+        },
+        {
+          "name": "side",
+          "type": "SideOrLogical",
+          "default": "'top'",
+          "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled.\n\nAccepts the logical `'inline-start'` / `'inline-end'` in addition to the physical sides; those\nresolve to `left` / `right` for the text direction (Base UI parity). The placed side reported via\n`data-side` / `placedSide()` echoes the requested kind: logical in → logical out (even after a\ncollision flip), physical in → physical out."
+        },
+        {
+          "name": "sideOffset",
+          "default": "8",
+          "description": "Distance between the anchor and the popup in pixels. Also accepts an {@link OffsetFunction} that\nreads the anchor / positioner dimensions and the resolved side / align."
+        },
+        {
+          "name": "sticky",
+          "type": "\"partial\" | \"always\"",
+          "default": "'partial'",
+          "description": "The sticky behavior on the align axis. `partial` will keep the\ncontent in the boundary as long as the trigger is at least partially\nin the boundary whilst \"always\" will keep the content in the boundary\nregardless."
+        },
+        {
+          "name": "updatePositionStrategy",
+          "type": "\"optimized\" | \"always\"",
+          "default": "'always'",
+          "description": "Strategy to update the position of the floating element on every animation frame."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "placed",
+          "type": "void",
+          "description": "Emits when the element is placed."
+        }
+      ]
+    },
+    {
+      "directive": "RdxToastProvider",
+      "selector": "[rdxToastProvider]",
+      "exportAs": "rdxToastProvider",
+      "description": "Hosts a {@link RdxToastManager} for its subtree. Put it on a wrapping element (or the app root)\nso descendant viewports and components share one queue. `limit` caps simultaneously visible toasts.",
+      "inputs": [
+        {
+          "name": "limit",
+          "type": "number",
+          "default": "DEFAULT_LIMIT",
+          "description": "Max number of toasts shown at once."
+        },
+        {
+          "name": "timeout",
+          "type": "number",
+          "default": "DEFAULT_TIMEOUT",
+          "description": "Default auto-dismiss delay (ms) for toasts that omit their own `timeout`. `0` disables it."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxToastRoot",
+      "selector": "[rdxToastRoot]",
+      "exportAs": "rdxToastRoot",
+      "description": "A single toast — the Angular counterpart of `<Toast.Root>`. Bind the toast model from the\nviewport's `@for`; this directive owns the announcement `role`, the `data-state` enter/leave\ncontract, swipe-to-dismiss, and the stacking variables consumers style against.\n\nStacking / styling contract written to the host (no transform is applied for you):\n- `--toast-index` — position from the front (`0` = frontmost).\n- `--toast-height` — this toast's measured height (px).\n- `--toast-offset-y` — combined height (px) of the toasts stacked in front, for expanded layout.\n- `--toast-swipe-movement-x` / `--toast-swipe-movement-y` — live swipe offset (px).\n- `[data-front]` — present on the frontmost toast.\n- `[data-expanded]` — present while the viewport is hovered/focused.\n- `[data-state]` — `open` while visible, `closed` once dismissal begins.\n- `[data-swiping]` / `[data-swipe-direction]` / `[data-swipe-dismiss]` — gesture state.\n\nWhen the leave animation (driven by `data-state=\"closed\"`) ends, the toast leaves the queue.",
+      "inputs": [
+        {
+          "name": "swipeDirection",
+          "type": "RdxToastSwipeDirection | RdxToastSwipeDirection[]",
+          "default": "['down', 'right']",
+          "description": "Allowed swipe-to-dismiss directions. Accepts a single direction or a list."
+        },
+        {
+          "name": "toast",
+          "type": "RdxToastObject",
+          "required": true,
+          "description": "The toast model to render — pass the item from the viewport's `@for`."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxToastTitle",
+      "selector": "[rdxToastTitle]",
+      "exportAs": "rdxToastTitle",
+      "description": "Accessible title for a toast; registers so the root only points `aria-labelledby` at a real node.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxToastViewport",
+      "selector": "[rdxToastViewport]",
+      "exportAs": "rdxToastViewport",
+      "description": "The positioned region that holds the visible toasts — the Angular counterpart of\n`<Toast.Viewport>`. Exposes the queue for templates to render, and while it is hovered or focused\nit expands the stack (`data-expanded` on each root) and pauses every auto-dismiss timer, resuming\nonce neither hover nor focus remains — matching Base UI.\n\nHeadless: it carries no positioning styles. Consumers position it (e.g. fixed bottom-right) and\niterate `viewport.toasts()` with `@for`.",
+      "inputs": [],
+      "outputs": []
+    }
+  ]
+}

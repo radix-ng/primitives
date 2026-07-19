@@ -1,0 +1,20 @@
+{
+  "version": "1.1.0",
+  "slug": "portal",
+  "section": "utils",
+  "parts": [
+    {
+      "directive": "RdxPortal",
+      "selector": "[rdxPortal]",
+      "exportAs": "rdxPortal",
+      "inputs": [
+        {
+          "name": "container",
+          "type": "RdxPortalContainer",
+          "description": "Specify a container to portal the content into. Can be an `ElementRef`, a native element, or a\nCSS selector. Defaults to `document.body` when not set (or when a selector matches nothing)."
+        }
+      ],
+      "outputs": []
+    }
+  ]
+}

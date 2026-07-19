@@ -1,0 +1,28 @@
+{
+  "version": "1.1.0",
+  "slug": "direction-provider",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxDirectionProvider",
+      "selector": "[rdxDirectionProvider]",
+      "exportAs": "rdxDirectionProvider",
+      "description": "Provides a reading direction for descendant primitives.\n\nThis controls primitive behavior only. Set the native `dir` attribute or CSS `direction`\nseparately when the DOM itself should render right-to-left.",
+      "inputs": [
+        {
+          "name": "direction",
+          "type": "Direction | undefined",
+          "default": "undefined",
+          "description": "The reading direction for descendant primitives."
+        },
+        {
+          "name": "dir",
+          "type": "Direction | undefined",
+          "default": "undefined",
+          "description": "Alias for Angular templates that prefer `[dir]`."
+        }
+      ],
+      "outputs": []
+    }
+  ]
+}

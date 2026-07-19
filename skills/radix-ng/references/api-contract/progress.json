@@ -1,0 +1,78 @@
+{
+  "version": "1.1.0",
+  "slug": "progress",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxProgressIndicatorDirective",
+      "selector": "[rdxProgressIndicator]",
+      "exportAs": "rdxProgressIndicator",
+      "description": "Displays the visual progress fill.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxProgressLabelDirective",
+      "selector": "[rdxProgressLabel]",
+      "exportAs": "rdxProgressLabel",
+      "description": "Labels the progress task.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxProgressRootDirective",
+      "selector": "[rdxProgressRoot]",
+      "exportAs": "rdxProgressRoot",
+      "description": "Provides progress state and accessibility attributes.",
+      "inputs": [
+        {
+          "name": "labelId",
+          "default": "injectId('rdx-progress-label-')"
+        },
+        {
+          "name": "max",
+          "default": "DEFAULT_MAX",
+          "description": "Maximum progress value."
+        },
+        {
+          "name": "min",
+          "default": "DEFAULT_MIN",
+          "description": "Minimum progress value."
+        },
+        {
+          "name": "value",
+          "type": "number | null, number | null",
+          "default": "null",
+          "description": "Current progress value. Set to `null` for indeterminate progress."
+        },
+        {
+          "name": "valueId",
+          "default": "injectId('rdx-progress-value-')"
+        },
+        {
+          "name": "valueLabel",
+          "type": "ProgressValueFormatter",
+          "default": "(value, min, max) => this.defaultValueLabel(value, min, max)",
+          "description": "Formats the current value for assistive technologies and `rdxProgressValue`."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxProgressTrackDirective",
+      "selector": "[rdxProgressTrack]",
+      "exportAs": "rdxProgressTrack",
+      "description": "Contains the visual progress indicator.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxProgressValueDirective",
+      "selector": "[rdxProgressValue]",
+      "exportAs": "rdxProgressValue",
+      "description": "Displays the formatted progress value.",
+      "inputs": [],
+      "outputs": []
+    }
+  ]
+}

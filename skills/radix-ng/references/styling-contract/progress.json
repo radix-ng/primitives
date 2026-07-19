@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Progress",
+  "slug": "progress",
+  "section": "components",
+  "description": "Displays task completion with accessible label, value, track, and indicator parts.",
+  "doc": "radix-ng-examples/references/components/progress.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-progress--docs",
+  "anatomy": "<div rdxProgressRoot [value]=\"70\">\n  <span rdxProgressLabel>Upload progress</span>\n  <span rdxProgressValue></span>\n  <div rdxProgressTrack>\n    <div rdxProgressIndicator></div>\n  </div>\n</div>",
+  "dataAttributes": []
+}

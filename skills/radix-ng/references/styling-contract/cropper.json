@@ -1,0 +1,22 @@
+{
+  "version": "1.1.0",
+  "name": "Cropper",
+  "slug": "cropper",
+  "section": "components",
+  "description": "Headless component for interactive image cropping — inspired by the experience on [X](https://x.com/).",
+  "doc": "radix-ng-examples/references/components/cropper.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-cropper--docs",
+  "anatomy": "<div rdxCropperRoot>\n  <div rdxCropperDescription></div>\n  <div rdxCropperImage></div>\n  <div rdxCropperCropArea></div>\n</div>",
+  "dataAttributes": [
+    {
+      "attribute": "data-dragging",
+      "parts": "The image is being dragged.",
+      "values": ""
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "The disabled input is set.",
+      "values": ""
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "version": "1.1.0",
+  "slug": "avatar",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxAvatarFallbackDirective",
+      "selector": "span[rdxAvatarFallback]",
+      "exportAs": "rdxAvatarFallback",
+      "inputs": [
+        {
+          "name": "delayMs",
+          "type": "number",
+          "default": "0",
+          "description": "Useful for delaying rendering so it only appears for those with slower connections."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAvatarImageDirective",
+      "selector": "img[rdxAvatarImage]",
+      "exportAs": "rdxAvatarImage",
+      "inputs": [
+        {
+          "name": "crossOrigin",
+          "type": "'anonymous' | 'use-credentials' | ''",
+          "description": "The CORS mode used when fetching the image."
+        },
+        {
+          "name": "referrerPolicy",
+          "type": "HTMLAttributeReferrerPolicy"
+        },
+        {
+          "name": "sizes",
+          "type": "string",
+          "description": "The `sizes` attribute paired with `srcSet`."
+        },
+        {
+          "name": "src",
+          "type": "string"
+        },
+        {
+          "name": "srcSet",
+          "type": "string",
+          "description": "A responsive `srcset` for the image. When set without `src`, an empty `src` no longer counts as\nan error."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onLoadingStatusChange",
+          "type": "RdxImageLoadingStatus",
+          "description": "A callback providing information about the loading status of the image.\nThis is useful in case you want to control more precisely what to render as the image is loading."
+        }
+      ]
+    },
+    {
+      "directive": "RdxAvatarRootDirective",
+      "selector": "span[rdxAvatarRoot]",
+      "exportAs": "rdxAvatarRoot",
+      "inputs": [],
+      "outputs": []
+    }
+  ]
+}

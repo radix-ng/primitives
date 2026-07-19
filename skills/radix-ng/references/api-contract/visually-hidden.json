@@ -1,0 +1,69 @@
+{
+  "version": "1.1.0",
+  "slug": "visually-hidden",
+  "section": "utils",
+  "parts": [
+    {
+      "directive": "RdxVisuallyHiddenInputBubbleDirective",
+      "selector": "input[rdxVisuallyHiddenInputBubble]",
+      "hostDirectives": [
+        "RdxVisuallyHiddenDirective"
+      ],
+      "inputs": [
+        {
+          "name": "checked",
+          "type": "boolean | undefined",
+          "default": "undefined"
+        },
+        {
+          "name": "disabled",
+          "type": "boolean | undefined",
+          "default": "undefined"
+        },
+        {
+          "name": "feature",
+          "type": "VisuallyHidden",
+          "default": "'fully-hidden'"
+        },
+        {
+          "name": "name",
+          "type": "string | undefined",
+          "default": "undefined"
+        },
+        {
+          "name": "required",
+          "type": "boolean | undefined",
+          "default": "undefined"
+        },
+        {
+          "name": "value",
+          "type": "T | string | null"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxVisuallyHiddenInputDirective",
+      "selector": "input[rdxVisuallyHiddenInput]",
+      "description": "Mirrors a control's value into a visually hidden `<input>` so it participates in form\nsubmission while staying out of the visual and (when `fully-hidden`) accessibility tree.\n\nApply it to a real `<input>` element. It carries a **single scalar value** — the composed\n{@link RdxVisuallyHiddenInputBubbleDirective} owns `name`/`value`/`checked` and keeps the\nnative value in sync, re-dispatching `input`/`change` events so the value bubbles to the form.\n\nA single `<input>` can only represent one form field, so object/array values are not\nsupported here; render one directive per field instead.\n\n```html\n<input rdxVisuallyHiddenInput [name]=\"'agree'\" [value]=\"checked() ? 'on' : 'off'\" />\n```",
+      "hostDirectives": [
+        "RdxVisuallyHiddenInputBubbleDirective"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxVisuallyHiddenDirective",
+      "selector": "[rdxVisuallyHidden]",
+      "description": "<span rdxVisuallyHidden [feature]=\"'fully-hidden'\">\n  <ng-content />\n</span>\n\n<button (click)=\"directiveInstance.setFeature('focusable')\">Make Focusable</button>\n<button (click)=\"directiveInstance.setFeature('fully-hidden')\">Hide</button>",
+      "inputs": [
+        {
+          "name": "feature",
+          "type": "VisuallyHidden",
+          "default": "'focusable'"
+        }
+      ],
+      "outputs": []
+    }
+  ]
+}

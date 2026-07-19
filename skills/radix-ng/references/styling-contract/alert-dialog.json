@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Alert Dialog",
+  "slug": "alert-dialog",
+  "section": "components",
+  "description": "A modal dialog that interrupts the user with important content and expects a response.",
+  "doc": "radix-ng-examples/references/components/alert-dialog.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-alert-dialog--docs",
+  "anatomy": "<div rdxAlertDialogRoot>\n    <button rdxAlertDialogTrigger>Delete</button>\n\n    <ng-template rdxAlertDialogPortal>\n        <div rdxAlertDialogBackdrop></div>\n        <div rdxAlertDialogPopup>\n            <h2 rdxAlertDialogTitle>Are you sure?</h2>\n            <p rdxAlertDialogDescription>This action cannot be undone.</p>\n            <button rdxAlertDialogClose>Cancel</button>\n            <button rdxAlertDialogClose>Confirm</button>\n        </div>\n    </ng-template>\n</div>",
+  "dataAttributes": []
+}

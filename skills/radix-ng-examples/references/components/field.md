@@ -1,40 +1,10 @@
 # Field
 
-#### Groups a control with accessible label, description, error message, and field state.
+Groups a control with accessible label, description, error message, and field state.
 
-Field is form-agnostic. It does not replace Angular Forms; pass custom state through root inputs or use
-the small `rdxNgControlField` / `rdxSignalField` adapters.
+> Index — full source of each example is one click away in `../examples/field--*.md`; the whole-doc dump is in `../llms-full.txt`.
 
-```typescript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RdxFieldControl } from '../src/field-control';
-import { RdxFieldDescription } from '../src/field-description';
-import { RdxFieldError } from '../src/field-error';
-import { RdxFieldLabel } from '../src/field-label';
-import { RdxFieldRoot } from '../src/field-root';
-import { fieldDescription, fieldError, fieldLabel } from './field.shared';
-
-@Component({
-    changeDetection: ChangeDetectionStrategy.Eager,
-    selector: 'field-default-example',
-    imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
-    template: `
-        <div class="flex w-80 flex-col gap-2" rdxFieldRoot required>
-            <label [class]="labelClass" rdxFieldLabel>Email</label>
-            <input [class]="inputClass" rdxFieldControl type="email" placeholder="name@example.com" />
-            <p [class]="descriptionClass" rdxFieldDescription>Used for account notifications.</p>
-            <p [class]="errorClass" rdxFieldError>Enter a valid email address.</p>
-        </div>
-    `
-})
-export class FieldDefaultExample {
-    protected readonly inputClass =
-        'border-border bg-background text-foreground placeholder:text-muted-foreground h-9 w-full rounded-md border px-3 text-sm outline-none';
-    protected readonly labelClass = fieldLabel;
-    protected readonly descriptionClass = fieldDescription;
-    protected readonly errorClass = fieldError;
-}
-```
+> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
 
 ## Features
 
@@ -91,194 +61,13 @@ reflecting the field's validation state; its `disabled` is OR'd with the root's.
 
 ## Examples
 
-### Default
+- [Default](../examples/field--default.md)
+- [Invalid](../examples/field--invalid.md)
+- [Reactive Forms](../examples/field--reactive-forms.md)
+- [Custom Control](../examples/field--custom-control.md)
 
-The root owns the relationships between the field parts.
+## API & styling contract
 
-```typescript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RdxFieldControl } from '../src/field-control';
-import { RdxFieldDescription } from '../src/field-description';
-import { RdxFieldError } from '../src/field-error';
-import { RdxFieldLabel } from '../src/field-label';
-import { RdxFieldRoot } from '../src/field-root';
-import { fieldDescription, fieldError, fieldLabel } from './field.shared';
-
-@Component({
-    changeDetection: ChangeDetectionStrategy.Eager,
-    selector: 'field-default-example',
-    imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
-    template: `
-        <div class="flex w-80 flex-col gap-2" rdxFieldRoot required>
-            <label [class]="labelClass" rdxFieldLabel>Email</label>
-            <input [class]="inputClass" rdxFieldControl type="email" placeholder="name@example.com" />
-            <p [class]="descriptionClass" rdxFieldDescription>Used for account notifications.</p>
-            <p [class]="errorClass" rdxFieldError>Enter a valid email address.</p>
-        </div>
-    `
-})
-export class FieldDefaultExample {
-    protected readonly inputClass =
-        'border-border bg-background text-foreground placeholder:text-muted-foreground h-9 w-full rounded-md border px-3 text-sm outline-none';
-    protected readonly labelClass = fieldLabel;
-    protected readonly descriptionClass = fieldDescription;
-    protected readonly errorClass = fieldError;
-}
-```
-
-### Invalid
-
-Pass invalid, dirty, and touched state from your form model.
-
-```typescript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RdxFieldControl } from '../src/field-control';
-import { RdxFieldDescription } from '../src/field-description';
-import { RdxFieldError } from '../src/field-error';
-import { RdxFieldLabel } from '../src/field-label';
-import { RdxFieldRoot } from '../src/field-root';
-import { fieldDescription, fieldError, fieldInputInvalid, fieldLabel } from './field.shared';
-
-@Component({
-    changeDetection: ChangeDetectionStrategy.Eager,
-    selector: 'field-invalid-example',
-    imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
-    template: `
-        <div class="flex w-80 flex-col gap-2" rdxFieldRoot invalid required dirty touched>
-            <label [class]="labelClass" rdxFieldLabel>Workspace name</label>
-            <input
-                [class]="inputClass"
-                rdxFieldControl
-                value=""
-                placeholder="acme"
-                aria-errormessage="workspace-error"
-            />
-            <p [class]="descriptionClass" rdxFieldDescription>Use lowercase letters and hyphens.</p>
-            <p id="workspace-error" [class]="errorClass" rdxFieldError>Workspace name is required.</p>
-        </div>
-    `
-})
-export class FieldInvalidExample {
-    protected readonly inputClass = fieldInputInvalid;
-    protected readonly labelClass = fieldLabel;
-    protected readonly descriptionClass = fieldDescription;
-    protected readonly errorClass = fieldError;
-}
-```
-
-### Reactive Forms
-
-Place `rdxNgControlField` next to `formControl`, `formControlName`, or `ngModel`. Angular Forms remains
-responsible for validation; the adapter reports actual state while Field's `validationMode` controls when
-it becomes visible. Use `rdxFieldError[match]` for a specific Angular error key.
-
-```html
-<div rdxFieldRoot required>
-    <label rdxFieldLabel>Email</label>
-    <input formControlName="email" rdxFieldControl rdxNgControlField />
-    <p match="required" rdxFieldError>Email is required.</p>
-    <p match="email" rdxFieldError>Enter a valid email address.</p>
-</div>
-```
-
-```typescript
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RdxFieldControl } from '../src/field-control';
-import { RdxFieldDescription } from '../src/field-description';
-import { RdxFieldError } from '../src/field-error';
-import { RdxFieldLabel } from '../src/field-label';
-import { RdxFieldRoot } from '../src/field-root';
-import { RdxNgControlField } from '../src/ng-control-field';
-import { fieldDescription, fieldError, fieldInputInvalid, fieldLabel, fieldSubmitButton } from './field.shared';
-
-@Component({
-    changeDetection: ChangeDetectionStrategy.Eager,
-    selector: 'field-reactive-forms-example',
-    imports: [
-        ReactiveFormsModule,
-        RdxFieldRoot,
-        RdxFieldLabel,
-        RdxFieldControl,
-        RdxFieldDescription,
-        RdxFieldError,
-        RdxNgControlField
-    ],
-    template: `
-        <form class="flex w-80 flex-col gap-3" [formGroup]="form" (ngSubmit)="submit()">
-            <div class="flex flex-col gap-2" rdxFieldRoot required>
-                <label [class]="labelClass" rdxFieldLabel>Email</label>
-                <input [class]="inputClass" rdxFieldControl rdxNgControlField type="email" formControlName="email" />
-                <p [class]="descriptionClass" rdxFieldDescription>Use the email connected to your account.</p>
-                <p [class]="errorClass" match="required" rdxFieldError>Email is required.</p>
-                <p [class]="errorClass" match="email" rdxFieldError>Enter a valid email address.</p>
-            </div>
-
-            <button [class]="buttonClass" type="submit">Submit</button>
-        </form>
-    `
-})
-export class FieldReactiveFormsExample {
-    protected readonly inputClass = fieldInputInvalid;
-    protected readonly buttonClass = fieldSubmitButton;
-    protected readonly labelClass = fieldLabel;
-    protected readonly descriptionClass = fieldDescription;
-    protected readonly errorClass = fieldError;
-
-    private readonly formBuilder = inject(FormBuilder);
-
-    readonly form = this.formBuilder.group({
-        email: this.formBuilder.control('', [Validators.required, Validators.email])
-    });
-
-    get email() {
-        return this.form.controls.email;
-    }
-
-    submit(): void {
-        this.form.markAllAsTouched();
-    }
-}
-```
-
-### Custom Control
-
-For custom controls, pass `filled` and `focused` state to the root when the native events are not
-enough.
-
-```typescript
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
-import { RdxFieldControl } from '../src/field-control';
-import { RdxFieldDescription } from '../src/field-description';
-import { RdxFieldError } from '../src/field-error';
-import { RdxFieldLabel } from '../src/field-label';
-import { RdxFieldRoot } from '../src/field-root';
-import { fieldCustomTrigger, fieldDescription, fieldError, fieldLabel } from './field.shared';
-
-@Component({
-    changeDetection: ChangeDetectionStrategy.Eager,
-    selector: 'field-custom-control-example',
-    imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
-    template: `
-        <div class="flex w-80 flex-col gap-2" [filled]="selected()" [focused]="open()" rdxFieldRoot>
-            <label [class]="labelClass" rdxFieldLabel>Plan</label>
-            <button [class]="triggerClass" (click)="open.update((value) => !value)" type="button" rdxFieldControl>
-                {{ selected() ? 'Pro' : 'Choose a plan' }}
-            </button>
-            <p [class]="descriptionClass" rdxFieldDescription>Custom controls can pass state into the field root.</p>
-            <p [class]="errorClass" rdxFieldError>Choose a plan.</p>
-        </div>
-    `
-})
-export class FieldCustomControlExample {
-    readonly open = signal(false);
-    readonly selected = computed(() => this.open());
-
-    protected readonly triggerClass = fieldCustomTrigger;
-    protected readonly labelClass = fieldLabel;
-    protected readonly descriptionClass = fieldDescription;
-    protected readonly errorClass = fieldError;
-}
-```
-
-## API Reference
+Machine-readable contracts for this primitive live in the `radix-ng` skill:
+- API (selectors, inputs, outputs, two-way bindings): `references/api-contract/field.json`
+- Styling (parts + `data-*`): `references/styling-contract/field.json`

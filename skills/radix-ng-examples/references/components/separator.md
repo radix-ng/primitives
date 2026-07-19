@@ -1,29 +1,10 @@
 # Separator
 
-#### A separator element accessible to screen readers.
+A separator element accessible to screen readers.
 
-```html
-<div class="flex w-full max-w-lg items-center text-sm">
-    <nav class="flex items-center gap-4" aria-label="Main">
-        <a class="text-foreground hover:text-primary transition-colors" href="#">Home</a>
-        <a class="text-foreground hover:text-primary transition-colors" href="#">Pricing</a>
-        <a class="text-foreground hover:text-primary transition-colors" href="#">Blog</a>
-        <a class="text-foreground hover:text-primary transition-colors" href="#">Support</a>
-    </nav>
+> Index — full source of each example is one click away in `../examples/separator--*.md`; the whole-doc dump is in `../llms-full.txt`.
 
-    <div class="bg-border mx-5 h-5 w-px shrink-0" rdxSeparatorRoot orientation="vertical"></div>
-
-    <div class="flex items-center gap-4">
-        <a class="text-foreground hover:text-primary transition-colors" href="#">Log in</a>
-        <a
-            class="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-3 py-1.5 font-medium transition-colors"
-            href="#"
-        >
-            Sign up
-        </a>
-    </div>
-</div>
-```
+> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
 
 ## Features
 
@@ -47,58 +28,11 @@ Separator is a single directive. Apply `rdxSeparatorRoot` to the element that se
 
 ## Examples
 
-### Vertical
+- [Vertical](../examples/separator--vertical.md)
+- [Horizontal](../examples/separator--horizontal.md)
 
-Use `orientation="vertical"` when separating inline content groups.
+## API & styling contract
 
-```html
-<div class="flex w-full max-w-lg items-center text-sm">
-    <nav class="flex items-center gap-4" aria-label="Main">
-        <a class="text-foreground hover:text-primary transition-colors" href="#">Home</a>
-        <a class="text-foreground hover:text-primary transition-colors" href="#">Pricing</a>
-        <a class="text-foreground hover:text-primary transition-colors" href="#">Blog</a>
-        <a class="text-foreground hover:text-primary transition-colors" href="#">Support</a>
-    </nav>
-
-    <div class="bg-border mx-5 h-5 w-px shrink-0" rdxSeparatorRoot orientation="vertical"></div>
-
-    <div class="flex items-center gap-4">
-        <a class="text-foreground hover:text-primary transition-colors" href="#">Log in</a>
-        <a
-            class="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-3 py-1.5 font-medium transition-colors"
-            href="#"
-        >
-            Sign up
-        </a>
-    </div>
-</div>
-```
-
-### Horizontal
-
-The default orientation is horizontal.
-
-```html
-<div class="flex w-full max-w-sm flex-col gap-3">
-    <div>
-        <h3 class="text-foreground text-sm font-medium">Radix NG Primitives</h3>
-        <p class="text-muted-foreground mt-1 text-sm">Headless Angular primitives modeled after Base UI.</p>
-    </div>
-
-    <div class="bg-border h-px w-full" rdxSeparatorRoot></div>
-
-    <div class="text-muted-foreground text-sm">
-        Composable directives with state exposed through data attributes.
-    </div>
-</div>
-```
-
-## API Reference
-
-`RdxSeparatorRootDirective` — applies `role="separator"` and `aria-orientation`. Apply to any element.
-
-**Data attributes**
-
-| Attribute          | Value                          |
-| ------------------ | ------------------------------ |
-| `data-orientation` | `"horizontal"` \| `"vertical"` |
+Machine-readable contracts for this primitive live in the `radix-ng` skill:
+- API (selectors, inputs, outputs, two-way bindings): `references/api-contract/separator.json`
+- Styling (parts + `data-*`): `references/styling-contract/separator.json`

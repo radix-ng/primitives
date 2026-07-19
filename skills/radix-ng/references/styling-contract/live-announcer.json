@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "LiveAnnouncer",
+  "slug": "live-announcer",
+  "section": "utils",
+  "description": "Announces messages to screen readers through an `aria-live` region, without moving focus.",
+  "doc": "radix-ng-examples/references/utils/live-announcer.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-live-announcer--docs",
+  "anatomy": "",
+  "dataAttributes": []
+}

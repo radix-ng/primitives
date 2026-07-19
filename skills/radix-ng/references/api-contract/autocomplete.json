@@ -1,0 +1,580 @@
+{
+  "version": "1.1.0",
+  "slug": "autocomplete",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxAutocompleteAnchor",
+      "selector": "[rdxAutocompleteAnchor]",
+      "exportAs": "rdxAutocompleteAnchor",
+      "description": "Optional positioning anchor for the popup. Put it on the element the popup should align to — for\nexample a wrapper that holds the input plus an icon/clear button. When present it takes precedence\nover the input. Reuses the combobox anchor behavior.",
+      "hostDirectives": [
+        "RdxComboboxAnchor"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAutocompleteArrow",
+      "selector": "[rdxAutocompleteArrow]",
+      "exportAs": "rdxAutocompleteArrow",
+      "description": "An optional arrow that points from the popup to the anchor. Composes the popper arrow directly\n(the same building block the combobox arrow uses).",
+      "hostDirectives": [
+        "RdxPopperArrow"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAutocompleteBackdrop",
+      "selector": "[rdxAutocompleteBackdrop]",
+      "exportAs": "rdxAutocompleteBackdrop",
+      "description": "An overlay rendered beneath the popup in `modal` mode. Exposes `data-open` / `data-closed` for\nanimation. Reuses the combobox backdrop.",
+      "hostDirectives": [
+        "RdxComboboxBackdrop"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAutocompleteClear",
+      "selector": "button[rdxAutocompleteClear]",
+      "exportAs": "rdxAutocompleteClear",
+      "description": "Clears the input value. Hidden when there is nothing to clear.",
+      "hostDirectives": [
+        "RdxFloatingInsideElement"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAutocompleteEmpty",
+      "selector": "[rdxAutocompleteEmpty]",
+      "exportAs": "rdxAutocompleteEmpty",
+      "description": "A polite, atomic live region announcing the \"no results\" message. Like the combobox empty part, the\nelement stays mounted and visible at all times (never hidden/unmounted) so the transition to empty is\nannounced; only its projected content is rendered conditionally.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAutocompleteGroupLabel",
+      "selector": "[rdxAutocompleteGroupLabel]",
+      "exportAs": "rdxAutocompleteGroupLabel",
+      "description": "Accessible label for a {@link RdxAutocompleteGroup}. Wires itself up via `aria-labelledby`. Reuses\nthe combobox group label.",
+      "hostDirectives": [
+        "RdxComboboxGroupLabel"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAutocompleteGroup",
+      "selector": "[rdxAutocompleteGroup]",
+      "exportAs": "rdxAutocompleteGroup",
+      "description": "Groups related options under a shared label. Hides itself when all of its items are filtered out.\nReuses the combobox group (and exposes the combobox group context for the label + items).",
+      "hostDirectives": [
+        "RdxComboboxGroup"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAutocompleteIcon",
+      "selector": "[rdxAutocompleteIcon]",
+      "exportAs": "rdxAutocompleteIcon",
+      "description": "Decorative icon inside the trigger. Hidden from assistive technology. Reuses the combobox icon.",
+      "hostDirectives": [
+        "RdxComboboxIcon"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAutocompleteInputGroup",
+      "selector": "[rdxAutocompleteInputGroup]",
+      "exportAs": "rdxAutocompleteInputGroup",
+      "description": "Optional wrapper around the input and its adornments (icon, clear, trigger). Mirrors the input's\nstate via `data-*` so the whole group can be styled together (focus ring, disabled, etc.).",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAutocompleteInput",
+      "selector": "input[rdxAutocompleteInput]",
+      "exportAs": "rdxAutocompleteInput",
+      "description": "The autocomplete text input. Holds DOM focus at all times; the highlighted option is referenced via\n`aria-activedescendant`. In `both` / `inline` modes it shows the active item's inline completion\nwith the completed suffix selected. Integrates with Field for labeling and validation state.",
+      "hostDirectives": [
+        "RdxPopperAnchor",
+        "RdxFloatingInsideElement"
+      ],
+      "inputs": [
+        {
+          "name": "id",
+          "default": "injectId('rdx-autocomplete-input-')",
+          "description": "The input id; Field labels and descriptions reference it for accessible relationships."
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "default": "false",
+          "description": "Marks the input as invalid independently of any Field state."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAutocompleteItemIndicator",
+      "selector": "[rdxAutocompleteItemIndicator]",
+      "exportAs": "rdxAutocompleteItemIndicator",
+      "description": "Renders only when its item is selected (e.g. a checkmark). Reuses the combobox item indicator,\nwhich reads the item context provided by {@link RdxAutocompleteItem}.",
+      "hostDirectives": [
+        "RdxComboboxItemIndicator"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAutocompleteItem",
+      "selector": "[rdxAutocompleteItem]",
+      "exportAs": "rdxAutocompleteItem",
+      "description": "A selectable suggestion. Registers itself with the root for filtering and navigation. Highlight is\nvirtual (`data-highlighted` + `aria-activedescendant` on the input) — items never take DOM focus.\nSelecting an item writes its text into the input. Unlike the combobox item, the `value` is optional;\nwhen omitted, selection falls back to the option's text content (autocomplete's value is the input string).",
+      "inputs": [
+        {
+          "name": "disabled",
+          "default": "false",
+          "description": "Whether the option is disabled."
+        },
+        {
+          "name": "index",
+          "type": "number",
+          "description": "The option's index in the list. Required in virtualized mode."
+        },
+        {
+          "name": "textValue",
+          "type": "string",
+          "default": "''",
+          "description": "Explicit text matched against the query and written to the input. Defaults to text content."
+        },
+        {
+          "name": "value",
+          "type": "AcceptableValue | undefined",
+          "default": "undefined",
+          "description": "The explicit `[value]`, or `undefined` when omitted. Read the resolved {@link value} instead —\nit falls back to the text content only when no value was bound (so explicit falsy values like\n`0` / `''` / `null` are preserved for the filter and selection)."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAutocompleteLabel",
+      "selector": "[rdxAutocompleteLabel]",
+      "exportAs": "rdxAutocompleteLabel",
+      "description": "An accessible label for the autocomplete. Registers its id so the input (and trigger) reference it\nvia `aria-labelledby`. Reuses the combobox label behavior.",
+      "hostDirectives": [
+        "RdxComboboxLabel"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAutocompleteList",
+      "selector": "[rdxAutocompleteList]",
+      "exportAs": "rdxAutocompleteList",
+      "description": "The listbox (or grid) container for suggestions. Carries the id referenced by the input's\n`aria-controls`, and switches its role to `grid` when the root has `grid` enabled.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAutocompletePopup",
+      "selector": "[rdxAutocompletePopup]",
+      "exportAs": "rdxAutocompletePopup",
+      "description": "The popup surface. Composes the popper content (for `data-side` / `data-align`) and a dismissable\nlayer for outside-dismiss. It does **not** trap focus — focus stays in the input throughout. When\nthe input lives **inside** the popup (the \"input in popup\" / emoji-picker pattern), it moves focus\nto the input once the popup is positioned.",
+      "hostDirectives": [
+        "RdxPopperContent",
+        "RdxFloatingNodeRegistration"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAutocompletePortal",
+      "selector": "ng-template[rdxAutocompletePortal]",
+      "exportAs": "rdxAutocompletePortal",
+      "description": "Structural directive that teleports the autocomplete popup into a container (default\n`document.body`) while the autocomplete is open, keeping it mounted until any CSS exit `@keyframes`\nfinishes. Composes the structural {@link RdxComboboxPortal} (which reads the open state from the\ncombobox root context provided by `RdxAutocompleteRoot`).\n\nApply it with the `*` microsyntax on the positioner —\n`<div *rdxAutocompletePortal rdxAutocompletePositioner>` — or as an explicit\n`<ng-template rdxAutocompletePortal>`. For a custom container use the explicit form with `[container]`.",
+      "hostDirectives": [
+        "RdxComboboxPortal"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAutocompletePortalMisuseGuard",
+      "selector": "[rdxAutocompletePortal]:not(ng-template)",
+      "description": "Dev-mode guard: `rdxAutocompletePortal` is now structural, so the old `<div rdxAutocompletePortal>`\nmarkup would silently stop portaling — fail loudly instead.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAutocompletePositioner",
+      "selector": "[rdxAutocompletePositioner]",
+      "exportAs": "rdxAutocompletePositioner",
+      "description": "Positions the autocomplete popup relative to the input anchor using the popper engine.\n\nA \"thin\" positioner (ADR 0012): it inherits the full popper positioning surface — the inputs\n(`side`, `sideOffset`, `align`, …), the `placed` output, and the host bindings — from\n{@link RdxPopperContentWrapper}, and only declares autocomplete's Base UI-aligned defaults through\nthe config provider (the same building block the combobox positioner uses).",
+      "inputs": [
+        {
+          "name": "align",
+          "type": "Align",
+          "default": "'start'",
+          "description": "How to align the popup relative to the specified side. May change when collisions occur."
+        },
+        {
+          "name": "alignOffset",
+          "default": "0",
+          "description": "An offset in pixels from the `start` or `end` alignment options. Also accepts an\n{@link OffsetFunction} (same signature as `sideOffset`)."
+        },
+        {
+          "name": "anchor",
+          "type": "RdxPopperAnchorElement",
+          "description": "An element to position the popup against. Defaults to the popper anchor."
+        },
+        {
+          "name": "arrowPadding",
+          "type": "number",
+          "default": "0",
+          "description": "Minimum distance to maintain between the arrow and the edges of the popup.\nIf your content has border-radius, this will prevent it from overflowing the corners."
+        },
+        {
+          "name": "avoidCollisions",
+          "type": "boolean",
+          "default": "true",
+          "deprecated": true,
+          "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges.\n\n`false` disables all avoidance (unless a `collisionAvoidance` object is provided, which wins)."
+        },
+        {
+          "name": "collisionAvoidance",
+          "type": "RdxCollisionAvoidance | undefined",
+          "default": "undefined",
+          "description": "How the popup avoids colliding with the boundary edges, per axis (Base UI `collisionAvoidance`).\nOverrides the deprecated `avoidCollisions` and any per-primitive preset. An object here **fully\nreplaces** the preset — omitted fields fall back to `side: 'flip'`, `align: 'flip'`,\n`fallbackAxisSide: 'end'`, never to the preset. See {@link RdxCollisionAvoidance}."
+        },
+        {
+          "name": "collisionBoundary",
+          "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
+          "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
+        },
+        {
+          "name": "collisionPadding",
+          "type": "number | Partial<Record<Side, number>>",
+          "default": "0",
+          "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
+        },
+        {
+          "name": "dir",
+          "type": "Direction | undefined",
+          "default": "undefined",
+          "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
+        },
+        {
+          "name": "hideWhenDetached",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether to hide the content when the trigger becomes fully occluded."
+        },
+        {
+          "name": "positionStrategy",
+          "type": "\"fixed\" | \"absolute\"",
+          "default": "'fixed'",
+          "description": "The type of CSS position property to use."
+        },
+        {
+          "name": "side",
+          "type": "SideOrLogical",
+          "default": "'bottom'",
+          "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled.\n\nAccepts the logical `'inline-start'` / `'inline-end'` in addition to the physical sides; those\nresolve to `left` / `right` for the text direction (Base UI parity). The placed side reported via\n`data-side` / `placedSide()` echoes the requested kind: logical in → logical out (even after a\ncollision flip), physical in → physical out."
+        },
+        {
+          "name": "sideOffset",
+          "default": "4",
+          "description": "Distance between the anchor and the popup in pixels. Also accepts an {@link OffsetFunction} that\nreads the anchor / positioner dimensions and the resolved side / align."
+        },
+        {
+          "name": "sticky",
+          "type": "\"partial\" | \"always\"",
+          "default": "'partial'",
+          "description": "The sticky behavior on the align axis. `partial` will keep the\ncontent in the boundary as long as the trigger is at least partially\nin the boundary whilst \"always\" will keep the content in the boundary\nregardless."
+        },
+        {
+          "name": "updatePositionStrategy",
+          "type": "\"optimized\" | \"always\"",
+          "default": "'optimized'",
+          "description": "Strategy to update the position of the floating element on every animation frame."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "placed",
+          "type": "void",
+          "description": "Emits when the element is placed."
+        }
+      ]
+    },
+    {
+      "directive": "RdxAutocompleteRoot",
+      "selector": "[rdxAutocompleteRoot]",
+      "exportAs": "rdxAutocompleteRoot",
+      "description": "Root of an Autocomplete — a text input with a filtered list of suggestions. A thin configuration over\nthe shared combobox engine (ADR 0014) with `selectionMode: 'none'`, so its value **is** the input\nstring: typing, selecting an item, or clearing all change a single string value. Implements\n`ControlValueAccessor` (the form value is the input string).",
+      "hostDirectives": [
+        "RdxPopper"
+      ],
+      "inputs": [
+        {
+          "name": "autoHighlight",
+          "default": "false",
+          "description": "Auto-highlight behavior (matches Base UI):\n- `false` (default): never auto-highlight;\n- `true` (also the bare `autoHighlight` attribute): highlight the first match as the query changes;\n- `'always'`: keep the first navigable item highlighted whenever the popup is open."
+        },
+        {
+          "name": "defaultOpen",
+          "default": "false",
+          "description": "Initial open state when uncontrolled."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "description": "Initial input text when uncontrolled."
+        },
+        {
+          "name": "dir",
+          "type": "Direction | undefined",
+          "default": "undefined",
+          "description": "Text direction."
+        },
+        {
+          "name": "disabled",
+          "default": "false",
+          "description": "Whether the autocomplete is disabled."
+        },
+        {
+          "name": "filter",
+          "type": "AutocompleteFilter | null | undefined",
+          "default": "undefined",
+          "description": "Filter applied to items against the input query (only when {@link mode} is `'list'` / `'both'`).\n`undefined` → locale-aware contains; a function → custom `(value, query, itemToString)`; `null` →\nbuilt-in filtering disabled."
+        },
+        {
+          "name": "form",
+          "type": "string",
+          "description": "Id of an external form that owns this control."
+        },
+        {
+          "name": "grid",
+          "default": "false",
+          "description": "Whether the list is laid out as a 2D grid (enables row/column arrow navigation)."
+        },
+        {
+          "name": "highlightItemOnHover",
+          "default": "true",
+          "description": "Whether moving the pointer over an item highlights it."
+        },
+        {
+          "name": "isItemEqualToValue",
+          "type": "ItemValueComparator<AcceptableValue>",
+          "description": "How item values are compared for equality (a comparator function or an object key). Base UI prop name."
+        },
+        {
+          "name": "items",
+          "type": "readonly AcceptableValue[]",
+          "description": "The full set of item values for {@link virtualized} mode."
+        },
+        {
+          "name": "itemToStringValue",
+          "type": "(value: AcceptableValue) => string",
+          "description": "Converts an item value to its string label (filter text + input text on selection)."
+        },
+        {
+          "name": "keepHighlight",
+          "default": "false",
+          "description": "Whether a pointer-driven highlight is kept when the cursor leaves the list."
+        },
+        {
+          "name": "limit",
+          "default": "-1",
+          "description": "Maximum number of matching items to show. `-1` (default) means no limit."
+        },
+        {
+          "name": "locale",
+          "type": "Intl.LocalesArgument",
+          "description": "Locale for the default `contains` filter's string comparison. Defaults to the runtime locale."
+        },
+        {
+          "name": "loopFocus",
+          "default": "true",
+          "description": "Whether keyboard navigation wraps at the list boundaries."
+        },
+        {
+          "name": "modal",
+          "default": "false",
+          "description": "Whether the popup is modal: locks page scroll and makes outside content inert while open."
+        },
+        {
+          "name": "mode",
+          "type": "AutocompleteMode",
+          "default": "'list'",
+          "description": "Filtering / inline-completion behavior. See {@link AutocompleteMode}."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "Name used when serializing this composite control into native `FormData`."
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the popup is open."
+        },
+        {
+          "name": "openOnInputClick",
+          "default": "false",
+          "description": "Whether clicking the input opens the popup. Defaults to `false` (Base UI default)."
+        },
+        {
+          "name": "readOnly",
+          "default": "false",
+          "description": "Whether the autocomplete is read-only."
+        },
+        {
+          "name": "required",
+          "default": "false",
+          "description": "Whether a value is required (for forms)."
+        },
+        {
+          "name": "submitOnItemClick",
+          "default": "false",
+          "description": "Whether selecting an item requests submit of the closest form."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "default": "''",
+          "description": "The input text. This is the form value (controlled / uncontrolled via {@link defaultValue})."
+        },
+        {
+          "name": "virtualized",
+          "default": "false",
+          "description": "Whether the list is externally virtualized (navigation runs over {@link items} by index)."
+        },
+        {
+          "name": "dirty",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the value changed from its initial value. Merged with internal tracking."
+        },
+        {
+          "name": "errors",
+          "type": "readonly RdxValidationError[]",
+          "default": "[]",
+          "description": "Validation errors for the control. A non-empty list marks it invalid."
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+        },
+        {
+          "name": "pending",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
+        },
+        {
+          "name": "touched",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onItemHighlighted",
+          "type": "ComboboxItemHighlightedDetails",
+          "description": "Emits as the highlight moves, with the item's value, its index in {@link filteredItems}, and the reason."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "RdxComboboxOpenChange",
+          "description": "Emits when the popup opens or closes."
+        },
+        {
+          "name": "onOpenChangeComplete",
+          "type": "boolean",
+          "description": "Emits after the open/close transition (including any exit animation) finishes."
+        },
+        {
+          "name": "onValueChange",
+          "type": "AutocompleteValueChangeDetails",
+          "description": "Emits when the input value changes (typing, selection, or clear), with the reason."
+        },
+        {
+          "name": "touch",
+          "type": "void",
+          "description": "Emits when the control is touched, notifying Signal Forms (stable Angular 22 contract)."
+        }
+      ],
+      "twoWay": [
+        "open",
+        "value",
+        "touched"
+      ]
+    },
+    {
+      "directive": "RdxAutocompleteRow",
+      "selector": "[rdxAutocompleteRow]",
+      "exportAs": "rdxAutocompleteRow",
+      "description": "A row in a grid-layout autocomplete list. Groups the items in one row so the root can navigate by\nrow (ArrowUp / ArrowDown) and within a row (ArrowLeft / ArrowRight). Only meaningful when the root\nhas `grid` enabled; the root resolves an item's row from its nearest `[rdxAutocompleteRow]` ancestor.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAutocompleteSeparator",
+      "selector": "[rdxAutocompleteSeparator]",
+      "exportAs": "rdxAutocompleteSeparator",
+      "description": "A visual separator between groups of suggestions (`role=\"separator\"`). Reuses the combobox separator.",
+      "hostDirectives": [
+        "RdxComboboxSeparator"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAutocompleteStatus",
+      "selector": "[rdxAutocompleteStatus]",
+      "exportAs": "rdxAutocompleteStatus",
+      "description": "A polite live region for async status (loading, result counts) announced without moving focus.\nReuses the combobox status region.",
+      "hostDirectives": [
+        "RdxComboboxStatus"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAutocompleteTrigger",
+      "selector": "button[rdxAutocompleteTrigger]",
+      "exportAs": "rdxAutocompleteTrigger",
+      "description": "Toggles the autocomplete popup. Reuses the combobox trigger: a `tabindex=\"-1\"` toggle when the input\nsits outside the popup, or the focusable `role=\"combobox\"` control when the input is inside it.",
+      "hostDirectives": [
+        "RdxComboboxTrigger"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxAutocompleteValue",
+      "selector": "[rdxAutocompleteValue]",
+      "exportAs": "rdxAutocompleteValue",
+      "description": "Renders the current input value as text. Useful for a read-only display of the committed value.\nRead `slotText()` in the template. Exposes `data-placeholder` while the value is empty.\n\n```html\n<span #value=\"rdxAutocompleteValue\" rdxAutocompleteValue placeholder=\"Empty\">{{ value.slotText() }}</span>\n```",
+      "inputs": [
+        {
+          "name": "placeholder",
+          "type": "string",
+          "description": "Text shown when the value is empty."
+        }
+      ],
+      "outputs": []
+    }
+  ]
+}

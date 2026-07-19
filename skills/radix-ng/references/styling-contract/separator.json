@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Separator",
+  "slug": "separator",
+  "section": "components",
+  "description": "A separator element accessible to screen readers.",
+  "doc": "radix-ng-examples/references/components/separator.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-separator--docs",
+  "anatomy": "<div rdxSeparatorRoot></div>",
+  "dataAttributes": []
+}

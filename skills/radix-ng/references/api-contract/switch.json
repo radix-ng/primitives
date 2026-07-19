@@ -1,0 +1,146 @@
+{
+  "version": "1.1.0",
+  "slug": "switch",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxSwitchInput",
+      "selector": "input[rdxSwitchInput]",
+      "exportAs": "rdxSwitchInput",
+      "description": "The hidden native checkbox that mirrors the switch state for form submission and screen readers.\n\nSee https://base-ui.com/react/components/switch",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxSwitchRoot",
+      "selector": "button[rdxSwitchRoot]",
+      "exportAs": "rdxSwitchRoot",
+      "description": "A control that toggles between on and off.\n\nSee https://base-ui.com/react/components/switch",
+      "hostDirectives": [
+        "RdxControlValueAccessor"
+      ],
+      "inputs": [
+        {
+          "name": "aria-label",
+          "type": "string | undefined",
+          "default": "undefined"
+        },
+        {
+          "name": "aria-labelledby",
+          "type": "string | undefined",
+          "default": "undefined"
+        },
+        {
+          "name": "checked",
+          "type": "boolean",
+          "default": "false",
+          "description": "The controlled checked state. Use with `(onCheckedChange)` or two-way `[(checked)]`."
+        },
+        {
+          "name": "defaultChecked",
+          "type": "boolean | undefined",
+          "default": "undefined",
+          "description": "The state of the switch when it is initially rendered. Use when you do not need to control its state."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "When `true`, prevents the user from interacting with the switch."
+        },
+        {
+          "name": "form",
+          "type": "string",
+          "description": "Associates the switch with an external form by id."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "default": "injectId('rdx-switch-')"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "Native form field name."
+        },
+        {
+          "name": "readonly",
+          "type": "boolean",
+          "default": "false",
+          "description": "When `true`, the switch is focusable but cannot be toggled."
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "default": "false",
+          "description": "When `true`, the switch must be on before the owning form can be submitted."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "default": "'on'",
+          "description": "Value submitted with the form when the switch is on.\n\nBound publicly as `[value]`; the TS member is named `submitValue` so the\ndirective can satisfy `RdxFormCheckboxControl`, whose contract reserves a\n`value` member for `RdxFormValueControl` and forbids it on checkbox-style\ncontrols."
+        },
+        {
+          "name": "uncheckedValue",
+          "type": "string",
+          "description": "Value submitted while the switch is off. When omitted, the off state contributes no entry,\nmatching native checkbox behavior."
+        },
+        {
+          "name": "dirty",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the value changed from its initial value. Merged with internal tracking."
+        },
+        {
+          "name": "errors",
+          "type": "readonly RdxValidationError[]",
+          "default": "[]",
+          "description": "Validation errors for the control. A non-empty list marks it invalid."
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+        },
+        {
+          "name": "pending",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
+        },
+        {
+          "name": "touched",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onCheckedChange",
+          "type": "RdxSwitchCheckedChangeEvent",
+          "description": "Event handler called when the checked state of the switch changes."
+        },
+        {
+          "name": "touch",
+          "type": "void",
+          "description": "Emits when the control is touched, notifying Signal Forms (stable Angular 22 contract)."
+        }
+      ],
+      "twoWay": [
+        "checked",
+        "touched"
+      ]
+    },
+    {
+      "directive": "RdxSwitchThumb",
+      "selector": "span[rdxSwitchThumb]",
+      "exportAs": "rdxSwitchThumb",
+      "description": "The moving part of the switch that indicates whether it is on or off.\n\nSee https://base-ui.com/react/components/switch",
+      "inputs": [],
+      "outputs": []
+    }
+  ]
+}

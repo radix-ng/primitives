@@ -1,0 +1,265 @@
+{
+  "version": "1.1.0",
+  "slug": "number-field",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxNumberFieldDecrement",
+      "selector": "button[rdxNumberFieldDecrement]",
+      "exportAs": "rdxNumberFieldDecrement",
+      "description": "A stepper button that decreases the field value when clicked or held.\n\nSee https://base-ui.com/react/components/number-field",
+      "inputs": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "When `true`, the button is disabled in addition to inheriting the root's disabled state."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxNumberFieldGroup",
+      "selector": "div[rdxNumberFieldGroup]",
+      "exportAs": "rdxNumberFieldGroup",
+      "description": "Groups the input with the increment and decrement buttons.\n\nSee https://base-ui.com/react/components/number-field",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxNumberFieldHiddenInput",
+      "selector": "input[rdxNumberFieldHiddenInput]",
+      "exportAs": "rdxNumberFieldHiddenInput",
+      "description": "The optional hidden native `input[type=number]` that mirrors the field value for browser constraint\nvalidation (min/max/step/required) and autofill. When present it also owns native form serialization;\nwithout it the root generates a plain hidden entry. Place it inside the root, alongside the visible\n`[rdxNumberFieldInput]`.\n\nSee https://base-ui.com/react/components/number-field",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxNumberFieldIncrement",
+      "selector": "button[rdxNumberFieldIncrement]",
+      "exportAs": "rdxNumberFieldIncrement",
+      "description": "A stepper button that increases the field value when clicked or held.\n\nSee https://base-ui.com/react/components/number-field",
+      "inputs": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "When `true`, the button is disabled in addition to inheriting the root's disabled state."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxNumberFieldInput",
+      "selector": "input[rdxNumberFieldInput]",
+      "exportAs": "rdxNumberFieldInput",
+      "description": "The native text input that displays the formatted value and accepts typed input.\n\nSee https://base-ui.com/react/components/number-field",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxNumberFieldRoot",
+      "selector": "div[rdxNumberFieldRoot]",
+      "exportAs": "rdxNumberFieldRoot",
+      "description": "Groups all parts of the number field and manages its state, parsing/formatting\nand value-change logic. A single directive drives the whole family — parts read\nsignals and call methods off it through the root context.\n\nSee https://base-ui.com/react/components/number-field",
+      "hostDirectives": [
+        "RdxControlValueAccessor"
+      ],
+      "inputs": [
+        {
+          "name": "allowOutOfRange",
+          "type": "boolean",
+          "default": "false",
+          "description": "When `true`, direct text entry may go outside the `min`/`max` range without clamping.\nStep interactions (arrow keys, buttons, wheel, scrub) still clamp."
+        },
+        {
+          "name": "allowWheelScrub",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the value can be changed with the mouse wheel while the input is focused."
+        },
+        {
+          "name": "defaultValue",
+          "type": "number",
+          "description": "The uncontrolled value of the field when it is initially rendered."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "When `true`, the user cannot interact with the field."
+        },
+        {
+          "name": "form",
+          "type": "string",
+          "description": "Id of an external form that owns this field."
+        },
+        {
+          "name": "format",
+          "type": "Intl.NumberFormatOptions",
+          "description": "Options used to format the input value (forwarded to `Intl.NumberFormat`)."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "default": "injectId('rdx-number-field-')",
+          "description": "The id of the input element."
+        },
+        {
+          "name": "largeStep",
+          "type": "number",
+          "default": "10",
+          "description": "The step used when incrementing while the Shift key is held. Snaps to multiples of this value."
+        },
+        {
+          "name": "locale",
+          "type": "string",
+          "default": "'en'",
+          "description": "The locale used to parse and format the value."
+        },
+        {
+          "name": "max",
+          "type": "number | undefined",
+          "default": "undefined",
+          "description": "The maximum value of the field."
+        },
+        {
+          "name": "min",
+          "type": "number | undefined",
+          "default": "undefined",
+          "description": "The minimum value of the field."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "Name used when serializing this field into native `FormData`."
+        },
+        {
+          "name": "readonly",
+          "type": "boolean",
+          "default": "false",
+          "description": "When `true`, the field is focusable but its value cannot be changed."
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "default": "false",
+          "description": "When `true`, the user must enter a value before the owning form can be submitted."
+        },
+        {
+          "name": "smallStep",
+          "type": "number",
+          "default": "0.1",
+          "description": "The step used when incrementing while the Alt key is held. Snaps to multiples of this value."
+        },
+        {
+          "name": "snapOnStep",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the value should snap to the nearest step when incrementing or decrementing."
+        },
+        {
+          "name": "step",
+          "type": "number",
+          "default": "1",
+          "description": "Amount to increment and decrement with the buttons, arrow keys and scrub area."
+        },
+        {
+          "name": "value",
+          "type": "number | null",
+          "default": "null",
+          "description": "The controlled value of the field. Use with `(onValueChange)` or two-way `[(value)]`."
+        },
+        {
+          "name": "dirty",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the value changed from its initial value. Merged with internal tracking."
+        },
+        {
+          "name": "errors",
+          "type": "readonly RdxValidationError[]",
+          "default": "[]",
+          "description": "Validation errors for the control. A non-empty list marks it invalid."
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+        },
+        {
+          "name": "pending",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
+        },
+        {
+          "name": "touched",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onValueChange",
+          "type": "RdxNumberFieldValueChangeEvent",
+          "description": "Emitted when the value changes (during interaction or programmatically)."
+        },
+        {
+          "name": "onValueCommitted",
+          "type": "number | null",
+          "description": "Emitted when the value is committed: on blur after typing, or when a pointer is released\nafter scrubbing or pressing a button. Fires together with `onValueChange` for keyboard input."
+        },
+        {
+          "name": "touch",
+          "type": "void",
+          "description": "Emits when the control is touched, notifying Signal Forms (stable Angular 22 contract)."
+        }
+      ],
+      "twoWay": [
+        "value",
+        "touched"
+      ]
+    },
+    {
+      "directive": "RdxNumberFieldScrubAreaCursor",
+      "selector": "[rdxNumberFieldScrubAreaCursor]",
+      "exportAs": "rdxNumberFieldScrubAreaCursor",
+      "description": "A custom element shown instead of the native cursor while scrubbing. It is portaled to the\ndocument body and positioned with the Pointer Lock API. Hidden in Safari (which would shift\nlayout with the native pointer-lock notification) and for touch input.\n\nSee https://base-ui.com/react/components/number-field",
+      "hostDirectives": [
+        "RdxPortal"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxNumberFieldScrubArea",
+      "selector": "[rdxNumberFieldScrubArea]",
+      "exportAs": "rdxNumberFieldScrubArea",
+      "description": "An interactive area where the user can click and drag to change the field value.\nUses the Pointer Lock API for continuous dragging (disabled in Safari to avoid layout shift).\n\nSee https://base-ui.com/react/components/number-field",
+      "inputs": [
+        {
+          "name": "direction",
+          "type": "ScrubDirection",
+          "default": "'horizontal'",
+          "description": "The direction the cursor must move to change the value."
+        },
+        {
+          "name": "pixelSensitivity",
+          "type": "number",
+          "default": "2",
+          "description": "How many pixels the cursor must move before the value changes. Higher is less sensitive."
+        },
+        {
+          "name": "teleportDistance",
+          "type": "number | undefined",
+          "default": "undefined",
+          "description": "If set, the distance the cursor may move from the scrub area center before it loops back."
+        }
+      ],
+      "outputs": []
+    }
+  ]
+}

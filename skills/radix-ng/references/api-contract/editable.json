@@ -1,0 +1,189 @@
+{
+  "version": "1.1.0",
+  "slug": "editable",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxEditableArea",
+      "selector": "[rdxEditableArea]",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxEditableCancelTrigger",
+      "selector": "button[rdxEditableCancelTrigger]",
+      "inputs": [
+        {
+          "name": "aria-label",
+          "type": "string",
+          "default": "'cancel'",
+          "description": "Accessible label for the trigger. Override to localize."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxEditableEditTrigger",
+      "selector": "button[rdxEditableEditTrigger]",
+      "inputs": [
+        {
+          "name": "aria-label",
+          "type": "string",
+          "default": "'edit'",
+          "description": "Accessible label for the trigger. Override to localize."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxEditableInput",
+      "selector": "input[rdxEditableInput]",
+      "inputs": [
+        {
+          "name": "aria-label",
+          "type": "string",
+          "default": "'editable input'",
+          "description": "Accessible label for the input. Override to localize."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxEditablePreview",
+      "selector": "span[rdxEditablePreview]",
+      "exportAs": "rdxEditablePreview",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxEditableRoot",
+      "selector": "[rdxEditableRoot]",
+      "exportAs": "rdxEditableRoot",
+      "hostDirectives": [
+        "RdxFocusOutside",
+        "RdxPointerDownOutside"
+      ],
+      "inputs": [
+        {
+          "name": "activationMode",
+          "type": "EditableActivationMode",
+          "default": "'focus'"
+        },
+        {
+          "name": "autoResize",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "description": "Uncontrolled initial value."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "maxLength",
+          "type": "number | undefined",
+          "default": "undefined"
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "default": "'Enter text...'"
+        },
+        {
+          "name": "readonly",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "selectOnFocus",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "startWithEditMode",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether to start with the edit mode active"
+        },
+        {
+          "name": "submitMode",
+          "type": "EditableSubmitMode",
+          "default": "'blur'"
+        },
+        {
+          "name": "value",
+          "type": "string"
+        },
+        {
+          "name": "dirty",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the value changed from its initial value. Merged with internal tracking."
+        },
+        {
+          "name": "errors",
+          "type": "readonly RdxValidationError[]",
+          "default": "[]",
+          "description": "Validation errors for the control. A non-empty list marks it invalid."
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+        },
+        {
+          "name": "pending",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
+        },
+        {
+          "name": "touched",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onValueChange",
+          "type": "RdxEditableValueChangeEvent",
+          "description": "Emitted when the value is committed (on submit)."
+        },
+        {
+          "name": "touch",
+          "type": "void",
+          "description": "Emits when the control is touched, notifying Signal Forms (stable Angular 22 contract)."
+        }
+      ],
+      "twoWay": [
+        "value",
+        "touched"
+      ]
+    },
+    {
+      "directive": "RdxEditableSubmitTrigger",
+      "selector": "button[rdxEditableSubmitTrigger]",
+      "inputs": [
+        {
+          "name": "aria-label",
+          "type": "string",
+          "default": "'submit'",
+          "description": "Accessible label for the trigger. Override to localize."
+        }
+      ],
+      "outputs": []
+    }
+  ]
+}

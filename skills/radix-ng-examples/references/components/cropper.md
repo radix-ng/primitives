@@ -1,40 +1,10 @@
 # Cropper
 
-#### Headless component for interactive image cropping — inspired by the experience on [X](https://x.com/).
+Headless component for interactive image cropping — inspired by the experience on [X](https://x.com/).
 
-Based on the React version [image-cropper](https://github.com/origin-space/image-cropper).
+> Index — full source of each example is one click away in `../examples/cropper--*.md`; the whole-doc dump is in `../llms-full.txt`.
 
-```typescript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { demoCropper } from '../../storybook/styles';
-import { RdxCropperCropAreaDirective } from '../src/cropper-crop-area.directive';
-import { RdxCropperDescriptionDirective } from '../src/cropper-description.directive';
-import { RdxCropperImageComponent } from '../src/cropper-image.component';
-import { RdxCropperRootDirective } from '../src/cropper-root.directive';
-
-@Component({
-    changeDetection: ChangeDetectionStrategy.Eager,
-    selector: 'cropper-default',
-    imports: [
-        RdxCropperRootDirective,
-        RdxCropperImageComponent,
-        RdxCropperCropAreaDirective,
-        RdxCropperDescriptionDirective
-    ],
-    template: `
-        <div [class]="c.root" image="https://images.unsplash.com/photo-1494790108377-be9c29b29330" rdxCropperRoot>
-            <div class="sr-only" rdxCropperDescription>
-                Use the arrow keys to move the image, and plus or minus to zoom.
-            </div>
-            <div [imgClass]="c.image" rdxCropperImage></div>
-            <div [class]="c.cropArea" rdxCropperCropArea></div>
-        </div>
-    `
-})
-export class CropperDefault {
-    protected readonly c = demoCropper;
-}
-```
+> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
 
 ## Features
 
@@ -70,140 +40,11 @@ Import all parts and piece them together.
 
 ## Examples
 
-### Disabled
+- [Disabled](../examples/cropper--disabled.md)
+- [With crop data](../examples/cropper--with-crop-data.md)
 
-Set `disabled` to freeze the cropper — drag, wheel/pinch zoom, and keyboard are all ignored, the root
-leaves the tab order, and `data-disabled` is exposed for styling.
+## API & styling contract
 
-```typescript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { demoCropper } from '../../storybook/styles';
-import { RdxCropperCropAreaDirective } from '../src/cropper-crop-area.directive';
-import { RdxCropperDescriptionDirective } from '../src/cropper-description.directive';
-import { RdxCropperImageComponent } from '../src/cropper-image.component';
-import { RdxCropperRootDirective } from '../src/cropper-root.directive';
-
-@Component({
-    changeDetection: ChangeDetectionStrategy.Eager,
-    selector: 'cropper-disabled',
-    imports: [
-        RdxCropperRootDirective,
-        RdxCropperImageComponent,
-        RdxCropperCropAreaDirective,
-        RdxCropperDescriptionDirective
-    ],
-    template: `
-        <div
-            [class]="c.root"
-            disabled
-            image="https://images.unsplash.com/photo-1494790108377-be9c29b29330"
-            rdxCropperRoot
-        >
-            <div class="sr-only" rdxCropperDescription>
-                Use the arrow keys to move the image, and plus or minus to zoom.
-            </div>
-            <div [imgClass]="c.image" rdxCropperImage></div>
-            <div [class]="c.cropArea" rdxCropperCropArea></div>
-        </div>
-    `
-})
-export class CropperDisabled {
-    protected readonly c = demoCropper;
-}
-```
-
-### With crop data
-
-Subscribe to `onCropChange` to read the crop rectangle (in the source image's natural pixels).
-
-```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { demoCropper } from '../../storybook/styles';
-import { RdxCropperCropAreaDirective } from '../src/cropper-crop-area.directive';
-import { RdxCropperDescriptionDirective } from '../src/cropper-description.directive';
-import { RdxCropperImageComponent } from '../src/cropper-image.component';
-import { Area, RdxCropperRootDirective } from '../src/cropper-root.directive';
-
-@Component({
-    changeDetection: ChangeDetectionStrategy.Eager,
-    selector: 'cropper-with-data',
-    imports: [
-        RdxCropperRootDirective,
-        RdxCropperImageComponent,
-        RdxCropperCropAreaDirective,
-        RdxCropperDescriptionDirective
-    ],
-    template: `
-        <div class="flex flex-col items-center gap-2">
-            <div
-                [class]="c.root"
-                (onCropChange)="cropData.set($event)"
-                image="https://images.unsplash.com/photo-1494790108377-be9c29b29330"
-                rdxCropperRoot
-            >
-                <div class="sr-only" rdxCropperDescription>
-                    Use the arrow keys to move the image, and plus or minus to zoom.
-                </div>
-                <div [imgClass]="c.image" rdxCropperImage></div>
-                <div [class]="c.cropArea" rdxCropperCropArea></div>
-            </div>
-
-            @if (cropData(); as data) {
-                <code [class]="c.output">{{ format(data) }}</code>
-            }
-        </div>
-    `
-})
-export class CropperWithData {
-    protected readonly c = demoCropper;
-    readonly cropData = signal<Area | null>(null);
-
-    protected format(data: Area): string {
-        return JSON.stringify(data, null, 2);
-    }
-}
-```
-
-## Data attributes
-
-### Root
-
-| Attribute       | Present when                 |
-| --------------- | ---------------------------- |
-| `data-dragging` | The image is being dragged.  |
-| `data-disabled` | The `disabled` input is set. |
-
-## Accessibility
-
-Always include a `rdxCropperDescription` element inside `rdxCropperRoot`. Its text is linked to the
-root via `aria-describedby`, giving screen reader users instructions on how to operate the cropper; a
-console warning is logged when it is missing. Visually hide it with an `sr-only` class. The root uses
-`role="application"` so arrow and zoom keys reach the cropper instead of the screen reader's browse
-mode, and its accessible name can be customized with the `ariaLabel` input.
-
-### Keyboard Interactions
-
-| Key                     | Description                         |
-| ----------------------- | ----------------------------------- |
-| Arrow keys              | Pan the image within the crop area. |
-| `+` / `=` / `Page Up`   | Zoom in.                            |
-| `-` / `_` / `Page Down` | Zoom out.                           |
-
-## API Reference
-
-### Root
-
-`RdxCropperRootDirective` — the main container and controller. It handles logic, state, and interactions.
-
-### Description
-
-`RdxCropperDescriptionDirective` — renders a `<div>` for accessibility instructions. Its id is linked
-via `aria-describedby` on the _Root_ element.
-
-### Image
-
-`RdxCropperImageComponent` — renders the actual `<img>`. It is positioned and scaled by `rdxCropperRoot`.
-
-### Crop Area
-
-`RdxCropperCropAreaDirective` — a `<div>` representing the visual crop window. Style it to show the bounds.
+Machine-readable contracts for this primitive live in the `radix-ng` skill:
+- API (selectors, inputs, outputs, two-way bindings): `references/api-contract/cropper.json`
+- Styling (parts + `data-*`): `references/styling-contract/cropper.json`

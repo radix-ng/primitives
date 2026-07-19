@@ -1,0 +1,278 @@
+{
+  "version": "1.1.0",
+  "slug": "preview-card",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxPreviewCardArrow",
+      "selector": "[rdxPreviewCardArrow]",
+      "description": "An optional arrow element rendered alongside the preview-card.",
+      "hostDirectives": [
+        "RdxPopperArrow"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxPreviewCardBackdrop",
+      "selector": "[rdxPreviewCardBackdrop]",
+      "description": "An optional backdrop rendered behind the popup.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxPreviewCardPopup",
+      "selector": "[rdxPreviewCardPopup]",
+      "description": "A container for the preview-card contents.\n\n**ADR 0015 migration** onto the new floating dismissal engine (dismissal-only — a preview-card has\nno focus manager, ADR 0017 §1). Escape, an outside press, and a focus-out all close it (the legacy's\ntrigger-press preventDefault is now automatic: the trigger is the registered reference, so a press on\nit is \"inside\" and never fires `pointerDownOutside`). A focus-out while a pointer is held on the\ntrigger is still vetoed.",
+      "hostDirectives": [
+        "RdxPopperContent",
+        "RdxFloatingNodeRegistration"
+      ],
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "escapeKeyDown",
+          "type": "KeyboardEvent",
+          "description": "Event handler called when the escape key is down. Can be prevented."
+        },
+        {
+          "name": "focusOutside",
+          "type": "FocusEvent",
+          "description": "Event handler called when focus moves outside of the popup. Can be prevented."
+        },
+        {
+          "name": "interactOutside",
+          "type": "RdxOutsidePressDomEvent | FocusEvent",
+          "description": "Event handler called when an interaction happens outside of the popup. Can be prevented."
+        },
+        {
+          "name": "pointerDownOutside",
+          "type": "RdxOutsidePressDomEvent",
+          "description": "Event handler called when a pointerdown event happens outside of the popup. Can be prevented."
+        }
+      ]
+    },
+    {
+      "directive": "RdxPreviewCardPortal",
+      "selector": "ng-template[rdxPreviewCardPortal]",
+      "exportAs": "rdxPreviewCardPortal",
+      "description": "Structural directive that teleports the preview-card content into a container (default\n`document.body`) while the card is open, and keeps it mounted until any CSS exit `@keyframes`\nfinishes.\n\nApply it with the `*` microsyntax on the positioner —\n`<div *rdxPreviewCardPortal rdxPreviewCardPositioner>` — or as an explicit\n`<ng-template rdxPreviewCardPortal>`. For a custom container use the explicit form with `[container]`.",
+      "hostDirectives": [
+        "RdxPortalPresence"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxPreviewCardPortalMisuseGuard",
+      "selector": "[rdxPreviewCardPortal]:not(ng-template)",
+      "description": "Dev-mode guard: `rdxPreviewCardPortal` used to be an attribute directive on a `<div>`. It is now\nstructural, so the old `<div rdxPreviewCardPortal>` markup would silently stop portaling — fail\nloudly instead.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "directive": "RdxPreviewCardPositioner",
+      "selector": "[rdxPreviewCardPositioner]",
+      "description": "Positions the preview-card against its trigger.\n\nA \"thin\" positioner (ADR 0012): it inherits the popper positioning surface (inputs, `placed`\noutput, unified vars + placement attrs) from {@link RdxPopperContentWrapper} and adds preview-card's\nown concerns — Base UI-aligned defaults via the config provider, the open/closed/instant state\nattributes, the deprecated `--radix-preview-card-*` aliases, and the grace-area hover bridge.",
+      "inputs": [
+        {
+          "name": "align",
+          "type": "Align",
+          "default": "'center'",
+          "description": "How to align the popup relative to the specified side. May change when collisions occur."
+        },
+        {
+          "name": "alignOffset",
+          "default": "0",
+          "description": "An offset in pixels from the `start` or `end` alignment options. Also accepts an\n{@link OffsetFunction} (same signature as `sideOffset`)."
+        },
+        {
+          "name": "anchor",
+          "type": "RdxPopperAnchorElement",
+          "description": "An element to position the popup against. Defaults to the popper anchor."
+        },
+        {
+          "name": "arrowPadding",
+          "type": "number",
+          "default": "5",
+          "description": "Minimum distance to maintain between the arrow and the edges of the popup.\nIf your content has border-radius, this will prevent it from overflowing the corners."
+        },
+        {
+          "name": "avoidCollisions",
+          "type": "boolean",
+          "default": "true",
+          "deprecated": true,
+          "description": "When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges.\n\n`false` disables all avoidance (unless a `collisionAvoidance` object is provided, which wins)."
+        },
+        {
+          "name": "collisionAvoidance",
+          "type": "RdxCollisionAvoidance | undefined",
+          "default": "undefined",
+          "description": "How the popup avoids colliding with the boundary edges, per axis (Base UI `collisionAvoidance`).\nOverrides the deprecated `avoidCollisions` and any per-primitive preset. An object here **fully\nreplaces** the preset — omitted fields fall back to `side: 'flip'`, `align: 'flip'`,\n`fallbackAxisSide: 'end'`, never to the preset. See {@link RdxCollisionAvoidance}."
+        },
+        {
+          "name": "collisionBoundary",
+          "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
+          "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
+        },
+        {
+          "name": "collisionPadding",
+          "type": "number | Partial<Record<Side, number>>",
+          "default": "5",
+          "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
+        },
+        {
+          "name": "dir",
+          "type": "Direction | undefined",
+          "default": "undefined",
+          "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
+        },
+        {
+          "name": "hideWhenDetached",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether to hide the content when the trigger becomes fully occluded."
+        },
+        {
+          "name": "positionStrategy",
+          "type": "\"fixed\" | \"absolute\"",
+          "default": "'fixed'",
+          "description": "The type of CSS position property to use."
+        },
+        {
+          "name": "side",
+          "type": "SideOrLogical",
+          "default": "'bottom'",
+          "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled.\n\nAccepts the logical `'inline-start'` / `'inline-end'` in addition to the physical sides; those\nresolve to `left` / `right` for the text direction (Base UI parity). The placed side reported via\n`data-side` / `placedSide()` echoes the requested kind: logical in → logical out (even after a\ncollision flip), physical in → physical out."
+        },
+        {
+          "name": "sideOffset",
+          "default": "0",
+          "description": "Distance between the anchor and the popup in pixels. Also accepts an {@link OffsetFunction} that\nreads the anchor / positioner dimensions and the resolved side / align."
+        },
+        {
+          "name": "sticky",
+          "type": "\"partial\" | \"always\"",
+          "default": "'partial'",
+          "description": "The sticky behavior on the align axis. `partial` will keep the\ncontent in the boundary as long as the trigger is at least partially\nin the boundary whilst \"always\" will keep the content in the boundary\nregardless."
+        },
+        {
+          "name": "updatePositionStrategy",
+          "type": "\"optimized\" | \"always\"",
+          "default": "'always'",
+          "description": "Strategy to update the position of the floating element on every animation frame."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "placed",
+          "type": "void",
+          "description": "Emits when the element is placed."
+        }
+      ]
+    },
+    {
+      "directive": "RdxPreviewCardRoot",
+      "selector": "[rdxPreviewCardRoot]",
+      "exportAs": "rdxPreviewCardRoot",
+      "description": "Groups all parts of the preview-card.",
+      "hostDirectives": [
+        "RdxPopper"
+      ],
+      "inputs": [
+        {
+          "name": "defaultOpen",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the preview-card is initially open."
+        },
+        {
+          "name": "defaultTriggerId",
+          "type": "string | null",
+          "default": "null",
+          "description": "ID of the trigger associated with an initially open uncontrolled preview-card."
+        },
+        {
+          "name": "handle",
+          "type": "RdxPreviewCardHandle<unknown>",
+          "description": "Associates this root with detached trigger elements."
+        },
+        {
+          "name": "open",
+          "default": "false",
+          "description": "Whether the preview-card is currently open."
+        },
+        {
+          "name": "triggerId",
+          "type": "string | null",
+          "default": "null",
+          "description": "ID of the trigger associated with a controlled preview-card."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onOpenChange",
+          "type": "RdxPreviewCardOpenChange"
+        },
+        {
+          "name": "onOpenChangeComplete",
+          "type": "boolean"
+        }
+      ],
+      "twoWay": [
+        "open",
+        "triggerId"
+      ]
+    },
+    {
+      "directive": "RdxPreviewCardTrigger",
+      "selector": "[rdxPreviewCardTrigger]",
+      "description": "A link or element that opens the preview card.",
+      "hostDirectives": [
+        "RdxPopperAnchor"
+      ],
+      "inputs": [
+        {
+          "name": "closeDelay",
+          "type": "number",
+          "default": "300",
+          "description": "How long to wait before closing a hover-opened preview-card, in milliseconds."
+        },
+        {
+          "name": "delay",
+          "type": "number",
+          "default": "600",
+          "description": "How long to wait before opening the preview-card on hover, in milliseconds."
+        },
+        {
+          "name": "disabled",
+          "default": "false",
+          "description": "Whether the trigger should ignore user interaction."
+        },
+        {
+          "name": "handle",
+          "type": "RdxPreviewCardHandle<unknown>",
+          "description": "Associates this trigger with a detached preview-card root."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "description": "ID used to identify this trigger when opening a detached preview-card imperatively."
+        },
+        {
+          "name": "payload",
+          "type": "unknown",
+          "description": "Data associated with this trigger while it is active."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxPreviewCardViewport",
+      "selector": "[rdxPreviewCardViewport]",
+      "description": "A viewport for animating content changes when a preview-card moves between triggers.\n\nRender one direct child inside the viewport. It is marked with `data-current`;\nwhen the active trigger changes, a DOM snapshot is retained as `data-previous`\nuntil its CSS animation or transition completes.",
+      "inputs": [],
+      "outputs": []
+    }
+  ]
+}

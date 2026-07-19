@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "Composite",
+  "slug": "composite",
+  "section": "utils",
+  "description": "Composite",
+  "doc": "radix-ng-examples/references/utils/composite.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-composite--docs",
+  "anatomy": "<div rdxCompositeList>\n  <button rdxCompositeListItem>One</button>\n  <button rdxCompositeListItem>Two</button>\n  <button rdxCompositeListItem>Three</button>\n</div>\n\n<div rdxCompositeRoot orientation=\"horizontal\">\n  <button rdxCompositeItem>One</button>\n  <button rdxCompositeItem>Two</button>\n  <button rdxCompositeItem>Three</button>\n</div>",
+  "dataAttributes": []
+}

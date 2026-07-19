@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "name": "injectId",
+  "slug": "inject-id",
+  "section": "utils",
+  "description": "Generates unique, SSR-stable element IDs — the Angular counterpart of React's `useId`.",
+  "doc": "radix-ng-examples/references/utils/inject-id.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-inject-id--docs",
+  "anatomy": "",
+  "dataAttributes": []
+}
