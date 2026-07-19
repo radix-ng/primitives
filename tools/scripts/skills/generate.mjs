@@ -226,14 +226,17 @@ write(
 const componentDocs = docs.filter((doc) => doc.section === 'components' && (metaFor(doc).examples ?? []).length);
 const totalExamples = componentDocs.reduce((sum, doc) => sum + metaFor(doc).examples.length, 0);
 
+// One line per component: the name links to its full-source doc, followed by the
+// component's own description and an example count. Both the example names AND their
+// source stay in per-component references/components/<slug>.md (one drill-down away) —
+// paying ~8KB of inline example names eagerly, for every component on every activation,
+// to save the agent one on-demand read of the chosen component's doc is a bad trade.
 const indexBody = componentDocs
     .map((doc) => {
-        const items = metaFor(doc)
-            .examples.map((ex) => `- **${ex.name}**${ex.description ? ` — ${ex.description}` : ''}`)
-            .join('\n');
-        return `### ${doc.title}\n\nFull source (all examples): [\`references/components/${doc.slug}.md\`](./references/components/${doc.slug}.md) · [Storybook](${SITE_URL}/?path=/docs/primitives-${doc.slug}--docs)\n\n${items}`;
+        const count = metaFor(doc).examples.length;
+        return `- **[${doc.title}](./references/components/${doc.slug}.md)** — ${doc.description} _(${count} example${count === 1 ? '' : 's'})_`;
     })
-    .join('\n\n');
+    .join('\n');
 
 const examplesSkill = `---
 name: radix-ng-examples
@@ -258,10 +261,10 @@ Working examples built on \`@radix-ng/primitives\`. Full source is **bundled off
 
 ## How to use this skill
 
-1. Describe the UI you want to build (e.g. "a multi-select accordion", "a form field with validation").
-2. Find the matching component below and scan its example list.
-3. Open the component's bundled \`references/components/<name>.md\` — it has the **full Angular source**
-   of every example.
+1. Describe the UI you want to build (e.g. "a multi-select combobox", "a form field with validation").
+2. Find the matching component below by name and description.
+3. Open that component's bundled \`references/components/<slug>.md\` — it lists every example by name
+   and has the **full Angular source** of each.
 4. Adapt it: keep the primitive directives and \`data-*\` styling hooks, swap in the project's own
    design-system classes/tokens.
 
@@ -278,6 +281,33 @@ write(path.join(skillsRoot, 'radix-ng-examples/SKILL.md'), examplesSkill);
 
 // 4. API contract (selectors + inputs/outputs per part, from compodoc metadata)
 const api = generateApiContract({ workspaceRoot, primitivesRoot, skillsRoot, version: VERSION, write });
+
+// 5. Eager-load budget. A SKILL.md is the ONLY file pulled into a consumer agent's context on
+// skill activation — everything under references/ loads on demand. Oversized SKILL.md files are
+// therefore the main way this bundle could *accelerate* a consumer's context compaction, so cap
+// them here. A regression (e.g. re-expanding every example inline) throws, which CI surfaces via
+// the `pnpm skills:build` step. references/ shards are intentionally unbounded — they only cost
+// context when explicitly opened. Raise a budget only with a deliberate reason.
+const SKILL_BUDGETS = [
+    { file: 'radix-ng/SKILL.md', maxLines: 200, maxBytes: 14_000, source: 'hand-authored' },
+    { file: 'radix-ng-examples/SKILL.md', maxLines: 120, maxBytes: 12_000, source: 'generated' }
+];
+const budgetErrors = SKILL_BUDGETS.flatMap(({ file, maxLines, maxBytes, source }) => {
+    const content = fs.readFileSync(path.join(skillsRoot, file), 'utf8');
+    const lines = content.split('\n').length;
+    const bytes = Buffer.byteLength(content, 'utf8');
+    const over = [];
+    if (lines > maxLines) over.push(`${lines} lines > ${maxLines}`);
+    if (bytes > maxBytes) over.push(`${bytes} bytes > ${maxBytes}`);
+    return over.length ? [`  ${file} (${source}): ${over.join('; ')}`] : [];
+});
+if (budgetErrors.length) {
+    throw new Error(
+        `SKILL.md eager-load budget exceeded — these files load into a consumer agent's context on ` +
+            `skill activation and must stay small:\n${budgetErrors.join('\n')}\n` +
+            `Move detail into references/ (loaded on demand), or raise the budget in generate.mjs deliberately.`
+    );
+}
 
 console.log(`✓ ${docs.length} docs rendered → ${path.relative(workspaceRoot, refsRoot)}/<section>/`);
 console.log(`✓ llms.txt + llms-full.txt (${docs.length} docs)`);

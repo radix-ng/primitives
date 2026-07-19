@@ -21,10 +21,10 @@ Working examples built on `@radix-ng/primitives`. Full source is **bundled offli
 
 ## How to use this skill
 
-1. Describe the UI you want to build (e.g. "a multi-select accordion", "a form field with validation").
-2. Find the matching component below and scan its example list.
-3. Open the component's bundled `references/components/<name>.md` — it has the **full Angular source**
-   of every example.
+1. Describe the UI you want to build (e.g. "a multi-select combobox", "a form field with validation").
+2. Find the matching component below by name and description.
+3. Open that component's bundled `references/components/<slug>.md` — it lists every example by name
+   and has the **full Angular source** of each.
 4. Adapt it: keep the primitive directives and `data-*` styling hooks, swap in the project's own
    design-system classes/tokens.
 
@@ -35,464 +35,46 @@ Total: **247 examples** across **43 components**.
 
 ## Components
 
-### Accordion
-
-Full source (all examples): [`references/components/accordion.md`](./references/components/accordion.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-accordion--docs)
-
-- **Disabled**
-- **Multiple**
-- **Collapsible**
-- **Horizontal**
-- **Events**
-- **Keep mounted**
-
-### Alert Dialog
-
-Full source (all examples): [`references/components/alert-dialog.md`](./references/components/alert-dialog.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-alert-dialog--docs)
-
-- **Default**
-- **Controlled**
-- **Multiple triggers**
-- **Controlled mode with multiple triggers**
-- **Detached triggers**
-- **Close confirmation**
-- **Open from a menu**
-
-### Autocomplete
-
-Full source (all examples): [`references/components/autocomplete.md`](./references/components/autocomplete.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-autocomplete--docs)
-
-- **Default**
-- **Inline autocompletion**
-- **Auto highlight**
-- **Grouped**
-- **Limit**
-- **Fuzzy matching**
-- **Localization**
-- **Async**
-- **Command palette**
-- **Grid**
-- **Controlled open state**
-- **Virtualized**
-- **Reactive forms**
-- **Template-driven forms**
-- **Validation**
-- **Disabled**
-
-### Avatar
-
-Full source (all examples): [`references/components/avatar.md`](./references/components/avatar.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-avatar--docs)
-
-- **Sizes**
-- **Fallback**
-- **Delayed fallback**
-
-### Button
-
-Full source (all examples): [`references/components/button.md`](./references/components/button.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-button--docs)
-
-- **Variants**
-- **Sizes**
-- **Disabled**
-- **As link**
-- **Loading**
-
-### Calendar
-
-Full source (all examples): [`references/components/calendar.md`](./references/components/calendar.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-calendar--docs)
-
-- **Calendar with Locale and Calendar System Selection**
-- **Multiple selection**
-- **Week numbers**
-- **Disabled dates**
-- **Unavailable dates**
-- **Custom navigation**
-- **Multiple months**
-
-### Checkbox
-
-Full source (all examples): [`references/components/checkbox.md`](./references/components/checkbox.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-checkbox--docs)
-
-- **Labeling**
-- **Change events**
-- **Indeterminate**
-- **Keep mounted**
-- **Template-driven forms**
-- **Reactive forms**
-- **Validation**
-- **Select all**
-- **Checkbox group**
-
-### Collapsible
-
-Full source (all examples): [`references/components/collapsible.md`](./references/components/collapsible.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-collapsible--docs)
-
-- **Keep mounted**
-- **Animation**
-- **External trigger**
-
-### Combobox
-
-Full source (all examples): [`references/components/combobox.md`](./references/components/combobox.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-combobox--docs)
-
-- **Default**
-- **Disabled**
-- **Grouped**
-- **Grid**
-- **Multiple**
-- **Async / external filtering**
-- **Async with multiple selection**
-- **Creatable**
-- **Input inside the popup**
-- **Command palette**
-- **Modal**
-- **Controlled open state**
-- **Reactive forms**
-- **Validation**
-- **Empty state**
-- **Virtualized**
-
-### Context Menu
-
-Full source (all examples): [`references/components/context-menu.md`](./references/components/context-menu.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-context-menu--docs)
-
-- **Default**
-
-### Cropper
-
-Full source (all examples): [`references/components/cropper.md`](./references/components/cropper.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-cropper--docs)
-
-- **Disabled**
-- **With crop data**
-
-### Date Field
-
-Full source (all examples): [`references/components/date-field.md`](./references/components/date-field.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-date-field--docs)
-
-- **With locale**
-- **Invalid**
-
-### Dialog
-
-Full source (all examples): [`references/components/dialog.md`](./references/components/dialog.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-dialog--docs)
-
-- **Default**
-- **Controlled**
-- **Non-modal**
-- **Trap focus only**
-- **Without pointer dismissal**
-- **Multiple triggers**
-- **Controlled mode with multiple triggers**
-- **Detached triggers**
-- **Nested dialogs**
-- **Close confirmation**
-- **Outside scroll**
-- **Inside scroll**
-- **Placing elements outside the popup**
-- **Open from a menu**
-
-### Drawer
-
-Full source (all examples): [`references/components/drawer.md`](./references/components/drawer.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-drawer--docs)
-
-- **Default**
-- **State**
-- **Position**
-- **Snap points**
-- **Swipe to open**
-- **Mobile navigation**
-- **Non-modal**
-- **Action sheet with separate destructive action**
-- **Virtual keyboard**
-- **Nested drawers**
-- **Indent effect**
-- **Detached triggers**
-
-### Editable
-
-Full source (all examples): [`references/components/editable.md`](./references/components/editable.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-editable--docs)
-
-- **Double-click to edit**
-- **Auto-resize**
-
-### Field
-
-Full source (all examples): [`references/components/field.md`](./references/components/field.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-field--docs)
-
-- **Default**
-- **Invalid**
-- **Reactive Forms**
-- **Custom Control**
-
-### Fieldset
-
-Full source (all examples): [`references/components/fieldset.md`](./references/components/fieldset.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-fieldset--docs)
-
-- **Default**
-- **Disabled**
-- **Signup form**
-
-### Form
-
-Full source (all examples): [`references/components/form.md`](./references/components/form.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-form--docs)
-
-- **Server errors with clear-on-edit**
-- **Reset**
-- **Reactive Forms**
-- **Native controls**
-
-### Input
-
-Full source (all examples): [`references/components/input.md`](./references/components/input.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-input--docs)
-
-- **Disabled**
-- **With Field**
-- **Reactive Forms**
-- **Signup Form**
-
-### Menu
-
-Full source (all examples): [`references/components/menu.md`](./references/components/menu.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-menu--docs)
-
-- **Default**
-- **Radio items**
-- **Checkbox items**
-- **With labels**
-- **Nested submenus**
-- **Arrow**
-- **Backdrop**
-- **Viewport (animated resize)**
-- **Keep mounted**
-- **Custom return focus (`finalFocus`)**
-- **CSS animations**
-
-### Menubar
-
-Full source (all examples): [`references/components/menubar.md`](./references/components/menubar.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-menubar--docs)
-
-- **Default**
-
-### Meter
-
-Full source (all examples): [`references/components/meter.md`](./references/components/meter.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-meter--docs)
-
-- **Default**
-- **Custom range**
-- **Aria value text**
-
-### Navigation Menu
-
-Full source (all examples): [`references/components/navigation-menu.md`](./references/components/navigation-menu.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-navigation-menu--docs)
-
-- **Default**
-- **Vertical**
-- **Right to left**
-- **Links only**
-- **Custom links**
-- **Large menus**
-- **Nested submenus**
-- **Nested inline submenus**
-
-### Number Field
-
-Full source (all examples): [`references/components/number-field.md`](./references/components/number-field.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-number-field--docs)
-
-- **Default**
-- **Decimal**
-- **Percentage**
-- **Currency**
-- **Scrub Area**
-- **Reactive Forms**
-
-### Pagination
-
-Full source (all examples): [`references/components/pagination.md`](./references/components/pagination.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-pagination--docs)
-
-- **With ellipsis**
-- **With first/last button**
-
-### Popover
-
-Full source (all examples): [`references/components/popover.md`](./references/components/popover.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-popover--docs)
-
-- **Default**
-- **Controlled**
-- **Controlled mode with multiple triggers**
-- **Positioning**
-- **Animation**
-- **Modal behavior**
-- **Custom anchor**
-- **Detached handles**
-- **Opening on hover**
-- **Animating between triggers**
-
-### Preview Card
-
-Full source (all examples): [`references/components/preview-card.md`](./references/components/preview-card.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-preview-card--docs)
-
-- **Controlled Multiple**
-- **Detached**
-- **Positioning**
-- **Viewport**
-
-### Progress
-
-Full source (all examples): [`references/components/progress.md`](./references/components/progress.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-progress--docs)
-
-- **Default**
-- **Indeterminate**
-- **Custom range**
-- **Circular**
-
-### Radio Group
-
-Full source (all examples): [`references/components/radio.md`](./references/components/radio.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-radio--docs)
-
-- **Default**
-- **Disabled**
-- **Template-driven forms**
-
-### Scroll Area
-
-Full source (all examples): [`references/components/scroll-area.md`](./references/components/scroll-area.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-scroll-area--docs)
-
-- **Horizontal**
-- **Both scrollbars**
-- **Gradient scroll fade**
-- **Combining with Tabs**
-
-### Select
-
-Full source (all examples): [`references/components/select.md`](./references/components/select.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-select--docs)
-
-- **Default**
-- **Multiple**
-- **Change details and interaction state**
-- **Object values**
-- **Reactive Forms**
-- **Template-driven Forms**
-- **With scroll buttons**
-- **Item-aligned positioning**
-- **Item-aligned with scroll**
-
-### Separator
-
-Full source (all examples): [`references/components/separator.md`](./references/components/separator.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-separator--docs)
-
-- **Vertical**
-- **Horizontal**
-
-### Signal Forms
-
-Full source (all examples): [`references/components/signal-forms.md`](./references/components/signal-forms.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-signal-forms--docs)
-
-- **Field driven by Signal Forms**
-- **Two ways to surface field errors**
-- **When validity is displayed (`validationMode`)**
-- **Angular-owned submission (`rdxSignalSubmit`)**
-- **Pending async validation**
-- **Async validation and reset lifecycle**
-
-### Slider
-
-Full source (all examples): [`references/components/slider.md`](./references/components/slider.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-slider--docs)
-
-- **Range**
-- **Vertical**
-- **Value**
-- **Disabled**
-- **Reactive forms**
-
-### Stepper
-
-Full source (all examples): [`references/components/stepper.md`](./references/components/stepper.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-stepper--docs)
-
-- **Vertical**
-- **Navigation**
-
-### Switch
-
-Full source (all examples): [`references/components/switch.md`](./references/components/switch.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-switch--docs)
-
-- **Preselection**
-- **Disabled**
-- **Read-only**
-- **Reactive Forms**
-
-### Tabs
-
-Full source (all examples): [`references/components/tabs.md`](./references/components/tabs.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-tabs--docs)
-
-- **Activate on focus**
-- **Vertical**
-- **Disabled**
-- **Indicator**
-- **Animated panels**
-- **Mounting & unmounting**
-- **Unmount with `@keyframes`**
-
-### Time Field
-
-Full source (all examples): [`references/components/time-field.md`](./references/components/time-field.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-time-field--docs)
-
-- **Default**
-- **Hour cycle**
-- **Granularity**
-- **Disabled**
-- **Readonly**
-- **Validation**
-- **Localization**
-
-### Toast
-
-Full source (all examples): [`references/components/toast.md`](./references/components/toast.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-toast--docs)
-
-- **Default**
-- **Stacking**
-- **Swipe to dismiss**
-- **Promise**
-- **Types**
-- **Custom position**
-- **Undo action**
-- **Custom data**
-- **Deduplicated**
-- **Varying heights**
-- **Anchored**
-
-### Toggle
-
-Full source (all examples): [`references/components/toggle.md`](./references/components/toggle.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-toggle--docs)
-
-- **Pressed by default**
-- **Controlled**
-- **Disabled**
-
-### Toggle Group
-
-Full source (all examples): [`references/components/toggle-group.md`](./references/components/toggle-group.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-toggle-group--docs)
-
-- **Native forms**
-- **Multiple**
-- **Disabled**
-- **Two-way binding**
-
-### Toolbar
-
-Full source (all examples): [`references/components/toolbar.md`](./references/components/toolbar.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-toolbar--docs)
-
-- **Vertical**
-- **Disabled**
-- **Using with Menu**
-- **Using with Tooltip**
-- **Using with NumberField**
-
-### Tooltip
-
-Full source (all examples): [`references/components/tooltip.md`](./references/components/tooltip.md) · [Storybook](https://radix-ng.com/?path=/docs/primitives-tooltip--docs)
-
-- **Default**
-- **Provider**
-- **Per-trigger delay**
-- **Disabled trigger**
-- **Tracking the cursor**
-- **Moving anchors**
+- **[Accordion](./references/components/accordion.md)** — A vertically stacked set of interactive headings that each reveal an associated section of content. _(6 examples)_
+- **[Alert Dialog](./references/components/alert-dialog.md)** — A modal dialog that interrupts the user with important content and expects a response. _(7 examples)_
+- **[Autocomplete](./references/components/autocomplete.md)** — A text input with a list of suggestions: free-form text whose value **is** the input string, with the active option tracked via `aria-activedescendant`. _(16 examples)_
+- **[Avatar](./references/components/avatar.md)** — An image element with a fallback for representing the user. _(3 examples)_
+- **[Button](./references/components/button.md)** — A button, or any element that should behave like one. _(5 examples)_
+- **[Calendar](./references/components/calendar.md)** — Displays dates and days of the week, facilitating date-related interactions. _(7 examples)_
+- **[Checkbox](./references/components/checkbox.md)** — A control that allows the user to toggle between checked and not checked. _(9 examples)_
+- **[Collapsible](./references/components/collapsible.md)** — A collapsible panel controlled by a button. _(3 examples)_
+- **[Combobox](./references/components/combobox.md)** — A filterable select: a text input that filters a list of options, with the highlighted option tracked via `aria-activedescendant`. _(16 examples)_
+- **[Context Menu](./references/components/context-menu.md)** — A menu that appears at the pointer on right click (or touch long-press), built on the Menu primitive. _(1 example)_
+- **[Cropper](./references/components/cropper.md)** — Headless component for interactive image cropping — inspired by the experience on [X](https://x.com/). _(2 examples)_
+- **[Date Field](./references/components/date-field.md)** — Enables users to input specific dates within a designated field. _(2 examples)_
+- **[Dialog](./references/components/dialog.md)** — A window overlaid on the page, rendering the content underneath inert. _(14 examples)_
+- **[Drawer](./references/components/drawer.md)** — An edge-anchored sheet that opens over the page and dismisses with a swipe. _(12 examples)_
+- **[Editable](./references/components/editable.md)** — An inline text field that swaps a read-only preview for an editable input. _(2 examples)_
+- **[Field](./references/components/field.md)** — Groups a control with accessible label, description, error message, and field state. _(4 examples)_
+- **[Fieldset](./references/components/fieldset.md)** — Groups related form controls with a legend and shared disabled state. _(3 examples)_
+- **[Form](./references/components/form.md)** — The top of the forms layer cake: aggregates fields, maps server errors by name, and intercepts submit and reset. _(4 examples)_
+- **[Input](./references/components/input.md)** — A native text input with headless state attributes and Field integration. _(4 examples)_
+- **[Menu](./references/components/menu.md)** — A headless dropdown menu anchored to a trigger button. _(11 examples)_
+- **[Menubar](./references/components/menubar.md)** — A visually persistent menu common in desktop applications that provides quick access to a consistent set of commands. _(1 example)_
+- **[Meter](./references/components/meter.md)** — A graphical display of a numeric value within a range. _(3 examples)_
+- **[Navigation Menu](./references/components/navigation-menu.md)** — A collection of links and menus for website navigation. _(8 examples)_
+- **[Number Field](./references/components/number-field.md)** — A numeric input with stepper buttons, drag-to-scrub, locale-aware formatting and keyboard control. _(6 examples)_
+- **[Pagination](./references/components/pagination.md)** — Displays data in paged format and provides navigation between pages. _(2 examples)_
+- **[Popover](./references/components/popover.md)** — An accessible popup anchored to a button. _(10 examples)_
+- **[Preview Card](./references/components/preview-card.md)** — A popup that appears when a link is hovered or focused, showing a visual preview. _(4 examples)_
+- **[Progress](./references/components/progress.md)** — Displays task completion with accessible label, value, track, and indicator parts. _(4 examples)_
+- **[Radio Group](./references/components/radio.md)** — A set of checkable buttons—known as radio buttons—where no more than one of the buttons can be checked at a time. _(3 examples)_
+- **[Scroll Area](./references/components/scroll-area.md)** — A native scroll container with a custom, cross-browser scrollbar. _(4 examples)_
+- **[Select](./references/components/select.md)** — A control that presents a list of options for the user to pick from, triggered by a button. _(9 examples)_
+- **[Separator](./references/components/separator.md)** — A separator element accessible to screen readers. _(2 examples)_
+- **[Signal Forms](./references/components/signal-forms.md)** — Bridge Angular [Signal Forms](https://angular.dev/guide/forms/signals) into headless `Field` and `Form`. _(6 examples)_
+- **[Slider](./references/components/slider.md)** — An input where the user selects a value, or a range of values, from within a given range. _(5 examples)_
+- **[Stepper](./references/components/stepper.md)** — A set of steps that are used to indicate progress through a multi-step process. _(2 examples)_
+- **[Switch](./references/components/switch.md)** — A control that allows the user to toggle between checked and not checked. _(4 examples)_
+- **[Tabs](./references/components/tabs.md)** — A set of layered sections of content—known as tab panels—that are displayed one at a time. _(7 examples)_
+- **[Time Field](./references/components/time-field.md)** — A segmented time input that lets users enter a time hour-by-hour with full keyboard control and localization. _(7 examples)_
+- **[Toast](./references/components/toast.md)** — A succinct, low-priority message that appears temporarily, stacks, and can be swiped away. _(11 examples)_
+- **[Toggle](./references/components/toggle.md)** — A two-state button that can be either on or off. _(3 examples)_
+- **[Toggle Group](./references/components/toggle-group.md)** — A set of two-state buttons that can be toggled on or off. _(4 examples)_
+- **[Toolbar](./references/components/toolbar.md)** — A container for grouping a set of controls, such as buttons, toggle groups or menus. _(5 examples)_
+- **[Tooltip](./references/components/tooltip.md)** — Displays contextual information when a trigger is hovered or focused. _(6 examples)_
