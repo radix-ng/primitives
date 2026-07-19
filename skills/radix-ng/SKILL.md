@@ -72,6 +72,26 @@ Everything is **bundled offline** — no live site required.
    See `references/styling.md`.
 6. **Validate** — labels associated, keyboard works, the part hierarchy is intact.
 
+## Recovering after context loss
+
+If your context was compacted, or you're resuming and no longer trust what you remember about the
+API, re-ground yourself from the bundled files before writing more code. These files — never a
+conversation summary — are the source of truth; treat the summary as navigation only.
+
+1. **Re-establish the primitive and version.** Identify which primitive(s) the task uses, then check
+   the consumer's installed `@radix-ng/primitives` version against the `version` field in
+   `references/api-contract.json`. If they differ, trust the installed package's `.d.ts` over this
+   bundle.
+2. **Reload the contracts, not your memory.** Re-read that primitive's entry in
+   `references/api-contract.json` (selectors, inputs, outputs, two-way bindings) and
+   `references/styling-contract.json` (parts + `data-*`). Anything you "remember" that isn't there
+   does not exist.
+3. **Reload the nearest example cheaply.** Open a single shard from the `radix-ng-examples` skill —
+   `references/examples/<component>--<example>.md` (one example each, a few KB) — instead of
+   re-reading the whole component doc.
+4. **Re-read your own work.** The code, diff, and tests you already produced are ground truth for
+   where you are — reconcile against them, not against a remembered plan.
+
 ## Styling with a custom design system
 
 These primitives are made for this. The recipe:
