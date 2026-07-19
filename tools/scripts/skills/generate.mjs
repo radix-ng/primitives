@@ -396,6 +396,7 @@ const api = generateApiContract({ workspaceRoot, primitivesRoot, skillsRoot, ver
 // no orphan shards after a rename, and no dangling relative links in the router or the component indexes.
 const errors = [];
 const warnings = [];
+let publicRoutes = 0;
 const componentSlugs = docs.filter((doc) => doc.section === 'components').map((doc) => doc.slug);
 const stylingSlugs = new Set(contract.map((primitive) => primitive.slug));
 const apiSlugs = new Set(api.slugs);
@@ -438,6 +439,21 @@ const checkLinks = (fileAbs) => {
 checkLinks(path.join(skillsRoot, 'radix-ng-examples/SKILL.md'));
 for (const slug of componentSlugs) checkLinks(path.join(refsRoot, 'components', `${slug}.md`));
 
+// Public-route stability: every URL llms.txt advertises must resolve to a served file. The bundle is
+// served at radix-ng.com/<path> ← references/<path> (Storybook staticDirs map references/ to the site
+// root). With the CI drift check on llms.txt this means a public URL can neither 404 silently nor change
+// unreviewed — a renamed/removed slug shows up as a reviewable diff in llms.txt.
+const llmsTxt = fs.readFileSync(path.join(refsRoot, 'llms.txt'), 'utf8');
+for (const match of llmsTxt.matchAll(new RegExp(`\\]\\(${SITE_URL}/([^)\\s]+)\\)`, 'g'))) {
+    publicRoutes++;
+    if (!fs.existsSync(path.join(refsRoot, match[1]))) {
+        errors.push(`llms.txt advertises ${SITE_URL}/${match[1]} but references/${match[1]} is not served`);
+    }
+}
+if (!fs.existsSync(path.join(refsRoot, 'llms-full.txt'))) {
+    errors.push(`llms.txt links ${SITE_URL}/llms-full.txt, but references/llms-full.txt is missing`);
+}
+
 if (warnings.length) {
     console.warn(
         `⚠ ${warnings.length} component(s) without example shards:\n${warnings.map((w) => `  ${w}`).join('\n')}`
@@ -479,5 +495,5 @@ console.log(`✓ ${exampleShardCount} example shards → ${path.relative(workspa
 console.log(`✓ llms.txt + llms-full.txt (${docs.length} docs)`);
 console.log(`✓ styling-contract: ${contract.length} shards + deprecated monolith`);
 console.log(`✓ api-contract: ${api.primitives} shards + deprecated monolith (${api.parts} parts)`);
-console.log(`✓ integrity guards passed (version, correspondence, orphans, links)`);
+console.log(`✓ integrity guards passed (version, correspondence, orphans, links, ${publicRoutes} public routes)`);
 console.log(`✓ radix-ng-examples/SKILL.md (${totalExamples} examples / ${componentDocs.length} components)`);
