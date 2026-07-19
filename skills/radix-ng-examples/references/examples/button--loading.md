@@ -2,7 +2,7 @@
 
 > One example from the [Button](../components/button.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 For buttons that enter a loading state after being clicked, set `disabled` while pending together
 with `focusableWhenDisabled` so focus stays on the button. Add `aria-busy` and render a spinner to

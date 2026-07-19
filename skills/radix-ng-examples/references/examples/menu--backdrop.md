@@ -2,7 +2,7 @@
 
 > One example from the [Menu](../components/menu.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 Add `rdxMenuBackdrop` as a sibling root before the positioner inside an explicit
 `<ng-template rdxMenuPortal>` to render an overlay behind the popup. Menus are modal by default,

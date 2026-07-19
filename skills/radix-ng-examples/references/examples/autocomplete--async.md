@@ -2,7 +2,7 @@
 
 > One example from the [Autocomplete](../components/autocomplete.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 `[filter]="null"` hands filtering to you; a fake request searches the movie list (`will_error` simulates
 a failure) and `RdxAutocompleteStatus` announces loading, result counts, and errors.

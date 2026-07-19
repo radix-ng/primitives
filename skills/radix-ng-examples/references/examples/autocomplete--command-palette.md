@@ -2,7 +2,7 @@
 
 > One example from the [Autocomplete](../components/autocomplete.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 An always-open, inline autocomplete (no popup — the `List` is rendered directly) inside a `Dialog`.
 `autoHighlight="always"` keeps the first match highlighted; selecting a command closes the dialog

@@ -2,7 +2,7 @@
 
 > One example from the [Select](../components/select.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 `[(ngModel)]` uses the same `ControlValueAccessor`. This example demonstrates the value round-trip,
 submission, touched/dirty state, and `NgForm.resetForm()` while keeping the same Field anatomy.

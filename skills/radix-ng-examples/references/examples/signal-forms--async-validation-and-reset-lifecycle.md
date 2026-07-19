@@ -2,7 +2,7 @@
 
 > One example from the [Signal Forms](../components/signal-forms.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 The Signal Forms side of the paired recipe above runs an Angular `validateAsync` resource, exposes
 `pending()` as progress UI, submits through `rdxSignalSubmit`, and restores both the model and

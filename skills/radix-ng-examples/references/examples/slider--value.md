@@ -2,7 +2,7 @@
 
 > One example from the [Slider](../components/slider.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 Display the formatted value with `rdxSliderValue`. Formatting honours the root's
 `format` (`Intl.NumberFormatOptions`) and `locale`. The output automatically

@@ -2,7 +2,7 @@
 
 > One example from the [Scroll Area](../components/scroll-area.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 Stack `rdxTabsList` and `rdxScrollAreaViewport` on the same element so the tab list _is_ the scrollable
 viewport (the Angular equivalent of Base UI's `render` prop). Keeping the scroll state on that element

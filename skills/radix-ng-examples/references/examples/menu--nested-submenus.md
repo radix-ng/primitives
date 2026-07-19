@@ -2,7 +2,7 @@
 
 > One example from the [Menu](../components/menu.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 Wrap a `rdxMenuSubTrigger` and its popup inside a nested `ng-container rdxMenuRoot`. The subtrigger
 opens the submenu on hover (100 ms `delay`), click, or ArrowRight; ArrowLeft closes it and returns

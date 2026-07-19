@@ -4,7 +4,7 @@ A control that allows the user to toggle between checked and not checked.
 
 > Index — full source of each example is one click away in `../examples/checkbox--*.md`; the whole-doc dump is in `../llms-full.txt`.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 ## Features
 

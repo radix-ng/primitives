@@ -2,7 +2,7 @@
 
 > One example from the [Combobox](../components/combobox.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 With `modal`, page scroll is locked and content outside the popup is inert while open. Add a
 `rdxComboboxBackdrop` (styled `position: fixed; inset: 0; pointer-events: auto`) behind the popup;

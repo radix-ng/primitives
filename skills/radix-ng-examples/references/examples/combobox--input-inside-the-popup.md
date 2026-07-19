@@ -2,7 +2,7 @@
 
 > One example from the [Combobox](../components/combobox.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 A select-like pattern where the trigger shows the current value and the search input lives inside the
 popup. Put `rdxComboboxAnchor` on the trigger so the popup anchors to it; the input takes focus when

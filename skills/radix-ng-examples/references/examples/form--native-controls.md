@@ -2,7 +2,7 @@
 
 > One example from the [Form](../components/form.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 No `@angular/forms` at all — a valid submit serializes the form's `FormData` into a plain values object
 (repeated names collapse into arrays).

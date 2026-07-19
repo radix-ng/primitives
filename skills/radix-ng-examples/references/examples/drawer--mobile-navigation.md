@@ -2,7 +2,7 @@
 
 > One example from the [Drawer](../components/drawer.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 A taller sheet whose body scrolls. The swipe gesture yields to scrolling inside `rdxDrawerContent`
 until the scroll reaches its edge, so the drawer only swipes away from the top of the list.

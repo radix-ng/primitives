@@ -2,7 +2,7 @@
 
 > One example from the [Progress](../components/progress.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 Use `min`, `max`, and `valueLabel` when progress is not a simple 0-100 percentage.
 

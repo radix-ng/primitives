@@ -2,7 +2,7 @@
 
 > One example from the [Button](../components/button.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 The first button uses the native `disabled` attribute (removed from the tab order). The second sets
 `focusableWhenDisabled`, so it stays focusable via `aria-disabled` while its activation is suppressed.

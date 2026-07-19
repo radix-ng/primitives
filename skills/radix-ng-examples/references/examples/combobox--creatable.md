@@ -2,7 +2,7 @@
 
 > One example from the [Combobox](../components/combobox.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 Lets the user add a value that isn't in the list. When the query matches nothing, a "Create" row
 appears; choosing it opens a modal dialog (prefilled with the query) to confirm the new label, which

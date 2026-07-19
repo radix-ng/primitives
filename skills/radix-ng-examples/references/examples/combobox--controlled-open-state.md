@@ -2,7 +2,7 @@
 
 > One example from the [Combobox](../components/combobox.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 Use `[open]` + `(onOpenChange)` when the application needs to inspect or veto open-state changes.
 The change payload includes `reason`, the originating DOM `event`, and `eventDetails.cancel()`.

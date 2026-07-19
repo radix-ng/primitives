@@ -2,7 +2,7 @@
 
 > One example from the [Combobox](../components/combobox.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 `[filter]="null"` disables built-in matching so you can drive the list yourself from a request.
 Nothing loads until the user types — `RdxComboboxStatus` shows the "start typing" hint and announces

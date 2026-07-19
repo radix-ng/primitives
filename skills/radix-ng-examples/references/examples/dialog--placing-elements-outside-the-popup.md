@@ -2,7 +2,7 @@
 
 > One example from the [Dialog](../components/dialog.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 Make the popup a transparent `pointer-events-none` frame and opt its children back into pointer events
 individually, so elements such as a close button can sit outside the visible content card while the gaps

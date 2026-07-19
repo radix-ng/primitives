@@ -1,3 +1,24 @@
+## 1.1.1 (2026-07-19)
+
+### 🚀 Features
+
+- **forms:** complete native form contracts ([8f95ba82](https://github.com/radix-ng/primitives/commit/8f95ba82))
+- **forms:** complete native form contract for composite controls ([d0922280](https://github.com/radix-ng/primitives/commit/d0922280))
+
+### 🩹 Fixes
+
+- **autocomplete:** handle inline completion across input methods ([6418032e](https://github.com/radix-ng/primitives/commit/6418032e))
+- **forms:** harden composite native form contracts ([d0a45a5a](https://github.com/radix-ng/primitives/commit/d0a45a5a))
+
+### 🔥 Performance
+
+- **combobox:** optimize large-list filtering ([b2d44b3a](https://github.com/radix-ng/primitives/commit/b2d44b3a))
+- **combobox:** optimize large-list registration ([a5ea9bf3](https://github.com/radix-ng/primitives/commit/a5ea9bf3))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 1.1.0 (2026-07-11)
 
 ### 🚀 Features

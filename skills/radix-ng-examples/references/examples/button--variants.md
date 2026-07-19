@@ -2,7 +2,7 @@
 
 > One example from the [Button](../components/button.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 Visual variants — `primary`, `secondary`, `outline`, `ghost`, and `destructive` — come from the
 shared `demoButton` style layer, not the directive itself.

@@ -2,7 +2,7 @@
 
 > One example from the [Autocomplete](../components/autocomplete.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 With `mode="both"` (filter + inline) the input is completed from the first match, with the completed
 suffix selected so the next keystroke replaces it. Inline modes highlight the first match implicitly,

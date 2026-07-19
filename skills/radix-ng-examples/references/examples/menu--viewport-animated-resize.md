@@ -2,7 +2,7 @@
 
 > One example from the [Menu](../components/menu.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 Wrap the popup content in `rdxMenuViewport` to smoothly animate the popup size when the content
 changes — for example revealing an advanced section, or switching between menubar menus of different

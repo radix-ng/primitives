@@ -2,7 +2,7 @@
 
 > One example from the [Dialog](../components/dialog.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.1.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.1.1` — if the installed version differs, verify the API against the installed package.
 
 Drive the dialog with `[(open)]` and listen to `onOpenChange` to intercept a close request and show a
 confirmation dialog when there are unsaved changes.
