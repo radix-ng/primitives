@@ -223,6 +223,33 @@ Radix NG generally uses familiar Base UI part names such as `Root`, `Trigger`, `
 Names may differ because of Angular conventions, backwards compatibility, or implementation
 details. Check the primitive's Anatomy section before translating an example directly.
 
+### CSP nonces and inline styles
+
+Base UI ships a `CSPProvider` / `CSPContext` that threads a `nonce` and a `disableStyleElements`
+flag through React context so its components can attach the nonce to the inline `<style>` elements
+they render. Radix NG deliberately does **not** port that provider, for two reasons:
+
+- **Angular already plumbs the nonce framework-wide.** Angular has a built-in
+  [`CSP_NONCE`](https://angular.dev/api/core/CSP_NONCE) token (and reads an `ngCspNonce` attribute on
+  the application root element), and its renderer applies the nonce to the styles it injects.
+  Re-creating a React-style context would duplicate what the framework already provides.
+- **Headless primitives barely inject styles at all.** Directives carry no styles, so there is
+  almost nothing to attach a nonce to. The one exception is Scroll Area, which appends a tiny
+  stylesheet to `<head>` to hide the native WebKit scrollbar — something that genuinely cannot be
+  expressed with inline styles. It reads Angular's `CSP_NONCE` directly and also exposes a
+  `disableStyleElements` input to opt out of the injected stylesheet entirely.
+
+So the two values Base UI's provider carries map onto Angular-native tools instead of a bespoke
+provider:
+
+| Base UI CSP config     | Radix NG                                                                     |
+| ---------------------- | ---------------------------------------------------------------------------- |
+| `nonce`                | Angular's built-in `CSP_NONCE` token / `ngCspNonce` on the app root element   |
+| `disableStyleElements` | A `disableStyleElements` input on the primitive that injects styles (Scroll Area) |
+
+If you set a nonce with `CSP_NONCE`, Scroll Area's injected stylesheet picks it up automatically —
+no extra Radix NG provider is required.
+
 ## Translating a Base UI example
 
 Base UI examples are useful architectural references even when the syntax differs:
