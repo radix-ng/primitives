@@ -1,6 +1,6 @@
 # Signal Forms
 
-Bridge Angular [Signal Forms](https://angular.dev/guide/forms/signals) into headless `Field` and `Form`.
+Bridge Angular [Signal Forms](https://angular.dev/guide/forms/signals/overview) into headless `Field` and `Form`.
 
 > Index — full source of each example is one click away in `../examples/signal-forms--*.md`; the whole-doc dump is in `../llms-full.txt`.
 

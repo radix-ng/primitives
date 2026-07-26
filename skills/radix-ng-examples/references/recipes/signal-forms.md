@@ -3,7 +3,7 @@
 #### Build accessible forms with Angular **Signal Forms** and the headless `Field` parts.
 
 This guide builds the same forms you'll find on the React side of the ecosystem, using Angular's
-built-in [Signal Forms](https://angular.dev/guide/forms/signals) as the engine and Radix NG's `Form`,
+built-in [Signal Forms](https://angular.dev/guide/forms/signals/overview) as the engine and Radix NG's `Form`,
 `Field` and control primitives for accessible, unstyled markup. You'll create a form with `form()`,
 validate it with the schema validators, surface errors, and keep everything keyboard- and
 screen-reader-friendly.

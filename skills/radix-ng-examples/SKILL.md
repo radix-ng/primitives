@@ -72,7 +72,7 @@ Total: **247 examples** across **43 components**.
 - **[Scroll Area](./references/components/scroll-area.md)** — A native scroll container with a custom, cross-browser scrollbar. _(4 examples)_
 - **[Select](./references/components/select.md)** — A control that presents a list of options for the user to pick from, triggered by a button. _(9 examples)_
 - **[Separator](./references/components/separator.md)** — A separator element accessible to screen readers. _(2 examples)_
-- **[Signal Forms](./references/components/signal-forms.md)** — Bridge Angular [Signal Forms](https://angular.dev/guide/forms/signals) into headless `Field` and `Form`. _(6 examples)_
+- **[Signal Forms](./references/components/signal-forms.md)** — Bridge Angular [Signal Forms](https://angular.dev/guide/forms/signals/overview) into headless `Field` and `Form`. _(6 examples)_
 - **[Slider](./references/components/slider.md)** — An input where the user selects a value, or a range of values, from within a given range. _(5 examples)_
 - **[Stepper](./references/components/stepper.md)** — A set of steps that are used to indicate progress through a multi-step process. _(2 examples)_
 - **[Switch](./references/components/switch.md)** — A control that allows the user to toggle between checked and not checked. _(4 examples)_
