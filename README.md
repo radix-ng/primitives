@@ -1,6 +1,5 @@
 # Radix NG
 
-[![Build Size](https://img.shields.io/bundlephobia/minzip/@radix-ng/primitives@latest?label=bundle%20size&style=flat&colorA=000000&colorB=000000)](https://bundlephobia.com/result?p=@radix-ng/primitives@latest)
 [![Version](https://img.shields.io/npm/v/@radix-ng/primitives?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/@radix-ng/primitives)
 [![Downloads](https://img.shields.io/npm/dm/@radix-ng/primitives.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/@radix-ng/primitives)
 [![License](https://img.shields.io/npm/l/@radix-ng/primitives?style=flat&colorA=000000&colorB=000000)](/LICENSE)
