@@ -143,6 +143,14 @@ the DOM once the animation finishes.
 
 <Canvas of={TabsStories.KeyframeUnmount} />
 
+### Projected through a wrapper
+
+Tabs can be projected into a list owned by a wrapper component's view. The wrapper composes
+`RdxTabsRoot` onto its host and keeps `RdxTabsList` in its template; projected tabs still participate
+in roving focus and implicit selection.
+
+<Canvas of={TabsStories.ProjectedThroughWrapper} />
+
 ## API Reference
 
 ### TabsRoot

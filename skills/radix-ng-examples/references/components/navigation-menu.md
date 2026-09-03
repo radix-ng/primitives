@@ -87,6 +87,10 @@ or the explicit `<ng-template rdxNavigationMenuPortal>` form shown below when an
 </nav>
 ```
 
+Top-level `rdxNavigationMenuTrigger` and `rdxNavigationMenuLink` elements may also be projected into an
+`rdxNavigationMenuList` owned by a wrapper component's view; Navigation Menu bridges the List's
+composite ownership across that projection boundary.
+
 ## Examples
 
 - [Default](../examples/navigation-menu--default.md)

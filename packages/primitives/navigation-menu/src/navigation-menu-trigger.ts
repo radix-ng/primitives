@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ENTER, injectDocument, SPACE } from '@radix-ng/primitives/core';
+import { provideNavigationMenuCompositeItemOwner } from './navigation-menu-composite-item-owner';
 import { RdxNavigationMenuItem } from './navigation-menu-item';
 import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
 import { focusFirst, getTabbableCandidates } from './utils';
@@ -21,6 +22,7 @@ import { focusFirst, getTabbableCandidates } from './utils';
 @Directive({
     selector: 'button[rdxNavigationMenuTrigger]',
     hostDirectives: [RdxCompositeItem],
+    providers: [provideNavigationMenuCompositeItemOwner()],
     host: {
         type: 'button',
         '[id]': 'item.triggerId()',

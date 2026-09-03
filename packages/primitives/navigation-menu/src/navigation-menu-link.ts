@@ -1,6 +1,7 @@
 import { booleanAttribute, Directive, ElementRef, inject, input, output } from '@angular/core';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import { ENTER, SPACE } from '@radix-ng/primitives/core';
+import { provideNavigationMenuCompositeItemOwner } from './navigation-menu-composite-item-owner';
 import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
 
 /**
@@ -12,6 +13,7 @@ import { injectNavigationMenuRootContext } from './navigation-menu-root-context'
 @Directive({
     selector: '[rdxNavigationMenuLink]',
     hostDirectives: [RdxCompositeItem],
+    providers: [provideNavigationMenuCompositeItemOwner()],
     host: {
         '[attr.data-active]': 'active() ? "" : undefined',
         '[attr.aria-current]': 'active() ? "page" : undefined',

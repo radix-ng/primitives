@@ -3,8 +3,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import {
     navigationMenuImports,
+    RdxNavigationMenuItem,
+    RdxNavigationMenuLink,
+    RdxNavigationMenuList,
     RdxNavigationMenuOpenChange,
-    RdxNavigationMenuRoot
+    RdxNavigationMenuRoot,
+    RdxNavigationMenuTrigger
 } from '@radix-ng/primitives/navigation-menu';
 
 @Component({
@@ -122,6 +126,71 @@ class NestedHostComponent {}
     `
 })
 class KeepMountedHostComponent {}
+
+@Component({
+    selector: 'test-projected-navigation-menu',
+    hostDirectives: [RdxNavigationMenuRoot],
+    imports: [RdxNavigationMenuList],
+    template: `
+        <ul rdxNavigationMenuList>
+            <ng-content />
+        </ul>
+    `
+})
+class ProjectedNavigationMenuWrapperComponent {}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [
+        ProjectedNavigationMenuWrapperComponent,
+        RdxNavigationMenuItem,
+        RdxNavigationMenuTrigger,
+        RdxNavigationMenuLink
+    ],
+    template: `
+        <test-projected-navigation-menu>
+            <li rdxNavigationMenuItem value="one">
+                <button rdxNavigationMenuTrigger>One</button>
+            </li>
+            <li rdxNavigationMenuItem>
+                <a href="#docs" rdxNavigationMenuLink>Docs</a>
+            </li>
+            <li rdxNavigationMenuItem value="three">
+                <button rdxNavigationMenuTrigger>Three</button>
+            </li>
+        </test-projected-navigation-menu>
+    `
+})
+class ProjectedNavigationMenuHostComponent {}
+
+describe('Navigation Menu projected through a hostDirectives wrapper', () => {
+    it('keeps projected triggers and links in the list composite', async () => {
+        TestBed.configureTestingModule({ imports: [ProjectedNavigationMenuHostComponent] });
+        const fixture = TestBed.createComponent(ProjectedNavigationMenuHostComponent);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        const items = Array.from(
+            fixture.nativeElement.querySelectorAll('[rdxNavigationMenuTrigger], a[rdxNavigationMenuLink]')
+        ) as HTMLElement[];
+
+        expect(items.map((item) => item.getAttribute('tabindex'))).toEqual(['0', '-1', '-1']);
+
+        items[0].focus();
+        items[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        expect(document.activeElement).toBe(items[1]);
+
+        items[1].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        expect(document.activeElement).toBe(items[2]);
+    });
+});
 
 describe('RdxNavigationMenu', () => {
     let fixture: ComponentFixture<HostComponent>;

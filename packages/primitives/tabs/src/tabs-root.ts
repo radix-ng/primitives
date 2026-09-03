@@ -1,5 +1,10 @@
 import { Directive, effect, inject, input, model, output, signal, untracked } from '@angular/core';
-import { RdxCompositeList, RdxCompositeMetadata } from '@radix-ng/primitives/composite';
+import {
+    RdxCompositeList,
+    RdxCompositeListContext,
+    RdxCompositeMetadata,
+    RdxCompositeRootContext
+} from '@radix-ng/primitives/composite';
 import {
     createCancelableChangeEventDetails,
     DataOrientation,
@@ -30,9 +35,12 @@ const rootContext = (): RdxTabsRootContext => {
         activateOnFocus: root.activateOnFocus.asReadonly(),
         tabListElement: root.tabListElement.asReadonly(),
         tabMap: root.tabMap.asReadonly(),
+        tabCompositeRoot: root.tabCompositeRoot.asReadonly(),
+        tabCompositeList: root.tabCompositeList.asReadonly(),
         setValue: (value, event, reason) => root.setValue(value, event, reason as RdxTabsValueChangeReason | undefined),
         setActivateOnFocus: (value) => root.activateOnFocus.set(value),
-        setTabListElement: (element) => root.tabListElement.set(element),
+        registerTabList: (element, compositeRoot, compositeList) =>
+            root.registerTabList(element, compositeRoot, compositeList),
         setTabMap: (map) => root.tabMap.set(map)
     };
 };
@@ -94,6 +102,12 @@ export class RdxTabsRoot {
 
     /** @ignore Set by `[rdxTabsList]`. */
     readonly tabMap = signal(new Map<HTMLElement, RdxCompositeMetadata<RdxTabsTabMetadata>>());
+
+    /** @ignore Set by `[rdxTabsList]`. */
+    readonly tabCompositeRoot = signal<RdxCompositeRootContext | null>(null);
+
+    /** @ignore Set by `[rdxTabsList]`. */
+    readonly tabCompositeList = signal<RdxCompositeListContext | null>(null);
 
     /** @ignore */
     readonly activationDirection = signal<RdxTabsActivationDirection>('none');
@@ -232,6 +246,31 @@ export class RdxTabsRoot {
 
         this.activationDirection.set(activationDirection);
         this.commitValue(value);
+    }
+
+    /** @ignore */
+    registerTabList(
+        element: HTMLElement,
+        compositeRoot: RdxCompositeRootContext,
+        compositeList: RdxCompositeListContext
+    ): () => void {
+        // Keep the last tab map while a List is being replaced or temporarily unmounted. Clearing it
+        // would make the uncontrolled-value effect treat the selected tab as removed, commit `null`,
+        // and leave the remounted list without a selection. The next List publishes its own map.
+        this.tabListElement.set(element);
+        this.tabCompositeRoot.set(compositeRoot);
+        this.tabCompositeList.set(compositeList);
+
+        return () => {
+            if (this.tabCompositeRoot() !== compositeRoot || this.tabCompositeList() !== compositeList) {
+                return;
+            }
+
+            this.tabListElement.set(null);
+            this.tabCompositeRoot.set(null);
+            this.tabCompositeList.set(null);
+            this.activateOnFocus.set(false);
+        };
     }
 
     private commitValue(value: RdxTabsValue): void {

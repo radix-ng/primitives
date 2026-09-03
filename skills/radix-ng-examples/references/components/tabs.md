@@ -54,6 +54,7 @@ plus a `Panel` per value and an optional `Indicator`.
 - [Animated panels](../examples/tabs--animated-panels.md)
 - [Mounting & unmounting](../examples/tabs--mounting-unmounting.md)
 - [Unmount with `@keyframes`](../examples/tabs--unmount-with-keyframes.md)
+- [Projected through a wrapper](../examples/tabs--projected-through-a-wrapper.md)
 
 ## API & styling contract
 
