@@ -1,17 +1,9 @@
 import { booleanAttribute, computed, Directive, effect, inject, input } from '@angular/core';
-import { provideRdxCompositeItemOwner, RdxCompositeItem, RdxCompositeItemOwner } from '@radix-ng/primitives/composite';
+import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import { BooleanInput } from '@radix-ng/primitives/core';
+import { provideTabsCompositeItemOwner } from './tabs-composite-item-owner';
 import { injectTabsRootContext } from './tabs-root-context';
 import { makePanelId, makeTabId, RdxTabsValue } from './utils';
-
-const compositeItemOwner = (): RdxCompositeItemOwner => {
-    const rootContext = injectTabsRootContext();
-
-    return {
-        rootContext: rootContext.tabCompositeRoot,
-        listContext: rootContext.tabCompositeList
-    };
-};
 
 /**
  * An individual interactive tab button that activates its corresponding panel.
@@ -22,7 +14,7 @@ const compositeItemOwner = (): RdxCompositeItemOwner => {
     selector: '[rdxTabsTab]',
     exportAs: 'rdxTabsTab',
     hostDirectives: [RdxCompositeItem],
-    providers: [provideRdxCompositeItemOwner(compositeItemOwner)],
+    providers: [provideTabsCompositeItemOwner()],
     host: {
         '[attr.type]': 'nativeButton() ? "button" : undefined',
         role: 'tab',

@@ -14347,7 +14347,10 @@ or the explicit `<ng-template rdxNavigationMenuPortal>` form shown below when an
 
 Top-level `rdxNavigationMenuTrigger` and `rdxNavigationMenuLink` elements may also be projected into an
 `rdxNavigationMenuList` owned by a wrapper component's view; Navigation Menu bridges the List's
-composite ownership across that projection boundary.
+composite ownership across that projection boundary. The bridge runs through the Root, so
+`rdxNavigationMenuRoot` must stay in the projected content's declaring tree — compose it onto the
+wrapper's host. Moving the Root into the wrapper's template puts it out of the projected parts' reach
+and they throw a missing-context error.
 
 ## Examples
 
@@ -22797,50 +22800,26 @@ class TabsProjectedWrapper {}
             <tabs-projected-wrapper
                 class="border-border bg-background text-foreground block w-[420px] overflow-hidden rounded-xl border shadow-sm"
             >
-                <button
-                    class="text-muted-foreground hover:text-foreground data-[active]:text-foreground data-[active]:bg-background focus-visible:ring-ring relative inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-colors outline-none focus-visible:ring-2 data-[active]:shadow-[inset_0_-2px_0_0_var(--primary)]"
-                    rdxTabsTab
-                    value="account"
-                >
-                    Account
-                </button>
-                <button
-                    class="text-muted-foreground hover:text-foreground data-[active]:text-foreground data-[active]:bg-background focus-visible:ring-ring relative inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-colors outline-none focus-visible:ring-2 data-[active]:shadow-[inset_0_-2px_0_0_var(--primary)]"
-                    rdxTabsTab
-                    value="password"
-                >
-                    Password
-                </button>
-                <button
-                    class="text-muted-foreground hover:text-foreground data-[active]:text-foreground data-[active]:bg-background focus-visible:ring-ring relative inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-colors outline-none focus-visible:ring-2 data-[active]:shadow-[inset_0_-2px_0_0_var(--primary)]"
-                    rdxTabsTab
-                    value="team"
-                >
-                    Team
-                </button>
+                <button [class]="tabClass" rdxTabsTab value="account">Account</button>
+                <button [class]="tabClass" rdxTabsTab value="password">Password</button>
+                <button [class]="tabClass" rdxTabsTab value="team">Team</button>
 
-                <div
-                    class="bg-background text-foreground p-6 text-sm leading-6 outline-none"
-                    rdxTabsPanel
-                    value="account"
-                >
+                <div [class]="panelClass" rdxTabsPanel value="account">
                     Make changes to your account here. The first projected tab was selected implicitly.
                 </div>
-                <div
-                    class="bg-background text-foreground p-6 text-sm leading-6 outline-none"
-                    rdxTabsPanel
-                    value="password"
-                >
+                <div [class]="panelClass" rdxTabsPanel value="password">
                     Change your password here. After saving, you'll be logged out.
                 </div>
-                <div class="bg-background text-foreground p-6 text-sm leading-6 outline-none" rdxTabsPanel value="team">
-                    Invite teammates and manage their roles.
-                </div>
+                <div [class]="panelClass" rdxTabsPanel value="team">Invite teammates and manage their roles.</div>
             </tabs-projected-wrapper>
         </div>
     `
 })
-export class TabsProjectedWrapperExample {}
+export class TabsProjectedWrapperExample {
+    protected readonly tabClass =
+        'text-muted-foreground hover:text-foreground data-[active]:text-foreground data-[active]:bg-background focus-visible:ring-ring relative inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-colors outline-none focus-visible:ring-2 data-[active]:shadow-[inset_0_-2px_0_0_var(--primary)]';
+    protected readonly panelClass = 'bg-background text-foreground p-6 text-sm leading-6 outline-none';
+}
 ```
 
 ## API Reference

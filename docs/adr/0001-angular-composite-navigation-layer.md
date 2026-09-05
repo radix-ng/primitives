@@ -1,9 +1,9 @@
 # ADR 0001: Use Angular Composite as the Shared Navigation Layer
 
 - Status: Accepted
-- Date: 2026-06-02 (updated 2026-06-19)
+- Date: 2026-06-02 (updated 2026-09-05)
 - Decision owners: Radix NG maintainers
-- Related: `packages/primitives/composite`
+- Related: `packages/primitives/composite`, `packages/primitives/tabs`, `packages/primitives/navigation-menu`
 
 ## Context
 
@@ -39,6 +39,34 @@ The Angular implementation is split into two layers:
 The old public `@radix-ng/primitives/roving-focus` entry point is removed in the breaking Base UI
 parity cleanup. Consumers should migrate to `@radix-ng/primitives/composite` or, preferably, to the
 higher-level primitive that owns the interaction pattern.
+
+### Item ownership across content projection
+
+Base UI resolves an item's composite root and list through React context, which follows the rendered
+element tree. Angular resolves them through the element injector, which follows the **declaring**
+template. The two agree until a wrapper component projects items: `<ng-content />` moves nodes into the
+wrapper's view but keeps their declaring injector, so an item projected into a `List` that lives in the
+wrapper's template cannot inject that List's contexts and silently drops out of the collection.
+
+`RdxCompositeItemOwner` (`composite/src/composite-item-owner.ts`) is the Angular-specific escape hatch
+for this. A primitive that wants to support the pattern republishes its List's `RdxCompositeRootContext`
+and `RdxCompositeListContext` as signals on its own Root context, then provides an owner on each item
+part; `RdxCompositeItem` / `RdxCompositeListItem` prefer an owner over injection whenever one is present.
+The DOM containment checks (`rootElement.contains` / `listElement.contains`) still gate registration, so
+an item that is bridged but rendered outside the list element registers with nothing.
+
+Constraints that come with it:
+
+- The owner is authoritative even while its signals are `null`, so an item that has one **never** falls
+  back to injecting a nearer composite root. A primitive that later nests a second composite root inside
+  itself has to make its owner conditional.
+- The owner is resolved through the primitive's Root context, so the Root must stay in the projected
+  items' declaring tree — wrappers compose it onto their host element.
+- The bridge is opt-in per primitive. `tabs` and `navigation-menu` provide it (`tabs-composite-item-owner.ts`,
+  `navigation-menu-composite-item-owner.ts`); every other composite consumer relies on plain injection.
+
+`RdxCompositeItemOwner` is exported from the `composite` entry point only so sibling secondary entry
+points can coordinate. It is marked `@internal` and carries no semver stability guarantee.
 
 ## Scope
 
@@ -107,4 +135,6 @@ Revisit this ADR before:
 - adding grid navigation;
 - adding typeahead to composite root;
 - duplicating ordered item registration in a new primitive;
-- adding a new composite option that exists only for one primitive.
+- adding a new composite option that exists only for one primitive;
+- nesting a second composite root inside a primitive that provides an `RdxCompositeItemOwner`;
+- promoting `RdxCompositeItemOwner` to a supported public API.

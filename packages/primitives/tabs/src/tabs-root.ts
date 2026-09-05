@@ -254,9 +254,6 @@ export class RdxTabsRoot {
         compositeRoot: RdxCompositeRootContext,
         compositeList: RdxCompositeListContext
     ): () => void {
-        // Keep the last tab map while a List is being replaced or temporarily unmounted. Clearing it
-        // would make the uncontrolled-value effect treat the selected tab as removed, commit `null`,
-        // and leave the remounted list without a selection. The next List publishes its own map.
         this.tabListElement.set(element);
         this.tabCompositeRoot.set(compositeRoot);
         this.tabCompositeList.set(compositeList);
@@ -266,6 +263,10 @@ export class RdxTabsRoot {
                 return;
             }
 
+            // `tabMap` is deliberately left as it is while a List is being replaced or temporarily
+            // unmounted. Clearing it would make the uncontrolled-value effect treat the selected tab as
+            // removed, commit `null`, and leave the remounted list without a selection. The next List
+            // publishes its own map.
             this.tabListElement.set(null);
             this.tabCompositeRoot.set(null);
             this.tabCompositeList.set(null);

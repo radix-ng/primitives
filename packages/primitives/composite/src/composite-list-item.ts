@@ -35,6 +35,14 @@ export class RdxCompositeListItem {
 
     readonly index = computed(() => this.listContext()?.indexOf(this.elementRef.nativeElement) ?? -1);
 
+    /**
+     * Whether the host is a descendant of the owning list element.
+     *
+     * @deprecated Internal registration detail that is removed in the next release. Use
+     * `index() !== -1` to check whether the item is registered with a list.
+     */
+    readonly inListElement = computed(() => this.isInListElement(this.listContext()));
+
     constructor() {
         afterNextRender(() => {
             this.hasRendered.set(true);

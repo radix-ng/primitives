@@ -80,8 +80,11 @@ export class AppTabsList {}
 ```
 
 `Tabs` and `Navigation Menu` additionally bridge projected top-level composite items into a List that
-lives inside the wrapper's view. Do not assume the same bridge exists for other compound primitives
-unless their documentation says so.
+lives inside the wrapper's view. The bridge runs through the Root, so `RdxTabsRoot` /
+`RdxNavigationMenuRoot` must stay in the projected content's declaring tree — compose it onto the
+wrapper's host. Moving the Root into the wrapper's template puts it out of the projected parts' reach
+and they throw a missing-context error. Do not assume the same bridge exists for other compound
+primitives unless their documentation says so.
 
 ## Headless utilities
 
