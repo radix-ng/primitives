@@ -1,6 +1,8 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DataOrientation } from '@radix-ng/primitives/core';
+import { By } from '@angular/platform-browser';
+import { DataOrientation, resetRdxDevWarnings } from '@radix-ng/primitives/core';
+import { vi } from 'vitest';
 import { RdxTabsList } from '../src/tabs-list';
 import { RdxTabsPanel } from '../src/tabs-panel';
 import { RdxTabsPanelPresence } from '../src/tabs-panel-presence';
@@ -281,6 +283,225 @@ describe('Tabs', () => {
 });
 
 @Component({
+    selector: 'test-projected-tabs',
+    hostDirectives: [
+        {
+            directive: RdxTabsRoot,
+            outputs: ['onValueChange']
+        }
+    ],
+    imports: [RdxTabsList],
+    template: `
+        @if (showList()) {
+            <div [activateOnFocus]="activateOnFocus()" rdxTabsList>
+                <ng-content select="[rdxTabsTab]" />
+            </div>
+        }
+        <ng-content />
+    `
+})
+class ProjectedTabsWrapperComponent {
+    readonly showList = input(true);
+    readonly activateOnFocus = input(false);
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [ProjectedTabsWrapperComponent, RdxTabsTab, RdxTabsPanel],
+    template: `
+        <test-projected-tabs
+            [activateOnFocus]="activateOnFocus()"
+            [showList]="showList()"
+            (onValueChange)="onValueChange($event)"
+        >
+            <button rdxTabsTab value="one">One</button>
+            <button rdxTabsTab value="two">Two</button>
+            <button rdxTabsTab value="three">Three</button>
+            <div rdxTabsPanel value="one">Panel one</div>
+            <div rdxTabsPanel value="two">Panel two</div>
+            <div rdxTabsPanel value="three">Panel three</div>
+        </test-projected-tabs>
+    `
+})
+class ProjectedTabsHostComponent {
+    readonly showList = signal(true);
+    readonly activateOnFocus = signal(false);
+    readonly changes: RdxTabsValueChangeEvent[] = [];
+
+    onValueChange(change: RdxTabsValueChangeEvent): void {
+        this.changes.push(change);
+    }
+}
+
+describe('Tabs projected through a hostDirectives wrapper', () => {
+    let fixture: ComponentFixture<ProjectedTabsHostComponent>;
+    let host: ProjectedTabsHostComponent;
+
+    const tabs = () => Array.from(fixture.nativeElement.querySelectorAll('[role="tab"]')) as HTMLButtonElement[];
+    const panels = () => Array.from(fixture.nativeElement.querySelectorAll('[role="tabpanel"]')) as HTMLElement[];
+    const root = () => fixture.debugElement.query(By.directive(RdxTabsRoot)).injector.get(RdxTabsRoot) as RdxTabsRoot;
+
+    beforeEach(async () => {
+        TestBed.configureTestingModule({ imports: [ProjectedTabsHostComponent] });
+        fixture = TestBed.createComponent(ProjectedTabsHostComponent);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+    });
+
+    it('keeps tabs in the tab-list composite and panels in the root list', async () => {
+        const tabElements = tabs();
+        const panelElements = panels();
+
+        expect(tabElements.map((tab) => tab.getAttribute('tabindex'))).toEqual(['0', '-1', '-1']);
+        expect(tabElements.map((tab) => tab.getAttribute('aria-selected'))).toEqual(['true', 'false', 'false']);
+        expect(panelElements.map((panel) => panel.getAttribute('data-index'))).toEqual(['0', '1', '2']);
+        expect(panelElements.map((panel) => panel.hidden)).toEqual([false, true, true]);
+
+        tabElements[0].focus();
+        tabElements[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+        await fixture.whenStable();
+        fixture.detectChanges();
+        expect(document.activeElement).toBe(tabElements[1]);
+
+        tabElements[1].dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }));
+        await fixture.whenStable();
+        fixture.detectChanges();
+        expect(document.activeElement).toBe(tabElements[2]);
+
+        tabElements[2].dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true }));
+        await fixture.whenStable();
+        fixture.detectChanges();
+        expect(document.activeElement).toBe(tabElements[0]);
+
+        tabElements[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+        await fixture.whenStable();
+        fixture.detectChanges();
+        expect(document.activeElement).toBe(tabElements[2]);
+    });
+
+    it('selects a projected tab on click', () => {
+        tabs()[1].click();
+        fixture.detectChanges();
+
+        expect(root().value()).toBe('two');
+        expect(tabs().map((tab) => tab.getAttribute('aria-selected'))).toEqual(['false', 'true', 'false']);
+        expect(panels().map((panel) => panel.hidden)).toEqual([true, false, true]);
+        expect(host.changes.at(-1)?.eventDetails.reason).toBe('none');
+    });
+
+    it('selects projected tabs on focus when activateOnFocus is enabled', async () => {
+        host.activateOnFocus.set(true);
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        tabs()[2].focus();
+        fixture.detectChanges();
+
+        expect(document.activeElement).toBe(tabs()[2]);
+        expect(root().value()).toBe('three');
+        expect(panels().map((panel) => panel.hidden)).toEqual([true, true, false]);
+    });
+
+    it('keeps the selected tab when the projected list is destroyed and recreated', async () => {
+        host.activateOnFocus.set(true);
+        tabs()[1].click();
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        const tabsRoot = root();
+        const firstCompositeRoot = tabsRoot.tabCompositeRoot();
+        const firstCompositeList = tabsRoot.tabCompositeList();
+        const changesBeforeUnmount = host.changes.length;
+
+        expect(tabsRoot.value()).toBe('two');
+        expect(tabsRoot.activateOnFocus()).toBe(true);
+        expect(tabsRoot.tabMap().size).toBe(3);
+
+        host.showList.set(false);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        expect(tabs()).toHaveLength(0);
+        expect(tabsRoot.tabListElement()).toBeNull();
+        expect(tabsRoot.tabCompositeRoot()).toBeNull();
+        expect(tabsRoot.tabCompositeList()).toBeNull();
+        expect(tabsRoot.activateOnFocus()).toBe(false);
+        // A temporary List absence must not look like removal of every tab to the selection effect.
+        expect(tabsRoot.tabMap().size).toBe(3);
+        expect(tabsRoot.value()).toBe('two');
+        expect(host.changes).toHaveLength(changesBeforeUnmount);
+
+        host.showList.set(true);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        expect(tabsRoot.tabCompositeRoot()).not.toBe(firstCompositeRoot);
+        expect(tabsRoot.tabCompositeList()).not.toBe(firstCompositeList);
+        expect(tabsRoot.tabMap().size).toBe(3);
+        expect(tabsRoot.activateOnFocus()).toBe(true);
+        expect(tabsRoot.value()).toBe('two');
+        expect(tabs().map((tab) => tab.getAttribute('aria-selected'))).toEqual(['false', 'true', 'false']);
+        expect(panels().map((panel) => panel.hidden)).toEqual([true, false, true]);
+        expect(host.changes).toHaveLength(changesBeforeUnmount);
+    });
+
+    it('ignores cleanup from an older tab-list registration', async () => {
+        const replacementFixture = TestBed.createComponent(ProjectedTabsHostComponent);
+        replacementFixture.detectChanges();
+        await replacementFixture.whenStable();
+        replacementFixture.detectChanges();
+
+        const tabsRoot = root();
+        const replacementRoot = replacementFixture.debugElement
+            .query(By.directive(RdxTabsRoot))
+            .injector.get(RdxTabsRoot);
+        const firstCompositeRoot = tabsRoot.tabCompositeRoot();
+        const firstCompositeList = tabsRoot.tabCompositeList();
+        const replacementCompositeRoot = replacementRoot.tabCompositeRoot();
+        const replacementCompositeList = replacementRoot.tabCompositeList();
+
+        expect(firstCompositeRoot).not.toBeNull();
+        expect(firstCompositeList).not.toBeNull();
+        expect(replacementCompositeRoot).not.toBeNull();
+        expect(replacementCompositeList).not.toBeNull();
+
+        const staleElement = document.createElement('div');
+        const replacementElement = document.createElement('div');
+        const staleCleanup = tabsRoot.registerTabList(staleElement, firstCompositeRoot!, firstCompositeList!);
+        const currentCleanup = tabsRoot.registerTabList(
+            replacementElement,
+            replacementCompositeRoot!,
+            replacementCompositeList!
+        );
+        const currentMap = replacementRoot.tabMap();
+        tabsRoot.tabMap.set(currentMap);
+        tabsRoot.activateOnFocus.set(true);
+
+        staleCleanup();
+
+        expect(tabsRoot.tabListElement()).toBe(replacementElement);
+        expect(tabsRoot.tabCompositeRoot()).toBe(replacementCompositeRoot);
+        expect(tabsRoot.tabCompositeList()).toBe(replacementCompositeList);
+        expect(tabsRoot.tabMap()).toBe(currentMap);
+        expect(tabsRoot.activateOnFocus()).toBe(true);
+
+        currentCleanup();
+
+        expect(tabsRoot.tabListElement()).toBeNull();
+        expect(tabsRoot.tabCompositeRoot()).toBeNull();
+        expect(tabsRoot.tabCompositeList()).toBeNull();
+        expect(tabsRoot.tabMap()).toBe(currentMap);
+        expect(tabsRoot.activateOnFocus()).toBe(false);
+
+        replacementFixture.destroy();
+    });
+});
+
+@Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <div (onValueChange)="onValueChange($event)" rdxTabsRoot>
@@ -424,5 +645,67 @@ describe('Tabs with *rdxTabsPanelPresence', () => {
 
         expect(content('.content-one')).toBeTruthy();
         expect(content('.content-two')).toBeTruthy();
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel],
+    template: `
+        <div rdxTabsRoot defaultValue="one">
+            <div rdxTabsList>
+                <button rdxTabsTab value="one">One</button>
+            </div>
+            @if (renderStrayTab()) {
+                <button class="stray" rdxTabsTab value="two">Two</button>
+            }
+            <div rdxTabsPanel value="one">Panel one</div>
+            <div rdxTabsPanel value="two">Panel two</div>
+        </div>
+    `
+})
+class StrayTabHostComponent {
+    readonly renderStrayTab = signal(true);
+}
+
+describe('Tabs diagnostics', () => {
+    let warn: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(() => {
+        resetRdxDevWarnings();
+        warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    });
+
+    afterEach(() => {
+        warn.mockRestore();
+    });
+
+    it('warns when a tab is rendered outside its list', async () => {
+        TestBed.configureTestingModule({ imports: [StrayTabHostComponent] });
+        const fixture = TestBed.createComponent(StrayTabHostComponent);
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        expect(warn).toHaveBeenCalledWith(expect.stringContaining('[rdx:tabs/tab-outside-list]'));
+    });
+
+    it('stays silent when every tab is inside the list', async () => {
+        TestBed.configureTestingModule({ imports: [StrayTabHostComponent] });
+        const fixture = TestBed.createComponent(StrayTabHostComponent);
+        fixture.componentInstance.renderStrayTab.set(false);
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('stays silent while the list is unmounted', async () => {
+        TestBed.configureTestingModule({ imports: [ProjectedTabsHostComponent] });
+        const fixture = TestBed.createComponent(ProjectedTabsHostComponent);
+        fixture.componentInstance.showList.set(false);
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        expect(warn).not.toHaveBeenCalled();
     });
 });

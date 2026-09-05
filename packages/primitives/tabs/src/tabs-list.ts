@@ -1,5 +1,10 @@
-import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input } from '@angular/core';
-import { RdxCompositeMetadata, RdxCompositeRoot } from '@radix-ng/primitives/composite';
+import { booleanAttribute, computed, DestroyRef, Directive, effect, ElementRef, inject, input } from '@angular/core';
+import {
+    injectRdxCompositeListContext,
+    injectRdxCompositeRootContext,
+    RdxCompositeMetadata,
+    RdxCompositeRoot
+} from '@radix-ng/primitives/composite';
 import { injectTabsRootContext } from './tabs-root-context';
 import { RdxTabsTabMetadata } from './utils';
 
@@ -23,6 +28,8 @@ export class RdxTabsList {
     protected readonly rootContext = injectTabsRootContext();
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly compositeRoot = inject(RdxCompositeRoot, { self: true });
+    private readonly compositeRootContext = injectRdxCompositeRootContext();
+    private readonly compositeListContext = injectRdxCompositeListContext();
 
     /**
      * Whether a tab is activated when it receives focus (automatic activation).
@@ -67,7 +74,12 @@ export class RdxTabsList {
     });
 
     constructor() {
-        this.rootContext.setTabListElement(this.elementRef.nativeElement);
+        const unregister = this.rootContext.registerTabList(
+            this.elementRef.nativeElement,
+            this.compositeRootContext,
+            this.compositeListContext
+        );
+        inject(DestroyRef).onDestroy(unregister);
 
         // Constants — set once (not reactive). Disabled tabs stay in the roving sequence (APG: arrow
         // keys can focus a disabled tab), so the composite has no disabled indices and Home/End are on.

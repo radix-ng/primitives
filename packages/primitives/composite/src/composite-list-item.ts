@@ -10,8 +10,9 @@ import {
     signal,
     untracked
 } from '@angular/core';
+import { injectRdxCompositeItemOwner } from './composite-item-owner';
 import { injectRdxCompositeListContext } from './composite-list';
-import { RdxCompositeItemMetadata } from './types';
+import { RdxCompositeItemMetadata, RdxCompositeListContext } from './types';
 
 /**
  * Registers the host with the nearest composite list without changing focus behavior.
@@ -21,19 +22,26 @@ import { RdxCompositeItemMetadata } from './types';
     exportAs: 'rdxCompositeListItem'
 })
 export class RdxCompositeListItem {
-    private readonly listContext = injectRdxCompositeListContext(true);
+    private readonly owner = injectRdxCompositeItemOwner();
+    private readonly injectedListContext = this.owner ? null : injectRdxCompositeListContext(true);
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly hasRendered = signal(false);
+
+    private readonly listContext = computed(() => (this.owner ? this.owner.listContext() : this.injectedListContext));
 
     /** Arbitrary metadata included in the list's ordered item map. */
     readonly metadataInput = input<RdxCompositeItemMetadata | null | undefined>(undefined, { alias: 'metadata' });
     private readonly _metadata = linkedSignal(() => this.metadataInput());
 
-    readonly index = computed(() => this.listContext?.indexOf(this.elementRef.nativeElement) ?? -1);
-    readonly inListElement = computed(() => {
-        const listContext = this.listContext;
-        return !!listContext && listContext.listElement.contains(this.elementRef.nativeElement);
-    });
+    readonly index = computed(() => this.listContext()?.indexOf(this.elementRef.nativeElement) ?? -1);
+
+    /**
+     * Whether the host is a descendant of the owning list element.
+     *
+     * @deprecated Internal registration detail that is removed in the next release. Use
+     * `index() !== -1` to check whether the item is registered with a list.
+     */
+    readonly inListElement = computed(() => this.isInListElement(this.listContext()));
 
     constructor() {
         afterNextRender(() => {
@@ -41,8 +49,8 @@ export class RdxCompositeListItem {
         });
 
         effect((onCleanup) => {
-            const listContext = this.listContext;
-            if (!listContext || !this.hasRendered() || !this.inListElement()) {
+            const listContext = this.listContext();
+            if (!listContext || !this.hasRendered() || !this.isInListElement(listContext)) {
                 return;
             }
 
@@ -57,5 +65,9 @@ export class RdxCompositeListItem {
 
     setMetadata(value: RdxCompositeItemMetadata | null | undefined): void {
         this._metadata.set(value);
+    }
+
+    private isInListElement(listContext: RdxCompositeListContext | null): boolean {
+        return !!listContext && listContext.listElement.contains(this.elementRef.nativeElement);
     }
 }

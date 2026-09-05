@@ -63,7 +63,7 @@
     {
       "directive": "RdxNavigationMenuLink",
       "selector": "[rdxNavigationMenuLink]",
-      "description": "A navigation link. Can close the menu on selection when `closeOnClick` is enabled.\n\nUsed both as a top-level navigation item and inside content. Top-level links join the list's\ncomposite collection, matching Base UI's CompositeItem-backed NavigationMenu.Link.",
+      "description": "A navigation link. Can close the menu on selection when `closeOnClick` is enabled.\n\nUsed both as a top-level navigation item and inside content. Every link is bound to the List's\ncomposite, matching Base UI's CompositeItem-backed NavigationMenu.Link; links rendered inside content\nfall outside the list element, register with nothing and stay plain tabbable anchors.",
       "hostDirectives": [
         "RdxCompositeItem"
       ],

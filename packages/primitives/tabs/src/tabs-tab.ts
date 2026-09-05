@@ -1,6 +1,17 @@
-import { booleanAttribute, computed, Directive, effect, inject, input } from '@angular/core';
+import {
+    afterRenderEffect,
+    booleanAttribute,
+    computed,
+    Directive,
+    effect,
+    ElementRef,
+    inject,
+    input,
+    isDevMode
+} from '@angular/core';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
-import { BooleanInput } from '@radix-ng/primitives/core';
+import { BooleanInput, rdxDevWarning } from '@radix-ng/primitives/core';
+import { provideTabsCompositeItemOwner } from './tabs-composite-item-owner';
 import { injectTabsRootContext } from './tabs-root-context';
 import { makePanelId, makeTabId, RdxTabsValue } from './utils';
 
@@ -13,6 +24,7 @@ import { makePanelId, makeTabId, RdxTabsValue } from './utils';
     selector: '[rdxTabsTab]',
     exportAs: 'rdxTabsTab',
     hostDirectives: [RdxCompositeItem],
+    providers: [provideTabsCompositeItemOwner()],
     host: {
         '[attr.type]': 'nativeButton() ? "button" : undefined',
         role: 'tab',
@@ -35,6 +47,7 @@ import { makePanelId, makeTabId, RdxTabsValue } from './utils';
 export class RdxTabsTab {
     protected readonly rootContext = injectTabsRootContext();
     private readonly compositeItem = inject(RdxCompositeItem, { self: true });
+    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
     /**
      * A unique value that associates the tab with a panel.
@@ -71,6 +84,25 @@ export class RdxTabsTab {
     private isMainButton = false;
 
     constructor() {
+        if (isDevMode()) {
+            // Stays silent while no list is registered — a list behind `@if`, or tabs projected into a
+            // list that has not rendered yet, are both legitimate. Once a list exists, a tab outside it
+            // is misuse: composite registration is gated on DOM containment.
+            afterRenderEffect(() => {
+                const listContext = this.rootContext.tabCompositeList();
+
+                if (listContext && !listContext.listElement.contains(this.elementRef.nativeElement)) {
+                    rdxDevWarning(
+                        'tabs/tab-outside-list',
+                        '`rdxTabsTab` is rendered outside its `rdxTabsList`, so it gets no roving tabindex, ' +
+                            'arrow keys cannot reach it, and its `role="tab"` sits outside the `role="tablist"`. ' +
+                            'Move the tab inside the list, or project it there with `<ng-content>`.',
+                        'components/tabs'
+                    );
+                }
+            });
+        }
+
         effect(() => {
             this.compositeItem.setMetadata({
                 disabled: this.disabled(),

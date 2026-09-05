@@ -86,6 +86,51 @@ hostDirectives: [
 ]
 ```
 
+## Projecting compound parts
+
+Angular content projection preserves the injector ancestry of the template that declared a node.
+Rendering a projected part through `<ng-content>` changes its DOM position, but it does not make the
+part a dependency-injection child of directives inside the wrapper's view.
+
+This distinction matters when a compound primitive has an intermediate provider-bearing part. A
+portable wrapper exposes that part on its own host so its projected children share the same declaring
+tree:
+
+```ts
+@Component({
+    selector: 'app-tabs',
+    template: '<ng-content />',
+    hostDirectives: [RdxTabsRoot]
+})
+export class AppTabs {}
+
+@Component({
+    selector: 'app-tabs-list',
+    template: '<ng-content />',
+    hostDirectives: [RdxTabsList]
+})
+export class AppTabsList {}
+```
+
+```html
+<app-tabs>
+    <app-tabs-list>
+        <button rdxTabsTab value="account">Account</button>
+        <button rdxTabsTab value="password">Password</button>
+    </app-tabs-list>
+    <div rdxTabsPanel value="account">Account settings</div>
+    <div rdxTabsPanel value="password">Password settings</div>
+</app-tabs>
+```
+
+Tabs and Navigation Menu also support projecting their top-level composite items into a List owned by
+the wrapper's template: each primitive explicitly bridges the List's composite ownership through its
+Root. The Root itself must stay in the projected content's declaring tree — compose it onto the
+wrapper's host, the way `app-tabs` does above. Moving the Root into the wrapper's template puts it out
+of the projected parts' reach and they throw a missing-context error. Do not assume an arbitrary
+compound primitive provides the same bridge; expose provider-bearing parts as wrapper hosts unless that
+primitive documents otherwise.
+
 ## Changing the rendered element
 
 Because primitives are attribute directives, you choose the rendered element directly in the

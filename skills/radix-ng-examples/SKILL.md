@@ -36,7 +36,7 @@ contract in the `radix-ng` skill (`references/styling-contract/<slug>.json`).
 addressed by the component slug and the kebab-cased example name. Cheaper than re-reading the whole
 component doc.
 
-Total: **247 examples** across **43 components**.
+Total: **248 examples** across **43 components**.
 
 ## Components
 
@@ -76,7 +76,7 @@ Total: **247 examples** across **43 components**.
 - **[Slider](./references/components/slider.md)** — An input where the user selects a value, or a range of values, from within a given range. _(5 examples)_
 - **[Stepper](./references/components/stepper.md)** — A set of steps that are used to indicate progress through a multi-step process. _(2 examples)_
 - **[Switch](./references/components/switch.md)** — A control that allows the user to toggle between checked and not checked. _(4 examples)_
-- **[Tabs](./references/components/tabs.md)** — A set of layered sections of content—known as tab panels—that are displayed one at a time. _(7 examples)_
+- **[Tabs](./references/components/tabs.md)** — A set of layered sections of content—known as tab panels—that are displayed one at a time. _(8 examples)_
 - **[Time Field](./references/components/time-field.md)** — A segmented time input that lets users enter a time hour-by-hour with full keyboard control and localization. _(7 examples)_
 - **[Toast](./references/components/toast.md)** — A succinct, low-priority message that appears temporarily, stacks, and can be swiped away. _(11 examples)_
 - **[Toggle](./references/components/toggle.md)** — A two-state button that can be either on or off. _(3 examples)_

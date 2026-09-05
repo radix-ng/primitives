@@ -1,17 +1,22 @@
 import { booleanAttribute, Directive, ElementRef, inject, input, output } from '@angular/core';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import { ENTER, SPACE } from '@radix-ng/primitives/core';
+import { provideNavigationMenuCompositeItemOwner } from './navigation-menu-composite-item-owner';
 import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
 
 /**
  * A navigation link. Can close the menu on selection when `closeOnClick` is enabled.
  *
- * Used both as a top-level navigation item and inside content. Top-level links join the list's
- * composite collection, matching Base UI's CompositeItem-backed NavigationMenu.Link.
+ * Used both as a top-level navigation item and inside content. Every link is bound to the List's
+ * composite, matching Base UI's CompositeItem-backed NavigationMenu.Link; links rendered inside content
+ * fall outside the list element, register with nothing and stay plain tabbable anchors.
  */
 @Directive({
     selector: '[rdxNavigationMenuLink]',
     hostDirectives: [RdxCompositeItem],
+    // Unconditional list ownership: a consumer `rdxCompositeRoot` around in-content links does not
+    // capture them. See navigation-menu-composite-item-owner.ts for the rationale and revisit trigger.
+    providers: [provideNavigationMenuCompositeItemOwner()],
     host: {
         '[attr.data-active]': 'active() ? "" : undefined',
         '[attr.aria-current]': 'active() ? "page" : undefined',

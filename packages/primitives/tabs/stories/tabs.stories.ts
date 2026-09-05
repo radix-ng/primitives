@@ -14,6 +14,8 @@ import { TabsIndicatorExample } from './tabs-indicator';
 import indicatorSource from './tabs-indicator?raw';
 import { TabsKeyframesExample } from './tabs-keyframes';
 import keyframesSource from './tabs-keyframes?raw';
+import { TabsProjectedWrapperExample } from './tabs-projected-wrapper';
+import projectedWrapperSource from './tabs-projected-wrapper?raw';
 
 const html = String.raw;
 
@@ -38,7 +40,8 @@ export default {
                 RdxTabsIndicator,
                 TabsIndicatorExample,
                 TabsAnimatedExample,
-                TabsKeyframesExample
+                TabsKeyframesExample,
+                TabsProjectedWrapperExample
             ]
         }),
         tailwindDemoDecorator()
@@ -154,6 +157,15 @@ export const KeyframeUnmount: Story = {
     render: () => ({
         template: html`
             <tabs-keyframes-example />
+        `
+    })
+};
+
+export const ProjectedThroughWrapper: Story = {
+    parameters: source(projectedWrapperSource),
+    render: () => ({
+        template: html`
+            <tabs-projected-wrapper-example />
         `
     })
 };

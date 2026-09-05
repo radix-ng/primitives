@@ -1,7 +1,8 @@
 import { computed, Directive, ElementRef, inject } from '@angular/core';
+import { injectRdxCompositeItemOwner } from './composite-item-owner';
 import { RdxCompositeListItem } from './composite-list-item';
 import { injectRdxCompositeRootContext } from './composite-root';
-import { RdxCompositeItemMetadata } from './types';
+import { RdxCompositeItemMetadata, RdxCompositeRootContext } from './types';
 
 /**
  * Internal Base UI-style composite item. Registers itself with the nearest composite root and
@@ -23,20 +24,18 @@ import { RdxCompositeItemMetadata } from './types';
     }
 })
 export class RdxCompositeItem {
-    private readonly rootContext = injectRdxCompositeRootContext(true);
+    private readonly owner = injectRdxCompositeItemOwner();
+    private readonly injectedRootContext = this.owner ? null : injectRdxCompositeRootContext(true);
     private readonly listItem = inject(RdxCompositeListItem, { self: true });
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
-    readonly index = this.listItem.index;
-    private readonly inRootElement = computed(() => {
-        const rootContext = this.rootContext;
-        return !!rootContext && rootContext.rootElement.contains(this.elementRef.nativeElement);
-    });
-    protected readonly highlighted = computed(() => this.rootContext?.highlightedIndex() === this.index());
-    protected readonly tabIndex = computed(() => {
-        const rootContext = this.rootContext;
+    private readonly rootContext = computed(() => (this.owner ? this.owner.rootContext() : this.injectedRootContext));
 
-        if (!rootContext || !this.inRootElement()) {
+    readonly index = this.listItem.index;
+    protected readonly tabIndex = computed(() => {
+        const rootContext = this.rootContext();
+
+        if (!this.isInRootElement(rootContext)) {
             return null;
         }
 
@@ -49,23 +48,23 @@ export class RdxCompositeItem {
     }
 
     protected handleFocus(): void {
+        const rootContext = this.rootContext();
         const index = this.index();
 
-        if (this.inRootElement() && index !== -1) {
-            this.rootContext?.setHighlightedIndex(index);
+        if (index !== -1 && this.isInRootElement(rootContext)) {
+            rootContext.setHighlightedIndex(index);
         }
     }
 
     protected handleMouseMove(): void {
-        const rootContext = this.rootContext;
+        const rootContext = this.rootContext();
         const index = this.index();
 
         if (
-            !this.inRootElement() ||
-            !rootContext ||
+            !this.isInRootElement(rootContext) ||
             index === -1 ||
             !rootContext.highlightItemOnHover() ||
-            this.highlighted()
+            rootContext.highlightedIndex() === index
         ) {
             return;
         }
@@ -73,5 +72,9 @@ export class RdxCompositeItem {
         if (!rootContext.isIndexDisabled(index)) {
             this.elementRef.nativeElement.focus();
         }
+    }
+
+    private isInRootElement(rootContext: RdxCompositeRootContext | null): rootContext is RdxCompositeRootContext {
+        return !!rootContext && rootContext.rootElement.contains(this.elementRef.nativeElement);
     }
 }

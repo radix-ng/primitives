@@ -1,5 +1,9 @@
 import { DestroyRef, Directive, effect, ElementRef, inject } from '@angular/core';
-import { RdxCompositeRoot } from '@radix-ng/primitives/composite';
+import {
+    injectRdxCompositeListContext,
+    injectRdxCompositeRootContext,
+    RdxCompositeRoot
+} from '@radix-ng/primitives/composite';
 import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ARROW_UP } from '@radix-ng/primitives/core';
 import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
 
@@ -18,9 +22,15 @@ import { injectNavigationMenuRootContext } from './navigation-menu-root-context'
 export class RdxNavigationMenuList {
     protected readonly rootContext = injectNavigationMenuRootContext();
     private readonly compositeRoot = inject(RdxCompositeRoot, { self: true });
+    private readonly compositeRootContext = injectRdxCompositeRootContext();
+    private readonly compositeListContext = injectRdxCompositeListContext();
 
     constructor() {
-        const unregisterList = this.rootContext.registerList(inject<ElementRef<HTMLElement>>(ElementRef).nativeElement);
+        const unregisterList = this.rootContext.registerList(
+            inject<ElementRef<HTMLElement>>(ElementRef).nativeElement,
+            this.compositeRootContext,
+            this.compositeListContext
+        );
         inject(DestroyRef).onDestroy(unregisterList);
 
         effect(() => {

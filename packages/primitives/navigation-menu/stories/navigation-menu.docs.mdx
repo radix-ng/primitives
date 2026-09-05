@@ -103,6 +103,13 @@ or the explicit `<ng-template rdxNavigationMenuPortal>` form shown below when an
 </nav>
 ```
 
+Top-level `rdxNavigationMenuTrigger` and `rdxNavigationMenuLink` elements may also be projected into an
+`rdxNavigationMenuList` owned by a wrapper component's view; Navigation Menu bridges the List's
+composite ownership across that projection boundary. The bridge runs through the Root, so
+`rdxNavigationMenuRoot` must stay in the projected content's declaring tree — compose it onto the
+wrapper's host. Moving the Root into the wrapper's template puts it out of the projected parts' reach
+and they throw a missing-context error.
+
 ## Examples
 
 ### Default

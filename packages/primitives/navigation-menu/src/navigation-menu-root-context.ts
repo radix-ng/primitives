@@ -1,4 +1,5 @@
 import { Signal, TemplateRef } from '@angular/core';
+import { RdxCompositeListContext, RdxCompositeRootContext } from '@radix-ng/primitives/composite';
 import { createContext, RdxCancelableChangeEventDetails, RdxTransitionStatus } from '@radix-ng/primitives/core';
 
 export type NavigationMenuOrientation = 'horizontal' | 'vertical';
@@ -60,6 +61,9 @@ export interface RdxNavigationMenuRootContext {
     readonly trigger: Signal<HTMLElement | undefined>;
     readonly triggers: Signal<HTMLElement[]>;
     readonly list: Signal<HTMLElement | undefined>;
+    /** Composite contexts owned by List, bridged across Angular content projection. */
+    readonly listCompositeRoot: Signal<RdxCompositeRootContext | null>;
+    readonly listCompositeList: Signal<RdxCompositeListContext | null>;
     readonly contents: Signal<Map<string, RdxNavigationMenuContentEntry>>;
     readonly activeContent: Signal<RdxNavigationMenuContentEntry | undefined>;
     readonly popup: Signal<HTMLElement | undefined>;
@@ -79,7 +83,11 @@ export interface RdxNavigationMenuRootContext {
     setSize(size: { width: number; height: number } | null): void;
 
     registerTrigger(value: string, trigger: HTMLElement): () => void;
-    registerList(list: HTMLElement): () => void;
+    registerList(
+        list: HTMLElement,
+        compositeRoot: RdxCompositeRootContext,
+        compositeList: RdxCompositeListContext
+    ): () => void;
     registerContent(entry: RdxNavigationMenuContentEntry): () => void;
     registerPopup(element: HTMLElement): () => void;
     registerTransitionElement(element: HTMLElement): () => void;

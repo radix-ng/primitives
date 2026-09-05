@@ -12,6 +12,7 @@ import {
     signal,
     untracked
 } from '@angular/core';
+import { RdxCompositeListContext, RdxCompositeRootContext } from '@radix-ng/primitives/composite';
 import {
     createCancelableChangeEventDetails,
     createFloatingRootContext,
@@ -147,6 +148,8 @@ export class RdxNavigationMenuRoot {
     readonly trigger = signal<HTMLElement | undefined>(undefined);
     readonly triggers = signal<HTMLElement[]>([]);
     readonly list = signal<HTMLElement | undefined>(undefined);
+    readonly listCompositeRoot = signal<RdxCompositeRootContext | null>(null);
+    readonly listCompositeList = signal<RdxCompositeListContext | null>(null);
     readonly contents = signal<Map<string, RdxNavigationMenuContentEntry>>(new Map());
     readonly popup = signal<HTMLElement | undefined>(undefined);
     readonly size = signal<{ width: number; height: number } | null>(null);
@@ -359,13 +362,23 @@ export class RdxNavigationMenuRoot {
         };
     }
 
-    registerList(list: HTMLElement) {
+    registerList(list: HTMLElement, compositeRoot: RdxCompositeRootContext, compositeList: RdxCompositeListContext) {
         this.list.set(list);
+        this.listCompositeRoot.set(compositeRoot);
+        this.listCompositeList.set(compositeList);
 
         return () => {
-            if (this.list() === list) {
-                this.list.set(undefined);
+            if (
+                this.list() !== list ||
+                this.listCompositeRoot() !== compositeRoot ||
+                this.listCompositeList() !== compositeList
+            ) {
+                return;
             }
+
+            this.list.set(undefined);
+            this.listCompositeRoot.set(null);
+            this.listCompositeList.set(null);
         };
     }
 
@@ -485,6 +498,8 @@ function contextFor(root: RdxNavigationMenuRoot): RdxNavigationMenuRootContext {
         trigger: root.trigger.asReadonly(),
         triggers: root.triggers.asReadonly(),
         list: root.list.asReadonly(),
+        listCompositeRoot: root.listCompositeRoot.asReadonly(),
+        listCompositeList: root.listCompositeList.asReadonly(),
         contents: root.contents.asReadonly(),
         activeContent: root.activeContent,
         popup: root.popup.asReadonly(),
@@ -501,7 +516,7 @@ function contextFor(root: RdxNavigationMenuRoot): RdxNavigationMenuRootContext {
         cancelHoverClose: () => root.cancelHoverClose(),
         setSize: (size) => root.setSize(size),
         registerTrigger: (value, trigger) => root.registerTrigger(value, trigger),
-        registerList: (list) => root.registerList(list),
+        registerList: (list, compositeRoot, compositeList) => root.registerList(list, compositeRoot, compositeList),
         registerContent: (entry) => root.registerContent(entry),
         registerPopup: (element) => root.registerPopup(element),
         registerTransitionElement: (element) => root.registerTransitionElement(element),
