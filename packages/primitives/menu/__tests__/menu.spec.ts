@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { resetRdxDevWarnings } from '@radix-ng/primitives/core';
 import { RdxReturnFocus } from '@radix-ng/primitives/floating-focus-manager';
 import { FOCUS_GUARD_ATTR } from '@radix-ng/primitives/focus-scope';
 import {
@@ -2899,5 +2900,87 @@ describe('Menu structural portal', () => {
             const fixture = TestBed.createComponent(MisuseHost);
             fixture.detectChanges();
         }).toThrow(/structural directive/);
+    });
+});
+
+// ─── Diagnostics ─────────────────────────────────────────────────────────────
+
+@Component({
+    selector: 'test-projected-menu-popup',
+    imports: [RdxMenuPopup, RdxMenuItem],
+    template: `
+        <div rdxMenuPopup>
+            @if (inline()) {
+                <button rdxMenuItem>Inline</button>
+            }
+            <ng-content />
+        </div>
+    `
+})
+class ProjectedMenuPopupWrapper {
+    readonly inline = input(true);
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, ProjectedMenuPopupWrapper, RdxMenuItem],
+    template: `
+        <div #root="rdxMenuRoot" rdxMenuRoot>
+            <button rdxMenuTrigger>Open</button>
+            @if (root.open()) {
+                <div rdxMenuPositioner>
+                    <test-projected-menu-popup [inline]="inline()">
+                        <button rdxMenuItem>Projected</button>
+                    </test-projected-menu-popup>
+                </div>
+            }
+        </div>
+    `
+})
+class ProjectedMenuItemsHost {
+    readonly inline = signal(true);
+}
+
+describe('Menu diagnostics', () => {
+    let warn: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(() => {
+        resetRdxDevWarnings();
+        warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    });
+
+    afterEach(() => {
+        warn.mockRestore();
+    });
+
+    /** Opens the menu and moves focus, which is what makes the popup resolve its item list. */
+    function navigate(fixture: ComponentFixture<unknown>): void {
+        fixture.detectChanges();
+        (fixture.nativeElement.querySelector('[rdxMenuTrigger]') as HTMLElement).click();
+        fixture.detectChanges();
+        keydown(fixture.nativeElement.querySelector('[rdxMenuPopup]') as HTMLElement, 'ArrowDown');
+    }
+
+    it('warns when a popup mixes inline and projected items', () => {
+        TestBed.configureTestingModule({ imports: [ProjectedMenuItemsHost] });
+        navigate(TestBed.createComponent(ProjectedMenuItemsHost));
+
+        expect(warn).toHaveBeenCalledWith(expect.stringContaining('[rdx:menu/items-outside-composite]'));
+    });
+
+    it('stays silent when every item is projected and the DOM fallback applies', () => {
+        TestBed.configureTestingModule({ imports: [ProjectedMenuItemsHost] });
+        const fixture = TestBed.createComponent(ProjectedMenuItemsHost);
+        fixture.componentInstance.inline.set(false);
+        navigate(fixture);
+
+        expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('stays silent when the popup declares its own items', () => {
+        TestBed.configureTestingModule({ imports: [BasicMenuComponent] });
+        navigate(TestBed.createComponent(BasicMenuComponent));
+
+        expect(warn).not.toHaveBeenCalled();
     });
 });

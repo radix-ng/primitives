@@ -94,6 +94,7 @@ recoverable mistake:
 | `autocomplete/virtualized-item-label` | `rdxAutocompleteRoot` is `virtualized` with object items but has no `itemToStringValue` to label them.       |
 | `tabs/tab-outside-list`             | `rdxTabsTab` is rendered outside its `rdxTabsList`, so it gets no roving tabindex and arrow keys can't reach it. |
 | `toggle-group/missing-toggle-value` | `rdxToggle` sits inside an `rdxToggleGroup` without a `value`, so the group can't derive its pressed state.  |
+| `menu/items-outside-composite`      | `rdxMenuPopup` holds menu items registered with another list (projected in from a wrapper), so keyboard navigation skips them. |
 
 **Errors** (thrown in dev) flag markup that cannot work at all: the structural portal guards
 (`<primitive>/portal-on-element`), thrown when a structural `*rdx…Portal` directive is used as a plain
