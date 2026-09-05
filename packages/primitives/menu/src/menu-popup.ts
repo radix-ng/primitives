@@ -443,6 +443,12 @@ export class RdxMenuPopup {
         this.focusMenuItem(items[0]);
     }
 
+    // The DOM fallback covers a popup whose items were all projected past it: their composite
+    // registration resolves through the declaring injector tree, not the rendered one, so they never
+    // reach this popup's list (see ADR 0001, "Item ownership across content projection"). It is
+    // all-or-nothing — a popup mixing inline and projected items keeps the inline ones and silently
+    // drops the rest. Menu has no `RdxCompositeItemOwner` bridge because `rdxMenuSubTrigger` belongs to
+    // the parent popup's list, so ownership would have to be resolved per popup rather than per root.
     private menuItems(): RdxMenuCompositeItem[] {
         const compositeItems = getCompositeMenuItems(this.compositeList);
 

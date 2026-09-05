@@ -64,6 +64,13 @@ Constraints that come with it:
   items' declaring tree — wrappers compose it onto their host element.
 - The bridge is opt-in per primitive. `tabs` and `navigation-menu` provide it (`tabs-composite-item-owner.ts`,
   `navigation-menu-composite-item-owner.ts`); every other composite consumer relies on plain injection.
+- `menu` is deliberately left without one and instead falls back to reading focusable items out of the
+  DOM when its composite list comes back empty (`menuItems()` in `menu-popup.ts`). That covers a popup
+  whose items are _all_ projected, but not a **mixed** popup: as soon as one item registers inline, the
+  fallback is skipped and the projected ones drop out of keyboard navigation. A real bridge is more
+  expensive here than in Tabs — `rdxMenuSubTrigger` belongs to the _parent_ popup's list, so ownership
+  has to be resolved per popup rather than per root, which a single pair of signals on the Root context
+  cannot express.
 
 `RdxCompositeItemOwner` is exported from the `composite` entry point only so sibling secondary entry
 points can coordinate. It is marked `@internal` and carries no semver stability guarantee.
@@ -114,6 +121,17 @@ Use `rdxCompositeList` / `rdxCompositeListItem` when only ordered metadata regis
 Use `rdxCompositeRoot` / `rdxCompositeItem` when the widget also needs roving focus and arrow-key
 navigation.
 
+## Rejected alternatives
+
+- **A generic DOM- or `WeakMap`-based fallback in `composite` itself**, resolving an item's list by
+  walking up from the element instead of through DI. Rejected because it treats the symptom: in the
+  projection case DI does not fail to find a context, it finds a _valid but wrong_ one (the wrapper's
+  own ancestor), so a fallback would never be reached. It would also make every item's ownership
+  implicit and position-dependent, where the owner provider keeps it explicit and per primitive.
+- **Making `RdxCompositeItemOwner` part of the public API** so consumers can bridge their own
+  composites. Deferred until someone asks: the shape is still driven by two primitives' needs, and
+  freezing it now would lock in a contract we have not stress-tested.
+
 ## Consequences
 
 ### Positive
@@ -137,4 +155,5 @@ Revisit this ADR before:
 - duplicating ordered item registration in a new primitive;
 - adding a new composite option that exists only for one primitive;
 - nesting a second composite root inside a primitive that provides an `RdxCompositeItemOwner`;
-- promoting `RdxCompositeItemOwner` to a supported public API.
+- promoting `RdxCompositeItemOwner` to a supported public API;
+- bridging ownership into a primitive whose lists are per-popup rather than per-root (`menu`).
