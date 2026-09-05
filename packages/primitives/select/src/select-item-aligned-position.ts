@@ -10,7 +10,7 @@ import {
     output,
     signal
 } from '@angular/core';
-import { clamp, resizeEffect } from '@radix-ng/primitives/core';
+import { clamp, rdxPlatform, resizeEffect } from '@radix-ng/primitives/core';
 import { RdxSelectItemAlignedPositionContent } from './select-item-aligned-position-content';
 import { RDX_SELECT_POSITIONER_TOKEN, RdxPositionerImpl, RdxSelectPopup } from './select-popup';
 import { injectSelectRootContext } from './select-root';
@@ -50,7 +50,12 @@ export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
      * touch-opened. A touch open falls back to a plain anchored dropdown ({@link positionBelowTrigger}).
      * Read by the popup's scroll-lock policy — an active item-aligned popup locks even when `modal=false`.
      */
-    readonly alignItemWithTriggerActive = computed(() => this.rootContext.open() && !this.rootContext.openedByTouch());
+    readonly alignItemWithTriggerActive = computed(
+        () => this.rootContext.open() && !this.rootContext.openedByTouch() && !this.pinchZoomFallback()
+    );
+
+    /** Set while the page is pinch-zoomed in Safari — see {@link isPinchZoomed}. */
+    private readonly pinchZoomFallback = signal(false);
 
     readonly contentZIndex = signal('');
 
@@ -80,9 +85,21 @@ export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
         });
     }
 
+    /** Whether Safari is pinch-zoomed, where it fails to place an item-aligned popup correctly. */
+    private isPinchZoomed(): boolean {
+        if (!rdxPlatform.engine.webkit) {
+            return false;
+        }
+        const win = this.currentElement.nativeElement.ownerDocument.defaultView;
+        return (win?.visualViewport?.scale ?? 1) !== 1;
+    }
+
     position() {
+        this.pinchZoomFallback.set(this.isPinchZoomed());
+
         // Base UI parity: a touch-opened select does NOT align the item with the trigger (the macOS-style
-        // overlay is awkward on mobile). Fall back to a plain anchored dropdown below the trigger.
+        // overlay is awkward on mobile), and neither does a pinch-zoomed page in Safari. Fall back to a
+        // plain anchored dropdown below the trigger.
         if (!this.alignItemWithTriggerActive()) {
             this.positionBelowTrigger();
             return;

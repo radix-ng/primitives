@@ -1,22 +1,10 @@
 import { computed, Directive, effect, ElementRef, inject, input, numberAttribute, signal } from '@angular/core';
-import { NumberInput } from '@radix-ng/primitives/core';
+import { NumberInput, rdxPlatform } from '@radix-ng/primitives/core';
 import { injectNumberFieldRootContext } from './number-field-context';
 import { provideNumberFieldScrubAreaContext, RdxNumberFieldScrubAreaContext } from './number-field-scrub-area-context';
 import { numberOrUndefined } from './number-field.utils';
 
 type ScrubDirection = 'horizontal' | 'vertical';
-
-function isWebKitBrowser(): boolean {
-    return (
-        typeof navigator !== 'undefined' &&
-        /AppleWebKit/.test(navigator.userAgent) &&
-        !/Chrome/.test(navigator.userAgent)
-    );
-}
-
-function isFirefoxBrowser(): boolean {
-    return typeof navigator !== 'undefined' && /firefox/i.test(navigator.userAgent);
-}
 
 /** Calculates the viewport rect the virtual cursor loops within. */
 function getViewportRect(teleportDistance: number | undefined, scrubAreaEl: HTMLElement) {
@@ -172,7 +160,7 @@ export class RdxNumberFieldScrubArea {
                     this.pointerDownTarget = null;
                 };
 
-                if (isFirefoxBrowser()) {
+                if (rdxPlatform.engine.gecko) {
                     // Firefox needs a small delay or pointer lock won't release on a soft click.
                     setTimeout(finish, 20);
                 } else {
@@ -223,7 +211,7 @@ export class RdxNumberFieldScrubArea {
         this.onScrubbingChange(true, event);
 
         // WebKit causes significant layout shift with the native pointer-lock message.
-        if (!isTouch && !isWebKitBrowser()) {
+        if (!isTouch && !rdxPlatform.engine.webkit) {
             try {
                 await this.scrubAreaEl.ownerDocument.body.requestPointerLock();
                 this.isPointerLockDenied.set(false);

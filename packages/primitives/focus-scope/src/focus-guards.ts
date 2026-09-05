@@ -1,4 +1,5 @@
 import { effect } from '@angular/core';
+import { rdxPlatform } from '@radix-ng/primitives/core';
 import { composedContains, queryComposedAll, tabbable } from './utils';
 
 /** Marks the leading / trailing focus-guard spans (Base UI `data-base-ui-focus-guard`). */
@@ -30,8 +31,16 @@ export const FOCUS_GUARD_STYLE: Partial<CSSStyleDeclaration> = {
 export function createFocusGuard(ownerDocument: Document): HTMLSpanElement {
     const guard = ownerDocument.createElement('span');
     guard.setAttribute('tabindex', '0');
-    guard.setAttribute('aria-hidden', 'true');
     guard.setAttribute(FOCUS_GUARD_ATTR, '');
+    // Unlike NVDA and JAWS, VoiceOver's virtual cursor fires `focus` as it moves — but only over
+    // focusable / `role="button"` elements, through WebKit's NSAccessibility path. Giving the guard
+    // that role lets the trap catch the virtual cursor; the role also means it can no longer be
+    // hidden from the accessibility tree (Base UI `FocusGuard`).
+    if (rdxPlatform.screenReader.voiceOver && rdxPlatform.engine.webkit) {
+        guard.setAttribute('role', 'button');
+    } else {
+        guard.setAttribute('aria-hidden', 'true');
+    }
     Object.assign(guard.style, FOCUS_GUARD_STYLE);
     return guard;
 }

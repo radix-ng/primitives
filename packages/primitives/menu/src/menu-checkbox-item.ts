@@ -16,6 +16,7 @@ import {
     BooleanInput,
     createCancelableChangeEventDetails,
     createContext,
+    isStationaryWebKitPointer,
     RdxCancelableChangeEventDetails
 } from '@radix-ng/primitives/core';
 import { injectRdxMenuRootContext } from './menu-root';
@@ -122,6 +123,10 @@ export class RdxMenuCheckboxItem {
     }
 
     onPointerMove(event: PointerEvent): void {
+        // WebKit fires zero-delta moves while the list scrolls under a still cursor.
+        if (isStationaryWebKitPointer(event)) {
+            return;
+        }
         if (event.defaultPrevented || event.pointerType !== 'mouse' || this.effectiveDisabled()) {
             return;
         }

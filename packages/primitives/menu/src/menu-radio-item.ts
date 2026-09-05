@@ -11,7 +11,7 @@ import {
     Signal
 } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
-import { BooleanInput, createContext } from '@radix-ng/primitives/core';
+import { BooleanInput, createContext, isStationaryWebKitPointer } from '@radix-ng/primitives/core';
 import { injectRdxMenuRadioGroupContext } from './menu-radio-group';
 import { injectRdxMenuRootContext } from './menu-root';
 
@@ -113,6 +113,10 @@ export class RdxMenuRadioItem<T = unknown> {
     }
 
     onPointerMove(event: PointerEvent): void {
+        // WebKit fires zero-delta moves while the list scrolls under a still cursor.
+        if (isStationaryWebKitPointer(event)) {
+            return;
+        }
         if (event.defaultPrevented || event.pointerType !== 'mouse' || this.effectiveDisabled()) {
             return;
         }

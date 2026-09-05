@@ -17,7 +17,7 @@ import {
     injectComboboxRootContext,
     provideComboboxItemContext
 } from '@radix-ng/primitives/combobox';
-import { AcceptableValue, injectId } from '@radix-ng/primitives/core';
+import { AcceptableValue, injectId, isStationaryWebKitPointer } from '@radix-ng/primitives/core';
 import { RdxAutocompleteRow } from './autocomplete-row';
 
 const itemContext = () => {
@@ -58,7 +58,7 @@ const itemContext = () => {
         '(mousedown)': 'onMouseDown($event)',
         '(mouseup)': 'onMouseUp($event)',
         '(click)': 'onClick()',
-        '(pointermove)': 'onPointerMove()',
+        '(pointermove)': 'onPointerMove($event)',
         '(pointerleave)': 'onPointerLeave($event)'
     }
 })
@@ -213,7 +213,11 @@ export class RdxAutocompleteItem implements ComboboxItemRef {
         }
     }
 
-    onPointerMove(): void {
+    onPointerMove(event: PointerEvent): void {
+        // WebKit fires zero-delta moves while the list scrolls under a still cursor.
+        if (isStationaryWebKitPointer(event)) {
+            return;
+        }
         // Hover highlighting disabled: leave `data-highlighted` to keyboard/auto-highlight only.
         if (!this.rootContext.highlightItemOnHover()) {
             return;

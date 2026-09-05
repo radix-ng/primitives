@@ -1,14 +1,7 @@
 import { computed, DestroyRef, Directive, ElementRef, inject } from '@angular/core';
+import { rdxPlatform } from '@radix-ng/primitives/core';
 import { RdxPortal } from '@radix-ng/primitives/portal';
 import { injectNumberFieldScrubAreaContext } from './number-field-scrub-area-context';
-
-function isWebKitBrowser(): boolean {
-    return (
-        typeof navigator !== 'undefined' &&
-        /AppleWebKit/.test(navigator.userAgent) &&
-        !/Chrome/.test(navigator.userAgent)
-    );
-}
 
 /**
  * A custom element shown instead of the native cursor while scrubbing. It is portaled to the
@@ -37,7 +30,7 @@ export class RdxNumberFieldScrubAreaCursor {
     protected readonly shouldRender = computed(
         () =>
             this.scrubContext.isScrubbing() &&
-            !isWebKitBrowser() &&
+            !rdxPlatform.engine.webkit &&
             !this.scrubContext.isTouchInput() &&
             !this.scrubContext.isPointerLockDenied()
     );

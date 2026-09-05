@@ -13,7 +13,7 @@ import {
     signal
 } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
-import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
+import { BooleanInput, NumberInput, rdxPlatform } from '@radix-ng/primitives/core';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { getFocusableMenuItems } from './menu-focus';
 import { injectRdxMenuRootContext, RdxMenuRoot } from './menu-root';
@@ -44,7 +44,7 @@ const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();
         role: 'menuitem',
         '[attr.tabindex]': 'parentMenuRoot?.open() && highlighted() ? 0 : -1',
         '[attr.aria-haspopup]': '"menu"',
-        '[attr.aria-expanded]': 'submenuContext.isOpen()',
+        '[attr.aria-expanded]': 'omitExpanded() ? undefined : submenuContext.isOpen()',
         '[attr.aria-disabled]': 'effectiveDisabled() ? true : undefined',
         '[attr.data-popup-open]': 'submenuContext.isOpen() ? "" : undefined',
         '[attr.data-highlighted]': 'highlighted() ? "" : undefined',
@@ -78,7 +78,20 @@ export class RdxMenuSubTrigger {
     private lastPointer: { x: number; y: number } | null = null;
     /** Whether the current open was initiated by hover (vs keyboard / click). */
     private openedByHover = false;
+    /** Whether the current open came from the keyboard — read by {@link omitExpanded}. */
+    private readonly openedByKeyboard = signal(false);
     private ignoreNextKeyboardClick = false;
+
+    /**
+     * Whether to drop `aria-expanded` from the trigger. Opening a submenu flips the trigger's expanded
+     * state while the trigger still has focus, and VoiceOver announces that change instead of the item
+     * focus moves to a moment later — so the first submenu item is never announced. Dropping the state
+     * only while the submenu is open avoids the announcement without claiming the submenu is collapsed;
+     * `aria-haspopup` still says the item opens a submenu (Base UI `MenuSubmenuTrigger`).
+     */
+    protected readonly omitExpanded = computed(
+        () => rdxPlatform.screenReader.voiceOver && this.submenuContext.isOpen() && this.openedByKeyboard()
+    );
 
     /** Whether this trigger (and therefore the submenu) is disabled. */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
@@ -233,6 +246,7 @@ export class RdxMenuSubTrigger {
         }
 
         this.openedByHover = false;
+        this.openedByKeyboard.set(!isMouseClick);
         this.clearSiblingHighlights();
 
         if (this.submenuContext.isOpen()) {
@@ -258,6 +272,7 @@ export class RdxMenuSubTrigger {
         event.stopPropagation();
         this.ignoreNextKeyboardClick = true;
         this.openedByHover = false;
+        this.openedByKeyboard.set(true);
         this.clearSiblingHighlights();
 
         if (!this.submenuContext.isOpen()) {
@@ -277,6 +292,7 @@ export class RdxMenuSubTrigger {
         event.preventDefault();
         event.stopPropagation();
         this.openedByHover = false;
+        this.openedByKeyboard.set(true);
         this.clearSiblingHighlights();
         if (!this.submenuContext.isOpen()) {
             this.closeSiblingSubmenus();
@@ -294,6 +310,7 @@ export class RdxMenuSubTrigger {
         event.preventDefault();
         event.stopPropagation();
         this.openedByHover = false;
+        this.openedByKeyboard.set(true);
         this.clearSiblingHighlights();
         if (!this.submenuContext.isOpen()) {
             this.closeSiblingSubmenus();
@@ -318,6 +335,7 @@ export class RdxMenuSubTrigger {
             this.closeSiblingSubmenus();
             this.openTimer = setTimeout(() => {
                 this.openedByHover = true;
+                this.openedByKeyboard.set(false);
                 this.submenuContext.show(false, 'trigger-hover');
             }, this.delay() ?? 100);
         }

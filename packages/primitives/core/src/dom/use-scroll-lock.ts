@@ -1,10 +1,11 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { computed, DestroyRef, effect, inject, PLATFORM_ID, signal, Signal } from '@angular/core';
+import { rdxPlatform } from './platform';
 
 /** Marker attribute set on `<html>` while scroll is locked (a strategy-independent test/CSS hook). */
 export const RDX_SCROLL_LOCKED_ATTR = 'data-rdx-scroll-locked';
 
-// ── Small DOM / platform helpers (inlined — we deliberately do NOT depend on `@floating-ui/utils`) ──
+// ── Small DOM helpers (inlined — we deliberately do NOT depend on `@floating-ui/utils`) ──
 
 /**
  * Floating UI's `isOverflowElement`: whether `element` is itself a scroll container (its computed
@@ -22,22 +23,6 @@ function isOverflowElement(element: Element): boolean {
         /auto|scroll|overlay|hidden|clip/.test(overflow + overflowY + overflowX) &&
         !['inline', 'contents'].includes(display)
     );
-}
-
-/**
- * WebKit (Safari / any iOS browser) UA check — needs the `Safari` token and excludes desktop Blink
- * (Chrome / Edge / Android), so jsdom (`AppleWebKit … jsdom`, no `Safari`) is correctly **not** WebKit.
- * Mirrors the same helper in the dismissal capability; only WebKit needs the pinch-zoom bail-out.
- */
-function isWebKit(win: Window): boolean {
-    const ua = win.navigator.userAgent;
-    return /AppleWebKit/i.test(ua) && /Safari/i.test(ua) && !/Chrome|Chromium|Edg|Android/i.test(ua);
-}
-
-/** iOS / iPadOS detection (iPadOS 13+ reports as Mac, so also accept touch-capable `MacIntel`). */
-function isIOS(win: Window): boolean {
-    const nav = win.navigator;
-    return /iP(ad|hone|od)/.test(nav.userAgent) || (nav.platform === 'MacIntel' && nav.maxTouchPoints > 1);
 }
 
 /** Whether the document currently has **inset** (space-consuming) scrollbars rather than overlay ones. */
@@ -116,7 +101,7 @@ function preventScrollInsetScrollbars(doc: Document): () => void {
     }
 
     // Pinch-zoom in Safari causes a shift — just don't lock while zoomed.
-    if (isWebKit(win) && (win.visualViewport?.scale ?? 1) !== 1) {
+    if (rdxPlatform.engine.webkit && (win.visualViewport?.scale ?? 1) !== 1) {
         return () => {};
     }
 
@@ -274,7 +259,7 @@ class ScrollLocker {
         if (htmlOverflowY === 'hidden' || htmlOverflowY === 'clip') {
             this.restore = () => undefined;
         } else {
-            const hasOverlayScrollbars = (win ? isIOS(win) : false) || !hasInsetScrollbars(this.doc);
+            const hasOverlayScrollbars = rdxPlatform.os.ios || !hasInsetScrollbars(this.doc);
             const strategyRestore = hasOverlayScrollbars
                 ? preventScrollOverlayScrollbars(this.doc)
                 : preventScrollInsetScrollbars(this.doc);

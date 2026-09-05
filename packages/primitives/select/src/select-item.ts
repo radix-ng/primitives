@@ -11,7 +11,13 @@ import {
     Signal
 } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
-import { AcceptableValue, createContext, handleAndDispatchCustomEvent, injectId } from '@radix-ng/primitives/core';
+import {
+    AcceptableValue,
+    createContext,
+    handleAndDispatchCustomEvent,
+    injectId,
+    isStationaryWebKitPointer
+} from '@radix-ng/primitives/core';
 import { injectSelectPopupContext } from './select-popup';
 import { injectSelectRootContext } from './select-root';
 import { SELECTION_KEYS, valueComparator } from './utils';
@@ -131,7 +137,11 @@ export class RdxSelectItem {
         this.contentContext.onItemLeave?.();
     }
 
-    onPointerMove(event: Event) {
+    onPointerMove(event: PointerEvent) {
+        // WebKit fires zero-delta moves while the list scrolls under a still cursor.
+        if (isStationaryWebKitPointer(event)) {
+            return;
+        }
         if (event.defaultPrevented) return;
         // Ignore pointer events synthesized by keyboard-driven scrolling (don't steal the highlight).
         if (this.contentContext.isKeyboardActive()) {

@@ -1,6 +1,6 @@
 import { isPlatformBrowser } from '@angular/common';
 import { DestroyRef, inject, PLATFORM_ID } from '@angular/core';
-import { RdxFloatingNode, RdxFloatingRootContext } from '@radix-ng/primitives/core';
+import { RdxFloatingNode, RdxFloatingRootContext, rdxPlatform } from '@radix-ng/primitives/core';
 import { RDX_FLOATING_MARKER } from '@radix-ng/primitives/floating-focus-manager';
 
 /** Why a dismissal was requested — mirrors Base UI's open-change `reason` strings (`useDismiss.ts`). */
@@ -97,17 +97,6 @@ function isElement(target: EventTarget | null): target is Element {
     }
     const view = target.ownerDocument?.defaultView;
     return view ? target instanceof view.Element : target instanceof Element;
-}
-
-/**
- * Whether `window` is a WebKit (Safari / any iOS browser) engine — its IME `compositionend`/`keydown`
- * ordering needs a longer guard. Requires the `Safari` token and excludes desktop Blink (Chrome /
- * Edge / Android), so jsdom (`AppleWebKit/537.36 … jsdom`, no `Safari`) is correctly **not** WebKit and
- * the unit timing stays 0ms.
- */
-function isWebKit(window: { navigator: Navigator }): boolean {
-    const ua = window.navigator.userAgent;
-    return /AppleWebKit/i.test(ua) && /Safari/i.test(ua) && !/Chrome|Chromium|Edg|Android/i.test(ua);
 }
 
 /** Only a primary (left / default) press dismisses — a non-primary mouse button is ignored. */
@@ -380,7 +369,7 @@ export class RdxDismiss {
                 () => {
                     isComposing = false;
                 },
-                isWebKit(ownerWindow) ? 5 : 0
+                rdxPlatform.engine.webkit ? 5 : 0
             );
         };
 

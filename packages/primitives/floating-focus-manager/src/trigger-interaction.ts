@@ -1,4 +1,5 @@
 import { computed, effect, Signal, signal } from '@angular/core';
+import { rdxPlatform } from '@radix-ng/primitives/core';
 import {
     composedContains,
     createAriaOwnsAnchor,
@@ -78,7 +79,16 @@ export function createRdxTriggerInteraction(options: RdxTriggerInteractionOption
             if (event.detail !== 0 && lastPointerType() === 'touch') {
                 return 'touch';
             }
-            return getInteractionTypeFromEvent(event);
+            const interactionType = getInteractionTypeFromEvent(event);
+            // iOS's hit-slop: a tap slightly outside a touch target fires `mousedown` / `click` but no
+            // `pointerdown`, so the click carries no pointer type and reads as a mouse click. With no
+            // pointer type recorded at all, such a click on iOS is really a tap — a pointing device
+            // attached to an iPad still reports its own `pointerdown` first, so it is unaffected
+            // (Base UI `useOpenMethodTriggerProps`).
+            if (interactionType === 'mouse' && lastPointerType() === '' && rdxPlatform.os.ios) {
+                return 'touch';
+            }
+            return interactionType;
         }
     };
 }

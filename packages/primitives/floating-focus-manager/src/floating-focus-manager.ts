@@ -17,10 +17,12 @@ import {
 } from '@angular/core';
 import {
     BooleanInput,
+    getActiveElement,
     RDX_FLOATING_REGISTRATION,
     RDX_FLOATING_ROOT_CONTEXT,
     RdxFloatingRootContext,
-    RdxFloatingTree
+    RdxFloatingTree,
+    rdxPlatform
 } from '@radix-ng/primitives/core';
 import {
     composedContains,
@@ -33,6 +35,7 @@ import {
     getPreviousTabbable,
     getTabbableCandidates,
     isOutsideEvent,
+    isTypeableElement,
     provideRdxFocusScopeConfig,
     RdxFocusScope,
     RdxFocusScopeConfig,
@@ -331,6 +334,23 @@ export class RdxFloatingFocusManager {
                 return;
             }
             onCleanup(markOthers(this.avoidElements(), { inert: true, mark: false }));
+        });
+
+        // Safari scrolls the page to the bottom when a popup whose input holds focus unmounts.
+        // Blurring it while the popup closes (before the exit animation unmounts it) avoids that
+        // jump; other engines don't need it (Base UI `FloatingFocusManager`).
+        effect(() => {
+            if (!rdxPlatform.engine.webkit || this.isFloatingOpen()) {
+                return;
+            }
+            const floating = this.rootContext?.floatingElement ?? this.host;
+            if (!floating) {
+                return;
+            }
+            const activeEl = getActiveElement(floating.ownerDocument);
+            if (isTypeableElement(activeEl) && composedContains(floating, activeEl)) {
+                activeEl.blur();
+            }
         });
 
         this.trackInteractionType();

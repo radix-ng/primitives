@@ -8,7 +8,7 @@ import {
     inject,
     input
 } from '@angular/core';
-import { BooleanInput, injectId } from '@radix-ng/primitives/core';
+import { BooleanInput, injectId, rdxPlatform } from '@radix-ng/primitives/core';
 import { RdxFloatingInsideElement } from '@radix-ng/primitives/dismissable-layer';
 import { injectFieldRootContext } from '@radix-ng/primitives/field';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
@@ -63,7 +63,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
         '(focus)': 'onFocus()',
         '(blur)': 'onBlur()',
         '(keydown)': 'onKeydown($event)',
-        '(compositionstart)': 'composing = true',
+        '(compositionstart)': 'onCompositionStart()',
         '(compositionend)': 'onCompositionEnd($event)'
     }
 })
@@ -147,12 +147,29 @@ export class RdxComboboxInput {
     /** Whether an IME composition is in progress (CJK). While composing, don't filter or select. */
     protected composing = false;
 
+    /**
+     * Whether IME composition is in progress, combining our own `compositionstart` bookkeeping with
+     * the event's native flag. Always `false` on Android: predictive-text keyboards there (Samsung's,
+     * for one) report a composition for ordinary typing, so honoring it would stall filtering for the
+     * whole session (Base UI `ComboboxInput`).
+     */
+    protected isComposing(nativeIsComposing: boolean | undefined): boolean {
+        return !rdxPlatform.os.android && (this.composing || Boolean(nativeIsComposing));
+    }
+
     onInput(event: Event): void {
         // Defer filtering until the composition ends so intermediate IME text doesn't filter/select.
-        if (this.composing || (event as InputEvent).isComposing) {
+        if (this.isComposing((event as InputEvent).isComposing)) {
             return;
         }
         this.commitInput((event.target as HTMLInputElement).value, event);
+    }
+
+    onCompositionStart(): void {
+        if (rdxPlatform.os.android) {
+            return;
+        }
+        this.composing = true;
     }
 
     onCompositionEnd(event: CompositionEvent): void {
@@ -197,7 +214,7 @@ export class RdxComboboxInput {
         // Don't interfere with IME composition or text-editing shortcuts / range selection. Shift+Arrows
         // and modified Home/End keep moving/extending the caret; Ctrl/Meta combos stay browser shortcuts.
         // (Plain Home/End navigate the grid below, but only in `grid` mode.)
-        if (event.isComposing || this.composing) {
+        if (this.isComposing(event.isComposing)) {
             return;
         }
         if (event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) {

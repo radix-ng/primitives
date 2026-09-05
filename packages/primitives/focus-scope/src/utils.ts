@@ -55,6 +55,22 @@ export function focusFirst(
     return;
 }
 
+/**
+ * Selector for elements the user can type into (Base UI `TYPEABLE_SELECTOR`).
+ */
+const TYPEABLE_SELECTOR =
+    "input:not([type='hidden']):not([disabled]),[contenteditable]:not([contenteditable='false']),textarea:not([disabled])";
+
+/**
+ * Whether `element` accepts text input — an enabled input, textarea, or contenteditable host.
+ * Owner-document-safe, so an element living in an iframe is still recognized.
+ */
+export function isTypeableElement(element: unknown): element is HTMLElement {
+    const view = (element as Element | null)?.ownerDocument?.defaultView;
+    const HtmlElement = view?.HTMLElement ?? HTMLElement;
+    return element instanceof HtmlElement && element.matches(TYPEABLE_SELECTOR);
+}
+
 export function isSelectableInput(element: any): element is FocusableTarget & { select: () => void } {
     return element instanceof HTMLInputElement && 'select' in element;
 }

@@ -22,6 +22,7 @@ import {
     RdxFormUiControlBase,
     RdxFormUiTouchTarget,
     RdxFormValueControl,
+    rdxPlatform,
     serializeNativeFormValue,
     useNativeFormControl
 } from '@radix-ng/primitives/core';
@@ -247,6 +248,12 @@ export class RdxNumberFieldRoot extends RdxFormUiControlBase implements RdxFormV
 
     /** @ignore Software-keyboard hint based on whether the format allows fractional digits. */
     readonly inputMode = computed<InputMode>(() => {
+        if (rdxPlatform.os.ios) {
+            // iOS's numeric software keyboard has no minus key, so a range that allows negative
+            // values has to fall back to the default keyboard. Otherwise "decimal" is the best fit:
+            // unlike "numeric", it at least offers a decimal separator (Base UI `NumberFieldRoot`).
+            return this.minWithDefault() < 0 ? 'text' : 'decimal';
+        }
         const hasDecimals = (this.formatter().resolvedOptions().maximumFractionDigits ?? 0) > 0;
         return hasDecimals ? 'decimal' : 'numeric';
     });

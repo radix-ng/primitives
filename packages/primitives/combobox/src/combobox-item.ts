@@ -12,7 +12,7 @@ import {
     signal,
     Signal
 } from '@angular/core';
-import { AcceptableValue, createContext, injectId } from '@radix-ng/primitives/core';
+import { AcceptableValue, createContext, injectId, isStationaryWebKitPointer } from '@radix-ng/primitives/core';
 import { injectComboboxGroupContext } from './combobox-group';
 import { ComboboxItemRef, injectComboboxRootContext } from './combobox-root';
 import { RdxComboboxRow } from './combobox-row';
@@ -61,7 +61,7 @@ export const [injectComboboxItemContext, provideComboboxItemContext] = createCon
         '(mousedown)': 'onMouseDown($event)',
         '(mouseup)': 'onMouseUp($event)',
         '(click)': 'onClick($event)',
-        '(pointermove)': 'onPointerMove()',
+        '(pointermove)': 'onPointerMove($event)',
         '(pointerleave)': 'onPointerLeave($event)'
     }
 })
@@ -219,7 +219,11 @@ export class RdxComboboxItem implements ComboboxItemRef {
         }
     }
 
-    onPointerMove(): void {
+    onPointerMove(event: PointerEvent): void {
+        // WebKit fires zero-delta moves while the list scrolls under a still cursor.
+        if (isStationaryWebKitPointer(event)) {
+            return;
+        }
         // Hover highlighting disabled: leave `data-highlighted` to keyboard/auto-highlight only.
         if (!this.rootContext.highlightItemOnHover()) {
             return;

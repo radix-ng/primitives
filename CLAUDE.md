@@ -403,3 +403,5 @@ Prefer the package.json scripts above over ad-hoc shell, and keep commands match
 - `AcceptableValue` — `string | Record<string, any> | null`
 - `isNullish(v)` — null/undefined check
 - `rdxDevWarning` / `rdxDevError` / `rdxCheckTriggerElement` / `rdxCheckLabelElement` — dev-mode diagnostics (ADR 0013); `docsUrl(path)` builds a `radix-ng.com/<path>.md` link
+- `rdxPlatform` — the **only** place the library sniffs the platform: `engine.{webkit,gecko,blink}` (WebKit is a `-webkit-backdrop-filter` CSS probe, not a UA match), `os.{ios,android,mac,windows,linux,apple}`, `screenReader.voiceOver`, `env.jsdom`. Static, SSR-safe (all `false` without `navigator`). Never re-roll a `navigator.userAgent` check in a primitive — add the missing trait here (`core/src/dom/platform.ts`)
+- `isStationaryWebKitPointer(event)` — hover-highlight guard: WebKit fires zero-delta `mousemove`/`pointermove` when a list scrolls under a still cursor, which would yank the highlight off the keyboard target. Every hover-highlight handler (composite item, menu items, select / combobox / autocomplete items) opens with this check
