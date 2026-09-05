@@ -92,10 +92,13 @@ recoverable mistake:
 | `field/unassociated-label`          | `rdxFieldLabel` is placed on a non-`<label>` element, so its `for` attribute can't associate the control.    |
 | `preview-card/trigger-element`      | `rdxPreviewCardTrigger` is on a non-interactive, non-focusable host (use a `<button>`/`<a>` or add `tabindex`). |
 | `autocomplete/virtualized-item-label` | `rdxAutocompleteRoot` is `virtualized` with object items but has no `itemToStringValue` to label them.       |
+| `tabs/tab-outside-list`             | `rdxTabsTab` is rendered outside its `rdxTabsList`, so it gets no roving tabindex and arrow keys can't reach it. |
+| `toggle-group/missing-toggle-value` | `rdxToggle` sits inside an `rdxToggleGroup` without a `value`, so the group can't derive its pressed state.  |
 
-**Errors** (thrown in dev) flag markup that cannot work at all — currently the structural portal
-guards (`<primitive>/portal-on-element`), thrown when a structural `*rdx…Portal` directive is used as a
-plain attribute on an element instead of an `ng-template`.
+**Errors** (thrown in dev) flag markup that cannot work at all: the structural portal guards
+(`<primitive>/portal-on-element`), thrown when a structural `*rdx…Portal` directive is used as a plain
+attribute on an element instead of an `ng-template`, and `popover/trigger-missing-root`, thrown when
+`rdxPopoverTrigger` has neither an enclosing `rdxPopoverRoot` nor a `handle` connected to one.
 
 Most parts that require a specific host element enforce it through their **selector** (e.g.
 `button[rdxSelectTrigger]`, `label[rdxLabel]`), so the mistake is caught at compile time and needs no

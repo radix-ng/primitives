@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { DataOrientation } from '@radix-ng/primitives/core';
+import { DataOrientation, resetRdxDevWarnings } from '@radix-ng/primitives/core';
+import { vi } from 'vitest';
 import { RdxTabsList } from '../src/tabs-list';
 import { RdxTabsPanel } from '../src/tabs-panel';
 import { RdxTabsPanelPresence } from '../src/tabs-panel-presence';
@@ -644,5 +645,67 @@ describe('Tabs with *rdxTabsPanelPresence', () => {
 
         expect(content('.content-one')).toBeTruthy();
         expect(content('.content-two')).toBeTruthy();
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel],
+    template: `
+        <div rdxTabsRoot defaultValue="one">
+            <div rdxTabsList>
+                <button rdxTabsTab value="one">One</button>
+            </div>
+            @if (renderStrayTab()) {
+                <button class="stray" rdxTabsTab value="two">Two</button>
+            }
+            <div rdxTabsPanel value="one">Panel one</div>
+            <div rdxTabsPanel value="two">Panel two</div>
+        </div>
+    `
+})
+class StrayTabHostComponent {
+    readonly renderStrayTab = signal(true);
+}
+
+describe('Tabs diagnostics', () => {
+    let warn: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(() => {
+        resetRdxDevWarnings();
+        warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    });
+
+    afterEach(() => {
+        warn.mockRestore();
+    });
+
+    it('warns when a tab is rendered outside its list', async () => {
+        TestBed.configureTestingModule({ imports: [StrayTabHostComponent] });
+        const fixture = TestBed.createComponent(StrayTabHostComponent);
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        expect(warn).toHaveBeenCalledWith(expect.stringContaining('[rdx:tabs/tab-outside-list]'));
+    });
+
+    it('stays silent when every tab is inside the list', async () => {
+        TestBed.configureTestingModule({ imports: [StrayTabHostComponent] });
+        const fixture = TestBed.createComponent(StrayTabHostComponent);
+        fixture.componentInstance.renderStrayTab.set(false);
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('stays silent while the list is unmounted', async () => {
+        TestBed.configureTestingModule({ imports: [ProjectedTabsHostComponent] });
+        const fixture = TestBed.createComponent(ProjectedTabsHostComponent);
+        fixture.componentInstance.showList.set(false);
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        expect(warn).not.toHaveBeenCalled();
     });
 });
