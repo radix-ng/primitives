@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, signal, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { resetRdxDevWarnings } from '@radix-ng/primitives/core';
@@ -259,6 +259,44 @@ class DisabledRootItemsMenuComponent {
     selections: string[] = [];
     checked = false;
     radioValue: string | undefined;
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [
+        RdxMenuRoot,
+        RdxMenuTrigger,
+        RdxMenuPositioner,
+        RdxMenuPopup,
+        RdxMenuItem,
+        RdxMenuSubTrigger,
+        RdxMenuPortal
+    ],
+    template: `
+        <div #root="rdxMenuRoot" rdxMenuRoot>
+            <button rdxMenuTrigger>Open</button>
+
+            @if (root.open()) {
+                <div class="root-positioner" rdxMenuPositioner>
+                    <div rdxMenuPopup>
+                        <button rdxMenuItem>Item</button>
+
+                        <ng-container #submenu="rdxMenuRoot" rdxMenuRoot>
+                            <button rdxMenuSubTrigger>More</button>
+                            <div class="submenu-positioner" *rdxMenuPortal rdxMenuPositioner>
+                                <div rdxMenuPopup>
+                                    <button rdxMenuItem>Sub item</button>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            }
+        </div>
+    `
+})
+class PortaledSubmenuComponent {
+    readonly root = viewChild<RdxMenuRoot>('root');
 }
 
 @Component({
@@ -892,6 +930,71 @@ describe('Menu', () => {
 
             expect(freshFixture.componentInstance.selected).toEqual(['a']);
             expect(freshFixture.componentInstance.open).toBe(false);
+        });
+
+        describe('the cancel-open guard', () => {
+            // A press that opens the menu and is released elsewhere cancels it. "Elsewhere" must exclude
+            // the whole menu chain: the positioner wraps the popup (so it is not *inside* it), and a
+            // submenu is portaled as a DOM sibling.
+            function armedMenu(): ComponentFixture<PortaledSubmenuComponent> {
+                vi.useFakeTimers();
+                TestBed.resetTestingModule();
+                TestBed.configureTestingModule({ imports: [PortaledSubmenuComponent] });
+                const menu = TestBed.createComponent(PortaledSubmenuComponent);
+                menu.detectChanges();
+
+                const menuTrigger: HTMLElement = menu.nativeElement.querySelector('[rdxMenuTrigger]');
+                menuTrigger.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }));
+                menu.detectChanges();
+                vi.advanceTimersByTime(200);
+                menu.detectChanges();
+                return menu;
+            }
+
+            function mouseUpOn(target: Element): void {
+                // Coordinates well away from the origin: jsdom reports a zero rect for every element,
+                // so a release at (0, 0) would land inside the trigger's drift tolerance.
+                target.dispatchEvent(
+                    new MouseEvent('mouseup', { bubbles: true, button: 0, clientX: 500, clientY: 500 })
+                );
+            }
+
+            it('closes on a release outside the menu', () => {
+                // Without this the two checks below would pass on a guard that never fires.
+                const menu = armedMenu();
+                expect(menu.componentInstance.root()?.open()).toBe(true);
+
+                mouseUpOn(document.body);
+                menu.detectChanges();
+
+                expect(menu.componentInstance.root()?.open()).toBe(false);
+            });
+
+            it('survives a release on the positioner that wraps the popup', () => {
+                const menu = armedMenu();
+
+                mouseUpOn(menu.nativeElement.querySelector('.root-positioner'));
+                menu.detectChanges();
+
+                expect(menu.componentInstance.root()?.open()).toBe(true);
+            });
+
+            it('survives a release inside a portaled submenu', () => {
+                const menu = armedMenu();
+
+                const subTrigger: HTMLElement = menu.nativeElement.querySelector('[rdxMenuSubTrigger]');
+                subTrigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+                menu.detectChanges();
+
+                const submenuPositioner = document.querySelector<HTMLElement>('.submenu-positioner');
+                expect(submenuPositioner).not.toBeNull();
+                expect(menu.nativeElement.contains(submenuPositioner)).toBe(false);
+
+                mouseUpOn(submenuPositioner!);
+                menu.detectChanges();
+
+                expect(menu.componentInstance.root()?.open()).toBe(true);
+            });
         });
 
         it('does not leave the mouseup grace window armed after a normal trigger click', () => {

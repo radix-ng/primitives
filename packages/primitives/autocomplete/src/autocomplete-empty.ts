@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, ElementRef, inject } from '@angular/core';
 import { injectComboboxRootContext } from '@radix-ng/primitives/combobox';
+import { useInitialLiveRegionText } from '@radix-ng/primitives/core';
 
 /**
  * A polite, atomic live region announcing the "no results" message. Like the combobox empty part, the
@@ -31,4 +32,10 @@ export class RdxAutocompleteEmpty {
 
     /** Whether no items match the current query (drives projection of the message). */
     protected readonly isEmpty = computed(() => this.rootContext.visibleCount() === 0);
+
+    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+
+    constructor() {
+        useInitialLiveRegionText(() => this.elementRef.nativeElement);
+    }
 }

@@ -28,6 +28,7 @@ export * from './src/menu-group-context';
 export * from './src/menu-group-label';
 export * from './src/menu-item';
 export * from './src/menu-link-item';
+export * from './src/menu-owner';
 export * from './src/menu-popup';
 export * from './src/menu-portal';
 export * from './src/menu-positioner';

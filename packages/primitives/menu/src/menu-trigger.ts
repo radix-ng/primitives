@@ -12,10 +12,11 @@ import {
     PLATFORM_ID,
     signal
 } from '@angular/core';
-import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
+import { BooleanInput, isMouseWithinBounds, NumberInput } from '@radix-ng/primitives/core';
 import { createRdxTriggerInteraction, useTriggerFocusGuards } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { getFocusableMenuItems } from './menu-focus';
+import { findMenuOwnerId } from './menu-owner';
 import { injectRdxMenuRootContext } from './menu-root';
 import { applyPointerTunnel, createSafePolygonHandler, hasOpenChildSubmenu } from './menu-safe-polygon';
 
@@ -80,6 +81,19 @@ export class RdxMenuTrigger {
         const popup = this.rootContext.popupElement();
 
         if (target && (trigger.contains(target) || popup?.contains(target))) {
+            return;
+        }
+
+        // Everything else belonging to this menu chain: the positioner wrapping the popup, and a
+        // submenu portaled as a DOM sibling rather than nested inside it (Base UI `findRootOwnerId`).
+        if (target && findMenuOwnerId(target) === this.rootContext.ownerId()) {
+            return;
+        }
+
+        // A release a few pixels off the trigger — pointer drift, or a decorative pseudo-element that
+        // renders past the trigger's box but takes no pointer events — is still a release *on* the
+        // trigger, and must not cancel the menu it just opened (Base UI `MenuTrigger`).
+        if (isMouseWithinBounds(event, trigger)) {
             return;
         }
 

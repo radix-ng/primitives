@@ -65,3 +65,45 @@ test('an outside press closes the context menu', async ({ page }) => {
     await page.mouse.click(5, 5);
     await expect(page.locator(popup)).toHaveCount(0);
 });
+
+test('the release that ends the opening right-click never selects an item', async ({ page }) => {
+    // The `contextmenu` gesture ends with a `mouseup` on whatever now sits under the cursor — often a
+    // menu item, since the popup opens right there. Selecting it would be an accident on every
+    // platform, so the trigger records where the gesture started and items ignore that release.
+    await gotoStory(page, 'primitives-context-menu--default');
+
+    const area = page.locator(trigger).first();
+    const box = (await area.boundingBox())!;
+    const x = box.x + box.width / 2;
+    const y = box.y + box.height / 2;
+
+    await page.mouse.move(x, y);
+    await page.mouse.down({ button: 'right' });
+    await expect(page.locator(popup)).toBeVisible();
+    await page.mouse.up({ button: 'right' });
+
+    // The menu is still open: nothing was picked by the gesture's own release.
+    await expect(page.locator(popup)).toBeVisible();
+});
+
+test('dragging the right button onto an item selects it on macOS only', async ({ page }) => {
+    // macOS treats "hold the right button, drag onto an item, release" as a pick; Windows and Linux
+    // give that release to the opening gesture. `rdxPlatform.os.mac` decides, so the expectation
+    // follows the OS this run is on.
+    const isMac = process.platform === 'darwin';
+    await gotoStory(page, 'primitives-context-menu--default');
+
+    const area = page.locator(trigger).first();
+    const box = (await area.boundingBox())!;
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down({ button: 'right' });
+    await expect(page.locator(popup)).toBeVisible();
+
+    const item = page.locator('[rdxMenuItem]').first();
+    const itemBox = (await item.boundingBox())!;
+    await page.mouse.move(itemBox.x + itemBox.width / 2, itemBox.y + itemBox.height / 2, { steps: 6 });
+    await page.mouse.up({ button: 'right' });
+
+    // Selecting an item closes the menu; ignoring the release leaves it open.
+    await expect(page.locator(popup)).toHaveCount(isMac ? 0 : 1);
+});

@@ -202,3 +202,73 @@ test('a keepMounted menu stays open on a real trigger press even when the page h
     // After the full press the menu stays open.
     await expect(page.locator('[rdxMenuPopup][data-open]')).toHaveCount(1);
 });
+
+test('a press released a few pixels off the trigger keeps the menu open', async ({ page }) => {
+    // The trigger arms a document `mouseup` guard that cancels the just-opened menu when the release
+    // lands elsewhere. A quick press whose pointer drifts a couple of pixels is still a release on the
+    // trigger, so the guard tolerates a small offset (`isMouseWithinBounds`).
+    await gotoStory(page, 'primitives-menu--default');
+
+    const trigger = page.locator('[rdxMenuTrigger]').first();
+    const box = (await trigger.boundingBox())!;
+
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 4 });
+    await page.mouse.down();
+    await expect(page.locator('[rdxMenuPopup]')).toBeVisible();
+
+    await page.mouse.move(box.x + box.width + 3, box.y + box.height / 2, { steps: 2 });
+    await page.mouse.up();
+
+    await expect(page.locator('[rdxMenuPopup][data-open]')).toHaveCount(1);
+});
+
+test('a release over the trigger’s decorative pseudo-element keeps the menu open', async ({ page }) => {
+    // A `::after` that renders past the trigger and takes no pointer events (a ring, a larger hit
+    // target) leaves the release with the *page* as its target while visually still on the trigger.
+    // The bounds check reads the pseudo-element's box, so such a release does not cancel the menu.
+    // Invisible to the unit suite: jsdom has no layout and throws on `getComputedStyle(el, '::after')`.
+    await gotoStory(page, 'primitives-menu--default');
+    await page.addStyleTag({
+        content: `[rdxMenuTrigger] { position: relative }
+                  [rdxMenuTrigger]::after { content: ''; position: absolute; inset: -20px; pointer-events: none }`
+    });
+
+    const trigger = page.locator('[rdxMenuTrigger]').first();
+    const box = (await trigger.boundingBox())!;
+    const releaseX = box.x + box.width + 12;
+    const releaseY = box.y + box.height / 2;
+
+    await page.mouse.move(box.x + box.width / 2, releaseY, { steps: 4 });
+    await page.mouse.down();
+    await expect(page.locator('[rdxMenuPopup]')).toBeVisible();
+
+    // The release point is outside the trigger's own box but inside the pseudo-element's.
+    const targetIsTrigger = await page.evaluate(
+        ([x, y]) => !!document.elementFromPoint(x, y)?.closest('[rdxMenuTrigger]'),
+        [releaseX, releaseY]
+    );
+    expect(targetIsTrigger, 'release point must not hit the trigger itself').toBe(false);
+
+    await page.mouse.move(releaseX, releaseY, { steps: 2 });
+    await page.mouse.up();
+
+    await expect(page.locator('[rdxMenuPopup][data-open]')).toHaveCount(1);
+});
+
+test('a press released far from the trigger cancels the just-opened menu', async ({ page }) => {
+    // The counterpart of the two checks above: the document `mouseup` guard must still fire when the
+    // release is a genuine "changed my mind" drag-off, otherwise those two prove nothing.
+    await gotoStory(page, 'primitives-menu--default');
+
+    const trigger = page.locator('[rdxMenuTrigger]').first();
+    const box = (await trigger.boundingBox())!;
+
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 4 });
+    await page.mouse.down();
+    await expect(page.locator('[rdxMenuPopup]')).toBeVisible();
+
+    await page.mouse.move(box.x + box.width + 200, box.y + box.height / 2, { steps: 4 });
+    await page.mouse.up();
+
+    await expect(page.locator('[rdxMenuPopup][data-open]')).toHaveCount(0);
+});

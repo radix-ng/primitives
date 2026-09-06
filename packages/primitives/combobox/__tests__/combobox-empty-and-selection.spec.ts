@@ -82,7 +82,9 @@ describe('Combobox empty live region + selection-mode attributes', () => {
         const empty = el('[rdxComboboxEmpty]');
         expect(empty.hasAttribute('hidden')).toBe(false);
         expect(empty.getAttribute('role')).toBe('status');
-        expect(empty.textContent?.trim()).toBe('No results');
+        // `useInitialLiveRegionText` appends an invisible word joiner for ~200ms so a screen reader
+        // sees a mutation on the freshly mounted region; the message itself is unchanged.
+        expect(empty.textContent?.replace(/\u2060/g, '').trim()).toBe('No results');
         expect(empty.getAttribute('data-empty')).toBe('');
     });
 

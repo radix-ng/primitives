@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, ElementRef, inject } from '@angular/core';
+import { useInitialLiveRegionText } from '@radix-ng/primitives/core';
 import { injectComboboxRootContext } from './combobox-root';
 
 /**
@@ -34,4 +35,10 @@ export class RdxComboboxEmpty {
 
     /** Whether no items match the current query (drives projection of the message). */
     protected readonly isEmpty = computed(() => this.rootContext.visibleCount() === 0);
+
+    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+
+    constructor() {
+        useInitialLiveRegionText(() => this.elementRef.nativeElement);
+    }
 }

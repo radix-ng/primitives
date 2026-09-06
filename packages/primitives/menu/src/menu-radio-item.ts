@@ -11,7 +11,13 @@ import {
     Signal
 } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
-import { BooleanInput, createContext, isStationaryWebKitPointer } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    createContext,
+    dispatchClickWithModifiers,
+    isStationaryWebKitPointer
+} from '@radix-ng/primitives/core';
+import { shouldActivateOnMouseUp } from './menu-mouse-up';
 import { injectRdxMenuRadioGroupContext } from './menu-radio-group';
 import { injectRdxMenuRootContext } from './menu-root';
 
@@ -148,12 +154,14 @@ export class RdxMenuRadioItem<T = unknown> {
     }
 
     onMouseUp(event: MouseEvent): void {
-        if (this.effectiveDisabled() || event.button !== 0 || !this.rootContext?.allowMouseUpTrigger()) {
+        if (this.effectiveDisabled() || !shouldActivateOnMouseUp(event, this.rootContext)) {
             return;
         }
 
-        this.rootContext.setAllowMouseUpTrigger(false);
-        this.elementRef.nativeElement.click();
+        this.rootContext!.setAllowMouseUpTrigger(false);
+        // A pointer gesture, not a keyboard activation: carry the modifiers over and report
+        // `detail: 1` so the menu does not treat the close as instant.
+        dispatchClickWithModifiers(this.elementRef.nativeElement, event, { detail: 1 });
     }
 
     protected onActivate(event: Event): void {

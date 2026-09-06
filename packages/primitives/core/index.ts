@@ -28,7 +28,9 @@ export * from './src/floating/internal-backdrop';
 export * from './src/floating/provide-floating-tree';
 export * from './src/floating/trigger-registry';
 
+export * from './src/dom/dispatch-click';
 export * from './src/dom/document';
+export * from './src/dom/element-bounds';
 export * from './src/dom/element-size';
 export * from './src/dom/get-active-element';
 export * from './src/dom/platform';
@@ -41,6 +43,7 @@ export * from './src/composables/use-arrow-navigation';
 export * from './src/composables/use-filter';
 export * from './src/composables/use-grace-area';
 export * from './src/composables/use-list-highlight';
+export * from './src/composables/use-live-region-text';
 export * from './src/composables/use-pointer-drag';
 export * from './src/composables/use-transition-status';
 export * from './src/composables/watch';

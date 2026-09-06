@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import {
     booleanAttribute,
     computed,
@@ -11,11 +12,16 @@ import {
     Signal,
     untracked
 } from '@angular/core';
-import { BooleanInput, createContext } from '@radix-ng/primitives/core';
+import { BooleanInput, createContext, rdxPlatform } from '@radix-ng/primitives/core';
 import { RdxDialogRoot } from '@radix-ng/primitives/dialog';
 import { RdxDrawerProvider } from './drawer-provider';
 import { RdxDrawerSnapPoint } from './drawer-snap';
 import { RdxDrawerSwipeDirection } from './drawer-swipe';
+
+/** The slice of the `CloseWatcher` API used here; it has no TypeScript DOM lib types yet. */
+interface CloseWatcherLike extends EventTarget {
+    destroy(): void;
+}
 
 export interface RdxDrawerRootContext {
     /** Direction a swipe travels to dismiss the drawer. */
@@ -114,6 +120,7 @@ const context = (): RdxDrawerRootContext => {
 })
 export class RdxDrawerRoot {
     private readonly dialog = inject(RdxDialogRoot);
+    private readonly document = inject(DOCUMENT);
     private readonly provider = inject(RdxDrawerProvider, { optional: true });
 
     /** The popup's measured size (px) along its dismiss axis, reported by the popup. */
@@ -191,6 +198,35 @@ export class RdxDrawerRoot {
                     this.openingSwipeDistance.set(0);
                 });
             }
+        });
+
+        // Android's system back gesture is delivered as a close request, which `CloseWatcher`
+        // (Chromium-only) turns into an event. Only the frontmost drawer takes it, and only on
+        // Android: elsewhere Escape and nesting are already owned by the dismissal layer, and a second
+        // close path there would fight it (Base UI `DrawerRoot`).
+        effect((onCleanup) => {
+            if (!rdxPlatform.os.android || !this.dialog.open() || this.nestedDrawerCount() > 0) {
+                return;
+            }
+
+            const win = this.document.defaultView as (Window & { CloseWatcher?: new () => CloseWatcherLike }) | null;
+            const CloseWatcherCtor = win?.CloseWatcher;
+            if (!CloseWatcherCtor) {
+                return;
+            }
+
+            const closeWatcher = new CloseWatcherCtor();
+            const handleClose = (event: Event): void => {
+                if (this.dialog.open()) {
+                    this.dialog.close('close-watcher', event);
+                }
+            };
+            closeWatcher.addEventListener('close', handleClose);
+
+            onCleanup(() => {
+                closeWatcher.removeEventListener('close', handleClose);
+                closeWatcher.destroy();
+            });
         });
 
         // Register with the optional app-level provider while open so background content can react.

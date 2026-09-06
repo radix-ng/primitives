@@ -9,7 +9,7 @@ import {
     signal
 } from '@angular/core';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
-import { RdxMenuRoot } from '@radix-ng/primitives/menu';
+import { findMenuOwnerId, RdxMenuRoot } from '@radix-ng/primitives/menu';
 import { injectRdxContextMenuRootContext } from './context-menu-root';
 
 /**
@@ -54,6 +54,9 @@ export class RdxContextMenuTrigger {
     private allowMouseUp = false;
     private readonly handleDocumentMouseUp = (event: MouseEvent): void => {
         this.clearContextMenuMouseUpGuard();
+        // The gesture is over: whatever happens next is a fresh interaction, so no later release may
+        // activate an item.
+        this.menuRoot.setAllowMouseUpTrigger(false);
 
         if (!this.allowMouseUp) {
             return;
@@ -61,9 +64,10 @@ export class RdxContextMenuTrigger {
 
         this.allowMouseUp = false;
         const target = event.target as Node | null;
-        const popup = this.menuRoot.popupElement();
 
-        if (target && popup?.contains(target)) {
+        // Anything belonging to this menu chain — the positioner around the popup, and a submenu
+        // portaled elsewhere in the DOM — is not an outside release (Base UI `findRootOwnerId`).
+        if (target && findMenuOwnerId(target) === this.menuRoot.ownerId()) {
             return;
         }
 
@@ -107,6 +111,10 @@ export class RdxContextMenuTrigger {
         // A keyboard-initiated context menu (the Menu key / Shift+F10) is not preceded by a pointerdown,
         // so it opens with the first item highlighted; a pointer opens the popup without highlighting.
         const fromKeyboard = event.timeStamp - this.lastPointerDownTime > 300;
+        // Where the gesture started, and permission for an item to act on the release that ends it —
+        // both consumed by the items' `mouseup` handling (Base UI `ContextMenuTrigger`).
+        this.menuRoot.setInitialCursorPoint(fromKeyboard ? null : { x: event.clientX, y: event.clientY });
+        this.menuRoot.setAllowMouseUpTrigger(!fromKeyboard);
         // A right-click `contextmenu` event has no `pointerType`, so this records a non-touch open.
         this.rootContext.openAt(event.clientX, event.clientY, fromKeyboard ? 'first' : 'popup', event);
         this.armContextMenuMouseUpGuard(this.elementRef.nativeElement);

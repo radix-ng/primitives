@@ -19,6 +19,7 @@ import {
     createContext,
     createFloatingRootContext,
     Direction,
+    injectId,
     provideFloatingRootContext,
     provideFloatingTree,
     RdxCancelableChangeEventDetails,
@@ -108,6 +109,21 @@ export interface RdxMenuRootContext {
     instantType: Signal<RdxMenuInstantType | undefined>;
     /** Whether a trigger-originated press may activate an item on the following mouseup. */
     allowMouseUpTrigger: Signal<boolean>;
+    /** Whether this menu is a context menu (opened at the pointer rather than from a trigger element). */
+    isContextMenu: Signal<boolean>;
+    /**
+     * Id of the outermost menu in this chain. Every positioner in the tree carries it as
+     * `data-rdx-menu-owner`, so an element can be traced back to the menu that owns it even when a
+     * submenu is portaled elsewhere in the DOM.
+     */
+    ownerId: Signal<string>;
+    /**
+     * Reads — and clears — the cursor position the context-menu gesture started at. An item uses it to
+     * recognize the `mouseup` that merely finished the opening right-click and must not select it.
+     */
+    consumeInitialCursorPoint: () => { x: number; y: number } | null;
+    /** Records where a context-menu gesture started; cleared by the first item that consumes it. */
+    setInitialCursorPoint: (point: { x: number; y: number } | null) => void;
     /** Whether the current open was initiated by touch (ADR 0016 §3 — gates the anchored scroll lock). */
     openedByTouch: Signal<boolean>;
     openInteractionType: Signal<RdxInteractionType>;
@@ -192,6 +208,10 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         lastOpenChangeReason: instance.lastOpenChangeReason.asReadonly(),
         instantType: instance.instantType,
         allowMouseUpTrigger: instance.allowMouseUpTrigger,
+        isContextMenu: instance.isContextMenu,
+        ownerId: instance.ownerId,
+        consumeInitialCursorPoint: () => instance.consumeInitialCursorPoint(),
+        setInitialCursorPoint: (point) => instance.setInitialCursorPoint(point),
         openedByTouch: instance.openedByTouch.asReadonly(),
         openInteractionType: instance.openInteractionType.asReadonly(),
         closeInteractionType: instance.closeInteractionType.asReadonly(),
@@ -312,7 +332,19 @@ export class RdxMenuRoot {
     readonly autoFocus = signal<RdxMenuAutoFocus>('first');
     readonly isSubmenu = signal(false);
     /** Set by `RdxContextMenuRoot` (it composes this root) — distinguishes a context menu from a dropdown. */
-    readonly isContextMenu = signal(false);
+    private readonly menuId = injectId('rdx-menu-root-');
+    /** This menu chain's owner id — the root's own id, inherited by every submenu below it. */
+    readonly ownerId: Signal<string> = computed(() => this.parentRoot?.ownerId() ?? this.menuId);
+
+    private readonly localIsContextMenu = signal(false);
+    /**
+     * Whether this menu belongs to a context menu — inherited by submenus, whose items follow the same
+     * right-button gesture rules as the root's (Base UI scopes its context-menu context over the whole
+     * tree, submenus included).
+     */
+    readonly isContextMenu: Signal<boolean> = computed(
+        () => this.localIsContextMenu() || (this.parentRoot?.isContextMenu() ?? false)
+    );
     readonly hasTriggerInteractionHandler = signal(false);
     private readonly preventUnmountOnClose = signal(false);
 
@@ -340,6 +372,9 @@ export class RdxMenuRoot {
     readonly allowMouseUpTrigger: Signal<boolean> = computed(
         () => this.parentRoot?.allowMouseUpTrigger() ?? this.localAllowMouseUpTrigger()
     );
+
+    /** Cursor position a context-menu gesture started at, until an item consumes it. */
+    private initialCursorPoint: { x: number; y: number } | null = null;
 
     /** Whether the current open was initiated by **touch** (ADR 0016 §3 — gates the anchored scroll lock). */
     readonly openedByTouch = signal(false);
@@ -480,7 +515,7 @@ export class RdxMenuRoot {
     }
 
     markAsContextMenu(): void {
-        this.isContextMenu.set(true);
+        this.localIsContextMenu.set(true);
     }
 
     setActiveIndex(index: number | null): void {
@@ -491,6 +526,25 @@ export class RdxMenuRoot {
         if (this.activeIndex() !== index) {
             this.activeIndex.set(index);
         }
+    }
+
+    /** @ignore Records where a context-menu gesture started (see {@link consumeInitialCursorPoint}). */
+    setInitialCursorPoint(point: { x: number; y: number } | null): void {
+        if (this.parentRoot) {
+            this.parentRoot.setInitialCursorPoint(point);
+            return;
+        }
+        this.initialCursorPoint = point;
+    }
+
+    /** @ignore Reads and clears the recorded gesture origin — only the first item to ask receives it. */
+    consumeInitialCursorPoint(): { x: number; y: number } | null {
+        if (this.parentRoot) {
+            return this.parentRoot.consumeInitialCursorPoint();
+        }
+        const point = this.initialCursorPoint;
+        this.initialCursorPoint = null;
+        return point;
     }
 
     setAllowMouseUpTrigger(value: boolean): void {

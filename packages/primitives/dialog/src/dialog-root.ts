@@ -40,6 +40,7 @@ export type RdxDialogOpenChangeReason =
     | 'escape-key'
     | 'swipe'
     | 'imperative-action'
+    | 'close-watcher'
     | 'none';
 
 export type RdxDialogOpenChangeEventDetails = RdxCancelableChangeEventDetails<RdxDialogOpenChangeReason>;

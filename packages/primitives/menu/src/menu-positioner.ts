@@ -31,6 +31,9 @@ import { injectRdxMenuRootContext } from './menu-root';
         })
     ],
     host: {
+        // Marks this positioner — and everything inside it — as belonging to its menu chain, so a
+        // portaled submenu can still be traced back to the root that owns it (`findMenuOwnerId`).
+        '[attr.data-rdx-menu-owner]': 'rootContext.ownerId()',
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
         // Base UI puts a native `hidden` on a closed positioner (`hidden: !mounted`). It matters for a

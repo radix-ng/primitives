@@ -1,5 +1,12 @@
 import { expect, Page, test } from '@playwright/test';
 
+declare global {
+    interface Window {
+        /** Populated by the close-watcher specs' init script. */
+        __closeWatchers: EventTarget[];
+    }
+}
+
 async function gotoStory(page: Page, storyId: string): Promise<void> {
     await page.goto(`/iframe.html?id=${storyId}&viewMode=story`);
     await page.waitForSelector('#storybook-root', { state: 'attached' });
@@ -388,5 +395,57 @@ test.describe('Drawer snap points', () => {
                 )
             )
             .toBe(0);
+    });
+});
+
+test.describe('Drawer close watcher', () => {
+    // Android delivers its system back gesture as a close request; `CloseWatcher` (Chromium-only) is
+    // what surfaces it to the page. The branch is gated on `rdxPlatform.os.android`, so these run in an
+    // Android-UA context and intercept the constructor to drive the close event by hand — the real
+    // gesture cannot be produced in a desktop browser.
+    const ANDROID_UA =
+        'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36';
+
+    /** Records every `CloseWatcher` the page constructs so the test can fire its close event. */
+    const RECORD_WATCHERS = `
+        window.__closeWatchers = [];
+        const Native = window.CloseWatcher;
+        if (Native) {
+            window.CloseWatcher = class extends Native {
+                constructor(...args) {
+                    super(...args);
+                    window.__closeWatchers.push(this);
+                }
+            };
+        }
+    `;
+
+    async function openDrawer(page: Page): Promise<void> {
+        await gotoStory(page, 'primitives-drawer--default');
+        await page.getByRole('button', { name: 'Open drawer' }).click();
+        await expect(page.locator('[rdxDrawerPopup]')).toBeVisible();
+    }
+
+    test('the Android back gesture closes the drawer', async ({ browser }) => {
+        const context = await browser.newContext({ userAgent: ANDROID_UA });
+        const page = await context.newPage();
+        await page.addInitScript(RECORD_WATCHERS);
+
+        await openDrawer(page);
+        expect(await page.evaluate(() => window.__closeWatchers.length), 'a watcher is registered').toBeGreaterThan(0);
+
+        await page.evaluate(() => window.__closeWatchers.at(-1).dispatchEvent(new Event('close')));
+        await expect(page.locator('[rdxDrawerPopup]')).toHaveCount(0);
+
+        await context.close();
+    });
+
+    test('no watcher is registered off Android', async ({ page }) => {
+        // Elsewhere Escape and nesting are owned by the dismissal layer; a second close path would
+        // fight it, so the drawer must not register a watcher at all.
+        await page.addInitScript(RECORD_WATCHERS);
+        await openDrawer(page);
+
+        expect(await page.evaluate(() => window.__closeWatchers.length)).toBe(0);
     });
 });
