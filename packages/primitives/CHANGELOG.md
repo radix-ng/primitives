@@ -1,3 +1,19 @@
+## 1.2.0 (2026-09-06)
+
+### 🚀 Features
+
+- align popup gestures and announcements with platform behavior ([739d9540](https://github.com/radix-ng/primitives/commit/739d9540))
+- **menu:** warn when a popup holds items owned by another list ([5460493a](https://github.com/radix-ng/primitives/commit/5460493a))
+
+### 🩹 Fixes
+
+- apply upstream platform quirks behind rdxPlatform ([87a0d421](https://github.com/radix-ng/primitives/commit/87a0d421))
+- **composite:** preserve list ownership across content projection ([#452](https://github.com/radix-ng/primitives/pull/452))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 1.1.2 (2026-07-19)
 
 ### 🚀 Features
