@@ -12,8 +12,7 @@ import { injectRdxTooltipContext } from './tooltip';
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
         '[attr.data-instant]': 'rootContext.instantType()',
         '[attr.data-side]': 'side()',
-        '[attr.data-align]': 'align()',
-        '[attr.data-uncentered]': 'uncentered() ? "" : undefined'
+        '[attr.data-align]': 'align()'
     }
 })
 export class RdxTooltipArrow {
@@ -22,7 +21,6 @@ export class RdxTooltipArrow {
 
     protected readonly side = computed(() => this.wrapper?.placedSide());
     protected readonly align = computed(() => this.wrapper?.placedAlign());
-    protected readonly uncentered = computed(() => this.wrapper?.arrowUncentered() ?? false);
 
     protected readonly isVisuallyHidden = !!inject(RdxVisuallyHiddenDirective, {
         optional: true

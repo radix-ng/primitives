@@ -161,3 +161,42 @@ test.describe('Popover — new floating engine migration', () => {
         expect(await scrollLocked()).toBe(false);
     });
 });
+
+/**
+ * ADR 0002: the Popper arrow no longer hides itself just because the popup had to shift off-center
+ * to avoid a boundary collision (the legacy Radix behavior); it stays visible and exposes
+ * `data-uncentered` instead, mirroring Base UI. Needs a real browser: jsdom has no layout, so it can't
+ * drive Floating UI's collision/arrow middleware.
+ */
+test.describe('Popover — arrow (ADR 0002)', () => {
+    test('keeps the arrow visible and marks it data-uncentered when the popup cannot stay centered on the anchor', async ({
+        page
+    }) => {
+        const errors: string[] = [];
+        page.on('pageerror', (e) => errors.push(String(e)));
+
+        await gotoStory(page, 'primitives-popover--default');
+
+        // Pin the trigger mostly off-screen past the left edge so the popup — clamped inside the
+        // viewport by the collision boundary — can no longer stay centered on it. Floating UI's arrow
+        // middleware then has to clamp the arrow away from its ideal (anchor-centered) position.
+        await page
+            .locator(trigger)
+            .first()
+            .evaluate((el: HTMLElement) => {
+                el.style.position = 'fixed';
+                el.style.left = '-100px';
+                el.style.top = '250px';
+            });
+
+        await page.locator(trigger).first().click();
+        const arrow = page.locator('[rdxPopoverArrow]');
+        await expect(page.locator(popup)).toBeVisible();
+
+        await expect(arrow).toHaveAttribute('data-uncentered', '');
+        await expect(arrow).toBeVisible();
+        // No inline `visibility` of its own — it would only disappear by inheriting a hidden positioner.
+        expect(await arrow.evaluate((el) => el.style.visibility)).toBe('');
+        expect(errors).toEqual([]);
+    });
+});

@@ -74,6 +74,10 @@ The Default story exposes these values as controls.
 Add `rdxPopperArrow` inside the wrapper to render an arrow. The default arrow is an SVG, but projected content can
 replace its visual shape.
 
+The arrow stays visible even when the popup has to shift off-center to avoid a collision — it never disappears on
+its own. When it can no longer be centered on the anchor, it sets `data-uncentered` so you can style it (for
+example, to hide it yourself) instead of getting a silent, unstyleable disappearance.
+
 ```html
 <div
     class="border-border bg-muted flex h-48 w-80 items-center justify-center rounded-xl border border-dashed"
@@ -105,6 +109,15 @@ replace its visual shape.
     <div class="custom-arrow"></div>
 </span>
 ```
+
+## Data attributes
+
+| Attribute            | Part                    | Present when                                                |
+| --------------------- | ------------------------ | ------------------------------------------------------------ |
+| `data-side`           | Content wrapper          | Always — the resolved placement side.                        |
+| `data-align`          | Content wrapper          | Always — the resolved placement alignment.                   |
+| `data-anchor-hidden`  | Content wrapper          | `hideWhenDetached` is set and the anchor is fully occluded.   |
+| `data-uncentered`     | Arrow                    | The popup shifted and the arrow can no longer be centered on the anchor. |
 
 ## Moving Anchors
 

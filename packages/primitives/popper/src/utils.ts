@@ -103,10 +103,15 @@ export function transformOrigin(options: { arrowWidth: number; arrowHeight: numb
         fn(data) {
             const { placement, rects, middlewareData } = data;
 
-            const cannotCenterArrow = middlewareData.arrow?.centerOffset !== 0;
-            const isArrowHidden = cannotCenterArrow;
-            const arrowWidth = isArrowHidden ? 0 : options.arrowWidth;
-            const arrowHeight = isArrowHidden ? 0 : options.arrowHeight;
+            // Whether an `RdxPopperArrow` exists at all — the `arrow` middleware only writes
+            // `middlewareData.arrow` when one does (see `RdxPopperContentWrapper`'s `position` resource).
+            // This used to be `centerOffset !== 0` ("cannot be centered"), which — before ADR 0002 — was
+            // also when the arrow was hidden. Now the arrow stays visible when off-center, so the origin
+            // must still track its real (off-center) tip; only a genuinely arrow-less popup falls back to
+            // an alignment-based origin (Base UI's `!arrowEl` case).
+            const hasArrow = middlewareData.arrow !== undefined;
+            const arrowWidth = hasArrow ? options.arrowWidth : 0;
+            const arrowHeight = hasArrow ? options.arrowHeight : 0;
 
             const [placedSide, placedAlign] = getSideAndAlignFromPlacement(placement);
             const noArrowAlign = { start: '0%', center: '50%', end: '100%' }[placedAlign];
@@ -118,17 +123,17 @@ export function transformOrigin(options: { arrowWidth: number; arrowHeight: numb
             let y = '';
 
             if (placedSide === 'bottom') {
-                x = isArrowHidden ? noArrowAlign : `${arrowXCenter}px`;
+                x = hasArrow ? `${arrowXCenter}px` : noArrowAlign;
                 y = `${-arrowHeight}px`;
             } else if (placedSide === 'top') {
-                x = isArrowHidden ? noArrowAlign : `${arrowXCenter}px`;
+                x = hasArrow ? `${arrowXCenter}px` : noArrowAlign;
                 y = `${rects.floating.height + arrowHeight}px`;
             } else if (placedSide === 'right') {
                 x = `${-arrowHeight}px`;
-                y = isArrowHidden ? noArrowAlign : `${arrowYCenter}px`;
+                y = hasArrow ? `${arrowYCenter}px` : noArrowAlign;
             } else if (placedSide === 'left') {
                 x = `${rects.floating.width + arrowHeight}px`;
-                y = isArrowHidden ? noArrowAlign : `${arrowYCenter}px`;
+                y = hasArrow ? `${arrowYCenter}px` : noArrowAlign;
             }
             return { data: { x, y } };
         }

@@ -26,11 +26,14 @@ const OPPOSITE_SIDE: Record<Side, Side> = {
     host: {
         // The arrow is purely decorative — keep it out of the accessibility tree (Base UI does the same).
         'aria-hidden': 'true',
-        '[style]': 'style()'
+        '[style]': 'style()',
+        // ADR 0002: the arrow stays visible when the popup is shifted off-center; this is the hook
+        // consumers use to style it instead (e.g. hide it themselves, or adjust its shape).
+        '[attr.data-uncentered]': 'uncentered() ? "" : undefined'
     }
 })
 export class RdxPopperArrow {
-    private readonly popperContentContext = injectPopperContentWrapperContext();
+    protected readonly popperContentContext = injectPopperContentWrapperContext();
 
     private readonly environmentInjector = inject(EnvironmentInjector);
 
@@ -44,11 +47,21 @@ export class RdxPopperArrow {
     // `inline-start`/`inline-end` when a logical side was requested — a styling hook, not a direction).
     baseSide = computed(() => OPPOSITE_SIDE[this.popperContentContext.physicalPlacedSide()!]);
 
+    /** Whether the popup was shifted off-center and the arrow could not be centered on the anchor. */
+    protected readonly uncentered = computed(() => this.popperContentContext.arrowUncentered());
+
     protected readonly style = computed(() => {
+        // `arrowX`/`arrowY` are legitimately `0` when Floating UI clamps the arrow to the padded edge
+        // of the popup (e.g. `arrowPadding` defaults to `0`) — most likely exactly when the popup is
+        // shifted off-center (ADR 0002 keeps that arrow visible now). A truthy check would drop `0` and
+        // leave that axis unset, so check for "no value" explicitly instead.
+        const arrowX = this.popperContentContext.arrowX();
+        const arrowY = this.popperContentContext.arrowY();
+
         return {
             position: 'absolute',
-            left: this.popperContentContext.arrowX() ? `${this.popperContentContext.arrowX()}px` : undefined,
-            top: this.popperContentContext.arrowY() ? `${this.popperContentContext.arrowY()}px` : undefined,
+            left: arrowX != null ? `${arrowX}px` : undefined,
+            top: arrowY != null ? `${arrowY}px` : undefined,
             [this.baseSide()]: 0,
             transformOrigin: {
                 top: '',
@@ -61,8 +74,10 @@ export class RdxPopperArrow {
                 right: 'translateY(50%) rotate(90deg) translateX(-50%)',
                 bottom: `rotate(180deg)`,
                 left: 'translateY(50%) rotate(-90deg) translateX(50%)'
-            }[this.popperContentContext.physicalPlacedSide()!],
-            visibility: this.popperContentContext.shouldHideArrow() ? 'hidden' : undefined
+            }[this.popperContentContext.physicalPlacedSide()!]
+            // No `visibility` toggle here (ADR 0002): the arrow is only ever hidden by inheriting the
+            // positioner's own `visibility: hidden` when the anchor is fully occluded
+            // (`RdxPopperContentWrapper`'s `hideWhenDetached` / `referenceHidden` path).
         };
     });
 
