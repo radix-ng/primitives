@@ -3106,8 +3106,10 @@ Positions the popup against the input anchor via the popper engine.
 Renders the current value as text (with a `placeholder` when empty).
 
 Other parts (`Portal` (structural), `Backdrop`, `Popup`, `List`, `Row`, `Group`, `GroupLabel`,
-`ItemIndicator`, `Empty`, `Status`, `Trigger`, `Icon`, `Clear`, `Label`, `Anchor`, `InputGroup`) read
-everything from context and take no inputs of their own.
+`ItemIndicator`, `Empty`, `Status`, `Trigger`, `Icon`, `Clear`, `Label`, `Anchor`, `InputGroup`,
+`Arrow` (re-exposes `width` / `height`; carries `data-uncentered` when it can no longer be centered on
+the anchor — it stays visible rather than disappearing)) read everything from context and take no
+inputs of their own.
 
 ---
 
@@ -7546,7 +7548,8 @@ A selected-value chip in `multiple` mode. Provide its `value`.
 `RdxComboboxLabel` (registers an `aria-labelledby` target), `RdxComboboxTrigger`, `RdxComboboxClear`
 (also takes a `disabled` input), `RdxComboboxIcon`, `RdxComboboxPortal` (structural; re-exposes
 `container`), `RdxComboboxBackdrop` (modal overlay; `data-open` / `data-closed`),
-`RdxComboboxArrow` (re-exposes `width` / `height`), `RdxComboboxList` (exposes `data-empty` while no
+`RdxComboboxArrow` (re-exposes `width` / `height`; carries `data-uncentered` when it can no longer be
+centered on the anchor — it stays visible rather than disappearing), `RdxComboboxList` (exposes `data-empty` while no
 options match, `role="grid"` when the root has `grid`), `RdxComboboxRow` (`role="row"` for grid lists),
 `RdxComboboxItemIndicator`,
 `RdxComboboxGroup`, `RdxComboboxGroupLabel`, `RdxComboboxSeparator` (`role="separator"`),
@@ -15237,7 +15240,9 @@ during the cross-item transition.
 These parts read their behavior and state from context. `List` groups the navigation items with
 composite focus, `Item` carries the `value`, and `Icon` exposes `data-popup-open` for a caret.
 `Popup` reflects `data-open` / `data-closed` / `data-side` / `data-align` / `data-instant` /
-`data-starting-style` / `data-ending-style` and owns `--popup-width` / `--popup-height`. `Backdrop`
+`data-starting-style` / `data-ending-style` and owns `--popup-width` / `--popup-height`. `Arrow`
+reflects `data-open` / `data-closed` / `data-side` / `data-align` / `data-uncentered` (set when it
+cannot be centered on the anchor — it stays visible rather than disappearing). `Backdrop`
 is presentational and reflects `data-open` / `data-closed` / `data-starting-style` /
 `data-ending-style` / `data-instant`.
 
@@ -29233,6 +29238,10 @@ The Default story exposes these values as controls.
 Add `rdxPopperArrow` inside the wrapper to render an arrow. The default arrow is an SVG, but projected content can
 replace its visual shape.
 
+The arrow stays visible even when the popup has to shift off-center to avoid a collision — it never disappears on
+its own. When it can no longer be centered on the anchor, it sets `data-uncentered` so you can style it (for
+example, to hide it yourself) instead of getting a silent, unstyleable disappearance.
+
 ```html
 <div
     class="border-border bg-muted flex h-48 w-80 items-center justify-center rounded-xl border border-dashed"
@@ -29264,6 +29273,15 @@ replace its visual shape.
     <div class="custom-arrow"></div>
 </span>
 ```
+
+## Data attributes
+
+| Attribute            | Part                    | Present when                                                |
+| --------------------- | ------------------------ | ------------------------------------------------------------ |
+| `data-side`           | Content wrapper          | Always — the resolved placement side.                        |
+| `data-align`          | Content wrapper          | Always — the resolved placement alignment.                   |
+| `data-anchor-hidden`  | Content wrapper          | `hideWhenDetached` is set and the anchor is fully occluded.   |
+| `data-uncentered`     | Arrow                    | The popup shifted and the arrow can no longer be centered on the anchor. |
 
 ## Moving Anchors
 

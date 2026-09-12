@@ -36,7 +36,7 @@ Keep this table in sync when adding or re-statusing an ADR.
 | ADR                                                                          | Status                 | Title                                                                                |
 | ---------------------------------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------ |
 | [0001](0001-angular-composite-navigation-layer.md)                           | Accepted               | Use Angular Composite as the Shared Navigation Layer                                 |
-| [0002](0002-popper-arrow-base-ui-alignment.md)                               | Proposed               | Align the Popper Arrow with Base UI (stop hiding the uncentered arrow)               |
+| [0002](0002-popper-arrow-base-ui-alignment.md)                               | Accepted               | Align the Popper Arrow with Base UI (stop hiding the uncentered arrow)               |
 | [0003](0003-popover-base-ui-like-angular-anatomy.md)                         | Superseded by ADR-0010 | Prefer a Base UI-like Popover Anatomy with a Template Portal Directive               |
 | [0004](0004-field-signal-forms-adapter.md)                                   | Superseded by ADR-0018 | Keep Field Form-Agnostic and Defer Signal Forms Adapter                              |
 | [0005](0005-prefer-owned-floating-ui-stack-over-angular-cdk-menu-overlay.md) | Accepted               | Prefer the Owned Floating UI Stack over Angular CDK Menu and Overlay                 |

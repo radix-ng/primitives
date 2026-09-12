@@ -1,9 +1,16 @@
 # ADR 0002: Align the Popper Arrow with Base UI (stop hiding the uncentered arrow)
 
-- Status: Proposed
-- Date: 2026-06-02
+- Status: Accepted
+- Date: 2026-06-02 (accepted 2026-09-12)
 - Decision owners: Radix NG maintainers
 - Related: `packages/primitives/popper` (consumers: `tooltip`, `popover`, and any future Popper user)
+
+> **Implementation status (2026-09-12):** Shipped. `RdxPopperArrow` no longer sets `visibility: hidden`
+> when the popup shifts off-center; it stays visible and sets `data-uncentered` itself (moved off the
+> five consuming primitives, which used to duplicate the binding). `RdxPopperContentWrapper.shouldHideArrow`
+> is `@deprecated` — it now only reflects `anchorHidden`, which already hides the whole positioner (and,
+> by inheritance, the arrow) for the `hideWhenDetached` / `referenceHidden` case described in the
+> Migration Plan below.
 
 ## Context
 

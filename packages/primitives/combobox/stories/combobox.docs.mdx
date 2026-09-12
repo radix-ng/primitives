@@ -386,7 +386,8 @@ A selected-value chip in `multiple` mode. Provide its `value`.
 `RdxComboboxLabel` (registers an `aria-labelledby` target), `RdxComboboxTrigger`, `RdxComboboxClear`
 (also takes a `disabled` input), `RdxComboboxIcon`, `RdxComboboxPortal` (structural; re-exposes
 `container`), `RdxComboboxBackdrop` (modal overlay; `data-open` / `data-closed`),
-`RdxComboboxArrow` (re-exposes `width` / `height`), `RdxComboboxList` (exposes `data-empty` while no
+`RdxComboboxArrow` (re-exposes `width` / `height`; carries `data-uncentered` when it can no longer be
+centered on the anchor — it stays visible rather than disappearing), `RdxComboboxList` (exposes `data-empty` while no
 options match, `role="grid"` when the root has `grid`), `RdxComboboxRow` (`role="row"` for grid lists),
 `RdxComboboxItemIndicator`,
 `RdxComboboxGroup`, `RdxComboboxGroupLabel`, `RdxComboboxSeparator` (`role="separator"`),
