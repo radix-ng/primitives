@@ -200,6 +200,44 @@ class GatedPositionerHostComponent {
     readonly active = signal(true);
 }
 
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [popperImports],
+    template: `
+        <div rdxPopperRoot>
+            <button rdxPopperAnchor>Anchor</button>
+            <div rdxPopperContentWrapper>
+                <div rdxPopperContent>
+                    Content
+                    <span rdxPopperArrow></span>
+                </div>
+            </div>
+        </div>
+    `
+})
+class ArrowPopperHostComponent {}
+
+// Same anatomy as `ArrowPopperHostComponent`, but with a reactive `side` input — used to trigger a
+// `position` resource reload (a params change) and inspect the arrow's geometry mid-recompute.
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [popperImports],
+    template: `
+        <div rdxPopperRoot>
+            <button rdxPopperAnchor>Anchor</button>
+            <div [side]="side()" rdxPopperContentWrapper>
+                <div rdxPopperContent>
+                    Content
+                    <span rdxPopperArrow></span>
+                </div>
+            </div>
+        </div>
+    `
+})
+class ReactiveArrowPopperHostComponent {
+    readonly side = signal<'top' | 'bottom'>('bottom');
+}
+
 describe('RdxPopperContentWrapper', () => {
     const autoUpdateMock = vi.mocked(autoUpdate);
     const computePositionMock = vi.mocked(computePosition);
@@ -217,7 +255,9 @@ describe('RdxPopperContentWrapper', () => {
                 CollisionPopperHostComponent,
                 PresetPopperHostComponent,
                 GatedPositionerHostComponent,
-                LogicalSidePopperHostComponent
+                LogicalSidePopperHostComponent,
+                ArrowPopperHostComponent,
+                ReactiveArrowPopperHostComponent
             ]
         });
     });
@@ -640,6 +680,175 @@ describe('RdxPopperContentWrapper', () => {
             // Flipped to the physical right edge: a logical request stays logical → inline-end (LTR).
             (lastOffsetFn() as any)({ ...state, placement: 'right' });
             expect(sideOffset).toHaveBeenLastCalledWith(expect.objectContaining({ side: 'inline-end' }));
+        });
+    });
+
+    // ADR 0002: the arrow no longer hides itself when the popup is shifted off-center — only a
+    // genuinely hidden anchor (the `hide` middleware's `referenceHidden`) hides it, inherited from the
+    // positioner. `data-uncentered` moved onto `RdxPopperArrow` itself so every consumer gets it.
+    describe('RdxPopperArrow (ADR 0002 — uncentered stays visible)', () => {
+        let originalResizeObserver: typeof ResizeObserver | undefined;
+
+        beforeAll(() => {
+            originalResizeObserver = globalThis.ResizeObserver;
+            Object.defineProperty(globalThis, 'ResizeObserver', {
+                configurable: true,
+                value: class {
+                    observe() {}
+                    disconnect() {}
+                }
+            });
+        });
+
+        afterAll(() => {
+            Object.defineProperty(globalThis, 'ResizeObserver', {
+                configurable: true,
+                value: originalResizeObserver
+            });
+        });
+
+        afterEach(() => {
+            computePositionMock.mockImplementation(() =>
+                Promise.resolve({ x: 0, y: 0, placement: 'bottom', strategy: 'fixed', middlewareData: {} })
+            );
+        });
+
+        async function render() {
+            const fixture = TestBed.createComponent(ArrowPopperHostComponent);
+            fixture.detectChanges();
+            await fixture.whenStable();
+            fixture.detectChanges();
+            return fixture;
+        }
+
+        it('keeps the arrow visible and marks it data-uncentered when the popup is shifted off-center', async () => {
+            computePositionMock.mockImplementation(() =>
+                Promise.resolve({
+                    x: 0,
+                    y: 0,
+                    placement: 'bottom',
+                    strategy: 'fixed',
+                    middlewareData: { arrow: { x: 12, y: 0, centerOffset: 8 } }
+                })
+            );
+
+            const fixture = await render();
+            const arrow: HTMLElement = fixture.nativeElement.querySelector('[rdxPopperArrow]');
+
+            expect(arrow.getAttribute('data-uncentered')).toBe('');
+            expect(arrow.style.visibility).toBe('');
+        });
+
+        // Codex review finding: a `0` coordinate is legitimate (Floating UI clamps the arrow to the
+        // padded edge of the popup, e.g. `arrowPadding: 0`, most likely exactly when it is off-center).
+        // A truthy check on `arrowX`/`arrowY` would drop `0` and leave that axis unset — harmless while
+        // the arrow was hidden whenever off-center, but a real mispositioning now that it stays visible.
+        it('still positions the arrow on an axis clamped to exactly 0', async () => {
+            computePositionMock.mockImplementation(() =>
+                Promise.resolve({
+                    x: 0,
+                    y: 0,
+                    placement: 'bottom',
+                    strategy: 'fixed',
+                    middlewareData: { arrow: { x: 0, y: 0, centerOffset: 8 } }
+                })
+            );
+
+            const fixture = await render();
+            const arrow: HTMLElement = fixture.nativeElement.querySelector('[rdxPopperArrow]');
+
+            expect(arrow.style.left).toBe('0px');
+            expect(arrow.style.top).toBe('0px');
+        });
+
+        it('omits data-uncentered when the arrow is centered', async () => {
+            computePositionMock.mockImplementation(() =>
+                Promise.resolve({
+                    x: 0,
+                    y: 0,
+                    placement: 'bottom',
+                    strategy: 'fixed',
+                    middlewareData: { arrow: { x: 12, y: 0, centerOffset: 0 } }
+                })
+            );
+
+            const fixture = await render();
+            const arrow: HTMLElement = fixture.nativeElement.querySelector('[rdxPopperArrow]');
+
+            expect(arrow.hasAttribute('data-uncentered')).toBe(false);
+        });
+
+        it('still hides the popup (and with it the arrow) when the anchor is fully hidden', async () => {
+            computePositionMock.mockImplementation(() =>
+                Promise.resolve({
+                    x: 0,
+                    y: 0,
+                    placement: 'bottom',
+                    strategy: 'fixed',
+                    middlewareData: { hide: { referenceHidden: true } }
+                })
+            );
+
+            const fixture = await render();
+            const wrapper: HTMLElement = fixture.nativeElement.querySelector('[rdxPopperContentWrapper]');
+            const arrow: HTMLElement = fixture.nativeElement.querySelector('[rdxPopperArrow]');
+
+            expect(wrapper.hasAttribute('data-anchor-hidden')).toBe(true);
+            expect(wrapper.style.visibility).toBe('hidden');
+            // The arrow sets no visibility of its own — it disappears because it inherits from the
+            // hidden positioner, not because it was individually hidden.
+            expect(arrow.style.visibility).toBe('');
+        });
+
+        // Codex review finding: the `position` resource resets `value()` to `undefined` while a reload
+        // is in flight (e.g. every pointer move while a tooltip tracks the cursor, or here, a `side`
+        // change). Before ADR 0002 that window was masked by `visibility: hidden` (an off-center
+        // `centerOffset` reads as `undefined !== 0` too); now that the arrow stays visible throughout,
+        // its geometry must keep showing the last resolved position instead of flashing to an
+        // untransformed / re-centered state.
+        it('keeps showing the last resolved arrow geometry while a reload is in flight', async () => {
+            computePositionMock.mockImplementationOnce(() =>
+                Promise.resolve({
+                    x: 0,
+                    y: 0,
+                    placement: 'bottom',
+                    strategy: 'fixed',
+                    middlewareData: { arrow: { x: 12, y: 0, centerOffset: 8 } }
+                })
+            );
+
+            const fixture = TestBed.createComponent(ReactiveArrowPopperHostComponent);
+            fixture.detectChanges();
+            await fixture.whenStable();
+            fixture.detectChanges();
+
+            const arrow: HTMLElement = fixture.nativeElement.querySelector('[rdxPopperArrow]');
+            expect(arrow.getAttribute('data-uncentered')).toBe('');
+            expect(arrow.style.left).toBe('12px');
+            const transformBeforeReload = arrow.style.transform;
+            expect(transformBeforeReload).not.toBe('');
+
+            // A `side` change reloads the position resource; hold the new `computePosition` call
+            // pending so the resource's transient `value() === undefined` window is observable.
+            let resolvePending!: (value: Awaited<ReturnType<typeof computePosition>>) => void;
+            computePositionMock.mockImplementationOnce(() => new Promise((resolve) => (resolvePending = resolve)));
+
+            fixture.componentInstance.side.set('top');
+            fixture.detectChanges();
+            await Promise.resolve();
+
+            expect(arrow.getAttribute('data-uncentered')).toBe('');
+            expect(arrow.style.left).toBe('12px');
+            expect(arrow.style.transform).toBe(transformBeforeReload);
+
+            resolvePending({
+                x: 0,
+                y: 0,
+                placement: 'top',
+                strategy: 'fixed',
+                middlewareData: { arrow: { x: 12, y: 0, centerOffset: 8 } }
+            });
+            await fixture.whenStable();
         });
     });
 });

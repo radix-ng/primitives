@@ -250,7 +250,9 @@ during the cross-item transition.
 These parts read their behavior and state from context. `List` groups the navigation items with
 composite focus, `Item` carries the `value`, and `Icon` exposes `data-popup-open` for a caret.
 `Popup` reflects `data-open` / `data-closed` / `data-side` / `data-align` / `data-instant` /
-`data-starting-style` / `data-ending-style` and owns `--popup-width` / `--popup-height`. `Backdrop`
+`data-starting-style` / `data-ending-style` and owns `--popup-width` / `--popup-height`. `Arrow`
+reflects `data-open` / `data-closed` / `data-side` / `data-align` / `data-uncentered` (set when it
+cannot be centered on the anchor — it stays visible rather than disappearing). `Backdrop`
 is presentational and reflects `data-open` / `data-closed` / `data-starting-style` /
 `data-ending-style` / `data-instant`.
 

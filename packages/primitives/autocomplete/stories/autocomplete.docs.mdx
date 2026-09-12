@@ -282,5 +282,7 @@ Renders the current value as text (with a `placeholder` when empty).
 <ArgTypes of={RdxAutocompleteValue} />
 
 Other parts (`Portal` (structural), `Backdrop`, `Popup`, `List`, `Row`, `Group`, `GroupLabel`,
-`ItemIndicator`, `Empty`, `Status`, `Trigger`, `Icon`, `Clear`, `Label`, `Anchor`, `InputGroup`) read
-everything from context and take no inputs of their own.
+`ItemIndicator`, `Empty`, `Status`, `Trigger`, `Icon`, `Clear`, `Label`, `Anchor`, `InputGroup`,
+`Arrow` (re-exposes `width` / `height`; carries `data-uncentered` when it can no longer be centered on
+the anchor — it stays visible rather than disappearing)) read everything from context and take no
+inputs of their own.

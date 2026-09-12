@@ -14,8 +14,7 @@ import { injectRdxMenuRootContext } from './menu-root';
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
         '[attr.data-side]': 'side()',
-        '[attr.data-align]': 'align()',
-        '[attr.data-uncentered]': 'uncentered() ? "" : undefined'
+        '[attr.data-align]': 'align()'
     }
 })
 export class RdxMenuArrow {
@@ -24,5 +23,4 @@ export class RdxMenuArrow {
 
     protected readonly side = computed(() => this.wrapper?.placedSide());
     protected readonly align = computed(() => this.wrapper?.placedAlign());
-    protected readonly uncentered = computed(() => this.wrapper?.arrowUncentered() ?? false);
 }

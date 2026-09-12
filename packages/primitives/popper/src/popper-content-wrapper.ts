@@ -103,6 +103,7 @@ const context = () => {
         arrowX: popperContentWrapper.arrowX,
         arrowY: popperContentWrapper.arrowY,
         shouldHideArrow: popperContentWrapper.shouldHideArrow,
+        arrowUncentered: popperContentWrapper.arrowUncentered,
         isPositioned: popperContentWrapper.isPositioned,
         anchorHidden: popperContentWrapper.anchorHidden
     };
@@ -279,14 +280,26 @@ export class RdxPopperContentWrapper {
      */
     readonly nonInteractive = signal(false);
 
-    readonly shouldHideArrow = computed(() => this.position.value()?.middlewareData['arrow']?.centerOffset !== 0);
+    /**
+     * @deprecated The arrow is no longer hidden just because the popup was shifted off-center (ADR
+     * 0002 — Base UI keeps it visible and lets consumers style {@link arrowUncentered} /
+     * `data-uncentered` instead). This now only reflects {@link anchorHidden}, which already hides the
+     * whole positioner (and, by inheritance, the arrow). Read `anchorHidden` directly. Removed in the
+     * next minor.
+     */
+    readonly shouldHideArrow = computed(() => this.anchorHidden());
+    // These read `resolvedPosition` (the last successfully computed position, held across a reload —
+    // see its doc below), not `position.value()` directly: the `position` resource resets `value()` to
+    // `undefined` whenever its params change (e.g. on every pointer move while a tooltip tracks the
+    // cursor), and ADR 0002 keeps the arrow visible throughout, so reading the raw resource here would
+    // flash it to an uncentered/hidden-anchor-less, untransformed state on every recompute.
     /** Whether the arrow could not be centered on the anchor because the popup was shifted. */
     readonly arrowUncentered = computed(
-        () => (this.position.value()?.middlewareData['arrow']?.centerOffset ?? 0) !== 0
+        () => (this.resolvedPosition()?.middlewareData['arrow']?.centerOffset ?? 0) !== 0
     );
-    readonly arrowX = computed(() => this.position.value()?.middlewareData['arrow']?.x);
-    readonly arrowY = computed(() => this.position.value()?.middlewareData['arrow']?.y);
-    readonly anchorHidden = computed(() => this.position.value()?.middlewareData.hide?.referenceHidden === true);
+    readonly arrowX = computed(() => this.resolvedPosition()?.middlewareData['arrow']?.x);
+    readonly arrowY = computed(() => this.resolvedPosition()?.middlewareData['arrow']?.y);
+    readonly anchorHidden = computed(() => this.resolvedPosition()?.middlewareData.hide?.referenceHidden === true);
 
     private readonly desiredPlacement = computed(
         () => (this.resolvedSide() + (this.align() !== 'center' ? '-' + this.align() : '')) as Placement
@@ -483,7 +496,11 @@ export class RdxPopperContentWrapper {
      * every pointer move while a tooltip tracks the cursor). Reading it directly would blank the
      * popup (`visibility: hidden` + off-screen transform) for the frames between a move and the next
      * resolved position — a visible flicker at high pointer-move rates. Holding the previous value
-     * keeps the popup placed and visible until the new position is ready.
+     * keeps the popup placed and visible until the new position is ready. `placement` (and, through it,
+     * `physicalPlacedSide` / `placedSide` / `placedAlign`) and the arrow-facing computeds
+     * (`arrowX`/`arrowY`/`arrowUncentered`/`anchorHidden`) read this too, for the same reason: none of
+     * them should flash to an empty/centered/visible-anchor state on every recompute (ADR 0002 in
+     * particular keeps the arrow permanently visible, so its geometry must stay valid throughout).
      */
     private readonly resolvedPosition = linkedSignal<
         ComputePositionReturn | undefined,
@@ -500,9 +517,13 @@ export class RdxPopperContentWrapper {
 
     /**
      * The current placement of the panel.
+     *
+     * Reads {@link resolvedPosition} (held across a reload), not the raw resource — otherwise
+     * `physicalPlacedSide` (which the arrow's rotation and transform-origin depend on, ADR 0002) as
+     * well as `data-side` / `data-align` would clear to `undefined` on every recompute.
      */
     readonly placement = computed(() => {
-        const placement = this.position.value()?.placement;
+        const placement = this.resolvedPosition()?.placement;
 
         if (!placement) {
             return;
