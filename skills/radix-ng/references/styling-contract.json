@@ -567,7 +567,28 @@
       "doc": "radix-ng-examples/references/utils/popper.md",
       "storybook": "https://radix-ng.com/?path=/docs/primitives-popper--docs",
       "anatomy": "<div rdxPopperRoot>\n    <button rdxPopperAnchor>Anchor</button>\n\n    <div side=\"top\" sideOffset=\"8\" rdxPopperContentWrapper>\n        <div rdxPopperContent>Floating content</div>\n        <span rdxPopperArrow></span>\n    </div>\n</div>",
-      "dataAttributes": []
+      "dataAttributes": [
+        {
+          "attribute": "data-side",
+          "parts": "Content wrapper",
+          "values": "Always — the resolved placement side."
+        },
+        {
+          "attribute": "data-align",
+          "parts": "Content wrapper",
+          "values": "Always — the resolved placement alignment."
+        },
+        {
+          "attribute": "data-anchor-hidden",
+          "parts": "Content wrapper",
+          "values": "hideWhenDetached is set and the anchor is fully occluded."
+        },
+        {
+          "attribute": "data-uncentered",
+          "parts": "Arrow",
+          "values": "The popup shifted and the arrow can no longer be centered on the anchor."
+        }
+      ]
     },
     {
       "name": "Portal",
