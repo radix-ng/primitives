@@ -28,6 +28,8 @@ export function elementSize({ elementRef, injector }: { elementRef: ElementRef<H
                 result.set({ width, height });
             });
 
+            resizeObserver.observe(elementRef.nativeElement, { box: 'border-box' });
+
             destroyRef.onDestroy(() => resizeObserver.disconnect());
         },
         { injector: injector }
