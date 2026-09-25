@@ -1,3 +1,15 @@
+## 1.2.1 (2026-09-25)
+
+### 🩹 Fixes
+
+- **core:** observe element size changes ([3b1071a9](https://github.com/radix-ng/primitives/commit/3b1071a9))
+- **popper:** keep the uncentered arrow visible and expose data-uncentered (ADR 0002) ([#460](https://github.com/radix-ng/primitives/pull/460))
+
+### ❤️ Thank You
+
+- Manos Kaparos
+- Oleg Pimenov @pimenovoleg
+
 ## 1.2.0 (2026-09-06)
 
 ### 🚀 Features
