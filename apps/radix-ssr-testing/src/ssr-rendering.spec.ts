@@ -13,6 +13,7 @@ import CollapsiblePage from './app/components/collapsible/page';
 import ComboboxPage from './app/components/combobox/page';
 import FormPage from './app/components/form/page';
 import LabelPage from './app/components/label/page';
+import OtpFieldPage from './app/components/otp-field/page';
 import SelectPage from './app/components/select/page';
 import SeparatorPage from './app/components/separator/page';
 import SliderPage from './app/components/slider/page';
@@ -52,6 +53,11 @@ const cases: readonly SsrCase[] = [
     // Form + Field render server-side with the external error already mapped onto the named field.
     { selector: 'app-form', component: FormPage, expects: ['novalidate', 'Email is already taken'] },
     { selector: 'app-label', component: LabelPage, expects: ['Label'] },
+    {
+        selector: 'app-otp-field',
+        component: OtpFieldPage,
+        expects: ['role="group"', 'id="server-code"', 'Character 4 of 4']
+    },
     // Select's overlay is portal + presence gated, so on the server (closed) only the trigger renders —
     // assert the placeholder the value shows when nothing is selected.
     { selector: 'app-select', component: SelectPage, expects: ['Pick a fruit'] },
