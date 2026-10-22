@@ -243,6 +243,52 @@ describe('RdxOtpField', () => {
         expect(host.onValueInvalid).toHaveBeenCalledWith('1x234');
     });
 
+    it('does not complete or auto-submit for a partial paste into a complete value', () => {
+        host.value.set('1234');
+        host.autoSubmit.set(true);
+        fixture.detectChanges();
+
+        slots[0].dispatchEvent(pasteEvent('99'));
+        fixture.detectChanges();
+
+        expect(host.value()).toBe('9934');
+        expect(host.onValueChange).toHaveBeenCalledWith(
+            expect.objectContaining({
+                value: '9934',
+                eventDetails: expect.objectContaining({ reason: 'input-paste' })
+            })
+        );
+        expect(host.onValueComplete).not.toHaveBeenCalled();
+        expect(host.onSubmit).not.toHaveBeenCalled();
+    });
+
+    it('does not complete or auto-submit for a rejected paste into a complete value', () => {
+        host.value.set('1234');
+        host.autoSubmit.set(true);
+        fixture.detectChanges();
+
+        slots[0].dispatchEvent(pasteEvent('x'));
+        fixture.detectChanges();
+
+        expect(host.value()).toBe('1234');
+        expect(host.onValueInvalid).toHaveBeenCalledWith('x');
+        expect(host.onValueComplete).not.toHaveBeenCalled();
+        expect(host.onSubmit).not.toHaveBeenCalled();
+    });
+
+    it('completes when a partial paste fills the remaining slots', () => {
+        host.value.set('12');
+        fixture.detectChanges();
+
+        slots[2].dispatchEvent(pasteEvent('34'));
+        fixture.detectChanges();
+
+        expect(host.value()).toBe('1234');
+        expect(host.onValueComplete).toHaveBeenCalledWith(
+            expect.objectContaining({ value: '1234', reason: 'input-paste' })
+        );
+    });
+
     it('emits completion for a repeated complete paste without a redundant value change', () => {
         host.value.set('1234');
         fixture.detectChanges();

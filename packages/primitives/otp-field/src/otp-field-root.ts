@@ -342,6 +342,7 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
         const rawCharacters = codePoints(attempted);
         const nonWhitespaceCharacters = rawCharacters.filter((character) => !/\s/u.test(character));
         const pastedCharacters = nonWhitespaceCharacters.filter((character) => this.isAllowed(character));
+        const isCompletePaste = pastedCharacters.length >= this.length();
         if (pastedCharacters.length !== nonWhitespaceCharacters.length) {
             this.valueInvalid.emit(attempted);
         }
@@ -349,7 +350,7 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
             replaceAt(codePoints(this.currentValue()), index, pastedCharacters, this.length()).join(''),
             'input-paste',
             event,
-            true
+            isCompletePaste
         );
     }
 
@@ -461,7 +462,7 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
 
         const wasComplete = codePoints(previousValue).length === this.length();
         const isComplete = codePoints(normalized).length === this.length();
-        const shouldComplete = isComplete && (completePaste || (reason === 'input-change' && !wasComplete));
+        const shouldComplete = isComplete && (!wasComplete || completePaste);
         if (shouldComplete && (changed || completePaste)) {
             this.valueComplete.emit({
                 value: normalized,
