@@ -5139,17 +5139,18 @@
           "directive": "RdxOtpFieldInput",
           "selector": "input[rdxOtpFieldInput]",
           "exportAs": "rdxOtpFieldInput",
-          "description": "One native input representing one character of the root value.\n\nSee https://base-ui.com/react/components/otp-field",
+          "description": "One native input representing one character of the root value.",
           "inputs": [
+            {
+              "name": "aria-label",
+              "type": "string | null | undefined",
+              "default": "undefined",
+              "description": "Optional accessible name override; later slots receive a generated character label by default."
+            },
             {
               "name": "type",
               "type": "string | undefined",
               "description": "Optional native input type override; when omitted, `mask` chooses text or password."
-            },
-            {
-              "name": "aria-label",
-              "type": "string | null | undefined",
-              "description": "Optional accessible name override; later slots receive a generated character label by default."
             }
           ],
           "outputs": []
@@ -5164,37 +5165,7 @@
           ],
           "inputs": [
             {
-              "name": "id",
-              "type": "string",
-              "default": "injectId('rdx-otp-field-')",
-              "description": "The id applied to the first slot; subsequent slots receive `{id}-2`, `{id}-3`, and so on."
-            },
-            {
-              "name": "length",
-              "type": "number",
-              "required": true,
-              "description": "Number of characters in the code. Required so server and client markup agree."
-            },
-            {
-              "name": "validationType",
-              "type": "RdxOtpFieldValidationType",
-              "default": "'numeric'",
-              "description": "Character set accepted by the field."
-            },
-            {
-              "name": "normalizeValue",
-              "type": "((value: string) => string) | undefined",
-              "description": "Additional normalization, applied between two validation passes. Keep this function idempotent."
-            },
-            {
-              "name": "mask",
-              "type": "boolean",
-              "default": "false",
-              "description": "Masks all slots unless an individual input supplies its own `type`."
-            },
-            {
               "name": "autoComplete",
-              "type": "string",
               "default": "'one-time-code'",
               "description": "Autocomplete hint used by the first slot and the hidden native input."
             },
@@ -5205,14 +5176,15 @@
               "description": "Submit the owning form as soon as a complete user-entered value is committed."
             },
             {
-              "name": "inputMode",
-              "type": "RdxOtpFieldInputMode",
-              "description": "Software-keyboard hint. Defaults to `numeric` for numeric validation and `text` otherwise."
+              "name": "defaultValue",
+              "type": "string",
+              "description": "Initial uncontrolled value. It is normalized before first render and restored on form reset."
             },
             {
-              "name": "name",
-              "type": "string",
-              "description": "Name used when this field participates in a native form."
+              "name": "disabled",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the user can interact with this field."
             },
             {
               "name": "form",
@@ -5220,10 +5192,33 @@
               "description": "Id of an external form that owns this field."
             },
             {
-              "name": "disabled",
+              "name": "id",
+              "type": "string",
+              "default": "injectId('rdx-otp-field-')",
+              "description": "The id applied to the first slot; subsequent slots receive `{id}-2`, `{id}-3`, and so on."
+            },
+            {
+              "name": "inputMode",
+              "type": "RdxOtpFieldInputMode",
+              "description": "Software-keyboard hint. Defaults to `numeric` for numeric validation and `text` otherwise."
+            },
+            {
+              "name": "length",
+              "type": "number",
+              "default": "{        transform: positiveIntegerAttribute    }",
+              "required": true,
+              "description": "Number of characters in the code. Required so server and client markup agree."
+            },
+            {
+              "name": "mask",
               "type": "boolean",
               "default": "false",
-              "description": "Whether the user can interact with the field."
+              "description": "Masks all slots unless an individual input supplies its own `type`."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Name used when this field participates in a native form."
             },
             {
               "name": "readonly",
@@ -5238,33 +5233,16 @@
               "description": "Whether a non-empty, complete code is required for native form submission."
             },
             {
-              "name": "defaultValue",
-              "type": "string",
-              "description": "Initial uncontrolled value. It is normalized before first render and restored on form reset."
+              "name": "validationType",
+              "type": "RdxOtpFieldValidationType",
+              "default": "'numeric'",
+              "description": "Character set accepted by the field."
             },
             {
               "name": "value",
               "type": "string",
               "default": "''",
               "description": "Current value. Use with `[(value)]` for two-way binding."
-            },
-            {
-              "name": "invalid",
-              "type": "boolean",
-              "default": "false",
-              "description": "Whether the control is invalid. A non-empty `errors` list also marks it invalid."
-            },
-            {
-              "name": "pending",
-              "type": "boolean",
-              "default": "false",
-              "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
-            },
-            {
-              "name": "touched",
-              "type": "boolean",
-              "default": "false",
-              "description": "Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out."
             },
             {
               "name": "dirty",
@@ -5277,6 +5255,24 @@
               "type": "readonly RdxValidationError[]",
               "default": "[]",
               "description": "Validation errors for the control. A non-empty list marks it invalid."
+            },
+            {
+              "name": "invalid",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+            },
+            {
+              "name": "pending",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
+            },
+            {
+              "name": "touched",
+              "type": "boolean",
+              "default": "false",
+              "description": "Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out."
             }
           ],
           "outputs": [
@@ -5286,14 +5282,14 @@
               "description": "Emitted before a user edit is committed. Call `eventDetails.cancel()` to reject the change."
             },
             {
-              "name": "valueInvalid",
-              "type": "string",
-              "description": "Emitted with the attempted pre-normalization text when a character is rejected."
-            },
-            {
               "name": "valueComplete",
               "type": "RdxOtpFieldValueCompleteEvent",
               "description": "Emitted after a user edit fills every slot."
+            },
+            {
+              "name": "valueInvalid",
+              "type": "string",
+              "description": "Emitted with the attempted pre-normalization text when a character is rejected."
             },
             {
               "name": "touch",
@@ -5310,11 +5306,11 @@
           "directive": "RdxOtpFieldSeparator",
           "selector": "div[rdxOtpFieldSeparator]",
           "exportAs": "rdxOtpFieldSeparator",
-          "description": "Visual and semantic separator between groups of OTP slots.\n\nSee https://base-ui.com/react/components/otp-field",
+          "description": "Visual and semantic separator between groups of OTP slots.",
           "inputs": [
             {
               "name": "orientation",
-              "type": "'horizontal' | 'vertical'",
+              "type": "\"horizontal\" | \"vertical\"",
               "default": "'horizontal'",
               "description": "Orientation of this separator."
             }
