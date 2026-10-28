@@ -1,0 +1,189 @@
+{
+  "version": "1.2.1",
+  "slug": "otp-field",
+  "section": "components",
+  "parts": [
+    {
+      "directive": "RdxOtpFieldInput",
+      "selector": "input[rdxOtpFieldInput]",
+      "exportAs": "rdxOtpFieldInput",
+      "description": "One native input representing one character of the root value.",
+      "inputs": [
+        {
+          "name": "aria-label",
+          "type": "string | null | undefined",
+          "default": "undefined",
+          "description": "Optional accessible name override; later slots receive a generated character label by default."
+        },
+        {
+          "name": "type",
+          "type": "string | undefined",
+          "description": "Optional native input type override; when omitted, `mask` chooses text or password."
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "directive": "RdxOtpFieldRoot",
+      "selector": "div[rdxOtpFieldRoot]",
+      "exportAs": "rdxOtpFieldRoot",
+      "description": "Coordinates one native input per code point and a visually hidden native text control for\nautofill, constraint validation, reset, and form submission.\n\nSee https://base-ui.com/react/components/otp-field",
+      "hostDirectives": [
+        "RdxControlValueAccessor"
+      ],
+      "inputs": [
+        {
+          "name": "autoComplete",
+          "default": "'one-time-code'",
+          "description": "Autocomplete hint used by the first slot and the hidden native input."
+        },
+        {
+          "name": "autoSubmit",
+          "type": "boolean",
+          "default": "false",
+          "description": "Submit the owning form as soon as a complete user-entered value is committed."
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "description": "Initial uncontrolled value. It is normalized before first render and restored on form reset."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the user can interact with this field."
+        },
+        {
+          "name": "form",
+          "type": "string",
+          "description": "Id of an external form that owns this field."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "default": "injectId('rdx-otp-field-')",
+          "description": "The id applied to the first slot; subsequent slots receive `{id}-2`, `{id}-3`, and so on."
+        },
+        {
+          "name": "inputMode",
+          "type": "RdxOtpFieldInputMode",
+          "description": "Software-keyboard hint. Defaults to `numeric` for numeric validation and `text` otherwise."
+        },
+        {
+          "name": "length",
+          "type": "number",
+          "default": "{        transform: positiveIntegerAttribute    }",
+          "required": true,
+          "description": "Number of characters in the code. Required so server and client markup agree."
+        },
+        {
+          "name": "mask",
+          "type": "boolean",
+          "default": "false",
+          "description": "Masks all slots unless an individual input supplies its own `type`."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "Name used when this field participates in a native form."
+        },
+        {
+          "name": "readonly",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the value can be changed. Read-only slots remain focusable and navigable."
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether a non-empty, complete code is required for native form submission."
+        },
+        {
+          "name": "validationType",
+          "type": "RdxOtpFieldValidationType",
+          "default": "'numeric'",
+          "description": "Character set accepted by the field."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "default": "''",
+          "description": "Current value. Use with `[(value)]` for two-way binding."
+        },
+        {
+          "name": "dirty",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the value changed from its initial value. Merged with internal tracking."
+        },
+        {
+          "name": "errors",
+          "type": "readonly RdxValidationError[]",
+          "default": "[]",
+          "description": "Validation errors for the control. A non-empty list marks it invalid."
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the control is invalid. A non-empty {@link errors} list also marks it invalid."
+        },
+        {
+          "name": "pending",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether async validation is pending. Pending controls publish neither `data-valid` nor `data-invalid`."
+        },
+        {
+          "name": "touched",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the control has been touched. A `model()` so Signal Forms can write it; set on blur/focus-out."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onValueChange",
+          "type": "RdxOtpFieldValueChangeEvent",
+          "description": "Emitted before a user edit is committed. Call `eventDetails.cancel()` to reject the change."
+        },
+        {
+          "name": "valueComplete",
+          "type": "RdxOtpFieldValueCompleteEvent",
+          "description": "Emitted after a user edit fills every slot."
+        },
+        {
+          "name": "valueInvalid",
+          "type": "string",
+          "description": "Emitted with the attempted pre-normalization text when a character is rejected."
+        },
+        {
+          "name": "touch",
+          "type": "void",
+          "description": "Emits when the control is touched, notifying Signal Forms (stable Angular 22 contract)."
+        }
+      ],
+      "twoWay": [
+        "value",
+        "touched"
+      ]
+    },
+    {
+      "directive": "RdxOtpFieldSeparator",
+      "selector": "div[rdxOtpFieldSeparator]",
+      "exportAs": "rdxOtpFieldSeparator",
+      "description": "Visual and semantic separator between groups of OTP slots.",
+      "inputs": [
+        {
+          "name": "orientation",
+          "type": "\"horizontal\" | \"vertical\"",
+          "default": "'horizontal'",
+          "description": "Orientation of this separator."
+        }
+      ],
+      "outputs": []
+    }
+  ]
+}

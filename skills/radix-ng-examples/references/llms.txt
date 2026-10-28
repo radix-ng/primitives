@@ -34,6 +34,7 @@ Generated from `@radix-ng/primitives@1.2.1` — if the installed version differs
 - [Meter](https://radix-ng.com/components/meter.md): A graphical display of a numeric value within a range.
 - [Navigation Menu](https://radix-ng.com/components/navigation-menu.md): A collection of links and menus for website navigation.
 - [Number Field](https://radix-ng.com/components/number-field.md): A numeric input with stepper buttons, drag-to-scrub, locale-aware formatting and keyboard control.
+- [OTP Field](https://radix-ng.com/components/otp-field.md): A headless one-time-code control built from one native input per character.
 - [Pagination](https://radix-ng.com/components/pagination.md): Displays data in paged format and provides navigation between pages.
 - [Popover](https://radix-ng.com/components/popover.md): An accessible popup anchored to a button.
 - [Preview Card](https://radix-ng.com/components/preview-card.md): A popup that appears when a link is hovered or focused, showing a visual preview.

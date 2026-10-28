@@ -188,7 +188,7 @@ const buildComponentIndex = (doc, meta) => {
 
 const mdxMeta = new Map(
     findMdx(primitivesRoot).map((filePath) => {
-        const content = fs.readFileSync(filePath, 'utf8');
+        const content = fs.readFileSync(filePath, 'utf8').replace(/\r\n?/g, '\n');
         const group = content.match(/<Meta\b[^>]*title=["']([^"']+)["'][^>]*\/>/)?.[1]?.split('/')[0];
         const slug = getSlug(filePath);
         const section = sectionOf(group || 'Primitives');

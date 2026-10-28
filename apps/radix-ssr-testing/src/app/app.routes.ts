@@ -32,6 +32,10 @@ export const appRoutes: Route[] = [
                 loadComponent: () => import('./components/form/page')
             },
             {
+                path: 'otp-field',
+                loadComponent: () => import('./components/otp-field/page')
+            },
+            {
                 path: 'label',
                 loadComponent: () => import('./components/label/page')
             },

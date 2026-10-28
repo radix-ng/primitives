@@ -15908,6 +15908,552 @@ Adheres to the [Spinbutton WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/
 
 ---
 
+# OTP Field
+
+#### A headless one-time-code control built from one native input per character.
+
+```typescript
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RdxOtpFieldModule } from '../index';
+import { otpFieldStyles } from './otp-field.styles';
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'rdx-otp-field-default-example',
+    imports: [RdxOtpFieldModule],
+    template: `
+        <div [class]="s.field">
+            <label [class]="s.label" for="verification-code">Verification code</label>
+            <div
+                id="verification-code"
+                [class]="s.root"
+                [length]="6"
+                [autoComplete]="'one-time-code'"
+                [inputMode]="'numeric'"
+                name="verificationCode"
+                rdxOtpFieldRoot
+            >
+                <input [class]="s.slot" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 2 of 6" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 3 of 6" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 4 of 6" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 5 of 6" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 6 of 6" rdxOtpFieldInput />
+            </div>
+            <p [class]="s.description">Enter the six-digit code sent to your device.</p>
+        </div>
+    `
+})
+export class OtpFieldDefaultExample {
+    protected readonly s = otpFieldStyles;
+}
+```
+
+## Features
+
+- ✅ Renders independently focusable native inputs for each character and a hidden form control for submission and validation.
+- ✅ Supports controlled and uncontrolled values, normalization, numeric or text validation, masking, and one-time-code autofill.
+- ✅ Distributes typing and pasted text across slots, with keyboard navigation between characters.
+- ✅ Integrates with Reactive Forms, `ngModel`, and Angular Signal Forms.
+- ✅ Exposes completion, invalid-input, and cancellable value-change events.
+- ✅ Supports visual grouping and separators without imposing styles or layout.
+
+## Import
+
+```ts
+import { RdxOtpFieldInput, RdxOtpFieldModule, RdxOtpFieldRoot, RdxOtpFieldSeparator } from '@radix-ng/primitives/otp-field';
+```
+
+## Anatomy
+
+Apply `rdxOtpFieldRoot` to a wrapper, then add one `rdxOtpFieldInput` native input for each character. A separator is optional and purely presentational.
+
+```html
+<div rdxOtpFieldRoot [length]="6" name="verificationCode" [autoComplete]="'one-time-code'">
+  <input rdxOtpFieldInput />
+  <input rdxOtpFieldInput aria-label="Character 2 of 6" />
+  <input rdxOtpFieldInput aria-label="Character 3 of 6" />
+  <input rdxOtpFieldInput aria-label="Character 4 of 6" />
+  <input rdxOtpFieldInput aria-label="Character 5 of 6" />
+  <input rdxOtpFieldInput aria-label="Character 6 of 6" />
+</div>
+```
+
+The root's `length` is required and should match the number of slot inputs. Slot indices follow DOM order, including inputs nested in layout wrappers. The first slot receives the root `id`; later slots receive numbered ids.
+
+## Events
+
+`onValueChange` emits the proposed string with event details. Call `eventDetails.cancel()` from the handler to prevent an update. Its reason is one of `input-change`, `input-clear`, `input-paste`, or `keyboard`.
+
+`valueComplete` is emitted after a value reaches the configured length, with a reason of `input-change` or `input-paste`. `valueInvalid` reports attempted text that did not pass validation. With `autoSubmit`, a complete code is applied before the associated form is submitted.
+
+## Examples
+
+### Basic numeric code
+
+The first slot uses one-time-code autocomplete and a numeric input mode for mobile keyboards.
+
+```typescript
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RdxOtpFieldModule } from '../index';
+import { otpFieldStyles } from './otp-field.styles';
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'rdx-otp-field-default-example',
+    imports: [RdxOtpFieldModule],
+    template: `
+        <div [class]="s.field">
+            <label [class]="s.label" for="verification-code">Verification code</label>
+            <div
+                id="verification-code"
+                [class]="s.root"
+                [length]="6"
+                [autoComplete]="'one-time-code'"
+                [inputMode]="'numeric'"
+                name="verificationCode"
+                rdxOtpFieldRoot
+            >
+                <input [class]="s.slot" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 2 of 6" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 3 of 6" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 4 of 6" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 5 of 6" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 6 of 6" rdxOtpFieldInput />
+            </div>
+            <p [class]="s.description">Enter the six-digit code sent to your device.</p>
+        </div>
+    `
+})
+export class OtpFieldDefaultExample {
+    protected readonly s = otpFieldStyles;
+}
+```
+
+### Groups and separator
+
+Plain wrapper elements group slots visually. The separator part is optional and does not change character indexing.
+
+```typescript
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RdxOtpFieldModule } from '../index';
+import { otpFieldStyles } from './otp-field.styles';
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'rdx-otp-field-groups-example',
+    imports: [RdxOtpFieldModule],
+    template: `
+        <div [class]="s.field">
+            <label [class]="s.label" for="grouped-code">Backup code</label>
+            <div
+                id="grouped-code"
+                [class]="s.root"
+                [length]="8"
+                [inputMode]="'text'"
+                [validationType]="'alphanumeric'"
+                rdxOtpFieldRoot
+            >
+                <div class="flex gap-2">
+                    <input [class]="s.slot" rdxOtpFieldInput />
+                    <input [class]="s.slot" aria-label="Character 2 of 8" rdxOtpFieldInput />
+                    <input [class]="s.slot" aria-label="Character 3 of 8" rdxOtpFieldInput />
+                    <input [class]="s.slot" aria-label="Character 4 of 8" rdxOtpFieldInput />
+                </div>
+                <div [class]="s.separator" aria-hidden="true" rdxOtpFieldSeparator>—</div>
+                <div class="flex gap-2">
+                    <input [class]="s.slot" aria-label="Character 5 of 8" rdxOtpFieldInput />
+                    <input [class]="s.slot" aria-label="Character 6 of 8" rdxOtpFieldInput />
+                    <input [class]="s.slot" aria-label="Character 7 of 8" rdxOtpFieldInput />
+                    <input [class]="s.slot" aria-label="Character 8 of 8" rdxOtpFieldInput />
+                </div>
+            </div>
+            <p [class]="s.description">The visual separator groups the eight characters into two blocks.</p>
+        </div>
+    `
+})
+export class OtpFieldGroupsExample {
+    protected readonly s = otpFieldStyles;
+}
+```
+
+### Character validation
+
+`validationType` accepts `numeric` (the default), `alpha`, `alphanumeric`, or `none`.
+
+```typescript
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RdxOtpFieldModule } from '../index';
+import { otpFieldStyles } from './otp-field.styles';
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'rdx-otp-field-validation-example',
+    imports: [RdxOtpFieldModule],
+    template: `
+        <div class="grid gap-6">
+            <div [class]="s.field">
+                <label [class]="s.label" for="letters-only">Letters only</label>
+                <div id="letters-only" [class]="s.root" [length]="6" [validationType]="'alpha'" rdxOtpFieldRoot>
+                    <input [class]="s.slot" rdxOtpFieldInput />
+                    <input [class]="s.slot" aria-label="Character 2 of 6" rdxOtpFieldInput />
+                    <input [class]="s.slot" aria-label="Character 3 of 6" rdxOtpFieldInput />
+                    <input [class]="s.slot" aria-label="Character 4 of 6" rdxOtpFieldInput />
+                    <input [class]="s.slot" aria-label="Character 5 of 6" rdxOtpFieldInput />
+                    <input [class]="s.slot" aria-label="Character 6 of 6" rdxOtpFieldInput />
+                </div>
+            </div>
+
+            <div [class]="s.field">
+                <label [class]="s.label" for="letters-and-digits">Letters and digits</label>
+                <div
+                    id="letters-and-digits"
+                    [class]="s.root"
+                    [length]="6"
+                    [validationType]="'alphanumeric'"
+                    rdxOtpFieldRoot
+                >
+                    <input [class]="s.slot" rdxOtpFieldInput />
+                    <input [class]="s.slot" aria-label="Character 2 of 6" rdxOtpFieldInput />
+                    <input [class]="s.slot" aria-label="Character 3 of 6" rdxOtpFieldInput />
+                    <input [class]="s.slot" aria-label="Character 4 of 6" rdxOtpFieldInput />
+                    <input [class]="s.slot" aria-label="Character 5 of 6" rdxOtpFieldInput />
+                    <input [class]="s.slot" aria-label="Character 6 of 6" rdxOtpFieldInput />
+                </div>
+            </div>
+        </div>
+    `
+})
+export class OtpFieldValidationExample {
+    protected readonly s = otpFieldStyles;
+}
+```
+
+### Uppercase normalization
+
+`normalizeValue` can transform accepted text. Keep normalization idempotent so repeated updates do not change an already normalized value.
+
+```typescript
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RdxOtpFieldModule } from '../index';
+import { otpFieldStyles } from './otp-field.styles';
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'rdx-otp-field-normalize-example',
+    imports: [RdxOtpFieldModule],
+    template: `
+        <div [class]="s.field">
+            <label [class]="s.label" for="uppercase-code">Alphabetic code</label>
+            <div
+                id="uppercase-code"
+                [class]="s.root"
+                [length]="6"
+                [normalizeValue]="uppercase"
+                [validationType]="'alpha'"
+                rdxOtpFieldRoot
+            >
+                <input [class]="s.slot" placeholder="A" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 2 of 6" placeholder="B" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 3 of 6" placeholder="C" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 4 of 6" placeholder="D" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 5 of 6" placeholder="E" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 6 of 6" placeholder="F" rdxOtpFieldInput />
+            </div>
+            <p [class]="s.description">Type lowercase or uppercase; the stored value is normalized to uppercase.</p>
+        </div>
+    `
+})
+export class OtpFieldNormalizeExample {
+    protected readonly s = otpFieldStyles;
+    protected readonly uppercase = (value: string): string => value.toUpperCase();
+}
+```
+
+### Placeholders
+
+Set the native `placeholder` on each slot to show a per-character hint.
+
+```typescript
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RdxOtpFieldModule } from '../index';
+import { otpFieldStyles } from './otp-field.styles';
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'rdx-otp-field-placeholder-example',
+    imports: [RdxOtpFieldModule],
+    template: `
+        <div [class]="s.field">
+            <label [class]="s.label" for="placeholder-code">Invitation code</label>
+            <div id="placeholder-code" [class]="s.root" [length]="6" rdxOtpFieldRoot>
+                <input [class]="s.slot" placeholder="•" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 2 of 6" placeholder="•" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 3 of 6" placeholder="•" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 4 of 6" placeholder="•" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 5 of 6" placeholder="•" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 6 of 6" placeholder="•" rdxOtpFieldInput />
+            </div>
+            <p [class]="s.description">Each empty slot shows its own placeholder.</p>
+        </div>
+    `
+})
+export class OtpFieldPlaceholderExample {
+    protected readonly s = otpFieldStyles;
+}
+```
+
+### Masked entry
+
+`mask` obscures slot values; setting `type` on an individual input overrides the mask for that slot.
+
+```typescript
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RdxOtpFieldModule } from '../index';
+import { otpFieldStyles } from './otp-field.styles';
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'rdx-otp-field-mask-example',
+    imports: [RdxOtpFieldModule],
+    template: `
+        <div [class]="s.field">
+            <label [class]="s.label" for="masked-code">Private access code</label>
+            <div
+                id="masked-code"
+                [class]="s.root"
+                [length]="6"
+                [mask]="true"
+                [autoComplete]="'one-time-code'"
+                [inputMode]="'numeric'"
+                rdxOtpFieldRoot
+            >
+                <input [class]="s.slot" type="text" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 2 of 6" type="text" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 3 of 6" type="text" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 4 of 6" type="text" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 5 of 6" type="text" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 6 of 6" type="text" rdxOtpFieldInput />
+            </div>
+            <p [class]="s.description">
+                Masking obscures the entered characters while keeping text input and autofill available.
+            </p>
+        </div>
+    `
+})
+export class OtpFieldMaskExample {
+    protected readonly s = otpFieldStyles;
+}
+```
+
+### Reactive Forms
+
+The root works with `formControlName` and forwards required validity to the form-associated hidden control.
+
+```typescript
+import { JsonPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RdxOtpFieldModule } from '../index';
+import { otpFieldStyles } from './otp-field.styles';
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'rdx-otp-field-reactive-forms-example',
+    imports: [JsonPipe, ReactiveFormsModule, RdxOtpFieldModule],
+    template: `
+        <form [class]="s.form" [formGroup]="verification" (ngSubmit)="onSubmit()">
+            <div [class]="s.field">
+                <label [class]="s.label" for="form-code">Verification code</label>
+                <div
+                    id="form-code"
+                    [class]="s.root"
+                    [length]="6"
+                    [autoComplete]="'one-time-code'"
+                    [inputMode]="'numeric'"
+                    formControlName="code"
+                    name="code"
+                    required
+                    rdxOtpFieldRoot
+                >
+                    <input [class]="s.slot" rdxOtpFieldInput />
+                    <input [class]="s.slot" aria-label="Character 2 of 6" rdxOtpFieldInput />
+                    <input [class]="s.slot" aria-label="Character 3 of 6" rdxOtpFieldInput />
+                    <input [class]="s.slot" aria-label="Character 4 of 6" rdxOtpFieldInput />
+                    <input [class]="s.slot" aria-label="Character 5 of 6" rdxOtpFieldInput />
+                    <input [class]="s.slot" aria-label="Character 6 of 6" rdxOtpFieldInput />
+                </div>
+                <p [class]="s.description">Reactive Forms owns the value and required validation.</p>
+            </div>
+
+            <button [class]="s.submit" type="submit">Verify</button>
+            <p class="text-muted-foreground text-sm">Form value: {{ verification.value | json }}</p>
+            @if (submitted) {
+                <p class="text-foreground text-sm">Submitted code: {{ submitted }}</p>
+            }
+        </form>
+    `
+})
+export class OtpFieldReactiveFormsExample {
+    protected readonly s = otpFieldStyles;
+
+    protected readonly verification = new FormGroup({
+        code: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(6)] })
+    });
+
+    protected submitted = '';
+
+    protected onSubmit(): void {
+        this.submitted = this.verification.controls.code.value;
+    }
+}
+```
+
+### Template-driven forms
+
+Use `[(ngModel)]` on the root to bind the complete string value.
+
+```typescript
+import { JsonPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { RdxOtpFieldModule } from '../index';
+import { otpFieldStyles } from './otp-field.styles';
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'rdx-otp-field-ngmodel-example',
+    imports: [FormsModule, JsonPipe, RdxOtpFieldModule],
+    template: `
+        <div [class]="s.field">
+            <label [class]="s.label" for="template-code">Recovery code</label>
+            <div
+                id="template-code"
+                [(ngModel)]="code"
+                [class]="s.root"
+                [length]="6"
+                [autoComplete]="'one-time-code'"
+                [inputMode]="'numeric'"
+                name="recoveryCode"
+                rdxOtpFieldRoot
+            >
+                <input [class]="s.slot" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 2 of 6" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 3 of 6" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 4 of 6" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 5 of 6" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 6 of 6" rdxOtpFieldInput />
+            </div>
+            <p class="text-muted-foreground text-sm">ngModel value: {{ code | json }}</p>
+        </div>
+    `
+})
+export class OtpFieldNgModelExample {
+    protected readonly s = otpFieldStyles;
+    protected code = '';
+}
+```
+
+### Signal Forms
+
+Bind `[formField]` to the root to connect the multi-slot control to Angular Signal Forms. `rdxSignalField` is only needed when an enclosing `rdxFieldRoot` should receive field state.
+
+```typescript
+import { JsonPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { form, FormField, required } from '@angular/forms/signals';
+import { RdxOtpFieldModule } from '../index';
+import { otpFieldStyles } from './otp-field.styles';
+
+type Verification = { code: string };
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'rdx-otp-field-signal-forms-example',
+    imports: [FormField, JsonPipe, RdxOtpFieldModule],
+    template: `
+        <div [class]="s.field">
+            <label [class]="s.label" for="signal-code">One-time code</label>
+            <div
+                id="signal-code"
+                [class]="s.root"
+                [formField]="verificationForm.code"
+                [length]="6"
+                [autoComplete]="'one-time-code'"
+                [inputMode]="'numeric'"
+                rdxOtpFieldRoot
+            >
+                <input [class]="s.slot" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 2 of 6" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 3 of 6" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 4 of 6" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 5 of 6" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 6 of 6" rdxOtpFieldInput />
+            </div>
+            <p class="text-muted-foreground text-sm">Signal Forms model: {{ model() | json }}</p>
+        </div>
+    `
+})
+export class OtpFieldSignalFormsExample {
+    protected readonly s = otpFieldStyles;
+    protected readonly model = signal<Verification>({ code: '' });
+    protected readonly verificationForm = form(this.model, (path) => {
+        required(path.code, { message: 'Enter a code.' });
+    });
+}
+```
+
+## API Reference
+
+### Root
+
+`RdxOtpFieldRoot` owns the value, validation and slot coordination.
+
+**Inputs:** `value`, `defaultValue`, required positive integer `length`, `validationType`, `normalizeValue`, `mask`, `autoComplete`, `autoSubmit`, `inputMode`, `name`, `form`, `disabled`, `readonly`, `required`, and `id`.
+
+**Outputs:** `onValueChange`, `valueComplete`, and `valueInvalid`.
+
+**State attributes:** `data-disabled`, `data-readonly`, `data-required`, `data-valid`, `data-invalid`, `data-dirty`, `data-touched`, `data-complete`, `data-filled`, and `data-focused`. Root `data-filled` is present when any character has been entered.
+
+## Data attributes
+
+| Attribute | Parts | Values |
+| --- | --- | --- |
+| `data-disabled` | Root, Input | Present when interaction is disabled. |
+| `data-readonly` | Root, Input | Present when edits are disallowed. |
+| `data-required` | Root, Input | Present when a complete value is required. |
+| `data-valid` | Root, Input | Present when the form state is valid. |
+| `data-invalid` | Root, Input | Present when the form state is invalid. |
+| `data-dirty` | Root, Input | Present after the value changes. |
+| `data-touched` | Root, Input | Present after focus leaves the field. |
+| `data-complete` | Root, Input | Present when the value has one character per slot. |
+| `data-filled` | Root, Input | Root: any character; Input: that slot has a character. |
+| `data-focused` | Root, Input | Present while any slot has focus. |
+
+### Input
+
+`RdxOtpFieldInput` is a native text input associated with one character slot. Slots expose their DOM-order `index`, current `value`, and `filled` state.
+
+**State attributes:** `data-disabled`, `data-readonly`, `data-required`, `data-valid`, `data-invalid`, `data-dirty`, `data-touched`, `data-complete`, `data-filled`, and `data-focused`. On a slot, `data-filled` reflects that character; `data-focused` indicates that focus is within the OTP field. Use `:focus` to style the currently focused slot.
+
+### Separator
+
+`RdxOtpFieldSeparator` marks a visual break between slot groups and has no inputs.
+
+## Keyboard interactions
+
+| Key | Description |
+| --- | --- |
+| Character key | Accept a valid character and advance focus to the next slot. |
+| `Backspace` | Clear the current character; when empty, move to and clear the previous slot. |
+| `Delete` | Clear the current character. |
+| `ArrowLeft` / `ArrowRight` | Move focus to the previous or next slot. |
+| `Home` / `End` | Move focus to the first or last slot. |
+
+Pasting a multi-character value distributes accepted characters across the slots and reports rejected characters through `valueInvalid`. Invalid single-character input is rejected without changing the value.
+
+---
+
 # Pagination
 
 ####  Displays data in paged format and provides navigation between pages.
