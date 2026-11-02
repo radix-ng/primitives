@@ -22,7 +22,7 @@ import { RdxOtpFieldValidationType, RdxOtpFieldValueCompleteEvent } from '../src
                 [normalizeValue]="normalizeValue()"
                 [mask]="mask()"
                 [disabled]="disabled()"
-                [readonly]="readonly()"
+                [readOnly]="readonly()"
                 [required]="required()"
                 [name]="name()"
                 [autoSubmit]="autoSubmit()"
@@ -275,6 +275,39 @@ describe('RdxOtpField', () => {
 
         expect(host.value()).toBe('124');
         expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[2]);
+        expect(slots[2].selectionStart).toBe(0);
+        expect(slots[2].selectionEnd).toBe(1);
+    });
+
+    it('defers filtering and focus changes until IME composition ends', () => {
+        host.validationType.set('none');
+        fixture.detectChanges();
+        slots[0].focus();
+
+        slots[0].dispatchEvent(new Event('compositionstart', { bubbles: true }));
+        slots[0].value = 'あ';
+        const firstCompositionInput = new Event('input', { bubbles: true }) as InputEvent;
+        Object.defineProperty(firstCompositionInput, 'isComposing', { value: true });
+        slots[0].dispatchEvent(firstCompositionInput);
+
+        expect(host.value()).toBe('');
+        expect(slots[0].value).toBe('あ');
+
+        slots[0].value = 'あい';
+        const finalCompositionInput = new Event('input', { bubbles: true }) as InputEvent;
+        Object.defineProperty(finalCompositionInput, 'isComposing', { value: true });
+        slots[0].dispatchEvent(finalCompositionInput);
+        slots[0].dispatchEvent(new Event('compositionend', { bubbles: true }));
+        fixture.detectChanges();
+
+        expect(host.value()).toBe('あい');
+        expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[2]);
+        expect(host.onValueChange).toHaveBeenCalledTimes(1);
+
+        slots[0].dispatchEvent(new Event('input', { bubbles: true }));
+        fixture.detectChanges();
+        expect(host.value()).toBe('あい');
+        expect(host.onValueChange).toHaveBeenCalledTimes(1);
     });
 
     it('moves focus to the first empty slot when a controlled value shrinks', () => {
@@ -317,6 +350,43 @@ describe('RdxOtpField', () => {
 
         expect(host.value()).toBe('1234');
         expect(host.onValueInvalid).toHaveBeenCalledWith('1x234');
+    });
+
+    it('advances paste focus by accepted characters and does not jump for rejected text', () => {
+        host.length.set(6);
+        host.value.set('123456');
+        fixture.detectChanges();
+        slots[0].focus();
+
+        slots[0].dispatchEvent(pasteEvent('9 9'));
+        fixture.detectChanges();
+
+        expect(host.value()).toBe('993456');
+        expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[2]);
+
+        slots[0].focus();
+        slots[0].dispatchEvent(pasteEvent('abc'));
+        fixture.detectChanges();
+
+        expect(host.value()).toBe('993456');
+        expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[0]);
+    });
+
+    it('prevents native paste when reading clipboard data throws', () => {
+        const event = new Event('paste', { bubbles: true, cancelable: true }) as ClipboardEvent;
+        Object.defineProperty(event, 'clipboardData', {
+            value: {
+                getData: () => {
+                    throw new Error('clipboard unavailable');
+                }
+            }
+        });
+
+        slots[0].dispatchEvent(event);
+
+        expect(event.defaultPrevented).toBe(true);
+        expect(host.value()).toBe('');
+        expect(slots[0].value).toBe('');
     });
 
     it('does not complete or auto-submit for a partial paste into a complete value', () => {
@@ -392,7 +462,7 @@ describe('RdxOtpField', () => {
         expect(host.onValueComplete).not.toHaveBeenCalled();
     });
 
-    it('supports deletion and arrow, Home, and End navigation', () => {
+    it('supports deletion, arrow/Home/End navigation, and control shortcuts', () => {
         host.value.set('1234');
         fixture.detectChanges();
         slots[2].focus();
@@ -404,7 +474,7 @@ describe('RdxOtpField', () => {
                 eventDetails: expect.objectContaining({ reason: 'keyboard' })
             })
         );
-        expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[2]);
+        expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[1]);
 
         slots[2].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true, cancelable: true }));
         expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[1]);
@@ -412,6 +482,32 @@ describe('RdxOtpField', () => {
         expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[0]);
         slots[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true, cancelable: true }));
         expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[3]);
+
+        slots[3].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true, cancelable: true }));
+        expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[0]);
+        slots[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true }));
+        expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[3]);
+
+        slots[3].dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'ArrowLeft', ctrlKey: true, bubbles: true, cancelable: true })
+        );
+        expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[0]);
+        slots[0].dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'ArrowRight', metaKey: true, bubbles: true, cancelable: true })
+        );
+        expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[3]);
+
+        const clearAll = new KeyboardEvent('keydown', {
+            key: 'Backspace',
+            ctrlKey: true,
+            bubbles: true,
+            cancelable: true
+        });
+        slots[3].dispatchEvent(clearAll);
+        fixture.detectChanges();
+        expect(clearAll.defaultPrevented).toBe(true);
+        expect(host.value()).toBe('');
+        expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[0]);
     });
 
     it('keeps the native form value in one hidden text control and applies required validity', () => {

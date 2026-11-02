@@ -1,4 +1,5 @@
 import { computed, Directive, ElementRef, inject, input } from '@angular/core';
+import { rdxPlatform } from '@radix-ng/primitives/core';
 import { injectOtpFieldRootContext } from './otp-field-context';
 
 /** One native input representing one character of the root value. */
@@ -19,21 +20,23 @@ import { injectOtpFieldRootContext } from './otp-field-context';
         '[tabIndex]': 'rootContext.isTabbable(index()) ? 0 : -1',
         '[disabled]': 'rootContext.isDisabled()',
         '[readonly]': 'rootContext.readonly()',
-        '[attr.aria-invalid]': 'rootContext.displayValid() === false ? "true" : null',
+        '[attr.aria-invalid]': 'rootContext.displayValid() === false ? "true" : undefined',
         '[attr.data-disabled]': 'rootContext.attr(rootContext.isDisabled())',
         '[attr.data-readonly]': 'rootContext.attr(rootContext.readonly())',
         '[attr.data-required]': 'rootContext.attr(rootContext.required())',
-        '[attr.data-valid]': 'rootContext.displayValid() === true ? "" : null',
-        '[attr.data-invalid]': 'rootContext.displayValid() === false ? "" : null',
-        '[attr.data-dirty]': 'rootContext.formUi.dirtyState() ? "" : null',
-        '[attr.data-touched]': 'rootContext.formUi.touchedState() ? "" : null',
-        '[attr.data-complete]': 'rootContext.isComplete() ? "" : null',
-        '[attr.data-filled]': 'filled() ? "" : null',
-        '[attr.data-focused]': 'rootContext.isFocused() ? "" : null',
+        '[attr.data-valid]': 'rootContext.displayValid() === true ? "" : undefined',
+        '[attr.data-invalid]': 'rootContext.displayValid() === false ? "" : undefined',
+        '[attr.data-dirty]': 'rootContext.formUi.dirtyState() ? "" : undefined',
+        '[attr.data-touched]': 'rootContext.formUi.touchedState() ? "" : undefined',
+        '[attr.data-complete]': 'rootContext.isComplete() ? "" : undefined',
+        '[attr.data-filled]': 'filled() ? "" : undefined',
+        '[attr.data-focused]': 'rootContext.isFocused() ? "" : undefined',
         '(input)': 'onInput($event)',
         '(mousedown)': 'onMouseDown($event)',
         '(paste)': 'onPaste($event)',
-        '(keydown)': 'onKeydown($event)'
+        '(keydown)': 'onKeydown($event)',
+        '(compositionstart)': 'onCompositionStart()',
+        '(compositionend)': 'onCompositionEnd($event)'
     }
 })
 export class RdxOtpFieldInput {
@@ -55,6 +58,9 @@ export class RdxOtpFieldInput {
     /** Optional accessible name override; later slots receive a generated character label by default. */
     readonly ariaLabel = input<string | null | undefined>(undefined, { alias: 'aria-label' });
 
+    private composing = false;
+    private skipNextInputValue: string | undefined;
+
     /** @ignore Native element used by the root for focus management. */
     hostElement(): HTMLInputElement {
         return this.elementRef.nativeElement;
@@ -71,17 +77,55 @@ export class RdxOtpFieldInput {
     }
 
     /** @ignore Preserves an explicitly supplied label while naming slots after the first by default. */
-    resolvedAriaLabel(): string | null {
+    resolvedAriaLabel(): string | undefined {
         const ariaLabel = this.ariaLabel();
         return ariaLabel === undefined
             ? this.index() === 0
-                ? null
+                ? undefined
                 : `Character ${this.index() + 1} of ${this.rootContext.length()}`
-            : ariaLabel;
+            : (ariaLabel ?? undefined);
     }
 
     onInput(event: Event): void {
         const target = event.target as HTMLInputElement;
+        if (this.isComposing((event as InputEvent).isComposing)) {
+            return;
+        }
+
+        if (this.skipNextInputValue !== undefined) {
+            const skipValue = this.skipNextInputValue;
+            this.skipNextInputValue = undefined;
+            if (target.value === skipValue) {
+                target.value = this.value();
+                return;
+            }
+        }
+
+        this.commitInput(target, event);
+    }
+
+    onCompositionStart(): void {
+        if (!rdxPlatform.os.android) {
+            this.composing = true;
+        }
+    }
+
+    onCompositionEnd(event: CompositionEvent): void {
+        this.composing = false;
+        if (rdxPlatform.os.android) {
+            return;
+        }
+
+        const target = event.target as HTMLInputElement;
+        this.skipNextInputValue = target.value;
+        this.commitInput(target, event);
+    }
+
+    private isComposing(nativeIsComposing: boolean | undefined): boolean {
+        return !rdxPlatform.os.android && (this.composing || Boolean(nativeIsComposing));
+    }
+
+    private commitInput(target: HTMLInputElement, event: Event): void {
         const insertedLength = this.rootContext.handleSlotInput(this.index(), target.value, event);
         target.value = this.value();
         if (insertedLength === null) {
@@ -89,10 +133,8 @@ export class RdxOtpFieldInput {
             return;
         }
 
-        if (insertedLength > 0) {
-            const nextIndex = Math.min(this.index() + insertedLength, this.rootContext.length() - 1);
-            this.rootContext.focusInput(nextIndex);
-        }
+        const nextIndex = Math.min(this.index() + insertedLength, this.rootContext.length() - 1);
+        this.rootContext.focusInput(nextIndex);
     }
 
     onMouseDown(event: MouseEvent): void {
@@ -107,26 +149,53 @@ export class RdxOtpFieldInput {
     }
 
     onPaste(event: ClipboardEvent): void {
-        const value = event.clipboardData?.getData('text/plain');
+        let value: string | undefined;
+        try {
+            value = event.clipboardData?.getData('text/plain');
+        } catch {
+            event.preventDefault();
+            return;
+        }
         if (value === undefined) {
             return;
         }
         event.preventDefault();
-        const accepted = this.rootContext.handlePaste(this.index(), value, event);
-        if (!accepted) {
+        const insertedLength = this.rootContext.handlePaste(this.index(), value, event);
+        if (insertedLength === null) {
             this.elementRef.nativeElement.value = this.value();
             return;
         }
-        const nextIndex = Math.min(this.index() + Math.max(1, Array.from(value).length), this.rootContext.length() - 1);
+        const nextIndex = Math.min(this.index() + insertedLength, this.rootContext.length() - 1);
         this.rootContext.focusInput(nextIndex);
     }
 
     onKeydown(event: KeyboardEvent): void {
-        if (event.altKey || event.ctrlKey || event.metaKey || this.rootContext.isDisabled()) {
+        if (this.isComposing(event.isComposing) || event.altKey || this.rootContext.isDisabled()) {
             return;
         }
 
         const index = this.index();
+        if (event.ctrlKey || event.metaKey) {
+            switch (event.key) {
+                case 'ArrowLeft':
+                    event.preventDefault();
+                    this.rootContext.focusInput(0);
+                    return;
+                case 'ArrowRight':
+                    event.preventDefault();
+                    this.rootContext.focusInput(this.rootContext.length() - 1);
+                    return;
+                case 'Backspace':
+                    if (this.rootContext.readonly()) {
+                        return;
+                    }
+                    event.preventDefault();
+                    this.rootContext.clearAll(event);
+                    return;
+                default:
+                    return;
+            }
+        }
         switch (event.key) {
             case 'ArrowLeft':
                 event.preventDefault();
@@ -136,10 +205,12 @@ export class RdxOtpFieldInput {
                 event.preventDefault();
                 this.rootContext.focusInput(Math.min(this.rootContext.length() - 1, index + 1));
                 return;
+            case 'ArrowUp':
             case 'Home':
                 event.preventDefault();
                 this.rootContext.focusInput(0);
                 return;
+            case 'ArrowDown':
             case 'End':
                 event.preventDefault();
                 this.rootContext.focusInput(this.rootContext.length() - 1);

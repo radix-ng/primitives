@@ -41,6 +41,19 @@ test.describe('OTP Field behavior', () => {
         expect(errors).toEqual([]);
     });
 
+    test('keeps the last slot to one character when typing beyond the code length', async ({ page }) => {
+        const errors = await gotoStory(page, 'primitives-otp-field--default');
+        const slots = page.locator(slot);
+
+        await slots.nth(0).focus();
+        await page.keyboard.type('12345678');
+
+        await expect(slots).toHaveCount(6);
+        await expect(slots.nth(5)).toHaveValue(/^\d$/);
+        await expect.poll(() => readCode(page)).toMatch(/^\d{6}$/);
+        expect(errors).toEqual([]);
+    });
+
     test('distributes a paste and navigates across visually grouped slots', async ({ page }) => {
         const errors = await gotoStory(page, 'primitives-otp-field--groups-and-separator');
         const slots = page.locator(slot);

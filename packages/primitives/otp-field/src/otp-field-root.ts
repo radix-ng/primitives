@@ -69,7 +69,7 @@ function positiveIntegerAttribute(value: NumberInput): number {
     host: {
         role: 'group',
         // `id` is an input to the root but belongs to the first slot, which is the label target.
-        '[attr.id]': 'null',
+        '[attr.id]': 'undefined',
         '[attr.data-disabled]': 'attr(isDisabled())',
         '[attr.data-readonly]': 'attr(readonly())',
         '[attr.data-required]': 'attr(required())',
@@ -124,7 +124,7 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /** Whether the value can be changed. Read-only slots remain focusable and navigable. */
-    readonly readonly = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+    readonly readonly = input<boolean, BooleanInput>(false, { alias: 'readOnly', transform: booleanAttribute });
 
     /** Whether a non-empty, complete code is required for native form submission. */
     readonly required = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
@@ -352,9 +352,9 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
     }
 
     /** @ignore Handles a paste into the currently focused slot. */
-    handlePaste(index: number, attempted: string, event: ClipboardEvent): boolean {
+    handlePaste(index: number, attempted: string, event: ClipboardEvent): number | null {
         if (this.isDisabled() || this.readonly()) {
-            return false;
+            return null;
         }
         const rawCharacters = codePoints(attempted);
         const nonWhitespaceCharacters = rawCharacters.filter((character) => !/\s/u.test(character));
@@ -363,12 +363,14 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
         if (pastedCharacters.length !== nonWhitespaceCharacters.length) {
             this.onValueInvalid.emit(attempted);
         }
-        return this.commitUserValue(
+        const insertedLength = Math.min(pastedCharacters.length, Math.max(0, this.length() - index));
+        const committed = this.commitUserValue(
             replaceAt(codePoints(this.currentValue()), index, pastedCharacters, this.length()).join(''),
             'input-paste',
             event,
             isCompletePaste
         );
+        return committed ? insertedLength : null;
     }
 
     /** @ignore Applies a native autofill value from the hidden input. */
@@ -404,7 +406,17 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
         }
         characters.splice(removeIndex, 1);
         if (this.commitUserValue(characters.join(''), 'keyboard', event)) {
-            this.focusInput(Math.max(0, removeIndex));
+            this.focusInput(Math.max(0, backward ? index - 1 : removeIndex));
+        }
+    }
+
+    /** @ignore Clears the full code for the Ctrl/Cmd+Backspace shortcut. */
+    clearAll(event: KeyboardEvent): void {
+        if (this.isDisabled() || this.readonly() || this.currentValue() === '') {
+            return;
+        }
+        if (this.commitUserValue('', 'keyboard', event)) {
+            this.focusInput(0);
         }
     }
 
