@@ -7,10 +7,10 @@ import { injectOtpFieldRootContext } from './otp-field-context';
     exportAs: 'rdxOtpFieldInput',
     host: {
         type: 'text',
-        maxlength: '1',
         autocorrect: 'off',
         spellcheck: 'false',
         '[id]': 'rootContext.inputId(index())',
+        '[attr.maxlength]': 'index() === 0 ? rootContext.length() : undefined',
         '[type]': 'resolvedType()',
         '[value]': 'value()',
         '[attr.aria-label]': 'resolvedAriaLabel()',
@@ -31,6 +31,7 @@ import { injectOtpFieldRootContext } from './otp-field-context';
         '[attr.data-filled]': 'filled() ? "" : null',
         '[attr.data-focused]': 'rootContext.isFocused() ? "" : null',
         '(input)': 'onInput($event)',
+        '(mousedown)': 'onMouseDown($event)',
         '(paste)': 'onPaste($event)',
         '(keydown)': 'onKeydown($event)'
     }
@@ -81,15 +82,27 @@ export class RdxOtpFieldInput {
 
     onInput(event: Event): void {
         const target = event.target as HTMLInputElement;
-        const accepted = this.rootContext.handleSlotInput(this.index(), target.value, event);
-        if (!accepted) {
+        const insertedLength = this.rootContext.handleSlotInput(this.index(), target.value, event);
+        if (insertedLength === null) {
             target.value = this.value();
             return;
         }
 
-        const insertedLength = Array.from(target.value).length;
-        const nextIndex = Math.min(this.index() + Math.max(1, insertedLength), this.rootContext.length() - 1);
-        this.rootContext.focusInput(nextIndex);
+        if (insertedLength > 0) {
+            const nextIndex = Math.min(this.index() + insertedLength, this.rootContext.length() - 1);
+            this.rootContext.focusInput(nextIndex);
+        }
+    }
+
+    onMouseDown(event: MouseEvent): void {
+        const input = this.elementRef.nativeElement;
+        if (this.rootContext.isDisabled() || input.value === '') {
+            return;
+        }
+
+        event.preventDefault();
+        this.rootContext.focusInput(this.index());
+        input.select();
     }
 
     onPaste(event: ClipboardEvent): void {

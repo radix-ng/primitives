@@ -158,6 +158,8 @@ describe('RdxOtpField', () => {
         ]);
         expect(slots.every((slot) => slot.type === 'text')).toBe(true);
         expect(root.hasAttribute('id')).toBe(false);
+        expect(slots[0]).toHaveAttribute('maxlength', '4');
+        expect(slots.slice(1).every((slot) => !slot.hasAttribute('maxlength'))).toBe(true);
     });
 
     it('normalizes default, controlled, and user-entered values', () => {
@@ -186,6 +188,17 @@ describe('RdxOtpField', () => {
         expect(host.onValueInvalid).toHaveBeenCalledWith('x');
     });
 
+    it('distributes multi-character autofill while dropping and reporting invalid characters', () => {
+        slots[0].value = '1x2';
+        slots[0].dispatchEvent(new Event('input', { bubbles: true }));
+        fixture.detectChanges();
+
+        expect(host.value()).toBe('12');
+        expect(slots.map((slot) => slot.value).join('')).toBe('12');
+        expect(host.onValueInvalid).toHaveBeenCalledWith('1x2');
+        expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[2]);
+    });
+
     it('applies an idempotent custom normalizer and still advances focus', () => {
         host.validationType.set('alpha');
         host.normalizeValue.set((value) => value.toUpperCase());
@@ -209,8 +222,40 @@ describe('RdxOtpField', () => {
         expect(slots[0].selectionStart).toBe(0);
         expect(slots[0].selectionEnd).toBe(1);
 
+        slots[0].setSelectionRange(1, 1);
+        const mouseDown = new MouseEvent('mousedown', { bubbles: true, cancelable: true });
+        slots[0].dispatchEvent(mouseDown);
+        expect(mouseDown.defaultPrevented).toBe(true);
+        expect(slots[0].selectionStart).toBe(0);
+        expect(slots[0].selectionEnd).toBe(1);
+
         slots[3].focus();
         expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[2]);
+    });
+
+    it('keeps focus on a slot cleared through a native input event', () => {
+        host.value.set('1234');
+        fixture.detectChanges();
+        slots[2].focus();
+
+        slots[2].value = '';
+        slots[2].dispatchEvent(new Event('input', { bubbles: true }));
+        fixture.detectChanges();
+
+        expect(host.value()).toBe('124');
+        expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[2]);
+    });
+
+    it('moves focus to the first empty slot when a controlled value shrinks', () => {
+        host.value.set('1234');
+        fixture.detectChanges();
+        slots[3].focus();
+
+        host.value.set('1');
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[1]);
+        expect(slots.map((slot) => slot.tabIndex)).toEqual([-1, 0, -1, -1]);
     });
 
     it('distributes pasted characters and completes after committing the value', () => {

@@ -196,6 +196,7 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
         syncNativeControl: () => this.syncNativeInput(),
         defaultValue: () => this.normalize(this.defaultValue() ?? this.cva.value() ?? this.value() ?? ''),
         onReset: (value) => {
+            const hadFocus = this.focusedIndex() >= 0;
             const normalized = this.normalize(value ?? '');
             this.value.set(normalized);
             if (!this.resetNgControl(normalized)) {
@@ -204,6 +205,9 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
             this.previousModelValue = normalized;
             this.previousCvaValue = normalized;
             this.focusedIndex.set(-1);
+            if (hadFocus) {
+                this.focusInput(Math.min(codePoints(normalized).length, this.length() - 1));
+            }
             this.formUi.resetInteractionState?.();
         }
     });
@@ -271,6 +275,14 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
             this.syncNativeInput();
         });
 
+        effect(() => {
+            const focusedIndex = this.focusedIndex();
+            const firstEmptyIndex = codePoints(this.currentValue()).length;
+            if (focusedIndex >= 0 && focusedIndex > firstEmptyIndex) {
+                untracked(() => this.focusInput(Math.min(firstEmptyIndex, this.length() - 1)));
+            }
+        });
+
         if (isPlatformBrowser(this.platformId)) {
             afterNextRender(() => this.mountNativeInput());
         }
@@ -310,28 +322,32 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
     }
 
     /** @ignore Called when a slot receives a native `input` event. */
-    handleSlotInput(index: number, attempted: string, event: Event): boolean {
+    handleSlotInput(index: number, attempted: string, event: Event): number | null {
         if (this.isDisabled() || this.readonly()) {
-            return false;
+            return null;
         }
 
         const rawCharacters = codePoints(attempted);
-        if (rawCharacters.some((character) => !/\s/u.test(character) && !this.isAllowed(character))) {
-            this.valueInvalid.emit(attempted);
-            return false;
-        }
-
         const current = codePoints(this.currentValue());
         if (rawCharacters.length === 0) {
             if (index >= current.length) {
-                return false;
+                return null;
             }
             current.splice(index, 1);
-            return this.commitUserValue(current.join(''), 'input-clear', event);
+            return this.commitUserValue(current.join(''), 'input-clear', event) ? 0 : null;
         }
 
-        const next = replaceAt(current, index, rawCharacters, this.length());
-        return this.commitUserValue(next.join(''), 'input-change', event);
+        const nonWhitespaceCharacters = rawCharacters.filter((character) => !/\s/u.test(character));
+        const acceptedCharacters = nonWhitespaceCharacters.filter((character) => this.isAllowed(character));
+        if (acceptedCharacters.length !== nonWhitespaceCharacters.length) {
+            this.valueInvalid.emit(attempted);
+        }
+        if (acceptedCharacters.length === 0) {
+            return null;
+        }
+
+        const next = replaceAt(current, index, acceptedCharacters, this.length());
+        return this.commitUserValue(next.join(''), 'input-change', event) ? acceptedCharacters.length : null;
     }
 
     /** @ignore Handles a paste into the currently focused slot. */
