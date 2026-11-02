@@ -4,12 +4,12 @@
 
 > Generated from `@radix-ng/primitives@1.2.1` — if the installed version differs, verify the API against the installed package.
 
-`validationType` accepts `numeric` (the default), `alpha`, `alphanumeric`, or `none`.
+`validationType` accepts `numeric` (the default), `alpha`, `alphanumeric`, or `none`. The first three modes accept ASCII characters only: digits `0–9`, letters `A–Z`, and their combination. Use `none` for other alphabets; `normalizeValue` can still transform text before it is stored.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { demoOtpField as otpFieldStyles } from '../../storybook/styles';
 import { RdxOtpFieldModule } from '../index';
-import { otpFieldStyles } from './otp-field.styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -18,14 +18,21 @@ import { otpFieldStyles } from './otp-field.styles';
     template: `
         <div class="grid gap-6">
             <div [class]="s.field">
-                <label [class]="s.label" for="letters-only">Letters only</label>
-                <div id="letters-only" [class]="s.root" [length]="6" [validationType]="'alpha'" rdxOtpFieldRoot>
+                <label id="letters-only-label" [class]="s.label" for="letters-only">Letters only</label>
+                <div
+                    id="letters-only"
+                    [class]="s.root"
+                    [length]="6"
+                    [validationType]="'alpha'"
+                    aria-labelledby="letters-only-label"
+                    rdxOtpFieldRoot
+                >
                     <input [class]="s.slot" rdxOtpFieldInput />
-                    <input [class]="s.slot" aria-label="Character 2 of 6" rdxOtpFieldInput />
-                    <input [class]="s.slot" aria-label="Character 3 of 6" rdxOtpFieldInput />
-                    <input [class]="s.slot" aria-label="Character 4 of 6" rdxOtpFieldInput />
-                    <input [class]="s.slot" aria-label="Character 5 of 6" rdxOtpFieldInput />
-                    <input [class]="s.slot" aria-label="Character 6 of 6" rdxOtpFieldInput />
+                    <input [class]="s.slot" rdxOtpFieldInput />
+                    <input [class]="s.slot" rdxOtpFieldInput />
+                    <input [class]="s.slot" rdxOtpFieldInput />
+                    <input [class]="s.slot" rdxOtpFieldInput />
+                    <input [class]="s.slot" rdxOtpFieldInput />
                 </div>
             </div>
 
@@ -36,14 +43,15 @@ import { otpFieldStyles } from './otp-field.styles';
                     [class]="s.root"
                     [length]="6"
                     [validationType]="'alphanumeric'"
+                    aria-label="Letters and numbers code"
                     rdxOtpFieldRoot
                 >
                     <input [class]="s.slot" rdxOtpFieldInput />
-                    <input [class]="s.slot" aria-label="Character 2 of 6" rdxOtpFieldInput />
-                    <input [class]="s.slot" aria-label="Character 3 of 6" rdxOtpFieldInput />
-                    <input [class]="s.slot" aria-label="Character 4 of 6" rdxOtpFieldInput />
-                    <input [class]="s.slot" aria-label="Character 5 of 6" rdxOtpFieldInput />
-                    <input [class]="s.slot" aria-label="Character 6 of 6" rdxOtpFieldInput />
+                    <input [class]="s.slot" rdxOtpFieldInput />
+                    <input [class]="s.slot" rdxOtpFieldInput />
+                    <input [class]="s.slot" rdxOtpFieldInput />
+                    <input [class]="s.slot" rdxOtpFieldInput />
+                    <input [class]="s.slot" rdxOtpFieldInput />
                 </div>
             </div>
         </div>
@@ -52,4 +60,21 @@ import { otpFieldStyles } from './otp-field.styles';
 export class OtpFieldValidationExample {
     protected readonly s = otpFieldStyles;
 }
+```
+
+For example, a field that accepts Cyrillic characters can use `[validationType]="'none'"` and normalize to NFC:
+
+```html
+<div [length]="6" [validationType]="'none'" [normalizeValue]="normalizeNfc" rdxOtpFieldRoot>
+  <input rdxOtpFieldInput />
+  <input rdxOtpFieldInput />
+  <input rdxOtpFieldInput />
+  <input rdxOtpFieldInput />
+  <input rdxOtpFieldInput />
+  <input rdxOtpFieldInput />
+</div>
+```
+
+```ts
+readonly normalizeNfc = (value: string) => value.normalize('NFC');
 ```

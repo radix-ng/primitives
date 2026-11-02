@@ -1,8 +1,8 @@
 import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { demoOtpField as otpFieldStyles } from '../../storybook/styles';
 import { RdxOtpFieldModule } from '../index';
-import { otpFieldStyles } from './otp-field.styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -21,14 +21,15 @@ import { otpFieldStyles } from './otp-field.styles';
                     formControlName="code"
                     name="code"
                     required
+                    aria-label="Verification code"
                     rdxOtpFieldRoot
                 >
                     <input [class]="s.slot" rdxOtpFieldInput />
-                    <input [class]="s.slot" aria-label="Character 2 of 6" rdxOtpFieldInput />
-                    <input [class]="s.slot" aria-label="Character 3 of 6" rdxOtpFieldInput />
-                    <input [class]="s.slot" aria-label="Character 4 of 6" rdxOtpFieldInput />
-                    <input [class]="s.slot" aria-label="Character 5 of 6" rdxOtpFieldInput />
-                    <input [class]="s.slot" aria-label="Character 6 of 6" rdxOtpFieldInput />
+                    <input [class]="s.slot" rdxOtpFieldInput />
+                    <input [class]="s.slot" rdxOtpFieldInput />
+                    <input [class]="s.slot" rdxOtpFieldInput />
+                    <input [class]="s.slot" rdxOtpFieldInput />
+                    <input [class]="s.slot" rdxOtpFieldInput />
                 </div>
                 <p [class]="s.description">Reactive Forms owns the value and required validation.</p>
             </div>

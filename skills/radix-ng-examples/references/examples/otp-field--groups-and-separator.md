@@ -8,8 +8,8 @@ Plain wrapper elements group slots visually. The separator part is optional and 
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { demoOtpField as otpFieldStyles } from '../../storybook/styles';
 import { RdxOtpFieldModule } from '../index';
-import { otpFieldStyles } from './otp-field.styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -24,20 +24,21 @@ import { otpFieldStyles } from './otp-field.styles';
                 [length]="8"
                 [inputMode]="'text'"
                 [validationType]="'alphanumeric'"
+                aria-label="Grouped verification code"
                 rdxOtpFieldRoot
             >
                 <div class="flex gap-2">
                     <input [class]="s.slot" rdxOtpFieldInput />
-                    <input [class]="s.slot" aria-label="Character 2 of 8" rdxOtpFieldInput />
-                    <input [class]="s.slot" aria-label="Character 3 of 8" rdxOtpFieldInput />
-                    <input [class]="s.slot" aria-label="Character 4 of 8" rdxOtpFieldInput />
+                    <input [class]="s.slot" rdxOtpFieldInput />
+                    <input [class]="s.slot" rdxOtpFieldInput />
+                    <input [class]="s.slot" rdxOtpFieldInput />
                 </div>
-                <div [class]="s.separator" aria-hidden="true" rdxOtpFieldSeparator>—</div>
+                <div [class]="s.separator" rdxOtpFieldSeparator>—</div>
                 <div class="flex gap-2">
-                    <input [class]="s.slot" aria-label="Character 5 of 8" rdxOtpFieldInput />
-                    <input [class]="s.slot" aria-label="Character 6 of 8" rdxOtpFieldInput />
-                    <input [class]="s.slot" aria-label="Character 7 of 8" rdxOtpFieldInput />
-                    <input [class]="s.slot" aria-label="Character 8 of 8" rdxOtpFieldInput />
+                    <input [class]="s.slot" rdxOtpFieldInput />
+                    <input [class]="s.slot" rdxOtpFieldInput />
+                    <input [class]="s.slot" rdxOtpFieldInput />
+                    <input [class]="s.slot" rdxOtpFieldInput />
                 </div>
             </div>
             <p [class]="s.description">The visual separator groups the eight characters into two blocks.</p>

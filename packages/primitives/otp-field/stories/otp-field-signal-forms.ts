@@ -1,8 +1,8 @@
 import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { form, FormField, required } from '@angular/forms/signals';
+import { demoOtpField as otpFieldStyles } from '../../storybook/styles';
 import { RdxOtpFieldModule } from '../index';
-import { otpFieldStyles } from './otp-field.styles';
 
 type Verification = { code: string };
 
@@ -20,14 +20,15 @@ type Verification = { code: string };
                 [length]="6"
                 [autoComplete]="'one-time-code'"
                 [inputMode]="'numeric'"
+                aria-label="Verification code"
                 rdxOtpFieldRoot
             >
                 <input [class]="s.slot" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 2 of 6" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 3 of 6" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 4 of 6" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 5 of 6" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 6 of 6" rdxOtpFieldInput />
+                <input [class]="s.slot" rdxOtpFieldInput />
+                <input [class]="s.slot" rdxOtpFieldInput />
+                <input [class]="s.slot" rdxOtpFieldInput />
+                <input [class]="s.slot" rdxOtpFieldInput />
+                <input [class]="s.slot" rdxOtpFieldInput />
             </div>
             <p class="text-muted-foreground text-sm">Signal Forms model: {{ model() | json }}</p>
         </div>

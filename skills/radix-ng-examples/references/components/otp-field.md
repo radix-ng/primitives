@@ -23,16 +23,24 @@ import { RdxOtpFieldInput, RdxOtpFieldModule, RdxOtpFieldRoot, RdxOtpFieldSepara
 
 ## Anatomy
 
-Apply `rdxOtpFieldRoot` to a wrapper, then add one `rdxOtpFieldInput` native input for each character. A separator is optional and purely presentational.
+Apply `rdxOtpFieldRoot` to a wrapper, then add one `rdxOtpFieldInput` native input for each character. Name the group with `aria-labelledby` or `aria-label`; the root `id` is applied to the first slot so a native label can target it. Later slots receive generated accessible names unless you provide an override.
 
 ```html
-<div rdxOtpFieldRoot [length]="6" name="verificationCode" [autoComplete]="'one-time-code'">
+<label id="verification-code-label" for="verification-code">Verification code</label>
+<div
+  rdxOtpFieldRoot
+  [id]="'verification-code'"
+  aria-labelledby="verification-code-label"
+  [length]="6"
+  name="verificationCode"
+  [autoComplete]="'one-time-code'"
+>
   <input rdxOtpFieldInput />
-  <input rdxOtpFieldInput aria-label="Character 2 of 6" />
-  <input rdxOtpFieldInput aria-label="Character 3 of 6" />
-  <input rdxOtpFieldInput aria-label="Character 4 of 6" />
-  <input rdxOtpFieldInput aria-label="Character 5 of 6" />
-  <input rdxOtpFieldInput aria-label="Character 6 of 6" />
+  <input rdxOtpFieldInput />
+  <input rdxOtpFieldInput />
+  <input rdxOtpFieldInput />
+  <input rdxOtpFieldInput />
+  <input rdxOtpFieldInput />
 </div>
 ```
 

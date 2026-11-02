@@ -89,7 +89,7 @@
           "description": "Name used when this field participates in a native form."
         },
         {
-          "name": "readonly",
+          "name": "readOnly",
           "type": "boolean",
           "default": "false",
           "description": "Whether the value can be changed. Read-only slots remain focusable and navigable."

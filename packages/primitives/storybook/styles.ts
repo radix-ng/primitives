@@ -88,6 +88,22 @@ export const demoInput = cn(
     demoFocusRing
 );
 
+/** One-character input groups used by the headless OTP Field examples. */
+export const demoOtpField = {
+    root: 'flex items-center gap-2',
+    slot: cn(
+        'size-10 shrink-0 rounded-md border border-border bg-background text-center font-mono text-lg text-foreground',
+        'placeholder:text-muted-foreground',
+        demoFocusRing
+    ),
+    separator: 'px-1 text-muted-foreground',
+    label: 'mb-2 block text-sm font-medium text-foreground',
+    description: 'mt-2 text-sm text-muted-foreground',
+    field: 'grid gap-1.5',
+    form: 'grid max-w-md gap-5',
+    submit: cn(demoButton.base, demoButton.primary, 'px-4 py-2')
+} as const;
+
 /**
  * Editable (inline edit) parts: a focusable preview that swaps to an input.
  *

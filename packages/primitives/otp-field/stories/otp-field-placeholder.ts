@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { demoOtpField as otpFieldStyles } from '../../storybook/styles';
 import { RdxOtpFieldModule } from '../index';
-import { otpFieldStyles } from './otp-field.styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -8,14 +8,20 @@ import { otpFieldStyles } from './otp-field.styles';
     imports: [RdxOtpFieldModule],
     template: `
         <div [class]="s.field">
-            <label [class]="s.label" for="placeholder-code">Invitation code</label>
-            <div id="placeholder-code" [class]="s.root" [length]="6" rdxOtpFieldRoot>
+            <label id="placeholder-code-label" [class]="s.label" for="placeholder-code">Invitation code</label>
+            <div
+                id="placeholder-code"
+                [class]="s.root"
+                [length]="6"
+                aria-labelledby="placeholder-code-label"
+                rdxOtpFieldRoot
+            >
                 <input [class]="s.slot" placeholder="•" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 2 of 6" placeholder="•" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 3 of 6" placeholder="•" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 4 of 6" placeholder="•" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 5 of 6" placeholder="•" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 6 of 6" placeholder="•" rdxOtpFieldInput />
+                <input [class]="s.slot" placeholder="•" rdxOtpFieldInput />
+                <input [class]="s.slot" placeholder="•" rdxOtpFieldInput />
+                <input [class]="s.slot" placeholder="•" rdxOtpFieldInput />
+                <input [class]="s.slot" placeholder="•" rdxOtpFieldInput />
+                <input [class]="s.slot" placeholder="•" rdxOtpFieldInput />
             </div>
             <p [class]="s.description">Each empty slot shows its own placeholder.</p>
         </div>

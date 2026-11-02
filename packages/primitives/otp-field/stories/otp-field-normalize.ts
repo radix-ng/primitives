@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { demoOtpField as otpFieldStyles } from '../../storybook/styles';
 import { RdxOtpFieldModule } from '../index';
-import { otpFieldStyles } from './otp-field.styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -15,14 +15,15 @@ import { otpFieldStyles } from './otp-field.styles';
                 [length]="6"
                 [normalizeValue]="uppercase"
                 [validationType]="'alpha'"
+                aria-label="Uppercase verification code"
                 rdxOtpFieldRoot
             >
                 <input [class]="s.slot" placeholder="A" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 2 of 6" placeholder="B" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 3 of 6" placeholder="C" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 4 of 6" placeholder="D" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 5 of 6" placeholder="E" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 6 of 6" placeholder="F" rdxOtpFieldInput />
+                <input [class]="s.slot" placeholder="B" rdxOtpFieldInput />
+                <input [class]="s.slot" placeholder="C" rdxOtpFieldInput />
+                <input [class]="s.slot" placeholder="D" rdxOtpFieldInput />
+                <input [class]="s.slot" placeholder="E" rdxOtpFieldInput />
+                <input [class]="s.slot" placeholder="F" rdxOtpFieldInput />
             </div>
             <p [class]="s.description">Type lowercase or uppercase; the stored value is normalized to uppercase.</p>
         </div>

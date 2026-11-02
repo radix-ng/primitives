@@ -8,8 +8,8 @@
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { demoOtpField as otpFieldStyles } from '../../storybook/styles';
 import { RdxOtpFieldModule } from '../index';
-import { otpFieldStyles } from './otp-field.styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -25,14 +25,15 @@ import { otpFieldStyles } from './otp-field.styles';
                 [mask]="true"
                 [autoComplete]="'one-time-code'"
                 [inputMode]="'numeric'"
+                aria-label="Masked verification code"
                 rdxOtpFieldRoot
             >
-                <input [class]="s.slot" type="text" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 2 of 6" type="text" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 3 of 6" type="text" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 4 of 6" type="text" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 5 of 6" type="text" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 6 of 6" type="text" rdxOtpFieldInput />
+                <input [class]="s.slot" rdxOtpFieldInput />
+                <input [class]="s.slot" rdxOtpFieldInput />
+                <input [class]="s.slot" rdxOtpFieldInput />
+                <input [class]="s.slot" rdxOtpFieldInput />
+                <input [class]="s.slot" rdxOtpFieldInput />
+                <input [class]="s.slot" rdxOtpFieldInput />
             </div>
             <p [class]="s.description">
                 Masking obscures the entered characters while keeping text input and autofill available.

@@ -27,26 +27,28 @@ import { RdxOtpFieldInput, RdxOtpFieldModule, RdxOtpFieldRoot, RdxOtpFieldSepara
 
 ## Anatomy
 
-Apply `rdxOtpFieldRoot` to a wrapper, then add one `rdxOtpFieldInput` native input for each character. A separator is optional and purely presentational.
+Apply `rdxOtpFieldRoot` to a wrapper, then add one `rdxOtpFieldInput` native input for each character. Name the group with `aria-labelledby` or `aria-label`; the root `id` is applied to the first slot so a native label can target it. Later slots receive generated accessible names unless you provide an override.
 
 ```html
-<div rdxOtpFieldRoot [length]="6" name="verificationCode" [autoComplete]="'one-time-code'">
+<label id="verification-code-label" for="verification-code">Verification code</label>
+<div
+  rdxOtpFieldRoot
+  [id]="'verification-code'"
+  aria-labelledby="verification-code-label"
+  [length]="6"
+  name="verificationCode"
+  [autoComplete]="'one-time-code'"
+>
   <input rdxOtpFieldInput />
-  <input rdxOtpFieldInput aria-label="Character 2 of 6" />
-  <input rdxOtpFieldInput aria-label="Character 3 of 6" />
-  <input rdxOtpFieldInput aria-label="Character 4 of 6" />
-  <input rdxOtpFieldInput aria-label="Character 5 of 6" />
-  <input rdxOtpFieldInput aria-label="Character 6 of 6" />
+  <input rdxOtpFieldInput />
+  <input rdxOtpFieldInput />
+  <input rdxOtpFieldInput />
+  <input rdxOtpFieldInput />
+  <input rdxOtpFieldInput />
 </div>
 ```
 
 The root's `length` is required and should match the number of slot inputs. Slot indices follow DOM order, including inputs nested in layout wrappers. The first slot receives the root `id`; later slots receive numbered ids.
-
-## Events
-
-`onValueChange` emits the proposed string with event details. Call `eventDetails.cancel()` from the handler to prevent an update. Its reason is one of `input-change`, `input-clear`, `input-paste`, or `keyboard`.
-
-`onValueComplete` is emitted after a value reaches the configured length, with a reason of `input-change` or `input-paste`. `onValueInvalid` reports attempted text that did not pass validation. With `autoSubmit`, a complete code is applied before the associated form is submitted.
 
 ## Examples
 
@@ -64,9 +66,26 @@ Plain wrapper elements group slots visually. The separator part is optional and 
 
 ### Character validation
 
-`validationType` accepts `numeric` (the default), `alpha`, `alphanumeric`, or `none`.
+`validationType` accepts `numeric` (the default), `alpha`, `alphanumeric`, or `none`. The first three modes accept ASCII characters only: digits `0–9`, letters `A–Z`, and their combination. Use `none` for other alphabets; `normalizeValue` can still transform text before it is stored.
 
 <Canvas of={Stories.Validation} />
+
+For example, a field that accepts Cyrillic characters can use `[validationType]="'none'"` and normalize to NFC:
+
+```html
+<div [length]="6" [validationType]="'none'" [normalizeValue]="normalizeNfc" rdxOtpFieldRoot>
+  <input rdxOtpFieldInput />
+  <input rdxOtpFieldInput />
+  <input rdxOtpFieldInput />
+  <input rdxOtpFieldInput />
+  <input rdxOtpFieldInput />
+  <input rdxOtpFieldInput />
+</div>
+```
+
+```ts
+readonly normalizeNfc = (value: string) => value.normalize('NFC');
+```
 
 ### Uppercase normalization
 
@@ -112,13 +131,19 @@ Bind `[formField]` to the root to connect the multi-slot control to Angular Sign
 
 <ArgTypes of={RdxOtpFieldRoot} />
 
-**Inputs:** `value`, `defaultValue`, required positive integer `length`, `validationType`, `normalizeValue`, `mask`, `autoComplete`, `autoSubmit`, `inputMode`, `name`, `form`, `disabled`, `readonly`, `required`, and `id`.
+**Inputs:** `value`, `defaultValue`, required positive integer `length`, `validationType`, `normalizeValue`, `mask`, `autoComplete`, `autoSubmit`, `inputMode`, `name`, `form`, `disabled`, `readOnly`, `required`, and `id`.
 
 **Outputs:** `onValueChange`, `onValueComplete`, and `onValueInvalid`.
 
 **State attributes:** `data-disabled`, `data-readonly`, `data-required`, `data-valid`, `data-invalid`, `data-dirty`, `data-touched`, `data-complete`, `data-filled`, and `data-focused`. Root `data-filled` is present when any character has been entered.
 
-## Data attributes
+### Events
+
+`onValueChange` emits the proposed string with event details. Call `eventDetails.cancel()` from the handler to prevent an update. Its reason is one of `input-change`, `input-clear`, `input-paste`, or `keyboard`.
+
+`onValueComplete` is emitted after a value reaches the configured length, with a reason of `input-change` or `input-paste`. `onValueInvalid` reports attempted text that did not pass validation. With `autoSubmit`, a complete code is applied before the associated form is submitted.
+
+### Data attributes
 
 | Attribute | Parts | Values |
 | --- | --- | --- |
@@ -147,14 +172,17 @@ Bind `[formField]` to the root to connect the multi-slot control to Angular Sign
 
 <ArgTypes of={RdxOtpFieldSeparator} />
 
-## Keyboard interactions
+### Keyboard interactions
 
 | Key | Description |
 | --- | --- |
 | Character key | Accept a valid character and advance focus to the next slot. |
-| `Backspace` | Clear the current character; when empty, move to and clear the previous slot. |
-| `Delete` | Clear the current character. |
+| `Backspace` | Clear the current character and focus the previous slot; when the current slot is empty, clear the previous character. |
+| `Delete` | Clear the current character and keep focus on its slot. |
 | `ArrowLeft` / `ArrowRight` | Move focus to the previous or next slot. |
+| `ArrowUp` / `ArrowDown` | Move focus to the first or last slot. |
 | `Home` / `End` | Move focus to the first or last slot. |
+| `Ctrl`/`Cmd` + `ArrowLeft` / `ArrowRight` | Move focus to the first or last slot. |
+| `Ctrl`/`Cmd` + `Backspace` | Clear the entire code. |
 
 Pasting a multi-character value distributes accepted characters across the slots and reports rejected characters through `onValueInvalid`. Invalid single-character input is rejected without changing the value.

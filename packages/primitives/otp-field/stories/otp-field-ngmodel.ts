@@ -1,8 +1,8 @@
 import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { demoOtpField as otpFieldStyles } from '../../storybook/styles';
 import { RdxOtpFieldModule } from '../index';
-import { otpFieldStyles } from './otp-field.styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -19,14 +19,15 @@ import { otpFieldStyles } from './otp-field.styles';
                 [autoComplete]="'one-time-code'"
                 [inputMode]="'numeric'"
                 name="recoveryCode"
+                aria-label="Recovery code"
                 rdxOtpFieldRoot
             >
                 <input [class]="s.slot" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 2 of 6" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 3 of 6" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 4 of 6" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 5 of 6" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 6 of 6" rdxOtpFieldInput />
+                <input [class]="s.slot" rdxOtpFieldInput />
+                <input [class]="s.slot" rdxOtpFieldInput />
+                <input [class]="s.slot" rdxOtpFieldInput />
+                <input [class]="s.slot" rdxOtpFieldInput />
+                <input [class]="s.slot" rdxOtpFieldInput />
             </div>
             <p class="text-muted-foreground text-sm">ngModel value: {{ code | json }}</p>
         </div>
