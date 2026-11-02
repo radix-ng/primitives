@@ -83,8 +83,9 @@ export class RdxOtpFieldInput {
     onInput(event: Event): void {
         const target = event.target as HTMLInputElement;
         const insertedLength = this.rootContext.handleSlotInput(this.index(), target.value, event);
+        target.value = this.value();
         if (insertedLength === null) {
-            target.value = this.value();
+            this.rootContext.focusInput(this.index());
             return;
         }
 

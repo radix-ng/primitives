@@ -139,10 +139,10 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
     readonly onValueChange = output<RdxOtpFieldValueChangeEvent>();
 
     /** Emitted with the attempted pre-normalization text when a character is rejected. */
-    readonly valueInvalid = output<string>();
+    readonly onValueInvalid = output<string>();
 
     /** Emitted after a user edit fills every slot. */
-    readonly valueComplete = output<RdxOtpFieldValueCompleteEvent>();
+    readonly onValueComplete = output<RdxOtpFieldValueCompleteEvent>();
 
     /** @ignore Inputs in DOM order, including those inside consumer wrappers. */
     readonly inputs = contentChildren(RdxOtpFieldInput, { descendants: true });
@@ -318,6 +318,7 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
         const slot = this.inputs()[index];
         if (slot && !this.isDisabled()) {
             slot.focus();
+            slot.hostElement().select();
         }
     }
 
@@ -340,7 +341,7 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
         const nonWhitespaceCharacters = rawCharacters.filter((character) => !/\s/u.test(character));
         const acceptedCharacters = nonWhitespaceCharacters.filter((character) => this.isAllowed(character));
         if (acceptedCharacters.length !== nonWhitespaceCharacters.length) {
-            this.valueInvalid.emit(attempted);
+            this.onValueInvalid.emit(attempted);
         }
         if (acceptedCharacters.length === 0) {
             return null;
@@ -360,7 +361,7 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
         const pastedCharacters = nonWhitespaceCharacters.filter((character) => this.isAllowed(character));
         const isCompletePaste = pastedCharacters.length >= this.length();
         if (pastedCharacters.length !== nonWhitespaceCharacters.length) {
-            this.valueInvalid.emit(attempted);
+            this.onValueInvalid.emit(attempted);
         }
         return this.commitUserValue(
             replaceAt(codePoints(this.currentValue()), index, pastedCharacters, this.length()).join(''),
@@ -380,7 +381,7 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
         const nonWhitespaceCharacters = rawCharacters.filter((character) => !/\s/u.test(character));
         const acceptedCharacters = nonWhitespaceCharacters.filter((character) => this.isAllowed(character));
         if (acceptedCharacters.length !== nonWhitespaceCharacters.length) {
-            this.valueInvalid.emit(attempted);
+            this.onValueInvalid.emit(attempted);
         }
         const accepted = this.commitUserValue(acceptedCharacters.join(''), 'input-change', event);
         if (accepted) {
@@ -457,7 +458,7 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
         let changed = false;
 
         if (rejectedCharacters) {
-            this.valueInvalid.emit(attemptedValue);
+            this.onValueInvalid.emit(attemptedValue);
         }
 
         if (normalized !== previousValue) {
@@ -480,7 +481,7 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
         const isComplete = codePoints(normalized).length === this.length();
         const shouldComplete = isComplete && (!wasComplete || completePaste);
         if (shouldComplete && (changed || completePaste)) {
-            this.valueComplete.emit({
+            this.onValueComplete.emit({
                 value: normalized,
                 reason: reason === 'input-paste' ? 'input-paste' : 'input-change',
                 event

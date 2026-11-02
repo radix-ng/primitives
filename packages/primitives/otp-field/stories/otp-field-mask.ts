@@ -18,12 +18,12 @@ import { otpFieldStyles } from './otp-field.styles';
                 [inputMode]="'numeric'"
                 rdxOtpFieldRoot
             >
-                <input [class]="s.slot" type="text" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 2 of 6" type="text" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 3 of 6" type="text" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 4 of 6" type="text" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 5 of 6" type="text" rdxOtpFieldInput />
-                <input [class]="s.slot" aria-label="Character 6 of 6" type="text" rdxOtpFieldInput />
+                <input [class]="s.slot" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 2 of 6" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 3 of 6" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 4 of 6" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 5 of 6" rdxOtpFieldInput />
+                <input [class]="s.slot" aria-label="Character 6 of 6" rdxOtpFieldInput />
             </div>
             <p [class]="s.description">
                 Masking obscures the entered characters while keeping text input and autofill available.

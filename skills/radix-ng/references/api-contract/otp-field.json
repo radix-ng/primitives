@@ -150,12 +150,12 @@
           "description": "Emitted before a user edit is committed. Call `eventDetails.cancel()` to reject the change."
         },
         {
-          "name": "valueComplete",
+          "name": "onValueComplete",
           "type": "RdxOtpFieldValueCompleteEvent",
           "description": "Emitted after a user edit fills every slot."
         },
         {
-          "name": "valueInvalid",
+          "name": "onValueInvalid",
           "type": "string",
           "description": "Emitted with the attempted pre-normalization text when a character is rejected."
         },

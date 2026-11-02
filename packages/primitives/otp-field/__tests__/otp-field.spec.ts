@@ -27,8 +27,8 @@ import { RdxOtpFieldValidationType, RdxOtpFieldValueCompleteEvent } from '../src
                 [name]="name()"
                 [autoSubmit]="autoSubmit()"
                 (onValueChange)="onValueChange($event)"
-                (valueInvalid)="onValueInvalid($event)"
-                (valueComplete)="onValueComplete($event)"
+                (onValueInvalid)="onValueInvalid($event)"
+                (onValueComplete)="onValueComplete($event)"
                 rdxOtpFieldRoot
             >
                 <div>
@@ -231,6 +231,37 @@ describe('RdxOtpField', () => {
 
         slots[3].focus();
         expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[2]);
+    });
+
+    it('restores unchanged slot values and selects them for replacement', () => {
+        host.value.set('1234');
+        fixture.detectChanges();
+
+        slots[3].focus();
+        slots[3].value = '45';
+        slots[3].dispatchEvent(new Event('input', { bubbles: true }));
+        fixture.detectChanges();
+
+        expect(host.value()).toBe('1234');
+        expect(slots[3].value).toBe('4');
+        expect(slots[3].selectionStart).toBe(0);
+        expect(slots[3].selectionEnd).toBe(1);
+
+        slots[2].focus();
+        slots[2].value = 'x';
+        slots[2].dispatchEvent(new Event('input', { bubbles: true }));
+        fixture.detectChanges();
+
+        expect(slots[2].value).toBe('3');
+        expect(slots[2].selectionStart).toBe(0);
+        expect(slots[2].selectionEnd).toBe(1);
+
+        slots[2].value = '9';
+        slots[2].dispatchEvent(new Event('input', { bubbles: true }));
+        fixture.detectChanges();
+
+        expect(host.value()).toBe('1294');
+        expect(slots.map((slot) => slot.value).join('')).toBe('1294');
     });
 
     it('keeps focus on a slot cleared through a native input event', () => {

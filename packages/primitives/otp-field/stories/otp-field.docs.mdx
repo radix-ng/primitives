@@ -46,7 +46,7 @@ The root's `length` is required and should match the number of slot inputs. Slot
 
 `onValueChange` emits the proposed string with event details. Call `eventDetails.cancel()` from the handler to prevent an update. Its reason is one of `input-change`, `input-clear`, `input-paste`, or `keyboard`.
 
-`valueComplete` is emitted after a value reaches the configured length, with a reason of `input-change` or `input-paste`. `valueInvalid` reports attempted text that did not pass validation. With `autoSubmit`, a complete code is applied before the associated form is submitted.
+`onValueComplete` is emitted after a value reaches the configured length, with a reason of `input-change` or `input-paste`. `onValueInvalid` reports attempted text that did not pass validation. With `autoSubmit`, a complete code is applied before the associated form is submitted.
 
 ## Examples
 
@@ -114,7 +114,7 @@ Bind `[formField]` to the root to connect the multi-slot control to Angular Sign
 
 **Inputs:** `value`, `defaultValue`, required positive integer `length`, `validationType`, `normalizeValue`, `mask`, `autoComplete`, `autoSubmit`, `inputMode`, `name`, `form`, `disabled`, `readonly`, `required`, and `id`.
 
-**Outputs:** `onValueChange`, `valueComplete`, and `valueInvalid`.
+**Outputs:** `onValueChange`, `onValueComplete`, and `onValueInvalid`.
 
 **State attributes:** `data-disabled`, `data-readonly`, `data-required`, `data-valid`, `data-invalid`, `data-dirty`, `data-touched`, `data-complete`, `data-filled`, and `data-focused`. Root `data-filled` is present when any character has been entered.
 
@@ -157,4 +157,4 @@ Bind `[formField]` to the root to connect the multi-slot control to Angular Sign
 | `ArrowLeft` / `ArrowRight` | Move focus to the previous or next slot. |
 | `Home` / `End` | Move focus to the first or last slot. |
 
-Pasting a multi-character value distributes accepted characters across the slots and reports rejected characters through `valueInvalid`. Invalid single-character input is rejected without changing the value.
+Pasting a multi-character value distributes accepted characters across the slots and reports rejected characters through `onValueInvalid`. Invalid single-character input is rejected without changing the value.
