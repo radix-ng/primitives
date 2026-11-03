@@ -5181,6 +5181,11 @@
               "description": "Initial uncontrolled value. It is normalized before first render and restored on form reset."
             },
             {
+              "name": "dir",
+              "type": "Direction | undefined",
+              "description": "Text direction used for horizontal slot navigation."
+            },
+            {
               "name": "disabled",
               "type": "boolean",
               "default": "false",

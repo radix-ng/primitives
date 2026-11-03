@@ -16286,7 +16286,7 @@ export class OtpFieldMaskExample {
 
 ### Reactive Forms
 
-The root works with `formControlName` and forwards required validity to the form-associated hidden control.
+The root works with `formControlName` and forwards required validity to the form-associated hidden control. When wrapped in `rdxFieldRoot`, it registers the first slot as the label target and inherits the Field's disabled and required state.
 
 ```typescript
 import { JsonPipe } from '@angular/common';
@@ -16450,7 +16450,9 @@ export class OtpFieldSignalFormsExample {
 
 `RdxOtpFieldRoot` owns the value, validation and slot coordination.
 
-**Inputs:** `value`, `defaultValue`, required positive integer `length`, `validationType`, `normalizeValue`, `mask`, `autoComplete`, `autoSubmit`, `inputMode`, `name`, `form`, `disabled`, `readOnly`, `required`, and `id`.
+**Inputs:** `value`, `defaultValue`, required positive integer `length`, `validationType`, `normalizeValue`, `mask`, `autoComplete`, `autoSubmit`, `inputMode`, `name`, `form`, `dir`, `disabled`, `readOnly`, `required`, and `id`.
+
+`form` is applied to every visible slot and the hidden form control. Horizontal keyboard navigation follows the local `dir` input or the nearest direction provider, and the resolved direction is reflected on the root element.
 
 **Outputs:** `onValueChange`, `onValueComplete`, and `onValueInvalid`.
 
@@ -16494,10 +16496,10 @@ export class OtpFieldSignalFormsExample {
 | Character key | Accept a valid character and advance focus to the next slot. |
 | `Backspace` | Clear the current character and focus the previous slot; when the current slot is empty, clear the previous character. |
 | `Delete` | Clear the current character and keep focus on its slot. |
-| `ArrowLeft` / `ArrowRight` | Move focus to the previous or next slot. |
+| `ArrowLeft` / `ArrowRight` | Move focus to the previous or next slot; the mapping reverses in RTL. |
 | `ArrowUp` / `ArrowDown` | Move focus to the first or last slot. |
 | `Home` / `End` | Move focus to the first or last slot. |
-| `Ctrl`/`Cmd` + `ArrowLeft` / `ArrowRight` | Move focus to the first or last slot. |
+| `Ctrl`/`Cmd` + `ArrowLeft` / `ArrowRight` | Move focus to the first or last slot; the mapping reverses in RTL. |
 | `Ctrl`/`Cmd` + `Backspace` | Clear the entire code. |
 
 Pasting a multi-character value distributes accepted characters across the slots and reports rejected characters through `onValueInvalid`. Invalid single-character input is rejected without changing the value.

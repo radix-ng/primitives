@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
+import { RdxFieldDescription, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { vi } from 'vitest';
 import { RdxOtpFieldModule } from '../index';
 import { RdxOtpFieldValidationType, RdxOtpFieldValueCompleteEvent } from '../src/types';
@@ -25,6 +26,8 @@ import { RdxOtpFieldValidationType, RdxOtpFieldValueCompleteEvent } from '../src
                 [readOnly]="readonly()"
                 [required]="required()"
                 [name]="name()"
+                [form]="form()"
+                [dir]="dir()"
                 [autoSubmit]="autoSubmit()"
                 (onValueChange)="onValueChange($event)"
                 (onValueInvalid)="onValueInvalid($event)"
@@ -54,6 +57,8 @@ class OtpFieldHost {
     readonly readonly = signal(false);
     readonly required = signal(false);
     readonly name = signal<string | undefined>('verificationCode');
+    readonly form = signal<string | undefined>(undefined);
+    readonly dir = signal<'ltr' | 'rtl'>('ltr');
     readonly autoSubmit = signal(false);
     readonly onValueChange = vi.fn();
     readonly onValueInvalid = vi.fn();
@@ -114,6 +119,28 @@ class SignalOtpFieldHost {
 })
 class NgModelOtpFieldHost {
     code = 'AB12';
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [RdxFieldDescription, RdxFieldLabel, RdxFieldRoot, RdxOtpFieldModule],
+    template: `
+        <div [disabled]="fieldDisabled()" [required]="fieldRequired()" rdxFieldRoot>
+            <label rdxFieldLabel>Verification code</label>
+            <p rdxFieldDescription>Enter the code sent to your device.</p>
+            <div [disabled]="otpDisabled()" [length]="4" rdxOtpFieldRoot>
+                <input rdxOtpFieldInput />
+                <input rdxOtpFieldInput />
+                <input rdxOtpFieldInput />
+                <input rdxOtpFieldInput />
+            </div>
+        </div>
+    `
+})
+class FieldOtpFieldHost {
+    readonly fieldDisabled = signal(false);
+    readonly fieldRequired = signal(true);
+    readonly otpDisabled = signal(false);
 }
 
 function pasteEvent(text: string): ClipboardEvent {
@@ -212,6 +239,46 @@ describe('RdxOtpField', () => {
         expect(host.value()).toBe('A');
         expect(slots[0].value).toBe('A');
         expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[1]);
+    });
+
+    it('normalizes incoming text before merging it into the current code', () => {
+        host.value.set('1303');
+        host.normalizeValue.set((value) => value.replace(/[^0-3]/gu, ''));
+        fixture.detectChanges();
+
+        slots[1].dispatchEvent(pasteEvent('29'));
+        fixture.detectChanges();
+
+        expect(host.value()).toBe('1203');
+        expect(host.onValueInvalid).toHaveBeenCalledWith('29');
+    });
+
+    it('normalizes typed text before merging it and reports characters dropped by the normalizer', () => {
+        host.value.set('1303');
+        host.normalizeValue.set((value) => value.replace(/[^0-3]/gu, ''));
+        fixture.detectChanges();
+
+        slots[1].value = '29';
+        slots[1].dispatchEvent(new Event('input', { bubbles: true }));
+        fixture.detectChanges();
+
+        expect(host.value()).toBe('1203');
+        expect(host.onValueInvalid).toHaveBeenCalledTimes(1);
+        expect(host.onValueInvalid).toHaveBeenCalledWith('29');
+    });
+
+    it('reports characters removed by a custom normalizer', () => {
+        host.validationType.set('none');
+        host.normalizeValue.set((value) => value.replace(/[4-9]/gu, ''));
+        fixture.detectChanges();
+
+        slots[0].value = '1209';
+        slots[0].dispatchEvent(new Event('input', { bubbles: true }));
+        fixture.detectChanges();
+
+        expect(host.value()).toBe('120');
+        expect(host.onValueInvalid).toHaveBeenCalledTimes(1);
+        expect(host.onValueInvalid).toHaveBeenCalledWith('1209');
     });
 
     it('keeps focus at the first empty slot and selects a filled character on focus', () => {
@@ -510,6 +577,41 @@ describe('RdxOtpField', () => {
         expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[0]);
     });
 
+    it('selects the shifted character after Delete', () => {
+        host.value.set('1234');
+        fixture.detectChanges();
+        slots[1].focus();
+
+        slots[1].dispatchEvent(new KeyboardEvent('keydown', { key: 'Delete', bubbles: true, cancelable: true }));
+        fixture.detectChanges();
+
+        expect(host.value()).toBe('134');
+        expect(slots[1].value).toBe('3');
+        expect(slots[1].selectionStart).toBe(0);
+        expect(slots[1].selectionEnd).toBe(1);
+    });
+
+    it('reverses horizontal key navigation when dir is rtl', () => {
+        host.value.set('1234');
+        host.dir.set('rtl');
+        fixture.detectChanges();
+        slots[1].focus();
+
+        slots[1].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }));
+        expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[0]);
+        slots[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true, cancelable: true }));
+        expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[1]);
+
+        slots[1].dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'ArrowRight', ctrlKey: true, bubbles: true, cancelable: true })
+        );
+        expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[0]);
+        slots[0].dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'ArrowLeft', metaKey: true, bubbles: true, cancelable: true })
+        );
+        expect(fixture.nativeElement.ownerDocument.activeElement).toBe(slots[3]);
+    });
+
     it('keeps the native form value in one hidden text control and applies required validity', () => {
         host.required.set(true);
         host.value.set('12');
@@ -520,8 +622,8 @@ describe('RdxOtpField', () => {
         expect(nativeInput.name).toBe('verificationCode');
         expect(nativeInput.value).toBe('12');
         expect(nativeInput.required).toBe(true);
-        expect(nativeInput.minLength).toBe(4);
-        expect(nativeInput.maxLength).toBe(4);
+        expect(nativeInput).not.toHaveAttribute('minlength');
+        expect(nativeInput).not.toHaveAttribute('maxlength');
         expect(nativeInput.validationMessage).toContain('Enter all 4 characters.');
         expect(root.querySelectorAll('[name="verificationCode"]')).toHaveLength(1);
         expect(new FormData(fixture.nativeElement.querySelector('form')).getAll('verificationCode')).toEqual(['12']);
@@ -529,6 +631,33 @@ describe('RdxOtpField', () => {
         host.value.set('1234');
         fixture.detectChanges();
         expect(nativeInput.validationMessage).toBe('');
+    });
+
+    it('rejects an incomplete optional value through native form validity', () => {
+        host.value.set('12');
+        fixture.detectChanges();
+
+        expect(nativeInput.required).toBe(false);
+        expect(nativeInput.validity.valid).toBe(false);
+        expect(nativeInput.validationMessage).toContain('Enter all 4 characters.');
+
+        host.value.set('');
+        fixture.detectChanges();
+        expect(nativeInput.validity.valid).toBe(true);
+    });
+
+    it('associates each visible slot with an external form', () => {
+        const externalForm = fixture.nativeElement.ownerDocument.createElement('form');
+        externalForm.id = 'external-otp-form';
+        fixture.nativeElement.ownerDocument.body.appendChild(externalForm);
+        host.form.set(externalForm.id);
+        fixture.detectChanges();
+
+        expect(slots.every((slot) => slot.getAttribute('form') === externalForm.id)).toBe(true);
+        expect(slots.every((slot) => slot.form === externalForm)).toBe(true);
+        expect(nativeInput.form).toBe(externalForm);
+
+        externalForm.remove();
     });
 
     it('uses one-time-code autocomplete only on the first slot and the native control', () => {
@@ -582,6 +711,34 @@ describe('RdxOtpField', () => {
 });
 
 describe('RdxOtpField form integrations', () => {
+    it('connects the enclosing Field to the first slot and inherits its disabled and required state', () => {
+        TestBed.configureTestingModule({ imports: [FieldOtpFieldHost] });
+        const fixture = TestBed.createComponent(FieldOtpFieldHost);
+        const host = fixture.componentInstance;
+        fixture.detectChanges();
+        const root = fixture.debugElement.query(By.css('[rdxOtpFieldRoot]')).nativeElement as HTMLElement;
+        const label = fixture.debugElement.query(By.css('[rdxFieldLabel]')).nativeElement as HTMLLabelElement;
+        const description = fixture.debugElement.query(By.css('[rdxFieldDescription]')).nativeElement as HTMLElement;
+        const slots = fixture.debugElement
+            .queryAll(By.css('[rdxOtpFieldInput]'))
+            .map((result) => result.nativeElement as HTMLInputElement);
+        const nativeInput = fixture.nativeElement.querySelector(
+            '[data-rdx-otp-field-native-input]'
+        ) as HTMLInputElement;
+
+        expect(label.htmlFor).toBe(slots[0].id);
+        expect(slots[0].getAttribute('aria-describedby')).toBe(description.id);
+        expect(root.getAttribute('data-required')).toBe('');
+        expect(slots[0].required).toBe(true);
+        expect(nativeInput.required).toBe(true);
+
+        host.fieldDisabled.set(true);
+        fixture.detectChanges();
+        expect(root.getAttribute('data-disabled')).toBe('');
+        expect(slots.every((slot) => slot.disabled)).toBe(true);
+        expect(nativeInput.disabled).toBe(true);
+    });
+
     it('integrates with Reactive Forms', () => {
         TestBed.configureTestingModule({ imports: [ReactiveOtpFieldHost] });
         const fixture = TestBed.createComponent(ReactiveOtpFieldHost);

@@ -54,6 +54,28 @@ test.describe('OTP Field behavior', () => {
         expect(errors).toEqual([]);
     });
 
+    test('selects the final character after a complete paste so it can be corrected', async ({ page }) => {
+        const errors = await gotoStory(page, 'primitives-otp-field--default');
+        const slots = page.locator(slot);
+
+        await slots.nth(0).evaluate((element) => {
+            const clipboard = new DataTransfer();
+            clipboard.setData('text/plain', '123456');
+            element.dispatchEvent(
+                new ClipboardEvent('paste', { bubbles: true, cancelable: true, clipboardData: clipboard })
+            );
+        });
+        await expect.poll(() => readCode(page)).toBe('123456');
+        await expect(slots.nth(5)).toBeFocused();
+        await expect
+            .poll(() => slots.nth(5).evaluate((element) => [element.selectionStart, element.selectionEnd]))
+            .toEqual([0, 1]);
+
+        await page.keyboard.type('9');
+        await expect.poll(() => readCode(page)).toBe('123459');
+        expect(errors).toEqual([]);
+    });
+
     test('distributes a paste and navigates across visually grouped slots', async ({ page }) => {
         const errors = await gotoStory(page, 'primitives-otp-field--groups-and-separator');
         const slots = page.locator(slot);

@@ -15,22 +15,25 @@ import { injectOtpFieldRootContext } from './otp-field-context';
         '[type]': 'resolvedType()',
         '[value]': 'value()',
         '[attr.aria-label]': 'resolvedAriaLabel()',
+        '[attr.aria-describedby]': 'index() === 0 ? rootContext.describedBy() : undefined',
         '[attr.inputmode]': 'rootContext.resolvedInputMode()',
         '[autocomplete]': 'index() === 0 ? rootContext.autoComplete() : "off"',
         '[tabIndex]': 'rootContext.isTabbable(index()) ? 0 : -1',
         '[disabled]': 'rootContext.isDisabled()',
+        '[required]': 'index() === 0 && rootContext.isRequired()',
         '[readonly]': 'rootContext.readonly()',
+        '[attr.form]': 'rootContext.form() || undefined',
         '[attr.aria-invalid]': 'rootContext.displayValid() === false ? "true" : undefined',
         '[attr.data-disabled]': 'rootContext.attr(rootContext.isDisabled())',
         '[attr.data-readonly]': 'rootContext.attr(rootContext.readonly())',
-        '[attr.data-required]': 'rootContext.attr(rootContext.required())',
+        '[attr.data-required]': 'rootContext.attr(rootContext.isRequired())',
         '[attr.data-valid]': 'rootContext.displayValid() === true ? "" : undefined',
         '[attr.data-invalid]': 'rootContext.displayValid() === false ? "" : undefined',
-        '[attr.data-dirty]': 'rootContext.formUi.dirtyState() ? "" : undefined',
-        '[attr.data-touched]': 'rootContext.formUi.touchedState() ? "" : undefined',
+        '[attr.data-dirty]': 'rootContext.dirtyState() ? "" : undefined',
+        '[attr.data-touched]': 'rootContext.touchedState() ? "" : undefined',
         '[attr.data-complete]': 'rootContext.isComplete() ? "" : undefined',
         '[attr.data-filled]': 'filled() ? "" : undefined',
-        '[attr.data-focused]': 'rootContext.isFocused() ? "" : undefined',
+        '[attr.data-focused]': 'rootContext.focusedState() ? "" : undefined',
         '(input)': 'onInput($event)',
         '(mousedown)': 'onMouseDown($event)',
         '(paste)': 'onPaste($event)',
@@ -175,33 +178,36 @@ export class RdxOtpFieldInput {
         }
 
         const index = this.index();
+        const isRtl = this.rootContext.direction() === 'rtl';
+        const previousKey = isRtl ? 'ArrowRight' : 'ArrowLeft';
+        const nextKey = isRtl ? 'ArrowLeft' : 'ArrowRight';
         if (event.ctrlKey || event.metaKey) {
-            switch (event.key) {
-                case 'ArrowLeft':
-                    event.preventDefault();
-                    this.rootContext.focusInput(0);
-                    return;
-                case 'ArrowRight':
-                    event.preventDefault();
-                    this.rootContext.focusInput(this.rootContext.length() - 1);
-                    return;
-                case 'Backspace':
-                    if (this.rootContext.readonly()) {
-                        return;
-                    }
-                    event.preventDefault();
-                    this.rootContext.clearAll(event);
-                    return;
-                default:
-                    return;
+            if (event.key === previousKey) {
+                event.preventDefault();
+                this.rootContext.focusInput(0);
+                return;
             }
+            if (event.key === nextKey) {
+                event.preventDefault();
+                this.rootContext.focusInput(this.rootContext.length() - 1);
+                return;
+            }
+            if (event.key === 'Backspace') {
+                if (this.rootContext.readonly()) {
+                    return;
+                }
+                event.preventDefault();
+                this.rootContext.clearAll(event);
+                return;
+            }
+            return;
         }
         switch (event.key) {
-            case 'ArrowLeft':
+            case previousKey:
                 event.preventDefault();
                 this.rootContext.focusInput(Math.max(0, index - 1));
                 return;
-            case 'ArrowRight':
+            case nextKey:
                 event.preventDefault();
                 this.rootContext.focusInput(Math.min(this.rootContext.length() - 1, index + 1));
                 return;

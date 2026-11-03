@@ -4,7 +4,7 @@
 
 > Generated from `@radix-ng/primitives@1.2.1` — if the installed version differs, verify the API against the installed package.
 
-The root works with `formControlName` and forwards required validity to the form-associated hidden control.
+The root works with `formControlName` and forwards required validity to the form-associated hidden control. When wrapped in `rdxFieldRoot`, it registers the first slot as the label target and inherits the Field's disabled and required state.
 
 ```typescript
 import { JsonPipe } from '@angular/common';

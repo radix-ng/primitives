@@ -9,6 +9,7 @@ import {
     effect,
     ElementRef,
     inject,
+    Injector,
     input,
     model,
     numberAttribute,
@@ -20,6 +21,7 @@ import {
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
+    Direction,
     injectControlValueAccessor,
     injectId,
     NumberInput,
@@ -30,6 +32,8 @@ import {
     serializeNativeFormValue,
     useNativeFormControl
 } from '@radix-ng/primitives/core';
+import { injectDirection } from '@radix-ng/primitives/direction-provider';
+import { injectFieldRootContext } from '@radix-ng/primitives/field';
 import { provideOtpFieldRootContext } from './otp-field-context';
 import { RdxOtpFieldInput } from './otp-field-input';
 import {
@@ -70,16 +74,17 @@ function positiveIntegerAttribute(value: NumberInput): number {
         role: 'group',
         // `id` is an input to the root but belongs to the first slot, which is the label target.
         '[attr.id]': 'undefined',
+        '[attr.dir]': 'direction()',
         '[attr.data-disabled]': 'attr(isDisabled())',
         '[attr.data-readonly]': 'attr(readonly())',
-        '[attr.data-required]': 'attr(required())',
+        '[attr.data-required]': 'attr(isRequired())',
         '[attr.data-valid]': 'displayValid() === true ? "" : undefined',
         '[attr.data-invalid]': 'displayValid() === false ? "" : undefined',
-        '[attr.data-dirty]': 'formUi.dirtyState() ? "" : undefined',
-        '[attr.data-touched]': 'formUi.touchedState() ? "" : undefined',
+        '[attr.data-dirty]': 'dirtyState() ? "" : undefined',
+        '[attr.data-touched]': 'touchedState() ? "" : undefined',
         '[attr.data-complete]': 'isComplete() ? "" : undefined',
-        '[attr.data-filled]': 'isFilled() ? "" : undefined',
-        '[attr.data-focused]': 'isFocused() ? "" : undefined',
+        '[attr.data-filled]': 'filledState() ? "" : undefined',
+        '[attr.data-focused]': 'focusedState() ? "" : undefined',
         '(focusin)': 'onFocusIn($event)',
         '(focusout)': 'onFocusOut($event)'
     }
@@ -113,6 +118,12 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
 
     /** Software-keyboard hint. Defaults to `numeric` for numeric validation and `text` otherwise. */
     readonly inputMode = input<RdxOtpFieldInputMode>();
+
+    /** Text direction used for horizontal slot navigation. */
+    readonly dir = input<Direction | undefined>();
+
+    /** @ignore Resolved direction used by slot keyboard navigation. */
+    readonly direction = injectDirection(this.dir);
 
     /** Name used when this field participates in a native form. */
     readonly name = input<string>();
@@ -153,8 +164,13 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
     /** @ignore The current normalized value shared by the slots and forms. */
     readonly currentValue = computed(() => this.normalize(this.cva.value() ?? this.value() ?? ''));
 
-    /** @ignore True when the CVA or this root disables interaction. */
-    readonly isDisabled = computed(() => Boolean(this.cva.disabled() || this.disabled()));
+    /** @ignore True when the CVA, this root, or an enclosing Field disables interaction. */
+    readonly isDisabled = computed(() =>
+        Boolean(this.cva.disabled() || this.disabled() || this.fieldRootContext?.disabledState())
+    );
+
+    /** @ignore Required state merged with an enclosing Field. */
+    readonly isRequired = computed(() => Boolean(this.required() || this.fieldRootContext?.requiredState()));
 
     /** @ignore True if the current value contains at least one code point. */
     readonly isFilled = computed(() => codePoints(this.currentValue()).length > 0);
@@ -168,6 +184,24 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
     /** @ignore Whether any slot currently has focus. */
     readonly isFocused = computed(() => this.focusedIndex() >= 0);
 
+    /** @ignore State reflected to an enclosing Field and to each slot. */
+    readonly dirtyState = computed(() => this.formUi.dirtyState() || Boolean(this.fieldRootContext?.dirtyState()));
+    readonly touchedState = computed(
+        () => this.formUi.touchedState() || Boolean(this.fieldRootContext?.touchedState())
+    );
+    readonly filledState = computed(() => this.isFilled() || Boolean(this.fieldRootContext?.filledState()));
+    readonly focusedState = computed(() => this.isFocused() || Boolean(this.fieldRootContext?.focusedState()));
+
+    /** @ignore Description and error ids supplied by an enclosing Field. */
+    readonly describedBy = computed(() => {
+        const field = this.fieldRootContext;
+        if (!field) {
+            return undefined;
+        }
+        const ids = [...field.descriptionIds(), ...field.errorIds()];
+        return ids.length > 0 ? ids.join(' ') : undefined;
+    });
+
     /** @ignore Roving tab stop: the focused slot, or the first empty slot when focus is outside. */
     readonly activeIndex = computed(() =>
         this.focusedIndex() >= 0
@@ -176,6 +210,8 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
     );
 
     private readonly host = inject<ElementRef<HTMLDivElement>>(ElementRef);
+    private readonly fieldRootContext = injectFieldRootContext(true);
+    private readonly injector = inject(Injector);
     private readonly platformId = inject(PLATFORM_ID);
     private readonly destroyRef = inject(DestroyRef);
     private readonly hasNativeInput = signal(true);
@@ -214,6 +250,23 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
 
     constructor() {
         super();
+
+        effect(() => {
+            if (this.inputs().length > 0) {
+                this.fieldRootContext?.setControlId(this.inputId(0));
+            }
+        });
+
+        effect(() => {
+            const field = this.fieldRootContext;
+            if (!field) {
+                return;
+            }
+            field.setDirty(this.formUi.dirtyState());
+            field.setTouched(this.formUi.touchedState());
+            field.setFilled(this.isFilled());
+            field.setFocused(this.isFocused());
+        });
 
         // Keep the Signal Forms model and CVA value synchronized while respecting which side was
         // written (a model input, Signal Forms, or Reactive/template-driven Forms).
@@ -317,8 +370,22 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
     focusInput(index: number): void {
         const slot = this.inputs()[index];
         if (slot && !this.isDisabled()) {
+            const element = slot.hostElement();
+            const selectCurrentCharacter = () => {
+                if (element.ownerDocument.activeElement !== element || this.isDisabled()) {
+                    return;
+                }
+                // A pending Angular value binding can still run after the focus event and collapse
+                // the selection. Restore the committed character after that render, then select it.
+                element.value = slot.value();
+                element.select();
+            };
+
+            // Avoid a stale DOM value during the focus event, then reselect after pending bindings run.
+            element.value = slot.value();
             slot.focus();
-            slot.hostElement().select();
+            selectCurrentCharacter();
+            afterNextRender(selectCurrentCharacter, { injector: this.injector });
         }
     }
 
@@ -328,9 +395,13 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
             return null;
         }
 
-        const rawCharacters = codePoints(attempted);
+        const { value: accepted, rejectedCharacters } = this.normalizeWithRejection(attempted);
+        if (rejectedCharacters) {
+            this.onValueInvalid.emit(attempted);
+        }
+        const acceptedCharacters = codePoints(accepted);
         const current = codePoints(this.currentValue());
-        if (rawCharacters.length === 0) {
+        if (codePoints(attempted).length === 0) {
             if (index >= current.length) {
                 return null;
             }
@@ -338,11 +409,6 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
             return this.commitUserValue(current.join(''), 'input-clear', event) ? 0 : null;
         }
 
-        const nonWhitespaceCharacters = rawCharacters.filter((character) => !/\s/u.test(character));
-        const acceptedCharacters = nonWhitespaceCharacters.filter((character) => this.isAllowed(character));
-        if (acceptedCharacters.length !== nonWhitespaceCharacters.length) {
-            this.onValueInvalid.emit(attempted);
-        }
         if (acceptedCharacters.length === 0) {
             return null;
         }
@@ -356,13 +422,12 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
         if (this.isDisabled() || this.readonly()) {
             return null;
         }
-        const rawCharacters = codePoints(attempted);
-        const nonWhitespaceCharacters = rawCharacters.filter((character) => !/\s/u.test(character));
-        const pastedCharacters = nonWhitespaceCharacters.filter((character) => this.isAllowed(character));
-        const isCompletePaste = pastedCharacters.length >= this.length();
-        if (pastedCharacters.length !== nonWhitespaceCharacters.length) {
+        const { value: accepted, rejectedCharacters } = this.normalizeWithRejection(attempted);
+        if (rejectedCharacters) {
             this.onValueInvalid.emit(attempted);
         }
+        const pastedCharacters = codePoints(accepted);
+        const isCompletePaste = pastedCharacters.length >= this.length();
         const insertedLength = Math.min(pastedCharacters.length, Math.max(0, this.length() - index));
         const committed = this.commitUserValue(
             replaceAt(codePoints(this.currentValue()), index, pastedCharacters, this.length()).join(''),
@@ -379,13 +444,7 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
             this.syncNativeInput();
             return;
         }
-        const rawCharacters = codePoints(attempted);
-        const nonWhitespaceCharacters = rawCharacters.filter((character) => !/\s/u.test(character));
-        const acceptedCharacters = nonWhitespaceCharacters.filter((character) => this.isAllowed(character));
-        if (acceptedCharacters.length !== nonWhitespaceCharacters.length) {
-            this.onValueInvalid.emit(attempted);
-        }
-        const accepted = this.commitUserValue(acceptedCharacters.join(''), 'input-change', event);
+        const accepted = this.commitUserValue(attempted, 'input-change', event);
         if (accepted) {
             this.focusInput(Math.min(codePoints(this.currentValue()).length, this.length() - 1));
         }
@@ -434,6 +493,7 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
         }
 
         this.focusedIndex.set(index);
+        this.fieldRootContext?.setFocused(true);
         this.inputs()[index]?.hostElement().select();
     }
 
@@ -450,6 +510,8 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
                 return;
             }
             this.focusedIndex.set(-1);
+            this.fieldRootContext?.setFocused(false);
+            this.fieldRootContext?.setTouched(true);
             this.formUi.markAsTouched();
         });
     }
@@ -519,6 +581,7 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
         const filteredCustom = this.filterAllowed(custom);
         const rejectedCharacters =
             codePoints(filtered).length !== codePoints(withoutWhitespace).length ||
+            codePoints(custom).length < codePoints(filtered).length ||
             codePoints(filteredCustom).length !== codePoints(custom).length;
         return {
             value: codePoints(filteredCustom).slice(0, this.length()).join(''),
@@ -565,15 +628,11 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
         }
         input.disabled = this.isDisabled();
         input.readOnly = this.readonly();
-        input.required = this.required();
+        input.required = this.isRequired();
         input.setAttribute('autocomplete', this.autoComplete());
         input.inputMode = this.resolvedInputMode();
-        input.minLength = this.length();
-        input.maxLength = this.length();
         input.value = this.currentValue();
-        input.setCustomValidity(
-            this.required() && this.isFilled() && !this.isComplete() ? `Enter all ${this.length()} characters.` : ''
-        );
+        input.setCustomValidity(this.isFilled() && !this.isComplete() ? `Enter all ${this.length()} characters.` : '');
 
         if (!this.nativeDefaultValueSet) {
             input.defaultValue = this.normalize(this.defaultValue() ?? this.currentValue());
