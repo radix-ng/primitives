@@ -111,7 +111,8 @@ type CopyTarget = 'install' | 'skill';
                             class="mb-5 max-w-3xl text-4xl leading-[1.04] font-bold tracking-normal text-balance sm:text-5xl sm:leading-[1.02] lg:text-6xl"
                         >
                             Headless UI
-                            <em class="text-[var(--landing-accent-text)] not-italic">primitives</em>
+                            <em class="whitespace-nowrap text-[var(--landing-accent-text)] not-italic">primitives</em>
+                            &ngsp;
                             <span class="sm:whitespace-nowrap">for Angular.</span>
                         </h1>
 
