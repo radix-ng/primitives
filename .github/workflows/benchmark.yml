@@ -26,7 +26,8 @@ env:
 
 jobs:
   benchmark:
-    runs-on: ubuntu-latest
+    # Playwright 1.60.0 does not support Ubuntu 26.04; keep the benchmark environment stable.
+    runs-on: ubuntu-24.04
     steps:
       # fetch-depth: 0 — we need history to resolve the merge-base for the baseline worktree.
       - name: Checkout code repository
