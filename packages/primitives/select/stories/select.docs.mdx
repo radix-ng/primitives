@@ -3,6 +3,7 @@ import * as Stories from './select.stories';
 import { RdxSelectRoot } from '../src/select-root';
 import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
+import { RdxSelectLabel } from '../src/select-label';
 import { RdxSelectItem } from '../src/select-item';
 import { RdxSelectPositioner } from '../src/select-positioner';
 
@@ -36,6 +37,7 @@ native `<select>` behavior).
 - ✅ Public interaction state via `openMethod`, `openInteractionType`, and `closeInteractionType`.
 - ✅ `modal` (default) locks page scroll and makes outside content inert, with an optional `Backdrop`.
 - ✅ Field integration on the trigger (invalid / disabled / required / focused state + `aria-describedby`).
+- ✅ `rdxSelectLabel` automatically names and focuses the trigger; Root's `id` identifies the control.
 - ✅ WAI-ARIA `combobox` / `listbox` semantics with `aria-selected` and `aria-disabled`.
 - ✅ Headless — state via `data-selected`, `data-highlighted`, `data-popup-open`, `data-placeholder`, `data-disabled`.
 
@@ -196,6 +198,30 @@ selection to `[]`, compares values with `Object.is` by default, and exposes `ite
 `highlightItemOnHover`. The matrix tracks the remaining differences; this is not a claim of complete
 behavioral parity.
 
+### Labels and control ids
+
+Place `rdxSelectLabel` inside Root to name the trigger automatically. It supports both a native
+`<label>` and ordinary markup such as `<div>`. Clicking label text focuses the trigger without
+opening the popup; nested interactive elements keep their own behavior.
+
+Set `id` on Root to identify the trigger. Root forwards it without duplicating it on a separate
+root element, and `rdxSelectLabel` derives its id as `<root-id>-label`. Customize the label id through
+Root, not a separate `id` on Label. An explicit Trigger `id` overrides the forwarded control id;
+removing an override restores its fallback. Container roots (`ng-container`) and Root/Trigger on
+the same button are supported.
+
+`rdxFieldLabel` remains the native label for a surrounding Field. The most recently registered live
+label in a Field supplies its accessible name; removing it restores the preceding label. Explicit
+`aria-labelledby` on Trigger takes precedence. Select.Label also reflects Field's validation and
+interaction attributes.
+
+<Canvas of={Stories.Labels} />
+
+Label registration and interaction behavior live in `core`, shared by Field, Select and Combobox;
+Autocomplete inherits the Combobox label through directive composition. The example retains the
+existing Angular support for labeling an outside Combobox/Autocomplete input. Current upstream's
+Combobox.Label targets a trigger; sharing this helper does not establish complete Combobox part parity.
+
 ### Labels before the popup opens
 
 Pass `items` to Root as a record (`{ fr: 'France' }`), an array of `{ value, label }` descriptors, or
@@ -215,6 +241,9 @@ movement and pointer leave; clicking an item still selects it. The default is `t
 <Canvas of={Stories.Items} />
 
 ### Migrating existing Select consumers
+
+- Root's `id` now identifies the trigger and is forwarded there. For a separate DOM id on a Root
+  wrapper, use `[attr.id]` with a different value or put that wrapper outside Root.
 
 - Empty uncontrolled values now start as `null` (single) or `[]` (multiple), replacing `undefined`.
   Angular bindings may still write `undefined`; use nullish checks for an empty single value.
@@ -308,6 +337,13 @@ value fallback. Set a `placeholder` attribute for the empty state. `data-placeho
 empty selection, including when a labeled null option supplies the displayed text.
 
 <ArgTypes of={RdxSelectValue} />
+
+### RdxSelectLabel
+
+An accessible label associated with the trigger. Its id is derived from Root. A native `<label>`
+receives `for`; other elements use `aria-labelledby` and focus the trigger when clicked.
+
+<ArgTypes of={RdxSelectLabel} />
 
 ### RdxSelectItem
 

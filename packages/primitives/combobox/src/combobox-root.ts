@@ -119,6 +119,8 @@ const context = () => {
     return {
         listId: engine.listId,
         labelId: engine.labelId,
+        registerLabel: engine.registerLabel,
+        labelControlElement: engine.labelControlElement,
         setLabelId: (id: string | undefined) => engine.setLabelId(id),
         dir: root.dir,
         value: root.value,

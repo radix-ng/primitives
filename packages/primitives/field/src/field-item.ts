@@ -1,5 +1,5 @@
 import { booleanAttribute, computed, Directive, inject, input, signal } from '@angular/core';
-import { BooleanInput, injectId, RDX_FIELD_VALIDITY } from '@radix-ng/primitives/core';
+import { BooleanInput, createLabelRegistry, injectId, RDX_FIELD_VALIDITY } from '@radix-ng/primitives/core';
 import { provideFieldRootContext, RdxFieldRoot, RdxFieldRootContext } from './field-root';
 
 const attr = (value: boolean) => (value ? '' : undefined);
@@ -19,6 +19,7 @@ const fieldItemContext = (): RdxFieldRootContext => {
     const root = item.root;
 
     return {
+        ...item.labelRegistry,
         controlId: item.controlId,
         name: root.effectiveName,
         descriptionIds: item.descriptionIds,
@@ -80,6 +81,7 @@ const fieldItemContext = (): RdxFieldRootContext => {
     }
 })
 export class RdxFieldItem {
+    readonly labelRegistry = createLabelRegistry();
     /** The enclosing field root (items are leaves under the root, so `skipSelf` reaches it). */
     readonly root = inject(RdxFieldRoot, { skipSelf: true });
 

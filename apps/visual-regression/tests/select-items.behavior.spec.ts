@@ -30,6 +30,7 @@ test('disabling hover preserves keyboard highlight and still allows pointer sele
     const errors = await openExample(page);
     const trigger = page.getByRole('combobox', { name: 'Preferred language' });
     await trigger.press('ArrowDown');
+    await expect(page.locator('[rdxSelectPopup]')).toBeFocused();
     await page.keyboard.press('Home');
     const none = page.getByRole('option', { name: 'No preference', exact: true });
     const english = page.getByRole('option', { name: 'English', exact: true });

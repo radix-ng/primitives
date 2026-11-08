@@ -1,5 +1,6 @@
-import { DestroyRef, Directive, inject } from '@angular/core';
-import { injectId } from '@radix-ng/primitives/core';
+import { Directive } from '@angular/core';
+import { injectId, useLabel } from '@radix-ng/primitives/core';
+import { injectFieldRootContext } from '@radix-ng/primitives/field';
 import { injectComboboxRootContext } from './combobox-root';
 
 /**
@@ -12,16 +13,21 @@ import { injectComboboxRootContext } from './combobox-root';
     selector: '[rdxComboboxLabel]',
     exportAs: 'rdxComboboxLabel',
     host: {
-        '[attr.id]': 'id'
+        '[attr.id]': 'id',
+        '(mousedown)': 'label.onMouseDown($event)',
+        '(pointerdown)': 'label.onPointerDown($event)',
+        '(click)': 'label.onClick($event)'
     }
 })
 export class RdxComboboxLabel {
     private readonly rootContext = injectComboboxRootContext();
+    private readonly field = injectFieldRootContext(true);
 
     readonly id = injectId('rdx-combobox-label-');
 
-    constructor() {
-        this.rootContext.setLabelId(this.id);
-        inject(DestroyRef).onDestroy(() => this.rootContext.setLabelId(undefined));
-    }
+    protected readonly label = useLabel({
+        id: () => this.id,
+        registries: this.field ? [this.rootContext, this.field] : [this.rootContext],
+        control: this.rootContext.labelControlElement
+    });
 }

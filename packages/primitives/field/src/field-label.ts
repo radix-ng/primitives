@@ -1,5 +1,5 @@
 import { Directive, input } from '@angular/core';
-import { injectId, rdxCheckLabelElement } from '@radix-ng/primitives/core';
+import { injectId, rdxCheckLabelElement, useLabel } from '@radix-ng/primitives/core';
 import { injectFieldRootContext } from './field-root';
 
 const attr = (value: boolean) => (value ? '' : undefined);
@@ -15,6 +15,9 @@ const attr = (value: boolean) => (value ? '' : undefined);
     host: {
         '[attr.id]': 'id()',
         '[attr.for]': 'htmlFor()',
+        '(mousedown)': 'label.onMouseDown($event)',
+        '(pointerdown)': 'label.onPointerDown($event)',
+        '(click)': 'label.onClick($event)',
         '[attr.data-invalid]': 'dataAttr(rootContext.invalidState())',
         '[attr.data-disabled]': 'dataAttr(rootContext.disabledState())',
         '[attr.data-required]': 'dataAttr(rootContext.requiredState())'
@@ -30,7 +33,13 @@ export class RdxFieldLabel {
      */
     readonly id = input(injectId('rdx-field-label-'));
 
-    readonly htmlFor = () => this.rootContext.controlId();
+    protected readonly label = useLabel({
+        id: this.id,
+        controlId: this.rootContext.controlId,
+        registries: [this.rootContext]
+    });
+
+    readonly htmlFor = this.label.htmlFor;
 
     constructor() {
         rdxCheckLabelElement('rdxFieldLabel', 'field/unassociated-label', 'components/field');

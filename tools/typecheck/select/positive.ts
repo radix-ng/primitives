@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { RdxSelectRoot, RdxSelectValueChangeEvent } from '@radix-ng/primitives/select';
 import { SelectItems } from '../../../packages/primitives/select/stories/select-items';
+import { SelectLabels } from '../../../packages/primitives/select/stories/select-labels';
 import { SelectTypedControl } from '../../../packages/primitives/select/stories/select-typed-control';
 import { SelectTypedWrapper } from '../../../packages/primitives/select/stories/select-typed-wrapper';
 
@@ -10,7 +11,7 @@ interface Country {
 }
 
 @Component({
-    imports: [RdxSelectRoot, SelectTypedControl, SelectTypedWrapper, SelectItems],
+    imports: [RdxSelectRoot, SelectTypedControl, SelectTypedWrapper, SelectItems, SelectLabels],
     template: `
         <div
             [(value)]="country"
@@ -32,6 +33,7 @@ interface Country {
         <example-select [(value)]="countries" [options]="options" [multiple]="true" [itemToStringLabel]="label" />
         <select-typed-wrapper />
         <select-items />
+        <select-labels />
         <div [value]="'fr'" [items]="{ fr: 'France' }" rdxSelectRoot></div>
         <div [value]="'fr'" [items]="[{ items: [{ value: 'fr', label: 'France' }] }]" rdxSelectRoot></div>
     `

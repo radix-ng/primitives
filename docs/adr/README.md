@@ -58,3 +58,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0021](0021-ng-control-field-adapter.md)                                     | Accepted               | Bridge `NgControl` State into Field Explicitly                                       |
 | [0022](0022-null-empty-values-for-signal-date-time-fields.md)                | Accepted               | Use `null` for Empty Signal Date and Time Fields                                     |
 | [0023](0023-complete-floating-focus-manager-rollout.md)                      | Proposed               | Complete the floating focus manager rollout (remainder of ADR 0017)                  |
+| [0024](0024-share-label-registration-and-interaction.md)                     | Accepted               | Share label registration and interaction                                             |

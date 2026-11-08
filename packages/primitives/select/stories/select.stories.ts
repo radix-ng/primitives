@@ -10,6 +10,8 @@ import { SelectEvents } from './select-events';
 import eventsSource from './select-events?raw';
 import { SelectItems } from './select-items';
 import itemsSource from './select-items?raw';
+import { SelectLabels } from './select-labels';
+import labelsSource from './select-labels?raw';
 import { SelectMultiple } from './select-multiple';
 import multipleSource from './select-multiple?raw';
 import { SelectObjectValues } from './select-object-values';
@@ -44,7 +46,8 @@ export default {
                 SelectAlignedPosition,
                 SelectAlignedPositionWithScroll,
                 SelectTypedWrapper,
-                SelectItems
+                SelectItems,
+                SelectLabels
             ]
         }),
         tailwindDemoDecorator()
@@ -121,6 +124,15 @@ export const Items: Story = {
     render: () => ({
         template: html`
             <select-items />
+        `
+    })
+};
+
+export const Labels: Story = {
+    parameters: source(labelsSource),
+    render: () => ({
+        template: html`
+            <select-labels />
         `
     })
 };

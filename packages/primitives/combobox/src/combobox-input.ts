@@ -35,7 +35,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
         '[attr.aria-haspopup]': 'rootContext.grid() ? "grid" : "listbox"',
         '[attr.aria-expanded]': 'rootContext.open()',
         '[attr.aria-controls]': 'rootContext.listId',
-        '[attr.aria-labelledby]': 'rootContext.labelId()',
+        '[attr.aria-labelledby]': 'labelledBy()',
         '[attr.aria-activedescendant]': 'rootContext.activeId()',
         '[attr.aria-describedby]': 'describedBy()',
         '[attr.aria-invalid]': 'displayValid() === false ? "true" : undefined',
@@ -71,6 +71,7 @@ export class RdxComboboxInput {
     protected readonly rootContext = injectComboboxRootContext();
     private readonly element = inject<ElementRef<HTMLInputElement>>(ElementRef).nativeElement;
     private readonly fieldRootContext = injectFieldRootContext(true);
+    protected readonly labelledBy = computed(() => this.fieldRootContext?.labelId() ?? this.rootContext.labelId());
 
     /** The input id; Field labels and descriptions reference it for accessible relationships. */
     readonly id = input(injectId('rdx-combobox-input-'));

@@ -12,10 +12,12 @@ import {
 import {
     BooleanInput,
     createContext,
+    createLabelRegistry,
     injectId,
     isValidationRevealed,
     RDX_DEFAULT_VALIDATION_MODE,
     RDX_FIELD_VALIDITY,
+    RdxLabelRegistry,
     RdxValidationError,
     RdxValidationMode
 } from '@radix-ng/primitives/core';
@@ -64,7 +66,7 @@ export interface RdxFieldState {
 const addId = (ids: string[], id: string) => (ids.includes(id) ? ids : [...ids, id]);
 const removeId = (ids: string[], id: string) => ids.filter((item) => item !== id);
 
-export interface RdxFieldRootContext {
+export interface RdxFieldRootContext extends RdxLabelRegistry {
     controlId: Signal<string>;
     name: Signal<string | undefined>;
     descriptionIds: Signal<string[]>;
@@ -108,6 +110,7 @@ const fieldRootContext = (): RdxFieldRootContext => {
     const root = injectFieldRoot();
 
     return {
+        ...root.labelRegistry,
         controlId: root.controlId,
         name: root.effectiveName,
         descriptionIds: root.descriptionIds,
@@ -183,6 +186,7 @@ export const [injectFieldRootContext, provideFieldRootContext] = createContext<R
     }
 })
 export class RdxFieldRoot {
+    readonly labelRegistry = createLabelRegistry();
     /**
      * Whether the field is invalid.
      *

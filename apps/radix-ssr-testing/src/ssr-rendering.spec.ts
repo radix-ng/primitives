@@ -4,7 +4,8 @@ import '@angular/compiler';
 import { Component, provideZonelessChangeDetection, Type } from '@angular/core';
 import { bootstrapApplication, BootstrapContext, provideClientHydration } from '@angular/platform-browser';
 import { provideServerRendering, renderApplication } from '@angular/platform-server';
-import { RdxSelectRoot } from '@radix-ng/primitives/select';
+import { RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
+import { RdxSelectLabel, RdxSelectRoot, RdxSelectTrigger } from '@radix-ng/primitives/select';
 import { describe, expect, it, vi } from 'vitest';
 import AccordionPage from './app/components/accordion/page';
 import AvatarPage from './app/components/avatar/page';
@@ -79,6 +80,25 @@ const cases: readonly SsrCase[] = [
 })
 class NativeSelectPage {}
 
+@Component({
+    selector: 'app-labelled-select',
+    imports: [RdxSelectRoot, RdxSelectTrigger, RdxSelectLabel, RdxFieldRoot, RdxFieldLabel],
+    template: `
+        <div id="server-country" rdxSelectRoot>
+            <div rdxSelectLabel>Country</div>
+            <button rdxSelectTrigger>Choose</button>
+        </div>
+        <div rdxFieldRoot>
+            <label id="server-field-label" rdxFieldLabel>Billing country</label>
+            <ng-container id="server-billing-country" rdxSelectRoot>
+                <button rdxSelectTrigger>Choose</button>
+            </ng-container>
+        </div>
+        <button id="server-same-host" rdxSelectRoot rdxSelectTrigger>Same host</button>
+    `
+})
+class LabelledSelectPage {}
+
 function renderToString(selector: string, component: Type<unknown>): Promise<string> {
     return renderApplication(
         (context: BootstrapContext) =>
@@ -94,6 +114,15 @@ function renderToString(selector: string, component: Type<unknown>): Promise<str
 }
 
 describe('SSR rendering', () => {
+    it('renders label associations and forwarded control ids before hydration', async () => {
+        const html = await renderToString('app-labelled-select', LabelledSelectPage);
+        expect(html.match(/id="server-country"/g)).toHaveLength(1);
+        expect(html).toContain('id="server-country-label"');
+        expect(html).toContain('aria-labelledby="server-country-label"');
+        expect(html).toContain('for="server-billing-country"');
+        expect(html).toContain('aria-labelledby="server-field-label"');
+        expect(html.match(/id="server-same-host"/g)).toHaveLength(1);
+    });
     for (const { selector, component, expects } of cases) {
         it(`renders <${selector}> on the server without throwing`, async () => {
             const html = await renderToString(selector, component);

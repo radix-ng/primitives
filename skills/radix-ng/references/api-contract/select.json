@@ -85,6 +85,14 @@
       "outputs": []
     },
     {
+      "directive": "RdxSelectLabel",
+      "selector": "[rdxSelectLabel]",
+      "exportAs": "rdxSelectLabel",
+      "description": "An accessible label automatically associated with the select trigger.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
       "directive": "RdxSelectList",
       "selector": "[rdxSelectList]",
       "inputs": [],
@@ -271,6 +279,11 @@
           "description": "Whether pointer movement highlights items. Keyboard navigation is independent."
         },
         {
+          "name": "id",
+          "type": "string",
+          "description": "Id of the select control. Forwarded to Trigger unless Trigger supplies its own id."
+        },
+        {
           "name": "isItemEqualToValue",
           "type": "ItemValueComparator<Value>",
           "description": "How item values are compared for equality — a function `(a, b) => boolean` or an object key."
@@ -427,12 +440,19 @@
       ],
       "inputs": [
         {
+          "name": "aria-labelledby",
+          "type": "string",
+          "default": "undefined",
+          "description": "Explicit accessible-name references override the associated Field / Select label."
+        },
+        {
           "name": "disabled",
           "default": "false"
         },
         {
           "name": "id",
-          "default": "injectId('rdx-select-trigger-')",
+          "type": "string",
+          "default": "undefined",
           "description": "The trigger id; Field labels and descriptions reference it for accessible relationships."
         }
       ],

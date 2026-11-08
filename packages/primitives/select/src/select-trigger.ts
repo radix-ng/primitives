@@ -1,5 +1,4 @@
-import { afterNextRender, booleanAttribute, computed, Directive, ElementRef, inject, input } from '@angular/core';
-import { injectId } from '@radix-ng/primitives/core';
+import { booleanAttribute, computed, DestroyRef, Directive, effect, ElementRef, inject, input } from '@angular/core';
 import { injectFieldRootContext } from '@radix-ng/primitives/field';
 import { createRdxTriggerInteraction } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
@@ -15,8 +14,10 @@ const attr = (value: boolean) => (value ? '' : undefined);
         role: 'combobox',
         type: 'button',
         '[attr.id]': 'id()',
+        '[attr.aria-labelledby]': 'labelledBy()',
         '[attr.aria-describedby]': 'describedBy()',
         '[attr.aria-controls]': 'triggerInteraction.ariaControls()',
+        '[attr.aria-expanded]': 'triggerInteraction.ariaExpanded()',
         '[attr.aria-invalid]': 'displayValid() === false ? "true" : undefined',
         '[attr.aria-required]': 'requiredState() ? "true" : undefined',
         '[attr.aria-readonly]': 'readOnlyState() ? "true" : undefined',
@@ -48,7 +49,14 @@ export class RdxSelectTrigger {
     private readonly fieldRootContext = injectFieldRootContext(true);
 
     /** The trigger id; Field labels and descriptions reference it for accessible relationships. */
-    readonly id = input(injectId('rdx-select-trigger-'));
+    readonly idInput = input<string>(undefined, { alias: 'id' });
+    readonly id = computed(() => this.idInput() ?? this.rootContext.id());
+
+    /** Explicit accessible-name references override the associated Field / Select label. */
+    readonly ariaLabelledBy = input<string>(undefined, { alias: 'aria-labelledby' });
+    protected readonly labelledBy = computed(
+        () => this.ariaLabelledBy() ?? this.fieldRootContext?.labelId() ?? this.rootContext.labelId()
+    );
 
     readonly disabled = input(false, { transform: booleanAttribute });
 
@@ -95,10 +103,17 @@ export class RdxSelectTrigger {
     });
 
     constructor() {
-        afterNextRender(() => {
-            this.rootContext.onTriggerChange(this.elementRef);
+        this.rootContext.onTriggerChange(this.elementRef);
+        effect(() => {
+            this.rootContext.triggerId.set(this.id());
             this.fieldRootContext?.setControlId(this.id());
             this.fieldRootContext?.setFilled(!this.rootContext.isEmptyModelValue());
+        });
+        inject(DestroyRef).onDestroy(() => {
+            if (this.rootContext.triggerElement() === this.elementRef.nativeElement) {
+                this.rootContext.triggerElement.set(null);
+                this.rootContext.triggerId.set(undefined);
+            }
         });
     }
 

@@ -73,12 +73,14 @@ describe('Select data attributes', () => {
     });
 
     it('trigger reflects placeholder and popup-open state', async () => {
+        expect(trigger().getAttribute('aria-expanded')).toBe('false');
         expect(trigger().hasAttribute('data-placeholder')).toBe(true);
         expect(trigger().hasAttribute('data-popup-open')).toBe(false);
 
         host.open.set(true);
         await settle();
         expect(trigger().hasAttribute('data-popup-open')).toBe(true);
+        expect(trigger().getAttribute('aria-expanded')).toBe('true');
 
         host.value.set('Apple');
         host.open.set(false);

@@ -22,6 +22,7 @@ import {
     createCancelableChangeEventDetails,
     createContext,
     createFloatingRootContext,
+    createLabelRegistry,
     Direction,
     formUiStateContext,
     injectId,
@@ -36,6 +37,7 @@ import {
     RdxFormUiStateContext,
     RdxFormUiTouchTarget,
     RdxFormValueControl,
+    RdxLabelRegistry,
     RdxTransitionStatus,
     serializeNativeFormValue,
     useNativeFormControl,
@@ -89,7 +91,9 @@ export interface RdxSelectValueChangeEvent<Value = AcceptableValue, Multiple ext
     eventDetails: RdxSelectValueChangeEventDetails;
 }
 
-export interface RdxSelectRootContext extends RdxFormUiStateContext {
+export interface RdxSelectRootContext extends RdxFormUiStateContext, RdxLabelRegistry {
+    id: Signal<string>;
+    triggerId: WritableSignal<string | undefined>;
     triggerElement: WritableSignal<HTMLElement | null>;
     valueElement: WritableSignal<HTMLElement | null>;
     triggerPointerDownPosRef: WritableSignal<{ x: number; y: number } | null>;
@@ -126,6 +130,9 @@ const context = (): RdxSelectRootContext => {
     const context = inject(RdxSelectRoot);
 
     return {
+        ...context.labelRegistry,
+        id: context.controlId,
+        triggerId: context.triggerId,
         triggerElement: context.triggerElement,
         valueElement: context.valueElement,
         triggerPointerDownPosRef: context.triggerPointerDownPosRef,
@@ -207,6 +214,14 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
     implements ControlValueAccessor, RdxFormValueControl<RdxSelectValueType<Value, Multiple>>
 {
     private readonly popper = inject(RdxPopper, { self: true });
+    private readonly hostElement = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+
+    /** Id of the select control. Forwarded to Trigger unless Trigger supplies its own id. */
+    readonly id = input<string>();
+    private readonly defaultId = injectId('rdx-select-');
+    readonly controlId = computed(() => this.id() ?? this.defaultId, { debugName: 'RdxSelectRoot.controlId' });
+    readonly labelRegistry = createLabelRegistry();
+    readonly triggerId = signal<string | undefined>(undefined);
 
     readonly contentId = injectId('rdx-select-content-');
 
@@ -333,6 +348,19 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
 
     constructor() {
         super();
+
+        // Root is also valid on ng-container. Forward its logical id without host bindings on
+        // container nodes, and avoid duplicating a static id on a separate root element.
+        effect(() => {
+            const id = this.controlId();
+            if (
+                this.hostElement.nodeType === 1 &&
+                this.triggerElement() !== this.hostElement &&
+                this.hostElement.getAttribute('id') === id
+            ) {
+                this.hostElement.removeAttribute('id');
+            }
+        });
 
         // Seed the uncontrolled value/open exactly once, then hand off to the model (so a later user
         // change is not snapped back by the still-set default input).

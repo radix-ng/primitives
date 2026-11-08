@@ -9,6 +9,7 @@ export * from './src/handle-and-dispatch-custom-event';
 export * from './src/id-generator';
 export * from './src/item-helpers';
 export * from './src/kbd-constants';
+export * from './src/labelable';
 export * from './src/live-announcer';
 export * from './src/predicates';
 export * from './src/provide-token';

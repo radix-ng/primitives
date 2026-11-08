@@ -23,6 +23,7 @@ A control that presents a list of options for the user to pick from, triggered b
 - ✅ Public interaction state via `openMethod`, `openInteractionType`, and `closeInteractionType`.
 - ✅ `modal` (default) locks page scroll and makes outside content inert, with an optional `Backdrop`.
 - ✅ Field integration on the trigger (invalid / disabled / required / focused state + `aria-describedby`).
+- ✅ `rdxSelectLabel` automatically names and focuses the trigger; Root's `id` identifies the control.
 - ✅ WAI-ARIA `combobox` / `listbox` semantics with `aria-selected` and `aria-disabled`.
 - ✅ Headless — state via `data-selected`, `data-highlighted`, `data-popup-open`, `data-placeholder`, `data-disabled`.
 
@@ -121,6 +122,7 @@ the behavior of a native `<select>`. Use `rdxSelectItemAlignedPosition` and
 - [Template-driven Forms](../examples/select--template-driven-forms.md)
 - [Typed application wrapper](../examples/select--typed-application-wrapper.md)
 - [Base UI compatibility](../examples/select--base-ui-compatibility.md)
+- [Labels and control ids](../examples/select--labels-and-control-ids.md)
 - [Labels before the popup opens](../examples/select--labels-before-the-popup-opens.md)
 - [Migrating existing Select consumers](../examples/select--migrating-existing-select-consumers.md)
 - [With scroll buttons](../examples/select--with-scroll-buttons.md)
