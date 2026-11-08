@@ -44,7 +44,10 @@ import {
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopper } from '@radix-ng/primitives/popper';
+import { RdxSelectItems } from './select-items';
 import { compare, valueComparator } from './utils';
+
+export type { RdxSelectItemGroup, RdxSelectItemOption, RdxSelectItems, RdxSelectLabelValue } from './select-items';
 
 export interface SelectOption {
     value: AcceptableValue | undefined;
@@ -76,7 +79,7 @@ export interface RdxSelectOpenChangeEvent {
 
 export type RdxSelectValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxSelectValueChangeReason>;
 
-/** The selection shape follows Base UI's Value / Multiple contract. Undefined is the Angular initial value. */
+/** The selection shape follows Base UI's Value / Multiple contract; undefined remains accepted from Angular bindings. */
 export type RdxSelectValueType<Value, Multiple extends boolean = boolean> =
     | (Multiple extends true ? Value[] : Value | null)
     | undefined;
@@ -94,6 +97,8 @@ export interface RdxSelectRootContext extends RdxFormUiStateContext {
     dir: Signal<Direction>;
     value: Signal<AcceptableValue | AcceptableValue[] | undefined>;
     multiple: Signal<boolean>;
+    items: Signal<RdxSelectItems | undefined>;
+    highlightItemOnHover: Signal<boolean>;
     isItemEqualToValue: Signal<ItemValueComparator<AcceptableValue> | undefined>;
     itemToStringLabel: Signal<((value: AcceptableValue) => string) | undefined>;
     open: Signal<boolean>;
@@ -128,6 +133,8 @@ const context = (): RdxSelectRootContext => {
         dir: context.dir,
         value: context.value,
         multiple: context.multiple,
+        items: context.items,
+        highlightItemOnHover: context.highlightItemOnHover,
         isItemEqualToValue: context.isItemEqualToValue,
         itemToStringLabel: context.itemToStringLabel,
         open: context.open,
@@ -232,6 +239,12 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
         transform: (value) => booleanAttribute(value) as Multiple
     });
 
+    /** Labels for Select.Value, available even when the popup's items are not mounted. */
+    readonly items = input<RdxSelectItems<Value>>();
+
+    /** Whether pointer movement highlights items. Keyboard navigation is independent. */
+    readonly highlightItemOnHover = input(true, { transform: booleanAttribute });
+
     readonly disabled = input(false, { transform: booleanAttribute });
     private readonly cvaDisabled = signal(false);
     readonly disabledState = computed(() => this.disabled() || this.cvaDisabled());
@@ -304,7 +317,10 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
         },
         defaultValue: () => {
             const defaultValue = this.defaultValue();
-            return defaultValue === undefined ? this.value() : defaultValue;
+            const emptyValue = (this.multiple() ? [] : null) as RdxSelectValueType<Value, Multiple>;
+            if (defaultValue !== undefined) return defaultValue ?? emptyValue;
+            const value = this.value();
+            return value === undefined ? emptyValue : value;
         },
         onReset: (value) => {
             this.value.set(value);
@@ -322,10 +338,16 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
         // change is not snapped back by the still-set default input).
         effect(() => {
             const defaultValue = this.defaultValue();
-            if (!this.hasAppliedDefaultValue && defaultValue !== undefined) {
+            const multiple = this.multiple();
+            if (!this.hasAppliedDefaultValue) {
                 this.hasAppliedDefaultValue = true;
                 if (untracked(this.value) === undefined) {
-                    this.value.set(defaultValue);
+                    this.value.set(
+                        (multiple ? (defaultValue ?? []) : (defaultValue ?? null)) as RdxSelectValueType<
+                            Value,
+                            Multiple
+                        >
+                    );
                 }
             }
         });

@@ -121,6 +121,8 @@ the behavior of a native `<select>`. Use `rdxSelectItemAlignedPosition` and
 - [Template-driven Forms](../examples/select--template-driven-forms.md)
 - [Typed application wrapper](../examples/select--typed-application-wrapper.md)
 - [Base UI compatibility](../examples/select--base-ui-compatibility.md)
+- [Labels before the popup opens](../examples/select--labels-before-the-popup-opens.md)
+- [Migrating existing Select consumers](../examples/select--migrating-existing-select-consumers.md)
 - [With scroll buttons](../examples/select--with-scroll-buttons.md)
 - [Item-aligned positioning](../examples/select--item-aligned-positioning.md)
 - [Item-aligned with scroll](../examples/select--item-aligned-with-scroll.md)

@@ -1,13 +1,13 @@
 import { afterNextRender, computed, Directive, ElementRef, inject, input } from '@angular/core';
-import { AcceptableValue, itemToStringLabel as defaultItemToStringLabel } from '@radix-ng/primitives/core';
+import { hasSelectNullLabel, resolveSelectLabel } from './select-items';
 import { injectSelectRootContext } from './select-root';
-import { valueComparator } from './utils';
 
 @Directive({
     selector: 'span[rdxSelectValue]',
     exportAs: 'rdxSelectedValue',
     host: {
-        '[style.pointer-events]': '"none"'
+        '[style.pointer-events]': '"none"',
+        '[attr.data-placeholder]': 'rootContext.isEmptyModelValue() ? "" : undefined'
     }
 })
 export class RdxSelectValue {
@@ -18,24 +18,22 @@ export class RdxSelectValue {
     readonly placeholder = input<string>();
 
     readonly slotText = computed(() => {
-        return this.selectedLabel().length ? this.selectedLabel().join(', ') : this.placeholder();
+        if (
+            this.rootContext.isEmptyModelValue() &&
+            this.placeholder() !== undefined &&
+            !hasSelectNullLabel(this.rootContext.items())
+        ) {
+            return this.placeholder();
+        }
+        return this.selectedLabel().join(', ');
     });
 
     readonly selectedLabel = computed(() => {
-        const options = Array.from(this.rootContext.optionsSet());
+        const items = this.rootContext.items();
         const customLabel = this.rootContext.itemToStringLabel();
 
-        const labelFor = (value?: AcceptableValue): string => {
-            if (customLabel && value !== undefined && value !== null) {
-                return customLabel(value);
-            }
-            const option = options.find((o) => valueComparator(value, o.value, this.rootContext.isItemEqualToValue()));
-            return option?.textContent ?? defaultItemToStringLabel(value);
-        };
-
         const value = this.rootContext.value();
-        const list = Array.isArray(value) ? value.map((v) => labelFor(v)) : [labelFor(value)];
-        return list.filter(Boolean);
+        return (Array.isArray(value) ? value : [value]).map((entry) => resolveSelectLabel(entry, items, customLabel));
     });
 
     constructor() {

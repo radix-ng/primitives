@@ -266,9 +266,19 @@
           "description": "Id of an external form that owns this control."
         },
         {
+          "name": "highlightItemOnHover",
+          "default": "true",
+          "description": "Whether pointer movement highlights items. Keyboard navigation is independent."
+        },
+        {
           "name": "isItemEqualToValue",
           "type": "ItemValueComparator<Value>",
           "description": "How item values are compared for equality — a function `(a, b) => boolean` or an object key."
+        },
+        {
+          "name": "items",
+          "type": "RdxSelectItems<Value>",
+          "description": "Labels for Select.Value, available even when the popup's items are not mounted."
         },
         {
           "name": "itemToStringLabel",

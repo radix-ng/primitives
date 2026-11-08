@@ -173,7 +173,7 @@ describe('Select onOpenChange', () => {
         popup()?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
         await settle();
 
-        expect(host.value()).toBeUndefined();
+        expect(host.value()).toBeNull();
         expect(host.open()).toBe(false);
         expect(host.valueEvents.at(-1)?.eventDetails.isCanceled()).toBe(true);
         expect(host.valueEvents.at(-1)?.eventDetails.reason).toBe('item-press');

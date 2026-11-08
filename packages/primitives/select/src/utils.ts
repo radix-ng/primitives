@@ -1,4 +1,4 @@
-import { AcceptableValue, getActiveElement, isEqual } from '@radix-ng/primitives/core';
+import { AcceptableValue, getActiveElement } from '@radix-ng/primitives/core';
 
 export const OPEN_KEYS = [' ', 'Enter', 'ArrowUp', 'ArrowDown'];
 export const SELECTION_KEYS = [' ', 'Enter'];
@@ -24,13 +24,11 @@ export function valueComparator<T>(
 export function compare<T>(value?: T, currentValue?: T, comparator?: string | ((a: T, b: T) => boolean)) {
     if (value === undefined || currentValue === undefined) return false;
 
-    if (typeof value === 'string') return value === currentValue;
-
     if (typeof comparator === 'function') return comparator(value, currentValue);
 
     if (typeof comparator === 'string') return value?.[comparator as keyof T] === currentValue?.[comparator as keyof T];
 
-    return isEqual(value, currentValue);
+    return Object.is(value, currentValue);
 }
 
 export function shouldShowPlaceholder(value?: AcceptableValue | AcceptableValue[]): boolean {

@@ -134,10 +134,12 @@ export class RdxSelectItem {
 
     onPointerLeave(event: Event) {
         if (event.defaultPrevented) return;
+        if (!this.rootContext.highlightItemOnHover()) return;
         this.contentContext.onItemLeave?.();
     }
 
     onPointerMove(event: PointerEvent) {
+        if (!this.rootContext.highlightItemOnHover()) return;
         // WebKit fires zero-delta moves while the list scrolls under a still cursor.
         if (isStationaryWebKitPointer(event)) {
             return;

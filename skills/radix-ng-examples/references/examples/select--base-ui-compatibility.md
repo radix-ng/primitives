@@ -6,6 +6,7 @@
 
 The [versioned Select parity matrix](https://github.com/radix-ng/primitives/blob/main/packages/primitives/select/PARITY.md)
 records the exact Base UI source commit, Angular adaptations, linked coverage and remaining gaps.
-The pilot preserves the existing runtime defaults and equality behavior; it does not claim complete
-behavioral parity. In particular, the initial value is still `undefined`, default object comparison is
-structural, and Root's upstream `items` and `highlightItemOnHover` inputs are not implemented yet.
+The Select contract now initializes an empty single selection to `null` and an empty multiple
+selection to `[]`, compares values with `Object.is` by default, and exposes `items` and
+`highlightItemOnHover`. The matrix tracks the remaining differences; this is not a claim of complete
+behavioral parity.
