@@ -21,10 +21,11 @@ interaction attributes.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { RdxAutocompleteInput, RdxAutocompleteLabel, RdxAutocompleteRoot } from '@radix-ng/primitives/autocomplete';
 import { RdxComboboxInput, RdxComboboxLabel, RdxComboboxRoot } from '@radix-ng/primitives/combobox';
 import { RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
-import { cn, demoButton, demoInput } from '../../storybook/styles';
+import { demoInput, demoSelect } from '../../storybook/styles';
 import { _importsSelect } from '../index';
 import { SelectTypedControl } from './select-typed-control';
 
@@ -33,6 +34,8 @@ import { SelectTypedControl } from './select-typed-control';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         _importsSelect,
+        LucideCheck,
+        LucideChevronDown,
         SelectTypedControl,
         RdxFieldRoot,
         RdxFieldLabel,
@@ -55,23 +58,20 @@ import { SelectTypedControl } from './select-typed-control';
                 @if (help()) {
                     <p class="text-muted-foreground text-xs">Choose the country you live in.</p>
                 }
-                <button [class]="buttonClass" rdxSelectTrigger>
+                <button class="w-full" [class]="s.trigger" rdxSelectTrigger>
                     <span #display="rdxSelectedValue" rdxSelectValue placeholder="Choose a country">
                         {{ display.slotText() }}
                     </span>
+                    <svg [class]="s.icon" lucideChevronDown size="16" aria-hidden="true" />
                 </button>
-                <div class="z-50" *rdxSelectPortal [sideOffset]="4" rdxSelectPositioner>
-                    <div
-                        class="border-border bg-popover text-popover-foreground w-64 rounded-md border p-1 shadow-md"
-                        rdxSelectPopup
-                    >
-                        <div rdxSelectList>
+                <div *rdxSelectPortal [class]="s.positioner" [sideOffset]="4" rdxSelectPositioner>
+                    <div [class]="s.popup" rdxSelectPopup>
+                        <div [class]="s.list" rdxSelectList>
                             @for (country of countries; track country) {
-                                <div
-                                    class="data-[highlighted]:bg-muted rounded-sm px-2 py-1.5 text-sm outline-none"
-                                    [value]="country"
-                                    rdxSelectItem
-                                >
+                                <div [class]="s.item" [value]="country" rdxSelectItem>
+                                    <span [class]="s.itemIndicator" rdxSelectItemIndicator aria-hidden="true">
+                                        <svg [class]="s.icon" lucideCheck size="16" aria-hidden="true" />
+                                    </span>
                                     <span rdxSelectItemText>{{ country }}</span>
                                 </div>
                             }
@@ -95,14 +95,10 @@ import { SelectTypedControl } from './select-typed-control';
     `
 })
 export class SelectLabels {
+    protected readonly s = demoSelect;
+
     readonly help = signal(false);
     readonly countries = ['France', 'Japan', 'United Kingdom'];
-    protected readonly buttonClass = cn(
-        demoButton.base,
-        demoButton.outline,
-        demoButton.size.md,
-        'w-full justify-start'
-    );
     protected readonly inputClass = demoInput;
 }
 ```

@@ -644,7 +644,7 @@ const formSchema = z.object({
                             <span #areaValue="rdxSelectedValue" rdxSelectValue placeholder="Select an area…">
                                 {{ areaValue.slotText() }}
                             </span>
-                            <svg lucideChevronDown size="16"></svg>
+                            <svg class="size-4 shrink-0" lucideChevronDown size="16" aria-hidden="true"></svg>
                         </button>
                         <div class="z-[100]" *rdxSelectPortal [sideOffset]="6" rdxSelectPositioner>
                             <div [class]="selectPopup" rdxSelectPopup>
@@ -652,7 +652,12 @@ const formSchema = z.object({
                                     @for (option of areas; track option.value) {
                                         <div [class]="selectItem" [value]="option.value" rdxSelectItem>
                                             <span [class]="selectIndicator" rdxSelectItemIndicator>
-                                                <svg lucideCheck size="16"></svg>
+                                                <svg
+                                                    class="size-4 shrink-0"
+                                                    lucideCheck
+                                                    size="16"
+                                                    aria-hidden="true"
+                                                ></svg>
                                             </span>
                                             <span rdxSelectItemText>{{ option.label }}</span>
                                         </div>

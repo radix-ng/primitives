@@ -88,6 +88,33 @@ export const demoInput = cn(
     demoFocusRing
 );
 
+/** Select parts shared by standalone examples, typed wrappers and form recipes. */
+export const demoSelect = {
+    trigger: cn(
+        'inline-flex min-h-9 items-center justify-between gap-2 rounded-md border border-border bg-background px-3 py-1.5 text-start text-sm text-foreground shadow-sm',
+        'data-[placeholder]:text-muted-foreground hover:bg-muted',
+        'disabled:cursor-not-allowed disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',
+        'data-[invalid]:border-destructive data-[invalid]:aria-invalid:ring-destructive/30',
+        demoFocusRing
+    ),
+    icon: 'size-4 shrink-0',
+    positioner: 'z-[100]',
+    popup: cn(
+        'min-w-[var(--anchor-width,10rem)] rounded-lg border border-border bg-popover text-popover-foreground shadow-md',
+        'will-change-[opacity,transform]'
+    ),
+    list: 'p-1',
+    item: cn(
+        'relative flex min-h-7 cursor-default items-center gap-2 rounded-sm ps-6 pe-8 text-sm leading-none text-popover-foreground outline-none select-none',
+        'data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground',
+        'data-[disabled]:pointer-events-none data-[disabled]:text-muted-foreground data-[disabled]:opacity-50'
+    ),
+    itemIndicator: 'absolute start-0 inline-flex w-6 items-center justify-center',
+    groupLabel: 'px-6 text-xs leading-6 text-muted-foreground',
+    separator: 'mx-1 my-1 h-px bg-border',
+    scrollButton: 'flex h-7 cursor-default items-center justify-center bg-popover text-muted-foreground hover:bg-muted'
+} as const;
+
 /** One-character input groups used by the headless OTP Field examples. */
 export const demoOtpField = {
     root: 'flex items-center gap-2',

@@ -11,6 +11,7 @@
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
+import { demoSelect } from '../../storybook/styles';
 import {
     RdxSelectItem,
     RdxSelectItemIndicator,
@@ -62,34 +63,20 @@ interface SelectEventLogEntry {
                         (onValueChange)="handleValueChange($event)"
                         rdxSelectRoot
                     >
-                        <button
-                            class="border-border bg-background text-foreground data-[placeholder]:text-muted-foreground hover:bg-muted focus-visible:ring-ring focus-visible:ring-offset-background inline-flex h-9 w-full items-center justify-between gap-2 rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-                            aria-label="Select a framework"
-                            rdxSelectTrigger
-                        >
+                        <button class="w-full" [class]="s.trigger" aria-label="Select a framework" rdxSelectTrigger>
                             <span #selectedValue="rdxSelectedValue" rdxSelectValue placeholder="Select a framework">
                                 {{ selectedValue.slotText() }}
                             </span>
-                            <svg lucideChevronDown size="16" />
+                            <svg [class]="s.icon" lucideChevronDown size="16" aria-hidden="true" />
                         </button>
 
-                        <div class="z-[100]" *rdxSelectPortal sideOffset="6" rdxSelectPositioner>
-                            <div
-                                class="border-border bg-popover text-popover-foreground min-w-48 rounded-lg border p-1 shadow-md"
-                                rdxSelectPopup
-                            >
-                                <div rdxSelectList>
+                        <div *rdxSelectPortal [class]="s.positioner" sideOffset="6" rdxSelectPositioner>
+                            <div [class]="s.popup" rdxSelectPopup>
+                                <div [class]="s.list" rdxSelectList>
                                     @for (option of options; track option.value) {
-                                        <div
-                                            class="data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground relative flex h-8 cursor-default items-center rounded-sm pr-8 pl-7 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                                            [value]="option.value"
-                                            rdxSelectItem
-                                        >
-                                            <span
-                                                class="absolute left-2 inline-flex size-4 items-center justify-center"
-                                                rdxSelectItemIndicator
-                                            >
-                                                <svg lucideCheck size="14" />
+                                        <div [class]="s.item" [value]="option.value" rdxSelectItem>
+                                            <span [class]="s.itemIndicator" rdxSelectItemIndicator>
+                                                <svg [class]="s.icon" lucideCheck size="16" aria-hidden="true" />
                                             </span>
                                             <span rdxSelectItemText>{{ option.label }}</span>
                                         </div>
@@ -177,6 +164,8 @@ interface SelectEventLogEntry {
     `
 })
 export class SelectEvents {
+    protected readonly s = demoSelect;
+
     readonly open = signal(false);
     readonly value = signal<string | undefined>(undefined);
     readonly cancelNextOpen = signal(false);
