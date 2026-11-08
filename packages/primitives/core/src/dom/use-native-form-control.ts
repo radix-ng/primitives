@@ -1,5 +1,6 @@
 import { isPlatformBrowser } from '@angular/common';
 import {
+    afterEveryRender,
     afterNextRender,
     DestroyRef,
     effect,
@@ -10,6 +11,7 @@ import {
     signal,
     untracked
 } from '@angular/core';
+import { autoUpdate } from '@floating-ui/dom';
 import { itemToStringValue as defaultItemToStringValue } from '../item-helpers';
 
 /** Angular callback counterpart of a ref to a generated native input. Called with null on cleanup. */
@@ -17,6 +19,8 @@ export type RdxNativeInputRef = (input: HTMLInputElement | null) => void;
 
 /** @internal A persistent, visually hidden input for autofill, validation and native focus. */
 export interface RdxNativeFormInputOptions {
+    /** Visible control whose bounds anchor the browser's native validation message. */
+    anchor?: () => HTMLElement | null;
     type: () => 'text' | 'hidden';
     name: () => string | undefined;
     value: () => string;
@@ -112,11 +116,64 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
     let inputChange = 0;
     let invalidInputGrown = false;
     let removeInputListeners: () => void = () => undefined;
+    let validationAnchor: HTMLElement | null = null;
+    let stopAnchorTracking: () => void = () => undefined;
     let defaultValue: T | undefined;
     let defaultValues: readonly string[] = [];
     let hasDefaultValue = false;
     let alive = true;
     let viewClaimed = false;
+
+    const clearValidationAnchor = () => {
+        stopAnchorTracking();
+        stopAnchorTracking = () => undefined;
+        validationAnchor = null;
+    };
+
+    const positionValidationInput = () => {
+        const input = inputElement();
+        const anchor = validationAnchor;
+        if (!input || !anchor?.isConnected) return;
+        const bounds = anchor.getBoundingClientRect();
+        if (!bounds.width || !bounds.height) return;
+
+        // Measure a CSS pixel at the fixed origin first: a transformed containing block changes
+        // both the origin and scale. This also keeps coordinates local to the owning iframe.
+        Object.assign(input.style, {
+            position: 'fixed',
+            margin: '0',
+            top: '0',
+            left: '0',
+            width: '1px',
+            height: '1px'
+        });
+        const origin = input.getBoundingClientRect();
+        const scaleX = origin.width || 1;
+        const scaleY = origin.height || 1;
+        Object.assign(input.style, {
+            left: `${(bounds.left - origin.left) / scaleX}px`,
+            top: `${(bounds.top - origin.top) / scaleY}px`,
+            width: `${bounds.width / scaleX}px`,
+            height: `${bounds.height / scaleY}px`
+        });
+    };
+
+    const anchorValidationInput = () => {
+        const input = inputElement();
+        const anchor = options.input?.anchor?.();
+        if (!input || !anchor) {
+            clearValidationAnchor();
+            return;
+        }
+        if (validationAnchor === anchor) {
+            positionValidationInput();
+            return;
+        }
+        clearValidationAnchor();
+        validationAnchor = anchor;
+        // autoUpdate runs synchronously once, before the browser displays its validation UI.
+        stopAnchorTracking = autoUpdate(anchor, input, positionValidationInput);
+    };
 
     const createInput = (): HTMLInputElement => {
         const input = ownerDocument.createElement('input');
@@ -129,6 +186,7 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
             invalidInputGrown = true;
             input.style.width = input.style.height = '1px';
             options.input?.onInvalid?.(event);
+            anchorValidationInput();
         };
         const onChange = (event: Event) => {
             const value = input.value;
@@ -192,11 +250,13 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
         const required = options.input?.required?.() ?? false;
         const readOnly = options.input?.readOnly?.() ?? false;
         const nextRef = options.input?.ref?.();
+        options.input?.anchor?.();
 
         // Track every option before deferring DOM work until Angular has claimed its view.
         if (!viewClaimed) return;
 
         if (nativeControlOwnsValue && inputElement()) {
+            clearValidationAnchor();
             removeInputListeners();
             untracked(() => inputRef?.(null));
             inputRef = undefined;
@@ -228,6 +288,12 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
                 whiteSpace: 'nowrap',
                 border: '0',
                 padding: '0',
+                pointerEvents: 'none',
+                minWidth: '0',
+                minHeight: '0',
+                maxWidth: 'none',
+                maxHeight: 'none',
+                boxSizing: 'border-box',
                 margin: primaryName ? '-1px' : '0',
                 width: primaryName || invalidInputGrown ? '1px' : '0',
                 height: primaryName || invalidInputGrown ? '1px' : '0',
@@ -239,6 +305,10 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
                 input.setAttribute('data-rdx-native-form-control', '');
             }
             input.value = primaryValue ?? '';
+            if (validationAnchor) {
+                if (!input.willValidate || input.validity.valid) clearValidationAnchor();
+                else anchorValidationInput();
+            }
             if (nextRef !== inputRef) {
                 untracked(() => {
                     inputRef?.(null);
@@ -302,6 +372,13 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
         untracked(sync);
     });
 
+    // Field errors can change layout after `invalid`; keep the browser's anchor aligned before paint.
+    if (options.input?.anchor) {
+        afterEveryRender(() => {
+            if (validationAnchor) positionValidationInput();
+        });
+    }
+
     const onReset = (event: Event) => {
         if (event.target !== ownerForm() || !options.onReset || !hasDefaultValue) {
             return;
@@ -311,7 +388,11 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
         // bubble listener can still cancel the reset before the model follows it.
         queueMicrotask(() => {
             if (alive && !event.defaultPrevented) {
-                untracked(() => options.onReset!(defaultValue as T));
+                untracked(() => {
+                    clearValidationAnchor();
+                    options.onReset!(defaultValue as T);
+                    sync();
+                });
             }
         });
     };
@@ -320,6 +401,7 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
 
     destroyRef.onDestroy(() => {
         alive = false;
+        clearValidationAnchor();
         removeInputListeners();
         ownerDocument.removeEventListener('reset', onReset, true);
         for (const input of inputs) {

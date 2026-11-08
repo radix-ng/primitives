@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { LucideChevronDown } from '@lucide/angular';
 import { AcceptableValue } from '@radix-ng/primitives/core';
 import {
     provideRdxSelectRoot,
@@ -20,6 +21,7 @@ import {
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [provideRdxSelectRoot(SelectTypedControl)],
     imports: [
+        LucideChevronDown,
         RdxSelectTrigger,
         RdxSelectValue,
         RdxSelectPortal,
@@ -38,7 +40,7 @@ import {
             <span #display="rdxSelectedValue" [placeholder]="placeholder()" rdxSelectValue>
                 {{ display.slotText() }}
             </span>
-            <span aria-hidden="true">⌄</span>
+            <svg class="shrink-0" lucideChevronDown size="16" aria-hidden="true" />
         </button>
         <div class="z-50" *rdxSelectPortal [sideOffset]="4" align="start" rdxSelectPositioner>
             <div

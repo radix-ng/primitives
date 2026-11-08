@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { LucideChevronDown } from '@lucide/angular';
 import { _importsSelect, RdxSelectItemGroup } from '../index';
 
 @Component({
     selector: 'select-items',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [_importsSelect],
+    imports: [_importsSelect, LucideChevronDown],
     template: `
         <div class="flex max-w-sm flex-col gap-4">
             <div [(value)]="value" [multiple]="false" [items]="items" [highlightItemOnHover]="hover()" rdxSelectRoot>
@@ -16,7 +17,7 @@ import { _importsSelect, RdxSelectItemGroup } from '../index';
                     <span #display="rdxSelectedValue" rdxSelectValue placeholder="Choose a language">
                         {{ display.slotText() }}
                     </span>
-                    <span aria-hidden="true">⌄</span>
+                    <svg class="shrink-0" lucideChevronDown size="16" aria-hidden="true" />
                 </button>
                 <div class="z-50" *rdxSelectPortal [sideOffset]="6" rdxSelectPositioner>
                     <div

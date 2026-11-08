@@ -208,6 +208,8 @@ name without introducing a separate value store or requiring React-style ref obj
 engine or write Angular validation errors. Angular forms still own their validators and Field state.
 Use `ngNativeValidate` on the form when opting into browser validation UI with Angular forms. Native
 invalid events mark the control touched, so an Angular required validator can reveal a Field error.
+While invalid, the technical input follows the visible trigger's bounds so the browser validation
+message stays attached to the control through layout changes, scrolling and resizing.
 The example includes an external-form multiple control, native submission and reset.
 
 <Canvas of={Stories.NativeForms} />

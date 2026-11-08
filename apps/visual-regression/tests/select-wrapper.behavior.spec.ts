@@ -9,6 +9,21 @@ async function openExample(page: Page): Promise<string[]> {
     return errors;
 }
 
+test('wrapper trigger chevrons use centered SVG icons', async ({ page }) => {
+    const errors = await openExample(page);
+    for (const trigger of await page.getByRole('combobox').all()) {
+        const icon = trigger.locator('svg[lucideChevronDown]');
+        await expect(icon).toHaveCount(1);
+        const centerOffset = await icon.evaluate((element) => {
+            const icon = element.getBoundingClientRect();
+            const trigger = element.closest('button')!.getBoundingClientRect();
+            return Math.abs(icon.y + icon.height / 2 - (trigger.y + trigger.height / 2));
+        });
+        expect(centerOffset).toBeLessThan(1);
+    }
+    expect(errors).toEqual([]);
+});
+
 for (const [name, output] of [
     ['Reactive Forms country', 'reactive-value'],
     ['Signal Forms country', 'signal-value']

@@ -1,4 +1,14 @@
-import { expect, Page, test } from '@playwright/test';
+import { expect, Locator, Page, test } from '@playwright/test';
+
+async function expectValidationAtControl(input: Locator, trigger: Locator): Promise<void> {
+    await expect
+        .poll(async () => {
+            const control = await trigger.evaluate((element) => element.getBoundingClientRect().toJSON());
+            const native = await input.evaluate((element) => element.getBoundingClientRect().toJSON());
+            return Math.max(...['x', 'y', 'width', 'height'].map((key) => Math.abs(control[key] - native[key])));
+        })
+        .toBeLessThan(1);
+}
 
 async function openExample(page: Page): Promise<string[]> {
     const errors: string[] = [];
@@ -45,12 +55,51 @@ test('native validation blocks empty controls and focuses their visible triggers
     await page.getByRole('button', { name: 'Submit', exact: true }).click();
     await expect(page.getByTestId('submission')).toHaveText('Not submitted');
     await expect(page.getByRole('combobox', { name: 'Country', exact: true })).toBeFocused();
+    await expectValidationAtControl(
+        page.locator('input[data-rdx-native-input][name="country"]'),
+        page.getByRole('combobox', { name: 'Country', exact: true })
+    );
     await expect(page.getByText('Choose a country.', { exact: true })).toBeVisible();
     await autofill(page, 'CA');
     await expect(page.getByTestId('country-value')).toHaveText('CA');
     await page.getByRole('button', { name: 'Submit', exact: true }).click();
     await expect(page.getByRole('combobox', { name: 'Destinations', exact: true })).toBeFocused();
+    await expectValidationAtControl(
+        page.locator('input[data-rdx-native-input]:not([name])'),
+        page.getByRole('combobox', { name: 'Destinations', exact: true })
+    );
     await expect(page.getByTestId('submission')).toHaveText('Not submitted');
+    expect(errors).toEqual([]);
+});
+
+test('native validation stays anchored through transformed containers, layout changes, scroll and resize', async ({
+    page
+}) => {
+    const errors = await openExample(page);
+    await page.evaluate(() => {
+        const root = document.getElementById('storybook-root')!;
+        root.style.transform = 'translate(35px, 20px) scale(0.9)';
+        root.style.transformOrigin = 'top left';
+        document.body.style.minHeight = '1800px';
+    });
+    await autofill(page, 'CA');
+    await expect(page.getByTestId('country-value')).toHaveText('CA');
+    await page.getByRole('button', { name: 'Submit', exact: true }).click();
+    const input = page.locator('input[data-rdx-native-input]:not([name])');
+    const trigger = page.getByRole('combobox', { name: 'Destinations', exact: true });
+    await expect(trigger).toBeFocused();
+    await expectValidationAtControl(input, trigger);
+    await page.evaluate(() => {
+        const form = document.getElementById('native-select-form')!;
+        const spacer = document.createElement('div');
+        spacer.style.height = '48px';
+        form.before(spacer);
+    });
+    await expectValidationAtControl(input, trigger);
+    await page.evaluate(() => window.scrollTo(0, 120));
+    await expectValidationAtControl(input, trigger);
+    await page.setViewportSize({ width: 1000, height: 650 });
+    await expectValidationAtControl(input, trigger);
     expect(errors).toEqual([]);
 });
 

@@ -353,6 +353,7 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
                 : serializeNativeFormValue(value);
         },
         input: {
+            anchor: () => this.triggerElement(),
             type: () =>
                 this.field || this.effectiveName() || this.autoComplete() || this.requiredState() || this.inputRef()
                     ? 'text'
