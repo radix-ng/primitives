@@ -73,7 +73,7 @@ type CopyTarget = 'install' | 'skill';
         LucideZap
     ],
     template: `
-        <main class="bg-background text-foreground min-h-screen">
+        <main class="bg-background text-foreground min-h-screen break-normal">
             <button
                 class="border-border bg-card hover:bg-muted absolute top-4 right-4 z-50 inline-flex size-10 items-center justify-center rounded-full border text-[var(--landing-accent-text)] shadow-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--landing-accent-text)] sm:fixed"
                 [attr.aria-label]="'Switch to ' + (theme.theme() === 'light' ? 'dark' : 'light') + ' theme'"
@@ -111,7 +111,8 @@ type CopyTarget = 'install' | 'skill';
                             class="mb-5 max-w-3xl text-4xl leading-[1.04] font-bold tracking-normal text-balance sm:text-5xl sm:leading-[1.02] lg:text-6xl"
                         >
                             Headless UI
-                            <em class="text-[var(--landing-accent-text)] not-italic">primitives</em>
+                            <em class="whitespace-nowrap text-[var(--landing-accent-text)] not-italic">primitives</em>
+                            &ngsp;
                             <span class="sm:whitespace-nowrap">for Angular.</span>
                         </h1>
 
@@ -120,7 +121,7 @@ type CopyTarget = 'install' | 'skill';
                             <strong class="text-foreground font-semibold whitespace-nowrap">Base UI</strong>
                             to Angular. Primitives ship no styles and expose their state through
                             <code
-                                class="rounded bg-[color:var(--landing-accent-tint)] px-1.5 py-0.5 font-mono text-[0.85em] text-[var(--landing-accent-text)]"
+                                class="rounded bg-[color:var(--landing-accent-tint)] px-1.5 py-0.5 font-mono text-[0.85em] whitespace-nowrap text-[var(--landing-accent-text)]"
                             >
                                 data-*
                             </code>
@@ -129,7 +130,7 @@ type CopyTarget = 'install' | 'skill';
                             or adopt them incrementally.
                             <span class="mt-3 block">
                                 Reactive Forms,
-                                <code class="font-mono text-[0.85em]">ngModel</code>
+                                <code class="font-mono text-[0.85em] whitespace-nowrap">ngModel</code>
                                 and Signal Forms share the same controls, Field anatomy and accessibility contract.
                             </span>
                         </p>
@@ -289,9 +290,9 @@ type CopyTarget = 'install' | 'skill';
                                 <span class="text-sm">Email notifications</span>
                                 <div class="flex items-center justify-between gap-3 sm:justify-start">
                                     <span class="text-muted-foreground font-mono text-[0.72rem] whitespace-nowrap">
-                                        data-checked=&quot;
+                                        <ng-container>data-checked=&quot;</ng-container>
                                         <b class="text-primary font-semibold">{{ emailEnabled() }}</b>
-                                        &quot;
+                                        <ng-container>&quot;</ng-container>
                                     </span>
                                     <button
                                         class="bg-muted relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-0 p-0 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--landing-accent-text)] data-[checked]:bg-[color:var(--landing-accent-fill)]"
@@ -312,9 +313,9 @@ type CopyTarget = 'install' | 'skill';
                                 <span class="text-sm">Accept the license terms</span>
                                 <div class="flex items-center justify-between gap-3 sm:justify-start">
                                     <span class="text-muted-foreground font-mono text-[0.72rem] whitespace-nowrap">
-                                        data-state=&quot;
+                                        <ng-container>data-state=&quot;</ng-container>
                                         <b class="text-primary font-semibold">{{ checkboxState() }}</b>
-                                        &quot;
+                                        <ng-container>&quot;</ng-container>
                                     </span>
                                     <div
                                         [checked]="licenseAccepted()"
@@ -341,9 +342,9 @@ type CopyTarget = 'install' | 'skill';
                                 <span class="text-sm">Marketing emails</span>
                                 <div class="flex items-center justify-between gap-3 sm:justify-start">
                                     <span class="text-muted-foreground font-mono text-[0.72rem] whitespace-nowrap">
-                                        data-checked=&quot;
+                                        <ng-container>data-checked=&quot;</ng-container>
                                         <b class="text-primary font-semibold">{{ marketingEnabled() }}</b>
-                                        &quot;
+                                        <ng-container>&quot;</ng-container>
                                     </span>
                                     <button
                                         class="bg-muted relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-0 p-0 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--landing-accent-text)] data-[checked]:bg-[color:var(--landing-accent-fill)]"
@@ -435,7 +436,9 @@ type CopyTarget = 'install' | 'skill';
                             Angular owns the model, validation, submission and reset.
                             <span class="whitespace-nowrap">Radix NG</span>
                             connects that state to the same headless controls, accessible Field parts and
-                            <code class="font-mono text-[0.9em] text-[var(--landing-accent-text)]">data-*</code>
+                            <code class="font-mono text-[0.9em] whitespace-nowrap text-[var(--landing-accent-text)]">
+                                data-*
+                            </code>
                             styling contract; it does not add a parallel form engine.
                         </p>
 
@@ -469,8 +472,8 @@ type CopyTarget = 'install' | 'skill';
                                     <svg class="size-3.5" lucideCheck></svg>
                                 </span>
                                 <span>
-                                    Async validation, backend errors, touched / dirty, submitting and reset follow
-                                    Angular's lifecycle.
+                                    Async validation, backend errors, touched and dirty state, submission and reset
+                                    follow Angular's lifecycle.
                                 </span>
                             </li>
                         </ul>
@@ -579,9 +582,12 @@ type CopyTarget = 'install' | 'skill';
                                         Bring your own element.
                                     </b>
                                     The directive attaches behavior to your
-                                    <code class="font-mono">&lt;button&gt;</code>
-                                    ,
-                                    <code class="font-mono">&lt;span&gt;</code>
+                                    <span class="whitespace-nowrap">
+                                        <code class="font-mono">&lt;button&gt;</code>
+                                        <ng-container>,</ng-container>
+                                    </span>
+                                    &ngsp;
+                                    <code class="font-mono whitespace-nowrap">&lt;span&gt;</code>
                                     or component.
                                 </span>
                             </div>
@@ -606,10 +612,13 @@ type CopyTarget = 'install' | 'skill';
                                     <b class="text-foreground font-semibold whitespace-nowrap">
                                         Pass through attributes.
                                     </b>
-                                    &nbsp;
-                                    <code class="font-mono">class</code>
-                                    ,
-                                    <code class="font-mono">id</code>
+                                    &ngsp;
+                                    <span class="whitespace-nowrap">
+                                        <code class="font-mono">class</code>
+                                        <ng-container>,</ng-container>
+                                    </span>
+                                    &ngsp;
+                                    <code class="font-mono whitespace-nowrap">id</code>
                                     and ARIA all forward to the host element.
                                 </span>
                             </div>
@@ -622,8 +631,11 @@ type CopyTarget = 'install' | 'skill';
                                 <span class="text-muted-foreground text-sm leading-6">
                                     <b class="text-foreground font-semibold whitespace-nowrap">Style the state.</b>
                                     The primitive publishes
-                                    <code class="font-mono">data-*</code>
-                                    ; your CSS decides how each state looks.
+                                    <span class="whitespace-nowrap">
+                                        <code class="font-mono">data-*</code>
+                                        <ng-container>;</ng-container>
+                                    </span>
+                                    your CSS decides how each state looks.
                                 </span>
                             </div>
                         </div>
@@ -678,9 +690,9 @@ type CopyTarget = 'install' | 'skill';
                                             >
                                                 data-*
                                             </code>
-                                            contract
+                                            contract,
                                         </span>
-                                        , ARIA and keyboard rules
+                                        ARIA and keyboard rules
                                         <span class="whitespace-nowrap">up front.</span>
                                     </span>
                                 </div>
