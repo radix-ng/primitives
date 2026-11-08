@@ -98,6 +98,7 @@ export const demoSelect = {
         demoFocusRing
     ),
     icon: 'size-4 shrink-0',
+    arrow: demoArrow('text-popover'),
     positioner: 'z-[100]',
     popup: cn(
         'min-w-[var(--anchor-width,10rem)] rounded-lg border border-border bg-popover text-popover-foreground shadow-md',

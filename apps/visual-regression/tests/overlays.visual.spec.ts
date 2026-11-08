@@ -55,6 +55,13 @@ test('select — open', async ({ page }) => {
     await shoot(page, 'select-default-open.png');
 });
 
+test('select — arrow', async ({ page }) => {
+    await gotoStory(page, 'primitives-select--arrow');
+    await page.getByRole('combobox').click();
+    await expect(page.locator('[rdxSelectArrow]')).toBeVisible();
+    await shoot(page, 'select-arrow-open.png');
+});
+
 test('context-menu — open', async ({ page }) => {
     await gotoStory(page, 'primitives-context-menu--default');
     await page.locator('[rdxContextMenuTrigger]').first().click({ button: 'right' });

@@ -66,6 +66,7 @@ export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
     readonly contentElement = contentChild.required(RdxSelectItemAlignedPositionContent);
 
     constructor() {
+        const injector = inject(Injector);
         afterNextRender(() => {
             this.position();
             if (this.contentElement().currentElementRef.nativeElement) {
@@ -73,15 +74,12 @@ export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
                     window.getComputedStyle(this.contentElement().currentElementRef.nativeElement).zIndex
                 );
             }
-        });
-
-        const injector = inject(Injector);
-
-        // Resize and position when trigger element changes
-        resizeEffect({
-            injector,
-            element: this.rootContext.triggerElement,
-            onResize: () => this.position()
+            // Observing layout is browser-only, just like the initial placement above.
+            resizeEffect({
+                injector,
+                element: this.rootContext.triggerElement,
+                onResize: () => this.position()
+            });
         });
     }
 

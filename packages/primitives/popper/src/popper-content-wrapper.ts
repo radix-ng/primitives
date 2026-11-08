@@ -1,3 +1,4 @@
+import { isPlatformBrowser } from '@angular/common';
 import {
     afterNextRender,
     afterRenderEffect,
@@ -13,6 +14,7 @@ import {
     linkedSignal,
     numberAttribute,
     output,
+    PLATFORM_ID,
     Provider,
     resource,
     Signal,
@@ -128,6 +130,7 @@ export const [injectPopperContentWrapperContext, providePopperContentWrapperCont
     }
 })
 export class RdxPopperContentWrapper {
+    private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
     private readonly elementRef = inject(ElementRef);
     private readonly injector = inject(Injector);
 
@@ -363,7 +366,7 @@ export class RdxPopperContentWrapper {
         params: () => this.positionParams(),
         loader: ({ params }) => {
             // Skip computing a position for a paused (closed keep-mounted) positioner.
-            if (!params.positioningActive || !params.anchor) {
+            if (!this.isBrowser || !params.positioningActive || !params.anchor) {
                 return Promise.resolve(null);
             }
 

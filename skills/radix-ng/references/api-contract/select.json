@@ -4,6 +4,17 @@
   "section": "components",
   "parts": [
     {
+      "directive": "RdxSelectArrow",
+      "selector": "[rdxSelectArrow]",
+      "exportAs": "rdxSelectArrow",
+      "description": "Decorative pointer from the popup to its trigger. Uses the shared Popper arrow geometry and\nstays hidden while the selected item is aligned with the trigger.",
+      "hostDirectives": [
+        "RdxPopperArrow"
+      ],
+      "inputs": [],
+      "outputs": []
+    },
+    {
       "directive": "RdxSelectBackdrop",
       "selector": "[rdxSelectBackdrop]",
       "exportAs": "rdxSelectBackdrop",

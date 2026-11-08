@@ -1,3 +1,4 @@
+import { RdxSelectArrow } from './src/select-arrow';
 import { RdxSelectBackdrop } from './src/select-backdrop';
 import { RdxSelectGroup } from './src/select-group';
 import { RdxSelectGroupLabel } from './src/select-group-label';
@@ -19,6 +20,7 @@ import { RdxSelectSeparator } from './src/select-separator';
 import { RdxSelectTrigger } from './src/select-trigger';
 import { RdxSelectValue } from './src/select-value';
 
+export * from './src/select-arrow';
 export * from './src/select-backdrop';
 export * from './src/select-group';
 export * from './src/select-group-label';
@@ -49,6 +51,7 @@ export const _importsSelect = [
     RdxSelectTrigger,
     RdxSelectValue,
     RdxSelectPopup,
+    RdxSelectArrow,
     RdxSelectList,
     RdxSelectLabel,
     RdxSelectItemIndicator,

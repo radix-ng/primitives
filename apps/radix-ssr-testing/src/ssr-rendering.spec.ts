@@ -5,7 +5,7 @@ import { Component, provideZonelessChangeDetection, Type } from '@angular/core';
 import { bootstrapApplication, BootstrapContext, provideClientHydration } from '@angular/platform-browser';
 import { provideServerRendering, renderApplication } from '@angular/platform-server';
 import { RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
-import { RdxSelectLabel, RdxSelectRoot, RdxSelectTrigger } from '@radix-ng/primitives/select';
+import { _importsSelect, RdxSelectLabel, RdxSelectRoot, RdxSelectTrigger } from '@radix-ng/primitives/select';
 import { describe, expect, it, vi } from 'vitest';
 import AccordionPage from './app/components/accordion/page';
 import AvatarPage from './app/components/avatar/page';
@@ -103,6 +103,34 @@ class NativeSelectPage {
 })
 class LabelledSelectPage {}
 
+@Component({
+    selector: 'app-select-arrows',
+    imports: [_importsSelect],
+    template: `
+        <ng-container [modal]="false" rdxSelectRoot>
+            <button rdxSelectTrigger>Fruit</button>
+            <div rdxSelectPositioner>
+                <div rdxSelectPopup>
+                    <div id="server-popper-arrow" rdxSelectArrow></div>
+                    <div rdxSelectList></div>
+                </div>
+            </div>
+        </ng-container>
+        <ng-container [modal]="false" rdxSelectRoot>
+            <button rdxSelectTrigger>Fruit</button>
+            <div rdxSelectItemAlignedPosition>
+                <div rdxSelectPopup>
+                    <div rdxSelectItemAlignedPositionContent>
+                        <div id="server-aligned-arrow" rdxSelectArrow></div>
+                        <div rdxSelectList></div>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    `
+})
+class SelectArrowsPage {}
+
 function renderToString(selector: string, component: Type<unknown>): Promise<string> {
     return renderApplication(
         (context: BootstrapContext) =>
@@ -118,6 +146,15 @@ function renderToString(selector: string, component: Type<unknown>): Promise<str
 }
 
 describe('SSR rendering', () => {
+    it('renders decorative Select arrows without running browser geometry on the server', async () => {
+        const html = await renderToString('app-select-arrows', SelectArrowsPage);
+        expect(html).toContain('id="server-popper-arrow"');
+        expect(html).not.toContain('<svg');
+        const aligned = /<div[^>]*id="server-aligned-arrow"[^>]*>/.exec(html)?.[0];
+        expect(aligned).toContain('hidden=""');
+        expect(aligned).toContain('aria-hidden="true"');
+        expect(html).toMatch(/ngh=/);
+    });
     it('renders label associations and forwarded control ids before hydration', async () => {
         const html = await renderToString('app-labelled-select', LabelledSelectPage);
         expect(html.match(/id="server-country"/g)).toHaveLength(1);

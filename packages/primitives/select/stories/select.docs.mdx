@@ -6,6 +6,7 @@ import { RdxSelectValue } from '../src/select-value';
 import { RdxSelectLabel } from '../src/select-label';
 import { RdxSelectItem } from '../src/select-item';
 import { RdxSelectPositioner } from '../src/select-positioner';
+import { RdxSelectArrow } from '../src/select-arrow';
 
 <Meta title="Primitives/Select" />
 
@@ -28,6 +29,7 @@ native `<select>` behavior).
 - ✅ Angular forms integration through `ControlValueAccessor`: Reactive Forms, `formControlName`, and `ngModel`.
 - ✅ Cancelable `onOpenChange` and `onValueChange` outputs with reason-aware `eventDetails`.
 - ✅ Two positioning modes: Popper (Floating UI) and Item-aligned (native-like).
+- ✅ Optional popup arrow with shared positioning and open/closed, side, alignment and uncentered states.
 - ✅ Scroll buttons appear automatically when the list overflows the viewport.
 - ✅ Typeahead: type a character to jump to matching items.
 - ✅ Custom comparison (`isItemEqualToValue`), labels (`itemToStringLabel`), and native form serialization
@@ -46,6 +48,7 @@ native `<select>` behavior).
 
 ```typescript
 import {
+  RdxSelectArrow,
   RdxSelectPopup,
   RdxSelectGroup,
   RdxSelectItem,
@@ -80,6 +83,7 @@ offsets.
 
   <div *rdxSelectPortal sideOffset="4" align="start" rdxSelectPositioner>
     <div rdxSelectPopup>
+      <div rdxSelectArrow></div>
       <!-- optional scroll-up button -->
       <div rdxSelectScrollUpButton><!-- up icon --></div>
 
@@ -141,6 +145,20 @@ With `multiple`, picks accumulate in the value array, the trigger joins their la
 item keeps its indicator. Shows `RdxSelectIcon` and `RdxSelectSeparator`.
 
 <Canvas of={Stories.Multiple} />
+
+### Arrow
+
+Place `rdxSelectArrow` inside the popup to point at its trigger. It reuses the shared Popper geometry,
+including collision handling, logical sides and `arrowPadding` on the positioner. `width` and `height`
+size the default SVG; project your own SVG to customize the shape. Use a text color matching the
+popup surface, because the default shape fills with `currentColor`.
+
+An arrow that cannot stay centered remains visible and exposes `data-uncentered` for styling.
+The legacy `rdxSelectItemAlignedPosition` hides the arrow while item alignment is active. Its
+touch/pinch-zoom dropdown fallback restores the arrow, using Floating UI arrow geometry against
+the independently positioned popup.
+
+<Canvas of={Stories.Arrow} />
 
 ### Change details and interaction state
 
@@ -432,6 +450,26 @@ Wraps the popup panel when using Popper positioning. Accepts the same positionin
 | `--transform-origin`                       | Origin to scale/zoom the popup from, based on side/align. |
 
 The deprecated `--radix-select-*` aliases of these variables are still emitted for one release.
+
+### RdxSelectArrow
+
+A decorative popup pointer, with `aria-hidden="true"`. `width` defaults to `10` and `height` to `5`.
+Active item alignment keeps it hidden; the anchored touch/pinch-zoom fallback restores it.
+The default SVG is created after hydration; the server renders the decorative host and its state attributes.
+
+<ArgTypes of={RdxSelectArrow} />
+
+| Input | Default | Description |
+| --- | --- | --- |
+| `width` | `10` | Width of the default SVG, in pixels. |
+| `height` | `5` | Height of the default SVG, in pixels. |
+
+| Attribute | Present when / value |
+| --- | --- |
+| `data-open` / `data-closed` | Reflects Root's open state, including an exit transition. |
+| `data-side` | The resolved physical or logical side; `none` during item alignment. |
+| `data-align` | The resolved `start`, `center` or `end` alignment. |
+| `data-uncentered` | The arrow could not be centered on the trigger. |
 
 ### RdxSelectItemText
 

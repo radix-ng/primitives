@@ -1,6 +1,7 @@
 import { booleanAttribute, ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoSelect } from '../../storybook/styles';
+import { RdxSelectArrow } from '../src/select-arrow';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectGroupLabel } from '../src/select-group-label';
 import { RdxSelectItem } from '../src/select-item';
@@ -30,6 +31,7 @@ import { RdxSelectValue } from '../src/select-value';
         RdxSelectGroupLabel,
         RdxSelectGroup,
         RdxSelectPopup,
+        RdxSelectArrow,
         RdxSelectItemAlignedPosition,
         RdxSelectItemText,
         RdxSelectItemAlignedPositionContent,
@@ -47,6 +49,7 @@ import { RdxSelectValue } from '../src/select-value';
             <div *rdxSelectPortal [class]="s.positioner" rdxSelectItemAlignedPosition>
                 <div class="min-w-40" rdxSelectPopup>
                     <div [class]="s.popup" rdxSelectItemAlignedPositionContent>
+                        <div [class]="s.arrow" rdxSelectArrow></div>
                         <div [class]="s.list" rdxSelectList>
                             <div [class]="s.groupLabel" rdxSelectGroupLabel>Fruits</div>
                             <div rdxSelectGroup>

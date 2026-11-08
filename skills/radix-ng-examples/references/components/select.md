@@ -14,6 +14,7 @@ A control that presents a list of options for the user to pick from, triggered b
 - ✅ Angular forms integration through `ControlValueAccessor`: Reactive Forms, `formControlName`, and `ngModel`.
 - ✅ Cancelable `onOpenChange` and `onValueChange` outputs with reason-aware `eventDetails`.
 - ✅ Two positioning modes: Popper (Floating UI) and Item-aligned (native-like).
+- ✅ Optional popup arrow with shared positioning and open/closed, side, alignment and uncentered states.
 - ✅ Scroll buttons appear automatically when the list overflows the viewport.
 - ✅ Typeahead: type a character to jump to matching items.
 - ✅ Custom comparison (`isItemEqualToValue`), labels (`itemToStringLabel`), and native form serialization
@@ -32,6 +33,7 @@ A control that presents a list of options for the user to pick from, triggered b
 
 ```typescript
 import {
+  RdxSelectArrow,
   RdxSelectPopup,
   RdxSelectGroup,
   RdxSelectItem,
@@ -66,6 +68,7 @@ offsets.
 
   <div *rdxSelectPortal sideOffset="4" align="start" rdxSelectPositioner>
     <div rdxSelectPopup>
+      <div rdxSelectArrow></div>
       <!-- optional scroll-up button -->
       <div rdxSelectScrollUpButton><!-- up icon --></div>
 
@@ -117,6 +120,7 @@ the behavior of a native `<select>`. Use `rdxSelectItemAlignedPosition` and
 
 - [Default](../examples/select--default.md)
 - [Multiple](../examples/select--multiple.md)
+- [Arrow](../examples/select--arrow.md)
 - [Change details and interaction state](../examples/select--change-details-and-interaction-state.md)
 - [Object values](../examples/select--object-values.md)
 - [Reactive Forms](../examples/select--reactive-forms.md)

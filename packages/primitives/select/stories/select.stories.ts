@@ -4,6 +4,8 @@ import { SelectAlignedPosition } from './select-aligned-position';
 import { SelectAlignedPositionWithScroll } from './select-aligned-position-with-scroll';
 import alignedPositionWithScrollSource from './select-aligned-position-with-scroll?raw';
 import alignedPositionSource from './select-aligned-position?raw';
+import { SelectArrowExample } from './select-arrow';
+import arrowSource from './select-arrow?raw';
 import { SelectDefault } from './select-default';
 import defaultSource from './select-default?raw';
 import { SelectEvents } from './select-events';
@@ -39,6 +41,7 @@ export default {
         moduleMetadata({
             imports: [
                 SelectDefault,
+                SelectArrowExample,
                 SelectEvents,
                 SelectMultiple,
                 SelectObjectValues,
@@ -73,6 +76,17 @@ export const Multiple: Story = {
     render: () => ({
         template: html`
             <select-multiple />
+        `
+    })
+};
+
+export const Arrow: Story = {
+    parameters: source(arrowSource),
+    args: { side: 'bottom', align: 'center', alignOffset: 0, dir: 'ltr' },
+    render: (args) => ({
+        props: args,
+        template: html`
+            <select-arrow-example [side]="side" [align]="align" [alignOffset]="alignOffset" [dir]="dir" />
         `
     })
 };

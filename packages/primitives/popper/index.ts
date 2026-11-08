@@ -10,6 +10,7 @@ export * from './src/popper-arrow';
 export * from './src/popper-content';
 export * from './src/popper-content-wrapper';
 export * from './src/popper-content.config';
+export * from './src/use-fixed-arrow-position';
 export * from './src/utils';
 
 export const popperImports = [RdxPopper, RdxPopperArrow, RdxPopperContentWrapper, RdxPopperContent, RdxPopperAnchor];
