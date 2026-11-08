@@ -4,6 +4,7 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { RdxFieldDescription, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
+import { RdxFormRoot } from '@radix-ng/primitives/form';
 import { vi } from 'vitest';
 import { RdxOtpFieldModule } from '../index';
 import { RdxOtpFieldValidationType, RdxOtpFieldValueCompleteEvent } from '../src/types';
@@ -141,6 +142,48 @@ class FieldOtpFieldHost {
     readonly fieldDisabled = signal(false);
     readonly fieldRequired = signal(true);
     readonly otpDisabled = signal(false);
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [RdxOtpFieldModule],
+    template: `
+        <form>
+            <div [(value)]="value" [defaultValue]="defaultValue" [length]="4" validationType="none" rdxOtpFieldRoot>
+                <input rdxOtpFieldInput />
+                <input rdxOtpFieldInput />
+                <input rdxOtpFieldInput />
+                <input rdxOtpFieldInput />
+            </div>
+            <button type="reset">Reset</button>
+        </form>
+    `
+})
+class OtpFieldResetHost {
+    readonly value = signal('1234');
+    readonly defaultValue = '1234';
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [RdxFormRoot, RdxFieldRoot, RdxOtpFieldModule],
+    template: `
+        <form [errors]="errors()" (onClearErrors)="onClearErrors($event)" rdxFormRoot>
+            <div name="code" rdxFieldRoot>
+                <div [(value)]="value" [length]="4" validationType="none" rdxOtpFieldRoot>
+                    <input rdxOtpFieldInput />
+                    <input rdxOtpFieldInput />
+                    <input rdxOtpFieldInput />
+                    <input rdxOtpFieldInput />
+                </div>
+            </div>
+        </form>
+    `
+})
+class FormErrorOtpFieldHost {
+    readonly errors = signal({ code: 'Code expired' });
+    readonly onClearErrors = vi.fn();
+    readonly value = signal('1234');
 }
 
 function pasteEvent(text: string): ClipboardEvent {
@@ -711,6 +754,19 @@ describe('RdxOtpField', () => {
 });
 
 describe('RdxOtpField form integrations', () => {
+    it('clears a Form server error when a pasted code is committed', () => {
+        TestBed.configureTestingModule({ imports: [FormErrorOtpFieldHost] });
+        const fixture = TestBed.createComponent(FormErrorOtpFieldHost);
+        const host = fixture.componentInstance;
+        fixture.detectChanges();
+        const slot = fixture.debugElement.query(By.css('[rdxOtpFieldInput]')).nativeElement as HTMLInputElement;
+
+        slot.dispatchEvent(pasteEvent('5678'));
+
+        expect(host.onClearErrors).toHaveBeenCalledTimes(1);
+        expect(host.onClearErrors).toHaveBeenCalledWith({});
+    });
+
     it('connects the enclosing Field to the first slot and inherits its disabled and required state', () => {
         TestBed.configureTestingModule({ imports: [FieldOtpFieldHost] });
         const fixture = TestBed.createComponent(FieldOtpFieldHost);
@@ -787,5 +843,53 @@ describe('RdxOtpField form integrations', () => {
         slots[0].dispatchEvent(new Event('input', { bubbles: true }));
         fixture.detectChanges();
         expect(host.code).toBe('ZB12');
+    });
+});
+
+describe('RdxOtpField native form reset', () => {
+    it('syncs every slot after a reset button restores the default value', async () => {
+        TestBed.configureTestingModule({ imports: [OtpFieldResetHost] });
+        const fixture = TestBed.createComponent(OtpFieldResetHost);
+        const host = fixture.componentInstance;
+        fixture.detectChanges();
+        const button = fixture.nativeElement.querySelector('button[type="reset"]') as HTMLButtonElement;
+        const slots = fixture.debugElement
+            .queryAll(By.css('[rdxOtpFieldInput]'))
+            .map((result) => result.nativeElement as HTMLInputElement);
+
+        host.value.set('1239');
+        fixture.detectChanges();
+        expect(slots.map((slot) => slot.value).join('')).toBe('1239');
+
+        button.click();
+        await new Promise((resolve) => setTimeout(resolve));
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        expect(host.value()).toBe('1234');
+        expect(slots.map((slot) => slot.value).join('')).toBe('1234');
+    });
+
+    it('syncs every slot after form.reset() restores the default value', async () => {
+        TestBed.configureTestingModule({ imports: [OtpFieldResetHost] });
+        const fixture = TestBed.createComponent(OtpFieldResetHost);
+        const host = fixture.componentInstance;
+        fixture.detectChanges();
+        const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+        const slots = fixture.debugElement
+            .queryAll(By.css('[rdxOtpFieldInput]'))
+            .map((result) => result.nativeElement as HTMLInputElement);
+
+        host.value.set('9876');
+        fixture.detectChanges();
+        expect(slots.map((slot) => slot.value).join('')).toBe('9876');
+
+        form.reset();
+        await new Promise((resolve) => setTimeout(resolve));
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        expect(host.value()).toBe('1234');
+        expect(slots.map((slot) => slot.value).join('')).toBe('1234');
     });
 });

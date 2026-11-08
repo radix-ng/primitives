@@ -241,6 +241,16 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
             this.previousModelValue = normalized;
             this.previousCvaValue = normalized;
             this.focusedIndex.set(-1);
+            // Native reset clears each slot's DOM value. The model may not change for slots whose
+            // characters already match, so sync every slot after the reset and the next render.
+            afterNextRender(
+                () => {
+                    for (const slot of this.inputs()) {
+                        slot.hostElement().value = slot.value();
+                    }
+                },
+                { injector: this.injector }
+            );
             if (hadFocus) {
                 this.focusInput(Math.min(codePoints(normalized).length, this.length() - 1));
             }
@@ -548,6 +558,7 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
             this.previousModelValue = normalized;
             this.previousCvaValue = normalized;
             this.formUi.markDirty();
+            this.fieldRootContext?.notifyEdited();
             changed = true;
         }
 
