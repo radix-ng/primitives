@@ -2,7 +2,7 @@
 
 > One example from the [OTP Field](../components/otp-field.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.2.1` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
 Plain wrapper elements group slots visually. The separator part is optional and does not change character indexing.
 

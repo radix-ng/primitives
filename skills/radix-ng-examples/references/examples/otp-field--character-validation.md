@@ -2,7 +2,7 @@
 
 > One example from the [OTP Field](../components/otp-field.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.2.1` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
 `validationType` accepts `numeric` (the default), `alpha`, `alphanumeric`, or `none`. The first three modes accept ASCII characters only: digits `0–9`, letters `A–Z`, and their combination. Use `none` for other alphabets; `normalizeValue` can still transform text before it is stored.
 

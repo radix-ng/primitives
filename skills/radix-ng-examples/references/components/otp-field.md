@@ -4,7 +4,7 @@ A headless one-time-code control built from one native input per character.
 
 > Index — full source of each example is one click away in `../examples/otp-field--*.md`; the whole-doc dump is in `../llms-full.txt`.
 
-> Generated from `@radix-ng/primitives@1.2.1` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
 ## Features
 

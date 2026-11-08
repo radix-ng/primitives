@@ -1,3 +1,13 @@
+## 1.3.0 (2026-11-08)
+
+### 🚀 Features
+
+- **otp-field:** add headless one-time-code primitive ([#465](https://github.com/radix-ng/primitives/pull/465))
+
+### ❤️ Thank You
+
+- Danny Ward @dannyward630
+
 ## 1.2.1 (2026-09-25)
 
 ### 🩹 Fixes

@@ -2,7 +2,7 @@
 
 > One example from the [OTP Field](../components/otp-field.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.2.1` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
 The root works with `formControlName` and forwards required validity to the form-associated hidden control. When wrapped in `rdxFieldRoot`, it registers the first slot as the label target and inherits the Field's disabled and required state.
 
