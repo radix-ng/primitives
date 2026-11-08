@@ -53,8 +53,26 @@ const ensureCompodocJson = (workspaceRoot, primitivesRoot) => {
     return JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
 };
 
-// `input<T, TransformInput>()` is reported as "T, TransformInput" — keep only the value type.
-const cleanType = (type) => (type ?? '').replace(/,\s*[^,]*(?:BooleanInput|NumberInput)[^,]*$/, '').trim();
+// Compodoc reports input<T, TransformInput>() as "T, TransformInput". Keep the first
+// top-level argument, including when the transform itself contains nested generic commas.
+export function cleanType(type) {
+    type ??= '';
+    let depth = 0;
+    let quote;
+    for (let index = 0; index < type.length; index++) {
+        const char = type[index];
+        if (quote) {
+            if (char === '\\') index++;
+            else if (char === quote) quote = undefined;
+            continue;
+        }
+        if (char === '"' || char === "'" || char === '`') quote = char;
+        else if ('<([{'.includes(char)) depth++;
+        else if ('>)]}'.includes(char) && type[index - 1] !== '=') depth--;
+        else if (char === ',' && depth === 0) return type.slice(0, index).trim();
+    }
+    return type.trim();
+}
 
 // Inputs inherited from `RdxPopperContentWrapper` (ADR 0012 thin positioners) default to
 // `this.config.<key> ?? <fallback>`, where `config` is the positioner's own

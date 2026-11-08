@@ -8,6 +8,8 @@
 /dist
 /coverage
 /tmp
+apps/visual-regression/playwright-report/
+apps/visual-regression/test-results/
 
 CHANGELOG.md
 

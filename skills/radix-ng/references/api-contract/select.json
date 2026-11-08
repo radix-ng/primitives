@@ -248,7 +248,7 @@
         },
         {
           "name": "defaultValue",
-          "type": "AcceptableValue | AcceptableValue[]",
+          "type": "RdxSelectValueType<Value, Multiple>",
           "description": "Initial value for the uncontrolled case. Applied once on init; `value`/`[(value)]` take over after."
         },
         {
@@ -267,17 +267,17 @@
         },
         {
           "name": "isItemEqualToValue",
-          "type": "ItemValueComparator<AcceptableValue>",
+          "type": "ItemValueComparator<Value>",
           "description": "How item values are compared for equality — a function `(a, b) => boolean` or an object key."
         },
         {
           "name": "itemToStringLabel",
-          "type": "(value: AcceptableValue) => string",
+          "type": "(value: Value) => string",
           "description": "Converts a value to its display label (used by `RdxSelectValue`)."
         },
         {
           "name": "itemToStringValue",
-          "type": "(value: AcceptableValue) => string",
+          "type": "(value: Value) => string",
           "description": "Converts an item value to the string submitted by a native form."
         },
         {
@@ -287,7 +287,8 @@
         },
         {
           "name": "multiple",
-          "default": "false"
+          "type": "Multiple",
+          "default": "false as Multiple"
         },
         {
           "name": "name",
@@ -311,7 +312,7 @@
         },
         {
           "name": "value",
-          "type": "AcceptableValue | AcceptableValue[]"
+          "type": "RdxSelectValueType<Value, Multiple>"
         },
         {
           "name": "dirty",
@@ -357,7 +358,7 @@
         },
         {
           "name": "onValueChange",
-          "type": "RdxSelectValueChangeEvent",
+          "type": "RdxSelectValueChangeEvent<Value, Multiple>",
           "description": "Emits before a value change is committed; call `eventDetails.cancel()` to veto it."
         },
         {

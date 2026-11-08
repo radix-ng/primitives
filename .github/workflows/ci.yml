@@ -73,8 +73,8 @@ jobs:
       # radix-docs is deprecated and its build is broken). `affected` has no project allow-list, so
       # list the excluded projects explicitly. radix-ssr-testing is built so its AOT template
       # type-check catches drift against the primitives' public API (it imports them as a consumer).
-      - name: Build Primitives and Schematics
-        run: npx nx affected -t build build:schematics --exclude=radix-storybook,radix-docs,radix-ng
+      - name: Build and check public template types
+        run: npx nx affected -t build build:schematics typecheck --exclude=radix-storybook,radix-docs,radix-ng
 
   skills:
     runs-on: ubuntu-latest
@@ -87,6 +87,7 @@ jobs:
 
       - name: Verify skills bundle is up to date
         run: |
+          node --test tools/scripts/skills/*.test.mjs
           pnpm skills:build
           if [ -n "$(git status --porcelain skills)" ]; then
             echo "::error::Skills bundle is out of date. Run 'pnpm skills:build' and commit the result."

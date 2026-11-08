@@ -170,6 +170,31 @@ submission, touched/dirty state, and `NgForm.resetForm()` while keeping the same
 
 <Canvas of={Stories.TemplateDrivenForms} />
 
+### Typed application wrapper
+
+An application-owned component can extend `RdxSelectRoot<Value, Multiple>` and use
+`provideRdxSelectRoot(YourSelect)` to rebind the primitive's context, floating-tree and form providers.
+It inherits the inputs, cancellable events, CVA and Signal Forms contract; no second value store or
+hand-written CVA is needed. Use `[multiple]="true"` or `[multiple]="false"` for precise mode inference.
+
+The [wrapper source](https://github.com/radix-ng/primitives/blob/main/packages/primitives/select/stories/select-typed-control.ts)
+owns only its rendering options, placeholder and Tailwind markup. This example uses it with typed
+object values in Reactive Forms, Signal Forms and multiple selection, including reset.
+
+<Canvas of={Stories.TypedWrapper} />
+
+The strict Angular AOT fixtures in `tools/typecheck/select` check both valid consumers and invalid
+value, mode, label, event and Signal Forms bindings. Classic CVA bindings retain Angular's runtime
+interface; `formControl` does not by itself infer or validate a custom control's generic value type.
+
+### Base UI compatibility
+
+The [versioned Select parity matrix](https://github.com/radix-ng/primitives/blob/main/packages/primitives/select/PARITY.md)
+records the exact Base UI source commit, Angular adaptations, linked coverage and remaining gaps.
+The pilot preserves the existing runtime defaults and equality behavior; it does not claim complete
+behavioral parity. In particular, the initial value is still `undefined`, default object comparison is
+structural, and Root's upstream `items` and `highlightItemOnHover` inputs are not implemented yet.
+
 ### With scroll buttons
 
 When the list is taller than the available viewport, `rdxSelectScrollUpButton` and

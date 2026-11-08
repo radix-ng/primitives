@@ -17,6 +17,7 @@ import { RdxCompositeItemRegistration, RdxCompositeList } from '@radix-ng/primit
 import {
     AcceptableValue,
     createContext,
+    getActiveElement,
     RDX_FLOATING_REGISTRATION,
     RDX_FLOATING_ROOT_CONTEXT,
     RdxFloatingNodeRegistration,
@@ -28,6 +29,7 @@ import {
     provideFloatingFocusManagerConfig,
     RdxFloatingFocusManager
 } from '@radix-ng/primitives/floating-focus-manager';
+import { composedContains } from '@radix-ng/primitives/focus-scope';
 import { RdxPopperContent } from '@radix-ng/primitives/popper';
 import { injectSelectRootContext } from './select-root';
 import { getNextMatch } from './useTypeahead';
@@ -161,6 +163,15 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
                 closeOnFocusOut: () => false,
                 // The listbox owns DOM focus; items are navigated virtually through aria-activedescendant.
                 initialFocus: () => host,
+                returnFocus: () => () => {
+                    const active = getActiveElement(host.ownerDocument);
+                    // Pointer opening can leave focus on body before the popup mounts. The default
+                    // return target is still the trigger; preserve deliberate focus elsewhere.
+                    if (active && active !== host.ownerDocument.body && !composedContains(host, active)) {
+                        return false;
+                    }
+                    return rootContext.triggerElement() ?? true;
+                },
                 restoreFocus: () => true,
                 openInteractionType: () => rootContext.openInteractionType(),
                 closeInteractionType: () => rootContext.closeInteractionType()

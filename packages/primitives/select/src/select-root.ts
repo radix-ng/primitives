@@ -8,14 +8,17 @@ import {
     input,
     model,
     output,
+    Provider,
     Signal,
     signal,
+    Type,
     untracked,
     WritableSignal
 } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 import {
     AcceptableValue,
+    BooleanInput,
     createCancelableChangeEventDetails,
     createContext,
     createFloatingRootContext,
@@ -73,8 +76,13 @@ export interface RdxSelectOpenChangeEvent {
 
 export type RdxSelectValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxSelectValueChangeReason>;
 
-export interface RdxSelectValueChangeEvent {
-    value: AcceptableValue | AcceptableValue[] | undefined;
+/** The selection shape follows Base UI's Value / Multiple contract. Undefined is the Angular initial value. */
+export type RdxSelectValueType<Value, Multiple extends boolean = boolean> =
+    | (Multiple extends true ? Value[] : Value | null)
+    | undefined;
+
+export interface RdxSelectValueChangeEvent<Value = AcceptableValue, Multiple extends boolean = boolean> {
+    value: RdxSelectValueType<Value, Multiple>;
     eventDetails: RdxSelectValueChangeEventDetails;
 }
 
@@ -168,22 +176,31 @@ export const [injectSelectRootContext, provideSelectRootContext] = createContext
     'components/select'
 );
 
+/** Rebind the root's DI and form providers when a design-system component extends RdxSelectRoot. */
+export function provideRdxSelectRoot<Value extends AcceptableValue, Multiple extends boolean>(
+    root: Type<RdxSelectRoot<Value, Multiple>>
+): Provider[] {
+    return [
+        ...(root === RdxSelectRoot ? [] : [{ provide: RdxSelectRoot, useExisting: root }]),
+        provideValueAccessor(root),
+        provideSelectRootContext(context),
+        provideFloatingTree(),
+        provideFloatingRootContext(() => inject(root).floatingContext)
+    ];
+}
+
 @Directive({
     selector: '[rdxSelectRoot]',
     exportAs: 'rdxSelectRoot',
-    providers: [
-        provideValueAccessor(RdxSelectRoot),
-        provideSelectRootContext(context),
-        // New floating foundation (ADR 0015/0017) — the dismissal capability reads this shared context.
-        provideFloatingTree(),
-        provideFloatingRootContext(() => inject(RdxSelectRoot).floatingContext)
-    ],
+    providers: [provideRdxSelectRoot(RdxSelectRoot)],
     hostDirectives: [RdxPopper]
 })
-export class RdxSelectRoot
+export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Multiple extends boolean = boolean>
     extends RdxFormUiControlBase
-    implements ControlValueAccessor, RdxFormValueControl<AcceptableValue | AcceptableValue[] | undefined>
+    implements ControlValueAccessor, RdxFormValueControl<RdxSelectValueType<Value, Multiple>>
 {
+    private readonly popper = inject(RdxPopper, { self: true });
+
     readonly contentId = injectId('rdx-select-content-');
 
     readonly open = model<boolean>(false);
@@ -203,15 +220,17 @@ export class RdxSelectRoot
         open: () => this.open()
     });
 
-    readonly value = model<AcceptableValue | AcceptableValue[]>();
+    readonly value = model<RdxSelectValueType<Value, Multiple>>();
 
     /** Initial value for the uncontrolled case. Applied once on init; `value`/`[(value)]` take over after. */
-    readonly defaultValue = input<AcceptableValue | AcceptableValue[]>();
+    readonly defaultValue = input<RdxSelectValueType<Value, Multiple>>();
 
     /** Whether the select is initially open (uncontrolled). Applied once on init. */
     readonly defaultOpen = input(false, { transform: booleanAttribute });
 
-    readonly multiple = input(false, { transform: booleanAttribute });
+    readonly multiple = input<Multiple, Multiple | Exclude<BooleanInput, boolean>>(false as Multiple, {
+        transform: (value) => booleanAttribute(value) as Multiple
+    });
 
     readonly disabled = input(false, { transform: booleanAttribute });
     private readonly cvaDisabled = signal(false);
@@ -236,19 +255,19 @@ export class RdxSelectRoot
     readonly dir: Signal<Direction> = injectDirection(this.dirInput);
 
     /** How item values are compared for equality — a function `(a, b) => boolean` or an object key. */
-    readonly isItemEqualToValue = input<ItemValueComparator<AcceptableValue>>();
+    readonly isItemEqualToValue = input<ItemValueComparator<Value>>();
 
     /** Converts a value to its display label (used by `RdxSelectValue`). */
-    readonly itemToStringLabel = input<(value: AcceptableValue) => string>();
+    readonly itemToStringLabel = input<(value: Value) => string>();
 
     /** Converts an item value to the string submitted by a native form. */
-    readonly itemToStringValue = input<(value: AcceptableValue) => string>();
+    readonly itemToStringValue = input<(value: Value) => string>();
 
     /** Emits before an open-state change is committed; call `eventDetails.cancel()` to veto it. */
     readonly onOpenChange = output<RdxSelectOpenChangeEvent>();
 
     /** Emits before a value change is committed; call `eventDetails.cancel()` to veto it. */
-    readonly onValueChange = output<RdxSelectValueChangeEvent>();
+    readonly onValueChange = output<RdxSelectValueChangeEvent<Value, Multiple>>();
 
     /** Emits after the open/close transition (including any exit animation) finishes. */
     readonly onOpenChangeComplete = output<boolean>();
@@ -280,7 +299,7 @@ export class RdxSelectRoot
         serialize: (value) => {
             const itemToStringValue = this.itemToStringValue();
             return itemToStringValue
-                ? serializeNativeFormValue(value, (entry) => itemToStringValue(entry as AcceptableValue))
+                ? serializeNativeFormValue(value, (entry) => itemToStringValue(entry as Value))
                 : serializeNativeFormValue(value);
         },
         defaultValue: () => {
@@ -340,6 +359,9 @@ export class RdxSelectRoot
         // trigger (the reference) as "inside", and uses it for positioning containment (ADR 0015).
         effect((onCleanup) => {
             const trigger = this.triggerElement();
+            // A component wrapper's trigger is a view child, outside Popper's content query.
+            // Register the same trigger explicitly so both composition forms stay anchored.
+            this.popper.anchorOverride.set(trigger ?? undefined);
             this.floatingContext.setReferenceElement(trigger);
             if (trigger) {
                 this.floatingContext.triggers.add(trigger);
@@ -370,12 +392,12 @@ export class RdxSelectRoot
 
     getOption(value: SelectOption['value']) {
         return Array.from(this.optionsSet()).find((option) =>
-            valueComparator(value, option.value, this.isItemEqualToValue())
+            valueComparator(value as Value, option.value as Value, this.isItemEqualToValue())
         );
     }
 
     setValue(
-        value: AcceptableValue | undefined,
+        value: Value | undefined,
         reason: RdxSelectValueChangeReason = 'none',
         event: Event = new Event('select.value-change')
     ): boolean {
@@ -383,18 +405,20 @@ export class RdxSelectRoot
             return false;
         }
 
-        const nextValue = this.multiple()
-            ? (() => {
-                  const current = this.value();
-                  const array = Array.isArray(current) ? [...current] : [];
-                  if (value === undefined) {
-                      return array;
-                  }
-                  const index = array.findIndex((i) => compare(i, value, this.isItemEqualToValue()));
-                  index === -1 ? array.push(value) : array.splice(index, 1);
-                  return [...array];
-              })()
-            : value;
+        const nextValue = (
+            this.multiple()
+                ? (() => {
+                      const current = this.value();
+                      const array = Array.isArray(current) ? [...current] : [];
+                      if (value === undefined) {
+                          return array;
+                      }
+                      const index = array.findIndex((i) => compare(i, value, this.isItemEqualToValue()));
+                      index === -1 ? array.push(value) : array.splice(index, 1);
+                      return [...array];
+                  })()
+                : value
+        ) as RdxSelectValueType<Value, Multiple>;
 
         const { eventDetails } = createCancelableChangeEventDetails(reason, event, this.triggerElement() ?? undefined);
         this.onValueChange.emit({ value: nextValue, eventDetails });
@@ -443,12 +467,12 @@ export class RdxSelectRoot
     }
 
     /** @ignore Write a form-owned value without emitting a user change. */
-    writeValue(value: AcceptableValue | AcceptableValue[] | undefined): void {
+    writeValue(value: RdxSelectValueType<Value, Multiple>): void {
         untracked(() => this.value.set(value));
     }
 
     /** @ignore Register the Reactive Forms / ngModel value callback. */
-    registerOnChange(fn: (value: AcceptableValue | AcceptableValue[] | undefined) => void): void {
+    registerOnChange(fn: (value: RdxSelectValueType<Value, Multiple>) => void): void {
         this.onChange = fn;
     }
 
@@ -462,6 +486,6 @@ export class RdxSelectRoot
         this.cvaDisabled.set(isDisabled);
     }
 
-    private onChange?: (value: AcceptableValue | AcceptableValue[] | undefined) => void;
+    private onChange?: (value: RdxSelectValueType<Value, Multiple>) => void;
     private onTouched?: () => void;
 }

@@ -41,7 +41,7 @@
         },
         {
           "name": "value",
-          "type": "number | null, number | null",
+          "type": "number | null",
           "default": "null",
           "description": "Current progress value. Set to `null` for indeterminate progress."
         },

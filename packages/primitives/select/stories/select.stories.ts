@@ -16,6 +16,8 @@ import { SelectReactiveForms } from './select-reactive-forms';
 import reactiveFormsSource from './select-reactive-forms?raw';
 import { SelectTemplateDrivenForms } from './select-template-driven-forms';
 import templateDrivenFormsSource from './select-template-driven-forms?raw';
+import { SelectTypedWrapper } from './select-typed-wrapper';
+import typedWrapperSource from './select-typed-wrapper?raw';
 import { SelectWithScroll } from './select-with-scroll';
 import withScrollSource from './select-with-scroll?raw';
 
@@ -38,7 +40,8 @@ export default {
                 SelectTemplateDrivenForms,
                 SelectWithScroll,
                 SelectAlignedPosition,
-                SelectAlignedPositionWithScroll
+                SelectAlignedPositionWithScroll,
+                SelectTypedWrapper
             ]
         }),
         tailwindDemoDecorator()
@@ -97,6 +100,15 @@ export const TemplateDrivenForms: Story = {
     render: () => ({
         template: html`
             <select-template-driven-forms />
+        `
+    })
+};
+
+export const TypedWrapper: Story = {
+    parameters: source(typedWrapperSource),
+    render: () => ({
+        template: html`
+            <select-typed-wrapper />
         `
     })
 };
