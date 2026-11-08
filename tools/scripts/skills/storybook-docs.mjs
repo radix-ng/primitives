@@ -213,7 +213,7 @@ const getRawImports = (storyFilePath, storyContent) => {
         const sourcePath = resolveImportPath(storyFilePath, match[2]);
         if (existsSync(sourcePath)) {
             rawImports.set(match[1], {
-                code: readFileSync(sourcePath, 'utf8').trim(),
+                code: readFileSync(sourcePath, 'utf8').replace(/\r\n?/g, '\n').trim(),
                 language: getCodeFenceLanguage(sourcePath)
             });
         }
@@ -225,7 +225,7 @@ const getRawImports = (storyFilePath, storyContent) => {
 const getStoryCode = (storyFilePath, storyName) => {
     if (!existsSync(storyFilePath)) return undefined;
 
-    const storyContent = readFileSync(storyFilePath, 'utf8');
+    const storyContent = readFileSync(storyFilePath, 'utf8').replace(/\r\n?/g, '\n');
     const storyObject = extractStoryObject(storyContent, storyName);
     if (!storyObject) return undefined;
 
@@ -296,7 +296,7 @@ const cleanStorybookMdx = (content, filePath) =>
         .trim();
 
 const parseDoc = (filePath) => {
-    const content = readFileSync(filePath, 'utf8');
+    const content = readFileSync(filePath, 'utf8').replace(/\r\n?/g, '\n');
     const metaTitle = content.match(/<Meta\b[^>]*title=["']([^"']+)["'][^>]*\/>/)?.[1];
     const heading = content.match(/^#\s+(.+)$/m)?.[1]?.trim();
     const titleParts = metaTitle?.split('/') ?? [];

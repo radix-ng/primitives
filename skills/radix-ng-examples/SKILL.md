@@ -36,7 +36,7 @@ contract in the `radix-ng` skill (`references/styling-contract/<slug>.json`).
 addressed by the component slug and the kebab-cased example name. Cheaper than re-reading the whole
 component doc.
 
-Total: **248 examples** across **43 components**.
+Total: **257 examples** across **44 components**.
 
 ## Components
 
@@ -64,6 +64,7 @@ Total: **248 examples** across **43 components**.
 - **[Meter](./references/components/meter.md)** — A graphical display of a numeric value within a range. _(3 examples)_
 - **[Navigation Menu](./references/components/navigation-menu.md)** — A collection of links and menus for website navigation. _(8 examples)_
 - **[Number Field](./references/components/number-field.md)** — A numeric input with stepper buttons, drag-to-scrub, locale-aware formatting and keyboard control. _(6 examples)_
+- **[OTP Field](./references/components/otp-field.md)** — A headless one-time-code control built from one native input per character. _(9 examples)_
 - **[Pagination](./references/components/pagination.md)** — Displays data in paged format and provides navigation between pages. _(2 examples)_
 - **[Popover](./references/components/popover.md)** — An accessible popup anchored to a button. _(10 examples)_
 - **[Preview Card](./references/components/preview-card.md)** — A popup that appears when a link is hovered or focused, showing a visual preview. _(4 examples)_

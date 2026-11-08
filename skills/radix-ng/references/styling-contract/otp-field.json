@@ -1,0 +1,11 @@
+{
+  "version": "1.2.1",
+  "name": "OTP Field",
+  "slug": "otp-field",
+  "section": "components",
+  "description": "A headless one-time-code control built from one native input per character.",
+  "doc": "radix-ng-examples/references/components/otp-field.md",
+  "storybook": "https://radix-ng.com/?path=/docs/primitives-otp-field--docs",
+  "anatomy": "<label id=\"verification-code-label\" for=\"verification-code\">Verification code</label>\n<div\n  rdxOtpFieldRoot\n  [id]=\"'verification-code'\"\n  aria-labelledby=\"verification-code-label\"\n  [length]=\"6\"\n  name=\"verificationCode\"\n  [autoComplete]=\"'one-time-code'\"\n>\n  <input rdxOtpFieldInput />\n  <input rdxOtpFieldInput />\n  <input rdxOtpFieldInput />\n  <input rdxOtpFieldInput />\n  <input rdxOtpFieldInput />\n  <input rdxOtpFieldInput />\n</div>",
+  "dataAttributes": []
+}

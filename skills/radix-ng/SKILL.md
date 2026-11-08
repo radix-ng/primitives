@@ -118,7 +118,7 @@ example before assembling them; they are the easiest to get wrong.
 menu (compound), menubar (compound), navigation-menu (compound).
 
 **Form controls:** field, fieldset, input, label, checkbox, radio, switch, toggle, toggle-group,
-slider, select (compound), number-field, date-field, time-field, calendar, editable, stepper.
+slider, select (compound), number-field, otp-field, date-field, time-field, calendar, editable, stepper.
 
 **Display & layout:** avatar, aspect-ratio, separator, progress, meter, tabs (compound), toolbar,
 pagination, cropper, toast.
