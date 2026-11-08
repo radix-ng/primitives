@@ -17,7 +17,7 @@ import { injectSelectRootContext } from './select-root';
     selector: 'ng-template[rdxSelectPortal]',
     exportAs: 'rdxSelectPortal',
     hostDirectives: [{ directive: RdxPortalPresence, inputs: ['container'] }],
-    providers: [provideRdxPresenceContext(() => ({ present: injectSelectRootContext().open }))]
+    providers: [provideRdxPresenceContext(() => ({ present: injectSelectRootContext().present }))]
 })
 export class RdxSelectPortal {}
 

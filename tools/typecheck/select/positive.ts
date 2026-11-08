@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { RdxSelectRoot, RdxSelectValueChangeEvent } from '@radix-ng/primitives/select';
 import { SelectItems } from '../../../packages/primitives/select/stories/select-items';
 import { SelectLabels } from '../../../packages/primitives/select/stories/select-labels';
+import { SelectNativeForms } from '../../../packages/primitives/select/stories/select-native-forms';
 import { SelectTypedControl } from '../../../packages/primitives/select/stories/select-typed-control';
 import { SelectTypedWrapper } from '../../../packages/primitives/select/stories/select-typed-wrapper';
 
@@ -11,7 +12,7 @@ interface Country {
 }
 
 @Component({
-    imports: [RdxSelectRoot, SelectTypedControl, SelectTypedWrapper, SelectItems, SelectLabels],
+    imports: [RdxSelectRoot, SelectTypedControl, SelectTypedWrapper, SelectItems, SelectLabels, SelectNativeForms],
     template: `
         <div
             [(value)]="country"
@@ -19,7 +20,9 @@ interface Country {
             [itemToStringLabel]="label"
             [items]="items"
             [highlightItemOnHover]="false"
+            [inputRef]="captureInput"
             (onValueChange)="single($event)"
+            autoComplete="country"
             rdxSelectRoot
         ></div>
         <div
@@ -34,6 +37,7 @@ interface Country {
         <select-typed-wrapper />
         <select-items />
         <select-labels />
+        <select-native-forms />
         <div [value]="'fr'" [items]="{ fr: 'France' }" rdxSelectRoot></div>
         <div [value]="'fr'" [items]="[{ items: [{ value: 'fr', label: 'France' }] }]" rdxSelectRoot></div>
     `
@@ -44,6 +48,8 @@ export class PositiveSelectTypes {
     readonly options: Country[] = [{ code: 'fr', name: 'France' }];
     readonly items = this.options.map((value) => ({ value, label: value.name }));
     readonly label = (value: Country) => value.name;
+    readonly nativeInput = signal<HTMLInputElement | null>(null);
+    readonly captureInput = (input: HTMLInputElement | null) => this.nativeInput.set(input);
     single(event: RdxSelectValueChangeEvent<Country, false>): void {
         this.country.set(event.value);
     }

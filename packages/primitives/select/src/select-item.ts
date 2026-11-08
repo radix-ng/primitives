@@ -2,6 +2,7 @@ import {
     afterNextRender,
     booleanAttribute,
     computed,
+    DestroyRef,
     Directive,
     effect,
     ElementRef,
@@ -27,7 +28,7 @@ export interface RdxSelectItemContext {
     disabled: Signal<boolean>;
     isSelected: Signal<boolean>;
     textId: string;
-    onItemTextChange: (node: HTMLElement) => void;
+    onItemTextChange: (node: HTMLElement) => () => void;
 }
 
 const context = (): RdxSelectItemContext => {
@@ -40,6 +41,7 @@ const context = (): RdxSelectItemContext => {
 
         onItemTextChange: (node: HTMLElement) => {
             context.textValue$.set(((context.textValue$() || node.textContent) ?? '').trim());
+            return context.registerItemText(node);
         }
     };
 };
@@ -83,6 +85,20 @@ export class RdxSelectItem {
     readonly disabled = input(false, { transform: booleanAttribute });
 
     readonly textValue$ = linkedSignal(this.textValue);
+    private itemTextElement: HTMLElement | undefined;
+    private readonly option = () => ({
+        value: this.value(),
+        disabled: this.disabled(),
+        textContent: (this.itemTextElement?.textContent ?? this.currentElement.nativeElement.textContent ?? '').trim()
+    });
+
+    /** @internal Item text owns cleanup, including replacement before the old view is destroyed. */
+    registerItemText(node: HTMLElement): () => void {
+        this.itemTextElement = node;
+        return () => {
+            if (this.itemTextElement === node) this.itemTextElement = undefined;
+        };
+    }
 
     readonly isSelected = computed(() =>
         valueComparator(this.rootContext.value(), this.value(), this.rootContext.isItemEqualToValue())
@@ -103,6 +119,8 @@ export class RdxSelectItem {
     private SELECT_SELECT = 'select.select';
 
     constructor() {
+        this.rootContext.onOptionAdd(this.option);
+        inject(DestroyRef).onDestroy(() => this.rootContext.onOptionRemove(this.option));
         effect(() => {
             this.listItem.setMetadata({
                 value: this.value(),

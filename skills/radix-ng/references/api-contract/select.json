@@ -250,6 +250,11 @@
       ],
       "inputs": [
         {
+          "name": "autoComplete",
+          "type": "string",
+          "description": "Hint passed to the generated native input for browser autofill."
+        },
+        {
           "name": "defaultOpen",
           "default": "false",
           "description": "Whether the select is initially open (uncontrolled). Applied once on init."
@@ -282,6 +287,11 @@
           "name": "id",
           "type": "string",
           "description": "Id of the select control. Forwarded to Trigger unless Trigger supplies its own id."
+        },
+        {
+          "name": "inputRef",
+          "type": "RdxNativeInputRef",
+          "description": "Called with the generated native input after hydration, and null when replaced or destroyed."
         },
         {
           "name": "isItemEqualToValue",

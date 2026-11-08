@@ -38,6 +38,7 @@ native `<select>` behavior).
 - ✅ `modal` (default) locks page scroll and makes outside content inert, with an optional `Backdrop`.
 - ✅ Field integration on the trigger (invalid / disabled / required / focused state + `aria-describedby`).
 - ✅ `rdxSelectLabel` automatically names and focuses the trigger; Root's `id` identifies the control.
+- ✅ Native autofill, required validation and input access through `autoComplete`, `inputRef` and `nativeInput()`.
 - ✅ WAI-ARIA `combobox` / `listbox` semantics with `aria-selected` and `aria-disabled`.
 - ✅ Headless — state via `data-selected`, `data-highlighted`, `data-popup-open`, `data-placeholder`, `data-disabled`.
 
@@ -172,6 +173,45 @@ submission, touched/dirty state, and `NgForm.resetForm()` while keeping the same
 
 <Canvas of={Stories.TemplateDrivenForms} />
 
+### Native forms and autofill
+
+The native input serves browser behavior. Select's `ControlValueAccessor` and Signal Forms contract
+connect its value to Angular independently of this bridge. Its visible button/popup anatomy needs a
+native representation for browser autofill and constraints; direct DOM access does not give the button
+those capabilities. When a primitive already has an input representing its form value, the shared
+bridge can reuse that control. See
+[ADR 0025](https://github.com/radix-ng/primitives/blob/main/docs/adr/0025-separate-angular-forms-from-browser-input-bridge.md).
+
+Select creates a technical native input after hydration for submission, browser autofill and required
+validation. Pass `autoComplete` such as `country` / `country-name`. Autofill matches serialized values
+or value labels without case sensitivity, then rendered item text. Matching an object keeps its
+original reference. Closed options may mount briefly in a hidden probe; the popup does not open or
+take focus, and no open-change events are emitted.
+
+The persistent input submits one scalar value. Multiple selections submit repeated entries through
+separate hidden inputs, with a nameless input checking the required empty state. Browser autofill is
+ignored in multiple, disabled and read-only modes. A canceled or unmatched autofill preserves the
+committed value, dirty state and external form errors and restores the native input's value.
+An enclosing Field supplies its name, disabled and required state; its name takes precedence over
+Root's own `name` when both are provided.
+
+Use `[inputRef]="captureInput"` with `(input: HTMLInputElement | null) => void`, or read
+`select.nativeInput()` through `#select="rdxSelectRoot"`. The callback receives the element after
+hydration, and `null` on callback replacement or destruction. The signal is `null` on the server,
+before hydration and after destruction. Focusing a focusable technical input redirects focus to the
+trigger; providing `inputRef` keeps an otherwise unnamed optional input focusable too.
+
+Prefer `nativeInput()` for signal-based Angular access. The callback API adapts Base UI's `inputRef`
+name without introducing a separate value store or requiring React-style ref objects.
+
+`required` participates in browser constraint validation; it does not install an additional validation
+engine or write Angular validation errors. Angular forms still own their validators and Field state.
+Use `ngNativeValidate` on the form when opting into browser validation UI with Angular forms. Native
+invalid events mark the control touched, so an Angular required validator can reveal a Field error.
+The example includes an external-form multiple control, native submission and reset.
+
+<Canvas of={Stories.NativeForms} />
+
 ### Typed application wrapper
 
 An application-owned component can extend `RdxSelectRoot<Value, Multiple>` and use
@@ -241,6 +281,10 @@ movement and pointer leave; clicking an item still selects it. The default is `t
 <Canvas of={Stories.Items} />
 
 ### Migrating existing Select consumers
+
+- A named empty single Select now contributes `name=""` to `FormData`, matching the persistent native
+  input contract. Previously an empty value contributed no entry. Multiple empty selections still
+  contribute no entries. Disabled controls are excluded.
 
 - Root's `id` now identifies the trigger and is forwarded there. For a separate DOM id on a Root
   wrapper, use `[attr.id]` with a different value or put that wrapper outside Root.

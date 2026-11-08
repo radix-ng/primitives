@@ -26,7 +26,7 @@ import { CONTENT_MARGIN } from './utils';
     ],
     host: {
         '[style]': `{
-            display: 'flex',
+            display: rootContext.autofillProbe() && !rootContext.open() ? 'none' : 'flex',
             flexDirection: 'column',
             position: 'fixed',
             zIndex: contentZIndex(),
@@ -35,7 +35,7 @@ import { CONTENT_MARGIN } from './utils';
 })
 export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
     private readonly currentElement = inject(ElementRef);
-    private readonly rootContext = injectSelectRootContext();
+    protected readonly rootContext = injectSelectRootContext();
 
     /**
      * The popup is now a **descendant** (item-aligned-position is the outer positioner), so read the

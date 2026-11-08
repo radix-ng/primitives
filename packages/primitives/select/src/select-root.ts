@@ -1,10 +1,13 @@
 import {
+    afterNextRender,
     booleanAttribute,
     computed,
+    DestroyRef,
     Directive,
     effect,
     ElementRef,
     inject,
+    Injector,
     input,
     model,
     output,
@@ -38,15 +41,18 @@ import {
     RdxFormUiTouchTarget,
     RdxFormValueControl,
     RdxLabelRegistry,
+    RdxNativeInputRef,
     RdxTransitionStatus,
     serializeNativeFormValue,
+    itemToStringValue as stringifyValue,
     useNativeFormControl,
     useTransitionStatus
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
+import { injectFieldRootContext } from '@radix-ng/primitives/field';
 import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopper } from '@radix-ng/primitives/popper';
-import { RdxSelectItems } from './select-items';
+import { RdxSelectItems, resolveSelectLabel } from './select-items';
 import { compare, valueComparator } from './utils';
 
 export type { RdxSelectItemGroup, RdxSelectItemOption, RdxSelectItems, RdxSelectLabelValue } from './select-items';
@@ -92,6 +98,8 @@ export interface RdxSelectValueChangeEvent<Value = AcceptableValue, Multiple ext
 }
 
 export interface RdxSelectRootContext extends RdxFormUiStateContext, RdxLabelRegistry {
+    present: Signal<boolean>;
+    autofillProbe: Signal<boolean>;
     id: Signal<string>;
     triggerId: WritableSignal<string | undefined>;
     triggerElement: WritableSignal<HTMLElement | null>;
@@ -130,6 +138,8 @@ const context = (): RdxSelectRootContext => {
     const context = inject(RdxSelectRoot);
 
     return {
+        present: context.present,
+        autofillProbe: context.autofillProbe,
         ...context.labelRegistry,
         id: context.controlId,
         triggerId: context.triggerId,
@@ -158,20 +168,9 @@ const context = (): RdxSelectRootContext => {
         transitionStatus: context.transitionStatus,
         registerTransitionElement: context.registerTransitionElement,
         optionsSet: context.optionsSet,
-        onOptionAdd: (option: () => SelectOption) => {
-            const existingOption = context.getOption(option());
-            if (existingOption) {
-                context.optionsSet().delete(existingOption);
-            }
-
-            context.optionsSet().add(option());
-        },
-        onOptionRemove: (option: () => SelectOption) => {
-            const existingOption = context.getOption(option());
-            if (existingOption) {
-                context.optionsSet().delete(existingOption);
-            }
-        },
+        onOptionAdd: (option) => context.optionGetters.update((current) => [...current, option]),
+        onOptionRemove: (option) =>
+            context.optionGetters.update((current) => current.filter((entry) => entry !== option)),
         onValueChange: (value: AcceptableValue | undefined, reason?: RdxSelectValueChangeReason, event?: Event) =>
             context.setValue(value, reason, event),
         onTriggerChange: (node: ElementRef<HTMLElement>) => {
@@ -215,6 +214,9 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
 {
     private readonly popper = inject(RdxPopper, { self: true });
     private readonly hostElement = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+    private readonly injector = inject(Injector);
+    private readonly destroyRef = inject(DestroyRef);
+    private readonly field = injectFieldRootContext(true);
 
     /** Id of the select control. Forwarded to Trigger unless Trigger supplies its own id. */
     readonly id = input<string>();
@@ -226,6 +228,12 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
     readonly contentId = injectId('rdx-select-content-');
 
     readonly open = model<boolean>(false);
+    private readonly forceMount = signal(false, { debugName: 'RdxSelectRoot.forceMount' });
+    /** @internal Retained until the next open so a probe cannot flash during presence cleanup. */
+    readonly autofillProbe = signal(false, { debugName: 'RdxSelectRoot.autofillProbe' });
+    /** @internal Closed popup mounting is used only to resolve browser-autofilled items. */
+    readonly present = computed(() => this.open() || this.forceMount(), { debugName: 'RdxSelectRoot.present' });
+    private autofillRequest = 0;
 
     /** Whether the current open was initiated by **touch** (ADR 0016 §3 — gates the anchored scroll lock). */
     readonly openedByTouch = signal(false);
@@ -262,7 +270,9 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
 
     readonly disabled = input(false, { transform: booleanAttribute });
     private readonly cvaDisabled = signal(false);
-    readonly disabledState = computed(() => this.disabled() || this.cvaDisabled());
+    readonly disabledState = computed(
+        () => this.disabled() || this.cvaDisabled() || Boolean(this.field?.disabledState())
+    );
 
     /** When `true`, the value cannot be changed by the user (the popup can still be opened to view it). */
     readonly readOnly = input(false, { transform: booleanAttribute });
@@ -272,6 +282,18 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
 
     /** Name used when serializing this composite control into native `FormData`. */
     readonly name = input<string>();
+    readonly effectiveName = computed(() => this.field?.name() ?? this.name(), {
+        debugName: 'RdxSelectRoot.effectiveName'
+    });
+    private readonly requiredState = computed(() => this.required() || Boolean(this.field?.requiredState()), {
+        debugName: 'RdxSelectRoot.requiredState'
+    });
+
+    /** Hint passed to the generated native input for browser autofill. */
+    readonly autoComplete = input<string>();
+
+    /** Called with the generated native input after hydration, and null when replaced or destroyed. */
+    readonly inputRef = input<RdxNativeInputRef>();
 
     /** Id of an external form that owns this control. */
     readonly form = input<string>();
@@ -320,7 +342,7 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
     private hasAppliedDefaultOpen = false;
 
     private readonly nativeFormControl = useNativeFormControl({
-        name: this.name,
+        name: this.effectiveName,
         form: this.form,
         disabled: this.disabledState,
         value: this.value,
@@ -330,6 +352,33 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
                 ? serializeNativeFormValue(value, (entry) => itemToStringValue(entry as Value))
                 : serializeNativeFormValue(value);
         },
+        input: {
+            type: () =>
+                this.field || this.effectiveName() || this.autoComplete() || this.requiredState() || this.inputRef()
+                    ? 'text'
+                    : 'hidden',
+            name: () => (this.scalarNativeValue() ? this.effectiveName() : undefined),
+            value: () => {
+                if (!this.scalarNativeValue()) return '';
+                const value = this.value();
+                return value == null ? '' : (this.itemToStringValue()?.(value as Value) ?? stringifyValue(value));
+            },
+            id: () =>
+                this.scalarNativeValue() && this.effectiveName() ? undefined : `${this.controlId()}-hidden-input`,
+            autoComplete: this.autoComplete,
+            required: () => this.requiredState() && (this.scalarNativeValue() || this.isEmptyModelValue()),
+            readOnly: this.readOnly,
+            ref: this.inputRef,
+            onChange: (value, event) => this.handleAutofill(value, event),
+            onFocus: () => {
+                const focusOptions = { preventScroll: false, focusVisible: true };
+                this.triggerElement()?.focus(focusOptions);
+            },
+            onInvalid: () => {
+                this.formUi.markAsTouched();
+                this.field?.setTouched(true);
+            }
+        },
         defaultValue: () => {
             const defaultValue = this.defaultValue();
             const emptyValue = (this.multiple() ? [] : null) as RdxSelectValueType<Value, Multiple>;
@@ -338,6 +387,8 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
             return value === undefined ? emptyValue : value;
         },
         onReset: (value) => {
+            this.autofillRequest++;
+            this.forceMount.set(false);
             this.value.set(value);
             if (!this.resetNgControl(value)) {
                 this.onChange?.(value);
@@ -346,8 +397,67 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
         }
     });
 
+    /** The technical native input, available after hydration; null on the server and after destruction. */
+    readonly nativeInput = this.nativeFormControl.inputElement;
+
+    private scalarNativeValue(): boolean {
+        return !this.multiple() && !Array.isArray(this.value());
+    }
+
+    private async handleAutofill(text: string, event: Event): Promise<void> {
+        if (!this.scalarNativeValue() || this.disabledState() || this.readOnly()) return;
+        const request = ++this.autofillRequest;
+        if (!this.open()) {
+            this.autofillProbe.set(true);
+            this.forceMount.set(true);
+        }
+        // Items and their labels are now available even when the popup had never opened.
+        await new Promise<void>((resolve) => {
+            const unregister = this.destroyRef.onDestroy(resolve);
+            afterNextRender(
+                {
+                    read: () => {
+                        unregister();
+                        resolve();
+                    }
+                },
+                { injector: this.injector }
+            );
+        });
+        if (this.destroyRef.destroyed || request !== this.autofillRequest) return;
+        try {
+            const options = this.optionGetters().map((option) => option());
+            const key = text.toLowerCase();
+            const match =
+                options.find(
+                    (option) =>
+                        option.value != null &&
+                        ((
+                            this.itemToStringValue()?.(option.value as Value) ?? stringifyValue(option.value)
+                        ).toLowerCase() === key ||
+                            resolveSelectLabel(
+                                option.value,
+                                undefined,
+                                this.itemToStringLabel() as ((value: AcceptableValue) => string) | undefined
+                            ).toLowerCase() === key)
+                ) ?? options.find((option) => option.value != null && option.textContent.toLowerCase() === key);
+            if (
+                match &&
+                !compare(this.value(), match.value, this.isItemEqualToValue() as ItemValueComparator<AcceptableValue>)
+            ) {
+                this.setValue(match.value as Value, 'none', event);
+            }
+        } finally {
+            this.forceMount.set(false);
+        }
+    }
+
     constructor() {
         super();
+
+        effect(() => {
+            if (this.open()) this.autofillProbe.set(false);
+        });
 
         // Root is also valid on ng-container. Forward its logical id without host bindings on
         // container nodes, and avoid duplicating a static id on a separate root element.
@@ -420,13 +530,13 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
         });
     }
 
-    readonly optionsSet = signal<Set<SelectOption>>(new Set());
+    /** @internal Live getters retain option identity and read current rendered labels for autofill. */
+    readonly optionGetters = signal<readonly (() => SelectOption)[]>([], { debugName: 'RdxSelectRoot.optionGetters' });
+    readonly optionsSet = computed(() => new Set(this.optionGetters().map((option) => option())), {
+        debugName: 'RdxSelectRoot.optionsSet'
+    });
 
-    // The native `select` only associates the correct default value if the corresponding
-    // `option` is rendered as a child **at the same time** as itself.
-    // Because it might take a few renders for our items to gather the information to build
-    // the native `option`(s), we generate a key on the `select` to make sure Vue re-builds it
-    // each time the options change.
+    /** Legacy option-key view of the live option registry. */
     readonly nativeSelectKey = computed(() => {
         return Array.from(this.optionsSet())
             .map((option) => option.value)
@@ -480,6 +590,7 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
         this.value.set(nextValue);
         this.formUi.markDirty();
         this.onChange?.(nextValue);
+        this.field?.notifyEdited();
 
         return true;
     }

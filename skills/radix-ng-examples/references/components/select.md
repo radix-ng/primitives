@@ -24,6 +24,7 @@ A control that presents a list of options for the user to pick from, triggered b
 - ✅ `modal` (default) locks page scroll and makes outside content inert, with an optional `Backdrop`.
 - ✅ Field integration on the trigger (invalid / disabled / required / focused state + `aria-describedby`).
 - ✅ `rdxSelectLabel` automatically names and focuses the trigger; Root's `id` identifies the control.
+- ✅ Native autofill, required validation and input access through `autoComplete`, `inputRef` and `nativeInput()`.
 - ✅ WAI-ARIA `combobox` / `listbox` semantics with `aria-selected` and `aria-disabled`.
 - ✅ Headless — state via `data-selected`, `data-highlighted`, `data-popup-open`, `data-placeholder`, `data-disabled`.
 
@@ -120,6 +121,7 @@ the behavior of a native `<select>`. Use `rdxSelectItemAlignedPosition` and
 - [Object values](../examples/select--object-values.md)
 - [Reactive Forms](../examples/select--reactive-forms.md)
 - [Template-driven Forms](../examples/select--template-driven-forms.md)
+- [Native forms and autofill](../examples/select--native-forms-and-autofill.md)
 - [Typed application wrapper](../examples/select--typed-application-wrapper.md)
 - [Base UI compatibility](../examples/select--base-ui-compatibility.md)
 - [Labels and control ids](../examples/select--labels-and-control-ids.md)

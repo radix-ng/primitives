@@ -193,7 +193,7 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
         '(keydown)': 'handleKeyDown($event)',
 
         '[style]': `{
-            display: 'flex',
+            display: rootContext.autofillProbe() && !rootContext.open() ? 'none' : 'flex',
             flexDirection: 'column',
             outline: 'none'
         }`
@@ -271,6 +271,7 @@ export class RdxSelectPopup {
 
     constructor() {
         this.positioner?.placed.subscribe(() => {
+            if (!this.rootContext.open()) return;
             this.isPositioned.set(true);
             this.highlightSelectedItemAfterPositioned();
 

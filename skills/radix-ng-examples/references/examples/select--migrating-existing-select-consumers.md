@@ -4,6 +4,10 @@
 
 > Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
+- A named empty single Select now contributes `name=""` to `FormData`, matching the persistent native
+  input contract. Previously an empty value contributed no entry. Multiple empty selections still
+  contribute no entries. Disabled controls are excluded.
+
 - Root's `id` now identifies the trigger and is forwarded there. For a separate DOM id on a Root
   wrapper, use `[attr.id]` with a different value or put that wrapper outside Root.
 

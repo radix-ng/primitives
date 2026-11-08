@@ -181,8 +181,8 @@ export const [injectFieldRootContext, provideFieldRootContext] = createContext<R
         '[attr.data-touched]': 'dataAttr(touchedState())',
         '[attr.data-filled]': 'dataAttr(filledState())',
         '[attr.data-focused]': 'dataAttr(focusedState())',
-        '(input)': 'notifyEdited()',
-        '(change)': 'notifyEdited()'
+        '(input)': 'onNativeEdit($event)',
+        '(change)': 'onNativeEdit($event)'
     }
 })
 export class RdxFieldRoot {
@@ -433,6 +433,12 @@ export class RdxFieldRoot {
     /** Notify the enclosing Form (if any) that this field's control was edited (clear-on-edit). */
     notifyEdited(): void {
         this.formContext?.notifyEdited(this.effectiveName());
+    }
+
+    /** Technical input events may be rejected; their composite control reports committed edits. */
+    protected onNativeEdit(event: Event): void {
+        if ((event.target as Element | null)?.hasAttribute?.('data-rdx-native-input')) return;
+        this.notifyEdited();
     }
 
     /** Reset interaction state on native form reset: touched/dirty/focused → false, filled re-synced. */

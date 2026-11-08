@@ -33,10 +33,12 @@ import { injectSelectRootContext } from './select-root';
     host: {
         // The unified vars + placement attrs come from the wrapper (ADR 0012); only `box-sizing` and
         // the deprecated `--radix-select-*` aliases (still consumed by demos) remain here.
-        '[style]': 'positionerStyle'
+        '[style]': 'positionerStyle',
+        '[style.display]': 'rootContext.autofillProbe() && !rootContext.open() ? "none" : undefined'
     }
 })
 export class RdxSelectPositioner extends RdxPopperContentWrapper implements RdxPositionerImpl {
+    protected readonly rootContext = injectSelectRootContext();
     protected readonly positionerStyle = { boxSizing: 'border-box', ...legacyPopperVars('select') };
 
     constructor() {

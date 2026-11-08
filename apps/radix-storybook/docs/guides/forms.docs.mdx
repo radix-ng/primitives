@@ -40,6 +40,29 @@ for `Field` when a control needs a label, description, error text, or shared inv
 required state; reach for `Form` when you also need server-error mapping, submit interception, or reset
 handling across the whole form.
 
+## Angular forms and browser forms
+
+Angular form integration and browser form participation serve different purposes. A custom control's
+`ControlValueAccessor` or Signal Forms `FormValueControl` connects its value, validators and
+interaction state to Angular. That connection does not require an additional native input.
+
+The browser separately handles `FormData`, autofill and native constraint validation. A custom Select
+made of a button and popup needs a native representation for those capabilities. Its technical input
+is a bridge to HTML behavior, used by Angular and React implementations alike. A hidden submission
+input can carry a value; a visually hidden text input can also participate in autofill and native
+constraints. `type="hidden"` inputs do not participate in constraint validation.
+
+When an existing native input represents the submitted value, the primitive reuses it. The common
+`useNativeFormControl` bridge coordinates ownership, attributes, events and cleanup; matching a
+browser-autofilled string to a selected item remains the primitive's responsibility.
+
+For Select, prefer `nativeInput()` for signal-based Angular access. Callback `inputRef` is available
+as a Base UI naming adaptation. Angular validators and Field state remain the application validation
+owners; browser validation is an additional capability. See the
+[Select native forms example](?path=/story/primitives-select--native-forms) and
+[ADR 0025](https://github.com/radix-ng/primitives/blob/main/docs/adr/0025-separate-angular-forms-from-browser-input-bridge.md)
+for the architectural decision.
+
 ## Form: server errors, submit, reset
 
 [`Form`](?path=/docs/primitives-form--docs) (`form[rdxFormRoot]`, entry `@radix-ng/primitives/form`)

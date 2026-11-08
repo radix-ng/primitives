@@ -26,6 +26,8 @@ interface Country {
             (onValueChange)="missing = $event.value?.missing"
             rdxSelectRoot
         ></div>
+        <!-- @expect-error input-ref-type -->
+        <div [inputRef]="numberLabel" rdxSelectRoot></div>
     `
 })
 export class NegativeSelectTypes {

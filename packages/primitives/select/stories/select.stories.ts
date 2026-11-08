@@ -14,6 +14,8 @@ import { SelectLabels } from './select-labels';
 import labelsSource from './select-labels?raw';
 import { SelectMultiple } from './select-multiple';
 import multipleSource from './select-multiple?raw';
+import { SelectNativeForms } from './select-native-forms';
+import nativeFormsSource from './select-native-forms?raw';
 import { SelectObjectValues } from './select-object-values';
 import objectValuesSource from './select-object-values?raw';
 import { SelectReactiveForms } from './select-reactive-forms';
@@ -47,7 +49,8 @@ export default {
                 SelectAlignedPositionWithScroll,
                 SelectTypedWrapper,
                 SelectItems,
-                SelectLabels
+                SelectLabels,
+                SelectNativeForms
             ]
         }),
         tailwindDemoDecorator()
@@ -133,6 +136,15 @@ export const Labels: Story = {
     render: () => ({
         template: html`
             <select-labels />
+        `
+    })
+};
+
+export const NativeForms: Story = {
+    parameters: source(nativeFormsSource),
+    render: () => ({
+        template: html`
+            <select-native-forms />
         `
     })
 };

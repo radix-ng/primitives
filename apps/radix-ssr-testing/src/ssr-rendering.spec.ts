@@ -74,11 +74,15 @@ const cases: readonly SsrCase[] = [
     imports: [RdxSelectRoot],
     template: `
         <form>
-            <ng-container [value]="'apple'" name="fruit" rdxSelectRoot />
+            <ng-container [value]="'apple'" [inputRef]="captureInput" name="fruit" autoComplete="off" rdxSelectRoot />
         </form>
     `
 })
-class NativeSelectPage {}
+class NativeSelectPage {
+    readonly captureInput = () => {
+        throw new Error('A native input ref must not run during server rendering.');
+    };
+}
 
 @Component({
     selector: 'app-labelled-select',

@@ -12,6 +12,7 @@ import { injectSelectRootContext } from './select-root';
     exportAs: 'rdxSelectBackdrop',
     host: {
         'aria-hidden': 'true',
+        '[style.display]': 'rootContext.autofillProbe() && !rootContext.open() ? "none" : undefined',
         '[attr.data-open]': 'rootContext.open() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.open() ? undefined : ""',
         '[attr.data-starting-style]': 'rootContext.transitionStatus() === "starting" ? "" : undefined',
