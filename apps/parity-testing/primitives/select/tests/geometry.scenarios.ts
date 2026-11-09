@@ -4,6 +4,7 @@ import type { Scenario } from './scenario';
 
 export const geometryScenarios: Scenario[] = geometryNames
     .filter((name) => !sizingNames.some((sizing) => sizing === name))
+    .filter((name) => !name.startsWith('live-'))
     .map((fixture) => ({
         name: `geometry: ${fixture.slice('geometry-'.length)}`,
         fixture,

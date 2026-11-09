@@ -270,6 +270,26 @@ remain owned by Root and the existing focus manager.
 
 <Canvas of={Stories.SizingAndFallback} />
 
+### Live layout and anchor tracking
+
+Anchored Select follows ancestor scrolling, trigger resizing and transforms. `disableAnchorTracking`
+opts out of those updates; it still measures on opening and responds to window resize. Use anchored
+mode when the popup needs to follow a moving trigger.
+
+Item alignment defaults to disabled anchor tracking and retains its opening position. Explicit
+`disableAnchorTracking="false"` refreshes anchor metrics and CSS variables, while the manual item
+coordinates still remain fixed for that opening, matching the pinned Base UI behavior. Reopening
+measures the current trigger, selection and consumer CSS. CSS `scale()` on the trigger is supported;
+scaled or transformed portal containers use the common anchored fallback.
+
+`data-anchor-hidden` reports clipping independently of popup visibility. Set `hideWhenDetached` to
+hide the popup while its anchor is fully clipped. The state does not itself close Select or change
+its value. Both positioners use 5px viewport collision padding by default.
+
+Use the controls before opening, or F2/F3/F4/F6 while the list owns focus. The scrollable example
+also lets you move the trigger out of its container and back.
+
+<Canvas of={Stories.LiveLayout} />
 
 ### Focus management
 
@@ -609,7 +629,7 @@ when the popup and trigger have different widths.
 | -------------------- | ------------------------------------------------------------------------- |
 | `data-side`          | Resolved side after collision handling — `top` / `right` / `bottom` / `left`. |
 | `data-align`         | Resolved alignment — `start` / `center` / `end`.                          |
-| `data-anchor-hidden` | The anchor is clipped/off-screen and the popup is hidden.                 |
+| `data-anchor-hidden` | The anchor is fully clipped/off-screen. `hideWhenDetached` controls automatic hiding. |
 
 **CSS variables**
 

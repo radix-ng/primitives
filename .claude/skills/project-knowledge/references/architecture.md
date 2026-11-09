@@ -92,8 +92,15 @@ height/offset writes are atomic. Render phases settle in-flow chrome before enab
 focus manager. Request versions discard stale placement, and retained reopening measures afresh.
 Rendered content side is separate from physical anchor-engine side; keep a single attribute writer.
 Numeric geometry cases use a 2px tolerance. Transformed containers use a safe anchored fallback,
-with the pin's overflow explicitly recorded; broader scale/modal and real-device coverage remains
-open. Native WebKit hover differences from the pin remain explicitly scoped.
+with the pin's overflow explicitly recorded; nested modal and real-device coverage remains open.
+Shared Popper `disableAnchorTracking` gates native observation (initial placement/window resize still
+run). Anchored Select defaults to tracking and 5px collision padding; item alignment defaults to frozen
+metrics. Explicit tracking refreshes CSS metrics without continuously recomputing manual coordinates,
+as in the pin; use anchored mode for a moving trigger. Select observes an initially unmeasurable trigger only until valid manual placement; there is no
+second ongoing resize policy. Preferred side exists during initial measurement so consumer height constraints apply before
+freezing. `data-anchor-hidden` is always observable; `hideWhenDetached` independently controls hiding.
+Native viewport rectangles keep CSS-scaled trigger text aligned; exact pin limits are recorded in
+`scaled-anchor-alignment` (ADR 0031). Native WebKit hover differences from the pin remain explicitly scoped.
 
 **Pointer movement:** core `createPointerMoveGuard` tracks scope-local viewport coordinates to
 distinguish real travel from stationary scroll/leave events, including real WebKit travel with zero

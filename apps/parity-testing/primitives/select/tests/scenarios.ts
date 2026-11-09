@@ -3,6 +3,7 @@ import { closedTypeaheadScenarios } from './closed-typeahead.scenarios';
 import { type Snapshot } from './driver';
 import { dynamicScenarios } from './dynamic.scenarios';
 import { geometryScenarios } from './geometry.scenarios';
+import { liveLayoutScenarios } from './live-layout.scenarios';
 import { positioningScenarios } from './positioning.scenarios';
 import type { Scenario } from './scenario';
 import { sizingScenarios } from './sizing.scenarios';
@@ -16,6 +17,7 @@ export const scenarios: Scenario[] = [
     ...dynamicScenarios,
     ...geometryScenarios,
     ...sizingScenarios,
+    ...liveLayoutScenarios,
     ...touchScenarios,
     {
         name: 'keyboard and typeahead',

@@ -553,6 +553,12 @@
               "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
             },
             {
+              "name": "disableAnchorTracking",
+              "type": "boolean | undefined",
+              "default": "undefined",
+              "description": "Disable ancestor-scroll, element-resize, layout-shift and animation-frame updates after initial placement.\nWindow/ancestor resize and explicit positioning inputs still update. Defaults to false; composite\nprimitives may choose a mode-specific default."
+            },
+            {
               "name": "hideWhenDetached",
               "type": "boolean",
               "default": "false",
@@ -1829,6 +1835,12 @@
               "type": "Direction | undefined",
               "default": "undefined",
               "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
+            },
+            {
+              "name": "disableAnchorTracking",
+              "type": "boolean | undefined",
+              "default": "undefined",
+              "description": "Disable ancestor-scroll, element-resize, layout-shift and animation-frame updates after initial placement.\nWindow/ancestor resize and explicit positioning inputs still update. Defaults to false; composite\nprimitives may choose a mode-specific default."
             },
             {
               "name": "hideWhenDetached",
@@ -4048,6 +4060,12 @@
               "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
             },
             {
+              "name": "disableAnchorTracking",
+              "type": "boolean | undefined",
+              "default": "undefined",
+              "description": "Disable ancestor-scroll, element-resize, layout-shift and animation-frame updates after initial placement.\nWindow/ancestor resize and explicit positioning inputs still update. Defaults to false; composite\nprimitives may choose a mode-specific default."
+            },
+            {
               "name": "hideWhenDetached",
               "type": "boolean",
               "default": "false",
@@ -4718,6 +4736,12 @@
               "type": "Direction | undefined",
               "default": "undefined",
               "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
+            },
+            {
+              "name": "disableAnchorTracking",
+              "type": "boolean | undefined",
+              "default": "undefined",
+              "description": "Disable ancestor-scroll, element-resize, layout-shift and animation-frame updates after initial placement.\nWindow/ancestor resize and explicit positioning inputs still update. Defaults to false; composite\nprimitives may choose a mode-specific default."
             },
             {
               "name": "hideWhenDetached",
@@ -5579,6 +5603,12 @@
               "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
             },
             {
+              "name": "disableAnchorTracking",
+              "type": "boolean | undefined",
+              "default": "undefined",
+              "description": "Disable ancestor-scroll, element-resize, layout-shift and animation-frame updates after initial placement.\nWindow/ancestor resize and explicit positioning inputs still update. Defaults to false; composite\nprimitives may choose a mode-specific default."
+            },
+            {
               "name": "hideWhenDetached",
               "type": "boolean",
               "default": "false",
@@ -5833,6 +5863,12 @@
               "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
             },
             {
+              "name": "disableAnchorTracking",
+              "type": "boolean | undefined",
+              "default": "undefined",
+              "description": "Disable ancestor-scroll, element-resize, layout-shift and animation-frame updates after initial placement.\nWindow/ancestor resize and explicit positioning inputs still update. Defaults to false; composite\nprimitives may choose a mode-specific default."
+            },
+            {
               "name": "hideWhenDetached",
               "type": "boolean",
               "default": "false",
@@ -6036,6 +6072,12 @@
               "type": "Direction | undefined",
               "default": "undefined",
               "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
+            },
+            {
+              "name": "disableAnchorTracking",
+              "type": "boolean | undefined",
+              "default": "undefined",
+              "description": "Disable ancestor-scroll, element-resize, layout-shift and animation-frame updates after initial placement.\nWindow/ancestor resize and explicit positioning inputs still update. Defaults to false; composite\nprimitives may choose a mode-specific default."
             },
             {
               "name": "hideWhenDetached",
@@ -6609,6 +6651,12 @@
               "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
             },
             {
+              "name": "disableAnchorTracking",
+              "type": "boolean | undefined",
+              "default": "undefined",
+              "description": "Disable ancestor-scroll, element-resize, layout-shift and animation-frame updates after initial placement.\nWindow/ancestor resize and explicit positioning inputs still update. Defaults to false; composite\nprimitives may choose a mode-specific default."
+            },
+            {
               "name": "hideWhenDetached",
               "type": "boolean",
               "default": "false",
@@ -6792,7 +6840,7 @@
             {
               "name": "collisionPadding",
               "type": "number | Partial<Record<Side, number>>",
-              "default": "0",
+              "default": "5",
               "description": "The distance in pixels from the boundary edges where collision detection should occur.\nAccepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`."
             },
             {
@@ -6800,6 +6848,12 @@
               "type": "Direction | undefined",
               "default": "undefined",
               "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
+            },
+            {
+              "name": "disableAnchorTracking",
+              "type": "boolean | undefined",
+              "default": "undefined",
+              "description": "Disable ancestor-scroll, element-resize, layout-shift and animation-frame updates after initial placement.\nWindow/ancestor resize and explicit positioning inputs still update. Defaults to false; composite\nprimitives may choose a mode-specific default."
             },
             {
               "name": "hideWhenDetached",
@@ -8026,6 +8080,12 @@
               "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
             },
             {
+              "name": "disableAnchorTracking",
+              "type": "boolean | undefined",
+              "default": "undefined",
+              "description": "Disable ancestor-scroll, element-resize, layout-shift and animation-frame updates after initial placement.\nWindow/ancestor resize and explicit positioning inputs still update. Defaults to false; composite\nprimitives may choose a mode-specific default."
+            },
+            {
               "name": "hideWhenDetached",
               "type": "boolean",
               "default": "false",
@@ -8639,6 +8699,12 @@
               "type": "Direction | undefined",
               "default": "undefined",
               "description": "Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a\nphysical one. Falls back to an enclosing direction provider, then `ltr`."
+            },
+            {
+              "name": "disableAnchorTracking",
+              "type": "boolean | undefined",
+              "default": "undefined",
+              "description": "Disable ancestor-scroll, element-resize, layout-shift and animation-frame updates after initial placement.\nWindow/ancestor resize and explicit positioning inputs still update. Defaults to false; composite\nprimitives may choose a mode-specific default."
             },
             {
               "name": "hideWhenDetached",

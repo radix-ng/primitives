@@ -62,6 +62,10 @@ function coerceOffset(value: number | OffsetFunction | string | null | undefined
     return typeof value === 'function' ? value : numberAttribute(value);
 }
 
+function coerceOptionalBoolean(value: BooleanInput | undefined): boolean | undefined {
+    return value == null ? undefined : booleanAttribute(value);
+}
+
 export type RdxPopperAnchorElement =
     | Element
     | ElementRef<Element>
@@ -92,7 +96,6 @@ type PopperPositionParams = {
     };
     arrow: RdxPopperArrow | undefined;
     arrowPadding: number;
-    hideWhenDetached: boolean;
 };
 
 const context = () => {
@@ -271,6 +274,19 @@ export class RdxPopperContentWrapper {
     readonly updatePositionStrategy = input<'optimized' | 'always'>(this.config.updatePositionStrategy ?? 'optimized');
 
     /**
+     * Disable ancestor-scroll, element-resize, layout-shift and animation-frame updates after initial placement.
+     * Window/ancestor resize and explicit positioning inputs still update. Defaults to false; composite
+     * primitives may choose a mode-specific default.
+     */
+    readonly disableAnchorTracking = input<boolean | undefined, BooleanInput>(undefined, {
+        transform: coerceOptionalBoolean
+    });
+
+    protected isAnchorTrackingDisabled(): boolean {
+        return this.disableAnchorTracking() ?? false;
+    }
+
+    /**
      * Emits when the element is placed.
      */
     readonly placed = output<void>();
@@ -287,9 +303,8 @@ export class RdxPopperContentWrapper {
     /**
      * @deprecated The arrow is no longer hidden just because the popup was shifted off-center (ADR
      * 0002 — Base UI keeps it visible and lets consumers style {@link arrowUncentered} /
-     * `data-uncentered` instead). This now only reflects {@link anchorHidden}, which already hides the
-     * whole positioner (and, by inheritance, the arrow). Read `anchorHidden` directly. Removed in the
-     * next minor.
+     * `data-uncentered` instead). This only reflects {@link anchorHidden}; `hideWhenDetached` enables
+     * hiding the whole positioner and its arrow. Read `anchorHidden` directly. Removed in the next minor.
      */
     readonly shouldHideArrow = computed(() => this.anchorHidden());
     // These read `resolvedPosition` (the last successfully computed position, held across a reload —
@@ -461,11 +476,7 @@ export class RdxPopperContentWrapper {
                         arrowWidth: params.arrowWidth,
                         arrowHeight: params.arrowHeight
                     }),
-                    params.hideWhenDetached &&
-                        hide({
-                            strategy: 'referenceHidden',
-                            ...params.detectOverflowOptions
-                        })
+                    hide({ strategy: 'referenceHidden' })
                 ]
             });
         }
@@ -488,8 +499,7 @@ export class RdxPopperContentWrapper {
             sticky: this.sticky(),
             detectOverflowOptions: this.detectOverflowOptions(),
             arrow: this.arrow(),
-            arrowPadding: this.arrowPadding(),
-            hideWhenDetached: this.hideWhenDetached()
+            arrowPadding: this.arrowPadding()
         };
     }
 
@@ -567,7 +577,9 @@ export class RdxPopperContentWrapper {
     /** Rendered side can differ from the anchor engine while a composite uses item alignment. */
     readonly contentSide = computed(() => this.getContentSide());
     protected getContentSide(): SideOrLogical | 'none' | undefined {
-        return this.placedSide();
+        // Consumer side-dependent constraints must apply during the first hidden measurement too.
+        // Frozen tracking cannot rely on resize observation to repair an unconstrained first pass.
+        return this.placedSide() ?? this.side();
     }
 
     /**
@@ -615,13 +627,12 @@ export class RdxPopperContentWrapper {
             visibility: ready ? 'visible' : 'hidden',
             pointerEvents: this.nonInteractive() || !ready ? 'none' : 'auto',
 
-            // hide the content if using the hide middleware and should be hidden
-            // set visibility to hidden and disable pointer events so the UI behaves
-            // as if the PopperContent isn't there at all
-            ...(pos?.middlewareData.hide?.referenceHidden && {
-                visibility: 'hidden',
-                pointerEvents: 'none'
-            })
+            // Keep clipping observable independently; automatic hiding is an explicit consumer choice.
+            ...(this.hideWhenDetached() &&
+                this.anchorHidden() && {
+                    visibility: 'hidden',
+                    pointerEvents: 'none'
+                })
         };
     }
 
@@ -649,8 +660,12 @@ export class RdxPopperContentWrapper {
             return;
         }
 
+        const disabled = this.isAnchorTrackingDisabled();
         const cleanup = autoUpdate(anchor, this.elementRef.nativeElement, () => this.positionResource.reload(), {
-            animationFrame: this.updatePositionStrategy() === 'always'
+            ancestorScroll: !disabled,
+            elementResize: !disabled && typeof ResizeObserver === 'function',
+            layoutShift: !disabled && typeof IntersectionObserver === 'function',
+            animationFrame: !disabled && this.updatePositionStrategy() === 'always'
         });
 
         onCleanup(cleanup);

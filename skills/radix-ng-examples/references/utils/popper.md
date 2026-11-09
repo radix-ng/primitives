@@ -114,12 +114,20 @@ example, to hide it yourself) instead of getting a silent, unstyleable disappear
 
 | Attribute            | Part                    | Present when                                                |
 | --------------------- | ------------------------ | ------------------------------------------------------------ |
-| `data-side`           | Content wrapper          | Always — the resolved placement side.                        |
+| `data-side`           | Content wrapper          | Preferred side while measuring; resolved side after placement. |
 | `data-align`          | Content wrapper          | Always — the resolved placement alignment.                   |
-| `data-anchor-hidden`  | Content wrapper          | `hideWhenDetached` is set and the anchor is fully occluded.   |
+| `data-anchor-hidden`  | Content wrapper          | The anchor is fully occluded, independently of `hideWhenDetached`. |
 | `data-uncentered`     | Arrow                    | The popup shifted and the arrow can no longer be centered on the anchor. |
 
 ## Moving Anchors
+
+`disableAnchorTracking` stops ancestor-scroll, element-resize, layout-shift and animation-frame
+updates after the initial positioning pass. Window resize still updates placement. Composite
+primitives can choose a mode-specific default; anchored Select tracks by default, while item-aligned
+Select retains its opening geometry. `data-anchor-hidden` reports clipping even when the popup stays
+visible; `hideWhenDetached` enables automatic hiding.
+
+Disabled tracking retains the last measured anchor visibility and size until the next positioning pass.
 
 The default `updatePositionStrategy` is `optimized`. It updates on events such as scroll, resize, and layout shifts
 without running position calculations on every animation frame.

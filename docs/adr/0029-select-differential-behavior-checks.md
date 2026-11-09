@@ -131,7 +131,7 @@ and checkpoint (`reference-webkit-hover`). Assert Angular hover behavior indepen
 The same exception records the reference's retained `item-0` highlight, rather than allowing
 arbitrary highlight or value differences.
 
-Anchored transformed portals pass common bounds; item-aligned transformed containers fail in both
-implementations at this pin and remain a tracked gap. Remaining work includes legacy item-aligned
-sizing/expansion, collision fallback, live ancestor scrolling while aligned, mobile visual viewport
-and pinch zoom, closed/unmounted collection changes, real AT and saved-profile autofill.
+ADR 0030 resolves Angular item-aligned transformed-container safety through anchored fallback and adds
+numeric sizing/expansion. ADR 0031 adds live anchor, CSS scale and clipping checks. Remaining work
+includes nested modal/portal configurations, mobile visual viewport and pinch zoom, closed/unmounted
+collection changes, real AT and saved-profile autofill.

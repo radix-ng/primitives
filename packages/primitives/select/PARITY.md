@@ -6,9 +6,9 @@ Audited on 2026-11-08; close-lifecycle, focus-policy and arbitrary-Value increme
 reproducible reference. Its package version is 1.9.0; it is not the release tag itself.
 
 This is an API/source audit with linked regression coverage, **not a certification of complete
-behavioral parity**. A shared React/Angular differential runner now defines 100 scenarios:
-88 desktop/dynamic/geometry cases in all three engines, eight tap cases in Chromium/WebKit,
-and four native touch-gesture cases in Chromium (284 comparisons; 16 capability skips).
+behavioral parity**. A shared React/Angular differential runner now defines 112 scenarios:
+100 desktop/dynamic/geometry cases in all three engines, eight tap cases in Chromium/WebKit,
+and four native touch-gesture cases in Chromium (320 comparisons; 16 capability skips).
 It checks this pin and records exact known differences ([runner documentation](../../../apps/parity-testing/primitives/select/README.md),
 [ADR 0029](../../../docs/adr/0029-select-differential-behavior-checks.md)). Rows marked as gaps remain open.
 
@@ -33,6 +33,7 @@ during item alignment and returns in the anchored touch/pinch-zoom fallback.
 | `itemToStringLabel`, `itemToStringValue`           | Callbacks preserve `Value`                                                                                                                       | AOT contract; object labels, submitted values and reset covered by wrapper tests.                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | `isItemEqualToValue`                               | Typed callback or legacy property key                                                                                                            | `select-parity.spec.ts`: object reference identity, `NaN`, signed zero, callback comparison for strings. **Migration:** default is now `Object.is`; the property-key comparator remains an Angular extension.                                                                                                                                                                                                                                                                                                          |
 | `modal` and positioning                            | Modal/non-modal, Popper and item-aligned positioning                                                                                             | `apps/visual-regression/tests/select.behavior.spec.ts`; this does not establish every mobile/browser combination.                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `disableAnchorTracking`, live geometry             | Shared Popper updates; default false anchored / true item-aligned                                                                                | `live-layout.scenarios.ts`, `select-live-layout.behavior.spec.ts`: scroll/resize/transform tracking, frozen placement, clipping flags, scaled triggers/portals and reopening. Item-aligned opt-in refreshes metrics without continuously realigning manual coordinates, matching the pin. See ADR 0031.                                                                                                                                                                                                                |
 | Keyboard navigation and focus                      | Virtual highlight model; Popup `closeOnFocusOut` opt-in, default `false`                                                                         | `select-focus-manager.spec.ts`, shared manager/scope tests, `select-focus.behavior.spec.ts`: Tab/Shift+Tab, cancellation, return focus, retained views, anchor movement and Dialog/Popover composition. **Gap:** default focus-out and item DOM focus still differ; real AT review is pending (ADR 0023 WS5 / ADR 0027). No full focus parity claim.                                                                                                                                                                   |
 | `items` label lookup                               | Record, flat or grouped descriptors on Root                                                                                                      | `select-parity.spec.ts`, `select-items.behavior.spec.ts`: labels before mount / after close, live updates, precedence and null labels. **Adaptation:** labels are text, not React nodes; record lookup requires own properties, including the null label. **Migration:** mounted item text no longer determines the Value label. Application wrappers still own option rendering.                                                                                                                                      |
 | `highlightItemOnHover`                             | Boolean Root input, default `true`                                                                                                               | `select-parity.spec.ts`, `select-items.behavior.spec.ts`: disabled hover preserves keyboard highlight through pointer move/leave; pointer selection works; enabled hover highlights and clears on leave.                                                                                                                                                                                                                                                                                                               |
@@ -232,8 +233,7 @@ Native scroll expansion applies height/offset atomically before updating arrow v
 
 Touch, pinch zoom, viewport/min-height collisions and fixed containing blocks use the common anchored
 fallback. A transformed container is an intentional Angular adaptation: it cannot use viewport item
-coordinates safely. Its placement and keyboard selection are tested; nested modal stacking, arbitrary
-scales and real mobile visual viewport movement still require further checks. Angular retained views
+coordinates safely. Its placement and keyboard selection are tested; nested modal stacking, nested modal stacking and real mobile visual viewport movement still require further checks; CSS scale coverage is described below. Angular retained views
 remain inert with retained highlight during closing; `retained-view-safety` records the exact DOM
 pairs against the reference's default retention (its Portal still has no equivalent keepMounted prop).
 
@@ -246,13 +246,46 @@ See [ADR 0030](../../../docs/adr/0030-select-item-alignment-and-anchored-fallbac
 **Sizing And Fallback** Storybook example. Angular browser checks also cover an early close during
 measurement, native wheel growth, in-flow initial text alignment and retained view identity.
 
+## Live layout, tracking and CSS scale
+
+Twelve differential scenarios cover native ancestor scrolling while open, frozen anchored placement,
+trigger width/translation/scale changes, row-height and height-cap changes, live labels, reopening,
+ancestor clipping and scaled portal hosts. Values, callback order and native entries remain compared.
+All mutations belong to application classes/data; adapters never set primitive geometry, focus or
+scroll offsets. Rectangles include trigger/value/selected text so alignment deltas remain inspectable.
+
+`disableAnchorTracking` is shared Popper behavior: it gates ancestor scroll, element resize, layout
+shift and animation-frame observation. Initial positioning, explicit input changes and window resize
+still work. Defaults are false for anchored positioning and true for manual item alignment. Select observes an unmeasurable trigger only until its first valid placement; ongoing tracking belongs
+to the common engine. Opting into tracking in item mode refreshes common
+metrics/CSS variables; manual coordinates remain fixed, as in the pin. Use anchored mode to follow a
+moving trigger. Reopening remeasures the current native layout.
+
+`data-anchor-hidden` reports clipping even when the popup remains visible. `hideWhenDetached` opts
+into hiding; clipping alone does not close Root or change its value. Preferred `data-side` is present
+for the first hidden measurement so consumer side-dependent height constraints apply before coordinates
+are frozen. Both Select positioners default to 5px viewport collision padding.
+
+**Recorded reference limits:** `scaled-anchor-alignment` permits only Angular true / Base UI false
+for selected-text alignment in three scaled-trigger checkpoints. Angular uses native viewport
+rectangles instead of dividing unscaled popup coordinates by trigger scale. Scaled portal hosts use
+the existing anchored fallback; the pin's manual-mode overflow is recorded with exact
+`transformed-alignment-fallback` mode/containment pairs. Neither exception covers value, keyboard or
+form differences. **Live Layout** demonstrates these modes; nine browser cases run in all engines.
+
+**Migration:** item mode no longer remeasures on every trigger ResizeObserver notification. Its default
+freezes anchor metrics for the opening, matching Base UI. Explicit false enables metric tracking;
+choose anchored positioning for continuous movement. Anchored collision padding changes from 0 to 5px;
+set `[collisionPadding]="0"` to retain zero padding. Clipping state is now observable independently of
+automatic hiding. See [ADR 0031](../../../docs/adr/0031-select-live-anchor-tracking.md).
+
 ## Next parity increments
 
-| Order | Work                             | Shared boundary / completion evidence                                                                                                                                                                     |
-| ----- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1     | Default focus policy / real AT   | Browser coverage and opt-in are available (ADR 0027). Compare virtual vs item focus and run the documented real-screen-reader scenarios before changing the default.                                      |
-| 2     | Behavioral equivalence           | 100 pinned scenarios include numeric sizing/expansion and safe fallback. Next: live aligned ancestor changes, broader CSS/scale and modal-container coverage, then closed/unmounted data (ADR 0029/0030). |
-| 3     | Real devices and native autofill | Desktop automation covers the bridge and Storybook modes. Verify real Safari/devices, saved-profile autofill and assistive technology separately.                                                         |
+| Order | Work                             | Shared boundary / completion evidence                                                                                                                                             |
+| ----- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1     | Default focus policy / real AT   | Browser coverage and opt-in are available (ADR 0027). Compare virtual vs item focus and run the documented real-screen-reader scenarios before changing the default.              |
+| 2     | Behavioral equivalence           | 112 pinned scenarios include live anchor tracking, CSS scale, clipping and safe fallback. Next: nested modal/portal composition and closed/unmounted collections (ADR 0029–0031). |
+| 3     | Real devices and native autofill | Desktop automation covers the bridge and Storybook modes. Verify real Safari/devices, saved-profile autofill and assistive technology separately.                                 |
 
 Rows with an implemented API still carry the verification limitations listed above. Completing a part
 or a shared helper does not certify complete behavioral parity.

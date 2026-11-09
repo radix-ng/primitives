@@ -21,6 +21,7 @@ import {
     optionActions
 } from './contract';
 import { anchoredHeightClass } from './geometry';
+import { liveCommands, liveFormClass, liveHeightClass, liveItemClass, type LiveState } from './live';
 
 const config = fixtureConfig();
 document.documentElement.dir = config.dir;
@@ -35,7 +36,7 @@ document.documentElement.dir = config.dir;
     imports: [_importsSelect, RdxDirectionProvider],
     template: `
         <form
-            [class]="config.geometry?.formClass ?? 'grid w-64 gap-3'"
+            [class]="(config.geometry?.formClass ?? 'grid w-64 gap-3') + liveFormClass(live())"
             [direction]="config.dir"
             [attr.dir]="config.dir"
             (submit)="$event.preventDefault()"
@@ -80,6 +81,7 @@ document.documentElement.dir = config.dir;
                     @if (config.aligned) {
                         <div
                             [class]="s.positioner + ' pointer-events-auto'"
+                            [disableAnchorTracking]="config.geometry?.disableAnchorTracking"
                             align="start"
                             sideOffset="5"
                             data-testid="positioner"
@@ -94,6 +96,7 @@ document.documentElement.dir = config.dir;
                                 <div
                                     [class]="
                                         s.popup +
+                                        liveHeightClass(live()) +
                                         (config.geometry
                                             ? ' min-h-0 flex-1 overflow-hidden' + config.geometry.heightClass
                                             : '')
@@ -112,7 +115,7 @@ document.documentElement.dir = config.dir;
                                     <div [class]="listClass" data-testid="list" rdxSelectList>
                                         @for (option of options(); track option.key) {
                                             <div
-                                                [class]="s.item"
+                                                [class]="s.item + liveItemClass(live())"
                                                 [value]="option.value"
                                                 [disabled]="option.disabled"
                                                 [attr.data-option-key]="option.key"
@@ -159,6 +162,7 @@ document.documentElement.dir = config.dir;
                     } @else {
                         <div
                             [class]="s.positioner"
+                            [disableAnchorTracking]="config.geometry?.disableAnchorTracking"
                             sideOffset="5"
                             align="start"
                             data-testid="positioner"
@@ -167,7 +171,8 @@ document.documentElement.dir = config.dir;
                             <div
                                 [class]="
                                     (config.dir === 'rtl' ? s.popup + ' w-48 min-w-48!' : s.popup) +
-                                    (config.geometry ? ' max-h-[var(--available-height)]' : '')
+                                    liveHeightClass(live()) +
+                                    (config.geometry ? anchoredHeightClass : '')
                                 "
                                 [closeOnFocusOut]="config.closeOnFocusOut"
                                 data-testid="popup"
@@ -176,7 +181,7 @@ document.documentElement.dir = config.dir;
                                 <div [class]="listClass" data-testid="list" rdxSelectList>
                                     @for (option of options(); track option.key) {
                                         <div
-                                            [class]="s.item"
+                                            [class]="s.item + liveItemClass(live())"
                                             [value]="option.value"
                                             [disabled]="option.disabled"
                                             [attr.data-option-key]="option.key"
@@ -235,6 +240,10 @@ class AngularSelectFixture {
               ? ' min-h-0 overflow-y-auto'
               : '');
     readonly options = signal(config.options);
+    readonly live = signal<LiveState>({});
+    readonly liveFormClass = liveFormClass;
+    readonly liveItemClass = liveItemClass;
+    readonly liveHeightClass = liveHeightClass;
     readonly optionActions = optionActions;
     readonly trace = installProbe('angular', this.config);
     readonly label = (value: ItemValue) => itemLabel(value, this.options());
@@ -257,6 +266,17 @@ class AngularSelectFixture {
         this.options.set(next);
     }
     onCommand(event: KeyboardEvent) {
+        const command = this.config.name.startsWith('live-') && liveCommands.find((c) => c.shortcut === event.key);
+        if (command) {
+            event.preventDefault();
+            this.live.update((state) => ({ ...state, [command.key]: !state[command.key] }));
+            if (command.key === 'renamed') {
+                this.options.set(
+                    this.config.options.map((o) => ({ ...o, label: o.label + (this.live().renamed ? ' renamed' : '') }))
+                );
+            }
+            return;
+        }
         const action = this.config.dynamic && optionActions.find((action) => action.shortcut === event.key);
         if (!action) return;
         event.preventDefault();

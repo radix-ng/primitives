@@ -2662,5 +2662,589 @@
         "angular": [],
         "react": ["item-39"],
         "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: aligned-default",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: aligned-default",
+        "checkpoint": "F2",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: aligned-default",
+        "checkpoint": "F6",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: aligned-default",
+        "checkpoint": "F4",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: aligned-default",
+        "checkpoint": "F3",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: aligned-default",
+        "checkpoint": "F7",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: aligned-default",
+        "checkpoint": "F8",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: aligned-default",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: aligned-default",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-39"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: aligned-default",
+        "checkpoint": "reopened",
+        "field": "selectedTextAligned",
+        "angular": true,
+        "react": false,
+        "category": "scaled-anchor-alignment"
+    },
+    {
+        "scenario": "live layout: aligned-default",
+        "checkpoint": "reopened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-39",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: aligned-initial-scale",
+        "checkpoint": "positioned",
+        "field": "selectedTextAligned",
+        "angular": true,
+        "react": false,
+        "category": "scaled-anchor-alignment"
+    },
+    {
+        "scenario": "live layout: aligned-initial-scale",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: aligned-initial-scale",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: aligned-initial-scale",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-39"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: aligned-portal-scale",
+        "checkpoint": "positioned",
+        "field": "itemAligned",
+        "angular": false,
+        "react": true,
+        "category": "transformed-alignment-fallback"
+    },
+    {
+        "scenario": "live layout: aligned-portal-scale",
+        "checkpoint": "positioned",
+        "field": "popupWithinViewport",
+        "angular": true,
+        "react": false,
+        "category": "transformed-alignment-fallback"
+    },
+    {
+        "scenario": "live layout: aligned-portal-scale",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: aligned-portal-scale",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: aligned-portal-scale",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-39"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: aligned-scroll",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: aligned-scroll",
+        "checkpoint": "ancestor scrolled",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: aligned-scroll",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: aligned-scroll",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-39"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: aligned-tracked",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: aligned-tracked",
+        "checkpoint": "F2",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: aligned-tracked",
+        "checkpoint": "F6",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: aligned-tracked",
+        "checkpoint": "F4",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: aligned-tracked",
+        "checkpoint": "F3",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: aligned-tracked",
+        "checkpoint": "F7",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: aligned-tracked",
+        "checkpoint": "F8",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: aligned-tracked",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: aligned-tracked",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-39"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: aligned-tracked",
+        "checkpoint": "reopened",
+        "field": "selectedTextAligned",
+        "angular": true,
+        "react": false,
+        "category": "scaled-anchor-alignment"
+    },
+    {
+        "scenario": "live layout: aligned-tracked",
+        "checkpoint": "reopened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-39",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-clipped",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-clipped",
+        "checkpoint": "ancestor scrolled",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-clipped",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: anchor-clipped",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-39"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: anchor-default",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-default",
+        "checkpoint": "F2",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-default",
+        "checkpoint": "F6",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-default",
+        "checkpoint": "F4",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-default",
+        "checkpoint": "F3",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-default",
+        "checkpoint": "F7",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-default",
+        "checkpoint": "F8",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-default",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: anchor-default",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-39"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: anchor-default",
+        "checkpoint": "reopened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-39",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-frozen",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-frozen",
+        "checkpoint": "F2",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-frozen",
+        "checkpoint": "F6",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-frozen",
+        "checkpoint": "F4",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-frozen",
+        "checkpoint": "F3",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-frozen",
+        "checkpoint": "F7",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-frozen",
+        "checkpoint": "F8",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-frozen",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: anchor-frozen",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-39"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: anchor-frozen",
+        "checkpoint": "reopened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-39",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-initial-scale",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-initial-scale",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: anchor-initial-scale",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-39"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: anchor-portal-scale",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-portal-scale",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: anchor-portal-scale",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-39"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: anchor-scroll",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-scroll",
+        "checkpoint": "ancestor scrolled",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-scroll",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: anchor-scroll",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-39"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: anchor-scroll-frozen",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-scroll-frozen",
+        "checkpoint": "ancestor scrolled",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "live layout: anchor-scroll-frozen",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "live layout: anchor-scroll-frozen",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-39"],
+        "category": "closed-dom-retention"
     }
 ]

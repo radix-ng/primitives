@@ -22,6 +22,8 @@ import { SelectItems } from './select-items';
 import itemsSource from './select-items?raw';
 import { SelectLabels } from './select-labels';
 import labelsSource from './select-labels?raw';
+import { SelectLiveLayout } from './select-live-layout';
+import liveLayoutSource from './select-live-layout?raw';
 import { SelectMultiple } from './select-multiple';
 import multipleSource from './select-multiple?raw';
 import { SelectNativeForms } from './select-native-forms';
@@ -70,6 +72,7 @@ export default {
                 SelectTypedWrapper,
                 SelectItems,
                 SelectLabels,
+                SelectLiveLayout,
                 SelectNativeForms,
                 SelectTypeahead
             ]
@@ -79,6 +82,30 @@ export default {
 } as Meta;
 
 type Story = StoryObj;
+
+export const LiveLayout: Story = {
+    parameters: source(liveLayoutSource),
+    args: { aligned: false, tracking: 'auto', portalScale: false, hideWhenDetached: false, scrollable: false },
+    argTypes: {
+        aligned: { control: 'boolean' },
+        tracking: { control: 'select', options: ['auto', 'on', 'off'] },
+        portalScale: { control: 'boolean' },
+        hideWhenDetached: { control: 'boolean' },
+        scrollable: { control: 'boolean' }
+    },
+    render: (args) => ({
+        props: args,
+        template: html`
+            <select-live-layout
+                [aligned]="aligned"
+                [tracking]="tracking"
+                [portalScale]="portalScale"
+                [hideWhenDetached]="hideWhenDetached"
+                [scrollable]="scrollable"
+            />
+        `
+    })
+};
 
 export const ViewportEdges: Story = {
     parameters: source(viewportEdgesSource),

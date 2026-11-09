@@ -96,7 +96,9 @@ export class RdxSelectItemAlignedPosition extends RdxPopperContentWrapper {
 
     constructor() {
         super();
-        this.positioningActive = computed(() => this.visible() && !this.itemLayout());
+        this.positioningActive = computed(
+            () => this.visible() && (!this.itemLayout() || !this.isAnchorTrackingDisabled())
+        );
         afterRenderEffect(() => {
             const open = this.rootContext.open();
             if (!open) {
@@ -113,9 +115,15 @@ export class RdxSelectItemAlignedPosition extends RdxPopperContentWrapper {
             untracked(() => this.invalidatePlacement());
         });
         afterNextRender(() => {
+            // Initial geometry may be unavailable in a hidden Angular view. Observe only until a
+            // valid manual placement exists; ongoing anchor tracking belongs to the common engine.
             resizeEffect({
                 injector: this.alignedInjector,
-                element: this.rootContext.triggerElement,
+                element: computed(() =>
+                    this.rootContext.open() && !this.itemLayout() && !this.anchoredFallback()
+                        ? this.rootContext.triggerElement()
+                        : null
+                ),
                 onResize: () => this.invalidatePlacement()
             });
             setupInternalBackdrop(this.alignedElement, this.alignedInjector, {
@@ -164,6 +172,10 @@ export class RdxSelectItemAlignedPosition extends RdxPopperContentWrapper {
 
     protected override getContentSide(): SideOrLogical | 'none' | undefined {
         return this.alignItemWithTriggerActive() ? 'none' : super.getContentSide();
+    }
+
+    protected override isAnchorTrackingDisabled(): boolean {
+        return this.disableAnchorTracking() ?? this.alignItemWithTriggerActive();
     }
 
     protected override onPlaced() {

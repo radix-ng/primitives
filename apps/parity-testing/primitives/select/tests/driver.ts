@@ -21,6 +21,8 @@ export interface Snapshot {
     listScrolled?: boolean;
     itemAligned?: boolean;
     popupWithinViewport?: boolean;
+    anchorHidden?: boolean;
+    selectedTextAligned?: boolean;
 }
 export interface Checkpoint {
     name: string;
@@ -298,12 +300,12 @@ export class SelectDriver {
         return this.page.evaluate(() => window.parity?.nativeEvents ?? []).catch(() => []);
     }
 
-    async scrollAncestor(): Promise<void> {
+    async scrollAncestor(delta = 30): Promise<void> {
         const scroller = this.page.getByTestId('scroller');
         const previous = await scroller.evaluate((el) => el.scrollTop);
         const bounds = (await scroller.boundingBox())!;
         await this.page.mouse.move(bounds.x + bounds.width - 20, bounds.y + bounds.height - 20);
-        await this.page.mouse.wheel(0, 30);
+        await this.page.mouse.wheel(0, delta);
         await expect.poll(() => scroller.evaluate((el) => el.scrollTop)).toBeGreaterThan(previous);
     }
 
@@ -347,6 +349,11 @@ export class SelectDriver {
                 positioner: positioner.getBoundingClientRect().toJSON(),
                 popup: panel.getBoundingClientRect().toJSON(),
                 trigger: document.querySelector('[data-testid="trigger"]')!.getBoundingClientRect().toJSON(),
+                value: document.querySelector('[data-testid="value"]')?.getBoundingClientRect().toJSON(),
+                selectedText: popup
+                    .querySelector('[aria-selected="true"] [data-option-text]')
+                    ?.getBoundingClientRect()
+                    .toJSON(),
                 scrollTop: list.scrollTop,
                 scrollHeight: list.scrollHeight,
                 clientHeight: list.clientHeight,
@@ -441,7 +448,7 @@ export class SelectDriver {
         name: string,
         expected: Partial<Snapshot> = {},
         listScrollBaseline?: number,
-        geometryState = false
+        geometryState: boolean | 'live' = false
     ): Promise<void> {
         // With paused time, advance rendering explicitly without spending the query's 750ms
         // timeout on protocol/trace collection. Ordinary scenarios retain frame-based settling.
@@ -458,7 +465,25 @@ export class SelectDriver {
                     const options = [...document.querySelectorAll<HTMLElement>('[data-option-key]')];
                     const panel = popup?.querySelector<HTMLElement>('[rdxSelectItemAlignedPositionContent]') ?? popup;
                     const bounds = geometryState ? panel?.getBoundingClientRect() : undefined;
+                    const selectedText = popup
+                        ?.querySelector('[aria-selected="true"] [data-option-text]')
+                        ?.getBoundingClientRect();
+                    const value = document.querySelector('[data-testid="value"]')?.getBoundingClientRect();
                     return {
+                        ...(geometryState === 'live'
+                            ? {
+                                  anchorHidden:
+                                      document
+                                          .querySelector('[data-testid="positioner"]')
+                                          ?.hasAttribute('data-anchor-hidden') ?? false,
+                                  selectedTextAligned:
+                                      !!selectedText &&
+                                      !!value &&
+                                      Math.abs(
+                                          selectedText.top + selectedText.height / 2 - value.top - value.height / 2
+                                      ) <= 2
+                              }
+                            : {}),
                         ...(geometryState
                             ? {
                                   itemAligned:

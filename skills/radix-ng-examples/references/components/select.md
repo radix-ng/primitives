@@ -129,6 +129,7 @@ the behavior of a native `<select>`. Use `rdxSelectItemAlignedPosition` and
 - [Dynamic options](../examples/select--dynamic-options.md)
 - [Viewport edges and long lists](../examples/select--viewport-edges-and-long-lists.md)
 - [Sizing and anchored fallback](../examples/select--sizing-and-anchored-fallback.md)
+- [Live layout and anchor tracking](../examples/select--live-layout-and-anchor-tracking.md)
 - [Focus management](../examples/select--focus-management.md)
 - [Object values](../examples/select--object-values.md)
 - [Arbitrary values](../examples/select--arbitrary-values.md)

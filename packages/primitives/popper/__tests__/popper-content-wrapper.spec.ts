@@ -206,7 +206,7 @@ class GatedPositionerHostComponent {
     template: `
         <div rdxPopperRoot>
             <button rdxPopperAnchor>Anchor</button>
-            <div rdxPopperContentWrapper>
+            <div [hideWhenDetached]="hideWhenDetached()" rdxPopperContentWrapper>
                 <div rdxPopperContent>
                     Content
                     <span rdxPopperArrow></span>
@@ -215,7 +215,9 @@ class GatedPositionerHostComponent {
         </div>
     `
 })
-class ArrowPopperHostComponent {}
+class ArrowPopperHostComponent {
+    readonly hideWhenDetached = signal(false);
+}
 
 // Same anatomy as `ArrowPopperHostComponent`, but with a reactive `side` input — used to trigger a
 // `position` resource reload (a params change) and inspect the arrow's geometry mid-recompute.
@@ -277,9 +279,7 @@ describe('RdxPopperContentWrapper', () => {
             expect.any(HTMLElement),
             expect.any(HTMLElement),
             expect.any(Function),
-            {
-                animationFrame: false
-            }
+            expect.objectContaining({ animationFrame: false })
         );
     });
 
@@ -293,9 +293,7 @@ describe('RdxPopperContentWrapper', () => {
             expect.any(HTMLElement),
             expect.any(HTMLElement),
             expect.any(Function),
-            {
-                animationFrame: true
-            }
+            expect.objectContaining({ animationFrame: true })
         );
     });
 
@@ -336,9 +334,7 @@ describe('RdxPopperContentWrapper', () => {
             expect.any(HTMLElement),
             expect.any(HTMLElement),
             expect.any(Function),
-            {
-                animationFrame: true
-            }
+            expect.objectContaining({ animationFrame: true })
         );
     });
 
@@ -386,9 +382,12 @@ describe('RdxPopperContentWrapper', () => {
         const buttons: HTMLButtonElement[] = fixture.nativeElement.querySelectorAll('button');
 
         expect(computePositionMock).toHaveBeenCalledWith(buttons[0], expect.any(HTMLElement), expect.any(Object));
-        expect(autoUpdateMock).toHaveBeenCalledWith(buttons[0], expect.any(HTMLElement), expect.any(Function), {
-            animationFrame: false
-        });
+        expect(autoUpdateMock).toHaveBeenCalledWith(
+            buttons[0],
+            expect.any(HTMLElement),
+            expect.any(Function),
+            expect.objectContaining({ animationFrame: false })
+        );
     });
 
     describe('logical sides (Base UI parity)', () => {
@@ -713,8 +712,9 @@ describe('RdxPopperContentWrapper', () => {
             );
         });
 
-        async function render() {
+        async function render(hideWhenDetached = false) {
             const fixture = TestBed.createComponent(ArrowPopperHostComponent);
+            fixture.componentInstance.hideWhenDetached.set(hideWhenDetached);
             fixture.detectChanges();
             await fixture.whenStable();
             fixture.detectChanges();
@@ -789,7 +789,7 @@ describe('RdxPopperContentWrapper', () => {
                 })
             );
 
-            const fixture = await render();
+            const fixture = await render(true);
             const wrapper: HTMLElement = fixture.nativeElement.querySelector('[rdxPopperContentWrapper]');
             const arrow: HTMLElement = fixture.nativeElement.querySelector('[rdxPopperArrow]');
 
@@ -798,6 +798,21 @@ describe('RdxPopperContentWrapper', () => {
             // The arrow sets no visibility of its own — it disappears because it inherits from the
             // hidden positioner, not because it was individually hidden.
             expect(arrow.style.visibility).toBe('');
+        });
+
+        it('reports a hidden anchor while leaving the popup visible by default', async () => {
+            computePositionMock.mockResolvedValue({
+                x: 0,
+                y: 0,
+                placement: 'bottom',
+                strategy: 'fixed',
+                middlewareData: { hide: { referenceHidden: true } }
+            });
+            const fixture = await render();
+            const wrapper: HTMLElement = fixture.nativeElement.querySelector('[rdxPopperContentWrapper]');
+            expect(wrapper.hasAttribute('data-anchor-hidden')).toBe(true);
+            expect(wrapper.style.visibility).toBe('visible');
+            expect(wrapper.style.pointerEvents).toBe('auto');
         });
 
         // Codex review finding: the `position` resource resets `value()` to `undefined` while a reload

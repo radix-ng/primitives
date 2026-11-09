@@ -15,6 +15,7 @@ import {
     optionActions
 } from './contract';
 import { anchoredHeightClass } from './geometry';
+import { liveCommands, liveFormClass, liveHeightClass, liveItemClass, type LiveState } from './live';
 
 const config = fixtureConfig();
 document.documentElement.dir = config.dir;
@@ -23,14 +24,26 @@ const trace = installProbe('react', config);
 function ReactSelectFixture() {
     const [portalHost, setPortalHost] = useState<HTMLDivElement | null>(null);
     const [options, setOptions] = useState(config.options);
+    const [live, setLive] = useState<LiveState>({});
     const mutate = (action: OptionAction) => {
         const next = changeOptions(options, action);
         trace.observeOptions(next);
         setOptions(next);
     };
     useLayoutEffect(() => {
-        if (!config.dynamic) return;
+        if (!config.dynamic && !config.name.startsWith('live-')) return;
         const onCommand = (event: KeyboardEvent) => {
+            const command = config.name.startsWith('live-') && liveCommands.find((c) => c.shortcut === event.key);
+            if (command) {
+                event.preventDefault();
+                const next = { ...live, [command.key]: !live[command.key] };
+                setLive(next);
+                if (command.key === 'renamed')
+                    setOptions(
+                        config.options.map((o) => ({ ...o, label: o.label + (next.renamed ? ' renamed' : '') }))
+                    );
+                return;
+            }
             const action = optionActions.find((action) => action.shortcut === event.key);
             if (!action) return;
             event.preventDefault();
@@ -48,7 +61,7 @@ function ReactSelectFixture() {
         <DirectionProvider direction={config.dir}>
             <div className={config.geometry?.shellClass ?? 'contents'} data-testid="scroller">
                 <form
-                    className={config.geometry?.formClass ?? 'grid w-64 gap-3'}
+                    className={(config.geometry?.formClass ?? 'grid w-64 gap-3') + liveFormClass(live)}
                     dir={config.dir}
                     data-testid="form"
                     onSubmit={(event) => event.preventDefault()}
@@ -101,6 +114,7 @@ function ReactSelectFixture() {
                                 sideOffset={5}
                                 align={config.name === 'anchor-default' ? undefined : 'start'}
                                 alignItemWithTrigger={config.aligned}
+                                disableAnchorTracking={config.geometry?.disableAnchorTracking}
                                 data-testid="positioner"
                             >
                                 <Select.Popup
@@ -111,6 +125,7 @@ function ReactSelectFixture() {
                                         (config.geometry
                                             ? ' flex min-h-0 flex-col overflow-hidden' +
                                               config.geometry.heightClass +
+                                              liveHeightClass(live) +
                                               anchoredHeightClass
                                             : '')
                                     }
@@ -140,7 +155,7 @@ function ReactSelectFixture() {
                                                 key={option.key}
                                                 value={option.value}
                                                 disabled={option.disabled}
-                                                className={demoSelect.item}
+                                                className={demoSelect.item + liveItemClass(live)}
                                                 data-option-key={option.key}
                                             >
                                                 <Select.ItemText data-option-text={option.key}>

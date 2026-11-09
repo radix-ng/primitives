@@ -16,7 +16,7 @@ Shared preparation, TypeScript tooling and commands are documented in the
 
 ## What is compared
 
-The 100 scenarios produce 284 comparisons and 16 capability skips: 88 desktop/dynamic/geometry cases in
+The 112 scenarios produce 320 comparisons and 16 capability skips: 100 desktop/dynamic/geometry cases in
 Chromium, Firefox and WebKit, eight touch-tap cases in Chromium/WebKit and four touch-gesture cases
 in Chromium. They exercise
 keyboard/typeahead, pointer/multiple selection, disabled/read-only states,
@@ -256,10 +256,32 @@ competing host-directive attributes from applying anchored max-height to an item
 Popup owns shared scroll-edge state, including native/library scroll writes and ResizeObserver.
 Readiness activates the existing focus manager after the layout settles; no direct focus is forced.
 
-Live ancestor changes while aligned, broader CSS/scale and nested modal portal configurations,
-actual pinch zoom/mobile visual viewport changes, AT and saved profiles remain further work. The
+Nested modal portal configurations, actual pinch zoom/mobile visual viewport changes, AT and saved
+profiles remain further work. Live anchor and CSS-scale coverage is described below. The
 Angular Storybook suite independently checks pending-measurement close/reopen and in-flow buttons;
 different framework completion timing is not a shared pre-placement phase boundary.
+
+## Live layout and anchor tracking
+
+Twelve cases in `live-layout.scenarios.ts` exercise native ancestor scrolling while open, trigger
+width/translation/scale, row height, consumer max-height, labels, frozen tracking, reopening and clipping.
+Both adapters use the same application commands/classes from `live.ts`. Model, focus, open state and
+scroll offsets remain primitive-owned. Every mutation checks unchanged form entries and no value
+callbacks; keyboard navigation then commits a real option. Rectangles retain value/selected text too.
+
+Anchored tracking follows the trigger; explicit `disableAnchorTracking` freezes its anchor metrics.
+Item mode defaults to frozen tracking; opting in refreshes metrics/width while retaining opening
+coordinates, matching the pinned implementation. Reopening measures current CSS. A clipped trigger
+sets `data-anchor-hidden` while Root remains open; automatic hiding is an independent Angular option.
+
+`scaled-anchor-alignment` records exact true/false selected-text alignment in the initial scaled
+trigger case and two scaled reopen checkpoints. The pin normalizes trigger scale in a different
+coordinate space; Angular keeps native viewport rectangles. A scaled item-aligned portal records the
+existing `transformed-alignment-fallback` mode/containment pair. Raw rectangles remain available;
+these are bounded reference limits, not new value/focus exceptions or pixel-identical CSS claims.
+
+Nine additional Storybook cases cover both modes, disabled tracking, scaled triggers/portals, and
+clipping with/without automatic hiding. See [ADR 0031](../../../../docs/adr/0031-select-live-anchor-tracking.md).
 
 ## Evidence and CI
 

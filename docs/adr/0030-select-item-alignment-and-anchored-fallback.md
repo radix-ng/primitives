@@ -66,6 +66,6 @@ measurements. Wait for unchanged layout/offsets before numeric comparison; keep 
 This avoids platform-dependent intermediate samples without modifying either implementation or
 writing scroll offsets from the adapter.
 
-Further work includes live ancestor changes during an aligned session, more custom CSS/scale and
+ADR 0031 adds live ancestor/anchor changes, CSS scale and clipping checks. Further work includes
 nested portal/modal configurations, mobile visual viewport movement, actual pinch zoom, real AT and
 saved-profile autofill. These checks do not certify complete geometry or device parity.

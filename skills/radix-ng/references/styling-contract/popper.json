@@ -11,7 +11,7 @@
     {
       "attribute": "data-side",
       "parts": "Content wrapper",
-      "values": "Always — the resolved placement side."
+      "values": "Preferred side while measuring; resolved side after placement."
     },
     {
       "attribute": "data-align",
@@ -21,7 +21,7 @@
     {
       "attribute": "data-anchor-hidden",
       "parts": "Content wrapper",
-      "values": "hideWhenDetached is set and the anchor is fully occluded."
+      "values": "The anchor is fully occluded, independently of hideWhenDetached."
     },
     {
       "attribute": "data-uncentered",
