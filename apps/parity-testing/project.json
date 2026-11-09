@@ -1,0 +1,22 @@
+{
+    "name": "parity-testing",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "projectType": "application",
+    "sourceRoot": "apps/parity-testing/primitives",
+    "targets": {
+        "parity": {
+            "executor": "nx:run-commands",
+            "cache": false,
+            "options": {
+                "command": "pnpm test-parity"
+            }
+        },
+        "build-fixtures": {
+            "executor": "nx:run-commands",
+            "cache": false,
+            "options": {
+                "command": "pnpm parity:build"
+            }
+        }
+    }
+}

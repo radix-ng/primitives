@@ -1,5 +1,12 @@
 import { computed, effect, Injector, Signal, signal, untracked } from '@angular/core';
-import { AcceptableValue, injectId, useFilter, useListHighlight, useTransitionStatus } from '@radix-ng/primitives/core';
+import {
+    AcceptableValue,
+    createLabelRegistry,
+    injectId,
+    useFilter,
+    useListHighlight,
+    useTransitionStatus
+} from '@radix-ng/primitives/core';
 
 /**
  * A combobox item, registered with the engine so it participates in filtering, navigation, and
@@ -122,7 +129,8 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
     const defaultFilter = computed(() => useFilter({ locale: config.locale() }));
 
     const listId = injectId(config.listIdPrefix);
-    const labelId = signal<string | undefined>(undefined);
+    const labelRegistry = createLabelRegistry();
+    let unregisterLegacyLabel: (() => void) | undefined;
     const inputElement = signal<HTMLInputElement | null>(null);
     // Where the text input lives relative to the popup (Base UI's `inputInsidePopup`), reported by the
     // input on mount from its positioner ancestor. Drives the Trigger's role:
@@ -556,10 +564,12 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
 
     return {
         listId,
-        labelId: labelId.asReadonly(),
+        ...labelRegistry,
         setLabelId(id: string | undefined): void {
-            labelId.set(id);
+            unregisterLegacyLabel?.();
+            unregisterLegacyLabel = id === undefined ? undefined : labelRegistry.registerLabel(id);
         },
+        labelControlElement: () => (inputLayout() === 'outside' ? inputElement() : (triggerElement ?? inputElement())),
         inputElement: inputElement.asReadonly(),
         setInputElement(el: HTMLInputElement | null): void {
             inputElement.set(el);

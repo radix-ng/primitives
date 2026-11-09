@@ -1,3 +1,4 @@
+import { isPlatformBrowser } from '@angular/common';
 import {
     afterNextRender,
     afterRenderEffect,
@@ -13,6 +14,7 @@ import {
     linkedSignal,
     numberAttribute,
     output,
+    PLATFORM_ID,
     Provider,
     resource,
     Signal,
@@ -98,6 +100,7 @@ const context = () => {
 
     return {
         placedSide: popperContentWrapper.placedSide,
+        contentSide: popperContentWrapper.contentSide,
         physicalPlacedSide: popperContentWrapper.physicalPlacedSide,
         placedAlign: popperContentWrapper.placedAlign,
         arrowX: popperContentWrapper.arrowX,
@@ -121,13 +124,14 @@ export const [injectPopperContentWrapperContext, providePopperContentWrapperCont
         'data-radix-popper-content-wrapper': '',
         // Placement state, emitted once for every positioner (ADR 0012). The popup
         // (`RdxPopperContent`) keeps its own `data-side`/`data-align` as popup-level styling hooks.
-        '[attr.data-side]': 'placedSide()',
+        '[attr.data-side]': 'contentSide()',
         '[attr.data-align]': 'placedAlign()',
         '[attr.data-anchor-hidden]': 'anchorHidden() ? "" : undefined',
         '[style]': 'style()'
     }
 })
 export class RdxPopperContentWrapper {
+    private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
     private readonly elementRef = inject(ElementRef);
     private readonly injector = inject(Injector);
 
@@ -359,11 +363,11 @@ export class RdxPopperContentWrapper {
         return this.context.anchorOverride() ?? this.context.anchor()?.elementRef.nativeElement ?? null;
     });
 
-    private readonly position = resource<ComputePositionReturn | null, PopperPositionParams>({
+    private readonly positionResource = resource<ComputePositionReturn | null, PopperPositionParams>({
         params: () => this.positionParams(),
         loader: ({ params }) => {
             // Skip computing a position for a paused (closed keep-mounted) positioner.
-            if (!params.positioningActive || !params.anchor) {
+            if (!this.isBrowser || !params.positioningActive || !params.anchor) {
                 return Promise.resolve(null);
             }
 
@@ -506,14 +510,18 @@ export class RdxPopperContentWrapper {
         ComputePositionReturn | undefined,
         ComputePositionReturn | undefined
     >({
-        source: () => this.position.value() ?? undefined,
+        source: () => this.positionResource.value() ?? undefined,
         computation: (value, previous) => value ?? previous?.value
     });
 
     /**
      * Whether the panel is positioned.
      */
-    readonly isPositioned = computed(() => !!this.position.value());
+    readonly isPositioned = computed(() => this.hasPosition());
+
+    protected hasPosition(): boolean {
+        return !!this.positionResource.value();
+    }
 
     /**
      * The current placement of the panel.
@@ -556,12 +564,21 @@ export class RdxPopperContentWrapper {
         return side === undefined ? undefined : toLogicalSide(this.side(), side, this.direction() === 'rtl');
     });
 
+    /** Rendered side can differ from the anchor engine while a composite uses item alignment. */
+    readonly contentSide = computed(() => this.getContentSide());
+    protected getContentSide(): SideOrLogical | 'none' | undefined {
+        return this.placedSide();
+    }
+
     /**
      * The current alignment of the panel.
      */
     readonly placedAlign = computed(() => this.placement()?.align);
 
-    protected readonly style = computed(() => {
+    protected readonly style = computed(() => this.getPositionerStyles());
+
+    /** Geometry modes can compose the common positioning styles without copying the engine. */
+    protected getPositionerStyles(): Record<string, string | number | undefined> {
         const pos = this.resolvedPosition();
         const x = pos?.x;
         const y = pos?.y;
@@ -606,7 +623,7 @@ export class RdxPopperContentWrapper {
                 pointerEvents: 'none'
             })
         };
-    });
+    }
 
     /**
      * Whether the positioner should actively track its anchor (recompute + `autoUpdate`). Defaults to
@@ -625,14 +642,14 @@ export class RdxPopperContentWrapper {
             return;
         }
 
-        this.position.reload();
+        this.positionResource.reload();
 
         const anchor = this.resolvedAnchor();
         if (!anchor) {
             return;
         }
 
-        const cleanup = autoUpdate(anchor, this.elementRef.nativeElement, () => this.position.reload(), {
+        const cleanup = autoUpdate(anchor, this.elementRef.nativeElement, () => this.positionResource.reload(), {
             animationFrame: this.updatePositionStrategy() === 'always'
         });
 
@@ -640,18 +657,22 @@ export class RdxPopperContentWrapper {
     });
 
     constructor() {
-        watch([this.isPositioned], ([isPositioned]) => {
+        watch([computed(() => !!this.positionResource.value())], ([isPositioned]) => {
             if (!isPositioned) {
                 return;
             }
 
             afterNextRender(
                 () => {
-                    this.placed.emit();
+                    this.onPlaced();
                 },
                 { injector: this.injector }
             );
         });
+    }
+
+    protected onPlaced(): void {
+        this.placed.emit();
     }
 }
 

@@ -1,258 +1,379 @@
 import {
     afterNextRender,
+    afterRenderEffect,
     computed,
     contentChild,
+    DestroyRef,
     Directive,
     ElementRef,
-    forwardRef,
     inject,
     Injector,
-    output,
-    signal
+    linkedSignal,
+    signal,
+    untracked
 } from '@angular/core';
-import { clamp, rdxPlatform, resizeEffect } from '@radix-ng/primitives/core';
+import { platform } from '@floating-ui/dom';
+import {
+    clamp,
+    provideExistingToken,
+    rdxPlatform,
+    resizeEffect,
+    setupInternalBackdrop
+} from '@radix-ng/primitives/core';
+import {
+    DROPDOWN_COLLISION_AVOIDANCE,
+    provideRdxPopperContentConfig,
+    provideRdxPopperContentWrapper,
+    RdxPopperContentWrapper,
+    SideOrLogical
+} from '@radix-ng/primitives/popper';
+import {
+    expandedItemAlignedLayout,
+    finishItemAlignedLayout,
+    initialItemAlignedLayout
+} from './select-item-aligned-layout';
 import { RdxSelectItemAlignedPositionContent } from './select-item-aligned-position-content';
-import { RDX_SELECT_POSITIONER_TOKEN, RdxPositionerImpl, RdxSelectPopup } from './select-popup';
+import { RDX_SELECT_POSITIONER_TOKEN, RdxSelectPopup } from './select-popup';
 import { injectSelectRootContext } from './select-root';
-import { CONTENT_MARGIN } from './utils';
+
+interface ItemLayout {
+    left: number;
+    height: number;
+    top?: number;
+    bottom?: number;
+    marginTop: number;
+    marginBottom: number;
+    maxHeight: number;
+}
 
 @Directive({
     selector: '[rdxSelectItemAlignedPosition]',
     providers: [
-        {
-            provide: RDX_SELECT_POSITIONER_TOKEN,
-            useExisting: forwardRef(() => RdxSelectItemAlignedPosition)
-        }
+        ...provideRdxPopperContentWrapper(RdxSelectItemAlignedPosition),
+        provideRdxPopperContentConfig({
+            align: 'center',
+            collisionPadding: 5,
+            collisionAvoidance: DROPDOWN_COLLISION_AVOIDANCE,
+            updatePositionStrategy: 'always'
+        }),
+        provideExistingToken(RDX_SELECT_POSITIONER_TOKEN, RdxSelectItemAlignedPosition)
     ],
     host: {
-        '[style]': `{
-            display: 'flex',
-            flexDirection: 'column',
-            position: 'fixed',
-            zIndex: contentZIndex(),
-        }`
+        '[attr.inert]': 'rootContext.open() ? undefined : ""',
+        '[hidden]': '!visible()'
     }
 })
-export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
-    private readonly currentElement = inject(ElementRef);
-    private readonly rootContext = injectSelectRootContext();
-
-    /**
-     * The popup is now a **descendant** (item-aligned-position is the outer positioner), so read the
-     * viewport / selected-item measurements off the popup instance instead of injecting its context.
-     */
-    readonly popup = contentChild.required(RdxSelectPopup);
-
-    readonly placed = output();
-
-    /**
-     * Whether item-aligned positioning is active (Base UI `alignItemWithTriggerActive`): open **and not**
-     * touch-opened. A touch open falls back to a plain anchored dropdown ({@link positionBelowTrigger}).
-     * Read by the popup's scroll-lock policy — an active item-aligned popup locks even when `modal=false`.
-     */
-    readonly alignItemWithTriggerActive = computed(
-        () => this.rootContext.open() && !this.rootContext.openedByTouch() && !this.pinchZoomFallback()
+export class RdxSelectItemAlignedPosition extends RdxPopperContentWrapper {
+    private readonly alignedElement = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+    private readonly alignedInjector = inject(Injector);
+    private readonly alignedDestroyRef = inject(DestroyRef);
+    protected readonly rootContext = injectSelectRootContext();
+    protected readonly visible = computed(
+        () => this.rootContext.open() || this.rootContext.transitionStatus() === 'ending'
     );
-
-    /** Set while the page is pinch-zoomed in Safari — see {@link isPinchZoomed}. */
-    private readonly pinchZoomFallback = signal(false);
-
-    readonly contentZIndex = signal('');
-
-    readonly shouldExpandOnScrollRef = signal(false);
-
-    readonly contentWrapperElement = signal<HTMLElement | undefined>(this.currentElement.nativeElement);
-
+    readonly popup = contentChild.required(RdxSelectPopup);
     readonly contentElement = contentChild.required(RdxSelectItemAlignedPositionContent);
+    readonly contentWrapperElement = signal<HTMLElement | undefined>(this.alignedElement);
+    readonly shouldExpandOnScrollRef = signal(false);
+    readonly readyToFocus = linkedSignal<boolean, boolean>({
+        source: () => this.rootContext.open(),
+        computation: (open, previous) => (open ? false : (previous?.value ?? false))
+    });
+
+    // Keep geometry through an exit, and start each open with a fresh common positioning pass.
+    protected readonly itemLayout = linkedSignal<boolean, ItemLayout | null>({
+        source: () => this.rootContext.open(),
+        computation: (open, previous) => (open ? null : (previous?.value ?? null))
+    });
+    private readonly anchoredFallback = linkedSignal<boolean, boolean>({
+        source: () => this.rootContext.open(),
+        computation: (open, previous) => (open ? false : (previous?.value ?? false))
+    });
+    readonly alignItemWithTriggerActive = computed(() => !this.anchoredFallback() && !this.rootContext.openedByTouch());
+    private request = 0;
+    private expansionFrame = 0;
+    private reachedMaxHeight = false;
 
     constructor() {
+        super();
+        this.positioningActive = computed(() => this.visible() && !this.itemLayout());
+        afterRenderEffect(() => {
+            const open = this.rootContext.open();
+            if (!open) {
+                untracked(() => this.cancelPlacement());
+                return;
+            }
+            this.rootContext.openedByTouch();
+            this.rootContext.value();
+            this.rootContext.dir();
+            this.popup().selectedItem();
+            this.popup().selectedItemText();
+            this.popup().viewport();
+            this.popup().items();
+            untracked(() => this.invalidatePlacement());
+        });
         afterNextRender(() => {
-            this.position();
-            if (this.contentElement().currentElementRef.nativeElement) {
-                this.contentZIndex.set(
-                    window.getComputedStyle(this.contentElement().currentElementRef.nativeElement).zIndex
-                );
-            }
+            resizeEffect({
+                injector: this.alignedInjector,
+                element: this.rootContext.triggerElement,
+                onResize: () => this.invalidatePlacement()
+            });
+            setupInternalBackdrop(this.alignedElement, this.alignedInjector, {
+                isOpen: () => this.rootContext.open(),
+                shouldRender: () => this.rootContext.modal(),
+                cutout: () => this.rootContext.triggerElement()
+            });
         });
-
-        const injector = inject(Injector);
-
-        // Resize and position when trigger element changes
-        resizeEffect({
-            injector,
-            element: this.rootContext.triggerElement,
-            onResize: () => this.position()
-        });
+        this.alignedDestroyRef.onDestroy(() => this.cancelPlacement());
     }
 
-    /** Whether Safari is pinch-zoomed, where it fails to place an item-aligned popup correctly. */
-    private isPinchZoomed(): boolean {
-        if (!rdxPlatform.engine.webkit) {
-            return false;
-        }
-        const win = this.currentElement.nativeElement.ownerDocument.defaultView;
-        return (win?.visualViewport?.scale ?? 1) !== 1;
+    protected override getPositionerStyles(): Record<string, string | number | undefined> {
+        const common = super.getPositionerStyles();
+        const layout = this.itemLayout();
+        return {
+            ...common,
+            position: this.anchoredFallback() ? common['position'] : 'fixed',
+            display:
+                !this.visible() || (this.rootContext.autofillProbe() && !this.rootContext.open()) ? 'none' : 'flex',
+            flexDirection: 'column',
+            ...(layout
+                ? {
+                      transform: '',
+                      visibility: 'visible',
+                      pointerEvents: 'auto',
+                      left: `${layout.left}px`,
+                      right: '',
+                      top: layout.top === undefined ? '' : `${layout.top}px`,
+                      bottom: layout.bottom === undefined ? '' : `${layout.bottom}px`,
+                      height: `${layout.height}px`,
+                      maxHeight: 'none',
+                      marginTop: `${layout.marginTop}px`,
+                      marginBottom: `${layout.marginBottom}px`
+                  }
+                : this.anchoredFallback()
+                  ? { maxHeight: 'var(--available-height)' }
+                  : this.readyToFocus()
+                    ? {}
+                    : { visibility: 'hidden', pointerEvents: 'none' })
+        };
     }
 
-    position() {
-        this.pinchZoomFallback.set(this.isPinchZoomed());
+    protected override hasPosition(): boolean {
+        return this.readyToFocus() && (this.anchoredFallback() ? super.hasPosition() : !!this.itemLayout());
+    }
 
-        // Base UI parity: a touch-opened select does NOT align the item with the trigger (the macOS-style
-        // overlay is awkward on mobile), and neither does a pinch-zoomed page in Safari. Fall back to a
-        // plain anchored dropdown below the trigger.
-        if (!this.alignItemWithTriggerActive()) {
-            this.positionBelowTrigger();
-            return;
-        }
+    protected override getContentSide(): SideOrLogical | 'none' | undefined {
+        return this.alignItemWithTriggerActive() ? 'none' : super.getContentSide();
+    }
 
-        if (
-            this.rootContext.triggerElement() &&
-            this.rootContext.valueElement() &&
-            this.contentWrapperElement() &&
-            this.contentElement().currentElementRef.nativeElement &&
-            this.popup().viewport() &&
-            this.popup().selectedItem() &&
-            this.popup().selectedItemText()
-        ) {
-            const triggerRect = this.rootContext.triggerElement()!.getBoundingClientRect();
-
-            // -----------------------------------------------------------------------------------------
-            //  Horizontal positioning
-            // -----------------------------------------------------------------------------------------
-            const contentRect = this.currentElement.nativeElement.getBoundingClientRect();
-            const valueNodeRect = this.rootContext.valueElement()!.getBoundingClientRect();
-            const itemTextRect = this.popup().selectedItemText()!.getBoundingClientRect();
-
-            if (this.rootContext.dir() !== 'rtl') {
-                const itemTextOffset = itemTextRect.left - contentRect.left;
-                const left = valueNodeRect.left - itemTextOffset;
-                const leftDelta = triggerRect.left - left;
-                const minContentWidth = triggerRect.width + leftDelta;
-                const contentWidth = Math.max(minContentWidth, contentRect.width);
-                const rightEdge = window.innerWidth - CONTENT_MARGIN;
-                const clampedLeft = clamp(left, CONTENT_MARGIN, Math.max(CONTENT_MARGIN, rightEdge - contentWidth));
-
-                this.contentWrapperElement()!.style.minWidth = `${minContentWidth}px`;
-                this.contentWrapperElement()!.style.left = `${clampedLeft}px`;
-            } else {
-                const itemTextOffset = contentRect.right - itemTextRect.right;
-                const right = window.innerWidth - valueNodeRect.right - itemTextOffset;
-                const rightDelta = window.innerWidth - triggerRect.right - right;
-                const minContentWidth = triggerRect.width + rightDelta;
-                const contentWidth = Math.max(minContentWidth, contentRect.width);
-                const leftEdge = window.innerWidth - CONTENT_MARGIN;
-                const clampedRight = clamp(right, CONTENT_MARGIN, Math.max(CONTENT_MARGIN, leftEdge - contentWidth));
-
-                this.contentWrapperElement()!.style.minWidth = `${minContentWidth}px`;
-                this.contentWrapperElement()!.style.right = `${clampedRight}px`;
-            }
-
-            // -----------------------------------------------------------------------------------------
-            // Vertical positioning
-            // -----------------------------------------------------------------------------------------
-            const items = this.popup()
-                .items()
-                .map((i) => i.element);
-            const availableHeight = window.innerHeight - CONTENT_MARGIN * 2;
-            const itemsHeight = this.popup().viewport()!.scrollHeight;
-
-            const contentStyles = window.getComputedStyle(this.currentElement.nativeElement);
-            const contentBorderTopWidth = Number.parseInt(contentStyles.borderTopWidth, 10);
-            const contentPaddingTop = Number.parseInt(contentStyles.paddingTop, 10);
-            const contentBorderBottomWidth = Number.parseInt(contentStyles.borderBottomWidth, 10);
-            const contentPaddingBottom = Number.parseInt(contentStyles.paddingBottom, 10);
-
-            const fullContentHeight =
-                contentBorderTopWidth +
-                contentPaddingTop +
-                itemsHeight +
-                contentPaddingBottom +
-                contentBorderBottomWidth;
-            const minContentHeight = Math.min(this.popup().selectedItem()!.offsetHeight * 5, fullContentHeight);
-
-            const viewportStyles = window.getComputedStyle(this.popup().viewport()!);
-            const viewportPaddingTop = Number.parseInt(viewportStyles.paddingTop, 10);
-            const viewportPaddingBottom = Number.parseInt(viewportStyles.paddingBottom, 10);
-
-            const topEdgeToTriggerMiddle = triggerRect.top + triggerRect.height / 2 - CONTENT_MARGIN;
-            const triggerMiddleToBottomEdge = availableHeight - topEdgeToTriggerMiddle;
-
-            const selectedItemHalfHeight = this.popup().selectedItem()!.offsetHeight / 2;
-            const itemOffsetMiddle = this.popup().selectedItem()!.offsetTop + selectedItemHalfHeight;
-            const contentTopToItemMiddle = contentBorderTopWidth + contentPaddingTop + itemOffsetMiddle;
-            const itemMiddleToContentBottom = fullContentHeight - contentTopToItemMiddle;
-
-            const willAlignWithoutTopOverflow = contentTopToItemMiddle <= topEdgeToTriggerMiddle;
-
-            if (willAlignWithoutTopOverflow) {
-                const isLastItem = this.popup().selectedItem()! === items[items.length - 1];
-                this.contentWrapperElement()!.style.bottom = `${0}px`;
-                const viewportOffsetBottom =
-                    this.currentElement.nativeElement.clientHeight -
-                    this.popup().viewport()!.offsetTop -
-                    this.popup().viewport()!.offsetHeight;
-                const clampedTriggerMiddleToBottomEdge = Math.max(
-                    triggerMiddleToBottomEdge,
-                    selectedItemHalfHeight +
-                        // viewport might have padding bottom, include it to avoid a scrollable viewport
-                        (isLastItem ? viewportPaddingBottom : 0) +
-                        viewportOffsetBottom +
-                        contentBorderBottomWidth
-                );
-                const height = contentTopToItemMiddle + clampedTriggerMiddleToBottomEdge;
-                this.contentWrapperElement()!.style.height = `${height}px`;
-            } else {
-                const isFirstItem = this.popup().selectedItem()! === items[0];
-                this.contentWrapperElement()!.style.top = `${0}px`;
-                const clampedTopEdgeToTriggerMiddle = Math.max(
-                    topEdgeToTriggerMiddle,
-                    contentBorderTopWidth +
-                        this.popup().viewport()!.offsetTop +
-                        // viewport might have padding top, include it to avoid a scrollable viewport
-                        (isFirstItem ? viewportPaddingTop : 0) +
-                        selectedItemHalfHeight
-                );
-                const height = clampedTopEdgeToTriggerMiddle + itemMiddleToContentBottom;
-                this.contentWrapperElement()!.style.height = `${height}px`;
-                this.popup().viewport()!.scrollTop =
-                    contentTopToItemMiddle - topEdgeToTriggerMiddle + this.popup().viewport()!.offsetTop;
-            }
-
-            this.contentWrapperElement()!.style.margin = `${CONTENT_MARGIN}px 0`;
-            this.contentWrapperElement()!.style.minHeight = `${minContentHeight}px`;
-            this.contentWrapperElement()!.style.maxHeight = `${availableHeight}px`;
-            // -----------------------------------------------------------------------------------------
-
+    protected override onPlaced() {
+        if (!this.rootContext.open()) return;
+        if (this.anchoredFallback()) {
+            this.readyToFocus.set(true);
             this.placed.emit();
-
-            // we don't want the initial scroll position adjustment to trigger "expand on scroll"
-            // so we explicitly turn it on only after they've registered.
-            requestAnimationFrame(() => this.shouldExpandOnScrollRef.set(true));
-        }
+        } else if (!this.itemLayout()) void this.position();
     }
 
-    /**
-     * Touch fallback (Base UI disables item-alignment on touch): position the popup as a plain anchored
-     * dropdown just below the trigger, clamped to the viewport, with no item alignment or pre-scroll.
-     */
-    private positionBelowTrigger() {
-        const trigger = this.rootContext.triggerElement();
-        const wrapper = this.contentWrapperElement();
-        if (!trigger || !wrapper) {
+    private cancelPlacement() {
+        this.request++;
+        this.shouldExpandOnScrollRef.set(false);
+        const view = this.alignedElement.ownerDocument.defaultView;
+        view?.cancelAnimationFrame?.(this.expansionFrame);
+    }
+    private valid(request: number) {
+        return request === this.request && this.rootContext.open() && !this.alignedDestroyRef.destroyed;
+    }
+    private invalidatePlacement() {
+        if (!this.rootContext.open()) return;
+        this.cancelPlacement();
+        this.reachedMaxHeight = false;
+        if (this.anchoredFallback()) return;
+        const hadLayout = !!this.itemLayout();
+        this.itemLayout.set(null);
+        if (!hadLayout && super.hasPosition()) void this.position();
+    }
+    private useAnchoredFallback() {
+        this.anchoredFallback.set(true);
+        this.itemLayout.set(null);
+        const request = this.request;
+        afterNextRender(
+            () => {
+                if (this.valid(request) && super.hasPosition()) {
+                    this.readyToFocus.set(true);
+                    this.placed.emit();
+                }
+            },
+            { injector: this.alignedInjector }
+        );
+    }
+    private maxPopupHeight() {
+        const style = this.alignedElement.ownerDocument.defaultView!.getComputedStyle(
+            this.contentElement().currentElementRef.nativeElement
+        );
+        return style.maxHeight.endsWith('px') ? parseFloat(style.maxHeight) || Infinity : Infinity;
+    }
+
+    async position() {
+        if (!this.rootContext.open() || this.anchoredFallback()) return;
+        if (this.itemLayout()) {
+            this.invalidatePlacement();
             return;
         }
+        if (!super.hasPosition()) return;
+        const request = ++this.request;
+        const trigger = this.rootContext.triggerElement();
+        const viewport = this.popup().viewport();
+        if (!trigger || !viewport) return;
         const triggerRect = trigger.getBoundingClientRect();
-        const availableHeight = window.innerHeight - CONTENT_MARGIN * 2;
-        const maxLeft = Math.max(CONTENT_MARGIN, window.innerWidth - CONTENT_MARGIN - triggerRect.width);
+        // A hidden/unmeasured anchor has no geometry to align. Keep measuring rather than
+        // interpreting a zero jsdom/hidden rect as a real viewport-edge collision.
+        if (!triggerRect.width || !triggerRect.height) {
+            // There is no item geometry yet (hidden anchor or layout-free renderer). The common
+            // pass is still complete; ResizeObserver will retry alignment when size is available.
+            this.readyToFocus.set(true);
+            this.placed.emit();
+            return;
+        }
+        const view = this.alignedElement.ownerDocument.defaultView!;
+        if (
+            this.rootContext.openedByTouch() ||
+            (rdxPlatform.engine.webkit && (view.visualViewport?.scale ?? 1) !== 1)
+        ) {
+            this.useAnchoredFallback();
+            return;
+        }
+        const offsetParent = await platform.getOffsetParent(this.alignedElement);
+        if (!this.valid(request)) return;
+        // Fixed positioning inside a transformed containing block needs a different coordinate
+        // space. Let the common Floating UI engine handle it instead of offsetting viewport math.
+        if (offsetParent !== view) {
+            this.useAnchoredFallback();
+            return;
+        }
+        const panel = this.contentElement().currentElementRef.nativeElement;
+        const style = view.getComputedStyle(this.alignedElement);
+        const panelStyle = view.getComputedStyle(panel);
+        const marginTop = parseFloat(style.marginTop) || 10;
+        const marginBottom = parseFloat(style.marginBottom) || 10;
+        const input = initialItemAlignedLayout({
+            trigger: triggerRect,
+            positioner: this.alignedElement.getBoundingClientRect(),
+            value: this.rootContext.valueElement()?.getBoundingClientRect(),
+            text: (() => {
+                const text = this.popup().selectedItemText()?.getBoundingClientRect();
+                // Focus/initial highlight may already have scrolled this list while the common
+                // positioner was measuring. Item alignment needs its intrinsic text offset.
+                return (
+                    text && {
+                        ...text.toJSON(),
+                        top: text.top + viewport.scrollTop,
+                        bottom: text.bottom + viewport.scrollTop
+                    }
+                );
+            })(),
+            rtl: this.rootContext.dir() === 'rtl',
+            viewportWidth: this.alignedElement.ownerDocument.documentElement.clientWidth,
+            viewportHeight: this.alignedElement.ownerDocument.documentElement.clientHeight,
+            marginTop,
+            marginBottom,
+            minHeight: parseFloat(style.minHeight) || 100,
+            borderBottom: parseFloat(panelStyle.borderBottomWidth) || 0,
+            scrollHeight: viewport.scrollHeight
+        });
+        const layout: ItemLayout = {
+            left: input.left,
+            height: input.height,
+            bottom: 0,
+            marginTop,
+            marginBottom,
+            maxHeight: Math.min(input.availableHeight, this.maxPopupHeight())
+        };
+        this.itemLayout.set(layout);
+        afterNextRender(
+            () => {
+                if (!this.valid(request)) return;
+                const finished = finishItemAlignedLayout(
+                    input,
+                    Math.max(0, viewport.scrollHeight - viewport.clientHeight)
+                );
+                if (finished.fallback) {
+                    this.useAnchoredFallback();
+                    return;
+                }
+                this.itemLayout.set({ ...layout, height: finished.height, top: finished.top, bottom: finished.bottom });
+                this.reachedMaxHeight = finished.height >= layout.maxHeight - 1;
+                afterNextRender(
+                    () => {
+                        if (!this.valid(request)) return;
+                        viewport.scrollTop = clamp(
+                            finished.scrollTop,
+                            0,
+                            Math.max(0, viewport.scrollHeight - viewport.clientHeight)
+                        );
+                        this.popup().updateScrollEdges();
+                        this.placed.emit();
+                        // In-flow scroll buttons can appear after the first placement notification.
+                        // Let Angular render that chrome before settling scroll and enabling focus.
+                        afterNextRender(
+                            () => {
+                                if (!this.valid(request)) return;
+                                const text = this.popup().selectedItemText()?.getBoundingClientRect();
+                                const value = this.rootContext.valueElement()?.getBoundingClientRect();
+                                if (
+                                    text &&
+                                    value &&
+                                    this.popup().highlight.highlightedItem()?.element === this.popup().selectedItem()
+                                ) {
+                                    const delta = text.top + text.height / 2 - value.top - value.height / 2;
+                                    viewport.scrollTop = clamp(
+                                        viewport.scrollTop + delta,
+                                        0,
+                                        Math.max(0, viewport.scrollHeight - viewport.clientHeight)
+                                    );
+                                }
+                                this.popup().updateScrollEdges();
+                                this.readyToFocus.set(true);
+                                this.placed.emit();
+                                this.expansionFrame = view.requestAnimationFrame(() => {
+                                    if (this.valid(request)) this.shouldExpandOnScrollRef.set(true);
+                                });
+                            },
+                            { injector: this.alignedInjector }
+                        );
+                    },
+                    { injector: this.alignedInjector }
+                );
+            },
+            { injector: this.alignedInjector }
+        );
+    }
 
-        wrapper.style.left = `${clamp(triggerRect.left, CONTENT_MARGIN, maxLeft)}px`;
-        wrapper.style.top = `${triggerRect.bottom}px`;
-        wrapper.style.bottom = '';
-        wrapper.style.height = '';
-        wrapper.style.margin = `${CONTENT_MARGIN}px 0`;
-        wrapper.style.minWidth = `${triggerRect.width}px`;
-        wrapper.style.maxHeight = `${availableHeight}px`;
-
-        this.placed.emit();
+    onScroll(viewport: HTMLElement): boolean {
+        const layout = this.itemLayout();
+        if (
+            !this.rootContext.open() ||
+            !layout ||
+            !this.shouldExpandOnScrollRef() ||
+            this.reachedMaxHeight ||
+            (layout.top !== 0 && layout.bottom !== 0)
+        )
+            return false;
+        const next = expandedItemAlignedLayout(
+            layout.height,
+            layout.maxHeight,
+            viewport.scrollTop,
+            Math.max(0, viewport.scrollHeight - viewport.clientHeight),
+            layout.top === 0
+        );
+        if (Math.abs(next.height - layout.height) < 0.01) return false;
+        this.itemLayout.set({ ...layout, height: next.height });
+        this.reachedMaxHeight = next.height >= layout.maxHeight - 1;
+        // Height and offset change in one native scroll turn. Intermediate arrow visibility must
+        // not alter list chrome before the new height is applied; the signal retains render ownership.
+        this.alignedElement.style.height = `${next.height}px`;
+        if (next.scrollTop !== undefined)
+            viewport.scrollTop = clamp(next.scrollTop, 0, Math.max(0, viewport.scrollHeight - viewport.clientHeight));
+        this.popup().updateScrollEdges();
+        return true;
     }
 }

@@ -1,5 +1,6 @@
 import {
     afterNextRender,
+    afterRenderEffect,
     computed,
     DestroyRef,
     Directive,
@@ -11,15 +12,18 @@ import {
     output,
     OutputRef,
     signal,
-    Signal
+    Signal,
+    untracked
 } from '@angular/core';
 import { RdxCompositeItemRegistration, RdxCompositeList } from '@radix-ng/primitives/composite';
 import {
-    AcceptableValue,
     createContext,
+    createPointerMoveGuard,
+    getActiveElement,
     RDX_FLOATING_REGISTRATION,
     RDX_FLOATING_ROOT_CONTEXT,
     RdxFloatingNodeRegistration,
+    resizeEffect,
     useAnchoredScrollLock,
     useListHighlight
 } from '@radix-ng/primitives/core';
@@ -28,9 +32,9 @@ import {
     provideFloatingFocusManagerConfig,
     RdxFloatingFocusManager
 } from '@radix-ng/primitives/floating-focus-manager';
+import { composedContains } from '@radix-ng/primitives/focus-scope';
 import { RdxPopperContent } from '@radix-ng/primitives/popper';
 import { injectSelectRootContext } from './select-root';
-import { getNextMatch } from './useTypeahead';
 import { RdxSelectItemMetadata, SELECTION_KEYS, valueComparator } from './utils';
 
 type RdxSelectCompositeItem = RdxCompositeItemRegistration<RdxSelectItemMetadata>;
@@ -46,11 +50,13 @@ export interface RdxSelectPopupContext {
     isHighlighted: (element: HTMLElement) => boolean;
     highlightItem: (element: HTMLElement) => void;
     isKeyboardActive: () => boolean;
+    isStationaryPointerMove: (event: PointerEvent) => boolean;
     setKeyboardActive: (value: boolean) => void;
     onViewportChange: (node: HTMLElement | undefined) => void;
+    onViewportScroll: (node: HTMLElement) => void;
+    canScrollUp: Signal<boolean>;
+    canScrollDown: Signal<boolean>;
     onItemLeave: () => void;
-    itemRefCallback: (node: HTMLElement, value: AcceptableValue | undefined, disabled: boolean) => void;
-    itemTextRefCallback: (node: HTMLElement, value: AcceptableValue | undefined, disabled: boolean) => void;
 }
 
 const context = (): RdxSelectPopupContext => {
@@ -72,40 +78,16 @@ const context = (): RdxSelectPopupContext => {
             }
         },
         isKeyboardActive: () => context.isKeyboardActive(),
+        isStationaryPointerMove: (event) => context.isStationaryPointerMove(event),
         setKeyboardActive: (value: boolean) => context.setKeyboardActive(value),
         onViewportChange: (node: HTMLElement | undefined) => {
             context.viewport.set(node);
         },
+        onViewportScroll: (node) => context.onViewportScroll(node),
+        canScrollUp: context.canScrollUp,
+        canScrollDown: context.canScrollDown,
         onItemLeave: () => {
             context.highlight.clear();
-        },
-        itemRefCallback: (node: HTMLElement, value: AcceptableValue | undefined, disabled: boolean) => {
-            const isFirstValidItem = !context.firstValidItemFoundRef() && !disabled;
-            const isSelectedItem = valueComparator(
-                context.rootContext.value(),
-                value,
-                context.rootContext.isItemEqualToValue()
-            );
-
-            if (isSelectedItem || isFirstValidItem) {
-                context.selectedItem.set(node);
-            }
-
-            if (isFirstValidItem) {
-                context.firstValidItemFoundRef.set(true);
-            }
-        },
-        itemTextRefCallback: (node: HTMLElement, value: AcceptableValue | undefined, disabled: boolean) => {
-            const isFirstValidItem = !context.firstValidItemFoundRef() && !disabled;
-            const isSelectedItem = valueComparator(
-                context.rootContext.value(),
-                value,
-                context.rootContext.isItemEqualToValue()
-            );
-
-            if (isSelectedItem || isFirstValidItem) {
-                context.selectedItemText.set(node);
-            }
         }
     };
 };
@@ -117,6 +99,9 @@ export const [injectSelectPopupContext, provideSelectPopupContext] = createConte
 
 export interface RdxPositionerImpl {
     placed: OutputRef<void>;
+    onScroll?: (viewport: HTMLElement) => boolean | void;
+    readyToFocus?: Signal<boolean>;
+    isPositioned?: Signal<boolean>;
     /**
      * Whether **item-aligned** positioning is currently active (Base UI `alignItemWithTriggerActive`).
      * `true` only for the item-aligned positioner while open **and not touch-opened** — a touch open
@@ -134,10 +119,9 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
  *
  * Since ADR 0010 §6 the popup is the **inner** element (the positioner is its ancestor): it carries
  * `role="listbox"`, the `contentId`, and — via the composed {@link RdxPopperContent} — the
- * `data-side` / `data-align` attributes and the until-positioned animation guard previously held by
- * the deleted `rdxSelectPositionerContent`. `RdxPopperContent` also makes the popup the element the
- * `RdxPopperContentWrapper` ancestor reads its content z-index from. In item-aligned mode there is no
- * wrapper, so `RdxPopperContent` no-ops.
+ * `data-side` / `data-align` attributes and the until-positioned animation guard. Both positioner
+ * modes compose the common wrapper; its rendered side is `none` during item alignment. Initial
+ * geometry readiness only gates activation of the existing focus manager, which still owns focus.
  *
  * @group Components
  */
@@ -145,7 +129,7 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
     selector: '[rdxSelectPopup]',
     hostDirectives: [
         RdxPopperContent,
-        { directive: RdxFloatingFocusManager, inputs: ['returnFocus: finalFocus'] },
+        { directive: RdxFloatingFocusManager, inputs: ['returnFocus: finalFocus', 'closeOnFocusOut'] },
         RdxFloatingNodeRegistration,
         RdxCompositeList
     ],
@@ -154,13 +138,25 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
         provideFloatingFocusManagerConfig(() => {
             const rootContext = injectSelectRootContext();
             const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+            const positioner = inject(RDX_SELECT_POSITIONER_TOKEN, { optional: true });
 
             return {
                 modal: () => false,
-                enabled: () => rootContext.open() || rootContext.transitionStatus() === 'ending',
+                enabled: () =>
+                    (rootContext.open() || rootContext.transitionStatus() === 'ending') &&
+                    (positioner?.readyToFocus?.() ?? true),
                 closeOnFocusOut: () => false,
                 // The listbox owns DOM focus; items are navigated virtually through aria-activedescendant.
                 initialFocus: () => host,
+                returnFocus: () => () => {
+                    const active = getActiveElement(host.ownerDocument);
+                    // Pointer opening can leave focus on body before the popup mounts. The default
+                    // return target is still the trigger; preserve deliberate focus elsewhere.
+                    if (active && active !== host.ownerDocument.body && !composedContains(host, active)) {
+                        return false;
+                    }
+                    return rootContext.triggerElement() ?? true;
+                },
                 restoreFocus: () => true,
                 openInteractionType: () => rootContext.openInteractionType(),
                 closeInteractionType: () => rootContext.closeInteractionType()
@@ -180,10 +176,13 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
         '[dir]': 'rootContext.dir()',
 
         '(keydown)': 'handleKeyDown($event)',
+        '(focusout)': 'rootContext.onTypeaheadFocusOut($event)',
 
         '[style]': `{
-            display: 'flex',
+            display: rootContext.autofillProbe() && !rootContext.open() ? 'none' : 'flex',
             flexDirection: 'column',
+            flex: '1 1 auto',
+            minHeight: '0',
             outline: 'none'
         }`
     }
@@ -194,6 +193,7 @@ export class RdxSelectPopup {
     private readonly currentElement = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly compositeList = inject(RdxCompositeList, { self: true });
     private readonly injector = inject(Injector);
+    private readonly focusManager = inject(RdxFloatingFocusManager);
 
     readonly rootContext = injectSelectRootContext();
 
@@ -211,31 +211,55 @@ export class RdxSelectPopup {
      */
     readonly highlight = useListHighlight<RdxSelectCompositeItem>({
         items: this.items,
-        isNavigable: (item) => !item.metadata()?.disabled,
+        // Base UI permits keyboard navigation to disabled options; selection and typeahead filter them separately.
+        isNavigable: () => true,
         getId: (item) => item.element.id,
         loop: signal(false),
         injector: this.injector
     });
 
-    readonly selectedItem = signal<HTMLElement | undefined>(undefined);
+    // Derive positioning refs from Angular's reactive collection instead of mount-only callbacks.
+    // The same view can be retained across opens while its value or item text changes.
+    private readonly positioningItem = computed(() => {
+        const items = this.items();
+        return (
+            items.find((item) =>
+                valueComparator(
+                    this.rootContext.value(),
+                    item.metadata()?.value,
+                    this.rootContext.isItemEqualToValue(),
+                    this.rootContext.multiple()
+                )
+            ) ?? items.find((item) => !item.metadata()?.disabled)
+        );
+    });
 
-    readonly selectedItemText = signal<HTMLElement | undefined>(undefined);
+    readonly selectedItem = computed(() => this.positioningItem()?.element);
 
-    readonly firstValidItemFoundRef = signal(false);
+    readonly selectedItemText = computed(() => this.positioningItem()?.metadata()?.textElement);
 
     readonly viewport = signal<HTMLElement | undefined>(undefined);
 
     readonly isPositioned = signal(false);
+    readonly canScrollUp = signal(false);
+    readonly canScrollDown = signal(false);
 
     // Tracks whether the last interaction was the keyboard, so the highlight doesn't jump to an item
     // the cursor happens to rest on when arrow-key navigation scrolls the list.
     private keyboardActive = false;
+    private pointerMoveGuard = createPointerMoveGuard();
     private hasHighlightedOpen = false;
 
-    // Typeahead buffer (APG listbox): printable characters accumulate for 1s and jump the highlight to
-    // the next item whose text matches.
-    private typeaheadSearch = '';
-    private typeaheadTimer?: ReturnType<typeof setTimeout>;
+    private readonly selectedIndex = computed(() =>
+        this.items().findIndex((item) =>
+            valueComparator(
+                this.rootContext.value(),
+                item.metadata()?.value,
+                this.rootContext.isItemEqualToValue(),
+                this.rootContext.multiple()
+            )
+        )
+    );
 
     /**
      * Event handler called when the escape key is down.
@@ -256,29 +280,64 @@ export class RdxSelectPopup {
      * (Popper or item-aligned). We react to its `placed` to highlight and scroll the selected item
      * into view and flag the popup as positioned.
      */
-    private readonly positioner = inject(RDX_SELECT_POSITIONER_TOKEN, { optional: true });
+    protected readonly positioner = inject(RDX_SELECT_POSITIONER_TOKEN, { optional: true });
 
     constructor() {
+        let populated = false;
+        afterRenderEffect(() => {
+            const open = this.rootContext.open();
+            const values = this.items().map((item) => item.metadata()?.value);
+            if (!open) {
+                populated = false;
+                return;
+            }
+            if (!values.length) return;
+            // Angular has finished registering/removing the view's items. Don't reconcile a
+            // partially constructed collection, a closed retained view, or the first async load.
+            if (populated) untracked(() => this.rootContext.reconcileOptions(values));
+            populated = true;
+        });
         this.positioner?.placed.subscribe(() => {
+            if (!this.rootContext.open()) return;
             this.isPositioned.set(true);
             this.highlightSelectedItemAfterPositioned();
+            if (this.keyboardActive) this.scrollHighlightedIntoView();
+            this.updateScrollEdges();
+        });
 
-            // In Popper mode the popup lives inside the positioner, which stays `visibility: hidden`
-            // until it is placed — so the mount-time `mountAutoFocus` call no-ops on the hidden
-            // listbox and keyboard navigation never starts. Focus it now that it is visible (skip if
-            // focus already moved inside, e.g. item-aligned mode or a re-placement).
-            const popup = this.content();
-            if (popup && !popup.contains(document.activeElement)) {
-                popup.focus({ preventScroll: true });
+        this.focusManager.focusOut.subscribe((event) => {
+            if (this.rootContext.open() && !event.defaultPrevented) {
+                this.rootContext.onOpenChange(false, 'focus-out', event);
             }
+        });
+
+        effect(() => {
+            const open = this.rootContext.open();
+            this.selectedIndex();
+            if (open) this.rootContext.resetTypeahead();
+        });
+
+        effect((onCleanup) => {
+            if (!this.rootContext.open()) return;
+            const document = this.currentElement.nativeElement.ownerDocument;
+            const view = document.defaultView;
+            const { origin, method } = untracked(() => ({
+                origin: this.rootContext.triggerPointerDownPosRef(),
+                method: this.rootContext.openMethod()
+            }));
+            const guard = createPointerMoveGuard(
+                origin && (method === 'mouse' || method === 'pen')
+                    ? { clientX: origin.x - (view?.scrollX ?? 0), clientY: origin.y - (view?.scrollY ?? 0) }
+                    : undefined
+            );
+            this.pointerMoveGuard = guard;
+            document.addEventListener('pointermove', guard, true);
+            onCleanup(() => document.removeEventListener('pointermove', guard, true));
         });
 
         effect(() => {
             if (!this.rootContext.open()) {
                 this.hasHighlightedOpen = false;
-                // Reset the "first valid item" seed so the next open re-resolves it (otherwise the
-                // selected/first-item highlight seed is stale on reopen).
-                this.firstValidItemFoundRef.set(false);
                 return;
             }
 
@@ -296,8 +355,23 @@ export class RdxSelectPopup {
         effect(() => {
             const item = this.highlight.highlightedItem();
             if (item && this.keyboardActive) {
-                item.element.scrollIntoView?.({ block: 'nearest' });
+                untracked(() => this.scrollHighlightedIntoView());
             }
+        });
+        afterNextRender(() => {
+            resizeEffect({
+                injector: this.injector,
+                element: this.viewport,
+                onResize: () => {
+                    // Scroll buttons can shrink the list after the keyboard's first scroll.
+                    // Observe actual layout so the active descendant remains visible after that
+                    // change too. Hover/touch highlighting must not cause programmatic scrolling.
+                    if (this.rootContext.open() && this.keyboardActive) {
+                        this.scrollHighlightedIntoView();
+                    }
+                    this.updateScrollEdges();
+                }
+            });
         });
 
         // Activation policy (ADR 0016 §2 + §3). Lock page scroll while the popup is OPEN and either modal
@@ -318,14 +392,12 @@ export class RdxSelectPopup {
         // The popup's animation determines when the open/close transition (onOpenChangeComplete) is done.
         const unregisterTransition = this.rootContext.registerTransitionElement(this.currentElement.nativeElement);
         inject(DestroyRef).onDestroy(unregisterTransition);
-        inject(DestroyRef).onDestroy(() => clearTimeout(this.typeaheadTimer));
 
         // The popup (listbox) is this layer's floating element — the inside surface for containment.
         this.floatingContext.setFloatingElement(this.currentElement.nativeElement);
 
-        // Dismissal (ADR 0015): Escape or an outside press closes the select. Focus-out does NOT close it
-        // — the listbox holds focus while open (items are navigated virtually), so a focus-out is not a
-        // dismissal (the legacy preventDefaulted it too).
+        // Dismissal (ADR 0015) owns Escape / outside press. Optional focus-out closing belongs to
+        // the shared focus manager, separately from the popup's virtual navigation model.
         new RdxDismiss(this.floatingContext, () => this.registration?.node() ?? null, {
             escapeKey: () => true,
             outsidePress: () => true,
@@ -346,7 +418,7 @@ export class RdxSelectPopup {
         });
 
         effect((onCleanup) => {
-            if (!this.content()) return;
+            if (!this.content() || !this.rootContext.open()) return;
 
             let pointerMoveDelta = { x: 0, y: 0 };
 
@@ -358,6 +430,8 @@ export class RdxSelectPopup {
             };
 
             const handlePointerUp = (event: PointerEvent) => {
+                // Dismissal may already have accepted this gesture on pointerdown.
+                if (!this.rootContext.open()) return;
                 // Prevent options from being untappable on touch devices
                 if (event.pointerType === 'touch') return;
 
@@ -366,7 +440,10 @@ export class RdxSelectPopup {
                     event.preventDefault();
                 } else {
                     // otherwise, if the event was outside the content, close.
-                    if (!this.content()?.contains(event.target as HTMLElement)) {
+                    if (
+                        !this.content()?.contains(event.target as HTMLElement) &&
+                        !this.floatingContext.triggers.contains(event.target)
+                    ) {
                         this.rootContext.onOpenChange(false, 'outside-press', event);
                     }
                 }
@@ -411,14 +488,15 @@ export class RdxSelectPopup {
         });
     }
 
-    /** Highlights the selected item (or the first enabled one) when the popup opens. */
+    /** Highlights the selected item (or the first rendered one), including disabled options. */
     highlightSelectedItem() {
         const items = this.items();
         const selected = items.find((item) =>
             valueComparator(
                 this.rootContext.value(),
-                item.metadata()?.value as AcceptableValue,
-                this.rootContext.isItemEqualToValue()
+                item.metadata()?.value,
+                this.rootContext.isItemEqualToValue(),
+                this.rootContext.multiple()
             )
         );
         if (selected) {
@@ -429,13 +507,38 @@ export class RdxSelectPopup {
     }
 
     private highlightSelectedItemAfterPositioned() {
-        if (this.items().length === 0) {
+        // A retained view may report placement after its open effect has already initialized the
+        // highlight. Late placement must not overwrite an arrow/typeahead choice made meanwhile.
+        if (this.items().length === 0 || this.hasHighlightedOpen) {
             return;
         }
 
         this.highlightSelectedItem();
         this.scrollSelectedIntoView();
         this.hasHighlightedOpen = true;
+    }
+
+    private scrollHighlightedIntoView() {
+        const item = this.highlight.highlightedItem();
+        const viewport = this.viewport();
+        if (!item || !viewport || (this.positioner?.isPositioned && !this.positioner.isPositioned())) return;
+        const items = this.items();
+        if (item === items[0]) viewport.scrollTop = 0;
+        else if (item === items.at(-1)) viewport.scrollTop = viewport.scrollHeight;
+        else item.element.scrollIntoView?.({ block: 'nearest' });
+    }
+
+    onViewportScroll(viewport: HTMLElement) {
+        if (!this.positioner?.onScroll?.(viewport)) this.updateScrollEdges();
+    }
+
+    /** Both arrow parts read the same native metrics, including library-driven offset writes. */
+    updateScrollEdges() {
+        const viewport = this.viewport();
+        if (!viewport) return;
+        const max = Math.max(0, viewport.scrollHeight - viewport.clientHeight);
+        this.canScrollUp.set(viewport.scrollTop > 0);
+        this.canScrollDown.set(Math.ceil(viewport.scrollTop) < max);
     }
 
     private scrollSelectedIntoView() {
@@ -450,13 +553,29 @@ export class RdxSelectPopup {
         return this.keyboardActive;
     }
 
+    isStationaryPointerMove(event: PointerEvent): boolean {
+        return this.pointerMoveGuard(event);
+    }
+
     handleKeyDown(event: Event) {
+        if (!this.rootContext.open() || this.rootContext.disabled()) return;
         const keyEvent = event as KeyboardEvent;
         if (keyEvent.isComposing) return;
 
-        // select should not be navigated using tab key so we prevent it
+        // Preserve the current default until the AT-gated focus policy change (ADR 0023).
+        // Opt-in uses the manager's native portal guards; Shift+Tab closes back to finalFocus.
         if (keyEvent.key === 'Tab') {
-            event.preventDefault();
+            if (!this.focusManager.effectiveCloseOnFocusOut()) event.preventDefault();
+            else if (keyEvent.shiftKey && !keyEvent.altKey && !keyEvent.ctrlKey && !keyEvent.metaKey) {
+                event.preventDefault();
+                this.rootContext.onOpenChange(false, 'focus-out', event);
+            }
+            return;
+        }
+
+        if (keyEvent.key === ' ' && this.rootContext.isTypeaheadActive()) {
+            keyEvent.preventDefault();
+            if (!keyEvent.ctrlKey && !keyEvent.altKey && !keyEvent.metaKey) this.handleTypeahead(' ');
             return;
         }
 
@@ -464,12 +583,27 @@ export class RdxSelectPopup {
             event.preventDefault();
             const item = this.highlight.highlightedItem();
             const metadata = item?.metadata();
-            if (item && metadata && !metadata.disabled) {
-                this.rootContext.onValueChange(metadata.value as AcceptableValue, 'item-press', event);
+            if (
+                item &&
+                metadata &&
+                !metadata.disabled &&
+                !this.rootContext.disabled() &&
+                !this.rootContext.readOnly()
+            ) {
+                this.rootContext.onValueChange(metadata.value, 'item-press', event);
                 if (!this.rootContext.multiple()) {
                     this.rootContext.onOpenChange(false, 'item-press', event);
                 }
             }
+            // A Space that cannot commit (e.g. a disabled/read-only item) still starts a search session.
+            if (
+                keyEvent.key === ' ' &&
+                this.rootContext.open() &&
+                !keyEvent.ctrlKey &&
+                !keyEvent.altKey &&
+                !keyEvent.metaKey
+            )
+                this.handleTypeahead(' ');
             return;
         }
 
@@ -490,38 +624,43 @@ export class RdxSelectPopup {
                     this.highlight.last();
                     break;
             }
+            if (this.highlight.highlightedItem()) this.hasHighlightedOpen = true;
             return;
         }
 
         // Typeahead: a single printable character jumps the highlight to the next matching item.
         if (keyEvent.key.length === 1 && !keyEvent.ctrlKey && !keyEvent.altKey && !keyEvent.metaKey) {
+            keyEvent.preventDefault();
             this.handleTypeahead(keyEvent.key);
         }
     }
 
-    /** Accumulates printable keys for 1s and moves the highlight to the next item whose text matches. */
-    private handleTypeahead(key: string) {
-        this.typeaheadSearch += key;
-        clearTimeout(this.typeaheadTimer);
-        this.typeaheadTimer = setTimeout(() => (this.typeaheadSearch = ''), 1000);
-
-        const navigableItems = this.items().filter((item) => !item.metadata()?.disabled);
-        const values = navigableItems.map((item) => this.itemText(item));
+    private handleTypeahead(key: string): void {
+        const items = this.items();
+        const selected = this.selectedIndex();
         const current = this.highlight.highlightedItem();
-        const nextMatch = getNextMatch(values, this.typeaheadSearch, current ? this.itemText(current) : undefined);
-
-        if (nextMatch === undefined) {
-            return;
-        }
-
-        const match = navigableItems[values.indexOf(nextMatch)];
-        if (match) {
+        const origin = selected >= 0 ? selected : current ? items.indexOf(current) : -1;
+        const index = this.rootContext.searchTypeahead(
+            key,
+            items.map((item) => ({
+                text: this.itemText(item),
+                disabled: !!item.metadata()?.disabled
+            })),
+            origin
+        );
+        if (index !== undefined) {
             this.keyboardActive = true;
-            this.highlight.set(match);
+            this.hasHighlightedOpen = true;
+            this.highlight.set(items[index]);
         }
     }
 
     private itemText(item: RdxSelectCompositeItem): string {
-        return (item.metadata()?.textValue || item.element.textContent || '').trim();
+        return (
+            item.metadata()?.textValue ||
+            item.metadata()?.textElement?.textContent ||
+            item.element.textContent ||
+            ''
+        ).trim();
     }
 }

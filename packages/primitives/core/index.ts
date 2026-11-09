@@ -9,6 +9,7 @@ export * from './src/handle-and-dispatch-custom-event';
 export * from './src/id-generator';
 export * from './src/item-helpers';
 export * from './src/kbd-constants';
+export * from './src/labelable';
 export * from './src/live-announcer';
 export * from './src/predicates';
 export * from './src/provide-token';
@@ -27,6 +28,7 @@ export * from './src/floating/floating-tree';
 export * from './src/floating/internal-backdrop';
 export * from './src/floating/provide-floating-tree';
 export * from './src/floating/trigger-registry';
+export * from './src/floating/use-popup-lifecycle';
 
 export * from './src/dom/dispatch-click';
 export * from './src/dom/document';
@@ -39,6 +41,7 @@ export * from './src/dom/use-native-form-control';
 export * from './src/dom/use-resize-observer';
 export * from './src/dom/use-scroll-lock';
 
+export * from './src/composables/typeahead';
 export * from './src/composables/use-arrow-navigation';
 export * from './src/composables/use-filter';
 export * from './src/composables/use-grace-area';

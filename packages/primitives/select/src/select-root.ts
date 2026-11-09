@@ -1,24 +1,32 @@
 import {
+    afterNextRender,
     booleanAttribute,
     computed,
+    DestroyRef,
     Directive,
     effect,
     ElementRef,
+    forwardRef,
     inject,
+    Injector,
     input,
     model,
     output,
+    Provider,
     Signal,
     signal,
+    Type,
     untracked,
     WritableSignal
 } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
+import { compareNodeDocumentPosition } from '@radix-ng/primitives/composite';
 import {
-    AcceptableValue,
+    BooleanInput,
     createCancelableChangeEventDetails,
     createContext,
     createFloatingRootContext,
+    createLabelRegistry,
     Direction,
     formUiStateContext,
     injectId,
@@ -33,20 +41,34 @@ import {
     RdxFormUiStateContext,
     RdxFormUiTouchTarget,
     RdxFormValueControl,
+    RdxLabelRegistry,
+    RdxNativeInputRef,
+    RdxPopupPresenceRegistration,
     RdxTransitionStatus,
     serializeNativeFormValue,
+    itemToStringValue as stringifyValue,
     useNativeFormControl,
-    useTransitionStatus
+    usePopupLifecycle
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
+import { injectFieldRootContext } from '@radix-ng/primitives/field';
 import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
+import { composedContains } from '@radix-ng/primitives/focus-scope';
 import { RdxPopper } from '@radix-ng/primitives/popper';
-import { compare, valueComparator } from './utils';
+import { RdxSelectItems, resolveSelectLabel } from './select-items';
+import { createSelectTypeahead, SELECT_TYPEAHEAD_RESET_MS, SelectTypeaheadEntry } from './select-typeahead';
+import { compare } from './utils';
 
-export interface SelectOption {
-    value: AcceptableValue | undefined;
+export type { RdxSelectItemGroup, RdxSelectItemOption, RdxSelectItems, RdxSelectLabelValue } from './select-items';
+
+export interface SelectOption<Value = unknown> {
+    value: Value | undefined;
     disabled?: boolean;
     textContent: string;
+    /** @internal Rendered option metadata for keyboard search. */
+    textValue?: string;
+    /** @internal Used to resolve the current DOM order after projection or reordering. */
+    element?: HTMLElement;
 }
 
 export type RdxSelectOpenMethod = RdxInteractionType;
@@ -60,6 +82,7 @@ export type RdxSelectOpenChangeReason =
     | 'focus-out'
     | 'list-navigation'
     | 'cancel-open'
+    | 'imperative-action'
     | 'none';
 
 export type RdxSelectValueChangeReason = RdxSelectOpenChangeReason;
@@ -71,23 +94,42 @@ export interface RdxSelectOpenChangeEvent {
     eventDetails: RdxSelectOpenChangeEventDetails;
 }
 
+/** Imperative actions available directly on a Root template reference or view query. */
+export interface RdxSelectRootActions {
+    close: () => boolean;
+    unmount: () => void;
+}
+
 export type RdxSelectValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxSelectValueChangeReason>;
 
-export interface RdxSelectValueChangeEvent {
-    value: AcceptableValue | AcceptableValue[] | undefined;
+/** The selection shape follows Base UI's Value / Multiple contract; undefined remains accepted from Angular bindings. */
+export type RdxSelectValueType<Value, Multiple extends boolean = boolean> =
+    | (Multiple extends true ? Value[] : Value | null)
+    | undefined;
+
+export interface RdxSelectValueChangeEvent<Value = unknown, Multiple extends boolean = boolean> {
+    value: RdxSelectValueType<Value, Multiple>;
     eventDetails: RdxSelectValueChangeEventDetails;
 }
 
-export interface RdxSelectRootContext extends RdxFormUiStateContext {
+export interface RdxSelectRootContext<Value = unknown> extends RdxFormUiStateContext, RdxLabelRegistry {
+    present: Signal<boolean>;
+    skipExitAnimation: Signal<boolean>;
+    registerPresence: (presence: RdxPopupPresenceRegistration) => () => void;
+    autofillProbe: Signal<boolean>;
+    id: Signal<string>;
+    triggerId: WritableSignal<string | undefined>;
     triggerElement: WritableSignal<HTMLElement | null>;
     valueElement: WritableSignal<HTMLElement | null>;
     triggerPointerDownPosRef: WritableSignal<{ x: number; y: number } | null>;
     contentId: string;
     dir: Signal<Direction>;
-    value: Signal<AcceptableValue | AcceptableValue[] | undefined>;
+    value: Signal<RdxSelectValueType<Value>>;
     multiple: Signal<boolean>;
-    isItemEqualToValue: Signal<ItemValueComparator<AcceptableValue> | undefined>;
-    itemToStringLabel: Signal<((value: AcceptableValue) => string) | undefined>;
+    items: Signal<RdxSelectItems<Value> | undefined>;
+    highlightItemOnHover: Signal<boolean>;
+    isItemEqualToValue: Signal<ItemValueComparator<Value> | undefined>;
+    itemToStringLabel: Signal<((value: Value) => string) | undefined>;
     open: Signal<boolean>;
     openedByTouch: Signal<boolean>;
     openMethod: Signal<RdxSelectOpenMethod>;
@@ -100,19 +142,34 @@ export interface RdxSelectRootContext extends RdxFormUiStateContext {
     isEmptyModelValue: Signal<boolean>;
     transitionStatus: Signal<RdxTransitionStatus>;
     registerTransitionElement: (element: HTMLElement) => () => void;
-    optionsSet: Signal<Set<SelectOption>>;
-    onOptionAdd: (option: () => SelectOption) => void;
-    onOptionRemove: (option: () => SelectOption) => void;
-    onValueChange: (value: AcceptableValue | undefined, reason?: RdxSelectValueChangeReason, event?: Event) => boolean;
+    optionsSet: Signal<Set<SelectOption<Value>>>;
+    onOptionAdd: (option: () => SelectOption<Value>) => void;
+    onOptionRemove: (option: () => SelectOption<Value>) => void;
+    reconcileOptions: (values: readonly Value[]) => void;
+    onValueChange: (value: Value | undefined, reason?: RdxSelectValueChangeReason, event?: Event) => boolean;
     onTriggerChange: (node: ElementRef<HTMLElement>) => void;
     onValueElementChange: (node: HTMLElement) => void;
     onOpenChange: (value: boolean, reason?: RdxSelectOpenChangeReason, event?: Event) => boolean;
+    isTypeaheadActive: () => boolean;
+    searchTypeahead: (key: string, entries: readonly SelectTypeaheadEntry[], origin: number) => number | undefined;
+    resetTypeahead: () => void;
+    onTypeaheadFocusOut: (event: FocusEvent) => void;
+    onClosedTypeahead: (event: KeyboardEvent) => boolean;
 }
 
+// Angular DI erases a family's template generics. Independent child directives exchange unknown
+// here; Root and application wrappers retain their own precise public Value contract.
 const context = (): RdxSelectRootContext => {
     const context = inject(RdxSelectRoot);
 
     return {
+        present: context.present,
+        skipExitAnimation: context.skipExitAnimation,
+        registerPresence: context.registerPresence,
+        autofillProbe: context.autofillProbe,
+        ...context.labelRegistry,
+        id: context.controlId,
+        triggerId: context.triggerId,
         triggerElement: context.triggerElement,
         valueElement: context.valueElement,
         triggerPointerDownPosRef: context.triggerPointerDownPosRef,
@@ -120,6 +177,8 @@ const context = (): RdxSelectRootContext => {
         dir: context.dir,
         value: context.value,
         multiple: context.multiple,
+        items: context.items,
+        highlightItemOnHover: context.highlightItemOnHover,
         isItemEqualToValue: context.isItemEqualToValue,
         itemToStringLabel: context.itemToStringLabel,
         open: context.open,
@@ -136,21 +195,11 @@ const context = (): RdxSelectRootContext => {
         transitionStatus: context.transitionStatus,
         registerTransitionElement: context.registerTransitionElement,
         optionsSet: context.optionsSet,
-        onOptionAdd: (option: () => SelectOption) => {
-            const existingOption = context.getOption(option());
-            if (existingOption) {
-                context.optionsSet().delete(existingOption);
-            }
-
-            context.optionsSet().add(option());
-        },
-        onOptionRemove: (option: () => SelectOption) => {
-            const existingOption = context.getOption(option());
-            if (existingOption) {
-                context.optionsSet().delete(existingOption);
-            }
-        },
-        onValueChange: (value: AcceptableValue | undefined, reason?: RdxSelectValueChangeReason, event?: Event) =>
+        onOptionAdd: (option) => context.optionGetters.update((current) => [...current, option]),
+        onOptionRemove: (option) =>
+            context.optionGetters.update((current) => current.filter((entry) => entry !== option)),
+        reconcileOptions: (values) => context.reconcileOptions(values),
+        onValueChange: (value: unknown, reason?: RdxSelectValueChangeReason, event?: Event) =>
             context.setValue(value, reason, event),
         onTriggerChange: (node: ElementRef<HTMLElement>) => {
             context.triggerElement.set(node.nativeElement);
@@ -159,7 +208,12 @@ const context = (): RdxSelectRootContext => {
             context.valueElement.set(node);
         },
         onOpenChange: (value: boolean, reason?: RdxSelectOpenChangeReason, event?: Event) =>
-            context.setOpen(value, reason, event)
+            context.setOpen(value, reason, event),
+        isTypeaheadActive: () => context.isTypeaheadActive(),
+        searchTypeahead: (key, entries, origin) => context.searchTypeahead(key, entries, origin),
+        resetTypeahead: () => context.resetTypeahead(),
+        onTypeaheadFocusOut: (event) => context.onTypeaheadFocusOut(event),
+        onClosedTypeahead: (event) => context.onClosedTypeahead(event)
     };
 };
 
@@ -168,25 +222,61 @@ export const [injectSelectRootContext, provideSelectRootContext] = createContext
     'components/select'
 );
 
+/** Rebind the root's DI and form providers when a design-system component extends RdxSelectRoot. */
+export function provideRdxSelectRoot<Value, Multiple extends boolean>(
+    root: Type<RdxSelectRoot<Value, Multiple>>
+): Provider[] {
+    return [
+        ...(root === RdxSelectRoot ? [] : [{ provide: RdxSelectRoot, useExisting: root }]),
+        provideValueAccessor(root),
+        provideSelectRootContext(context),
+        provideFloatingTree(),
+        provideFloatingRootContext(() => inject(root).floatingContext)
+    ];
+}
+
 @Directive({
     selector: '[rdxSelectRoot]',
     exportAs: 'rdxSelectRoot',
-    providers: [
-        provideValueAccessor(RdxSelectRoot),
-        provideSelectRootContext(context),
-        // New floating foundation (ADR 0015/0017) — the dismissal capability reads this shared context.
-        provideFloatingTree(),
-        provideFloatingRootContext(() => inject(RdxSelectRoot).floatingContext)
-    ],
+    // AOT static fields run before the outer class binding used by the provider helper is initialized.
+    providers: [forwardRef(() => provideRdxSelectRoot(RdxSelectRoot))],
     hostDirectives: [RdxPopper]
 })
-export class RdxSelectRoot
+export class RdxSelectRoot<Value = unknown, Multiple extends boolean = boolean>
     extends RdxFormUiControlBase
-    implements ControlValueAccessor, RdxFormValueControl<AcceptableValue | AcceptableValue[] | undefined>
+    implements ControlValueAccessor, RdxFormValueControl<RdxSelectValueType<Value, Multiple>>, RdxSelectRootActions
 {
+    private readonly popper = inject(RdxPopper, { self: true });
+    private readonly hostElement = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+    private readonly injector = inject(Injector);
+    private readonly destroyRef = inject(DestroyRef);
+    private readonly field = injectFieldRootContext(true);
+
+    /** Id of the select control. Forwarded to Trigger unless Trigger supplies its own id. */
+    readonly id = input<string>();
+    private readonly defaultId = injectId('rdx-select-');
+    readonly controlId = computed(() => this.id() ?? this.defaultId, { debugName: 'RdxSelectRoot.controlId' });
+    readonly labelRegistry = createLabelRegistry();
+    readonly triggerId = signal<string | undefined>(undefined);
+
     readonly contentId = injectId('rdx-select-content-');
 
     readonly open = model<boolean>(false);
+    private readonly forceMount = signal(false, { debugName: 'RdxSelectRoot.forceMount' });
+    /** @internal Hidden metadata reads for autofill and typeahead; retained until the next open. */
+    readonly autofillProbe = signal(false, { debugName: 'RdxSelectRoot.autofillProbe' });
+    /** @internal Mount while open, during a deferred close, or to resolve option metadata on demand. */
+    readonly present = computed(() => this.lifecycle.present() || this.forceMount(), {
+        debugName: 'RdxSelectRoot.present'
+    });
+    private autofillRequest = 0;
+    private optionReaders = 0;
+    private optionsRendered?: Promise<void>;
+    private readonly typeahead = createSelectTypeahead();
+    private typeaheadTimer?: ReturnType<typeof setTimeout>;
+    private typeaheadGeneration = 0;
+    private readonly queuedTypeahead: KeyboardEvent[] = [];
+    private closedTypeaheadRunning = false;
 
     /** Whether the current open was initiated by **touch** (ADR 0016 §3 — gates the anchored scroll lock). */
     readonly openedByTouch = signal(false);
@@ -203,19 +293,29 @@ export class RdxSelectRoot
         open: () => this.open()
     });
 
-    readonly value = model<AcceptableValue | AcceptableValue[]>();
+    readonly value = model<RdxSelectValueType<Value, Multiple>>();
 
     /** Initial value for the uncontrolled case. Applied once on init; `value`/`[(value)]` take over after. */
-    readonly defaultValue = input<AcceptableValue | AcceptableValue[]>();
+    readonly defaultValue = input<RdxSelectValueType<Value, Multiple>>();
 
     /** Whether the select is initially open (uncontrolled). Applied once on init. */
     readonly defaultOpen = input(false, { transform: booleanAttribute });
 
-    readonly multiple = input(false, { transform: booleanAttribute });
+    readonly multiple = input<Multiple, Multiple | Exclude<BooleanInput, boolean>>(false as Multiple, {
+        transform: (value) => booleanAttribute(value) as Multiple
+    });
+
+    /** Labels for Select.Value, available even when the popup's items are not mounted. */
+    readonly items = input<RdxSelectItems<Value>>();
+
+    /** Whether pointer movement highlights items. Keyboard navigation is independent. */
+    readonly highlightItemOnHover = input(true, { transform: booleanAttribute });
 
     readonly disabled = input(false, { transform: booleanAttribute });
     private readonly cvaDisabled = signal(false);
-    readonly disabledState = computed(() => this.disabled() || this.cvaDisabled());
+    readonly disabledState = computed(
+        () => this.disabled() || this.cvaDisabled() || Boolean(this.field?.disabledState())
+    );
 
     /** When `true`, the value cannot be changed by the user (the popup can still be opened to view it). */
     readonly readOnly = input(false, { transform: booleanAttribute });
@@ -225,6 +325,18 @@ export class RdxSelectRoot
 
     /** Name used when serializing this composite control into native `FormData`. */
     readonly name = input<string>();
+    readonly effectiveName = computed(() => this.field?.name() ?? this.name(), {
+        debugName: 'RdxSelectRoot.effectiveName'
+    });
+    private readonly requiredState = computed(() => this.required() || Boolean(this.field?.requiredState()), {
+        debugName: 'RdxSelectRoot.requiredState'
+    });
+
+    /** Hint passed to the generated native input for browser autofill. */
+    readonly autoComplete = input<string>();
+
+    /** Called with the generated native input after hydration, and null when replaced or destroyed. */
+    readonly inputRef = input<RdxNativeInputRef>();
 
     /** Id of an external form that owns this control. */
     readonly form = input<string>();
@@ -236,30 +348,38 @@ export class RdxSelectRoot
     readonly dir: Signal<Direction> = injectDirection(this.dirInput);
 
     /** How item values are compared for equality — a function `(a, b) => boolean` or an object key. */
-    readonly isItemEqualToValue = input<ItemValueComparator<AcceptableValue>>();
+    readonly isItemEqualToValue = input<ItemValueComparator<Value>>();
 
     /** Converts a value to its display label (used by `RdxSelectValue`). */
-    readonly itemToStringLabel = input<(value: AcceptableValue) => string>();
+    readonly itemToStringLabel = input<(value: Value) => string>();
 
     /** Converts an item value to the string submitted by a native form. */
-    readonly itemToStringValue = input<(value: AcceptableValue) => string>();
+    readonly itemToStringValue = input<(value: Value) => string>();
 
     /** Emits before an open-state change is committed; call `eventDetails.cancel()` to veto it. */
     readonly onOpenChange = output<RdxSelectOpenChangeEvent>();
 
     /** Emits before a value change is committed; call `eventDetails.cancel()` to veto it. */
-    readonly onValueChange = output<RdxSelectValueChangeEvent>();
+    readonly onValueChange = output<RdxSelectValueChangeEvent<Value, Multiple>>();
 
     /** Emits after the open/close transition (including any exit animation) finishes. */
     readonly onOpenChangeComplete = output<boolean>();
 
-    private readonly transition = useTransitionStatus((open) => this.onOpenChangeComplete.emit(open));
+    private readonly lifecycle = usePopupLifecycle(
+        this.open,
+        (open) => this.onOpenChangeComplete.emit(open),
+        'RdxSelectRoot'
+    );
 
     /** Open/close transition phase, for `data-starting-style` / `data-ending-style`. */
-    readonly transitionStatus = this.transition.status;
+    readonly transitionStatus = this.lifecycle.status;
 
     /** Registers the popup element whose animation determines transition completion. */
-    readonly registerTransitionElement = this.transition.registerElement;
+    readonly registerTransitionElement = this.lifecycle.registerElement;
+    /** @internal Presence reports when the live popup view has actually finished exiting. */
+    readonly registerPresence = this.lifecycle.registerPresence;
+    /** @internal An imperative completion bypasses a second CSS exit wait in Presence. */
+    readonly skipExitAnimation = this.lifecycle.skipExitAnimation;
 
     readonly isEmptyModelValue = computed(() => {
         const value = this.value();
@@ -273,21 +393,52 @@ export class RdxSelectRoot
     private hasAppliedDefaultOpen = false;
 
     private readonly nativeFormControl = useNativeFormControl({
-        name: this.name,
+        name: this.effectiveName,
         form: this.form,
         disabled: this.disabledState,
         value: this.value,
         serialize: (value) => {
-            const itemToStringValue = this.itemToStringValue();
-            return itemToStringValue
-                ? serializeNativeFormValue(value, (entry) => itemToStringValue(entry as AcceptableValue))
-                : serializeNativeFormValue(value);
+            return serializeNativeFormValue<Value>(value, this.itemToStringValue(), { multiple: this.multiple() });
+        },
+        input: {
+            anchor: () => this.triggerElement(),
+            type: () =>
+                this.field || this.effectiveName() || this.autoComplete() || this.requiredState() || this.inputRef()
+                    ? 'text'
+                    : 'hidden',
+            name: () => (this.scalarNativeValue() ? this.effectiveName() : undefined),
+            value: () => {
+                if (!this.scalarNativeValue()) return '';
+                const value = this.value();
+                return value == null ? '' : (this.itemToStringValue()?.(value as Value) ?? stringifyValue(value));
+            },
+            id: () =>
+                this.scalarNativeValue() && this.effectiveName() ? undefined : `${this.controlId()}-hidden-input`,
+            autoComplete: this.autoComplete,
+            required: () => this.requiredState() && (this.scalarNativeValue() || this.isEmptyModelValue()),
+            readOnly: this.readOnly,
+            ref: this.inputRef,
+            onChange: (value, event) => this.handleAutofill(value, event),
+            onFocus: () => {
+                const focusOptions = { preventScroll: false, focusVisible: true };
+                this.triggerElement()?.focus(focusOptions);
+            },
+            onInvalid: () => {
+                this.formUi.markAsTouched();
+                this.field?.setTouched(true);
+            }
         },
         defaultValue: () => {
             const defaultValue = this.defaultValue();
-            return defaultValue === undefined ? this.value() : defaultValue;
+            const emptyValue = (this.multiple() ? [] : null) as RdxSelectValueType<Value, Multiple>;
+            if (defaultValue !== undefined) return defaultValue ?? emptyValue;
+            const value = this.value();
+            return value === undefined ? emptyValue : value;
         },
         onReset: (value) => {
+            this.autofillRequest++;
+            this.resetTypeahead();
+            this.forceMount.set(false);
             this.value.set(value);
             if (!this.resetNgControl(value)) {
                 this.onChange?.(value);
@@ -296,17 +447,214 @@ export class RdxSelectRoot
         }
     });
 
+    /** The technical native input, available after hydration; null on the server and after destruction. */
+    readonly nativeInput = this.nativeFormControl.inputElement;
+
+    private scalarNativeValue(): boolean {
+        return !this.multiple();
+    }
+
+    /** Resolve live option metadata without opening, focusing or permanently retaining the popup. */
+    private async withOptions(read: (options: SelectOption<Value>[]) => void): Promise<void> {
+        this.optionReaders++;
+        try {
+            if (this.optionGetters().length === 0) {
+                if (!this.optionsRendered) {
+                    if (!this.open() && !this.lifecycle.present()) this.autofillProbe.set(true);
+                    this.forceMount.set(true);
+                    this.optionsRendered = new Promise<void>((resolve) => {
+                        const unregister = this.destroyRef.onDestroy(resolve);
+                        afterNextRender(
+                            {
+                                read: () => {
+                                    unregister();
+                                    resolve();
+                                }
+                            },
+                            { injector: this.injector }
+                        );
+                    });
+                }
+                await this.optionsRendered;
+            }
+            if (this.destroyRef.destroyed) return;
+            const options = this.optionGetters().map((option) => option());
+            options.sort((a, b) => (a.element && b.element ? compareNodeDocumentPosition(a.element, b.element) : 0));
+            read(options);
+        } finally {
+            if (--this.optionReaders === 0) {
+                this.optionsRendered = undefined;
+                this.forceMount.set(this.typeahead.active && !this.open());
+            }
+        }
+    }
+
+    private async handleAutofill(text: string, event: Event): Promise<void> {
+        if (!this.scalarNativeValue() || this.disabledState() || this.readOnly()) return;
+        this.resetTypeahead();
+        const request = ++this.autofillRequest;
+        await this.withOptions((options) => {
+            if (
+                request !== this.autofillRequest ||
+                !this.scalarNativeValue() ||
+                this.disabledState() ||
+                this.readOnly()
+            )
+                return;
+            const key = text.toLowerCase();
+            const match =
+                options.find(
+                    (option) =>
+                        option.value != null &&
+                        ((
+                            this.itemToStringValue()?.(option.value as Value) ?? stringifyValue(option.value)
+                        ).toLowerCase() === key ||
+                            resolveSelectLabel(option.value, undefined, this.itemToStringLabel()).toLowerCase() === key)
+                ) ?? options.find((option) => option.value != null && option.textContent.toLowerCase() === key);
+            if (match && !compare(this.value() as Value, match.value, this.isItemEqualToValue()))
+                this.setValue(match.value, 'none', event);
+        });
+    }
+
+    /** @internal One keyboard session shared by Trigger and Popup. */
+    isTypeaheadActive(): boolean {
+        return this.typeahead.active || this.queuedTypeahead.length > 0;
+    }
+
+    /** @internal Match labels without mirroring selection or moving focus. */
+    searchTypeahead(key: string, entries: readonly SelectTypeaheadEntry[], origin: number): number | undefined {
+        clearTimeout(this.typeaheadTimer);
+        this.typeaheadTimer = setTimeout(() => this.resetTypeahead(), SELECT_TYPEAHEAD_RESET_MS);
+        return this.typeahead.match(key, entries, origin);
+    }
+
+    /** @internal Also invalidates keyboard work waiting for an Angular view render. */
+    resetTypeahead(): void {
+        clearTimeout(this.typeaheadTimer);
+        this.typeaheadTimer = undefined;
+        this.typeahead.reset();
+        this.typeaheadGeneration++;
+        this.queuedTypeahead.length = 0;
+        if (this.optionReaders === 0) this.forceMount.set(false);
+    }
+
+    /** @internal Blur within the Trigger/Popup pair preserves the session. */
+    onTypeaheadFocusOut(event: FocusEvent): void {
+        const next = event.relatedTarget;
+        if (
+            next instanceof Node &&
+            ((this.triggerElement() && composedContains(this.triggerElement()!, next)) ||
+                (this.floatingContext.floatingElement && composedContains(this.floatingContext.floatingElement, next)))
+        )
+            return;
+        this.resetTypeahead();
+    }
+
+    private closedTypeaheadEnabled(): boolean {
+        return (
+            !this.destroyRef.destroyed && !this.open() && !this.multiple() && !this.disabledState() && !this.readOnly()
+        );
+    }
+
+    /** @internal Capture keys synchronously; option discovery may need one Angular render. */
+    onClosedTypeahead(event: KeyboardEvent): boolean {
+        if (
+            !this.closedTypeaheadEnabled() ||
+            event.defaultPrevented ||
+            event.isComposing ||
+            event.key.length !== 1 ||
+            event.ctrlKey ||
+            event.altKey ||
+            event.metaKey
+        )
+            return false;
+        this.autofillRequest++;
+        this.queuedTypeahead.push(event);
+        clearTimeout(this.typeaheadTimer);
+        this.typeaheadTimer = setTimeout(() => this.resetTypeahead(), SELECT_TYPEAHEAD_RESET_MS);
+        if (!this.closedTypeaheadRunning) this.runClosedTypeahead();
+        return true;
+    }
+
+    private runClosedTypeahead(): void {
+        const generation = this.typeaheadGeneration;
+        this.closedTypeaheadRunning = true;
+        void this.withOptions((options) => {
+            while (
+                generation === this.typeaheadGeneration &&
+                this.closedTypeaheadEnabled() &&
+                this.queuedTypeahead.length
+            ) {
+                const event = this.queuedTypeahead.shift()!;
+                if (event.key === ' ' && !this.typeahead.active) {
+                    this.setOpen(true, 'trigger-press', event);
+                    break;
+                }
+                const selected = options.findIndex((option) =>
+                    compare(this.value() as Value, option.value, this.isItemEqualToValue())
+                );
+                const index = this.searchTypeahead(
+                    event.key,
+                    options.map((option) => ({
+                        text: option.textValue || option.textContent,
+                        disabled: !!option.disabled
+                    })),
+                    selected
+                );
+                if (index !== undefined) this.setValue(options[index].value, 'none', event);
+            }
+        }).finally(() => {
+            this.closedTypeaheadRunning = false;
+            if (this.queuedTypeahead.length && this.closedTypeaheadEnabled()) this.runClosedTypeahead();
+        });
+    }
+
     constructor() {
         super();
+
+        // An initial selection is a reset/fallback snapshot, independent of later model writes.
+        afterNextRender(() => {
+            this.initialSelection = this.value();
+        });
+
+        this.destroyRef.onDestroy(() => this.resetTypeahead());
+        effect(() => {
+            if (this.open()) this.autofillProbe.set(false);
+            else this.triggerPointerDownPosRef.set(null);
+            // Logical open/close owns the session; browsers need not blur a removed popup.
+            this.resetTypeahead();
+        });
+        effect(() => {
+            if (this.disabledState() || this.readOnly() || this.multiple()) this.resetTypeahead();
+        });
+
+        // Root is also valid on ng-container. Forward its logical id without host bindings on
+        // container nodes, and avoid duplicating a static id on a separate root element.
+        effect(() => {
+            const id = this.controlId();
+            if (
+                this.hostElement.nodeType === 1 &&
+                this.triggerElement() !== this.hostElement &&
+                this.hostElement.getAttribute('id') === id
+            ) {
+                this.hostElement.removeAttribute('id');
+            }
+        });
 
         // Seed the uncontrolled value/open exactly once, then hand off to the model (so a later user
         // change is not snapped back by the still-set default input).
         effect(() => {
             const defaultValue = this.defaultValue();
-            if (!this.hasAppliedDefaultValue && defaultValue !== undefined) {
+            const multiple = this.multiple();
+            if (!this.hasAppliedDefaultValue) {
                 this.hasAppliedDefaultValue = true;
                 if (untracked(this.value) === undefined) {
-                    this.value.set(defaultValue);
+                    this.value.set(
+                        (multiple ? (defaultValue ?? []) : (defaultValue ?? null)) as RdxSelectValueType<
+                            Value,
+                            Multiple
+                        >
+                    );
                 }
             }
         });
@@ -317,16 +665,6 @@ export class RdxSelectRoot
                 this.hasAppliedDefaultOpen = true;
                 this.open.set(defaultOpen);
             }
-        });
-
-        let previousOpen = untracked(this.open);
-        effect(() => {
-            const open = this.open();
-            if (open === previousOpen) {
-                return;
-            }
-            previousOpen = open;
-            untracked(() => this.transition.start(open));
         });
 
         // A fresh open starts non-touch; the trigger flips it on a touch open. Reset whenever it closes.
@@ -340,6 +678,9 @@ export class RdxSelectRoot
         // trigger (the reference) as "inside", and uses it for positioning containment (ADR 0015).
         effect((onCleanup) => {
             const trigger = this.triggerElement();
+            // A component wrapper's trigger is a view child, outside Popper's content query.
+            // Register the same trigger explicitly so both composition forms stay anchored.
+            this.popper.anchorOverride.set(trigger ?? undefined);
             this.floatingContext.setReferenceElement(trigger);
             if (trigger) {
                 this.floatingContext.triggers.add(trigger);
@@ -348,34 +689,31 @@ export class RdxSelectRoot
         });
     }
 
-    readonly optionsSet = signal<Set<SelectOption>>(new Set());
+    /** @internal Live getters retain option identity and read current rendered labels for autofill. */
+    readonly optionGetters = signal<readonly (() => SelectOption<Value>)[]>([], {
+        debugName: 'RdxSelectRoot.optionGetters'
+    });
+    readonly optionsSet = computed(() => new Set(this.optionGetters().map((option) => option())), {
+        debugName: 'RdxSelectRoot.optionsSet'
+    });
 
-    // The native `select` only associates the correct default value if the corresponding
-    // `option` is rendered as a child **at the same time** as itself.
-    // Because it might take a few renders for our items to gather the information to build
-    // the native `option`(s), we generate a key on the `select` to make sure Vue re-builds it
-    // each time the options change.
+    /** Legacy option-key view of the live option registry. */
     readonly nativeSelectKey = computed(() => {
         return Array.from(this.optionsSet())
-            .map((option) => option.value)
+            .map(({ value }) => (value == null ? '' : (this.itemToStringValue()?.(value) ?? stringifyValue(value))))
             .join(';');
     });
 
     readonly triggerElement = signal<HTMLElement | null>(null);
     readonly valueElement = signal<HTMLElement | null>(null);
-    readonly triggerPointerDownPosRef = signal<{ x: number; y: number } | null>({
-        x: 0,
-        y: 0
-    });
+    readonly triggerPointerDownPosRef = signal<{ x: number; y: number } | null>(null);
 
-    getOption(value: SelectOption['value']) {
-        return Array.from(this.optionsSet()).find((option) =>
-            valueComparator(value, option.value, this.isItemEqualToValue())
-        );
+    getOption(value: Value | undefined) {
+        return Array.from(this.optionsSet()).find((option) => compare(value, option.value, this.isItemEqualToValue()));
     }
 
     setValue(
-        value: AcceptableValue | undefined,
+        value: Value | undefined,
         reason: RdxSelectValueChangeReason = 'none',
         event: Event = new Event('select.value-change')
     ): boolean {
@@ -383,19 +721,46 @@ export class RdxSelectRoot
             return false;
         }
 
-        const nextValue = this.multiple()
-            ? (() => {
-                  const current = this.value();
-                  const array = Array.isArray(current) ? [...current] : [];
-                  if (value === undefined) {
-                      return array;
-                  }
-                  const index = array.findIndex((i) => compare(i, value, this.isItemEqualToValue()));
-                  index === -1 ? array.push(value) : array.splice(index, 1);
-                  return [...array];
-              })()
-            : value;
+        const nextValue = (
+            this.multiple()
+                ? (() => {
+                      const current = this.value();
+                      const array = Array.isArray(current) ? [...current] : [];
+                      if (value === undefined) {
+                          return array;
+                      }
+                      const index = array.findIndex((i) => compare(i, value, this.isItemEqualToValue()));
+                      index === -1 ? array.push(value) : array.splice(index, 1);
+                      return [...array];
+                  })()
+                : value
+        ) as RdxSelectValueType<Value, Multiple>;
 
+        return this.commitValue(nextValue, reason, event);
+    }
+
+    private initialSelection: RdxSelectValueType<Value, Multiple> | undefined;
+
+    /** @internal Reconcile a settled, previously populated collection; closing/unmounting never calls this. */
+    reconcileOptions(values: readonly Value[]): void {
+        if (this.disabledState() || this.readOnly() || !values.length) return;
+        const current = this.value();
+        const includes = (value: Value) => values.some((item) => compare(item, value, this.isItemEqualToValue()));
+        if (this.multiple() && Array.isArray(current)) {
+            const next = current.filter((value) => includes(value));
+            if (next.length !== current.length) this.commitValue(next as RdxSelectValueType<Value, Multiple>);
+        } else if (current != null && !includes(current as Value)) {
+            const initial = this.initialSelection;
+            const next = initial != null && includes(initial as Value) ? initial : null;
+            this.commitValue(next as RdxSelectValueType<Value, Multiple>);
+        }
+    }
+
+    private commitValue(
+        nextValue: RdxSelectValueType<Value, Multiple>,
+        reason: RdxSelectValueChangeReason = 'none',
+        event: Event = new Event('select.value-change')
+    ): boolean {
         const { eventDetails } = createCancelableChangeEventDetails(reason, event, this.triggerElement() ?? undefined);
         this.onValueChange.emit({ value: nextValue, eventDetails });
 
@@ -406,6 +771,7 @@ export class RdxSelectRoot
         this.value.set(nextValue);
         this.formUi.markDirty();
         this.onChange?.(nextValue);
+        this.field?.notifyEdited();
 
         return true;
     }
@@ -418,6 +784,8 @@ export class RdxSelectRoot
             resolvedEvent,
             this.triggerElement() ?? undefined
         );
+        const transaction = this.lifecycle.prepareOpenChange(open);
+        eventDetails.preventUnmountOnClose = transaction.preventUnmountOnClose;
 
         this.onOpenChange.emit({ open, eventDetails });
 
@@ -425,16 +793,29 @@ export class RdxSelectRoot
             return false;
         }
 
+        this.resetTypeahead();
         this.open.set(open);
+        transaction.commit();
 
         if (open) {
             this.openedByTouch.set((event as PointerEvent | undefined)?.pointerType === 'touch');
             this.openInteractionType.set(interactionType);
         } else {
+            this.triggerPointerDownPosRef.set(null);
             this.closeInteractionType.set(interactionType);
         }
 
         return true;
+    }
+
+    /** Request a cancelable close with the Base UI `imperative-action` reason. */
+    close(): boolean {
+        return this.open() ? this.setOpen(false, 'imperative-action') : false;
+    }
+
+    /** Finish a pending close after an external animation; ignored while open or already complete. */
+    unmount(): void {
+        this.lifecycle.unmount();
     }
 
     /** @ignore Bridge the CVA touched callback into the shared Signal Forms UI-state path. */
@@ -443,12 +824,13 @@ export class RdxSelectRoot
     }
 
     /** @ignore Write a form-owned value without emitting a user change. */
-    writeValue(value: AcceptableValue | AcceptableValue[] | undefined): void {
+    writeValue(value: RdxSelectValueType<Value, Multiple>): void {
+        if (!Object.is(this.value(), value)) this.resetTypeahead();
         untracked(() => this.value.set(value));
     }
 
     /** @ignore Register the Reactive Forms / ngModel value callback. */
-    registerOnChange(fn: (value: AcceptableValue | AcceptableValue[] | undefined) => void): void {
+    registerOnChange(fn: (value: RdxSelectValueType<Value, Multiple>) => void): void {
         this.onChange = fn;
     }
 
@@ -462,6 +844,6 @@ export class RdxSelectRoot
         this.cvaDisabled.set(isDisabled);
     }
 
-    private onChange?: (value: AcceptableValue | AcceptableValue[] | undefined) => void;
+    private onChange?: (value: RdxSelectValueType<Value, Multiple>) => void;
     private onTouched?: () => void;
 }

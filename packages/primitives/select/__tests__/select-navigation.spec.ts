@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { _importsSelect } from '../index';
 
 interface Fruit {
@@ -13,14 +13,20 @@ interface Fruit {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsSelect],
     template: `
-        <div [(value)]="value" [(open)]="open" rdxSelectRoot>
+        <div
+            [(value)]="value"
+            [(open)]="open"
+            [readOnly]="readOnly()"
+            (onValueChange)="onValueChange($event)"
+            rdxSelectRoot
+        >
             <button rdxSelectTrigger>
                 <span rdxSelectValue placeholder="Select…"></span>
             </button>
             <div *rdxSelectPortal rdxSelectPositioner>
                 <div rdxSelectPopup>
                     <div rdxSelectList>
-                        @for (fruit of fruits; track fruit.value) {
+                        @for (fruit of fruits(); track fruit.value) {
                             <div [value]="fruit.value" [disabled]="fruit.disabled" rdxSelectItem>
                                 <span rdxSelectItemText>{{ fruit.label }}</span>
                             </div>
@@ -34,11 +40,13 @@ interface Fruit {
 class Host {
     readonly value = signal<string | undefined>(undefined);
     readonly open = signal(false);
-    readonly fruits: Fruit[] = [
+    readonly readOnly = signal(false);
+    readonly onValueChange = vi.fn();
+    readonly fruits = signal<Fruit[]>([
         { label: 'Apple', value: 'apple', disabled: false },
         { label: 'Banana', value: 'banana', disabled: true },
         { label: 'Grape', value: 'grape', disabled: false }
-    ];
+    ]);
 }
 
 describe('Select highlight navigation', () => {
@@ -74,17 +82,143 @@ describe('Select highlight navigation', () => {
         expect(items()[0].hasAttribute('tabindex')).toBe(false);
     });
 
-    it('opens with the first enabled item highlighted and ArrowDown skips disabled items', async () => {
-        // opening highlights the first enabled item (Apple)
+    it('the first genuine pointer move resumes hover after keyboard navigation', async () => {
+        key('ArrowDown');
+        await settle();
+        expect(items()[1]).toHaveAttribute('data-highlighted');
+        items()[2].dispatchEvent(
+            Object.assign(new MouseEvent('pointermove', { bubbles: true }), { movementX: 8, movementY: 2 })
+        );
+        await settle();
+        expect(items()[2]).toHaveAttribute('data-highlighted');
+        expect(host.onValueChange).not.toHaveBeenCalled();
+    });
+
+    it('ignores stationary leave events during keyboard scrolling but clears on real pointer departure', async () => {
+        const pointer = (type: string, clientX: number, movementX = 0) =>
+            Object.assign(new MouseEvent(type, { bubbles: true, clientX, clientY: 20 }), { movementX, movementY: 0 });
+        items()[0].dispatchEvent(pointer('pointermove', 10, 1));
+        key('End');
+        await settle();
+        items()[0].dispatchEvent(pointer('pointerleave', 10));
+        await settle();
+        expect(items()[2]).toHaveAttribute('data-highlighted');
+        items()[0].dispatchEvent(pointer('pointerleave', 40));
+        await settle();
+        expect(items()[2]).not.toHaveAttribute('data-highlighted');
+        expect(host.onValueChange).not.toHaveBeenCalled();
+    });
+
+    it.each([false, true])('an explicit press highlights with zero movement while readOnly=%s', async (readOnly) => {
+        host.readOnly.set(readOnly);
+        await settle();
+        items()[2].dispatchEvent(new MouseEvent('pointerdown', { button: 0, bubbles: true }));
+        await settle();
+        expect(items()[2]).toHaveAttribute('data-highlighted');
+        expect(content()).toHaveAttribute('aria-activedescendant', items()[2].id);
+        expect(host.onValueChange).not.toHaveBeenCalled();
+        items()[2].dispatchEvent(new MouseEvent('pointerup', { button: 0, bubbles: true }));
+        await settle();
+        if (readOnly) {
+            expect(host.open()).toBe(true);
+            expect(host.onValueChange).not.toHaveBeenCalled();
+        } else expect(host.value()).toBe('grape');
+    });
+
+    it('highlights disabled options with arrows and exposes their ids without selecting them', async () => {
         expect(items()[0].hasAttribute('data-highlighted')).toBe(true);
         expect(content().getAttribute('aria-activedescendant')).toBe(items()[0].id);
 
-        key('ArrowDown'); // skips disabled Banana → Grape
+        key('ArrowDown');
+        await settle();
+        expect(items()[1].getAttribute('aria-disabled')).toBe('true');
+        expect(items()[1].hasAttribute('data-highlighted')).toBe(true);
+        expect(items()[0].hasAttribute('data-highlighted')).toBe(false);
+        expect(content().getAttribute('aria-activedescendant')).toBe(items()[1].id);
+
+        key('ArrowDown');
         await settle();
         expect(items()[2].hasAttribute('data-highlighted')).toBe(true);
-        expect(items()[1].hasAttribute('data-highlighted')).toBe(false);
-        expect(items()[0].hasAttribute('data-highlighted')).toBe(false);
+        key('ArrowUp');
+        await settle();
+        expect(items()[1].hasAttribute('data-highlighted')).toBe(true);
+        expect(host.onValueChange).not.toHaveBeenCalled();
+    });
+
+    it.each(['Enter', ' '])('does not select or close on %j over a disabled option', async (activation) => {
+        const initialValue = host.value();
+        key('ArrowDown');
+        await settle();
+        key(activation);
+        await settle();
+        expect(host.value()).toBe(initialValue);
+        expect(host.open()).toBe(true);
+        expect(items()[1].hasAttribute('data-highlighted')).toBe(true);
+        expect(host.onValueChange).not.toHaveBeenCalled();
+    });
+
+    it('ignores pointer activation of a disabled option', async () => {
+        const initialValue = host.value();
+        items()[1].dispatchEvent(new MouseEvent('pointerup', { bubbles: true }));
+        await settle();
+        expect(host.value()).toBe(initialValue);
+        expect(host.open()).toBe(true);
+        expect(host.onValueChange).not.toHaveBeenCalled();
+    });
+
+    it('navigates disabled boundaries with Home/End without wrapping, even when every option is disabled', async () => {
+        host.fruits.update((fruits) => fruits.map((fruit) => ({ ...fruit, disabled: true })));
+        await settle();
+        key('End');
+        await settle();
         expect(content().getAttribute('aria-activedescendant')).toBe(items()[2].id);
+        key('ArrowDown');
+        await settle();
+        expect(items()[2].hasAttribute('data-highlighted')).toBe(true);
+        key('Home');
+        await settle();
+        expect(content().getAttribute('aria-activedescendant')).toBe(items()[0].id);
+        key('ArrowUp');
+        await settle();
+        expect(items()[0].hasAttribute('data-highlighted')).toBe(true);
+        expect(host.onValueChange).not.toHaveBeenCalled();
+    });
+
+    it('highlights an already selected disabled option when reopening', async () => {
+        host.open.set(false);
+        host.value.set('banana');
+        await settle();
+        host.open.set(true);
+        await settle();
+        expect(items()[1].getAttribute('aria-selected')).toBe('true');
+        expect(items()[1].hasAttribute('data-highlighted')).toBe(true);
+        expect(content().getAttribute('aria-activedescendant')).toBe(items()[1].id);
+        key('Enter');
+        await settle();
+        expect(host.value()).toBe('banana');
+        expect(host.open()).toBe(true);
+        expect(host.onValueChange).not.toHaveBeenCalled();
+    });
+
+    it('keeps a newly disabled highlight but releases a removed option', async () => {
+        host.fruits.update((fruits) => fruits.map((fruit) => ({ ...fruit, disabled: true })));
+        await settle();
+        const removedId = items()[0].id;
+        expect(content().getAttribute('aria-activedescendant')).toBe(removedId);
+        key('Enter');
+        await settle();
+        expect(host.open()).toBe(true);
+        expect(host.onValueChange).not.toHaveBeenCalled();
+        host.fruits.update((fruits) => fruits.filter((fruit) => fruit.value !== 'apple'));
+        await settle();
+        expect(content().getAttribute('aria-activedescendant')).not.toBe(removedId);
+    });
+
+    it('does not match a disabled option through typeahead', async () => {
+        key('b');
+        await settle();
+        expect(items()[0].hasAttribute('data-highlighted')).toBe(true);
+        expect(host.onValueChange).not.toHaveBeenCalled();
     });
 
     it('Enter selects the highlighted item and marks it data-selected', async () => {

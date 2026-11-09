@@ -33,6 +33,7 @@ Visual reference: [coss.com](https://coss.com/ui) (Base UI + Tailwind). The Stor
 | `demoButton`    | `base` + a `variant` + a `size` for buttons.              |
 | `demoCard`      | Card / panel surface (popovers, list rows, content boxes).|
 | `demoInput`     | Text input surface.                                       |
+| `demoSelect`    | Select trigger, popup, list, items, indicators and icons.  |
 
 ### Buttons
 
@@ -62,6 +63,13 @@ headless `data-disabled` attribute, so it pairs directly with `RdxButtonDirectiv
 
 See the **Primitives/Button** story for the live reference. Other primitives are migrated onto this
 layer in follow-up changes.
+
+### Select
+
+Use `demoSelect` for Select examples, including application wrappers and form recipes. It shares
+the trigger shadow, border, focus ring and disabled/invalid states, popup surface, item highlights,
+and icon sizing across stories. Keep width and content-specific layout classes on the example.
+Apply `demoSelect.list` to the list so popup padding is consistent even with scroll buttons.
 
 ## Positioning popups: put `z-index` on the positioner
 

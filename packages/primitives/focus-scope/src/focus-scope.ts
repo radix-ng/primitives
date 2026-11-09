@@ -89,7 +89,8 @@ export class RdxFocusScope {
         transform: (value) => (value === undefined ? undefined : booleanAttribute(value))
     });
 
-    readonly isTrapped = computed(() => this.trapped() ?? this.config.trapped());
+    private readonly enabled = computed(() => this.config.enabled?.() ?? true);
+    readonly isTrapped = computed(() => this.enabled() && (this.trapped() ?? this.config.trapped()));
 
     /**
      * Event handler called when auto-focusing on mount.
@@ -118,6 +119,7 @@ export class RdxFocusScope {
     };
 
     private alive = true;
+    private returnFocusFrame: number | undefined;
 
     constructor() {
         this.destroyRef.onDestroy(() => {
@@ -195,68 +197,78 @@ export class RdxFocusScope {
             );
 
             effect(
-                async (onCleanup) => {
+                (onCleanup) => {
+                    if (!this.enabled()) return;
                     const container = this.elementRef.nativeElement;
-
-                    await Promise.resolve();
-                    if (!container || !this.alive) {
-                        return;
-                    }
-
-                    this.focusScopesStack.add(this.focusScope);
-
-                    const previouslyFocusedElement = getActiveElement(this.ownerDocument) as HTMLElement | null;
-                    const hasFocusedCandidate = composedContains(container, previouslyFocusedElement);
-                    const mountEventHandler = (ev: Event) => {
-                        if (this.alive) this.mountAutoFocus.emit(ev);
-                    };
-
-                    if (!hasFocusedCandidate) {
-                        const mountEvent = new CustomEvent(AUTOFOCUS_ON_MOUNT, EVENT_OPTIONS);
-                        container.addEventListener(AUTOFOCUS_ON_MOUNT, mountEventHandler);
-                        container.dispatchEvent(mountEvent);
-
-                        if (!mountEvent.defaultPrevented) {
-                            focusFirst(getTabbableCandidates(container), {
-                                select: true,
-                                root: this.ownerDocument
-                            });
-                            if (getActiveElement(this.ownerDocument) === previouslyFocusedElement) focus(container);
-                        }
-                    }
-
-                    const unmountEventHandler = (ev: Event) => {
-                        if (this.alive) this.unmountAutoFocus.emit(ev);
-                    };
-                    container.addEventListener(AUTOFOCUS_ON_UNMOUNT, unmountEventHandler);
-
+                    const view = this.ownerDocument.defaultView ?? globalThis;
+                    let canceled = false;
+                    let cleanup: (() => void) | undefined;
                     onCleanup(() => {
-                        container.removeEventListener(AUTOFOCUS_ON_MOUNT, mountEventHandler);
+                        canceled = true;
+                        cleanup?.();
+                    });
+                    // Register cleanup synchronously; Angular may deactivate this view before the
+                    // deferred mount autofocus runs.
+                    queueMicrotask(() => {
+                        if (canceled || !this.alive || !this.enabled()) return;
+                        if (this.returnFocusFrame !== undefined) {
+                            view.cancelAnimationFrame(this.returnFocusFrame);
+                            this.returnFocusFrame = undefined;
+                        }
+                        this.focusScopesStack.add(this.focusScope);
+                        this.focusScope.resume();
 
-                        const unmountEvent = new CustomEvent(AUTOFOCUS_ON_UNMOUNT, EVENT_OPTIONS);
-                        container.dispatchEvent(unmountEvent);
+                        const previouslyFocusedElement = getActiveElement(this.ownerDocument) as HTMLElement | null;
+                        const hasFocusedCandidate = composedContains(container, previouslyFocusedElement);
+                        const mountEventHandler = (ev: Event) => {
+                            if (this.alive) this.mountAutoFocus.emit(ev);
+                        };
 
-                        // Queue the return-focus on the owner window's animation frame (not `setTimeout`),
-                        // so it runs after the unmounting paint settles (ADR 0017 Phase 1a queued focus).
-                        const view = this.ownerDocument.defaultView ?? globalThis;
-                        view.requestAnimationFrame(() => {
-                            // An enclosing focus manager can override the return target (ADR 0017
-                            // `returnFocus`): `false` suppresses it, an element returns there explicitly
-                            // (bypassing the moved-focus guard), `undefined` keeps the default behavior.
-                            const override = this.config.returnFocus?.();
-                            if (override !== false && !unmountEvent.defaultPrevented) {
-                                if (override) {
-                                    focus(override, { select: true });
-                                } else if (!this.shouldPreserveMovedFocus()) {
-                                    focus(previouslyFocusedElement ?? this.ownerDocument.body, { select: true });
-                                }
+                        if (!hasFocusedCandidate) {
+                            const mountEvent = new CustomEvent(AUTOFOCUS_ON_MOUNT, EVENT_OPTIONS);
+                            container.addEventListener(AUTOFOCUS_ON_MOUNT, mountEventHandler);
+                            container.dispatchEvent(mountEvent);
+
+                            if (!mountEvent.defaultPrevented) {
+                                focusFirst(getTabbableCandidates(container), {
+                                    select: true,
+                                    root: this.ownerDocument
+                                });
+                                if (getActiveElement(this.ownerDocument) === previouslyFocusedElement) focus(container);
                             }
+                        }
 
-                            // we need to remove the listener after we `dispatchEvent`
+                        const unmountEventHandler = (ev: Event) => {
+                            if (this.alive) this.unmountAutoFocus.emit(ev);
+                        };
+                        container.addEventListener(AUTOFOCUS_ON_UNMOUNT, unmountEventHandler);
+
+                        cleanup = () => {
+                            container.removeEventListener(AUTOFOCUS_ON_MOUNT, mountEventHandler);
+
+                            const unmountEvent = new CustomEvent(AUTOFOCUS_ON_UNMOUNT, EVENT_OPTIONS);
+                            container.dispatchEvent(unmountEvent);
                             container.removeEventListener(AUTOFOCUS_ON_UNMOUNT, unmountEventHandler);
 
-                            this.focusScopesStack.remove(this.focusScope);
-                        });
+                            // Queue the return-focus on the owner window's animation frame (not `setTimeout`),
+                            // so it runs after the unmounting paint settles (ADR 0017 Phase 1a queued focus).
+                            this.returnFocusFrame = view.requestAnimationFrame(() => {
+                                this.returnFocusFrame = undefined;
+                                // An enclosing focus manager can override the return target (ADR 0017
+                                // `returnFocus`): `false` suppresses it, an element returns there explicitly
+                                // (bypassing the moved-focus guard), `undefined` keeps the default behavior.
+                                const override = this.config.returnFocus?.();
+                                if (override !== false && !unmountEvent.defaultPrevented) {
+                                    if (override) {
+                                        focus(override, { select: true });
+                                    } else if (!this.shouldPreserveMovedFocus()) {
+                                        focus(previouslyFocusedElement ?? this.ownerDocument.body, { select: true });
+                                    }
+                                }
+
+                                this.focusScopesStack.remove(this.focusScope);
+                            });
+                        };
                     });
                 },
                 { injector: this.injector }
@@ -280,6 +292,7 @@ export class RdxFocusScope {
     }
 
     handleKeyDown(event: KeyboardEvent) {
+        if (!this.enabled()) return;
         // Only a looping or trapped scope polices Tab at its edges. A plain non-modal scope must let Tab
         // through so the browser can reach whatever follows the host — e.g. the hidden outer focus guards
         // `RdxFloatingFocusManager` places around it (calling `preventDefault()` here would fire first and

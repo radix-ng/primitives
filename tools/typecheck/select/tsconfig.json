@@ -1,0 +1,10 @@
+{
+    "extends": "../../../packages/primitives/tsconfig.json",
+    "compilerOptions": {
+        "noEmit": true,
+        "types": []
+    },
+    "files": ["positive.ts"],
+    "include": [],
+    "references": []
+}

@@ -1,0 +1,2666 @@
+[
+    {
+        "scenario": "array-valued item",
+        "checkpoint": "initial",
+        "field": "label",
+        "angular": "10 \u00d7 20",
+        "react": ",",
+        "category": "array-item-label"
+    },
+    {
+        "scenario": "array-valued item",
+        "checkpoint": "selected",
+        "field": "label",
+        "angular": "30 \u00d7 40",
+        "react": ",",
+        "category": "array-item-label"
+    },
+    {
+        "scenario": "array-valued item",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "array-valued item",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["30:40"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "array-valued item",
+        "checkpoint": "reopened",
+        "field": "label",
+        "angular": "30 \u00d7 40",
+        "react": ",",
+        "category": "array-item-label"
+    },
+    {
+        "scenario": "array-valued item",
+        "checkpoint": "reopened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:30:40",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "cancel close",
+        "checkpoint": "escape canceled",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "cancel close",
+        "checkpoint": "action canceled",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "cancel open",
+        "checkpoint": "canceled",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "cancel open",
+        "checkpoint": "canceled",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "cancel value",
+        "checkpoint": "canceled",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "cancel value",
+        "checkpoint": "canceled",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "default policy: focus outside",
+        "checkpoint": "opened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "default policy: Shift+Tab",
+        "checkpoint": "opened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "default policy: Shift+Tab",
+        "checkpoint": "left",
+        "field": "open",
+        "angular": true,
+        "react": false,
+        "category": "default-tab-policy"
+    },
+    {
+        "scenario": "default policy: Shift+Tab",
+        "checkpoint": "left",
+        "field": "controlsLinked",
+        "angular": true,
+        "react": false,
+        "category": "default-tab-policy"
+    },
+    {
+        "scenario": "default policy: Shift+Tab",
+        "checkpoint": "left",
+        "field": "popupVisible",
+        "angular": true,
+        "react": false,
+        "category": "default-tab-policy"
+    },
+    {
+        "scenario": "default policy: Shift+Tab",
+        "checkpoint": "left",
+        "field": "highlighted",
+        "angular": ["apple"],
+        "react": [],
+        "category": "default-tab-policy"
+    },
+    {
+        "scenario": "default policy: Shift+Tab",
+        "checkpoint": "left",
+        "field": "focus",
+        "angular": "popup",
+        "react": "trigger",
+        "category": "default-tab-policy"
+    },
+    {
+        "scenario": "default policy: Shift+Tab",
+        "checkpoint": "left",
+        "field": "events",
+        "angular": [
+            {
+                "type": "open",
+                "open": true,
+                "reason": "trigger-press",
+                "canceled": false,
+                "held": false
+            },
+            {
+                "type": "complete",
+                "open": true
+            }
+        ],
+        "react": [
+            {
+                "type": "open",
+                "open": true,
+                "reason": "trigger-press",
+                "canceled": false,
+                "held": false
+            },
+            {
+                "type": "complete",
+                "open": true
+            },
+            {
+                "type": "open",
+                "open": false,
+                "reason": "focus-out",
+                "canceled": false,
+                "held": false
+            },
+            {
+                "type": "complete",
+                "open": false
+            }
+        ],
+        "category": "default-tab-policy"
+    },
+    {
+        "scenario": "default policy: Tab",
+        "checkpoint": "opened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "default policy: Tab",
+        "checkpoint": "left",
+        "field": "open",
+        "angular": true,
+        "react": false,
+        "category": "default-tab-policy"
+    },
+    {
+        "scenario": "default policy: Tab",
+        "checkpoint": "left",
+        "field": "controlsLinked",
+        "angular": true,
+        "react": false,
+        "category": "default-tab-policy"
+    },
+    {
+        "scenario": "default policy: Tab",
+        "checkpoint": "left",
+        "field": "popupVisible",
+        "angular": true,
+        "react": false,
+        "category": "default-tab-policy"
+    },
+    {
+        "scenario": "default policy: Tab",
+        "checkpoint": "left",
+        "field": "highlighted",
+        "angular": ["apple"],
+        "react": [],
+        "category": "default-tab-policy"
+    },
+    {
+        "scenario": "default policy: Tab",
+        "checkpoint": "left",
+        "field": "focus",
+        "angular": "popup",
+        "react": "after",
+        "category": "default-tab-policy"
+    },
+    {
+        "scenario": "default policy: Tab",
+        "checkpoint": "left",
+        "field": "events",
+        "angular": [
+            {
+                "type": "open",
+                "open": true,
+                "reason": "trigger-press",
+                "canceled": false,
+                "held": false
+            },
+            {
+                "type": "complete",
+                "open": true
+            }
+        ],
+        "react": [
+            {
+                "type": "open",
+                "open": true,
+                "reason": "trigger-press",
+                "canceled": false,
+                "held": false
+            },
+            {
+                "type": "complete",
+                "open": true
+            },
+            {
+                "type": "open",
+                "open": false,
+                "reason": "focus-out",
+                "canceled": false,
+                "held": false
+            },
+            {
+                "type": "complete",
+                "open": false
+            }
+        ],
+        "category": "default-tab-policy"
+    },
+    {
+        "scenario": "deferred unmount",
+        "checkpoint": "held",
+        "field": "inert",
+        "angular": true,
+        "react": false,
+        "category": "deferred-exit-safety"
+    },
+    {
+        "scenario": "deferred unmount",
+        "checkpoint": "held",
+        "field": "focus",
+        "angular": "body",
+        "react": "option:apple",
+        "category": "deferred-exit-safety",
+        "angularAlternatives": ["trigger"]
+    },
+    {
+        "scenario": "deferred unmount",
+        "checkpoint": "finished",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "deferred unmount",
+        "checkpoint": "finished",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "deferred unmount",
+        "checkpoint": "duplicate finish",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "deferred unmount",
+        "checkpoint": "duplicate finish",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "keyboard and typeahead",
+        "checkpoint": "opened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "keyboard and typeahead",
+        "checkpoint": "arrow",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "keyboard and typeahead",
+        "checkpoint": "disabled option",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:blueberry",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "keyboard and typeahead",
+        "checkpoint": "typeahead",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "keyboard and typeahead",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "keyboard and typeahead",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "multiple selection",
+        "checkpoint": "added",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "multiple selection",
+        "checkpoint": "removed",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "multiple selection",
+        "checkpoint": "closed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "multiple selection",
+        "checkpoint": "closed",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "native reset",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "native reset",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "native reset",
+        "checkpoint": "reset",
+        "field": "label",
+        "angular": "Apple",
+        "react": "Banana",
+        "category": "native-reset"
+    },
+    {
+        "scenario": "native reset",
+        "checkpoint": "reset",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "native reset",
+        "checkpoint": "reset",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "native reset",
+        "checkpoint": "reset",
+        "field": "entries",
+        "angular": [["choice", "apple"]],
+        "react": [["choice", "banana"]],
+        "category": "native-reset"
+    },
+    {
+        "scenario": "object values",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "object values",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "object values",
+        "checkpoint": "reopened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "opt-in focus out",
+        "checkpoint": "opened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "opt-in focus out",
+        "checkpoint": "left",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "opt-in focus out",
+        "checkpoint": "left",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "pointer selection",
+        "checkpoint": "opened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "pointer selection",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "pointer selection",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["cherry"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "read-only keyboard selection",
+        "checkpoint": "ignored keyboard",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "read-only pointer selection",
+        "checkpoint": "ignored pointer",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "reopen deferred close",
+        "checkpoint": "held",
+        "field": "inert",
+        "angular": true,
+        "react": false,
+        "category": "deferred-exit-safety"
+    },
+    {
+        "scenario": "reopen deferred close",
+        "checkpoint": "held",
+        "field": "focus",
+        "angular": "body",
+        "react": "option:apple",
+        "category": "deferred-exit-safety",
+        "angularAlternatives": ["trigger"]
+    },
+    {
+        "scenario": "reopen deferred close",
+        "checkpoint": "reopened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "reopen deferred close",
+        "checkpoint": "stale finish",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "reopen deferred close",
+        "checkpoint": "finished",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "reopen deferred close",
+        "checkpoint": "finished",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "disabled options: navigation and blocked activation",
+        "checkpoint": "disabled middle",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:blueberry",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "disabled options: navigation and blocked activation",
+        "checkpoint": "activation ignored",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:blueberry",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "disabled options: navigation and blocked activation",
+        "checkpoint": "disabled first",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "disabled options: navigation and blocked activation",
+        "checkpoint": "disabled last",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:cherry",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "disabled options: navigation and blocked activation",
+        "checkpoint": "enabled selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "disabled options: navigation and blocked activation",
+        "checkpoint": "enabled selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["blackberry"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "typeahead skips disabled options",
+        "checkpoint": "first enabled match",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:blackberry",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead skips disabled options",
+        "checkpoint": "cycles enabled matches",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead skips disabled options",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "typeahead skips disabled options",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["blackberry"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "typeahead: close and reopen reset",
+        "checkpoint": "fresh on reopen",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:berlin",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: duplicate labels remain distinct",
+        "checkpoint": "second identical label",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:berlin-two",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: duplicate labels remain distinct",
+        "checkpoint": "selected second value",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "typeahead: duplicate labels remain distinct",
+        "checkpoint": "selected second value",
+        "field": "selected",
+        "angular": [],
+        "react": ["berlin-two"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "typeahead: miss resets immediately",
+        "checkpoint": "recovered",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:berlin",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: multiple search then commit",
+        "checkpoint": "search only",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:new-york",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: multiple search then commit",
+        "checkpoint": "added",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:new-york",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: multiword prefix and commit",
+        "checkpoint": "multiword",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:new-delhi",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: multiword prefix and commit",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "typeahead: multiword prefix and commit",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["new-delhi"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "typeahead: no selection uses active item",
+        "checkpoint": "active origin",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:berlin",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: origin after arrows",
+        "checkpoint": "search starts after selection",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:berlin",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: origin after arrows",
+        "checkpoint": "cycles",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:bern",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: read-only multiword search",
+        "checkpoint": "not committed",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:new-york",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: repeated letters inside labels",
+        "checkpoint": "double initial",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:aachen",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: repeated letters inside labels",
+        "checkpoint": "longer prefix",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:aardvark",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: Space on disabled then recovery",
+        "checkpoint": "leading space miss",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:cherry",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: Space on disabled then recovery",
+        "checkpoint": "fresh query",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:blackberry",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: timeout and Space activation",
+        "checkpoint": "committed after timeout",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "typeahead: timeout and Space activation",
+        "checkpoint": "committed after timeout",
+        "field": "selected",
+        "angular": [],
+        "react": ["new-york"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: blur resets search",
+        "checkpoint": "focused while closed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: blur resets search",
+        "checkpoint": "focused while closed",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: blur resets search",
+        "checkpoint": "fresh after blur",
+        "field": "inert",
+        "angular": true,
+        "react": false,
+        "category": "closed-options-inert"
+    },
+    {
+        "scenario": "closed typeahead: duplicate labels",
+        "checkpoint": "focused while closed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: duplicate labels",
+        "checkpoint": "focused while closed",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: duplicate labels",
+        "checkpoint": "first Berlin",
+        "field": "inert",
+        "angular": true,
+        "react": false,
+        "category": "closed-options-inert"
+    },
+    {
+        "scenario": "closed typeahead: duplicate labels",
+        "checkpoint": "second Berlin",
+        "field": "inert",
+        "angular": true,
+        "react": false,
+        "category": "closed-options-inert"
+    },
+    {
+        "scenario": "closed typeahead: inactive in typeahead-multiple",
+        "checkpoint": "focused while closed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: inactive in typeahead-multiple",
+        "checkpoint": "focused while closed",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: inactive in typeahead-multiple",
+        "checkpoint": "unchanged",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: inactive in typeahead-multiple",
+        "checkpoint": "unchanged",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: inactive in typeahead-read-only",
+        "checkpoint": "focused while closed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: inactive in typeahead-read-only",
+        "checkpoint": "focused while closed",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: inactive in typeahead-read-only",
+        "checkpoint": "unchanged",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: inactive in typeahead-read-only",
+        "checkpoint": "unchanged",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: popup blur resets search",
+        "checkpoint": "fresh after popup blur",
+        "field": "inert",
+        "angular": true,
+        "react": false,
+        "category": "closed-options-inert"
+    },
+    {
+        "scenario": "closed typeahead: prefix and cycling",
+        "checkpoint": "focused while closed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: prefix and cycling",
+        "checkpoint": "focused while closed",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: prefix and cycling",
+        "checkpoint": "first match",
+        "field": "inert",
+        "angular": true,
+        "react": false,
+        "category": "closed-options-inert"
+    },
+    {
+        "scenario": "closed typeahead: prefix and cycling",
+        "checkpoint": "cycled",
+        "field": "inert",
+        "angular": true,
+        "react": false,
+        "category": "closed-options-inert"
+    },
+    {
+        "scenario": "closed typeahead: rapid multiword",
+        "checkpoint": "focused while closed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: rapid multiword",
+        "checkpoint": "focused while closed",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: rapid multiword",
+        "checkpoint": "multiword committed",
+        "field": "inert",
+        "angular": true,
+        "react": false,
+        "category": "closed-options-inert"
+    },
+    {
+        "scenario": "closed typeahead: skips disabled matches",
+        "checkpoint": "focused while closed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: skips disabled matches",
+        "checkpoint": "focused while closed",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: skips disabled matches",
+        "checkpoint": "ignored",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: skips disabled matches",
+        "checkpoint": "ignored",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: timeout and idle Space",
+        "checkpoint": "focused while closed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: timeout and idle Space",
+        "checkpoint": "focused while closed",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: timeout and idle Space",
+        "checkpoint": "expired",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: timeout and idle Space",
+        "checkpoint": "expired",
+        "field": "selected",
+        "angular": [],
+        "react": ["berlin"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: timeout and idle Space",
+        "checkpoint": "opened normally",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:berlin",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "closed typeahead: value cancellation",
+        "checkpoint": "focused while closed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: value cancellation",
+        "checkpoint": "focused while closed",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: value cancellation",
+        "checkpoint": "first canceled",
+        "field": "inert",
+        "angular": true,
+        "react": false,
+        "category": "closed-options-inert"
+    },
+    {
+        "scenario": "closed typeahead: value cancellation",
+        "checkpoint": "cycling canceled",
+        "field": "inert",
+        "angular": true,
+        "react": false,
+        "category": "closed-options-inert"
+    },
+    {
+        "scenario": "aligned-modal: scroll lock releases on close",
+        "checkpoint": "locked",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "aligned-modal: scroll lock releases on close",
+        "checkpoint": "released",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "aligned-modal: scroll lock releases on close",
+        "checkpoint": "released",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "aligned-rtl: selected text and keyboard selection",
+        "checkpoint": "aligned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "aligned-rtl: selected text and keyboard selection",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "aligned-rtl: selected text and keyboard selection",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["cherry"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "aligned-rtl: selected text and keyboard selection",
+        "checkpoint": "realigned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:cherry",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "aligned: scroll lock releases on close",
+        "checkpoint": "locked",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "aligned: scroll lock releases on close",
+        "checkpoint": "released",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "aligned: scroll lock releases on close",
+        "checkpoint": "released",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "aligned: selected text and keyboard selection",
+        "checkpoint": "aligned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "aligned: selected text and keyboard selection",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "aligned: selected text and keyboard selection",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["cherry"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "aligned: selected text and keyboard selection",
+        "checkpoint": "realigned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:cherry",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "aligned: viewport resize closes",
+        "checkpoint": "resized",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "aligned: viewport resize closes",
+        "checkpoint": "resized",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "modal: canceled outside press",
+        "checkpoint": "canceled",
+        "field": "focus",
+        "angular": "popup",
+        "react": "body",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "modal: canceled outside press",
+        "checkpoint": "canceled",
+        "field": "events",
+        "angular": [
+            {
+                "type": "open",
+                "open": true,
+                "reason": "trigger-press",
+                "canceled": false,
+                "held": false
+            },
+            {
+                "type": "complete",
+                "open": true
+            },
+            {
+                "type": "open",
+                "open": false,
+                "reason": "outside-press",
+                "canceled": true,
+                "held": false
+            }
+        ],
+        "react": [
+            {
+                "type": "open",
+                "open": true,
+                "reason": "trigger-press",
+                "canceled": false,
+                "held": false
+            },
+            {
+                "type": "complete",
+                "open": true
+            },
+            {
+                "type": "open",
+                "open": false,
+                "reason": "outside-press",
+                "canceled": true,
+                "held": false
+            },
+            {
+                "type": "open",
+                "open": false,
+                "reason": "outside-press",
+                "canceled": true,
+                "held": false
+            }
+        ],
+        "category": "canceled-compatibility-press"
+    },
+    {
+        "scenario": "modal: canceled outside press",
+        "checkpoint": "still locked",
+        "field": "focus",
+        "angular": "popup",
+        "react": "body",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "modal: canceled outside press",
+        "checkpoint": "still locked",
+        "field": "events",
+        "angular": [
+            {
+                "type": "open",
+                "open": true,
+                "reason": "trigger-press",
+                "canceled": false,
+                "held": false
+            },
+            {
+                "type": "complete",
+                "open": true
+            },
+            {
+                "type": "open",
+                "open": false,
+                "reason": "outside-press",
+                "canceled": true,
+                "held": false
+            }
+        ],
+        "react": [
+            {
+                "type": "open",
+                "open": true,
+                "reason": "trigger-press",
+                "canceled": false,
+                "held": false
+            },
+            {
+                "type": "complete",
+                "open": true
+            },
+            {
+                "type": "open",
+                "open": false,
+                "reason": "outside-press",
+                "canceled": true,
+                "held": false
+            },
+            {
+                "type": "open",
+                "open": false,
+                "reason": "outside-press",
+                "canceled": true,
+                "held": false
+            }
+        ],
+        "category": "canceled-compatibility-press"
+    },
+    {
+        "scenario": "modal: keyboard selection",
+        "checkpoint": "opened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "modal: keyboard selection",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "modal: keyboard selection",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "modal: outside press is blocked",
+        "checkpoint": "dismissed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "modal: outside press is blocked",
+        "checkpoint": "dismissed",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "modal: scroll lock releases on close",
+        "checkpoint": "locked",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "modal: scroll lock releases on close",
+        "checkpoint": "released",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "modal: scroll lock releases on close",
+        "checkpoint": "released",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "modal: trigger press closes",
+        "checkpoint": "toggled closed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "modal: trigger press closes",
+        "checkpoint": "toggled closed",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nonmodal: outside press activates background",
+        "checkpoint": "activated",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nonmodal: outside press activates background",
+        "checkpoint": "activated",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "rtl: anchored start alignment",
+        "checkpoint": "aligned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "rtl: anchored start alignment",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "rtl: anchored start alignment",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "anchor: default center alignment",
+        "checkpoint": "centered",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "anchor: default center alignment",
+        "checkpoint": "closed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "anchor: default center alignment",
+        "checkpoint": "closed",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: disable highlighted option",
+        "checkpoint": "activation ignored",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "dynamic: disable highlighted option",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: disable highlighted option",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["cherry"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: insert during navigation",
+        "checkpoint": "inserted",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apricot",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "dynamic: insert during navigation",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: insert during navigation",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["apricot"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: multiple prunes removed values",
+        "checkpoint": "removed",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "dynamic: multiple prunes removed values",
+        "checkpoint": "removed",
+        "field": "highlighted",
+        "angular": ["banana"],
+        "react": ["blueberry"],
+        "category": "dynamic-highlight-identity"
+    },
+    {
+        "scenario": "dynamic: multiple prunes removed values",
+        "checkpoint": "selected",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:cherry",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "dynamic: reload objects with key equality",
+        "checkpoint": "reloaded",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "dynamic: reload objects with key equality",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: reload objects with key equality",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: removal change can be canceled",
+        "checkpoint": "canceled",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus",
+        "browser": "chromium"
+    },
+    {
+        "scenario": "dynamic: removal change can be canceled",
+        "checkpoint": "canceled",
+        "field": "focus",
+        "angular": "popup",
+        "react": "body",
+        "category": "dom-focus",
+        "browser": "firefox"
+    },
+    {
+        "scenario": "dynamic: removal change can be canceled",
+        "checkpoint": "canceled",
+        "field": "focus",
+        "angular": "popup",
+        "react": "body",
+        "category": "dom-focus",
+        "browser": "webkit"
+    },
+    {
+        "scenario": "dynamic: removal change can be canceled",
+        "checkpoint": "canceled",
+        "field": "highlighted",
+        "angular": [],
+        "react": ["banana"],
+        "category": "dynamic-highlight-identity"
+    },
+    {
+        "scenario": "dynamic: removal change can be canceled",
+        "checkpoint": "retained",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: remove highlighted option",
+        "checkpoint": "removed",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:blueberry",
+        "category": "dom-focus",
+        "browser": "chromium"
+    },
+    {
+        "scenario": "dynamic: remove highlighted option",
+        "checkpoint": "removed",
+        "field": "focus",
+        "angular": "popup",
+        "react": "body",
+        "category": "dom-focus",
+        "browser": "firefox"
+    },
+    {
+        "scenario": "dynamic: remove highlighted option",
+        "checkpoint": "removed",
+        "field": "focus",
+        "angular": "popup",
+        "react": "body",
+        "category": "dom-focus",
+        "browser": "webkit"
+    },
+    {
+        "scenario": "dynamic: remove highlighted option",
+        "checkpoint": "removed",
+        "field": "highlighted",
+        "angular": [],
+        "react": ["blueberry"],
+        "category": "dynamic-highlight-identity"
+    },
+    {
+        "scenario": "dynamic: remove highlighted option",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: remove highlighted option",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["cherry"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: remove selected option",
+        "checkpoint": "removed",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus",
+        "browser": "chromium"
+    },
+    {
+        "scenario": "dynamic: remove selected option",
+        "checkpoint": "removed",
+        "field": "focus",
+        "angular": "popup",
+        "react": "body",
+        "category": "dom-focus",
+        "browser": "firefox"
+    },
+    {
+        "scenario": "dynamic: remove selected option",
+        "checkpoint": "removed",
+        "field": "focus",
+        "angular": "popup",
+        "react": "body",
+        "category": "dom-focus",
+        "browser": "webkit"
+    },
+    {
+        "scenario": "dynamic: remove selected option",
+        "checkpoint": "removed",
+        "field": "highlighted",
+        "angular": [],
+        "react": ["banana"],
+        "category": "dynamic-highlight-identity"
+    },
+    {
+        "scenario": "dynamic: remove selected option",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: remove selected option",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["cherry"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: removed selection falls back to initial",
+        "checkpoint": "restored initial",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:blueberry",
+        "category": "dom-focus",
+        "browser": "chromium"
+    },
+    {
+        "scenario": "dynamic: removed selection falls back to initial",
+        "checkpoint": "restored initial",
+        "field": "focus",
+        "angular": "popup",
+        "react": "body",
+        "category": "dom-focus",
+        "browser": "firefox"
+    },
+    {
+        "scenario": "dynamic: removed selection falls back to initial",
+        "checkpoint": "restored initial",
+        "field": "focus",
+        "angular": "popup",
+        "react": "body",
+        "category": "dom-focus",
+        "browser": "webkit"
+    },
+    {
+        "scenario": "dynamic: removed selection falls back to initial",
+        "checkpoint": "restored initial",
+        "field": "highlighted",
+        "angular": [],
+        "react": ["blueberry"],
+        "category": "dynamic-highlight-identity"
+    },
+    {
+        "scenario": "dynamic: rename selected label while closed",
+        "checkpoint": "renamed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: rename selected label while closed",
+        "checkpoint": "renamed",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: rename selected label while closed",
+        "checkpoint": "reopened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "dynamic: reorder during navigation",
+        "checkpoint": "reordered",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "dynamic: reorder during navigation",
+        "checkpoint": "reordered",
+        "field": "highlighted",
+        "angular": ["banana"],
+        "react": ["apple"],
+        "category": "dynamic-highlight-identity"
+    },
+    {
+        "scenario": "dynamic: reorder during navigation",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: reorder during navigation",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: typeahead uses live labels",
+        "checkpoint": "renamed match",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "dynamic: typeahead uses live labels",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: typeahead uses live labels",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "touch: aligned popup falls below trigger",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "touch: aligned popup falls below trigger",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["cherry"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "touch: canceled option gesture",
+        "checkpoint": "next tap selects",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "touch: canceled option gesture",
+        "checkpoint": "next tap selects",
+        "field": "selected",
+        "angular": [],
+        "react": ["cherry"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "touch: canceled option gesture",
+        "checkpoint": "no selection",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "touch: canceled trigger gesture",
+        "checkpoint": "next tap opens",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "touch: modal outside tap",
+        "checkpoint": "dismissed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "touch: modal outside tap",
+        "checkpoint": "dismissed",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "touch: multiple toggle",
+        "checkpoint": "added",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "touch: multiple toggle",
+        "checkpoint": "removed",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "touch: read-only selection",
+        "checkpoint": "unchanged",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "touch: scroll options without selecting",
+        "checkpoint": "list scrolled",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "touch: single outside tap",
+        "checkpoint": "dismissed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "touch: single outside tap",
+        "checkpoint": "dismissed",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "touch: tap selection",
+        "checkpoint": "opened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "touch: tap selection",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "touch: tap selection",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: aligned-bottom",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-38",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "geometry: aligned-bottom",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: aligned-bottom",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-0"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: aligned-clipped",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "geometry: aligned-clipped",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: aligned-clipped",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-0"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: aligned-middle",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "geometry: aligned-middle",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: aligned-middle",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-0"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: aligned-portal",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "geometry: aligned-portal",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: aligned-portal",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-0"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: aligned-rtl",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "geometry: aligned-rtl",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: aligned-rtl",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-0"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: aligned-scroll",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "geometry: aligned-scroll",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: aligned-scroll",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-0"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: aligned-top",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-1",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "geometry: aligned-top",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: aligned-top",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-0"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: anchor-bottom",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-38",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "geometry: anchor-bottom",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: anchor-bottom",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-0"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: anchor-clipped",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "geometry: anchor-clipped",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: anchor-clipped",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-0"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: anchor-portal",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "geometry: anchor-portal",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: anchor-portal",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-0"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: anchor-right",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "geometry: anchor-right",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: anchor-right",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-0"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: anchor-scroll",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "geometry: anchor-scroll",
+        "checkpoint": "ancestor scrolled",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "geometry: anchor-scroll",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: anchor-scroll",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-0"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "geometry: scroll arrows start and stop",
+        "checkpoint": "hover scrolled",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-0",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "geometry: scroll arrows start and stop",
+        "checkpoint": "hover scrolled",
+        "field": "listScrolled",
+        "angular": true,
+        "react": false,
+        "category": "reference-webkit-hover",
+        "browser": "webkit"
+    },
+    {
+        "scenario": "geometry: scroll arrows start and stop",
+        "checkpoint": "hover scrolled",
+        "field": "highlighted",
+        "angular": [],
+        "react": ["item-0"],
+        "category": "reference-webkit-hover",
+        "browser": "webkit"
+    },
+    {
+        "scenario": "sizing: capped",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-0",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "sizing: capped",
+        "checkpoint": "capped",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-0",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "sizing: capped",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "sizing: capped",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-39"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "sizing: edge-bottom",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-38",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "sizing: edge-bottom",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "sizing: edge-bottom",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-39"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "sizing: edge-top",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-1",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "sizing: edge-top",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "sizing: edge-top",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-39"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "sizing: grow-down",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-0",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "sizing: grow-down",
+        "checkpoint": "expanded",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-0",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "sizing: grow-down",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "sizing: grow-down",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-39"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "sizing: grow-up",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-39",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "sizing: grow-up",
+        "checkpoint": "expanded",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-39",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "sizing: grow-up",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "sizing: grow-up",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-39"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "sizing: no-selection",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-0",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "sizing: no-selection",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "sizing: no-selection",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-39"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "sizing: reopen",
+        "checkpoint": "initial",
+        "field": "popupMounted",
+        "angular": true,
+        "react": false,
+        "category": "retained-view-safety"
+    },
+    {
+        "scenario": "sizing: reopen",
+        "checkpoint": "initial",
+        "field": "inert",
+        "angular": true,
+        "react": false,
+        "category": "retained-view-safety"
+    },
+    {
+        "scenario": "sizing: reopen",
+        "checkpoint": "initial",
+        "field": "selected",
+        "angular": ["item-18"],
+        "react": [],
+        "category": "retained-view-safety"
+    },
+    {
+        "scenario": "sizing: reopen",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "sizing: reopen",
+        "checkpoint": "selected",
+        "field": "inert",
+        "angular": true,
+        "react": false,
+        "category": "retained-view-safety"
+    },
+    {
+        "scenario": "sizing: reopen",
+        "checkpoint": "selected",
+        "field": "highlighted",
+        "angular": ["item-39"],
+        "react": [],
+        "category": "retained-view-safety"
+    },
+    {
+        "scenario": "sizing: reopen",
+        "checkpoint": "reopened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-39",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "sizing: short",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-2",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "sizing: short",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "sizing: short",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-3"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "sizing: transformed",
+        "checkpoint": "positioned",
+        "field": "itemAligned",
+        "angular": false,
+        "react": true,
+        "category": "transformed-alignment-fallback"
+    },
+    {
+        "scenario": "sizing: transformed",
+        "checkpoint": "positioned",
+        "field": "popupWithinViewport",
+        "angular": true,
+        "react": false,
+        "category": "transformed-alignment-fallback"
+    },
+    {
+        "scenario": "sizing: transformed",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "sizing: transformed",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "sizing: transformed",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-39"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "sizing: transformed-rtl",
+        "checkpoint": "positioned",
+        "field": "itemAligned",
+        "angular": false,
+        "react": true,
+        "category": "transformed-alignment-fallback"
+    },
+    {
+        "scenario": "sizing: transformed-rtl",
+        "checkpoint": "positioned",
+        "field": "popupWithinViewport",
+        "angular": true,
+        "react": false,
+        "category": "transformed-alignment-fallback"
+    },
+    {
+        "scenario": "sizing: transformed-rtl",
+        "checkpoint": "positioned",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:item-18",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "sizing: transformed-rtl",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "sizing: transformed-rtl",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["item-39"],
+        "category": "closed-dom-retention"
+    }
+]

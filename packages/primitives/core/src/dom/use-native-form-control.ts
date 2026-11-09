@@ -1,6 +1,38 @@
 import { isPlatformBrowser } from '@angular/common';
-import { afterNextRender, DestroyRef, effect, ElementRef, inject, PLATFORM_ID, Signal, untracked } from '@angular/core';
+import {
+    afterEveryRender,
+    afterNextRender,
+    DestroyRef,
+    effect,
+    ElementRef,
+    inject,
+    PLATFORM_ID,
+    Signal,
+    signal,
+    untracked
+} from '@angular/core';
+import { autoUpdate } from '@floating-ui/dom';
 import { itemToStringValue as defaultItemToStringValue } from '../item-helpers';
+
+/** Angular callback counterpart of a ref to a generated native input. Called with null on cleanup. */
+export type RdxNativeInputRef = (input: HTMLInputElement | null) => void;
+
+/** @internal A persistent, visually hidden input for autofill, validation and native focus. */
+export interface RdxNativeFormInputOptions {
+    /** Visible control whose bounds anchor the browser's native validation message. */
+    anchor?: () => HTMLElement | null;
+    type: () => 'text' | 'hidden';
+    name: () => string | undefined;
+    value: () => string;
+    id?: () => string | undefined;
+    autoComplete?: () => string | undefined;
+    required?: () => boolean;
+    readOnly?: () => boolean;
+    ref?: () => RdxNativeInputRef | undefined;
+    onChange?: (value: string, event: Event) => void | Promise<void>;
+    onFocus?: (event: FocusEvent) => void;
+    onInvalid?: (event: Event) => void;
+}
 
 /** Configuration for a composite control that participates in a native HTML form. */
 export interface RdxNativeFormControlOptions<T> {
@@ -20,12 +52,16 @@ export interface RdxNativeFormControlOptions<T> {
     readonly syncNativeControl?: () => void;
     /** Value restored by a native form reset. Captured once after inputs bind. */
     readonly defaultValue?: () => T;
-    /** Applies the captured default value after a native form reset. */
+    /** Applies the captured default in the next task, after native reset and its default action finish. */
     readonly onReset?: (value: T) => void;
+    /** Optional persistent input. When named, it submits instead of duplicating generated entries. */
+    readonly input?: RdxNativeFormInputOptions;
 }
 
 /** Imperative operations needed by controls that submit immediately after a value change. */
 export interface RdxNativeFormControl {
+    /** The generated persistent input; null on the server, before hydration and after destruction. */
+    readonly inputElement: Signal<HTMLInputElement | null>;
     /** The current owning form, including an external form selected by the `form` input. */
     ownerForm(): HTMLFormElement | null;
     /** Synchronizes generated/native controls with the current signals. */
@@ -36,17 +72,23 @@ export interface RdxNativeFormControl {
 
 /**
  * Converts a scalar or array model to HTML form values. `null` and `undefined` represent no
- * successful control; arrays deliberately become repeated entries under the same field name.
+ * successful control. By default arrays become repeated entries. An explicit selection mode lets
+ * controls serialize an array-valued single item without flattening it.
  */
-export function serializeNativeFormValue(
-    value: unknown,
-    itemToStringValue: (entry: unknown) => string = defaultItemToStringValue
+export function serializeNativeFormValue<Value = unknown>(
+    value: Value | readonly Value[] | null | undefined,
+    itemToStringValue: (entry: Value) => string = defaultItemToStringValue,
+    options: { multiple?: boolean } = {}
 ): readonly string[] {
-    const values = Array.isArray(value) ? value : [value];
+    const values: readonly (Value | null | undefined)[] =
+        (options.multiple ?? Array.isArray(value)) && Array.isArray(value)
+            ? value
+            : [value as Value | null | undefined];
     return values.flatMap((entry) => (entry == null ? [] : [itemToStringValue(entry)]));
 }
 
 const NOOP_NATIVE_FORM_CONTROL: RdxNativeFormControl = {
+    inputElement: signal<HTMLInputElement | null>(null).asReadonly(),
     ownerForm: () => null,
     sync: () => undefined,
     requestSubmit: () => undefined
@@ -74,11 +116,117 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
     }
 
     const inputs: HTMLInputElement[] = [];
+    const inputElement = signal<HTMLInputElement | null>(null);
+    let inputRef: RdxNativeInputRef | undefined;
+    let inputChange = 0;
+    let invalidInputGrown = false;
+    let removeInputListeners: () => void = () => undefined;
+    let validationAnchor: HTMLElement | null = null;
+    let stopAnchorTracking: () => void = () => undefined;
     let defaultValue: T | undefined;
     let defaultValues: readonly string[] = [];
     let hasDefaultValue = false;
+    const pendingResets = new Set<ReturnType<typeof setTimeout>>();
     let alive = true;
     let viewClaimed = false;
+
+    const clearValidationAnchor = () => {
+        stopAnchorTracking();
+        stopAnchorTracking = () => undefined;
+        validationAnchor = null;
+    };
+
+    const positionValidationInput = () => {
+        const input = inputElement();
+        const anchor = validationAnchor;
+        if (!input || !anchor?.isConnected) return;
+        const bounds = anchor.getBoundingClientRect();
+        if (!bounds.width || !bounds.height) return;
+
+        // Measure a CSS pixel at the fixed origin first: a transformed containing block changes
+        // both the origin and scale. This also keeps coordinates local to the owning iframe.
+        Object.assign(input.style, {
+            position: 'fixed',
+            margin: '0',
+            top: '0',
+            left: '0',
+            width: '1px',
+            height: '1px'
+        });
+        const origin = input.getBoundingClientRect();
+        const scaleX = origin.width || 1;
+        const scaleY = origin.height || 1;
+        Object.assign(input.style, {
+            left: `${(bounds.left - origin.left) / scaleX}px`,
+            top: `${(bounds.top - origin.top) / scaleY}px`,
+            width: `${bounds.width / scaleX}px`,
+            height: `${bounds.height / scaleY}px`
+        });
+    };
+
+    const anchorValidationInput = () => {
+        const input = inputElement();
+        const anchor = options.input?.anchor?.();
+        if (!input || !anchor) {
+            clearValidationAnchor();
+            return;
+        }
+        if (validationAnchor === anchor) {
+            positionValidationInput();
+            return;
+        }
+        clearValidationAnchor();
+        validationAnchor = anchor;
+        // autoUpdate runs synchronously once, before the browser displays its validation UI.
+        stopAnchorTracking = autoUpdate(anchor, input, positionValidationInput);
+    };
+
+    const createInput = (): HTMLInputElement => {
+        const input = ownerDocument.createElement('input');
+        input.tabIndex = -1;
+        input.setAttribute('aria-hidden', 'true');
+        input.setAttribute('data-rdx-native-input', '');
+        const onFocus = (event: FocusEvent) => options.input?.onFocus?.(event);
+        const onInvalid = (event: Event) => {
+            // Chromium needs a nonzero box to anchor its constraint-validation message.
+            invalidInputGrown = true;
+            input.style.width = input.style.height = '1px';
+            options.input?.onInvalid?.(event);
+            anchorValidationInput();
+        };
+        const onChange = (event: Event) => {
+            const value = input.value;
+            const request = ++inputChange;
+            // Let later listeners cancel, and coalesce the input/change pair from browser autofill.
+            queueMicrotask(async () => {
+                if (!alive || inputElement() !== input || request !== inputChange) return;
+                try {
+                    if (
+                        !event.defaultPrevented &&
+                        !untracked(options.disabled) &&
+                        !untracked(() => options.input?.readOnly?.())
+                    ) {
+                        await options.input?.onChange?.(value, event);
+                    }
+                } finally {
+                    if (alive) untracked(sync);
+                }
+            });
+        };
+        input.addEventListener('input', onChange);
+        input.addEventListener('change', onChange);
+        input.addEventListener('focus', onFocus);
+        input.addEventListener('invalid', onInvalid);
+        removeInputListeners = () => {
+            input.removeEventListener('input', onChange);
+            input.removeEventListener('change', onChange);
+            input.removeEventListener('focus', onFocus);
+            input.removeEventListener('invalid', onInvalid);
+        };
+        host.parentNode?.insertBefore(input, host.nextSibling);
+        inputElement.set(input);
+        return input;
+    };
 
     const ownerForm = (): HTMLFormElement | null => {
         const formId = options.form();
@@ -100,13 +248,84 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
         const nativeControlOwnsValue = options.hasNativeControl?.() ?? false;
         const values = options.value && options.serialize ? options.serialize(options.value()) : [];
 
-        // During hydration Angular must claim every server-rendered sibling before an imperative input
-        // can be inserted. The after-render callback below performs the first DOM synchronization.
-        if (!viewClaimed) {
-            return;
+        const primaryName = options.input?.name();
+        const primaryValue = options.input?.value();
+        const primaryType = options.input?.type();
+        const primaryId = options.input?.id?.();
+        const autoComplete = options.input?.autoComplete?.();
+        const required = options.input?.required?.() ?? false;
+        const readOnly = options.input?.readOnly?.() ?? false;
+        const nextRef = options.input?.ref?.();
+        options.input?.anchor?.();
+
+        // Track every option before deferring DOM work until Angular has claimed its view.
+        if (!viewClaimed) return;
+
+        if (nativeControlOwnsValue && inputElement()) {
+            clearValidationAnchor();
+            removeInputListeners();
+            untracked(() => inputRef?.(null));
+            inputRef = undefined;
+            inputElement()?.remove();
+            inputElement.set(null);
+            inputChange++;
+            invalidInputGrown = false;
         }
 
-        const shouldRender = Boolean(name && options.serialize && !nativeControlOwnsValue);
+        if (options.input && !nativeControlOwnsValue) {
+            const input = inputElement() ?? createInput();
+            input.type = primaryType ?? 'hidden';
+            input.disabled = disabled;
+            input.required = required;
+            input.readOnly = readOnly;
+            for (const [attribute, value] of Object.entries({
+                name: primaryName,
+                form,
+                id: primaryId,
+                autocomplete: autoComplete
+            })) {
+                if (value === undefined) input.removeAttribute(attribute);
+                else input.setAttribute(attribute, value);
+            }
+            Object.assign(input.style, {
+                position: primaryName ? 'absolute' : 'fixed',
+                clipPath: 'inset(50%)',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                border: '0',
+                padding: '0',
+                pointerEvents: 'none',
+                minWidth: '0',
+                minHeight: '0',
+                maxWidth: 'none',
+                maxHeight: 'none',
+                boxSizing: 'border-box',
+                margin: primaryName ? '-1px' : '0',
+                width: primaryName || invalidInputGrown ? '1px' : '0',
+                height: primaryName || invalidInputGrown ? '1px' : '0',
+                top: primaryName ? '' : '0',
+                left: primaryName ? '' : '0'
+            });
+            if (!input.hasAttribute('data-rdx-native-form-control')) {
+                input.defaultValue = primaryName ? (defaultValues[0] ?? '') : '';
+                input.setAttribute('data-rdx-native-form-control', '');
+            }
+            input.value = primaryValue ?? '';
+            if (validationAnchor) {
+                if (!input.willValidate || input.validity.valid) clearValidationAnchor();
+                else anchorValidationInput();
+            }
+            if (nextRef !== inputRef) {
+                untracked(() => {
+                    inputRef?.(null);
+                    nextRef?.(input);
+                });
+                inputRef = nextRef;
+            }
+        }
+
+        const primarySubmits = Boolean(options.input && primaryName && primaryName === name && !nativeControlOwnsValue);
+        const shouldRender = Boolean(name && options.serialize && !nativeControlOwnsValue && !primarySubmits);
         const count = shouldRender ? values.length : 0;
 
         while (inputs.length > count) {
@@ -117,14 +336,16 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
             const input = ownerDocument.createElement('input');
             input.type = 'hidden';
             const previous = inputs.at(-1);
-            host.parentNode?.insertBefore(input, previous ? previous.nextSibling : host.nextSibling);
+            host.parentNode?.insertBefore(
+                input,
+                previous ? previous.nextSibling : (inputElement() ?? host).nextSibling
+            );
             inputs.push(input);
         }
 
         for (let index = 0; index < inputs.length; index++) {
             const input = inputs[index];
             input.name = name!;
-            input.value = values[index];
             input.disabled = disabled;
 
             if (form) {
@@ -139,6 +360,7 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
                 input.defaultValue = defaultValues[index] ?? values[index];
                 input.setAttribute('data-rdx-native-form-control', '');
             }
+            input.value = values[index];
         }
     };
 
@@ -156,31 +378,53 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
         untracked(sync);
     });
 
+    // Field errors can change layout after `invalid`; keep the browser's anchor aligned before paint.
+    if (options.input?.anchor) {
+        afterEveryRender(() => {
+            if (validationAnchor) positionValidationInput();
+        });
+    }
+
     const onReset = (event: Event) => {
         if (event.target !== ownerForm() || !options.onReset || !hasDefaultValue) {
             return;
         }
 
-        // Native controls reset after the event. Check `defaultPrevented` in the microtask so a later
-        // bubble listener can still cancel the reset before the model follows it.
-        queueMicrotask(() => {
+        // WebKit can flush microtasks between native event listeners and before reset's default
+        // action (including <output> restoration). Run after the whole dispatch/default action,
+        // so bubble cancellation is final and Angular's render cannot be overwritten by the browser.
+        const timer = setTimeout(() => {
+            pendingResets.delete(timer);
             if (alive && !event.defaultPrevented) {
-                untracked(() => options.onReset!(defaultValue as T));
+                untracked(() => {
+                    clearValidationAnchor();
+                    options.onReset!(defaultValue as T);
+                    sync();
+                });
             }
-        });
+        }, 0);
+        pendingResets.add(timer);
     };
 
     ownerDocument.addEventListener('reset', onReset, true);
 
     destroyRef.onDestroy(() => {
         alive = false;
+        pendingResets.forEach(clearTimeout);
+        pendingResets.clear();
+        clearValidationAnchor();
+        removeInputListeners();
         ownerDocument.removeEventListener('reset', onReset, true);
         for (const input of inputs) {
             input.remove();
         }
+        untracked(() => inputRef?.(null));
+        inputElement()?.remove();
+        inputElement.set(null);
     });
 
     return {
+        inputElement: inputElement.asReadonly(),
         ownerForm,
         sync,
         requestSubmit: () => {

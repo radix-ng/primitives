@@ -12,10 +12,12 @@ import {
 import {
     BooleanInput,
     createContext,
+    createLabelRegistry,
     injectId,
     isValidationRevealed,
     RDX_DEFAULT_VALIDATION_MODE,
     RDX_FIELD_VALIDITY,
+    RdxLabelRegistry,
     RdxValidationError,
     RdxValidationMode
 } from '@radix-ng/primitives/core';
@@ -64,7 +66,7 @@ export interface RdxFieldState {
 const addId = (ids: string[], id: string) => (ids.includes(id) ? ids : [...ids, id]);
 const removeId = (ids: string[], id: string) => ids.filter((item) => item !== id);
 
-export interface RdxFieldRootContext {
+export interface RdxFieldRootContext extends RdxLabelRegistry {
     controlId: Signal<string>;
     name: Signal<string | undefined>;
     descriptionIds: Signal<string[]>;
@@ -108,6 +110,7 @@ const fieldRootContext = (): RdxFieldRootContext => {
     const root = injectFieldRoot();
 
     return {
+        ...root.labelRegistry,
         controlId: root.controlId,
         name: root.effectiveName,
         descriptionIds: root.descriptionIds,
@@ -178,11 +181,12 @@ export const [injectFieldRootContext, provideFieldRootContext] = createContext<R
         '[attr.data-touched]': 'dataAttr(touchedState())',
         '[attr.data-filled]': 'dataAttr(filledState())',
         '[attr.data-focused]': 'dataAttr(focusedState())',
-        '(input)': 'notifyEdited()',
-        '(change)': 'notifyEdited()'
+        '(input)': 'onNativeEdit($event)',
+        '(change)': 'onNativeEdit($event)'
     }
 })
 export class RdxFieldRoot {
+    readonly labelRegistry = createLabelRegistry();
     /**
      * Whether the field is invalid.
      *
@@ -429,6 +433,12 @@ export class RdxFieldRoot {
     /** Notify the enclosing Form (if any) that this field's control was edited (clear-on-edit). */
     notifyEdited(): void {
         this.formContext?.notifyEdited(this.effectiveName());
+    }
+
+    /** Technical input events may be rejected; their composite control reports committed edits. */
+    protected onNativeEdit(event: Event): void {
+        if ((event.target as Element | null)?.hasAttribute?.('data-rdx-native-input')) return;
+        this.notifyEdited();
     }
 
     /** Reset interaction state on native form reset: touched/dirty/focused → false, filled re-synced. */

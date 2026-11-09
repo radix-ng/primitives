@@ -115,6 +115,11 @@ cannot resolve layout / guards / `inert` hit-testing):
 
 ### WS5 — Select focus-out parity decision
 
+2026-11-09 increment: [ADR 0027](0027-select-focus-policy-and-retained-scopes.md) adds an explicit
+`closeOnFocusOut` opt-in on Select Popup, browser scenarios for both policies and nested layers, and
+shared activation/deactivation for retained focus scopes. The default remains `false`, virtual
+navigation remains in place, and real AT verification is still pending. This does not close WS5.
+
 Decide whether to flip Radix Select from the shipped `closeOnFocusOut: false` (`select-popup.ts:161` — the
 listbox owns DOM focus + `aria-activedescendant`) to Base UI's close-on-focus-out (0017 §1 Select row /
 Phase-0 resolution). This is **AT-gated**: confirm with a real screen reader whether closing on focus-out

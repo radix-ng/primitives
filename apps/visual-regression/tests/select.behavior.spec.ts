@@ -168,7 +168,8 @@ test('aligned-position-with-scroll: viewport overflows and scroll buttons toggle
     }));
     expect(clientHeight).toBeLessThan(scrollHeight);
 
-    await list.evaluate((el) => el.scrollBy(0, 200));
+    // Initial scrolling can be consumed by popup expansion before the list offset changes.
+    await list.evaluate((el) => el.scrollTo(0, el.scrollHeight));
     await expect(up).toBeVisible();
 });
 

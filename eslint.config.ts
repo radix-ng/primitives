@@ -93,6 +93,11 @@ export default defineConfig([
         }
     },
     {
+        files: ['apps/parity-testing/**/*.tsx', 'apps/parity-testing/**/*.mts'],
+        extends: [...tseslint.configs.recommended],
+        languageOptions: { globals: { ...globals.node, ...globals.browser } }
+    },
+    {
         files: ['**/*.html'],
         extends: [...angularEslint.configs.templateRecommended, ...angularEslint.configs.templateAccessibility],
         rules: {

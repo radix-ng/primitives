@@ -1,5 +1,4 @@
-import { afterNextRender, booleanAttribute, computed, Directive, ElementRef, inject, input } from '@angular/core';
-import { injectId } from '@radix-ng/primitives/core';
+import { booleanAttribute, computed, DestroyRef, Directive, effect, ElementRef, inject, input } from '@angular/core';
 import { injectFieldRootContext } from '@radix-ng/primitives/field';
 import { createRdxTriggerInteraction } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
@@ -15,8 +14,10 @@ const attr = (value: boolean) => (value ? '' : undefined);
         role: 'combobox',
         type: 'button',
         '[attr.id]': 'id()',
+        '[attr.aria-labelledby]': 'labelledBy()',
         '[attr.aria-describedby]': 'describedBy()',
         '[attr.aria-controls]': 'triggerInteraction.ariaControls()',
+        '[attr.aria-expanded]': 'triggerInteraction.ariaExpanded()',
         '[attr.aria-invalid]': 'displayValid() === false ? "true" : undefined',
         '[attr.aria-required]': 'requiredState() ? "true" : undefined',
         '[attr.aria-readonly]': 'readOnlyState() ? "true" : undefined',
@@ -38,7 +39,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
         '(pointerup)': 'onPointerUp($event)',
         '(keydown)': 'onKeydown($event)',
         '(focus)': 'onFocus()',
-        '(blur)': 'onBlur()'
+        '(blur)': 'onBlur($event)'
     }
 })
 export class RdxSelectTrigger {
@@ -48,7 +49,14 @@ export class RdxSelectTrigger {
     private readonly fieldRootContext = injectFieldRootContext(true);
 
     /** The trigger id; Field labels and descriptions reference it for accessible relationships. */
-    readonly id = input(injectId('rdx-select-trigger-'));
+    readonly idInput = input<string>(undefined, { alias: 'id' });
+    readonly id = computed(() => this.idInput() ?? this.rootContext.id());
+
+    /** Explicit accessible-name references override the associated Field / Select label. */
+    readonly ariaLabelledBy = input<string>(undefined, { alias: 'aria-labelledby' });
+    protected readonly labelledBy = computed(
+        () => this.ariaLabelledBy() ?? this.fieldRootContext?.labelId() ?? this.rootContext.labelId()
+    );
 
     readonly disabled = input(false, { transform: booleanAttribute });
 
@@ -95,10 +103,20 @@ export class RdxSelectTrigger {
     });
 
     constructor() {
-        afterNextRender(() => {
-            this.rootContext.onTriggerChange(this.elementRef);
+        this.rootContext.onTriggerChange(this.elementRef);
+        effect(() => {
+            this.rootContext.triggerId.set(this.id());
             this.fieldRootContext?.setControlId(this.id());
             this.fieldRootContext?.setFilled(!this.rootContext.isEmptyModelValue());
+        });
+        effect(() => {
+            if (this.isDisabled()) this.rootContext.resetTypeahead();
+        });
+        inject(DestroyRef).onDestroy(() => {
+            if (this.rootContext.triggerElement() === this.elementRef.nativeElement) {
+                this.rootContext.triggerElement.set(null);
+                this.rootContext.triggerId.set(undefined);
+            }
         });
     }
 
@@ -112,6 +130,12 @@ export class RdxSelectTrigger {
 
     handlePointerOpen(event: Event) {
         const pointerEvent = event as PointerEvent;
+
+        if (this.isDisabled()) return;
+        if (this.rootContext.open()) {
+            this.rootContext.onOpenChange(false, 'trigger-press', event);
+            return;
+        }
 
         if (this.handleOpen('trigger-press', event)) {
             this.rootContext.triggerPointerDownPosRef.set({
@@ -163,10 +187,23 @@ export class RdxSelectTrigger {
 
     onKeydown(event: Event) {
         const keyEvent = event as KeyboardEvent;
+        if (this.isDisabled() || keyEvent.isComposing) return;
+        if (!this.rootContext.open() && keyEvent.key === ' ' && this.rootContext.isTypeaheadActive()) {
+            if (keyEvent.ctrlKey || keyEvent.altKey || keyEvent.metaKey) {
+                event.preventDefault();
+                return;
+            }
+            if (this.rootContext.onClosedTypeahead(keyEvent)) {
+                event.preventDefault();
+                return;
+            }
+        }
         if (OPEN_KEYS.includes(keyEvent.key)) {
             const reason =
                 keyEvent.key === 'ArrowUp' || keyEvent.key === 'ArrowDown' ? 'list-navigation' : 'trigger-press';
             this.handleOpen(reason, event);
+            event.preventDefault();
+        } else if (!this.rootContext.open() && this.rootContext.onClosedTypeahead(keyEvent)) {
             event.preventDefault();
         }
     }
@@ -175,7 +212,9 @@ export class RdxSelectTrigger {
         this.fieldRootContext?.setFocused(true);
     }
 
-    onBlur(): void {
+    onBlur(event?: FocusEvent): void {
+        if (event) this.rootContext.onTypeaheadFocusOut(event);
+        else this.rootContext.resetTypeahead();
         this.fieldRootContext?.setFocused(false);
         this.fieldRootContext?.setTouched(true);
         // Notify Signal Forms (touched model + touch output) the control was touched.

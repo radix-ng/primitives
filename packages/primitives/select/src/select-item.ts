@@ -1,33 +1,27 @@
 import {
-    afterNextRender,
     booleanAttribute,
     computed,
+    DestroyRef,
     Directive,
     effect,
     ElementRef,
     inject,
     input,
-    linkedSignal,
-    Signal
+    Signal,
+    signal
 } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
-import {
-    AcceptableValue,
-    createContext,
-    handleAndDispatchCustomEvent,
-    injectId,
-    isStationaryWebKitPointer
-} from '@radix-ng/primitives/core';
+import { createContext, handleAndDispatchCustomEvent, injectId } from '@radix-ng/primitives/core';
 import { injectSelectPopupContext } from './select-popup';
 import { injectSelectRootContext } from './select-root';
 import { SELECTION_KEYS, valueComparator } from './utils';
 
-export interface RdxSelectItemContext {
-    value: Signal<AcceptableValue | undefined>;
+export interface RdxSelectItemContext<Value = unknown> {
+    value: Signal<Value | undefined>;
     disabled: Signal<boolean>;
     isSelected: Signal<boolean>;
     textId: string;
-    onItemTextChange: (node: HTMLElement) => void;
+    onItemTextChange: (node: HTMLElement) => () => void;
 }
 
 const context = (): RdxSelectItemContext => {
@@ -39,7 +33,7 @@ const context = (): RdxSelectItemContext => {
         textId: context.textId,
 
         onItemTextChange: (node: HTMLElement) => {
-            context.textValue$.set(((context.textValue$() || node.textContent) ?? '').trim());
+            return context.registerItemText(node);
         }
     };
 };
@@ -49,7 +43,7 @@ export const [injectSelectItemContext, provideSelectItemContext] = createContext
     'components/select'
 );
 
-export type SelectEvent = CustomEvent<{ originalEvent: PointerEvent | KeyboardEvent; value?: AcceptableValue }>;
+export type SelectEvent<Value = unknown> = CustomEvent<{ originalEvent: PointerEvent | KeyboardEvent; value?: Value }>;
 
 @Directive({
     selector: '[rdxSelectItem]',
@@ -64,28 +58,49 @@ export type SelectEvent = CustomEvent<{ originalEvent: PointerEvent | KeyboardEv
         '[attr.data-selected]': 'isSelected() ? "" : undefined',
         '[attr.data-highlighted]': 'isHighlighted() ? "" : undefined',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
+        '(pointerdown)': 'onPointerDown($event)',
         '(pointerup)': 'onPointerUp($event)',
         '(pointerleave)': 'onPointerLeave($event)',
         '(pointermove)': 'onPointerMove($event)'
     }
 })
-export class RdxSelectItem {
+export class RdxSelectItem<Value = unknown> {
     private readonly rootContext = injectSelectRootContext();
     private readonly contentContext = injectSelectPopupContext();
     private readonly listItem = inject(RdxCompositeListItem, { self: true });
 
     private readonly currentElement = inject<ElementRef<HTMLElement>>(ElementRef);
 
-    readonly value = input<AcceptableValue>();
+    readonly value = input<Value>();
 
     readonly textValue = input<string>('');
 
     readonly disabled = input(false, { transform: booleanAttribute });
 
-    readonly textValue$ = linkedSignal(this.textValue);
+    private readonly itemTextElement = signal<HTMLElement | undefined>(undefined);
+    private readonly option = () => ({
+        value: this.value(),
+        disabled: this.disabled(),
+        textValue: this.textValue(),
+        element: this.currentElement.nativeElement,
+        textContent: (this.itemTextElement()?.textContent ?? this.currentElement.nativeElement.textContent ?? '').trim()
+    });
+
+    /** @internal Item text owns cleanup, including replacement before the old view is destroyed. */
+    registerItemText(node: HTMLElement): () => void {
+        this.itemTextElement.set(node);
+        return () => {
+            if (this.itemTextElement() === node) this.itemTextElement.set(undefined);
+        };
+    }
 
     readonly isSelected = computed(() =>
-        valueComparator(this.rootContext.value(), this.value(), this.rootContext.isItemEqualToValue())
+        valueComparator(
+            this.rootContext.value(),
+            this.value(),
+            this.rootContext.isItemEqualToValue(),
+            this.rootContext.multiple()
+        )
     );
 
     /** Highlighted via the highlight model (keyboard / hover), not DOM focus. */
@@ -96,25 +111,51 @@ export class RdxSelectItem {
 
     readonly textId = injectId('rdx-select-item-text-');
 
-    private readonly afterNextRender = afterNextRender(() => {
-        this.contentContext.itemRefCallback(this.currentElement.nativeElement, this.value(), this.disabled());
-    });
-
     private SELECT_SELECT = 'select.select';
 
     constructor() {
+        this.rootContext.onOptionAdd(this.option);
+        inject(DestroyRef).onDestroy(() => this.rootContext.onOptionRemove(this.option));
         effect(() => {
             this.listItem.setMetadata({
                 value: this.value(),
                 disabled: this.disabled(),
-                textValue: this.textValue$()
+                textValue: this.textValue(),
+                textElement: this.itemTextElement()
             });
         });
     }
 
+    onPointerDown(event: PointerEvent) {
+        if (
+            !this.rootContext.open() ||
+            event.defaultPrevented ||
+            this.disabled() ||
+            this.rootContext.disabled() ||
+            event.button !== 0 ||
+            event.ctrlKey ||
+            event.pointerType === 'touch'
+        )
+            return;
+        // An explicit press must work even when WebKit reports a zero-delta first move.
+        // Read-only prevents selection, while pointer/keyboard highlighting remains available.
+        this.contentContext.setKeyboardActive(false);
+        this.contentContext.highlightItem(this.currentElement.nativeElement);
+    }
+
     onPointerUp(event: PointerEvent | KeyboardEvent) {
+        if (!this.rootContext.open()) return;
         if (event.defaultPrevented) return;
-        if (this.disabled()) return;
+        if (
+            'pointerType' in event &&
+            event.pointerType === 'touch' &&
+            !this.disabled() &&
+            !this.rootContext.disabled()
+        ) {
+            this.contentContext.setKeyboardActive(false);
+            this.contentContext.highlightItem(this.currentElement.nativeElement);
+        }
+        if (this.disabled() || this.rootContext.disabled() || this.rootContext.readOnly()) return;
 
         const eventDetail = { originalEvent: event, value: this.value() };
 
@@ -132,21 +173,28 @@ export class RdxSelectItem {
         );
     }
 
-    onPointerLeave(event: Event) {
+    onPointerLeave(event: PointerEvent) {
+        if (event.pointerType === 'touch') return;
+        if (!this.rootContext.open()) return;
         if (event.defaultPrevented) return;
+        if (!this.rootContext.highlightItemOnHover()) return;
+        // Keyboard scrolling can move the hovered item away without moving the pointer.
+        if (this.contentContext.isKeyboardActive() && this.contentContext.isStationaryPointerMove(event)) return;
         this.contentContext.onItemLeave?.();
     }
 
     onPointerMove(event: PointerEvent) {
-        // WebKit fires zero-delta moves while the list scrolls under a still cursor.
-        if (isStationaryWebKitPointer(event)) {
+        if (event.pointerType === 'touch') return;
+        if (!this.rootContext.open()) return;
+        if (!this.rootContext.highlightItemOnHover()) return;
+        // Scrolling can generate zero-delta moves beneath a stationary cursor.
+        if (this.contentContext.isStationaryPointerMove(event)) {
             return;
         }
         if (event.defaultPrevented) return;
-        // Ignore pointer events synthesized by keyboard-driven scrolling (don't steal the highlight).
+        // A real move resumes hover after keyboard navigation; stationary moves were filtered above.
         if (this.contentContext.isKeyboardActive()) {
             this.contentContext.setKeyboardActive(false);
-            return;
         }
         if (!this.disabled()) {
             this.contentContext.highlightItem(this.currentElement.nativeElement);

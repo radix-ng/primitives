@@ -10,10 +10,25 @@ setup for catching layout, positioning, and styling regressions.
 pnpm test-visual            # build Storybook, then diff every story against the baselines
 pnpm test-visual:update     # regenerate baselines (after an intentional visual change)
 pnpm test-visual:report     # open the HTML diff report from the last run
+pnpm test-browser:select   # build Storybook and run Select behavior checks in three desktop engines
 ```
 
 `pnpm test-visual` builds Storybook (`dist/radix-storybook`), serves it on `:4400`, and screenshots
 each story. A failing diff opens as side-by-side actual/expected/diff in the HTML report.
+
+For Select behavior checks, install `chromium firefox webkit` with `pnpm exec playwright install`.
+`playwright.select.config.ts` reuses the same `select*.behavior.spec.ts` files in all three engines;
+it excludes screenshots, so it does not create or change visual baselines. To rerun one engine against
+an existing build:
+
+```bash
+pnpm exec playwright test -c apps/visual-regression/playwright.select.config.ts --project=webkit
+```
+
+Engine setup, including Firefox app-data isolation on macOS, is shared with the
+[differential runner](../parity-testing/README.md). CI runs both in the `parity` job and uploads the
+Storybook HTML report and failure traces as well as differential observations. Passing desktop
+automation does not replace real Safari/device, screen-reader or saved-profile autofill checks.
 
 ## What's covered
 

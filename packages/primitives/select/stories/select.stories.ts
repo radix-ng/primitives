@@ -4,18 +4,40 @@ import { SelectAlignedPosition } from './select-aligned-position';
 import { SelectAlignedPositionWithScroll } from './select-aligned-position-with-scroll';
 import alignedPositionWithScrollSource from './select-aligned-position-with-scroll?raw';
 import alignedPositionSource from './select-aligned-position?raw';
+import { SelectArbitraryValues } from './select-arbitrary-values';
+import arbitraryValuesSource from './select-arbitrary-values?raw';
+import { SelectArrowExample } from './select-arrow';
+import arrowSource from './select-arrow?raw';
 import { SelectDefault } from './select-default';
 import defaultSource from './select-default?raw';
+import { SelectDeferredUnmount } from './select-deferred-unmount';
+import deferredUnmountSource from './select-deferred-unmount?raw';
+import { SelectDynamicOptions } from './select-dynamic-options';
+import dynamicOptionsSource from './select-dynamic-options?raw';
 import { SelectEvents } from './select-events';
 import eventsSource from './select-events?raw';
+import { SelectFocusManagement } from './select-focus-management';
+import focusManagementSource from './select-focus-management?raw';
+import { SelectItems } from './select-items';
+import itemsSource from './select-items?raw';
+import { SelectLabels } from './select-labels';
+import labelsSource from './select-labels?raw';
 import { SelectMultiple } from './select-multiple';
 import multipleSource from './select-multiple?raw';
+import { SelectNativeForms } from './select-native-forms';
+import nativeFormsSource from './select-native-forms?raw';
 import { SelectObjectValues } from './select-object-values';
 import objectValuesSource from './select-object-values?raw';
 import { SelectReactiveForms } from './select-reactive-forms';
 import reactiveFormsSource from './select-reactive-forms?raw';
 import { SelectTemplateDrivenForms } from './select-template-driven-forms';
 import templateDrivenFormsSource from './select-template-driven-forms?raw';
+import { SelectTypeahead } from './select-typeahead';
+import typeaheadSource from './select-typeahead?raw';
+import { SelectTypedWrapper } from './select-typed-wrapper';
+import typedWrapperSource from './select-typed-wrapper?raw';
+import { SelectViewportEdges } from './select-viewport-edges';
+import viewportEdgesSource from './select-viewport-edges?raw';
 import { SelectWithScroll } from './select-with-scroll';
 import withScrollSource from './select-with-scroll?raw';
 
@@ -31,14 +53,25 @@ export default {
         moduleMetadata({
             imports: [
                 SelectDefault,
+                SelectArbitraryValues,
+                SelectDeferredUnmount,
+                SelectDynamicOptions,
+                SelectArrowExample,
                 SelectEvents,
+                SelectFocusManagement,
                 SelectMultiple,
                 SelectObjectValues,
                 SelectReactiveForms,
                 SelectTemplateDrivenForms,
                 SelectWithScroll,
+                SelectViewportEdges,
                 SelectAlignedPosition,
-                SelectAlignedPositionWithScroll
+                SelectAlignedPositionWithScroll,
+                SelectTypedWrapper,
+                SelectItems,
+                SelectLabels,
+                SelectNativeForms,
+                SelectTypeahead
             ]
         }),
         tailwindDemoDecorator()
@@ -46,6 +79,66 @@ export default {
 } as Meta;
 
 type Story = StoryObj;
+
+export const ViewportEdges: Story = {
+    parameters: source(viewportEdgesSource),
+    args: { edge: 'top', dir: 'ltr' },
+    argTypes: {
+        edge: { control: 'select', options: ['top', 'middle', 'bottom'] },
+        dir: { control: 'select', options: ['ltr', 'rtl'] }
+    },
+    render: (args) => ({
+        props: args,
+        template: html`
+            <select-viewport-edges [edge]="edge" [dir]="dir" />
+        `
+    })
+};
+
+export const SizingAndFallback: Story = {
+    parameters: source(viewportEdgesSource),
+    args: {
+        edge: 'middle',
+        dir: 'ltr',
+        initialIndex: 0,
+        capped: false,
+        transformed: false,
+        keepMounted: false,
+        showArrow: true
+    },
+    argTypes: {
+        edge: { control: 'select', options: ['top', 'middle', 'bottom', 'near-top'] },
+        dir: { control: 'select', options: ['ltr', 'rtl'] },
+        initialIndex: { control: { type: 'number', min: 0, max: 39 } },
+        capped: { control: 'boolean' },
+        transformed: { control: 'boolean' },
+        keepMounted: { control: 'boolean' },
+        showArrow: { control: 'boolean' }
+    },
+    render: (args) => ({
+        props: args,
+        template: html`
+            <select-viewport-edges
+                [edge]="edge"
+                [dir]="dir"
+                [initialIndex]="initialIndex"
+                [capped]="capped"
+                [transformed]="transformed"
+                [keepMounted]="keepMounted"
+                [showArrow]="showArrow"
+            />
+        `
+    })
+};
+
+export const DynamicOptions: Story = {
+    parameters: source(dynamicOptionsSource),
+    render: () => ({
+        template: html`
+            <select-dynamic-options />
+        `
+    })
+};
 
 export const Default: Story = {
     parameters: source(defaultSource),
@@ -56,11 +149,72 @@ export const Default: Story = {
     })
 };
 
+export const ArbitraryValues: Story = {
+    parameters: source(arbitraryValuesSource),
+    render: () => ({
+        template: html`
+            <select-arbitrary-values />
+        `
+    })
+};
+
+export const Typeahead: Story = {
+    args: { keepMounted: false },
+    parameters: source(typeaheadSource),
+    render: (args) => ({
+        props: args,
+        template: html`
+            <select-typeahead [keepMounted]="keepMounted" />
+        `
+    })
+};
+
 export const Multiple: Story = {
     parameters: source(multipleSource),
     render: () => ({
         template: html`
             <select-multiple />
+        `
+    })
+};
+
+export const Arrow: Story = {
+    parameters: source(arrowSource),
+    args: { side: 'bottom', align: 'center', alignOffset: 0, dir: 'ltr' },
+    render: (args) => ({
+        props: args,
+        template: html`
+            <select-arrow-example [side]="side" [align]="align" [alignOffset]="alignOffset" [dir]="dir" />
+        `
+    })
+};
+
+export const DeferredUnmount: Story = {
+    parameters: source(deferredUnmountSource),
+    render: () => ({
+        template: html`
+            <select-deferred-unmount />
+        `
+    })
+};
+
+export const FocusManagement: Story = {
+    args: { shell: 'inline', keepMounted: true, closeOnFocusOut: false, finalFocus: 'default', cancelClose: false },
+    argTypes: {
+        shell: { control: 'select', options: ['inline', 'dialog', 'popover'] },
+        finalFocus: { control: 'select', options: ['default', 'after', 'none'] }
+    },
+    parameters: source(focusManagementSource),
+    render: (args) => ({
+        props: args,
+        template: html`
+            <select-focus-management
+                [shell]="shell"
+                [keepMounted]="keepMounted"
+                [closeOnFocusOut]="closeOnFocusOut"
+                [finalFocus]="finalFocus"
+                [cancelClose]="cancelClose"
+            />
         `
     })
 };
@@ -101,6 +255,42 @@ export const TemplateDrivenForms: Story = {
     })
 };
 
+export const TypedWrapper: Story = {
+    parameters: source(typedWrapperSource),
+    render: () => ({
+        template: html`
+            <select-typed-wrapper />
+        `
+    })
+};
+
+export const Items: Story = {
+    parameters: source(itemsSource),
+    render: () => ({
+        template: html`
+            <select-items />
+        `
+    })
+};
+
+export const Labels: Story = {
+    parameters: source(labelsSource),
+    render: () => ({
+        template: html`
+            <select-labels />
+        `
+    })
+};
+
+export const NativeForms: Story = {
+    parameters: source(nativeFormsSource),
+    render: () => ({
+        template: html`
+            <select-native-forms />
+        `
+    })
+};
+
 export const WithScroll: Story = {
     parameters: source(withScrollSource),
     render: () => ({
@@ -111,10 +301,12 @@ export const WithScroll: Story = {
 };
 
 export const AlignedPosition: Story = {
+    args: { keepMounted: false },
     parameters: source(alignedPositionSource),
-    render: () => ({
+    render: (args) => ({
+        props: args,
         template: html`
-            <select-aligned-position />
+            <select-aligned-position [keepMounted]="keepMounted" />
         `
     })
 };

@@ -4,7 +4,7 @@ import { injectPopperContentWrapperContext } from './popper-content-wrapper';
 @Directive({
     selector: '[rdxPopperContent]',
     host: {
-        '[attr.data-side]': 'popperContentWrapper?.placedSide()',
+        '[attr.data-side]': 'popperContentWrapper?.contentSide()',
         '[attr.data-align]': 'popperContentWrapper?.placedAlign()',
         '[style]': 'style()'
     }
@@ -12,9 +12,9 @@ import { injectPopperContentWrapperContext } from './popper-content-wrapper';
 export class RdxPopperContent {
     /**
      * Optional so the directive can be composed onto a content part that is also used outside Popper
-     * positioning (e.g. select's `item-aligned` mode, where there is no `RdxPopperContentWrapper`
-     * ancestor). With no wrapper the `data-side` / `data-align` bindings and the animation guard
-     * simply no-op.
+     * positioning. With no wrapper the `data-side` / `data-align` bindings and the animation guard
+     * simply no-op. A wrapper can expose a rendered side (such as Select's `none`) independently
+     * of its physical anchor-engine side.
      */
     protected readonly popperContentWrapper = injectPopperContentWrapperContext(true);
 

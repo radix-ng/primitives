@@ -144,6 +144,7 @@ class SelectFieldReactiveFormsHost {
                 #nativeRoot="rdxSelectRoot"
                 [(value)]="value"
                 [defaultValue]="defaultValue()"
+                [multiple]="multiple()"
                 [disabled]="disabled()"
                 [itemToStringValue]="serializeItem"
                 [name]="name()"
@@ -155,6 +156,7 @@ class SelectFieldReactiveFormsHost {
     `
 })
 class SelectNativeFormHost {
+    readonly multiple = signal(false);
     readonly nativeRoot = viewChild.required<RdxSelectRoot>('nativeRoot');
     readonly defaultValue = signal<AcceptableValue | AcceptableValue[]>('apple');
     readonly value = signal<AcceptableValue | AcceptableValue[]>('apple');
@@ -226,6 +228,35 @@ describe('Select with Reactive Forms', () => {
         fixture = TestBed.createComponent(SelectReactiveFormsHost);
         host = fixture.componentInstance;
         await settle();
+    });
+
+    it('updates the FormControl while closed and retains a multi-character query', async () => {
+        host.fruits.push('Apricot');
+        fixture.changeDetectorRef.markForCheck();
+        await settle();
+        const trigger = fixture.nativeElement.querySelector('[rdxSelectTrigger]') as HTMLElement;
+        trigger.focus();
+        for (const key of 'apr') {
+            trigger.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+            await settle();
+        }
+        expect(host.control.value).toBe('Apricot');
+        expect(host.control.dirty).toBe(true);
+        expect(host.control.untouched).toBe(true);
+        expect(selectRoot(fixture).open()).toBe(false);
+        expect(trigger).toHaveFocus();
+    });
+
+    it('does not mark a canceled closed-keyboard change dirty', async () => {
+        host.cancelNextValue.set(true);
+        await settle();
+        fixture.nativeElement
+            .querySelector('[rdxSelectTrigger]')
+            .dispatchEvent(new KeyboardEvent('keydown', { key: 'a', bubbles: true }));
+        await settle();
+        expect(host.control.value).toBe('Banana');
+        expect(host.control.pristine).toBe(true);
+        expect(selectRoot(fixture).open()).toBe(false);
     });
 
     it('lets the form value win over defaultValue and accepts programmatic writes', async () => {
@@ -363,6 +394,7 @@ describe('Select native form contract', () => {
         expect(new FormData(externalForm).getAll('external')).toEqual(['pear']);
 
         host.value.set(['apple', 'banana']);
+        host.multiple.set(true);
         fixture.detectChanges();
         expect(new FormData(nativeForm).getAll('fruit')).toEqual(['apple', 'banana']);
 
@@ -374,6 +406,7 @@ describe('Select native form contract', () => {
     it('serializes object values with itemToStringValue instead of object coercion', () => {
         const nativeForm = fixture.nativeElement.querySelector('#native-form') as HTMLFormElement;
 
+        host.multiple.set(true);
         host.value.set([
             { id: 'angular', label: 'Angular' },
             { id: 'vue', label: 'Vue' }
@@ -393,7 +426,7 @@ describe('Select native form contract', () => {
         fixture.detectChanges();
 
         nativeForm.reset();
-        await Promise.resolve();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
         fixture.detectChanges();
 
         expect(host.value()).toBe('apple');
@@ -408,7 +441,7 @@ describe('Select native form contract', () => {
         nativeForm.addEventListener('reset', (event) => event.preventDefault(), { once: true });
 
         nativeForm.reset();
-        await Promise.resolve();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
         fixture.detectChanges();
 
         expect(host.value()).toBe('banana');
@@ -430,7 +463,7 @@ describe('Select native reset with Reactive Forms', () => {
         fixture.detectChanges();
 
         (fixture.nativeElement.querySelector('form') as HTMLFormElement).reset();
-        await Promise.resolve();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
         fixture.detectChanges();
 
         expect(host.control.value).toBe('apple');
@@ -455,6 +488,21 @@ describe('Select with template-driven forms', () => {
         fixture = TestBed.createComponent(SelectTemplateDrivenFormsHost);
         host = fixture.componentInstance;
         await settle();
+    });
+
+    it('updates ngModel from a multi-character query without opening', async () => {
+        host.fruits.push('Apricot');
+        fixture.changeDetectorRef.markForCheck();
+        await settle();
+        const trigger = fixture.nativeElement.querySelector('[rdxSelectTrigger]') as HTMLElement;
+        trigger.focus();
+        for (const key of 'apr') {
+            trigger.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+            await settle();
+        }
+        expect(host.value).toBe('Apricot');
+        expect(selectRoot(fixture).open()).toBe(false);
+        expect(trigger).toHaveFocus();
     });
 
     it('round-trips values through ngModel', async () => {

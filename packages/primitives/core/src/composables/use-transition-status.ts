@@ -27,6 +27,8 @@ export interface RdxTransitionStatusRef {
     registerElement: (element: HTMLElement) => () => void;
     /** Drives a new transition for the given open state. Cancels any in-flight transition. */
     start: (open: boolean) => void;
+    /** Cancels the active transition without a completion notification. */
+    cancel: () => void;
 }
 
 /**
@@ -50,6 +52,7 @@ export function useTransitionStatus(onComplete: (open: boolean) => void): RdxTra
     let timer: ReturnType<typeof setTimeout> | undefined;
     let frame: number | undefined;
     let version = 0;
+    let active = false;
 
     const clearTimers = () => {
         if (frame !== undefined) {
@@ -64,10 +67,11 @@ export function useTransitionStatus(onComplete: (open: boolean) => void): RdxTra
     };
 
     const complete = (open: boolean, currentVersion: number) => {
-        if (currentVersion !== version) {
+        if (currentVersion !== version || !active) {
             return;
         }
 
+        active = false;
         clearTimers();
         status.set(undefined);
 
@@ -124,6 +128,7 @@ export function useTransitionStatus(onComplete: (open: boolean) => void): RdxTra
         },
         start: (open: boolean) => {
             const currentVersion = ++version;
+            active = true;
             clearTimers();
             status.set(open ? 'starting' : 'ending');
 
@@ -150,6 +155,12 @@ export function useTransitionStatus(onComplete: (open: boolean) => void): RdxTra
                 },
                 { injector }
             );
+        },
+        cancel: () => {
+            version++;
+            active = false;
+            clearTimers();
+            status.set(undefined);
         }
     };
 }

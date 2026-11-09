@@ -73,12 +73,14 @@ describe('Select data attributes', () => {
     });
 
     it('trigger reflects placeholder and popup-open state', async () => {
+        expect(trigger().getAttribute('aria-expanded')).toBe('false');
         expect(trigger().hasAttribute('data-placeholder')).toBe(true);
         expect(trigger().hasAttribute('data-popup-open')).toBe(false);
 
         host.open.set(true);
         await settle();
         expect(trigger().hasAttribute('data-popup-open')).toBe(true);
+        expect(trigger().getAttribute('aria-expanded')).toBe('true');
 
         host.value.set('Apple');
         host.open.set(false);
@@ -311,6 +313,20 @@ describe('Select with Signal Forms', () => {
         fixture = TestBed.createComponent(SelectSignalFormHost);
         host = fixture.componentInstance;
         await settle();
+    });
+
+    it('updates the signal field through a closed-trigger query without losing its prefix', async () => {
+        host.fruits.push('Apricot');
+        fixture.changeDetectorRef.markForCheck();
+        await settle();
+        trigger().focus();
+        for (const key of 'apr') {
+            trigger().dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+            await settle();
+        }
+        expect(host.model().city).toBe('Apricot');
+        expect(root().open()).toBe(false);
+        expect(trigger()).toHaveFocus();
     });
 
     it('reflects the bound field value (FormValueControl)', () => {

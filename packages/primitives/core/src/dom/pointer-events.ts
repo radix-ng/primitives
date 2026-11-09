@@ -14,3 +14,25 @@ import { rdxPlatform } from './platform';
 export function isStationaryWebKitPointer(event: MouseEvent | PointerEvent): boolean {
     return rdxPlatform.engine.webkit && event.movementX === 0 && event.movementY === 0;
 }
+
+/**
+ * Scope-local guard for zero-delta events, including engines that report them during real travel.
+ * Observe document moves in capture, then reuse the classification in item handlers. Viewport
+ * coordinates distinguish travel from list/page scrolling beneath a stationary pointer.
+ */
+export function createPointerMoveGuard(initialPosition?: { clientX: number; clientY: number }) {
+    let previousPosition = initialPosition;
+    let previousEvent: MouseEvent | PointerEvent | undefined;
+    let stationary = false;
+    return (event: MouseEvent | PointerEvent): boolean => {
+        if (previousEvent === event) return stationary;
+        stationary =
+            event.movementX === 0 &&
+            event.movementY === 0 &&
+            (!previousPosition ||
+                (event.clientX === previousPosition.clientX && event.clientY === previousPosition.clientY));
+        previousPosition = { clientX: event.clientX, clientY: event.clientY };
+        previousEvent = event;
+        return stationary;
+    };
+}

@@ -37,7 +37,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
         '[attr.aria-haspopup]': 'root.grid() ? "grid" : "listbox"',
         '[attr.aria-expanded]': 'root.open()',
         '[attr.aria-controls]': 'root.listId',
-        '[attr.aria-labelledby]': 'root.labelId()',
+        '[attr.aria-labelledby]': 'labelledBy()',
         '[attr.aria-activedescendant]': 'root.activeId()',
         '[attr.aria-describedby]': 'describedBy()',
         '[attr.aria-invalid]': 'displayValid() === false ? "true" : undefined',
@@ -72,6 +72,7 @@ export class RdxAutocompleteInput {
     protected readonly root = inject(RdxAutocompleteRoot);
     private readonly element = inject<ElementRef<HTMLInputElement>>(ElementRef).nativeElement;
     private readonly fieldRootContext = injectFieldRootContext(true);
+    protected readonly labelledBy = computed(() => this.fieldRootContext?.labelId() ?? this.root.labelId());
 
     /** The input id; Field labels and descriptions reference it for accessible relationships. */
     readonly id = input(injectId('rdx-autocomplete-input-'));

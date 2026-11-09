@@ -2,6 +2,7 @@ import { computed, DestroyRef, Directive, effect, ElementRef, inject, isDevMode,
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
 import { RdxCompositeList } from '@radix-ng/primitives/composite';
 import {
+    findTypeaheadMatch,
     RDX_FLOATING_REGISTRATION,
     RDX_FLOATING_ROOT_CONTEXT,
     rdxDevWarning,
@@ -44,7 +45,7 @@ import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
                 // The manager follows mounted/open lifecycle, not menu disabled state. Dismissal remains
                 // disabled separately below; focus/marker policy should not disappear if a menu becomes
                 // disabled while open, or if `preventUnmountOnClose()` keeps it mounted after close.
-                enabled: () => rootContext.present(),
+                enabled: () => rootContext.present() || rootContext.transitionStatus() === 'ending',
                 restoreFocus: () => true,
                 previousFocusableElement: () => rootContext.trigger() ?? null,
                 beforeContentFocusGuardRef: () => (element) => rootContext.setBeforeContentFocusGuard(element),
@@ -244,48 +245,6 @@ export class RdxMenuPopup {
                 this.rootContext.close('focus-out', event);
             }
         });
-
-        // keepMounted return-focus: the composed focus scope returns focus in its *unmount* cleanup,
-        // which never runs while a `keepMounted` popup stays in the DOM (so Escape/close would strand
-        // focus on the now-hidden popup — a keyboard trap). Mirror it on close: when the menu settles
-        // closed but the popup is still mounted, apply the focus manager's resolved return target
-        // (honoring `finalFocus`), falling back to the trigger. The `isConnected` guard scopes this to
-        // the keep-mounted case — a normally-unmounting popup is gone by the deferred frame, its scope
-        // having already returned focus.
-        const settledClosed = computed(
-            () => !this.rootContext.isOpen() && this.rootContext.transitionStatus() !== 'ending'
-        );
-        let wasSettledClosed = settledClosed();
-        effect(() => {
-            const closed = settledClosed();
-            const justSettled = closed && !wasSettledClosed;
-            wasSettledClosed = closed;
-            if (!justSettled) {
-                return;
-            }
-
-            const popup = this.elementRef.nativeElement;
-            const view = popup.ownerDocument.defaultView ?? globalThis;
-            view.requestAnimationFrame(() => {
-                if (!popup.isConnected) {
-                    return;
-                }
-
-                // Return focus only if it was inside the popup, or the browser dumped it to <body>
-                // because the positioner became `hidden`. If the user moved focus to another real
-                // element, leave it.
-                const active = popup.ownerDocument.activeElement;
-                if (active !== popup.ownerDocument.body && !popup.contains(active)) {
-                    return;
-                }
-
-                const target = this.focusManager.resolveReturnTarget();
-                if (target === false) {
-                    return; // finalFocus={false} suppresses return
-                }
-                (target ?? this.rootContext.trigger())?.focus({ preventScroll: true });
-            });
-        });
     }
 
     protected handleCloseParent(event: Event): void {
@@ -406,9 +365,12 @@ export class RdxMenuPopup {
                     const query =
                         this.search.length > 1 && [...this.search].every((c) => c === char) ? char : this.search;
                     const startIndex = currentIndex >= 0 ? currentIndex + 1 : 0;
-                    const rotated = [...items.slice(startIndex), ...items.slice(0, startIndex)];
-                    const match = rotated.find((item) => item.label.startsWith(query));
-                    this.focusMenuItem(match);
+                    const index = findTypeaheadMatch(
+                        items.map((item) => item.label),
+                        query,
+                        startIndex
+                    );
+                    this.focusMenuItem(index === undefined ? undefined : items[index]);
                 }
                 break;
             }

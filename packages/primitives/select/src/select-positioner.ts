@@ -1,4 +1,4 @@
-import { afterNextRender, Directive, ElementRef, inject, Injector } from '@angular/core';
+import { afterNextRender, computed, Directive, ElementRef, inject, Injector } from '@angular/core';
 import { provideExistingToken, setupInternalBackdrop } from '@radix-ng/primitives/core';
 import {
     DROPDOWN_COLLISION_AVOIDANCE,
@@ -24,23 +24,32 @@ import { injectSelectRootContext } from './select-root';
     providers: [
         ...provideRdxPopperContentWrapper(RdxSelectPositioner),
         provideRdxPopperContentConfig({
-            align: 'start',
+            align: 'center',
             collisionAvoidance: DROPDOWN_COLLISION_AVOIDANCE,
             updatePositionStrategy: 'always'
         }),
         provideExistingToken(RDX_SELECT_POSITIONER_TOKEN, RdxSelectPositioner)
     ],
     host: {
+        '[attr.inert]': 'rootContext.open() ? undefined : ""',
+        '[hidden]': '!visible()',
         // The unified vars + placement attrs come from the wrapper (ADR 0012); only `box-sizing` and
         // the deprecated `--radix-select-*` aliases (still consumed by demos) remain here.
-        '[style]': 'positionerStyle'
+        '[style]': 'positionerStyle',
+        '[style.display]': 'rootContext.autofillProbe() && !rootContext.open() ? "none" : undefined'
     }
 })
 export class RdxSelectPositioner extends RdxPopperContentWrapper implements RdxPositionerImpl {
+    protected readonly rootContext = injectSelectRootContext();
     protected readonly positionerStyle = { boxSizing: 'border-box', ...legacyPopperVars('select') };
+    protected readonly visible = computed(
+        () => this.rootContext.open() || this.rootContext.transitionStatus() === 'ending'
+    );
 
     constructor() {
         super();
+        // Reuse the shared positioner's visibility gate, as Menu does for retained views.
+        this.positioningActive = this.visible;
         const rootContext = injectSelectRootContext();
         const injector = inject(Injector);
         const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;

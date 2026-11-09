@@ -319,7 +319,7 @@ describe('RdxNumberField', () => {
         fixture.detectChanges();
 
         (fixture.nativeElement.querySelector('form') as HTMLFormElement).reset();
-        await Promise.resolve();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
         fixture.detectChanges();
 
         expect(component.value()).toBeNull();
@@ -350,7 +350,7 @@ describe('RdxNumberField native reset with Reactive Forms', () => {
         fixture.detectChanges();
 
         (fixture.nativeElement.querySelector('form') as HTMLFormElement).reset();
-        await Promise.resolve();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
         fixture.detectChanges();
 
         expect(host.control.value).toBe(5);

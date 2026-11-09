@@ -3,8 +3,10 @@ import * as Stories from './select.stories';
 import { RdxSelectRoot } from '../src/select-root';
 import { RdxSelectTrigger } from '../src/select-trigger';
 import { RdxSelectValue } from '../src/select-value';
+import { RdxSelectLabel } from '../src/select-label';
 import { RdxSelectItem } from '../src/select-item';
 import { RdxSelectPositioner } from '../src/select-positioner';
+import { RdxSelectArrow } from '../src/select-arrow';
 
 <Meta title="Primitives/Select" />
 
@@ -24,18 +26,23 @@ native `<select>` behavior).
 - ✅ Controlled and uncontrolled value via `[(value)]`, with `defaultValue` / `defaultOpen` seeds.
 - ✅ `readOnly` and `required` state, reflected on the trigger as `aria-readonly` / `aria-required`.
 - ✅ Single and multiple selection with the `multiple` input.
+- ✅ Arbitrary item values, including booleans, Dates, symbols and array-valued items.
 - ✅ Angular forms integration through `ControlValueAccessor`: Reactive Forms, `formControlName`, and `ngModel`.
 - ✅ Cancelable `onOpenChange` and `onValueChange` outputs with reason-aware `eventDetails`.
+- ✅ Imperative `close()` / `unmount()` actions and per-close deferred unmount for external animations.
 - ✅ Two positioning modes: Popper (Floating UI) and Item-aligned (native-like).
+- ✅ Optional popup arrow with shared positioning and open/closed, side, alignment and uncentered states.
 - ✅ Scroll buttons appear automatically when the list overflows the viewport.
 - ✅ Typeahead: type a character to jump to matching items.
 - ✅ Custom comparison (`isItemEqualToValue`), labels (`itemToStringLabel`), and native form serialization
-  (`itemToStringValue`) for object values.
+  (`itemToStringValue`) for arbitrary values.
 - ✅ Highlight-model navigation (`aria-activedescendant`) — focus stays on the listbox, not the items.
-- ✅ Full keyboard navigation: ArrowDown / ArrowUp, Home, End, Enter / Space, Escape.
+- ✅ Keyboard navigation: ArrowDown / ArrowUp, Home, End, Enter / Space, Escape.
 - ✅ Public interaction state via `openMethod`, `openInteractionType`, and `closeInteractionType`.
 - ✅ `modal` (default) locks page scroll and makes outside content inert, with an optional `Backdrop`.
 - ✅ Field integration on the trigger (invalid / disabled / required / focused state + `aria-describedby`).
+- ✅ `rdxSelectLabel` automatically names and focuses the trigger; Root's `id` identifies the control.
+- ✅ Native autofill, required validation and input access through `autoComplete`, `inputRef` and `nativeInput()`.
 - ✅ WAI-ARIA `combobox` / `listbox` semantics with `aria-selected` and `aria-disabled`.
 - ✅ Headless — state via `data-selected`, `data-highlighted`, `data-popup-open`, `data-placeholder`, `data-disabled`.
 
@@ -43,6 +50,7 @@ native `<select>` behavior).
 
 ```typescript
 import {
+  RdxSelectArrow,
   RdxSelectPopup,
   RdxSelectGroup,
   RdxSelectItem,
@@ -77,6 +85,7 @@ offsets.
 
   <div *rdxSelectPortal sideOffset="4" align="start" rdxSelectPositioner>
     <div rdxSelectPopup>
+      <div rdxSelectArrow></div>
       <!-- optional scroll-up button -->
       <div rdxSelectScrollUpButton><!-- up icon --></div>
 
@@ -139,6 +148,20 @@ item keeps its indicator. Shows `RdxSelectIcon` and `RdxSelectSeparator`.
 
 <Canvas of={Stories.Multiple} />
 
+### Arrow
+
+Place `rdxSelectArrow` inside the popup to point at its trigger. It reuses the shared Popper geometry,
+including collision handling, logical sides and `arrowPadding` on the positioner. `width` and `height`
+size the default SVG; project your own SVG to customize the shape. Use a text color matching the
+popup surface, because the default shape fills with `currentColor`.
+
+An arrow that cannot stay centered remains visible and exposes `data-uncentered` for styling.
+The legacy `rdxSelectItemAlignedPosition` hides the arrow while item alignment is active. Its
+touch/pinch-zoom dropdown fallback restores the arrow, using Floating UI arrow geometry against
+the independently positioned popup.
+
+<Canvas of={Stories.Arrow} />
+
 ### Change details and interaction state
 
 `onOpenChange` and `onValueChange` expose `eventDetails.reason`, the originating DOM event, and a
@@ -147,6 +170,134 @@ item keeps its indicator. Shows `RdxSelectIcon` and `RdxSelectSeparator`.
 
 <Canvas of={Stories.Events} />
 
+### Deferred unmount and imperative actions
+
+Use `#select="rdxSelectRoot"` or a `viewChild(RdxSelectRoot)` query to call `close()` and `unmount()`.
+`close()` requests a cancelable close with reason `imperative-action` and returns whether it was
+accepted. Calling it while already closed does nothing. These methods adapt Base UI's `actionsRef`
+capabilities to Angular template references and view queries; a React ref object is unnecessary.
+
+In an accepted closing `onOpenChange` event, call `eventDetails.preventUnmountOnClose()` to retain
+the popup for an external animation. The logical `open` state still becomes `false`, and the popup
+has `data-closed` / `data-ending-style`. Its positioner is inert while closed, so retained options do
+not keep accepting selections. Finish the animation, then call `unmount()` to complete the closing
+phase and release the portal. The example runs a Web Animations API exit and completes closing
+automatically; **Finish exit** skips to the animation's end.
+
+The opt-out belongs to that accepted close. A canceled request or an opening request cannot retain a
+later close. A late call is accepted only while the same close is pending. Reopening clears it; a
+stale `unmount()` while open does nothing. Cancel an old application animation on reopening so its
+callback cannot finish a different, later close. Repeated `unmount()` calls do not repeat
+`onOpenChangeComplete(false)`. Calling `close(); unmount()` in one batch is also supported.
+
+Normal closing still waits for Presence to finish its CSS exit. Manual completion bypasses another
+exit wait, and `onOpenChangeComplete(false)` runs once after the close finishes. Focus returns to the
+trigger unless the user deliberately moved focus elsewhere.
+
+`<ng-template rdxSelectPortal [keepMounted]="true">` retains the view even after closing completes.
+Here `unmount()` ends the closing phase; it does not destroy a keep-mounted view. The positioner hides
+after closing completes and stops tracking its anchor. Reopening reuses the view and resolves the
+current selected item. Changing `keepMounted` is independent of the per-close animation opt-out.
+The shared lifecycle is documented in
+[ADR 0026](https://github.com/radix-ng/primitives/blob/main/docs/adr/0026-popup-close-lifecycle-and-presence.md).
+
+<Canvas of={Stories.DeferredUnmount} />
+
+### Typeahead
+
+Focus the closed trigger and type to select a matching option without opening the popup or moving
+focus. Repeated initials cycle through matches; `new y` selects **New York**. Closed-trigger search
+is available in single mode and skips disabled options. A disabled/read-only Select and a multiple
+Select keep their values unchanged when typed into while closed.
+
+In the open popup, typing changes only the highlight. Enter selects it; Space selects it when there
+is no active search. During a query, Space continues the label, so multiword names remain searchable.
+Open-popup search remains available in read-only and multiple modes without committing by itself.
+
+Both modes use a 750ms session. Typing a value while closed keeps the prefix so later letters can
+refine it. A query with no match clears immediately. Opening or closing the popup, leaving the control, a form
+reset or an external Angular form write clears the session. An idle Space opens the closed popup.
+
+Closed matches emit the usual cancelable `onValueChange` with reason `none` and update Angular Forms
+through Root. They do not emit an open request or lock page scrolling. Option metadata loads only
+when needed and stays hidden; temporary views are released after a pause or blur. Use the
+`keepMounted` Storybook control to compare retained views. The `textValue` input provides an explicit
+search alias; otherwise matching reads the current ItemText.
+
+<Canvas of={Stories.Typeahead} />
+
+### Dynamic options
+
+Update a signal-backed collection and render options with `@for`, tracking a stable key. Select
+reads the current DOM order for navigation and current item labels for typeahead. Reordering keeps
+the highlighted element; removing it clears highlight so `aria-activedescendant` cannot reference
+a detached option.
+
+Removing a selected option from an already populated open list requests `onValueChange` with
+reason `none`. In single mode, Select falls back to the initial selection if it is still available,
+otherwise `null`. Multiple mode removes missing values. Cancel the event to retain the current
+value. Closing the popup and its initial asynchronous load do not clear selection. A completely
+empty collection retains its value until a later populated update.
+
+In this example, F2 adds Apricot, F3 removes the selected fruit and F6 reverses the options while
+the list stays open. Restore options returns the original collection.
+
+<Canvas of={Stories.DynamicOptions} />
+
+### Viewport edges and long lists
+
+This example keeps the item-aligned trigger near an edge of the viewport. Use the `edge` and `dir`
+controls to try top, middle, bottom and RTL layouts. Home and End reveal the first and last options,
+including list padding. When scroll buttons change the list's height, Select keeps the keyboard
+highlight visible after layout settles. Hovering an option does not scroll the list.
+
+<Canvas of={Stories.ViewportEdges} />
+
+### Sizing and anchored fallback
+
+Item-aligned lists start at the height needed to align the selected text. Native scrolling expands
+long lists until the viewport or a custom `max-height` is reached; short lists keep intrinsic height.
+The extra Angular content wrapper supplies the flex constraints needed for scrolling.
+
+Touch, pinch zoom, proximity to a viewport edge and transformed portal containers use the common
+anchored engine. The item-aligned part inherits `side`, `align`, offsets and collision inputs for
+that fallback; alignment defaults to center. `data-side="none"` identifies item alignment. An anchored
+fallback reports its actual side, and the optional arrow follows flips above/below the trigger.
+
+Try the initial item, height cap, transformed portal and retained-view controls below. F10 closes
+the popup; reopening recalculates geometry for the current selection. Application values and focus
+remain owned by Root and the existing focus manager.
+
+<Canvas of={Stories.SizingAndFallback} />
+
+
+### Focus management
+
+The popup owns DOM focus and uses `aria-activedescendant` for virtual navigation. Arrow keys and
+typeahead update the highlight; Enter or Space commits a selection. The existing default keeps
+Tab/Shift+Tab inside the open Select and does not close on focus-out.
+
+ArrowDown, ArrowUp, Home and End can highlight disabled options, including an already selected
+disabled option. Their `aria-disabled` state remains exposed; Enter, Space and pointer activation
+cannot select them or close the popup. Typeahead skips disabled options when matching labels.
+
+Set `[closeOnFocusOut]="true"` on **Popup** to opt into the shared focus manager's focus-out policy.
+Forward Tab moves to the next control after the trigger and closes with reason `focus-out`, without
+committing the highlight. Shift+Tab requests closing back to the trigger. A canceled `onOpenChange`
+request leaves the Select open. Moving focus to another control programmatically closes and preserves
+that target; moving into a related child layer remains inside.
+
+`finalFocus` accepts an element, `false`, or an interaction callback. It works with ordinary and
+keep-mounted views. A closed retained popup no longer keeps its parent focus scope paused. Escape
+closes the current layer and returns focus, while deliberate outside focus is preserved by default.
+
+The opt-in preserves virtual navigation. Changing the default focus policy or moving DOM focus to
+items still requires the real screen-reader review tracked in
+[ADR 0027](https://github.com/radix-ng/primitives/blob/main/docs/adr/0027-select-focus-policy-and-retained-scopes.md).
+Use this story's controls to compare both policies and the Dialog/Popover shells.
+
+<Canvas of={Stories.FocusManagement} />
+
 ### Object values
 
 Each item's `value` is an object. Set `[isItemEqualToValue]="'id'"` so items are matched by a stable
@@ -154,6 +305,26 @@ key (here `id`) instead of reference, and render rich, two-line content in both 
 items from the selected object.
 
 <Canvas of={Stories.ObjectValues} />
+
+### Arbitrary values
+
+`RdxSelectRoot<Value, Multiple>` and `RdxSelectItem<Value>` accept an unconstrained Value. Values are
+kept intact in Angular models and change events. Equality defaults to `Object.is`; for distinct Date
+instances representing the same date, supply a comparator such as `(a, b) => a.getTime() === b.getTime()`.
+Empty selections are handled before calling a custom comparator. Falsy values such as `false`, `0`
+and `0n` are selectable values.
+
+The `multiple` input defines the selection shape. With `[multiple]="false"`, an array can be **one
+item**: its label/value formatter receives the whole array and the native form submits one entry.
+With `[multiple]="true"`, the outer array is the selection collection; each selected item produces its
+own entry, including when the item itself is an array.
+
+Use `itemToStringLabel` for display and `itemToStringValue` for the strings expected by your form
+endpoint. Without a formatter the shared JSON/String fallback applies. The example uses boolean
+Reactive Forms, Date Signal Forms, a readonly coordinate array and multiple symbol values, with
+native submission and reset.
+
+<Canvas of={Stories.ArbitraryValues} />
 
 ### Reactive Forms
 
@@ -169,6 +340,141 @@ has opened.
 submission, touched/dirty state, and `NgForm.resetForm()` while keeping the same Field anatomy.
 
 <Canvas of={Stories.TemplateDrivenForms} />
+
+### Native forms and autofill
+
+The native input serves browser behavior. Select's `ControlValueAccessor` and Signal Forms contract
+connect its value to Angular independently of this bridge. Its visible button/popup anatomy needs a
+native representation for browser autofill and constraints; direct DOM access does not give the button
+those capabilities. When a primitive already has an input representing its form value, the shared
+bridge can reuse that control. See
+[ADR 0025](https://github.com/radix-ng/primitives/blob/main/docs/adr/0025-separate-angular-forms-from-browser-input-bridge.md).
+
+Select creates a technical native input after hydration for submission, browser autofill and required
+validation. Pass `autoComplete` such as `country` / `country-name`. Autofill matches serialized values
+or value labels without case sensitivity, then rendered item text. Matching an object keeps its
+original reference. Closed options may mount briefly in a hidden probe; the popup does not open or
+take focus, and no open-change events are emitted.
+
+The persistent input submits one scalar value. Multiple selections submit repeated entries through
+separate hidden inputs, with a nameless input checking the required empty state. Browser autofill is
+ignored in multiple, disabled and read-only modes. A canceled or unmatched autofill preserves the
+committed value, dirty state and external form errors and restores the native input's value.
+An enclosing Field supplies its name, disabled and required state; its name takes precedence over
+Root's own `name` when both are provided.
+
+Use `[inputRef]="captureInput"` with `(input: HTMLInputElement | null) => void`, or read
+`select.nativeInput()` through `#select="rdxSelectRoot"`. The callback receives the element after
+hydration, and `null` on callback replacement or destruction. The signal is `null` on the server,
+before hydration and after destruction. Focusing a focusable technical input redirects focus to the
+trigger; providing `inputRef` keeps an otherwise unnamed optional input focusable too.
+
+Prefer `nativeInput()` for signal-based Angular access. The callback API adapts Base UI's `inputRef`
+name without introducing a separate value store or requiring React-style ref objects.
+
+`required` participates in browser constraint validation; it does not install an additional validation
+engine or write Angular validation errors. Angular forms still own their validators and Field state.
+Use `ngNativeValidate` on the form when opting into browser validation UI with Angular forms. Native
+invalid events mark the control touched, so an Angular required validator can reveal a Field error.
+While invalid, the technical input follows the visible trigger's bounds so the browser validation
+message stays attached to the control through layout changes, scrolling and resizing.
+The example includes an external-form multiple control, native submission and reset.
+
+<Canvas of={Stories.NativeForms} />
+
+### Typed application wrapper
+
+An application-owned component can extend `RdxSelectRoot<Value, Multiple>` and use
+`provideRdxSelectRoot(YourSelect)` to rebind the primitive's context, floating-tree and form providers.
+It inherits the inputs, cancellable events, CVA and Signal Forms contract; no second value store or
+hand-written CVA is needed. Use `[multiple]="true"` or `[multiple]="false"` for precise mode inference.
+
+The [wrapper source](https://github.com/radix-ng/primitives/blob/main/packages/primitives/select/stories/select-typed-control.ts)
+owns only its rendering options, placeholder and Tailwind markup. This example uses it with typed
+object values in Reactive Forms, Signal Forms and multiple selection, including reset.
+
+<Canvas of={Stories.TypedWrapper} />
+
+The strict Angular AOT fixtures in `tools/typecheck/select` check both valid consumers and invalid
+value, mode, label, event and Signal Forms bindings. Classic CVA bindings retain Angular's runtime
+interface; `formControl` does not by itself infer or validate a custom control's generic value type.
+Angular DI also does not connect an independently declared Item's generic to its parent Root. The
+wrapper's `options: readonly Value[]` ties the collection to the public selection/callback types.
+Internal part communication uses `unknown`; no `any` fallback is required. See
+[ADR 0028](https://github.com/radix-ng/primitives/blob/main/docs/adr/0028-select-arbitrary-value-contract.md).
+
+### Base UI compatibility
+
+The [versioned Select parity matrix](https://github.com/radix-ng/primitives/blob/main/packages/primitives/select/PARITY.md)
+records the exact Base UI source commit, Angular adaptations, linked coverage and remaining gaps.
+The Select contract now initializes an empty single selection to `null` and an empty multiple
+selection to `[]`, compares values with `Object.is` by default, and exposes `items` and
+`highlightItemOnHover`. The matrix tracks the remaining differences; this is not a claim of complete
+behavioral parity.
+
+### Labels and control ids
+
+Place `rdxSelectLabel` inside Root to name the trigger automatically. It supports both a native
+`<label>` and ordinary markup such as `<div>`. Clicking label text focuses the trigger without
+opening the popup; nested interactive elements keep their own behavior.
+
+Set `id` on Root to identify the trigger. Root forwards it without duplicating it on a separate
+root element, and `rdxSelectLabel` derives its id as `<root-id>-label`. Customize the label id through
+Root, not a separate `id` on Label. An explicit Trigger `id` overrides the forwarded control id;
+removing an override restores its fallback. Container roots (`ng-container`) and Root/Trigger on
+the same button are supported.
+
+`rdxFieldLabel` remains the native label for a surrounding Field. The most recently registered live
+label in a Field supplies its accessible name; removing it restores the preceding label. Explicit
+`aria-labelledby` on Trigger takes precedence. Select.Label also reflects Field's validation and
+interaction attributes.
+
+<Canvas of={Stories.Labels} />
+
+Label registration and interaction behavior live in `core`, shared by Field, Select and Combobox;
+Autocomplete inherits the Combobox label through directive composition. The example retains the
+existing Angular support for labeling an outside Combobox/Autocomplete input. Current upstream's
+Combobox.Label targets a trigger; sharing this helper does not establish complete Combobox part parity.
+
+### Labels before the popup opens
+
+Pass `items` to Root as a record (`{ fr: 'France' }`), an array of `{ value, label }` descriptors, or
+an array of groups with an `items` array. These provide text labels for `rdxSelectValue` before the
+popup mounts and after it closes. They do not render the options; the template still owns the list.
+The Angular label type is `string | number | null | undefined`; rich markup belongs in the template.
+
+`itemToStringLabel` takes precedence for non-null values, followed by an object's explicit `label`.
+Records match the value as a property key. Descriptor arrays match primitive values directly, or
+an object's `value` property; they do not use the selection comparator to resolve arbitrary objects.
+Use `itemToStringLabel` for objects such as `{ code, name }`.
+
+A null option with a label in `items` overrides the placeholder. Numeric zero and empty text labels
+are preserved. `[highlightItemOnHover]="false"` keeps keyboard highlighting independent of pointer
+movement and pointer leave; clicking an item still selects it. The default is `true`.
+
+<Canvas of={Stories.Items} />
+
+### Migrating existing Select consumers
+
+- A named empty single Select now contributes `name=""` to `FormData`, matching the persistent native
+  input contract. Previously an empty value contributed no entry. Multiple empty selections still
+  contribute no entries. Disabled controls are excluded.
+
+- Root's `id` now identifies the trigger and is forwarded there. For a separate DOM id on a Root
+  wrapper, use `[attr.id]` with a different value or put that wrapper outside Root.
+
+- Empty uncontrolled values now start as `null` (single) or `[]` (multiple), replacing `undefined`.
+  Angular bindings may still write `undefined`; use nullish checks for an empty single value.
+- Unparameterized TypeScript Root/Item references now use `unknown` instead of `AcceptableValue`.
+  Supply `RdxSelectRoot<MyValue, false/true>` / `RdxSelectItem<MyValue>` or narrow before reading values.
+- A single-mode array is now one item for labels, selection and submission. Set `[multiple]="true"`
+  when the array represents a collection of selected values.
+- Selection now uses `Object.is` instead of structural equality. Keep object references stable or
+  supply `[isItemEqualToValue]="'id'"` / an explicit comparator. To retain the previous deep comparison,
+  import `isEqual` from `@radix-ng/primitives/core` and pass it as the comparator.
+- Display labels no longer depend on mounted `rdxSelectItemText` nodes. Provide `items` or
+  `itemToStringLabel` when item text differs from the raw value. Object `label` / `value` properties
+  remain fallback labels.
 
 ### With scroll buttons
 
@@ -222,6 +528,14 @@ or closed.
 
 <ArgTypes of={RdxSelectRoot} />
 
+| Action | Result | Behavior |
+| --- | --- | --- |
+| `close()` | `boolean` | Requests an `imperative-action` close through `onOpenChange`; returns `false` if canceled or already closed. |
+| `unmount()` | `void` | Completes a pending closing phase; ignored while open or already complete. |
+
+The methods are also described by the exported `RdxSelectRootActions` interface. `keepMounted` on
+`rdxSelectPortal` determines whether the view remains after close completion.
+
 ### RdxSelectTrigger
 
 The button that opens the popup. Must be a `<button>` element.
@@ -248,10 +562,18 @@ The button that opens the popup. Must be a `<button>` element.
 
 ### RdxSelectValue
 
-Renders the current selection inside the trigger. Reads the selected item's text from context.
-Set a `placeholder` attribute for the empty state.
+Renders the current selection inside the trigger using Root's `items`, `itemToStringLabel`, or the
+value fallback. Set a `placeholder` attribute for the empty state. `data-placeholder` reflects an
+empty selection, including when a labeled null option supplies the displayed text.
 
 <ArgTypes of={RdxSelectValue} />
+
+### RdxSelectLabel
+
+An accessible label associated with the trigger. Its id is derived from Root. A native `<label>`
+receives `for`; other elements use `aria-labelledby` and focus the trigger when clicked.
+
+<ArgTypes of={RdxSelectLabel} />
 
 ### RdxSelectItem
 
@@ -275,6 +597,10 @@ The item also carries `role="option"`, `aria-selected`, and `aria-disabled`.
 Wraps the popup panel when using Popper positioning. Accepts the same positioning inputs as
 `rdxMenuPositioner` (`sideOffset`, `alignOffset`, `align`, `side`, `avoidCollisions`, …).
 
+The default alignment is `center`, matching Base UI. Set `align="start"` for edge alignment.
+**Migration:** the previous Select default was `start`; specify it explicitly to keep that placement
+when the popup and trigger have different widths.
+
 <ArgTypes of={RdxSelectPositioner} />
 
 **Data attributes**
@@ -294,6 +620,26 @@ Wraps the popup panel when using Popper positioning. Accepts the same positionin
 | `--transform-origin`                       | Origin to scale/zoom the popup from, based on side/align. |
 
 The deprecated `--radix-select-*` aliases of these variables are still emitted for one release.
+
+### RdxSelectArrow
+
+A decorative popup pointer, with `aria-hidden="true"`. `width` defaults to `10` and `height` to `5`.
+Active item alignment keeps it hidden; the anchored touch/pinch-zoom fallback restores it.
+The default SVG is created after hydration; the server renders the decorative host and its state attributes.
+
+<ArgTypes of={RdxSelectArrow} />
+
+| Input | Default | Description |
+| --- | --- | --- |
+| `width` | `10` | Width of the default SVG, in pixels. |
+| `height` | `5` | Height of the default SVG, in pixels. |
+
+| Attribute | Present when / value |
+| --- | --- |
+| `data-open` / `data-closed` | Reflects Root's open state, including an exit transition. |
+| `data-side` | The resolved physical or logical side; `none` during item alignment. |
+| `data-align` | The resolved `start`, `center` or `end` alignment. |
+| `data-uncentered` | The arrow could not be centered on the trigger. |
 
 ### RdxSelectItemText
 

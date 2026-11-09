@@ -16,6 +16,7 @@
         "test-visual": "nx run radix-storybook:build-storybook && playwright test -c apps/visual-regression/playwright.config.ts",
         "test-visual:update": "nx run radix-storybook:build-storybook && playwright test -c apps/visual-regression/playwright.config.ts --update-snapshots",
         "test-visual:report": "playwright show-report apps/visual-regression/playwright-report",
+        "test-browser:select": "nx run radix-storybook:build-storybook && playwright test -c apps/visual-regression/playwright.select.config.ts",
         "----Radix Primitives---": "-----------------------------------------------------------------",
         "primitives:build": "nx run primitives:build",
         "primitives:build:schematics": "nx run primitives:build:schematics",
@@ -48,7 +49,12 @@
         "release:dry-run": "nx release --dry-run -- --skip-nx-cache",
         "----RELEASE Scripts-------": "---------------------------------------------------------",
         "release:skip-publish": "nx release --skip-publish",
-        "release:primitives": "nx release --projects=primitives --skip-publish"
+        "release:primitives": "nx release --projects=primitives --skip-publish",
+        "parity:prepare": "node apps/parity-testing/shared/reference.ts",
+        "parity:build": "pnpm parity:typecheck && node apps/parity-testing/run.ts --build-only",
+        "test-parity:select": "pnpm test-parity select",
+        "test-parity": "pnpm parity:typecheck && node --test apps/parity-testing/shared/*.test.ts && node apps/parity-testing/run.ts",
+        "parity:typecheck": "tsc --project apps/parity-testing/tsconfig.tools.json"
     },
     "dependencies": {
         "@angular/common": "22.0.2",
@@ -80,6 +86,7 @@
         "@angular/cli": "22.0.2",
         "@angular/compiler-cli": "22.0.2",
         "@angular/language-service": "22.0.2",
+        "@babel/runtime": "7.29.7",
         "@chromatic-com/storybook": "^5.2.1",
         "@commitlint/cli": "^19.5.0",
         "@commitlint/config-conventional": "^19.5.0",
@@ -88,6 +95,8 @@
         "@eslint-community/eslint-plugin-eslint-comments": "^4.7.1",
         "@eslint/compat": "^2.0.4",
         "@eslint/js": "^10.0.1",
+        "@floating-ui/react-dom": "2.1.9",
+        "@floating-ui/utils": "0.2.12",
         "@fontsource-variable/inter": "^5.2.8",
         "@fontsource/jetbrains-mono": "^5.2.8",
         "@lucide/angular": "^1.17.0",
@@ -121,6 +130,9 @@
         "@types/express": "4.17.21",
         "@types/jest-axe": "^3.5.9",
         "@types/node": "^22.19.19",
+        "@types/react": "19.3.0",
+        "@types/react-dom": "19.3.0",
+        "@types/use-sync-external-store": "1.7.0",
         "@typescript-eslint/utils": "^8.60.1",
         "@vitest/browser": "4.1.8",
         "@vitest/browser-playwright": "4.1.8",
@@ -157,7 +169,10 @@
         "prettier-plugin-organize-attributes": "^1.0.0",
         "prettier-plugin-organize-imports": "^4.1.0",
         "prettier-plugin-tailwindcss": "^0.8.0",
+        "react": "19.3.1",
+        "react-dom": "19.3.1",
         "remark-gfm": "^4.0.1",
+        "reselect": "5.3.0",
         "rimraf": "^6.0.1",
         "rollup-plugin-typescript-paths": "^1.5.0",
         "rollup-plugin-visualizer": "^5.12.0",
@@ -170,6 +185,7 @@
         "ts-node": "10.9.1",
         "typescript": "6.0.3",
         "typescript-eslint": "^8.61.1",
+        "use-sync-external-store": "1.7.0",
         "verdaccio": "6.7.2",
         "vite": "8.0.16",
         "vitest": "4.1.8",
@@ -178,5 +194,8 @@
     "nx": {
         "includedScripts": []
     },
-    "packageManager": "pnpm@11.5.1"
+    "packageManager": "pnpm@11.5.1",
+    "engines": {
+        "node": ">=24.15.0 <25"
+    }
 }

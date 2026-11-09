@@ -73,8 +73,8 @@ jobs:
       # radix-docs is deprecated and its build is broken). `affected` has no project allow-list, so
       # list the excluded projects explicitly. radix-ssr-testing is built so its AOT template
       # type-check catches drift against the primitives' public API (it imports them as a consumer).
-      - name: Build Primitives and Schematics
-        run: npx nx affected -t build build:schematics --exclude=radix-storybook,radix-docs,radix-ng
+      - name: Build and check public template types
+        run: npx nx affected -t build build:schematics typecheck --exclude=radix-storybook,radix-docs,radix-ng
 
   skills:
     runs-on: ubuntu-latest
@@ -87,6 +87,7 @@ jobs:
 
       - name: Verify skills bundle is up to date
         run: |
+          node --test tools/scripts/skills/*.test.mjs
           pnpm skills:build
           if [ -n "$(git status --porcelain skills)" ]; then
             echo "::error::Skills bundle is out of date. Run 'pnpm skills:build' and commit the result."
@@ -94,11 +95,49 @@ jobs:
             exit 1
           fi
 
+  parity:
+    # Playwright's browser system dependencies are supported on Ubuntu 24.04.
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout code repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - uses: ./.github/actions/setup
+
+      - name: Install browsers
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+
+      - name: Compare primitives with pinned Base UI
+        run: pnpm test-parity
+
+      - name: Check Select stories across browser engines
+        run: pnpm test-browser:select
+
+      - name: Publish comparison summary
+        if: always()
+        run: |
+          for report in dist/parity-testing/*/results/summary.md; do
+            if [ -f "$report" ]; then
+              cat "$report" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+
+      - name: Upload comparison evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: primitive-parity
+          path: |
+            dist/parity-testing/*/results
+            apps/visual-regression/test-results
+            apps/visual-regression/playwright-report
+          retention-days: 14
+
   summary:
     if: ${{ always() }}
-    needs: [lint, unit, builds, skills]
+    needs: [lint, unit, builds, skills, parity]
     runs-on: ubuntu-latest
     steps:
       - name: On error
-        if: ${{ needs.builds.result != 'success' || needs.unit.result != 'success' || needs.lint.result != 'success' || needs.skills.result != 'success' }}
+        if: ${{ needs.builds.result != 'success' || needs.unit.result != 'success' || needs.lint.result != 'success' || needs.skills.result != 'success' || needs.parity.result != 'success' }}
         run: exit 1

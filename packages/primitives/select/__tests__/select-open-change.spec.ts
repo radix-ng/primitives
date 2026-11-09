@@ -6,6 +6,7 @@ import { _importsSelect } from '../index';
 import { RdxSelectItemAlignedPosition } from '../src/select-item-aligned-position';
 import { RdxSelectItemAlignedPositionContent } from '../src/select-item-aligned-position-content';
 import { RdxSelectOpenChangeEvent, RdxSelectRoot, RdxSelectValueChangeEvent } from '../src/select-root';
+import { RdxSelectTrigger } from '../src/select-trigger';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -34,12 +35,14 @@ import { RdxSelectOpenChangeEvent, RdxSelectRoot, RdxSelectValueChangeEvent } fr
                 </div>
             </div>
         </div>
+        <button id="outside-select" type="button">Outside</button>
     `
 })
 class OpenChangeHost {
     readonly open = signal(false);
     readonly value = signal<string | undefined>(undefined);
     readonly cancelNextOpen = signal(false);
+    readonly cancelNextClose = signal(false);
     readonly cancelNextValue = signal(false);
     readonly fruits = ['Apple', 'Banana'];
     readonly events: RdxSelectOpenChangeEvent[] = [];
@@ -49,6 +52,7 @@ class OpenChangeHost {
         if (this.cancelNextOpen() && event.open) {
             event.eventDetails.cancel();
         }
+        if (this.cancelNextClose() && !event.open) event.eventDetails.cancel();
 
         this.events.push(event);
     }
@@ -150,6 +154,46 @@ describe('Select onOpenChange', () => {
         expect(root().openInteractionType()).toBe('keyboard');
     });
 
+    it.each([false, true])('pointer activation requests a cancelable trigger close (canceled=%s)', async (canceled) => {
+        host.open.set(true);
+        host.cancelNextClose.set(canceled);
+        await settle();
+        const event = new MouseEvent('pointerdown', { button: 0, clientX: 20, clientY: 10 });
+        fixture.debugElement
+            .query(By.directive(RdxSelectTrigger))
+            .injector.get(RdxSelectTrigger)
+            .handlePointerOpen(event);
+        await settle();
+        expect(host.open()).toBe(canceled);
+        expect(host.events).toHaveLength(1);
+        expect(host.events[0].open).toBe(false);
+        expect(host.events[0].eventDetails.reason).toBe('trigger-press');
+        expect(host.events[0].eventDetails.event).toBe(event);
+        expect(host.events[0].eventDetails.isCanceled()).toBe(canceled);
+    });
+
+    it.each([false, true])(
+        'a keyboard-opened Select emits one outside close request (canceled=%s)',
+        async (canceled) => {
+            host.cancelNextClose.set(canceled);
+            trigger().dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+            await settle();
+            // Dismiss deliberately attaches pointer listeners in the next task, after the opening gesture.
+            await new Promise<void>((resolve) => setTimeout(resolve, 0));
+            for (const type of ['pointermove', 'pointerdown', 'pointerup']) {
+                fixture.nativeElement
+                    .querySelector('#outside-select')
+                    .dispatchEvent(new MouseEvent(type, { bubbles: true, button: 0, clientX: 200, clientY: 200 }));
+            }
+            await settle();
+            const closes = host.events.filter((event) => !event.open);
+            expect(closes).toHaveLength(1);
+            expect(closes[0].eventDetails.reason).toBe('outside-press');
+            expect(host.open()).toBe(canceled);
+            expect(closes[0].eventDetails.isCanceled()).toBe(canceled);
+        }
+    );
+
     it('reports item-press when selecting an item closes the popup', async () => {
         host.open.set(true);
         await settle();
@@ -173,7 +217,7 @@ describe('Select onOpenChange', () => {
         popup()?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
         await settle();
 
-        expect(host.value()).toBeUndefined();
+        expect(host.value()).toBeNull();
         expect(host.open()).toBe(false);
         expect(host.valueEvents.at(-1)?.eventDetails.isCanceled()).toBe(true);
         expect(host.valueEvents.at(-1)?.eventDetails.reason).toBe('item-press');

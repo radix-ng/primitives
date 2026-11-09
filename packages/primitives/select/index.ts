@@ -1,3 +1,4 @@
+import { RdxSelectArrow } from './src/select-arrow';
 import { RdxSelectBackdrop } from './src/select-backdrop';
 import { RdxSelectGroup } from './src/select-group';
 import { RdxSelectGroupLabel } from './src/select-group-label';
@@ -7,6 +8,7 @@ import { RdxSelectItemAlignedPosition } from './src/select-item-aligned-position
 import { RdxSelectItemAlignedPositionContent } from './src/select-item-aligned-position-content';
 import { RdxSelectItemIndicator } from './src/select-item-indicator';
 import { RdxSelectItemText } from './src/select-item-text';
+import { RdxSelectLabel } from './src/select-label';
 import { RdxSelectList } from './src/select-list';
 import { RdxSelectPopup } from './src/select-popup';
 import { RdxSelectPortal, RdxSelectPortalMisuseGuard } from './src/select-portal';
@@ -18,6 +20,7 @@ import { RdxSelectSeparator } from './src/select-separator';
 import { RdxSelectTrigger } from './src/select-trigger';
 import { RdxSelectValue } from './src/select-value';
 
+export * from './src/select-arrow';
 export * from './src/select-backdrop';
 export * from './src/select-group';
 export * from './src/select-group-label';
@@ -27,6 +30,7 @@ export * from './src/select-item-aligned-position';
 export * from './src/select-item-aligned-position-content';
 export * from './src/select-item-indicator';
 export * from './src/select-item-text';
+export * from './src/select-label';
 export * from './src/select-list';
 export * from './src/select-popup';
 export * from './src/select-portal';
@@ -47,7 +51,9 @@ export const _importsSelect = [
     RdxSelectTrigger,
     RdxSelectValue,
     RdxSelectPopup,
+    RdxSelectArrow,
     RdxSelectList,
+    RdxSelectLabel,
     RdxSelectItemIndicator,
     RdxSelectItem,
     RdxSelectItemText,

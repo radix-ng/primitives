@@ -1,4 +1,4 @@
-import { DestroyRef, Directive, effect, inject, output, signal } from '@angular/core';
+import { DestroyRef, Directive, inject, output, signal } from '@angular/core';
 import { injectSelectPopupContext } from './select-popup';
 
 @Directive({
@@ -21,10 +21,6 @@ export class RdxSelectScrollButtonBase {
     readonly autoScroll = output();
 
     constructor() {
-        effect(() => {
-            this.contentContext.highlightedItem()?.element.scrollIntoView({ block: 'nearest' });
-        });
-
         inject(DestroyRef).onDestroy(() => {
             this.clearAutoScrollTimer();
         });

@@ -1,5 +1,6 @@
-import { DestroyRef, Directive, ElementRef, inject, signal } from '@angular/core';
+import { computed, DestroyRef, Directive, ElementRef, inject, signal } from '@angular/core';
 import { RdxFloatingInsideElement } from '@radix-ng/primitives/dismissable-layer';
+import { injectFieldRootContext } from '@radix-ng/primitives/field';
 import { injectComboboxRootContext } from './combobox-root';
 
 /**
@@ -28,7 +29,7 @@ import { injectComboboxRootContext } from './combobox-root';
         '[attr.aria-haspopup]': 'rootContext.inputLayout() === "inside" ? "dialog" : "listbox"',
         '[attr.aria-expanded]': 'rootContext.open()',
         '[attr.aria-controls]': 'rootContext.listId',
-        '[attr.aria-labelledby]': 'rootContext.labelId()',
+        '[attr.aria-labelledby]': 'labelledBy()',
         '[attr.aria-required]':
             'rootContext.inputLayout() === "inside" && rootContext.requiredState() ? "true" : undefined',
         '[attr.disabled]': 'rootContext.disabledState() ? "" : undefined',
@@ -45,6 +46,8 @@ import { injectComboboxRootContext } from './combobox-root';
 })
 export class RdxComboboxTrigger {
     protected readonly rootContext = injectComboboxRootContext();
+    private readonly field = injectFieldRootContext(true);
+    protected readonly labelledBy = computed(() => this.field?.labelId() ?? this.rootContext.labelId());
     private readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
     /** Whether the trigger is currently pressed (pointer down), for Base UI's `data-pressed`. */

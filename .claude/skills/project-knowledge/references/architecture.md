@@ -7,6 +7,99 @@ metadata:
 
 # Architecture
 
+**Native input bridge (ADR 0025):** `core/src/dom/use-native-form-control.ts` supports an optional persistent
+visually hidden input alongside its existing submission-only entries. It owns browser-only creation
+after hydration, ref lifecycle, attributes, input/change coalescing, canceled-event restoration and
+listener cleanup. Select configures this for autofill, required constraints and focus redirection;
+its item matching and temporary hidden option mounting stay Select-side. Single values submit through
+the main named input (including empty strings); multiple values retain repeated hidden entries and a
+nameless validation input. Angular forms/Field remain the application validation owners. Extend this
+bridge for future consumers rather than copying native-input lifecycle into another primitive.
+Reset synchronization runs after native dispatch/default actions in the next task, with teardown
+cancellation; WebKit can flush capture-listener microtasks before bubbling cancellation (ADR 0025).
+The bridge serves browser behavior: CVA and Signal Forms work independently and need no extra input
+for their Angular model connection. Direct access to a button/div does not turn it into an editable
+HTML form control. Reuse an existing native input when it represents the submitted value. Prefer
+the readonly `nativeInput()` signal; callback `inputRef` is the Base UI naming adaptation. Keep
+application validation with Angular and Field, and browser constraints on the native control.
+
+**Shared label behavior (ADR 0024):** `core/src/labelable.ts` owns reactive label registration,
+registration-owned cleanup, native/non-native interaction and shadow-tree control lookup. Field Root
+and Item, Select and the Combobox engine use it; Autocomplete composes Combobox.Label. Primitive
+control identity, Field state and popup/value policy remain outside core. Extract proven shared
+responsibilities with concrete consumers during parity work, rather than waiting for every primitive
+to be finished or building a universal control engine.
+
+**Framework adaptation during parity work:** preserve the observable Base UI contract while using
+Angular's `model`, outputs, DI, reactive queries/collections and view lifecycle. Derive state with
+`computed` when it follows existing signals. A React ref, store, controlled-prop mirror or forced
+render requires an independent Angular need; its presence upstream is not a reason to port it.
+Keep browser requirements separate from framework workarounds (ADR 0025/0026).
+
+**Popup close lifecycle (ADR 0026):** `core/floating/use-popup-lifecycle.ts` coordinates an accepted
+close transaction, an external-animation hold, transition completion and registered Presence views.
+Select is the first consumer: Root exposes `close()` / `unmount()`, and Portal forwards `keepMounted`.
+Presence optionally registers its live view and can bypass exit waiting after explicit completion.
+Reopening invalidates the prior close; canceled/open requests cannot retain the next close. Other
+popup families have not yet migrated to this helper. Keep these lifetime mechanics shared when
+extending parity instead of adding another per-primitive retained-mount flag.
+
+**Retained focus scopes (ADR 0027):** the floating focus manager drives `RdxFocusScopeConfig.enabled`
+so a retained Angular view can deactivate its scope, return focus and resume its parent without DOM
+destruction. Keep initial/return-focus ownership in this shared path; Select placement and Menu close
+effects must not separately steal or return focus. Select Popup exposes `closeOnFocusOut` as an opt-in,
+default `false`; changing the default or switching to item DOM focus remains gated on real AT review.
+
+**Select arbitrary Value (ADR 0028):** Root/Item and their public contracts are unconstrained and
+default to `unknown`. Angular DI erases family generics; typed application wrappers connect options
+to selection and callbacks. Use explicit `multiple` to distinguish a selection collection from an
+array-valued item. Select passes that mode to the shared generic `serializeNativeFormValue`; other
+callers retain automatic array detection. Core `compareItemEquality` guards nullish selections before
+custom comparison; Select keeps identity defaults and Combobox keeps its existing equality policy.
+
+**Typeahead matching:** core `findTypeaheadMatch` is a pure, indexed, case-insensitive prefix matcher
+used by Select and Menu. Null labels represent unavailable entries. Select Root owns one Trigger/Popup
+query, 750ms timeout and origin; it does not mirror selection or copy a React store. Closed typing
+commits through Root, while open typing only highlights. Root shares lazy option preparation with
+autofill, coalescing reads/keys across Angular rendering and releasing hidden query views at session
+end. Metadata uses current DOM order, explicit aliases and live ItemText rather than a mount-time
+text cache. Logical open/close, blur, reset, mode changes and destruction invalidate stale work;
+query reset does not depend on browsers dispatching blur for a removed popup. Menu retains its own
+session and timeout policy; focus, eligibility and mounting remain primitive-owned (Select `PARITY.md`).
+
+**Desktop browser verification:** `tools/playwright/browser-projects.mts` is shared by the pinned
+React/Angular comparisons and Select Storybook behavior checks. Both run Chromium, Firefox and
+WebKit; screenshot baselines retain their existing configuration. Reports preserve per-engine
+versions/platform and exact differences. Firefox child processes on macOS use isolated app-data in
+the workspace cache rather than the installed browser's protected data. Desktop automation does not
+close real-AT, real-device or saved-profile autofill gates.
+
+Select differential fixtures also cover desktop modality/item alignment and whole-page RTL using
+native input and independent geometry constraints. Root clears pending pointer origin on logical
+close; keyboard opening has no invented origin. Trigger pressing can request a cancelable close.
+Keep one native pointer dismissal path rather than reproducing the pinned React compatibility-mouse
+retry after cancellation. Anchored Select alignment defaults to `center`; explicit `align="start"`
+retains the previous default (Select `PARITY.md`).
+
+Select Popup owns scrolling to the keyboard highlight. The shared `resizeEffect` observes the list
+so scroll-button layout changes cannot cover the active option; first/last items include list
+padding. Do not add unconditional highlight-scroll effects to individual buttons. The common resize
+helper tolerates an unavailable ResizeObserver. Popup also owns scroll-edge signals shared by both
+arrow parts; refresh them after native/library offset writes rather than relying on separate arrow
+listeners. Item alignment now composes the common Popper wrapper for measurement, collision fallback
+and arrow geometry (ADR 0030). A pure Select helper owns initial sizing and scroll expansion; native
+height/offset writes are atomic. Render phases settle in-flow chrome before enabling the existing
+focus manager. Request versions discard stale placement, and retained reopening measures afresh.
+Rendered content side is separate from physical anchor-engine side; keep a single attribute writer.
+Numeric geometry cases use a 2px tolerance. Transformed containers use a safe anchored fallback,
+with the pin's overflow explicitly recorded; broader scale/modal and real-device coverage remains
+open. Native WebKit hover differences from the pin remain explicitly scoped.
+
+**Pointer movement:** core `createPointerMoveGuard` tracks scope-local viewport coordinates to
+distinguish real travel from stationary scroll/leave events, including real WebKit travel with zero
+movement deltas. Select observes moves in document capture while open and reuses the same event
+classification in items. Other consumers of the existing pure `isStationaryWebKitPointer` are unchanged.
+
 ## Tech stack
 
 | Layer                  | Choice                                                   | Why                                                                                            |
@@ -40,6 +133,7 @@ apps/
   radix-ssr-testing/   ← SSR smoke-test app
   radix-perf-testing/  ← performance benchmark app
   visual-regression/   ← Playwright visual and behavior specs
+  parity-testing/      ← pinned Base UI comparisons: shared infrastructure + primitives/<name>/ suites
 skills/                ← LLM consumer Agent Skills (radix-ng, radix-ng-examples)
 tools/scripts/         ← build helpers (typedoc/api-docs, skills bundle generator)
 ```

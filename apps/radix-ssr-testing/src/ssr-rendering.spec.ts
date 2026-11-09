@@ -4,7 +4,8 @@ import '@angular/compiler';
 import { Component, provideZonelessChangeDetection, Type } from '@angular/core';
 import { bootstrapApplication, BootstrapContext, provideClientHydration } from '@angular/platform-browser';
 import { provideServerRendering, renderApplication } from '@angular/platform-server';
-import { RdxSelectRoot } from '@radix-ng/primitives/select';
+import { RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
+import { _importsSelect, RdxSelectLabel, RdxSelectRoot, RdxSelectTrigger } from '@radix-ng/primitives/select';
 import { describe, expect, it, vi } from 'vitest';
 import AccordionPage from './app/components/accordion/page';
 import AvatarPage from './app/components/avatar/page';
@@ -73,11 +74,101 @@ const cases: readonly SsrCase[] = [
     imports: [RdxSelectRoot],
     template: `
         <form>
-            <ng-container [value]="'apple'" name="fruit" rdxSelectRoot />
+            <ng-container [value]="'apple'" [inputRef]="captureInput" name="fruit" autoComplete="off" rdxSelectRoot />
         </form>
     `
 })
-class NativeSelectPage {}
+class NativeSelectPage {
+    readonly captureInput = () => {
+        throw new Error('A native input ref must not run during server rendering.');
+    };
+}
+
+@Component({
+    selector: 'app-labelled-select',
+    imports: [RdxSelectRoot, RdxSelectTrigger, RdxSelectLabel, RdxFieldRoot, RdxFieldLabel],
+    template: `
+        <div id="server-country" rdxSelectRoot>
+            <div rdxSelectLabel>Country</div>
+            <button rdxSelectTrigger>Choose</button>
+        </div>
+        <div rdxFieldRoot>
+            <label id="server-field-label" rdxFieldLabel>Billing country</label>
+            <ng-container id="server-billing-country" rdxSelectRoot>
+                <button rdxSelectTrigger>Choose</button>
+            </ng-container>
+        </div>
+        <button id="server-same-host" rdxSelectRoot rdxSelectTrigger>Same host</button>
+    `
+})
+class LabelledSelectPage {}
+
+@Component({
+    selector: 'app-select-arrows',
+    imports: [_importsSelect],
+    template: `
+        <ng-container [modal]="false" rdxSelectRoot>
+            <button rdxSelectTrigger>Fruit</button>
+            <div rdxSelectPositioner>
+                <div rdxSelectPopup>
+                    <div id="server-popper-arrow" rdxSelectArrow></div>
+                    <div rdxSelectList></div>
+                </div>
+            </div>
+        </ng-container>
+        <ng-container [modal]="false" rdxSelectRoot>
+            <button rdxSelectTrigger>Fruit</button>
+            <div rdxSelectItemAlignedPosition>
+                <div rdxSelectPopup>
+                    <div rdxSelectItemAlignedPositionContent>
+                        <div id="server-aligned-arrow" rdxSelectArrow></div>
+                        <div rdxSelectList></div>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    `
+})
+class SelectArrowsPage {}
+
+@Component({
+    selector: 'app-retained-select',
+    imports: [_importsSelect],
+    template: `
+        <ng-container rdxSelectRoot>
+            <button rdxSelectTrigger>Fruit</button>
+            <ng-template [keepMounted]="true" rdxSelectPortal>
+                <div rdxSelectPositioner>
+                    <div rdxSelectPopup>
+                        <div rdxSelectList>
+                            <div value="Apple" rdxSelectItem><span rdxSelectItemText>Apple</span></div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </ng-container>
+    `
+})
+class RetainedSelectPage {}
+
+@Component({
+    selector: 'app-arbitrary-select',
+    imports: [_importsSelect],
+    template: `
+        @for (value of values; track $index) {
+            <div [value]="value" [multiple]="false" [itemToStringLabel]="label" rdxSelectRoot>
+                <button rdxSelectTrigger>
+                    <span #display="rdxSelectedValue" rdxSelectValue>{{ display.slotText() }}</span>
+                </button>
+            </div>
+        }
+    `
+})
+class ArbitrarySelectPage {
+    readonly values = [false, new Date('2026-01-01T00:00:00Z'), [10, 20], Symbol('server-token')];
+    readonly label = (value: unknown) =>
+        typeof value === 'symbol' ? (value.description ?? '') : JSON.stringify(value);
+}
 
 function renderToString(selector: string, component: Type<unknown>): Promise<string> {
     return renderApplication(
@@ -94,6 +185,44 @@ function renderToString(selector: string, component: Type<unknown>): Promise<str
 }
 
 describe('SSR rendering', () => {
+    it('renders arbitrary single-item labels without coercing the selection shape', async () => {
+        const html = await renderToString('app-arbitrary-select', ArbitrarySelectPage);
+        expect(html).toContain('false');
+        expect(html).toContain('2026-01-01T00:00:00.000Z');
+        expect(html).toContain('[10,20]');
+        expect(html).toContain('server-token');
+        expect(html).toMatch(/ngh=/);
+    });
+    it('renders a keep-mounted Select in place without a browser HTMLElement constructor', async () => {
+        vi.stubGlobal('HTMLElement', undefined);
+        try {
+            const html = await renderToString('app-retained-select', RetainedSelectPage);
+            expect(html).toContain('role="listbox"');
+            expect(html).toContain('Apple');
+            expect(html).toContain('inert=""');
+            expect(html).toMatch(/ngh=/);
+        } finally {
+            vi.unstubAllGlobals();
+        }
+    });
+    it('renders decorative Select arrows without running browser geometry on the server', async () => {
+        const html = await renderToString('app-select-arrows', SelectArrowsPage);
+        expect(html).toContain('id="server-popper-arrow"');
+        expect(html).not.toContain('<svg');
+        const aligned = /<div[^>]*id="server-aligned-arrow"[^>]*>/.exec(html)?.[0];
+        expect(aligned).toContain('hidden=""');
+        expect(aligned).toContain('aria-hidden="true"');
+        expect(html).toMatch(/ngh=/);
+    });
+    it('renders label associations and forwarded control ids before hydration', async () => {
+        const html = await renderToString('app-labelled-select', LabelledSelectPage);
+        expect(html.match(/id="server-country"/g)).toHaveLength(1);
+        expect(html).toContain('id="server-country-label"');
+        expect(html).toContain('aria-labelledby="server-country-label"');
+        expect(html).toContain('for="server-billing-country"');
+        expect(html).toContain('aria-labelledby="server-field-label"');
+        expect(html.match(/id="server-same-host"/g)).toHaveLength(1);
+    });
     for (const { selector, component, expects } of cases) {
         it(`renders <${selector}> on the server without throwing`, async () => {
             const html = await renderToString(selector, component);

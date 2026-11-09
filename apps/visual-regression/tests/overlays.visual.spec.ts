@@ -55,6 +55,35 @@ test('select — open', async ({ page }) => {
     await shoot(page, 'select-default-open.png');
 });
 
+test('select — arrow', async ({ page }) => {
+    await gotoStory(page, 'primitives-select--arrow');
+    await page.getByRole('combobox').click();
+    await expect(page.locator('[rdxSelectArrow]')).toBeVisible();
+    await shoot(page, 'select-arrow-open.png');
+});
+
+test('select — deferred exit', async ({ page }) => {
+    await gotoStory(page, 'primitives-select--deferred-unmount');
+    await page.getByRole('combobox').click();
+    await expect(page.getByTestId('completions')).toHaveText('true');
+    await page.keyboard.press('Escape');
+    await expect(page.getByTestId('phase')).toHaveText('Closing');
+    await expect
+        .poll(() =>
+            page.locator('[rdxSelectPopup]').evaluate((element) => {
+                const animations = element.getAnimations();
+                animations.forEach((animation) => {
+                    animation.pause();
+                    animation.currentTime = 0;
+                });
+                return animations.some((animation) => animation.playState === 'paused');
+            })
+        )
+        .toBe(true);
+    // This intentionally paused external animation must not be auto-finished by screenshot capture.
+    await expect(page).toHaveScreenshot('select-deferred-exit.png', { fullPage: true, animations: 'allow' });
+});
+
 test('context-menu — open', async ({ page }) => {
     await gotoStory(page, 'primitives-context-menu--default');
     await page.locator('[rdxContextMenuTrigger]').first().click({ button: 'right' });

@@ -216,7 +216,7 @@ describe('Autocomplete forms', () => {
             await settle();
 
             (fixture.nativeElement.querySelector('form') as HTMLFormElement).reset();
-            await Promise.resolve();
+            await new Promise<void>((resolve) => setTimeout(resolve, 0));
             await settle();
 
             expect(host.control.value).toBe('');

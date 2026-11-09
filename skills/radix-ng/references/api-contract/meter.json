@@ -62,7 +62,7 @@
         },
         {
           "name": "value",
-          "type": "number, unknown",
+          "type": "number",
           "default": "{ transform: numberAttribute }",
           "required": true,
           "description": "Current meter value."

@@ -8,6 +8,7 @@ import {
     Injector,
     PLATFORM_ID,
     Provider,
+    signal,
     Signal,
     TemplateRef,
     ViewContainerRef
@@ -20,6 +21,8 @@ import { PresenceMachine } from './presence-machine';
  */
 export type RdxPresenceContext = {
     present: Signal<boolean>;
+    skipExitAnimation?: Signal<boolean>;
+    registerPresence?: (presence: { mounted: Signal<boolean>; keepMounted: () => boolean }) => () => void;
 };
 
 export const RDX_PRESENCE_CONTEXT = new InjectionToken<RdxPresenceContext>('RdxPresenceContext');
@@ -56,29 +59,38 @@ export class RdxPresenceDirective {
     private readonly templateRef = inject(TemplateRef<void>);
 
     private viewRef: EmbeddedViewRef<void> | null = null;
+    private readonly mounted = signal(false);
 
     constructor() {
+        const context = inject(RDX_PRESENCE_CONTEXT);
+        const unregister = context.registerPresence?.({ mounted: this.mounted.asReadonly(), keepMounted: () => false });
         const machine = new PresenceMachine({
-            present: inject(RDX_PRESENCE_CONTEXT).present,
+            present: context.present,
+            skipExitAnimation: context.skipExitAnimation,
             isBrowser: isPlatformBrowser(inject(PLATFORM_ID)),
             injector: inject(Injector),
             mountView: () => this.mountView(),
             destroyView: () => this.destroyView()
         });
 
-        inject(DestroyRef).onDestroy(() => machine.dispose());
+        inject(DestroyRef).onDestroy(() => {
+            machine.dispose();
+            unregister?.();
+        });
     }
 
     private mountView(): HTMLElement[] {
         this.viewRef = this.viewContainerRef.createEmbeddedView(this.templateRef);
+        this.mounted.set(true);
         // Return *all* root elements (not just the first) so a multi-root template — e.g. a backdrop
         // plus content — has the exit animation on any root suspend the unmount. Mirrors
         // `RdxPortalPresence.mountView`, which already watches every relocated root node.
-        return (this.viewRef.rootNodes as Node[]).filter((node): node is HTMLElement => node instanceof HTMLElement);
+        return (this.viewRef.rootNodes as Node[]).filter((node): node is HTMLElement => node.nodeType === 1);
     }
 
     private destroyView(): void {
         this.viewRef?.destroy();
         this.viewRef = null;
+        this.mounted.set(false);
     }
 }
