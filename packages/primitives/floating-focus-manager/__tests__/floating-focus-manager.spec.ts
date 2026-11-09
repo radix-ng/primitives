@@ -2,7 +2,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { createFloatingRootContext, provideFloatingRootContext } from '@radix-ng/primitives/core';
-import { FOCUS_GUARD_ATTR } from '@radix-ng/primitives/focus-scope';
+import { FOCUS_GUARD_ATTR, RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
     provideFloatingFocusManagerConfig,
@@ -82,11 +82,97 @@ class PortalBridgeHost {
     readonly getInsideElements = (): Array<Element | null> => [this.extraInside()];
 }
 
+@Component({
+    imports: [RdxFloatingFocusManager],
+    template: `
+        <div #parent [modal]="true" rdxFloatingFocusManager>
+            <button>Parent</button>
+            <div #child [enabled]="childEnabled()" rdxFloatingFocusManager><button>Child</button></div>
+        </div>
+    `
+})
+class RetainedChildHost {
+    readonly childEnabled = signal(false);
+    readonly parent = viewChild.required('parent', { read: RdxFocusScope });
+    readonly child = viewChild.required('child', { read: RdxFocusScope });
+}
+
 describe('RdxFloatingFocusManager (skeleton)', () => {
     const appended: Element[] = [];
 
     afterEach(() => appended.splice(0).forEach((el) => el.remove()));
     beforeEach(() => TestBed.resetTestingModule());
+
+    it('deactivates a retained child scope and resumes its parent', async () => {
+        const fixture = TestBed.createComponent(RetainedChildHost);
+        fixture.autoDetectChanges();
+        await flush();
+        const host = fixture.componentInstance;
+        expect(host.parent().focusScope.paused()).toBe(false);
+        host.childEnabled.set(true);
+        await fixture.whenStable();
+        await flush();
+        expect(host.parent().focusScope.paused()).toBe(true);
+        host.childEnabled.set(false);
+        await fixture.whenStable();
+        await flush();
+        expect(host.parent().focusScope.paused()).toBe(false);
+        host.childEnabled.set(true);
+        await fixture.whenStable();
+        await flush();
+        expect(host.parent().focusScope.paused()).toBe(true);
+        expect(host.child().focusScope.paused()).toBe(false);
+    });
+
+    it('does not autofocus a disabled retained view, then returns focus on deactivation', async () => {
+        const opener = document.createElement('button');
+        document.body.append(opener);
+        appended.push(opener);
+        opener.focus();
+        const fixture = TestBed.createComponent(ManagerHost);
+        fixture.componentInstance.enabled.set(false);
+        fixture.autoDetectChanges();
+        await flush();
+        expect(document.activeElement).toBe(opener);
+        fixture.componentInstance.enabled.set(true);
+        await fixture.whenStable();
+        await flush();
+        expect(document.activeElement).toBe(fixture.componentInstance.a().nativeElement);
+        fixture.componentInstance.enabled.set(false);
+        await fixture.whenStable();
+        await flush();
+        expect(document.activeElement).toBe(opener);
+    });
+
+    it('preserves programmatic null for focus policy callbacks', async () => {
+        TestBed.overrideComponent(ManagerHost, {
+            add: {
+                providers: [
+                    provideFloatingFocusManagerConfig(() => ({
+                        openInteractionType: () => null,
+                        closeInteractionType: () => null
+                    }))
+                ]
+            }
+        });
+        const fixture = TestBed.createComponent(ManagerHost);
+        const types: unknown[] = [];
+        fixture.componentInstance.initialFocus.set((type) => {
+            types.push(type);
+            return false;
+        });
+        fixture.componentInstance.returnFocus.set((type) => {
+            types.push(type);
+            return false;
+        });
+        fixture.autoDetectChanges();
+        await flush();
+        fixture.componentInstance.enabled.set(false);
+        await fixture.whenStable();
+        await flush();
+        expect(types.length).toBeGreaterThanOrEqual(2);
+        expect(types.every((type) => type === null)).toBe(true);
+    });
 
     // ─── modal → RdxFocusScope.trapped composition ────────────────────────────
 
@@ -465,7 +551,13 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
         expect(emitted()).toBe(false);
     });
 
-    it('does NOT emit when relatedTarget is a focus guard', async () => {
+    it('does NOT emit when relatedTarget is its own focus guard', async () => {
+        const { host, emitted } = await setupManager();
+        focusOutTo(host, host.previousElementSibling);
+        expect(emitted()).toBe(false);
+    });
+
+    it("does emit when focus reaches an unrelated layer's guard", async () => {
         const guard = document.createElement('span');
         guard.setAttribute(FOCUS_GUARD_ATTR, '');
         document.body.appendChild(guard);
@@ -473,7 +565,28 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
 
         const { host, emitted } = await setupManager();
         focusOutTo(host, guard);
+        expect(emitted()).toBe(true);
+    });
+
+    it('ignores document focus changes that did not originate in this layer', async () => {
+        const { emitted } = await setupManager();
+        const first = document.createElement('button');
+        const second = document.createElement('button');
+        document.body.append(first, second);
+        appended.push(first, second);
+        focusOutTo(first, second);
         expect(emitted()).toBe(false);
+    });
+
+    it('clears pointer suppression on pointercancel', async () => {
+        const { host, emitted } = await setupManager();
+        const outside = document.createElement('button');
+        document.body.append(outside);
+        appended.push(outside);
+        document.dispatchEvent(new Event('pointerdown'));
+        document.dispatchEvent(new Event('pointercancel'));
+        focusOutTo(host, outside);
+        expect(emitted()).toBe(true);
     });
 
     it('does NOT emit during a pointer press (a drag must not close)', async () => {

@@ -12,6 +12,8 @@ import { SelectDeferredUnmount } from './select-deferred-unmount';
 import deferredUnmountSource from './select-deferred-unmount?raw';
 import { SelectEvents } from './select-events';
 import eventsSource from './select-events?raw';
+import { SelectFocusManagement } from './select-focus-management';
+import focusManagementSource from './select-focus-management?raw';
 import { SelectItems } from './select-items';
 import itemsSource from './select-items?raw';
 import { SelectLabels } from './select-labels';
@@ -46,6 +48,7 @@ export default {
                 SelectDeferredUnmount,
                 SelectArrowExample,
                 SelectEvents,
+                SelectFocusManagement,
                 SelectMultiple,
                 SelectObjectValues,
                 SelectReactiveForms,
@@ -99,6 +102,27 @@ export const DeferredUnmount: Story = {
     render: () => ({
         template: html`
             <select-deferred-unmount />
+        `
+    })
+};
+
+export const FocusManagement: Story = {
+    args: { shell: 'inline', keepMounted: true, closeOnFocusOut: false, finalFocus: 'default', cancelClose: false },
+    argTypes: {
+        shell: { control: 'select', options: ['inline', 'dialog', 'popover'] },
+        finalFocus: { control: 'select', options: ['default', 'after', 'none'] }
+    },
+    parameters: source(focusManagementSource),
+    render: (args) => ({
+        props: args,
+        template: html`
+            <select-focus-management
+                [shell]="shell"
+                [keepMounted]="keepMounted"
+                [closeOnFocusOut]="closeOnFocusOut"
+                [finalFocus]="finalFocus"
+                [cancelClose]="cancelClose"
+            />
         `
     })
 };

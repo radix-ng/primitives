@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { RdxSelectRoot, RdxSelectRootActions, RdxSelectValueChangeEvent } from '@radix-ng/primitives/select';
+import { SelectFocusManagement } from '../../../packages/primitives/select/stories/select-focus-management';
 import { SelectItems } from '../../../packages/primitives/select/stories/select-items';
 import { SelectLabels } from '../../../packages/primitives/select/stories/select-labels';
 import { SelectNativeForms } from '../../../packages/primitives/select/stories/select-native-forms';
@@ -12,7 +13,15 @@ interface Country {
 }
 
 @Component({
-    imports: [RdxSelectRoot, SelectTypedControl, SelectTypedWrapper, SelectItems, SelectLabels, SelectNativeForms],
+    imports: [
+        RdxSelectRoot,
+        SelectTypedControl,
+        SelectTypedWrapper,
+        SelectItems,
+        SelectLabels,
+        SelectNativeForms,
+        SelectFocusManagement
+    ],
     template: `
         <div #actions="rdxSelectRoot" rdxSelectRoot>
             <button (click)="actions.close()" type="button">Close</button>
@@ -42,6 +51,7 @@ interface Country {
         <select-items />
         <select-labels />
         <select-native-forms />
+        <select-focus-management [closeOnFocusOut]="true" [keepMounted]="true" shell="dialog" />
         <div [value]="'fr'" [items]="{ fr: 'France' }" rdxSelectRoot></div>
         <div [value]="'fr'" [items]="[{ items: [{ value: 'fr', label: 'France' }] }]" rdxSelectRoot></div>
     `

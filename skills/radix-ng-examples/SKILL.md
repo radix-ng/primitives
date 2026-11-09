@@ -36,7 +36,7 @@ contract in the `radix-ng` skill (`references/styling-contract/<slug>.json`).
 addressed by the component slug and the kebab-cased example name. Cheaper than re-reading the whole
 component doc.
 
-Total: **265 examples** across **44 components**.
+Total: **266 examples** across **44 components**.
 
 ## Components
 
@@ -71,7 +71,7 @@ Total: **265 examples** across **44 components**.
 - **[Progress](./references/components/progress.md)** — Displays task completion with accessible label, value, track, and indicator parts. _(4 examples)_
 - **[Radio Group](./references/components/radio.md)** — A set of checkable buttons—known as radio buttons—where no more than one of the buttons can be checked at a time. _(3 examples)_
 - **[Scroll Area](./references/components/scroll-area.md)** — A native scroll container with a custom, cross-browser scrollbar. _(4 examples)_
-- **[Select](./references/components/select.md)** — A control that presents a list of options for the user to pick from, triggered by a button. _(17 examples)_
+- **[Select](./references/components/select.md)** — A control that presents a list of options for the user to pick from, triggered by a button. _(18 examples)_
 - **[Separator](./references/components/separator.md)** — A separator element accessible to screen readers. _(2 examples)_
 - **[Signal Forms](./references/components/signal-forms.md)** — Bridge Angular [Signal Forms](https://angular.dev/guide/forms/signals/overview) into headless `Field` and `Form`. _(6 examples)_
 - **[Slider](./references/components/slider.md)** — An input where the user selects a value, or a range of values, from within a given range. _(5 examples)_

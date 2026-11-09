@@ -11,6 +11,7 @@ import {
     isOutsideEvent
 } from '@radix-ng/primitives/focus-scope';
 import { getInteractionTypeFromEvent, RdxInteractionType } from './floating-focus-manager';
+import { registerFocusGuardOwners } from './focus-guard-ownership';
 
 export interface RdxTriggerInteractionOptions {
     trigger: () => HTMLElement;
@@ -109,6 +110,10 @@ export function useTriggerFocusGuards(options: RdxTriggerFocusGuardOptions): voi
         const trigger = options.trigger();
         const preGuard = createFocusGuard(trigger.ownerDocument);
         const postGuard = createFocusGuard(trigger.ownerDocument);
+        const unregisterGuards = registerFocusGuardOwners(
+            [preGuard, postGuard],
+            () => options.popupElement?.() ?? trigger
+        );
         preGuard.setAttribute('data-type', 'outside');
         postGuard.setAttribute('data-type', 'outside');
         const contentId = options.contentId?.();
@@ -157,6 +162,7 @@ export function useTriggerFocusGuards(options: RdxTriggerFocusGuardOptions): voi
         }
 
         onCleanup(() => {
+            unregisterGuards();
             preGuard.removeEventListener('focus', handlePreGuardFocus);
             postGuard.removeEventListener('focus', handlePostGuardFocus);
             preGuard.remove();

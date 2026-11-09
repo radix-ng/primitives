@@ -106,7 +106,7 @@ export function isOutsideEvent(event: FocusEvent, container: Element): boolean {
  */
 export function useFocusGuardsTabbability(
     portalNode: () => HTMLElement | null,
-    options: { enabled?: () => boolean } = {}
+    options: { enabled?: () => boolean; isInside?: (target: Node) => boolean } = {}
 ): void {
     const enabled = options.enabled ?? (() => true);
     let focusInsideDisabled = false;
@@ -117,10 +117,11 @@ export function useFocusGuardsTabbability(
             return;
         }
         const ownerDocument = node.ownerDocument;
+        const isInside = options.isInside ?? ((target: Node) => composedContains(node, target));
 
         const onFocus = (event: FocusEvent): void => {
             // Only react to focus actually crossing the portal boundary.
-            if (!event.relatedTarget || !isOutsideEvent(event, node)) {
+            if (!event.relatedTarget || isInside(event.relatedTarget as Node)) {
                 return;
             }
             if (event.type === 'focusin') {
@@ -134,7 +135,7 @@ export function useFocusGuardsTabbability(
             }
         };
 
-        if (isOutsideEvent(new FocusEvent('focusin', { relatedTarget: ownerDocument.activeElement }), node)) {
+        if (!ownerDocument.activeElement || !isInside(ownerDocument.activeElement)) {
             disableFocusInside(node);
             focusInsideDisabled = true;
         }

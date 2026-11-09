@@ -117,7 +117,7 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
     selector: '[rdxSelectPopup]',
     hostDirectives: [
         RdxPopperContent,
-        { directive: RdxFloatingFocusManager, inputs: ['returnFocus: finalFocus'] },
+        { directive: RdxFloatingFocusManager, inputs: ['returnFocus: finalFocus', 'closeOnFocusOut'] },
         RdxFloatingNodeRegistration,
         RdxCompositeList
     ],
@@ -175,6 +175,7 @@ export class RdxSelectPopup {
     private readonly currentElement = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly compositeList = inject(RdxCompositeList, { self: true });
     private readonly injector = inject(Injector);
+    private readonly focusManager = inject(RdxFloatingFocusManager);
 
     readonly rootContext = injectSelectRootContext();
 
@@ -253,14 +254,11 @@ export class RdxSelectPopup {
             if (!this.rootContext.open()) return;
             this.isPositioned.set(true);
             this.highlightSelectedItemAfterPositioned();
+        });
 
-            // In Popper mode the popup lives inside the positioner, which stays `visibility: hidden`
-            // until it is placed — so the mount-time `mountAutoFocus` call no-ops on the hidden
-            // listbox and keyboard navigation never starts. Focus it now that it is visible (skip if
-            // focus already moved inside, e.g. item-aligned mode or a re-placement).
-            const popup = this.content();
-            if (popup && !popup.contains(document.activeElement)) {
-                popup.focus({ preventScroll: true });
+        this.focusManager.focusOut.subscribe((event) => {
+            if (this.rootContext.open() && !event.defaultPrevented) {
+                this.rootContext.onOpenChange(false, 'focus-out', event);
             }
         });
 
@@ -311,9 +309,8 @@ export class RdxSelectPopup {
         // The popup (listbox) is this layer's floating element — the inside surface for containment.
         this.floatingContext.setFloatingElement(this.currentElement.nativeElement);
 
-        // Dismissal (ADR 0015): Escape or an outside press closes the select. Focus-out does NOT close it
-        // — the listbox holds focus while open (items are navigated virtually), so a focus-out is not a
-        // dismissal (the legacy preventDefaulted it too).
+        // Dismissal (ADR 0015) owns Escape / outside press. Optional focus-out closing belongs to
+        // the shared focus manager, separately from the popup's virtual navigation model.
         new RdxDismiss(this.floatingContext, () => this.registration?.node() ?? null, {
             escapeKey: () => true,
             outsidePress: () => true,
@@ -446,9 +443,14 @@ export class RdxSelectPopup {
         const keyEvent = event as KeyboardEvent;
         if (keyEvent.isComposing) return;
 
-        // select should not be navigated using tab key so we prevent it
+        // Preserve the current default until the AT-gated focus policy change (ADR 0023).
+        // Opt-in uses the manager's native portal guards; Shift+Tab closes back to finalFocus.
         if (keyEvent.key === 'Tab') {
-            event.preventDefault();
+            if (!this.focusManager.effectiveCloseOnFocusOut()) event.preventDefault();
+            else if (keyEvent.shiftKey && !keyEvent.altKey && !keyEvent.ctrlKey && !keyEvent.metaKey) {
+                event.preventDefault();
+                this.rootContext.onOpenChange(false, 'focus-out', event);
+            }
             return;
         }
 

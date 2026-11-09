@@ -33,6 +33,8 @@ import {
     type FocusableElement,
     getNextTabbable,
     getPreviousTabbable,
+    getTabbableAfterElement,
+    getTabbableBeforeElement,
     getTabbableCandidates,
     isOutsideEvent,
     isTypeableElement,
@@ -42,6 +44,7 @@ import {
     RdxFocusScopeConfigToken,
     useFocusGuardsTabbability
 } from '@radix-ng/primitives/focus-scope';
+import { registerFocusGuardOwners, resolveFocusGuardOwner } from './focus-guard-ownership';
 import { markOthers } from './mark-others';
 
 /**
@@ -162,7 +165,7 @@ function coerceOptionalBoolean(value: BooleanInput | undefined): boolean | undef
  * construction order (the manager later injects this same config and writes the signal).
  */
 function provideManagedFocusScopeConfig(): Provider {
-    return provideRdxFocusScopeConfig((): RdxFocusScopeConfig => ({ trapped: signal(false) }));
+    return provideRdxFocusScopeConfig((): RdxFocusScopeConfig => ({ trapped: signal(false), enabled: signal(false) }));
 }
 
 /**
@@ -276,12 +279,16 @@ export class RdxFloatingFocusManager {
         const getElements = this.getInsideElements() ?? this.config?.getInsideElements;
         return (getElements?.() ?? []).filter((element): element is Element => element != null);
     });
-    readonly effectiveOpenInteractionType = computed(
-        () => this.config?.openInteractionType?.() ?? this._interactionType()
+    readonly effectiveOpenInteractionType = computed(() =>
+        this.config?.openInteractionType ? this.config.openInteractionType() : this._interactionType()
     );
-    readonly effectiveCloseInteractionType = computed(
-        () => this.config?.closeInteractionType?.() ?? this._interactionType()
-    );
+    readonly effectiveCloseInteractionType = computed(() => {
+        const configured = this.config?.closeInteractionType;
+        const type = configured ? configured() : this._interactionType();
+        // Native focus events carry no pointer/key type; preserve the recorded interaction.
+        // Explicit null remains a programmatic close.
+        return type === '' ? this._interactionType() : type;
+    });
 
     /** The effective trap state the composed `RdxFocusScope` reads via its config token. */
     readonly trapped = computed(() => this.effectiveEnabled() && this.effectiveModal());
@@ -290,6 +297,7 @@ export class RdxFloatingFocusManager {
     // attach a `returnFocus` resolver the composed focus scope calls at unmount (ADR 0017 `returnFocus`).
     private readonly focusScopeConfig = inject(RdxFocusScopeConfigToken) as {
         trapped: WritableSignal<boolean>;
+        enabled: WritableSignal<boolean>;
         returnFocus?: () => HTMLElement | false | undefined;
     };
 
@@ -306,7 +314,10 @@ export class RdxFloatingFocusManager {
     readonly interactionType = this._interactionType.asReadonly();
 
     constructor() {
-        effect(() => this.focusScopeConfig.trapped.set(this.trapped()));
+        effect(() => {
+            this.focusScopeConfig.trapped.set(this.trapped());
+            this.focusScopeConfig.enabled.set(this.effectiveEnabled());
+        });
 
         // Own the return-focus *target* (the composed focus scope owns the *timing*): the scope calls this
         // in its queued post-unmount frame, resolving the `returnFocus` policy against the close interaction.
@@ -356,7 +367,9 @@ export class RdxFloatingFocusManager {
         this.trackInteractionType();
         useFocusGuardsTabbability(() => (this.rootContext?.floatingElement ?? this.host) as HTMLElement, {
             enabled: () =>
-                Boolean(this.rootContext) && this.effectiveEnabled() && this.isFloatingOpen() && !this.effectiveModal()
+                Boolean(this.rootContext) && this.effectiveEnabled() && this.isFloatingOpen() && !this.effectiveModal(),
+            // Angular portals can be siblings in the DOM while still being child floating layers.
+            isInside: (target) => this.isWithinFloatingSubtree(target)
         });
         this.wireCloseOnFocusOut();
         this.wireRestoreFocus();
@@ -408,23 +421,15 @@ export class RdxFloatingFocusManager {
     }
 
     /**
-     * Resolves the {@link returnFocus} policy against the **close** interaction type for the composed
-     * focus scope to apply at unmount (ADR 0017 §2). Mirrors Base UI's `getReturnElement`:
-     * - `false` → `false` (the scope suppresses return-focus);
-     * - `true` / `null` → `undefined` (the scope's default — return to the element focused before mount);
-     * - an element (direct or from a callback) → that element (returned **explicitly**, bypassing the
-     *   "focus moved elsewhere" guard).
-     */
-    /**
-     * Public view of {@link resolveReturnFocusTarget} for a **keep-mounted** primitive to apply
-     * return-focus on *close* — the composed scope's unmount-driven return never runs while the popup
-     * stays in the DOM. Returns an explicit element, `false` (suppress), or `undefined` (default →
-     * caller restores the previously-focused element, e.g. the trigger).
+     * Resolves the return policy for integrations that coordinate their own focus lifecycle.
+     * Normal retained-view activation/deactivation is handled by the composed focus scope.
+     * Returns an explicit element, `false` (suppress), or `undefined` (default).
      */
     resolveReturnTarget(): HTMLElement | false | undefined {
         return this.resolveReturnFocusTarget();
     }
 
+    /** Resolve the policy at deactivation/unmount; the scope owns queued return-focus timing. */
     private resolveReturnFocusTarget(): HTMLElement | false | undefined {
         const resolved = resolveReturnFocus(this.effectiveReturnFocus(), this.effectiveCloseInteractionType());
         if (resolved === false) {
@@ -462,46 +467,48 @@ export class RdxFloatingFocusManager {
      * the initial-focus policy for a few animation frames while the popup is open so the target can settle.
      */
     private wireInitialFocusFallback(): void {
-        effect(() => {
+        effect((onCleanup) => {
             if (!this.effectiveEnabled() || !this.isFloatingOpen()) {
                 return;
             }
 
-            this.scheduleInitialFocusFallback();
+            const ownerDocument = this.host.ownerDocument;
+            const origin = getActiveElement(ownerDocument);
+            const view = ownerDocument.defaultView ?? globalThis;
+            let attempt = 0;
+            let frame: number;
+            const applyInitialFocus = () => {
+                if (!this.effectiveEnabled() || !this.isFloatingOpen()) {
+                    return;
+                }
+
+                const popup = (this.rootContext?.floatingElement ?? this.host) as HTMLElement;
+                const activeElement = getActiveElement(ownerDocument);
+
+                if (activeElement instanceof HTMLElement && popup.contains(activeElement)) {
+                    return;
+                }
+                // A delayed layout retry must not undo a deliberate focus move to another control.
+                if (activeElement && activeElement !== ownerDocument.body && activeElement !== origin) return;
+
+                const interactionType = this.effectiveOpenInteractionType();
+                const resolved = resolveInitialFocus(this.effectiveInitialFocus(), interactionType);
+                if (resolved === false) {
+                    return;
+                }
+
+                const target = resolved ?? this.defaultInitialFocus(interactionType);
+                if (target && activeElement !== target) {
+                    target.focus({ preventScroll: true });
+                }
+
+                if (attempt++ < 2) {
+                    frame = view.requestAnimationFrame(applyInitialFocus);
+                }
+            };
+            frame = view.requestAnimationFrame(applyInitialFocus);
+            onCleanup(() => view.cancelAnimationFrame(frame));
         });
-    }
-
-    private scheduleInitialFocusFallback(attempt = 0): void {
-        const view = this.host.ownerDocument.defaultView ?? globalThis;
-        view.requestAnimationFrame(() => this.applyInitialFocusFallback(attempt));
-    }
-
-    private applyInitialFocusFallback(attempt: number): void {
-        if (!this.effectiveEnabled() || !this.isFloatingOpen()) {
-            return;
-        }
-
-        const popup = (this.rootContext?.floatingElement ?? this.host) as HTMLElement;
-        const activeElement = this.host.ownerDocument.activeElement;
-
-        if (activeElement instanceof HTMLElement && popup.contains(activeElement)) {
-            return;
-        }
-
-        const interactionType = this.effectiveOpenInteractionType();
-        const resolved = resolveInitialFocus(this.effectiveInitialFocus(), interactionType);
-        if (resolved === false) {
-            return;
-        }
-
-        const target = resolved ?? this.defaultInitialFocus(interactionType);
-        if (target && activeElement !== target) {
-            target.focus({ preventScroll: true });
-        }
-
-        if (attempt < 2) {
-            this.scheduleInitialFocusFallback(attempt + 1);
-        }
     }
 
     /**
@@ -521,15 +528,22 @@ export class RdxFloatingFocusManager {
             pointerDown = false;
         };
         const onFocusOut = (event: FocusEvent): void => {
-            if (!this.effectiveEnabled() || !this.effectiveCloseOnFocusOut() || this.effectiveModal() || pointerDown) {
+            if (
+                !this.effectiveEnabled() ||
+                !this.isFloatingOpen() ||
+                !this.effectiveCloseOnFocusOut() ||
+                this.effectiveModal() ||
+                pointerDown
+            ) {
                 return;
             }
+            // Document listeners also see unrelated widgets. Only this layer's own focus boundary
+            // (including its guards) can initiate a close.
+            const source = event.target as Node | null;
+            if (!source || !this.isRelatedTargetInside(source)) return;
             const relatedTarget = event.relatedTarget as Node | null;
             if (!relatedTarget) {
                 return; // focus left to nothing (tab-away / window blur) — let the browser handle it
-            }
-            if (relatedTarget instanceof Element && relatedTarget.hasAttribute(FOCUS_GUARD_ATTR)) {
-                return; // moved onto a focus guard — still inside the focus system
             }
             if (this.isRelatedTargetInside(relatedTarget)) {
                 return; // moved to a related node (trigger / ancestor / descendant) — keep open
@@ -539,11 +553,13 @@ export class RdxFloatingFocusManager {
 
         ownerDocument.addEventListener('pointerdown', onPointerDown, true);
         ownerDocument.addEventListener('pointerup', onPointerUp, true);
+        ownerDocument.addEventListener('pointercancel', onPointerUp, true);
         ownerDocument.addEventListener('focusout', onFocusOut, true);
 
         inject(DestroyRef).onDestroy(() => {
             ownerDocument.removeEventListener('pointerdown', onPointerDown, true);
             ownerDocument.removeEventListener('pointerup', onPointerUp, true);
+            ownerDocument.removeEventListener('pointercancel', onPointerUp, true);
             ownerDocument.removeEventListener('focusout', onFocusOut, true);
         });
     }
@@ -604,6 +620,7 @@ export class RdxFloatingFocusManager {
 
             const beforeGuard = createFocusGuard(ownerDocument);
             const afterGuard = createFocusGuard(ownerDocument);
+            const unregisterGuards = registerFocusGuardOwners([beforeGuard, afterGuard], () => this.host);
             beforeGuard.setAttribute('data-type', 'inside');
             afterGuard.setAttribute('data-type', 'inside');
 
@@ -654,6 +671,7 @@ export class RdxFloatingFocusManager {
                 afterGuard.removeEventListener('focus', onAfterFocus);
                 beforeGuard.remove();
                 afterGuard.remove();
+                unregisterGuards();
                 this.setBeforeContentFocusGuardRef(null);
             });
         });
@@ -684,10 +702,8 @@ export class RdxFloatingFocusManager {
 
     /** Whether `relatedTarget` is inside the popup, its trigger(s), or an ancestor / descendant popup. */
     private isRelatedTargetInside(relatedTarget: Node): boolean {
-        const floating = this.rootContext?.floatingElement ?? this.host;
-        if (composedContains(floating, relatedTarget)) {
-            return true;
-        }
+        relatedTarget = resolveFocusGuardOwner(relatedTarget);
+        if (this.isWithinFloatingSubtree(relatedTarget)) return true;
         if (this.rootContext && this.contextContains(this.rootContext, relatedTarget)) {
             return true;
         }
@@ -702,17 +718,31 @@ export class RdxFloatingFocusManager {
         const node = this.currentFloatingNode();
         if (node) {
             for (const ancestor of node.tree.ancestors(node)) {
-                if (ancestor.context && this.contextContains(ancestor.context, relatedTarget)) {
-                    return true;
-                }
-            }
-            for (const child of node.tree.children(node, { onlyOpen: true })) {
-                if (child.context && this.contextContains(child.context, relatedTarget)) {
+                // An ancestor popup's focus host is related; its arbitrary controls are outside this
+                // child layer. Moving to another field in a Dialog should close its Select.
+                if (
+                    ancestor.context &&
+                    (ancestor.context.floatingElement === relatedTarget ||
+                        ancestor.context.referenceElement === relatedTarget ||
+                        ancestor.context.triggers.contains(relatedTarget))
+                ) {
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    private isWithinFloatingSubtree(target: Node): boolean {
+        target = resolveFocusGuardOwner(target);
+        if (composedContains(this.rootContext?.floatingElement ?? this.host, target)) return true;
+        const node = this.currentFloatingNode();
+        return (
+            !!node &&
+            node.tree
+                .children(node, { onlyOpen: true })
+                .some((child) => child.context && this.contextContains(child.context, target))
+        );
     }
 
     private contextContains(context: RdxFloatingRootContext, relatedTarget: Node): boolean {
@@ -745,11 +775,11 @@ export class RdxFloatingFocusManager {
     }
 
     private defaultPreviousFocusable(): FocusableElement | null {
-        return getPreviousTabbable(this.rootContext?.referenceElement ?? this.host);
+        return getTabbableBeforeElement(this.rootContext?.referenceElement ?? this.host);
     }
 
     private defaultNextFocusable(): FocusableElement | null {
-        return getNextTabbable(this.rootContext?.referenceElement ?? this.host);
+        return getTabbableAfterElement(this.rootContext?.referenceElement ?? this.host);
     }
 
     private setBeforeContentFocusGuardRef(element: HTMLSpanElement | null): void {
