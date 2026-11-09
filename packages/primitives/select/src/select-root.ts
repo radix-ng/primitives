@@ -613,6 +613,7 @@ export class RdxSelectRoot<Value = unknown, Multiple extends boolean = boolean>
         this.destroyRef.onDestroy(() => this.resetTypeahead());
         effect(() => {
             if (this.open()) this.autofillProbe.set(false);
+            else this.triggerPointerDownPosRef.set(null);
             // Logical open/close owns the session; browsers need not blur a removed popup.
             this.resetTypeahead();
         });
@@ -698,10 +699,7 @@ export class RdxSelectRoot<Value = unknown, Multiple extends boolean = boolean>
 
     readonly triggerElement = signal<HTMLElement | null>(null);
     readonly valueElement = signal<HTMLElement | null>(null);
-    readonly triggerPointerDownPosRef = signal<{ x: number; y: number } | null>({
-        x: 0,
-        y: 0
-    });
+    readonly triggerPointerDownPosRef = signal<{ x: number; y: number } | null>(null);
 
     getOption(value: Value | undefined) {
         return Array.from(this.optionsSet()).find((option) => compare(value, option.value, this.isItemEqualToValue()));
@@ -771,6 +769,7 @@ export class RdxSelectRoot<Value = unknown, Multiple extends boolean = boolean>
             this.openedByTouch.set((event as PointerEvent | undefined)?.pointerType === 'touch');
             this.openInteractionType.set(interactionType);
         } else {
+            this.triggerPointerDownPosRef.set(null);
             this.closeInteractionType.set(interactionType);
         }
 

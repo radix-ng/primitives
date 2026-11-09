@@ -382,6 +382,8 @@ export class RdxSelectPopup {
             };
 
             const handlePointerUp = (event: PointerEvent) => {
+                // Dismissal may already have accepted this gesture on pointerdown.
+                if (!this.rootContext.open()) return;
                 // Prevent options from being untappable on touch devices
                 if (event.pointerType === 'touch') return;
 

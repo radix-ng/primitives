@@ -1,9 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, getDebugNode, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { AcceptableValue, ItemValueComparator } from '@radix-ng/primitives/core';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { _importsSelect, RdxSelectItems, RdxSelectRoot } from '../index';
+import { _importsSelect, RdxSelectItems, RdxSelectPositioner, RdxSelectRoot } from '../index';
 
 @Component({
     imports: [_importsSelect],
@@ -74,6 +74,14 @@ describe('Select Base UI 1.9 source-contract scenarios', () => {
     const text = () => fixture.nativeElement.querySelector('[rdxSelectValue]').textContent.trim();
     const root = () => fixture.debugElement.query(By.directive(RdxSelectRoot)).injector.get(RdxSelectRoot);
     const options = (): HTMLElement[] => Array.from(document.querySelectorAll('[rdxSelectItem]'));
+
+    it('uses center alignment by default for the anchored popup', async () => {
+        await mount((instance) => instance.open.set(true));
+        const positioner = getDebugNode(document.querySelector('[rdxSelectPositioner]'))!.injector.get(
+            RdxSelectPositioner
+        );
+        expect(positioner.align()).toBe('center');
+    });
 
     it('initializes empty single selection to null and empty multiple selection to an array', async () => {
         await mount();

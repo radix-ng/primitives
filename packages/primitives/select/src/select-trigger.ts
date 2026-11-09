@@ -131,6 +131,12 @@ export class RdxSelectTrigger {
     handlePointerOpen(event: Event) {
         const pointerEvent = event as PointerEvent;
 
+        if (this.isDisabled()) return;
+        if (this.rootContext.open()) {
+            this.rootContext.onOpenChange(false, 'trigger-press', event);
+            return;
+        }
+
         if (this.handleOpen('trigger-press', event)) {
             this.rootContext.triggerPointerDownPosRef.set({
                 x: Math.round(pointerEvent.pageX),

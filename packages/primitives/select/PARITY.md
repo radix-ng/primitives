@@ -6,8 +6,8 @@ Audited on 2026-11-08; close-lifecycle, focus-policy and arbitrary-Value increme
 reproducible reference. Its package version is 1.9.0; it is not the release tag itself.
 
 This is an API/source audit with linked regression coverage, **not a certification of complete
-behavioral parity**. A shared React/Angular differential runner now checks 41 scenarios in
-Chromium, Firefox and WebKit (123 comparisons) against this pin and records exact known differences ([runner documentation](../../../apps/parity-testing/primitives/select/README.md),
+behavioral parity**. A shared React/Angular differential runner now checks 54 scenarios in
+Chromium, Firefox and WebKit (162 comparisons) against this pin and records exact known differences ([runner documentation](../../../apps/parity-testing/primitives/select/README.md),
 [ADR 0029](../../../docs/adr/0029-select-differential-behavior-checks.md)). Rows marked as gaps remain open.
 
 Root and Item now accept an unconstrained `Value`, defaulting to `unknown`. Angular DI erases the
@@ -110,6 +110,34 @@ element-bound readout text to survive WebKit replacing `<output>` children on na
 Desktop WebKit automation does not certify real Safari/device behavior or screen-reader output.
 Saved-profile autofill also remains unverified; synthetic browser input events test only the bridge.
 
+## Modal, item-aligned and RTL comparisons
+
+Thirteen differential scenarios extend the desktop checks to modal selection/Escape, background hit
+blocking versus non-modal activation, canceled outside closing, scroll lock/release, trigger toggling,
+item alignment and realignment after selection in LTR/RTL, viewport-resize dismissal, explicit RTL
+start alignment, and the implicit anchored alignment default. Each fixture sets its native document
+direction and framework direction provider before bootstrap; these are whole-page RTL checks.
+
+Layout assertions use the same 2 CSS-pixel alignment tolerance and viewport bounds on both sides.
+Raw rectangles/deltas remain in the report. Scroll checks use real wheel input before/after close;
+background activation is counted from native clicks, including coordinate clicks through the actual
+backdrop hit area. These assertions do not force component state, focus or lifecycle completion.
+
+The increment corrects Trigger pointer toggling and duplicate outside-close requests after keyboard
+opening. A pending pointer origin starts as null and is cleared on logical close; keyboard opening
+does not invent a pointer gesture. The ordinary close/reopen typeahead scenario waits for close
+completion; the existing deferred fast-reopen scenario still tests cancellation of pending completion.
+
+**Migration:** the anchored Positioner default changes from `start` to Base UI's `center`. Set
+`align="start"` explicitly to retain edge alignment. The separate item-aligned positioner is unchanged.
+
+One additional difference is recorded explicitly: after an outside request is canceled, the pinned
+React implementation reports both `pointerdown` and compatibility `mousedown` requests; Angular's
+native pointer pipeline reports one request per gesture. The exact canceled event sequences are
+reviewed exceptions (`canceled-compatibility-press`); state, values, background blocking and scroll
+lock still have shared assertions. Existing virtual-focus and closed-view-retention exceptions apply.
+Real-device/touch and screen-reader gates remain open.
+
 ## Browser bridge decision
 
 The technical input supports HTML form behavior, independent of the framework. Angular CVA and
@@ -123,11 +151,11 @@ to retain the current bridge, ownership boundaries and migration implications.
 
 ## Next parity increments
 
-| Order | Work                             | Shared boundary / completion evidence                                                                                                                                      |
-| ----- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1     | Default focus policy / real AT   | Browser coverage and opt-in are available (ADR 0027). Compare virtual vs item focus and run the documented real-screen-reader scenarios before changing the default.       |
-| 2     | Behavioral equivalence           | 41 pinned React/Angular scenarios run in Chromium/Firefox/WebKit. Review recorded differences and add differential modal/item-aligned, touch and RTL scenarios (ADR 0029). |
-| 3     | Real devices and native autofill | Desktop automation covers the bridge and Storybook modes. Verify real Safari/devices, saved-profile autofill and assistive technology separately.                          |
+| Order | Work                             | Shared boundary / completion evidence                                                                                                                                                 |
+| ----- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1     | Default focus policy / real AT   | Browser coverage and opt-in are available (ADR 0027). Compare virtual vs item focus and run the documented real-screen-reader scenarios before changing the default.                  |
+| 2     | Behavioral equivalence           | 54 pinned React/Angular scenarios cover desktop modal/item-aligned and whole-page RTL modes. Add emulated touch, clipped/scrolling alignment and dynamic-option scenarios (ADR 0029). |
+| 3     | Real devices and native autofill | Desktop automation covers the bridge and Storybook modes. Verify real Safari/devices, saved-profile autofill and assistive technology separately.                                     |
 
 Rows with an implemented API still carry the verification limitations listed above. Completing a part
 or a shared helper does not certify complete behavioral parity.

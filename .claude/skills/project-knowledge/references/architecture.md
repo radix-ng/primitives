@@ -74,6 +74,13 @@ versions/platform and exact differences. Firefox child processes on macOS use is
 the workspace cache rather than the installed browser's protected data. Desktop automation does not
 close real-AT, real-device or saved-profile autofill gates.
 
+Select differential fixtures also cover desktop modality/item alignment and whole-page RTL using
+native input and independent geometry constraints. Root clears pending pointer origin on logical
+close; keyboard opening has no invented origin. Trigger pressing can request a cancelable close.
+Keep one native pointer dismissal path rather than reproducing the pinned React compatibility-mouse
+retry after cancellation. Anchored Select alignment defaults to `center`; explicit `align="start"`
+retains the previous default (Select `PARITY.md`).
+
 **Pointer movement:** core `createPointerMoveGuard` tracks scope-local viewport coordinates to
 distinguish real travel from stationary scroll/leave events, including real WebKit travel with zero
 movement deltas. Select observes moves in document capture while open and reuses the same event

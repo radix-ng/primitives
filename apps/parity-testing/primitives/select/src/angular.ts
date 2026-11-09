@@ -1,6 +1,7 @@
 import '@angular/compiler';
 import { afterNextRender, Component, provideZonelessChangeDetection, viewChild } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
+import { RdxDirectionProvider } from '@radix-ng/primitives/direction-provider';
 import {
     _importsSelect,
     RdxSelectOpenChangeEvent,
@@ -11,18 +12,35 @@ import { demoSelect } from '../../../../../packages/primitives/storybook/styles'
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { fixtureConfig, installProbe, itemKey, itemLabel, ItemValue } from './contract';
 
+const config = fixtureConfig();
+document.documentElement.dir = config.dir;
+
 @Component({
     selector: 'parity-select',
-    imports: [_importsSelect],
+    imports: [_importsSelect, RdxDirectionProvider],
     template: `
-        <form class="grid w-64 gap-3" (submit)="$event.preventDefault()" data-testid="form">
-            <button data-testid="before" type="button">Before</button>
+        <form
+            class="grid w-64 gap-3"
+            [direction]="config.dir"
+            [attr.dir]="config.dir"
+            (submit)="$event.preventDefault()"
+            data-testid="form"
+            rdxDirectionProvider
+        >
+            <button
+                (click)="trace.probe.backgroundActivations = trace.probe.backgroundActivations + 1"
+                data-testid="before"
+                type="button"
+            >
+                Before
+            </button>
             <div
+                class="grid gap-3"
                 [defaultValue]="config.initial"
                 [multiple]="config.multiple"
                 [disabled]="config.disabled"
                 [readOnly]="config.readOnly"
-                [modal]="false"
+                [modal]="config.modal"
                 [itemToStringLabel]="label"
                 [itemToStringValue]="key"
                 (onOpenChange)="openChange($event)"
@@ -33,42 +51,103 @@ import { fixtureConfig, installProbe, itemKey, itemLabel, ItemValue } from './co
             >
                 <div rdxSelectLabel>Fruit</div>
                 <button [class]="s.trigger" data-testid="trigger" rdxSelectTrigger>
-                    <span #display="rdxSelectedValue" rdxSelectValue placeholder="Choose a fruit">
+                    <span #display="rdxSelectedValue" data-testid="value" rdxSelectValue placeholder="Choose a fruit">
                         {{ display.slotText() }}
                     </span>
                 </button>
                 <ng-template rdxSelectPortal>
-                    <div [class]="s.positioner" sideOffset="5" rdxSelectPositioner>
-                        <div
-                            [class]="s.popup"
-                            [closeOnFocusOut]="config.closeOnFocusOut"
-                            data-testid="popup"
-                            rdxSelectPopup
-                        >
-                            <div [class]="s.list" rdxSelectList>
-                                @for (option of config.options; track option.key) {
-                                    <div
-                                        [class]="s.item"
-                                        [value]="option.value"
-                                        [disabled]="option.disabled"
-                                        [attr.data-option-key]="option.key"
-                                        rdxSelectItem
-                                    >
-                                        <span rdxSelectItemText>{{ option.label }}</span>
+                    @if (config.aligned) {
+                        <div [class]="s.positioner" data-testid="positioner" rdxSelectItemAlignedPosition>
+                            <div [closeOnFocusOut]="config.closeOnFocusOut" data-testid="popup" rdxSelectPopup>
+                                <div [class]="s.popup" rdxSelectItemAlignedPositionContent>
+                                    <div [class]="s.list" rdxSelectList>
+                                        @for (option of config.options; track option.key) {
+                                            <div
+                                                [class]="s.item"
+                                                [value]="option.value"
+                                                [disabled]="option.disabled"
+                                                [attr.data-option-key]="option.key"
+                                                rdxSelectItem
+                                            >
+                                                <span [attr.data-option-text]="option.key" rdxSelectItemText>
+                                                    {{ option.label }}
+                                                </span>
+                                            </div>
+                                        }
                                     </div>
-                                }
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    } @else if (config.name === 'anchor-default') {
+                        <div [class]="s.positioner" sideOffset="5" data-testid="positioner" rdxSelectPositioner>
+                            <div [class]="s.popup + ' w-48 min-w-48!'" data-testid="popup" rdxSelectPopup>
+                                <div [class]="s.list" rdxSelectList>
+                                    @for (option of config.options; track option.key) {
+                                        <div
+                                            [class]="s.item"
+                                            [value]="option.value"
+                                            [disabled]="option.disabled"
+                                            [attr.data-option-key]="option.key"
+                                            rdxSelectItem
+                                        >
+                                            <span [attr.data-option-text]="option.key" rdxSelectItemText>
+                                                {{ option.label }}
+                                            </span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    } @else {
+                        <div
+                            [class]="s.positioner"
+                            sideOffset="5"
+                            align="start"
+                            data-testid="positioner"
+                            rdxSelectPositioner
+                        >
+                            <div
+                                [class]="config.dir === 'rtl' ? s.popup + ' w-48 min-w-48!' : s.popup"
+                                [closeOnFocusOut]="config.closeOnFocusOut"
+                                data-testid="popup"
+                                rdxSelectPopup
+                            >
+                                <div [class]="s.list" rdxSelectList>
+                                    @for (option of config.options; track option.key) {
+                                        <div
+                                            [class]="s.item"
+                                            [value]="option.value"
+                                            [disabled]="option.disabled"
+                                            [attr.data-option-key]="option.key"
+                                            rdxSelectItem
+                                        >
+                                            <span [attr.data-option-text]="option.key" rdxSelectItemText>
+                                                {{ option.label }}
+                                            </span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </ng-template>
             </div>
-            <button data-testid="after" type="button">After</button>
+            <button
+                (click)="trace.probe.backgroundActivations = trace.probe.backgroundActivations + 1"
+                data-testid="after"
+                type="button"
+            >
+                After
+            </button>
         </form>
+        @if (config.scrollable) {
+            <div class="h-[150vh]" aria-hidden="true"></div>
+        }
     `
 })
 class AngularSelectFixture {
     readonly s = demoSelect;
-    readonly config = fixtureConfig();
+    readonly config = config;
     readonly trace = installProbe('angular', this.config);
     readonly label = (value: ItemValue) => itemLabel(value, this.config.options);
     readonly key = itemKey;
@@ -84,7 +163,10 @@ class AngularSelectFixture {
     }
 
     openChange({ open, eventDetails }: RdxSelectOpenChangeEvent): void {
-        if ((open && this.config.name === 'cancel-open') || (!open && this.config.name === 'cancel-close'))
+        if (
+            (open && this.config.name === 'cancel-open') ||
+            (!open && (this.config.name === 'cancel-close' || this.config.name === 'modal-cancel-close'))
+        )
             eventDetails.cancel();
         const held = !open && this.config.defer && !eventDetails.isCanceled();
         if (held) eventDetails.preventUnmountOnClose();

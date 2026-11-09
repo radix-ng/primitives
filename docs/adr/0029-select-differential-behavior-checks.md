@@ -65,3 +65,23 @@ other buttons too, retaining exact focus observations on both sides.
 Real screen readers, saved-profile autofill, real devices and differential coverage of the remaining anatomy/positioning
 modes still require their own validation. This runner closes the missing differential-test mechanism;
 it does not close those parity gaps.
+
+## Desktop modal and positioning increment
+
+Thirteen further scenarios cover desktop modality, background hit blocking/activation, scroll lock
+release, Trigger toggling, selected-text alignment and realignment in LTR/RTL, resize dismissal,
+explicit start alignment and the anchored center default. Both native document direction and framework
+direction providers are set before bootstrap. Geometry uses common alignment/viewport constraints
+with raw rectangles retained; wheel and pointer actions remain native browser input.
+
+Select no longer invents a pointer origin for keyboard opening. Accepted close clears a pending
+gesture, and release fallback does not repeat an already accepted dismissal. Trigger pointer pressing
+requests a cancelable close. Anchored alignment defaults to `center`, matching the pin; existing
+consumers can set `align="start"` to retain the earlier Angular default.
+
+The pin emits an additional compatibility-mousedown close request when a modal outside request is
+canceled. Preserve Angular's single native pointer path, recording exact canceled event sequences as
+`canceled-compatibility-press`; do not hide unrelated value/event/state differences. Ordinary completed
+close/reopen and deferred fast-reopen remain distinct scenario sequences.
+
+These desktop comparisons do not close real-device, touch or AT gates.

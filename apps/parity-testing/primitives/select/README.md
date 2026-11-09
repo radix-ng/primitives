@@ -16,7 +16,7 @@ Shared preparation, TypeScript tooling and commands are documented in the
 
 ## What is compared
 
-The 41 scenarios run in Chromium, Firefox and WebKit (123 comparisons). They exercise
+The 54 scenarios run in Chromium, Firefox and WebKit (162 comparisons). They exercise
 keyboard/typeahead, pointer/multiple selection, disabled/read-only states,
 open/value/close cancellation, imperative close and deferred unmount/reopen, native form reset,
 object/array values, Tab/Shift+Tab and focus outside. The default and opt-in Angular focus policies
@@ -67,13 +67,18 @@ still apply to both implementations. The report preserves all raw observations e
 - `array-item-label`: in this commit, Base UI Value branches on `Array.isArray(value)` even in single
   mode and renders a comma for an array-valued item. Angular respects explicit `multiple` and renders
   its item label (ADR 0028). Wire values and callback reference identity still match.
+- `canceled-compatibility-press`: the pinned reference retries a canceled modal outside press for
+  compatibility `mousedown` after `pointerdown`. Angular reports one cancelable request per pointer
+  gesture. Only the exact canceled sequences are exceptions; accepted-close callbacks, values,
+  background activation, open state and wheel scrolling remain checked against both implementations.
 
 The pinned `Select.Portal` has no `keepMounted` prop. That comparison is explicitly excluded; Angular
-keep-mounted coverage stays in its existing unit and Storybook browser tests. Desktop engines,
-nonmodal anchored positioning and one set of options are the differential scope. Modal/item-aligned
-positioning, touch/RTL and animation timing have separate Angular Storybook checks, now run in all
-three engines by `pnpm test-browser:select`. These do not establish differential parity for those
-modes. Real devices, saved-profile autofill and actual screen readers remain separate verification.
+keep-mounted coverage stays in its existing unit and Storybook browser tests. The differential scope
+now includes desktop anchored/modal/item-aligned modes and whole-page RTL. Touch, long/clipped
+alignment, dynamic data and animation timing are not certified by these comparisons. Additional
+Angular Storybook checks run in all three engines via `pnpm test-browser:select`; they do not replace
+differential evidence for the uncovered modes. Real devices, saved-profile autofill and actual screen
+readers remain separate verification.
 
 ## Typeahead coverage and boundaries
 
@@ -122,6 +127,34 @@ changing state; snapshots still record the exact framework-specific focus target
 trigger case checks that Tab skips it without requiring every browser to tab to buttons: Safari's
 default Tab preference can skip the trailing button too. Both implementations' actual focus remains
 in the comparison. Real AT and saved-profile autofill remain separate verification work.
+
+## Modal, geometry and direction coverage
+
+`tests/positioning.scenarios.ts` adds thirteen comparisons: selection and Escape, modal background
+blocking, non-modal background activation, canceled outside closing, page scroll lock/release,
+Trigger toggling, selected-text alignment/realignment in LTR and RTL, viewport-resize dismissal,
+explicit RTL start alignment and implicit anchored center alignment.
+
+Both fixtures set native document direction and a framework direction provider before bootstrap.
+The Angular Root container uses the same grid spacing and width constraints as the React fragment;
+Angular's separate item-aligned parts retain their real content queries and DI hierarchy. Default
+alignment coverage omits the Angular `align` binding entirely; other anchored cases explicitly use
+`start`. Passing undefined to an Angular input would overwrite its default and would not test omission.
+Geometry checks use a 2 CSS-pixel alignment tolerance and assert viewport containment. Raw rectangles/deltas
+are retained separately from canonical state. Equal trigger/popup widths would mask default alignment,
+so the default and RTL anchored cases deliberately render a narrower popup.
+
+Native wheel input probes page scrolling before/after logical close; a locked scroller need not emit
+a DOM `wheel` event. Background clicks use actual coordinates to test modal hit blocking, and native
+button handlers count activations. Recording adapters do not mirror component state. The ordinary
+typeahead close/reopen scenario waits for close completion; deferred fast reopening retains its
+separate lifecycle checks.
+
+The increment fixes duplicate outside requests caused by an invented `(0, 0)` trigger pointer origin,
+and restores a cancelable `trigger-press` close when the open Trigger is pressed. The implicit anchored
+alignment now matches the pin's `center`; explicit `align="start"` retains the previous Angular default.
+Canceled pointer/mouse compatibility retries remain a documented difference rather than an extra
+Angular event path.
 
 ## Evidence and CI
 

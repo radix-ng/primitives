@@ -552,6 +552,10 @@ The item also carries `role="option"`, `aria-selected`, and `aria-disabled`.
 Wraps the popup panel when using Popper positioning. Accepts the same positioning inputs as
 `rdxMenuPositioner` (`sideOffset`, `alignOffset`, `align`, `side`, `avoidCollisions`, …).
 
+The default alignment is `center`, matching Base UI. Set `align="start"` for edge alignment.
+**Migration:** the previous Select default was `start`; specify it explicitly to keep that placement
+when the popup and trigger have different widths.
+
 <ArgTypes of={RdxSelectPositioner} />
 
 **Data attributes**

@@ -9,7 +9,6 @@ A grouped list (Fruits / Vegetables) with Popper positioning. Click the trigger 
 ```typescript
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
-import { Align } from '@radix-ng/primitives/popper';
 import { demoSelect } from '../../storybook/styles';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectGroupLabel } from '../src/select-group-label';
@@ -52,13 +51,7 @@ import { RdxSelectValue } from '../src/select-value';
                 <svg [class]="s.icon" lucideChevronDown size="16" aria-hidden="true" />
             </button>
 
-            <div
-                *rdxSelectPortal
-                [class]="s.positioner"
-                [sideOffset]="sideOffset()"
-                [align]="align()"
-                rdxSelectPositioner
-            >
+            <div *rdxSelectPortal [class]="s.positioner" [sideOffset]="sideOffset()" rdxSelectPositioner>
                 <div [class]="s.popup" rdxSelectPopup>
                     <div [class]="s.list" rdxSelectList>
                         <div [class]="s.groupLabel" rdxSelectGroupLabel>Fruits</div>
@@ -94,7 +87,6 @@ export class SelectDefault {
     protected readonly s = demoSelect;
 
     readonly sideOffset = input<number>(5);
-    readonly align = input<Align>('start');
 
     readonly options = ['Apple', 'Banana', 'Blueberry', 'Grapes', 'Pineapple'];
     readonly vegetables = ['Aubergine', 'Broccoli', 'Carrot', 'Courgette', 'Leek'];

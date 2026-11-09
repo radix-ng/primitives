@@ -159,7 +159,7 @@
         {
           "name": "align",
           "type": "Align",
-          "default": "'start'",
+          "default": "'center'",
           "description": "How to align the popup relative to the specified side. May change when collisions occur."
         },
         {

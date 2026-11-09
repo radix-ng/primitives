@@ -15,6 +15,9 @@ export interface Snapshot {
     focus: string;
     entries: [string, string][];
     events: TraceEvent[];
+    backgroundActivations: number;
+    pageScrolled: boolean;
+    direction: string;
 }
 export interface Checkpoint {
     name: string;
@@ -24,6 +27,7 @@ export interface Checkpoint {
 export class SelectDriver {
     readonly checkpoints: Checkpoint[] = [];
     readonly errors: string[] = [];
+    readonly measurements: { name: string; bounds: unknown }[] = [];
     metadata: { reference: Reference; framework: string } | undefined;
 
     constructor(
@@ -82,8 +86,13 @@ export class SelectDriver {
     async highlighted(key: string): Promise<void> {
         await expect(this.option(key)).toHaveAttribute('data-highlighted', '');
     }
-    async closed(): Promise<void> {
+    async closed(complete = false): Promise<void> {
         await expect(this.trigger).toHaveAttribute('aria-expanded', 'false');
+        if (complete) {
+            await expect
+                .poll(() => this.page.evaluate(() => window.parity.events.at(-1)))
+                .toEqual({ type: 'complete', open: false });
+        }
     }
     async action(action: 'close' | 'unmount'): Promise<void> {
         await this.page.evaluate((name) => window.parity[name](), action);
@@ -93,6 +102,75 @@ export class SelectDriver {
     }
     async focusAfter(): Promise<void> {
         await this.page.getByTestId('after').focus();
+    }
+
+    async clickBackground(): Promise<void> {
+        const bounds = await this.page.getByTestId('before').boundingBox();
+        if (!bounds) throw new Error('Background button has no bounds');
+        // A locator click would wait for a modal backdrop to disappear instead of testing its hit area.
+        await this.page.mouse.click(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+    }
+
+    async wheelPage(scrolled: boolean): Promise<void> {
+        const viewport = this.page.viewportSize()!;
+        // Stay outside the popup and native scrollbar. A locked scroller may consume wheel input
+        // without delivering a DOM wheel event, so wait for rendering rather than event delivery.
+        await this.page.mouse.move(viewport.width / 2, viewport.height - 40);
+        await this.page.mouse.wheel(0, 240);
+        await this.page.evaluate(
+            () => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+        );
+        await expect.poll(() => this.page.evaluate(() => window.scrollY > 0)).toBe(scrolled);
+    }
+
+    async alignment(name: string, mode: 'item' | 'anchor' | 'center'): Promise<void> {
+        let bounds: unknown;
+        try {
+            await expect
+                .poll(async () => {
+                    const measurement = await this.page.evaluate((mode) => {
+                        const trigger = document.querySelector<HTMLElement>('[data-testid="trigger"]')!;
+                        const value = trigger.querySelector<HTMLElement>('[data-testid="value"]')!;
+                        const popup = document.querySelector<HTMLElement>('[data-testid="popup"]')!;
+                        const selected = popup.querySelector<HTMLElement>('[aria-selected="true"] [data-option-text]')!;
+                        const rtl = getComputedStyle(trigger).direction === 'rtl';
+                        const a = (mode === 'item' ? value : trigger).getBoundingClientRect();
+                        const b = (
+                            mode === 'item'
+                                ? selected
+                                : document.querySelector<HTMLElement>('[data-testid="positioner"]')!
+                        ).getBoundingClientRect();
+                        const popupBounds = popup.getBoundingClientRect();
+                        const inlineDelta =
+                            mode === 'center'
+                                ? a.left + a.width / 2 - (b.left + b.width / 2)
+                                : rtl
+                                  ? a.right - b.right
+                                  : a.left - b.left;
+                        const blockDelta = a.top + a.height / 2 - (b.top + b.height / 2);
+                        return {
+                            mode,
+                            rtl,
+                            reference: a.toJSON(),
+                            candidate: b.toJSON(),
+                            popup: popupBounds.toJSON(),
+                            inlineDelta,
+                            blockDelta,
+                            aligned: Math.abs(inlineDelta) <= 2 && (mode !== 'item' || Math.abs(blockDelta) <= 2),
+                            withinViewport:
+                                popupBounds.left >= 0 &&
+                                popupBounds.top >= 0 &&
+                                popupBounds.right <= innerWidth &&
+                                popupBounds.bottom <= innerHeight
+                        };
+                    }, mode);
+                    bounds = measurement;
+                    return measurement.aligned && measurement.withinViewport;
+                }, `${this.framework}: ${name}`)
+                .toBe(true);
+        } finally {
+            this.measurements.push({ name, bounds });
+        }
     }
 
     async nativeEvents(): Promise<string[]> {
@@ -138,7 +216,10 @@ export class SelectDriver {
                     entries: [
                         ...new FormData(document.querySelector<HTMLFormElement>('[data-testid="form"]')!).entries()
                     ].map(([key, value]) => [key, String(value)]),
-                    events: window.parity.events
+                    events: window.parity.events,
+                    backgroundActivations: window.parity.backgroundActivations,
+                    pageScrolled: window.scrollY > 0,
+                    direction: getComputedStyle(trigger).direction
                 };
             };
             let previous = '';

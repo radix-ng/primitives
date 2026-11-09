@@ -11,6 +11,13 @@ export type CaseName =
     | 'objects'
     | 'array'
     | 'focus-out'
+    | 'modal'
+    | 'modal-cancel-close'
+    | 'aligned'
+    | 'aligned-modal'
+    | 'rtl'
+    | 'aligned-rtl'
+    | 'anchor-default'
     | 'typeahead'
     | 'typeahead-read-only'
     | 'typeahead-multiple'
@@ -35,6 +42,10 @@ export interface FixtureConfig {
     readOnly: boolean;
     defer: boolean;
     closeOnFocusOut: boolean;
+    modal: boolean;
+    aligned: boolean;
+    dir: 'ltr' | 'rtl';
+    scrollable: boolean;
 }
 export type SelectionKeys = string | string[] | null;
 export type TraceEvent =
@@ -56,6 +67,7 @@ declare global {
             config: FixtureConfig;
             events: TraceEvent[];
             nativeEvents: string[];
+            backgroundActivations: number;
             close(): void;
             unmount(): void;
         };
@@ -77,6 +89,13 @@ export function fixtureConfig(): FixtureConfig {
         'objects',
         'array',
         'focus-out',
+        'modal',
+        'modal-cancel-close',
+        'aligned',
+        'aligned-modal',
+        'rtl',
+        'aligned-rtl',
+        'anchor-default',
         'typeahead',
         'typeahead-read-only',
         'typeahead-multiple',
@@ -133,8 +152,13 @@ export function fixtureConfig(): FixtureConfig {
             { key: '30:40', label: '30 × 40', value: [30, 40] }
         ];
     const multiple = name === 'multiple' || name === 'typeahead-multiple';
-    const initial =
-        name === 'typeahead-no-selection' ? null : name === 'disabled-navigation' ? options[2].value : options[0].value;
+    const initial = name.startsWith('aligned')
+        ? options[1].value
+        : name === 'typeahead-no-selection'
+          ? null
+          : name === 'disabled-navigation'
+            ? options[2].value
+            : options[0].value;
     return {
         name: name as CaseName,
         options,
@@ -143,7 +167,11 @@ export function fixtureConfig(): FixtureConfig {
         disabled: name === 'disabled',
         readOnly: name === 'read-only' || name === 'typeahead-read-only',
         defer: name === 'deferred',
-        closeOnFocusOut: name === 'focus-out'
+        closeOnFocusOut: name === 'focus-out',
+        modal: name === 'modal' || name === 'modal-cancel-close' || name === 'aligned-modal',
+        aligned: name.startsWith('aligned'),
+        dir: name === 'rtl' || name === 'aligned-rtl' ? 'rtl' : 'ltr',
+        scrollable: name.startsWith('modal') || name.startsWith('aligned') || name === 'rtl'
     };
 }
 
@@ -168,6 +196,7 @@ export function installProbe(framework: 'angular' | 'react', config: FixtureConf
         reference: __PARITY_REFERENCE__,
         events: [],
         nativeEvents: [],
+        backgroundActivations: 0,
         close: () => {
             throw new Error('Root actions not mounted');
         },

@@ -46,12 +46,14 @@ for (const scenario of scenarios) {
                         angular: {
                             checkpoints: angular.checkpoints,
                             nativeEvents: await angular.nativeEvents(),
-                            errors: angular.errors
+                            errors: angular.errors,
+                            measurements: angular.measurements
                         },
                         react: {
                             checkpoints: react.checkpoints,
                             nativeEvents: await react.nativeEvents(),
-                            errors: react.errors
+                            errors: react.errors,
+                            measurements: react.measurements
                         },
                         failures,
                         ...comparison

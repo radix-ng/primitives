@@ -24,7 +24,7 @@ import { injectSelectRootContext } from './select-root';
     providers: [
         ...provideRdxPopperContentWrapper(RdxSelectPositioner),
         provideRdxPopperContentConfig({
-            align: 'start',
+            align: 'center',
             collisionAvoidance: DROPDOWN_COLLISION_AVOIDANCE,
             updatePositionStrategy: 'always'
         }),

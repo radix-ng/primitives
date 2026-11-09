@@ -111,7 +111,7 @@ export const typeaheadScenarios: Scenario[] = [
             await d.open();
             await d.key('n');
             await d.key('Escape');
-            await d.closed();
+            await d.closed(true);
             await d.open();
             await d.key('b');
             await d.highlighted('berlin');

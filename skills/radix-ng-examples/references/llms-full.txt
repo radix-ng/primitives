@@ -19213,7 +19213,6 @@ native `<select>` behavior).
 ```typescript
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
-import { Align } from '@radix-ng/primitives/popper';
 import { demoSelect } from '../../storybook/styles';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectGroupLabel } from '../src/select-group-label';
@@ -19256,13 +19255,7 @@ import { RdxSelectValue } from '../src/select-value';
                 <svg [class]="s.icon" lucideChevronDown size="16" aria-hidden="true" />
             </button>
 
-            <div
-                *rdxSelectPortal
-                [class]="s.positioner"
-                [sideOffset]="sideOffset()"
-                [align]="align()"
-                rdxSelectPositioner
-            >
+            <div *rdxSelectPortal [class]="s.positioner" [sideOffset]="sideOffset()" rdxSelectPositioner>
                 <div [class]="s.popup" rdxSelectPopup>
                     <div [class]="s.list" rdxSelectList>
                         <div [class]="s.groupLabel" rdxSelectGroupLabel>Fruits</div>
@@ -19298,7 +19291,6 @@ export class SelectDefault {
     protected readonly s = demoSelect;
 
     readonly sideOffset = input<number>(5);
-    readonly align = input<Align>('start');
 
     readonly options = ['Apple', 'Banana', 'Blueberry', 'Grapes', 'Pineapple'];
     readonly vegetables = ['Aubergine', 'Broccoli', 'Carrot', 'Courgette', 'Leek'];
@@ -19426,7 +19418,6 @@ A grouped list (Fruits / Vegetables) with Popper positioning. Click the trigger 
 ```typescript
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
-import { Align } from '@radix-ng/primitives/popper';
 import { demoSelect } from '../../storybook/styles';
 import { RdxSelectGroup } from '../src/select-group';
 import { RdxSelectGroupLabel } from '../src/select-group-label';
@@ -19469,13 +19460,7 @@ import { RdxSelectValue } from '../src/select-value';
                 <svg [class]="s.icon" lucideChevronDown size="16" aria-hidden="true" />
             </button>
 
-            <div
-                *rdxSelectPortal
-                [class]="s.positioner"
-                [sideOffset]="sideOffset()"
-                [align]="align()"
-                rdxSelectPositioner
-            >
+            <div *rdxSelectPortal [class]="s.positioner" [sideOffset]="sideOffset()" rdxSelectPositioner>
                 <div [class]="s.popup" rdxSelectPopup>
                     <div [class]="s.list" rdxSelectList>
                         <div [class]="s.groupLabel" rdxSelectGroupLabel>Fruits</div>
@@ -19511,7 +19496,6 @@ export class SelectDefault {
     protected readonly s = demoSelect;
 
     readonly sideOffset = input<number>(5);
-    readonly align = input<Align>('start');
 
     readonly options = ['Apple', 'Banana', 'Blueberry', 'Grapes', 'Pineapple'];
     readonly vegetables = ['Aubergine', 'Broccoli', 'Carrot', 'Courgette', 'Leek'];
@@ -21752,6 +21736,10 @@ The item also carries `role="option"`, `aria-selected`, and `aria-disabled`.
 
 Wraps the popup panel when using Popper positioning. Accepts the same positioning inputs as
 `rdxMenuPositioner` (`sideOffset`, `alignOffset`, `align`, `side`, `avoidCollisions`, …).
+
+The default alignment is `center`, matching Base UI. Set `align="start"` for edge alignment.
+**Migration:** the previous Select default was `start`; specify it explicitly to keep that placement
+when the popup and trigger have different widths.
 
 **Data attributes**
 
