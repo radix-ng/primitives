@@ -230,6 +230,35 @@ describe('Select with Reactive Forms', () => {
         await settle();
     });
 
+    it('updates the FormControl while closed and retains a multi-character query', async () => {
+        host.fruits.push('Apricot');
+        fixture.changeDetectorRef.markForCheck();
+        await settle();
+        const trigger = fixture.nativeElement.querySelector('[rdxSelectTrigger]') as HTMLElement;
+        trigger.focus();
+        for (const key of 'apr') {
+            trigger.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+            await settle();
+        }
+        expect(host.control.value).toBe('Apricot');
+        expect(host.control.dirty).toBe(true);
+        expect(host.control.untouched).toBe(true);
+        expect(selectRoot(fixture).open()).toBe(false);
+        expect(trigger).toHaveFocus();
+    });
+
+    it('does not mark a canceled closed-keyboard change dirty', async () => {
+        host.cancelNextValue.set(true);
+        await settle();
+        fixture.nativeElement
+            .querySelector('[rdxSelectTrigger]')
+            .dispatchEvent(new KeyboardEvent('keydown', { key: 'a', bubbles: true }));
+        await settle();
+        expect(host.control.value).toBe('Banana');
+        expect(host.control.pristine).toBe(true);
+        expect(selectRoot(fixture).open()).toBe(false);
+    });
+
     it('lets the form value win over defaultValue and accepts programmatic writes', async () => {
         expect(selectRoot(fixture).value()).toBe('Banana');
 
@@ -459,6 +488,21 @@ describe('Select with template-driven forms', () => {
         fixture = TestBed.createComponent(SelectTemplateDrivenFormsHost);
         host = fixture.componentInstance;
         await settle();
+    });
+
+    it('updates ngModel from a multi-character query without opening', async () => {
+        host.fruits.push('Apricot');
+        fixture.changeDetectorRef.markForCheck();
+        await settle();
+        const trigger = fixture.nativeElement.querySelector('[rdxSelectTrigger]') as HTMLElement;
+        trigger.focus();
+        for (const key of 'apr') {
+            trigger.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+            await settle();
+        }
+        expect(host.value).toBe('Apricot');
+        expect(selectRoot(fixture).open()).toBe(false);
+        expect(trigger).toHaveFocus();
     });
 
     it('round-trips values through ngModel', async () => {

@@ -205,17 +205,24 @@ The shared lifecycle is documented in
 
 ### Typeahead
 
-Open the popup and start typing to highlight a matching option. Characters form a prefix for 750 ms;
-a pause starts a new search. Repeated initials cycle through matching options, and Space continues an
-active query, so you can type `new y` to find **New York** without selecting **Newark**.
+Focus the closed trigger and type to select a matching option without opening the popup or moving
+focus. Repeated initials cycle through matches; `new y` selects **New York**. Closed-trigger search
+is available in single mode and skips disabled options. A disabled/read-only Select and a multiple
+Select keep their values unchanged when typed into while closed.
 
-Typing changes only the highlight. Enter selects it; Space selects it when there is no active search.
-Disabled options are skipped by text matching. Search also works while the open Select is read-only,
-and in multiple mode selection still requires Enter or an idle Space. Closing or reopening the popup,
-changing the selected item, or leaving the control clears the search, including with `keepMounted`.
+In the open popup, typing changes only the highlight. Enter selects it; Space selects it when there
+is no active search. During a query, Space continues the label, so multiword names remain searchable.
+Open-popup search remains available in read-only and multiple modes without committing by itself.
 
-A new session starts after the selected item; with no selection it starts after the current highlight.
-A query with no match clears immediately so the next character can start another search.
+Both modes use a 750ms session. Typing a value while closed keeps the prefix so later letters can
+refine it. A query with no match clears immediately. Opening the popup, leaving the control, a form
+reset or an external Angular form write clears the session. An idle Space opens the closed popup.
+
+Closed matches emit the usual cancelable `onValueChange` with reason `none` and update Angular Forms
+through Root. They do not emit an open request or lock page scrolling. Option metadata loads only
+when needed and stays hidden; temporary views are released after a pause or blur. Use the
+`keepMounted` Storybook control to compare retained views. The `textValue` input provides an explicit
+search alias; otherwise matching reads the current ItemText.
 
 <Canvas of={Stories.Typeahead} />
 

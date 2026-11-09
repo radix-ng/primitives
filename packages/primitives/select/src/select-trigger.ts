@@ -39,7 +39,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
         '(pointerup)': 'onPointerUp($event)',
         '(keydown)': 'onKeydown($event)',
         '(focus)': 'onFocus()',
-        '(blur)': 'onBlur()'
+        '(blur)': 'onBlur($event)'
     }
 })
 export class RdxSelectTrigger {
@@ -108,6 +108,9 @@ export class RdxSelectTrigger {
             this.rootContext.triggerId.set(this.id());
             this.fieldRootContext?.setControlId(this.id());
             this.fieldRootContext?.setFilled(!this.rootContext.isEmptyModelValue());
+        });
+        effect(() => {
+            if (this.isDisabled()) this.rootContext.resetTypeahead();
         });
         inject(DestroyRef).onDestroy(() => {
             if (this.rootContext.triggerElement() === this.elementRef.nativeElement) {
@@ -178,10 +181,23 @@ export class RdxSelectTrigger {
 
     onKeydown(event: Event) {
         const keyEvent = event as KeyboardEvent;
+        if (this.isDisabled() || keyEvent.isComposing) return;
+        if (!this.rootContext.open() && keyEvent.key === ' ' && this.rootContext.isTypeaheadActive()) {
+            if (keyEvent.ctrlKey || keyEvent.altKey || keyEvent.metaKey) {
+                event.preventDefault();
+                return;
+            }
+            if (this.rootContext.onClosedTypeahead(keyEvent)) {
+                event.preventDefault();
+                return;
+            }
+        }
         if (OPEN_KEYS.includes(keyEvent.key)) {
             const reason =
                 keyEvent.key === 'ArrowUp' || keyEvent.key === 'ArrowDown' ? 'list-navigation' : 'trigger-press';
             this.handleOpen(reason, event);
+            event.preventDefault();
+        } else if (!this.rootContext.open() && this.rootContext.onClosedTypeahead(keyEvent)) {
             event.preventDefault();
         }
     }
@@ -190,7 +206,9 @@ export class RdxSelectTrigger {
         this.fieldRootContext?.setFocused(true);
     }
 
-    onBlur(): void {
+    onBlur(event?: FocusEvent): void {
+        if (event) this.rootContext.onTypeaheadFocusOut(event);
+        else this.rootContext.resetTypeahead();
         this.fieldRootContext?.setFocused(false);
         this.fieldRootContext?.setTouched(true);
         // Notify Signal Forms (touched model + touch output) the control was touched.

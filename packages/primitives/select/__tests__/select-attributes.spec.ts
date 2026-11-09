@@ -315,6 +315,20 @@ describe('Select with Signal Forms', () => {
         await settle();
     });
 
+    it('updates the signal field through a closed-trigger query without losing its prefix', async () => {
+        host.fruits.push('Apricot');
+        fixture.changeDetectorRef.markForCheck();
+        await settle();
+        trigger().focus();
+        for (const key of 'apr') {
+            trigger().dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+            await settle();
+        }
+        expect(host.model().city).toBe('Apricot');
+        expect(root().open()).toBe(false);
+        expect(trigger()).toHaveFocus();
+    });
+
     it('reflects the bound field value (FormValueControl)', () => {
         expect(root().value()).toBe('Banana');
         expect(trigger().getAttribute('data-filled')).toBe('');

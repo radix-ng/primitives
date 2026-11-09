@@ -56,11 +56,13 @@ callers retain automatic array detection. Core `compareItemEquality` guards null
 custom comparison; Select keeps identity defaults and Combobox keeps its existing equality policy.
 
 **Typeahead matching:** core `findTypeaheadMatch` is a pure, indexed, case-insensitive prefix matcher
-used by Select and Menu. Null labels represent unavailable entries. Select's open-popup session owns
-its query, 750ms timeout and origin, resetting through Angular effects and DestroyRef; it does not
-mirror selection state or copy a React store. Menu keeps its existing session and timeout policy.
-Selection, focus, availability and view mounting stay with their respective primitive. Closed-trigger
-Select typing remains a separate parity gap (Select `PARITY.md`).
+used by Select and Menu. Null labels represent unavailable entries. Select Root owns one Trigger/Popup
+query, 750ms timeout and origin; it does not mirror selection or copy a React store. Closed typing
+commits through Root, while open typing only highlights. Root shares lazy option preparation with
+autofill, coalescing reads/keys across Angular rendering and releasing hidden query views at session
+end. Metadata uses current DOM order, explicit aliases and live ItemText rather than a mount-time
+text cache. Blur/open/reset/mode changes and destruction invalidate stale work. Menu retains its own
+session and timeout policy; focus, eligibility and mounting remain primitive-owned (Select `PARITY.md`).
 
 ## Tech stack
 

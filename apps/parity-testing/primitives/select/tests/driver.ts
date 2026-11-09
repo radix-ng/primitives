@@ -50,12 +50,12 @@ export class SelectDriver {
     option(key: string) {
         return this.page.locator(`[data-option-key="${key}"]`);
     }
-    async open(pointer = false): Promise<void> {
+    async open(pointer = false, key: 'Enter' | 'Space' = 'Enter'): Promise<void> {
         const count = await this.page.evaluate(
             () => window.parity.events.filter((event) => event.type === 'complete' && event.open).length
         );
         if (pointer) await this.trigger.click();
-        else await this.trigger.press('Enter');
+        else await this.trigger.press(key);
         await expect(this.trigger).toHaveAttribute('aria-expanded', 'true');
         await expect
             .poll(() =>
@@ -64,6 +64,14 @@ export class SelectDriver {
                 )
             )
             .toBe(count + 1);
+        // Keyboard input starts when focus has actually entered the visible popup.
+        // Keep its exact target in snapshots; Angular virtual focus and Base UI item focus still differ.
+        await expect(this.page.getByTestId('popup')).toBeVisible();
+        await expect
+            .poll(() =>
+                this.page.getByTestId('popup').evaluate((popup) => popup.contains(popup.ownerDocument.activeElement))
+            )
+            .toBe(true);
     }
     async key(key: string): Promise<void> {
         await this.page.keyboard.press(key);

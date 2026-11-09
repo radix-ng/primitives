@@ -91,7 +91,7 @@ class AngularSelectFixture {
         this.trace.open(open, eventDetails.reason, eventDetails.isCanceled(), eventDetails.event, held);
     }
     valueChange({ value, eventDetails }: RdxSelectValueChangeEvent<ItemValue>): void {
-        if (this.config.name === 'cancel-value') eventDetails.cancel();
+        if (this.config.name === 'cancel-value' || this.config.name === 'typeahead-cancel-value') eventDetails.cancel();
         this.trace.value(value, eventDetails.reason, eventDetails.isCanceled(), eventDetails.event);
     }
 }

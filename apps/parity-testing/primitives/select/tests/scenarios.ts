@@ -1,9 +1,11 @@
+import { closedTypeaheadScenarios } from './closed-typeahead.scenarios';
 import { type Snapshot } from './driver';
 import type { Scenario } from './scenario';
 import { typeaheadScenarios } from './typeahead.scenarios';
 
 export const scenarios: Scenario[] = [
     ...typeaheadScenarios,
+    ...closedTypeaheadScenarios,
     {
         name: 'keyboard and typeahead',
         fixture: 'single',

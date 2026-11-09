@@ -838,5 +838,293 @@
         "angular": [],
         "react": ["new-york"],
         "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: blur resets search",
+        "checkpoint": "focused while closed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: blur resets search",
+        "checkpoint": "focused while closed",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: blur resets search",
+        "checkpoint": "fresh after blur",
+        "field": "inert",
+        "angular": true,
+        "react": false,
+        "category": "closed-options-inert"
+    },
+    {
+        "scenario": "closed typeahead: duplicate labels",
+        "checkpoint": "focused while closed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: duplicate labels",
+        "checkpoint": "focused while closed",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: duplicate labels",
+        "checkpoint": "first Berlin",
+        "field": "inert",
+        "angular": true,
+        "react": false,
+        "category": "closed-options-inert"
+    },
+    {
+        "scenario": "closed typeahead: duplicate labels",
+        "checkpoint": "second Berlin",
+        "field": "inert",
+        "angular": true,
+        "react": false,
+        "category": "closed-options-inert"
+    },
+    {
+        "scenario": "closed typeahead: inactive in typeahead-multiple",
+        "checkpoint": "focused while closed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: inactive in typeahead-multiple",
+        "checkpoint": "focused while closed",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: inactive in typeahead-multiple",
+        "checkpoint": "unchanged",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: inactive in typeahead-multiple",
+        "checkpoint": "unchanged",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: inactive in typeahead-read-only",
+        "checkpoint": "focused while closed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: inactive in typeahead-read-only",
+        "checkpoint": "focused while closed",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: inactive in typeahead-read-only",
+        "checkpoint": "unchanged",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: inactive in typeahead-read-only",
+        "checkpoint": "unchanged",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: popup blur resets search",
+        "checkpoint": "fresh after popup blur",
+        "field": "inert",
+        "angular": true,
+        "react": false,
+        "category": "closed-options-inert"
+    },
+    {
+        "scenario": "closed typeahead: prefix and cycling",
+        "checkpoint": "focused while closed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: prefix and cycling",
+        "checkpoint": "focused while closed",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: prefix and cycling",
+        "checkpoint": "first match",
+        "field": "inert",
+        "angular": true,
+        "react": false,
+        "category": "closed-options-inert"
+    },
+    {
+        "scenario": "closed typeahead: prefix and cycling",
+        "checkpoint": "cycled",
+        "field": "inert",
+        "angular": true,
+        "react": false,
+        "category": "closed-options-inert"
+    },
+    {
+        "scenario": "closed typeahead: rapid multiword",
+        "checkpoint": "focused while closed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: rapid multiword",
+        "checkpoint": "focused while closed",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: rapid multiword",
+        "checkpoint": "multiword committed",
+        "field": "inert",
+        "angular": true,
+        "react": false,
+        "category": "closed-options-inert"
+    },
+    {
+        "scenario": "closed typeahead: skips disabled matches",
+        "checkpoint": "focused while closed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: skips disabled matches",
+        "checkpoint": "focused while closed",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: skips disabled matches",
+        "checkpoint": "ignored",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: skips disabled matches",
+        "checkpoint": "ignored",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: timeout and idle Space",
+        "checkpoint": "focused while closed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: timeout and idle Space",
+        "checkpoint": "focused while closed",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: timeout and idle Space",
+        "checkpoint": "expired",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: timeout and idle Space",
+        "checkpoint": "expired",
+        "field": "selected",
+        "angular": [],
+        "react": ["berlin"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: timeout and idle Space",
+        "checkpoint": "opened normally",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:berlin",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "closed typeahead: value cancellation",
+        "checkpoint": "focused while closed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: value cancellation",
+        "checkpoint": "focused while closed",
+        "field": "selected",
+        "angular": [],
+        "react": ["amsterdam"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "closed typeahead: value cancellation",
+        "checkpoint": "first canceled",
+        "field": "inert",
+        "angular": true,
+        "react": false,
+        "category": "closed-options-inert"
+    },
+    {
+        "scenario": "closed typeahead: value cancellation",
+        "checkpoint": "cycling canceled",
+        "field": "inert",
+        "angular": true,
+        "react": false,
+        "category": "closed-options-inert"
     }
 ]

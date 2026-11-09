@@ -31,7 +31,6 @@ import {
 import { composedContains } from '@radix-ng/primitives/focus-scope';
 import { RdxPopperContent } from '@radix-ng/primitives/popper';
 import { injectSelectRootContext } from './select-root';
-import { createSelectTypeahead, SELECT_TYPEAHEAD_RESET_MS } from './select-typeahead';
 import { RdxSelectItemMetadata, SELECTION_KEYS, valueComparator } from './utils';
 
 type RdxSelectCompositeItem = RdxCompositeItemRegistration<RdxSelectItemMetadata>;
@@ -160,7 +159,7 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
         '[dir]': 'rootContext.dir()',
 
         '(keydown)': 'handleKeyDown($event)',
-        '(focusout)': 'onSearchFocusOut($event)',
+        '(focusout)': 'rootContext.onTypeaheadFocusOut($event)',
 
         '[style]': `{
             display: rootContext.autofillProbe() && !rootContext.open() ? 'none' : 'flex',
@@ -229,7 +228,6 @@ export class RdxSelectPopup {
     private keyboardActive = false;
     private hasHighlightedOpen = false;
 
-    private readonly typeahead = createSelectTypeahead();
     private readonly selectedIndex = computed(() =>
         this.items().findIndex((item) =>
             valueComparator(
@@ -240,7 +238,6 @@ export class RdxSelectPopup {
             )
         )
     );
-    private typeaheadTimer?: ReturnType<typeof setTimeout>;
 
     /**
      * Event handler called when the escape key is down.
@@ -277,9 +274,9 @@ export class RdxSelectPopup {
         });
 
         effect(() => {
-            this.rootContext.open();
+            const open = this.rootContext.open();
             this.selectedIndex();
-            this.resetTypeahead();
+            if (open) this.rootContext.resetTypeahead();
         });
 
         effect(() => {
@@ -324,7 +321,6 @@ export class RdxSelectPopup {
         // The popup's animation determines when the open/close transition (onOpenChangeComplete) is done.
         const unregisterTransition = this.rootContext.registerTransitionElement(this.currentElement.nativeElement);
         inject(DestroyRef).onDestroy(unregisterTransition);
-        inject(DestroyRef).onDestroy(() => this.resetTypeahead());
 
         // The popup (listbox) is this layer's floating element — the inside surface for containment.
         this.floatingContext.setFloatingElement(this.currentElement.nativeElement);
@@ -477,7 +473,7 @@ export class RdxSelectPopup {
             return;
         }
 
-        if (keyEvent.key === ' ' && this.typeahead.active) {
+        if (keyEvent.key === ' ' && this.rootContext.isTypeaheadActive()) {
             keyEvent.preventDefault();
             if (!keyEvent.ctrlKey && !keyEvent.altKey && !keyEvent.metaKey) this.handleTypeahead(' ');
             return;
@@ -528,6 +524,7 @@ export class RdxSelectPopup {
                     this.highlight.last();
                     break;
             }
+            if (this.highlight.highlightedItem()) this.hasHighlightedOpen = true;
             return;
         }
 
@@ -539,13 +536,11 @@ export class RdxSelectPopup {
     }
 
     private handleTypeahead(key: string): void {
-        clearTimeout(this.typeaheadTimer);
-        this.typeaheadTimer = setTimeout(() => this.resetTypeahead(), SELECT_TYPEAHEAD_RESET_MS);
         const items = this.items();
         const selected = this.selectedIndex();
         const current = this.highlight.highlightedItem();
         const origin = selected >= 0 ? selected : current ? items.indexOf(current) : -1;
-        const index = this.typeahead.match(
+        const index = this.rootContext.searchTypeahead(
             key,
             items.map((item) => ({
                 text: this.itemText(item),
@@ -555,28 +550,17 @@ export class RdxSelectPopup {
         );
         if (index !== undefined) {
             this.keyboardActive = true;
+            this.hasHighlightedOpen = true;
             this.highlight.set(items[index]);
         }
     }
 
-    private resetTypeahead(): void {
-        clearTimeout(this.typeaheadTimer);
-        this.typeaheadTimer = undefined;
-        this.typeahead.reset();
-    }
-
-    onSearchFocusOut(event: FocusEvent): void {
-        const next = event.relatedTarget;
-        if (
-            next instanceof Node &&
-            (composedContains(this.currentElement.nativeElement, next) ||
-                this.rootContext.triggerElement()?.contains(next))
-        )
-            return;
-        this.resetTypeahead();
-    }
-
     private itemText(item: RdxSelectCompositeItem): string {
-        return (item.metadata()?.textValue || item.element.textContent || '').trim();
+        return (
+            item.metadata()?.textValue ||
+            item.metadata()?.textElement?.textContent ||
+            item.element.textContent ||
+            ''
+        ).trim();
     }
 }

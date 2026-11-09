@@ -20,6 +20,7 @@ import {
     WritableSignal
 } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
+import { compareNodeDocumentPosition } from '@radix-ng/primitives/composite';
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
@@ -52,8 +53,10 @@ import {
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { injectFieldRootContext } from '@radix-ng/primitives/field';
 import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
+import { composedContains } from '@radix-ng/primitives/focus-scope';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 import { RdxSelectItems, resolveSelectLabel } from './select-items';
+import { createSelectTypeahead, SELECT_TYPEAHEAD_RESET_MS, SelectTypeaheadEntry } from './select-typeahead';
 import { compare } from './utils';
 
 export type { RdxSelectItemGroup, RdxSelectItemOption, RdxSelectItems, RdxSelectLabelValue } from './select-items';
@@ -62,6 +65,10 @@ export interface SelectOption<Value = unknown> {
     value: Value | undefined;
     disabled?: boolean;
     textContent: string;
+    /** @internal Rendered option metadata for keyboard search. */
+    textValue?: string;
+    /** @internal Used to resolve the current DOM order after projection or reordering. */
+    element?: HTMLElement;
 }
 
 export type RdxSelectOpenMethod = RdxInteractionType;
@@ -142,6 +149,11 @@ export interface RdxSelectRootContext<Value = unknown> extends RdxFormUiStateCon
     onTriggerChange: (node: ElementRef<HTMLElement>) => void;
     onValueElementChange: (node: HTMLElement) => void;
     onOpenChange: (value: boolean, reason?: RdxSelectOpenChangeReason, event?: Event) => boolean;
+    isTypeaheadActive: () => boolean;
+    searchTypeahead: (key: string, entries: readonly SelectTypeaheadEntry[], origin: number) => number | undefined;
+    resetTypeahead: () => void;
+    onTypeaheadFocusOut: (event: FocusEvent) => void;
+    onClosedTypeahead: (event: KeyboardEvent) => boolean;
 }
 
 // Angular DI erases a family's template generics. Independent child directives exchange unknown
@@ -194,7 +206,12 @@ const context = (): RdxSelectRootContext => {
             context.valueElement.set(node);
         },
         onOpenChange: (value: boolean, reason?: RdxSelectOpenChangeReason, event?: Event) =>
-            context.setOpen(value, reason, event)
+            context.setOpen(value, reason, event),
+        isTypeaheadActive: () => context.isTypeaheadActive(),
+        searchTypeahead: (key, entries, origin) => context.searchTypeahead(key, entries, origin),
+        resetTypeahead: () => context.resetTypeahead(),
+        onTypeaheadFocusOut: (event) => context.onTypeaheadFocusOut(event),
+        onClosedTypeahead: (event) => context.onClosedTypeahead(event)
     };
 };
 
@@ -244,13 +261,20 @@ export class RdxSelectRoot<Value = unknown, Multiple extends boolean = boolean>
 
     readonly open = model<boolean>(false);
     private readonly forceMount = signal(false, { debugName: 'RdxSelectRoot.forceMount' });
-    /** @internal Retained until the next open so a probe cannot flash during presence cleanup. */
+    /** @internal Hidden metadata reads for autofill and typeahead; retained until the next open. */
     readonly autofillProbe = signal(false, { debugName: 'RdxSelectRoot.autofillProbe' });
-    /** @internal Mount while open, during a deferred close, or to resolve browser-autofilled items. */
+    /** @internal Mount while open, during a deferred close, or to resolve option metadata on demand. */
     readonly present = computed(() => this.lifecycle.present() || this.forceMount(), {
         debugName: 'RdxSelectRoot.present'
     });
     private autofillRequest = 0;
+    private optionReaders = 0;
+    private optionsRendered?: Promise<void>;
+    private readonly typeahead = createSelectTypeahead();
+    private typeaheadTimer?: ReturnType<typeof setTimeout>;
+    private typeaheadGeneration = 0;
+    private readonly queuedTypeahead: KeyboardEvent[] = [];
+    private closedTypeaheadRunning = false;
 
     /** Whether the current open was initiated by **touch** (ADR 0016 §3 — gates the anchored scroll lock). */
     readonly openedByTouch = signal(false);
@@ -411,6 +435,7 @@ export class RdxSelectRoot<Value = unknown, Multiple extends boolean = boolean>
         },
         onReset: (value) => {
             this.autofillRequest++;
+            this.resetTypeahead();
             this.forceMount.set(false);
             this.value.set(value);
             if (!this.resetNgControl(value)) {
@@ -427,29 +452,53 @@ export class RdxSelectRoot<Value = unknown, Multiple extends boolean = boolean>
         return !this.multiple();
     }
 
+    /** Resolve live option metadata without opening, focusing or permanently retaining the popup. */
+    private async withOptions(read: (options: SelectOption<Value>[]) => void): Promise<void> {
+        this.optionReaders++;
+        try {
+            if (this.optionGetters().length === 0) {
+                if (!this.optionsRendered) {
+                    if (!this.open() && !this.lifecycle.present()) this.autofillProbe.set(true);
+                    this.forceMount.set(true);
+                    this.optionsRendered = new Promise<void>((resolve) => {
+                        const unregister = this.destroyRef.onDestroy(resolve);
+                        afterNextRender(
+                            {
+                                read: () => {
+                                    unregister();
+                                    resolve();
+                                }
+                            },
+                            { injector: this.injector }
+                        );
+                    });
+                }
+                await this.optionsRendered;
+            }
+            if (this.destroyRef.destroyed) return;
+            const options = this.optionGetters().map((option) => option());
+            options.sort((a, b) => (a.element && b.element ? compareNodeDocumentPosition(a.element, b.element) : 0));
+            read(options);
+        } finally {
+            if (--this.optionReaders === 0) {
+                this.optionsRendered = undefined;
+                this.forceMount.set(this.typeahead.active && !this.open());
+            }
+        }
+    }
+
     private async handleAutofill(text: string, event: Event): Promise<void> {
         if (!this.scalarNativeValue() || this.disabledState() || this.readOnly()) return;
+        this.resetTypeahead();
         const request = ++this.autofillRequest;
-        if (!this.open()) {
-            this.autofillProbe.set(true);
-            this.forceMount.set(true);
-        }
-        // Items and their labels are now available even when the popup had never opened.
-        await new Promise<void>((resolve) => {
-            const unregister = this.destroyRef.onDestroy(resolve);
-            afterNextRender(
-                {
-                    read: () => {
-                        unregister();
-                        resolve();
-                    }
-                },
-                { injector: this.injector }
-            );
-        });
-        if (this.destroyRef.destroyed || request !== this.autofillRequest) return;
-        try {
-            const options = this.optionGetters().map((option) => option());
+        await this.withOptions((options) => {
+            if (
+                request !== this.autofillRequest ||
+                !this.scalarNativeValue() ||
+                this.disabledState() ||
+                this.readOnly()
+            )
+                return;
             const key = text.toLowerCase();
             const match =
                 options.find(
@@ -460,19 +509,115 @@ export class RdxSelectRoot<Value = unknown, Multiple extends boolean = boolean>
                         ).toLowerCase() === key ||
                             resolveSelectLabel(option.value, undefined, this.itemToStringLabel()).toLowerCase() === key)
                 ) ?? options.find((option) => option.value != null && option.textContent.toLowerCase() === key);
-            if (match && !compare(this.value() as Value, match.value, this.isItemEqualToValue())) {
+            if (match && !compare(this.value() as Value, match.value, this.isItemEqualToValue()))
                 this.setValue(match.value, 'none', event);
+        });
+    }
+
+    /** @internal One keyboard session shared by Trigger and Popup. */
+    isTypeaheadActive(): boolean {
+        return this.typeahead.active || this.queuedTypeahead.length > 0;
+    }
+
+    /** @internal Match labels without mirroring selection or moving focus. */
+    searchTypeahead(key: string, entries: readonly SelectTypeaheadEntry[], origin: number): number | undefined {
+        clearTimeout(this.typeaheadTimer);
+        this.typeaheadTimer = setTimeout(() => this.resetTypeahead(), SELECT_TYPEAHEAD_RESET_MS);
+        return this.typeahead.match(key, entries, origin);
+    }
+
+    /** @internal Also invalidates keyboard work waiting for an Angular view render. */
+    resetTypeahead(): void {
+        clearTimeout(this.typeaheadTimer);
+        this.typeaheadTimer = undefined;
+        this.typeahead.reset();
+        this.typeaheadGeneration++;
+        this.queuedTypeahead.length = 0;
+        if (this.optionReaders === 0) this.forceMount.set(false);
+    }
+
+    /** @internal Blur within the Trigger/Popup pair preserves the session. */
+    onTypeaheadFocusOut(event: FocusEvent): void {
+        const next = event.relatedTarget;
+        if (
+            next instanceof Node &&
+            ((this.triggerElement() && composedContains(this.triggerElement()!, next)) ||
+                (this.floatingContext.floatingElement && composedContains(this.floatingContext.floatingElement, next)))
+        )
+            return;
+        this.resetTypeahead();
+    }
+
+    private closedTypeaheadEnabled(): boolean {
+        return (
+            !this.destroyRef.destroyed && !this.open() && !this.multiple() && !this.disabledState() && !this.readOnly()
+        );
+    }
+
+    /** @internal Capture keys synchronously; option discovery may need one Angular render. */
+    onClosedTypeahead(event: KeyboardEvent): boolean {
+        if (
+            !this.closedTypeaheadEnabled() ||
+            event.defaultPrevented ||
+            event.isComposing ||
+            event.key.length !== 1 ||
+            event.ctrlKey ||
+            event.altKey ||
+            event.metaKey
+        )
+            return false;
+        this.autofillRequest++;
+        this.queuedTypeahead.push(event);
+        clearTimeout(this.typeaheadTimer);
+        this.typeaheadTimer = setTimeout(() => this.resetTypeahead(), SELECT_TYPEAHEAD_RESET_MS);
+        if (!this.closedTypeaheadRunning) this.runClosedTypeahead();
+        return true;
+    }
+
+    private runClosedTypeahead(): void {
+        const generation = this.typeaheadGeneration;
+        this.closedTypeaheadRunning = true;
+        void this.withOptions((options) => {
+            while (
+                generation === this.typeaheadGeneration &&
+                this.closedTypeaheadEnabled() &&
+                this.queuedTypeahead.length
+            ) {
+                const event = this.queuedTypeahead.shift()!;
+                if (event.key === ' ' && !this.typeahead.active) {
+                    this.setOpen(true, 'trigger-press', event);
+                    break;
+                }
+                const selected = options.findIndex((option) =>
+                    compare(this.value() as Value, option.value, this.isItemEqualToValue())
+                );
+                const index = this.searchTypeahead(
+                    event.key,
+                    options.map((option) => ({
+                        text: option.textValue || option.textContent,
+                        disabled: !!option.disabled
+                    })),
+                    selected
+                );
+                if (index !== undefined) this.setValue(options[index].value, 'none', event);
             }
-        } finally {
-            this.forceMount.set(false);
-        }
+        }).finally(() => {
+            this.closedTypeaheadRunning = false;
+            if (this.queuedTypeahead.length && this.closedTypeaheadEnabled()) this.runClosedTypeahead();
+        });
     }
 
     constructor() {
         super();
 
+        this.destroyRef.onDestroy(() => this.resetTypeahead());
         effect(() => {
-            if (this.open()) this.autofillProbe.set(false);
+            if (this.open()) {
+                this.autofillProbe.set(false);
+                this.resetTypeahead();
+            } else if (this.disabledState() || this.readOnly() || this.multiple()) {
+                this.resetTypeahead();
+            }
         });
 
         // Root is also valid on ng-container. Forward its logical id without host bindings on
@@ -648,6 +793,7 @@ export class RdxSelectRoot<Value = unknown, Multiple extends boolean = boolean>
 
     /** @ignore Write a form-owned value without emitting a user change. */
     writeValue(value: RdxSelectValueType<Value, Multiple>): void {
+        if (!Object.is(this.value(), value)) this.resetTypeahead();
         untracked(() => this.value.set(value));
     }
 

@@ -93,10 +93,12 @@ export const ArbitraryValues: Story = {
 };
 
 export const Typeahead: Story = {
+    args: { keepMounted: false },
     parameters: source(typeaheadSource),
-    render: () => ({
+    render: (args) => ({
+        props: args,
         template: html`
-            <select-typeahead />
+            <select-typeahead [keepMounted]="keepMounted" />
         `
     })
 };

@@ -30,7 +30,9 @@ reset, explicit array selection mode and inert held exits instead of reproducing
 Disabled options participate in arrow/Home/End navigation, independently of selection eligibility;
 typeahead matches enabled options only. Select uses the existing shared highlight predicate without
 changing item DOM focus or the default focus-out policy. Open-popup typeahead now has dedicated differential coverage, including mixed Space sessions.
-Closed-trigger typing remains a separate behavior gap. Do not patch the reference
+Closed-trigger typing now has dedicated comparisons. Angular resolves hidden item metadata only for
+an actual read, sharing preparation with autofill; the reference pre-mounts on focus. Lifetime and
+inert differences remain explicit exceptions, independent of value/event parity. Do not patch the reference
 to make a comparison pass. Its Portal currently lacks `keepMounted`; existing Angular coverage remains
 necessary for that contract.
 

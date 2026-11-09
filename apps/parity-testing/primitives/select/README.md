@@ -16,7 +16,7 @@ Shared preparation, TypeScript tooling and commands are documented in the
 
 ## What is compared
 
-The 31 scenarios exercise keyboard/typeahead, pointer/multiple selection, disabled/read-only states,
+The 41 scenarios exercise keyboard/typeahead, pointer/multiple selection, disabled/read-only states,
 open/value/close cancellation, imperative close and deferred unmount/reopen, native form reset,
 object/array values, Tab/Shift+Tab and focus outside. The default and opt-in Angular focus policies
 are separate scenarios. Both fixtures use uncontrolled defaults and their real public actions.
@@ -52,6 +52,9 @@ still apply to both implementations. The report preserves all raw observations e
 - `closed-dom-retention`: the reference keeps a hidden popup and selected option nodes after close
   or canceled opening; Angular releases that view. Logical state, visibility and form values are
   compared separately and cannot be hidden by this exception.
+- `closed-options-inert`: Angular's hidden metadata view is inert while a closed query is active;
+  the pinned reference does not set inert on that hidden surface. Visibility, focus, callbacks and
+  form entries are compared separately. This retains Angular's existing closed-content safety rule.
 - `deferred-exit-safety`: Angular makes held, logically closed content inert and the browser drops
   focus from it; the reference retains item focus without `inert`. During this held phase only,
   Angular focus may be `body` or `trigger` (browser inert/focus-guard scheduling). Both exact targets
@@ -79,20 +82,31 @@ and the active-item origin with no selection. Shared assertions check actual hig
 state and form entries. No typeahead exception category is needed; only the existing DOM focus and
 closed-view retention differences remain on these checkpoints.
 
-Select keeps ephemeral session state locally. The case-insensitive, indexed prefix matcher is shared
-with Menu in core; Menu retains its own timeout and session policy. Index matching preserves distinct
-values when labels are equal. Unit coverage verifies exact timeout boundaries, composition/modifiers,
-external value changes, focus leaving and logical close/reset with and without retained Angular views.
-Late positioner notifications cannot reinitialize the highlight over a newer keyboard search.
-The Storybook Typeahead demo exercises multiword search, cycling, idle-Space activation and disabled
-items through real keyboard interactions.
+Trigger and Popup share one ephemeral session owned by Root. The case-insensitive, indexed prefix
+matcher is shared with Menu in core; Menu retains its own timeout and focus policy. Index matching
+preserves distinct values when labels are equal. Unit coverage verifies exact timeout boundaries,
+composition/modifiers, external form writes, focus leaving, live labels/order, and logical open/reset
+with and without retained Angular views. A late positioner notification cannot overwrite an already
+chosen keyboard highlight.
 
-**Remaining:** closed-trigger typeahead (selecting a single value without opening the popup) is an
-unimplemented Angular behavior and has no differential coverage yet. The pinned reference mounts
-options on trigger focus. An Angular implementation should use its option metadata and view lifecycle
-when a search needs them, preserving model ownership and cancellation instead of copying React refs
-or a render flag. Saved-profile autofill, real AT, additional browsers and the other scope limits above
-remain separate verification work.
+`tests/closed-typeahead.scenarios.ts` adds ten comparisons for selection without opening, rapid
+multiword input, cycling, value cancellation, timeout/idle Space, blur, popup-to-trigger reset,
+duplicate labels, disabled matching and read-only/multiple locks. No value/event/open-state
+exceptions are needed. Native key events are retained by Angular; the reference creates generic
+reason-`none` events, recorded separately as native-event evidence.
+
+Closed reads share Root's on-demand option preparation with autofill. Focus alone does not mount the
+Angular popup. The first query resolves projected item metadata after Angular renders, coalesces
+pending keys, and reads current DOM order and explicit aliases/live ItemText. A temporary view stays
+hidden and inert for the active 750ms session, then releases on timeout or blur; `keepMounted` is
+respected. Opening, reset, disabled/read-only/multiple transitions, blur and destruction invalidate
+stale pending keyboard work. Canceled requests leave values, native entries and form dirty state
+unchanged. Reactive Forms, ngModel and Signal Forms have direct closed-query regression coverage.
+
+The Storybook Typeahead demo supports both closed selection and open highlighting. Keyboard tests
+wait for actual focus inside a visible popup before sending open-list keys, without forcing focus or
+changing state; snapshots still record the exact framework-specific focus target. Real AT,
+additional browsers and saved-profile autofill remain separate verification work.
 
 ## Evidence and CI
 

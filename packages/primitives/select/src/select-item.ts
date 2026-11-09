@@ -7,7 +7,6 @@ import {
     ElementRef,
     inject,
     input,
-    linkedSignal,
     Signal,
     signal
 } from '@angular/core';
@@ -39,7 +38,6 @@ const context = (): RdxSelectItemContext => {
         textId: context.textId,
 
         onItemTextChange: (node: HTMLElement) => {
-            context.textValue$.set(((context.textValue$() || node.textContent) ?? '').trim());
             return context.registerItemText(node);
         }
     };
@@ -83,11 +81,12 @@ export class RdxSelectItem<Value = unknown> {
 
     readonly disabled = input(false, { transform: booleanAttribute });
 
-    readonly textValue$ = linkedSignal(this.textValue);
     private readonly itemTextElement = signal<HTMLElement | undefined>(undefined);
     private readonly option = () => ({
         value: this.value(),
         disabled: this.disabled(),
+        textValue: this.textValue(),
+        element: this.currentElement.nativeElement,
         textContent: (this.itemTextElement()?.textContent ?? this.currentElement.nativeElement.textContent ?? '').trim()
     });
 
@@ -125,7 +124,7 @@ export class RdxSelectItem<Value = unknown> {
             this.listItem.setMetadata({
                 value: this.value(),
                 disabled: this.disabled(),
-                textValue: this.textValue$(),
+                textValue: this.textValue(),
                 textElement: this.itemTextElement()
             });
         });

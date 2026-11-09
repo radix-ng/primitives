@@ -37,7 +37,7 @@ function ReactSelectFixture() {
                     trace.open(open, details.reason, details.isCanceled, details.event, held);
                 }}
                 onValueChange={(value, details) => {
-                    if (config.name === 'cancel-value') details.cancel();
+                    if (config.name === 'cancel-value' || config.name === 'typeahead-cancel-value') details.cancel();
                     trace.value(value, details.reason, details.isCanceled, details.event);
                 }}
                 onOpenChangeComplete={trace.complete}

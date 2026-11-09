@@ -16,7 +16,8 @@ export type CaseName =
     | 'typeahead-multiple'
     | 'typeahead-double-letter'
     | 'typeahead-duplicate-labels'
-    | 'typeahead-no-selection';
+    | 'typeahead-no-selection'
+    | 'typeahead-cancel-value';
 export type ItemValue = string | { id: string; label: string } | number[];
 export type Selection = ItemValue | ItemValue[] | null;
 export interface Option {
@@ -81,7 +82,8 @@ export function fixtureConfig(): FixtureConfig {
         'typeahead-multiple',
         'typeahead-double-letter',
         'typeahead-duplicate-labels',
-        'typeahead-no-selection'
+        'typeahead-no-selection',
+        'typeahead-cancel-value'
     ];
     if (!names.includes(name as CaseName)) throw new Error(`Unknown fixture case: ${name}`);
     let options: Option[] = [

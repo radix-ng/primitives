@@ -4,20 +4,27 @@
 
 > Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
-Open the popup and start typing to highlight a matching option. Characters form a prefix for 750 ms;
-a pause starts a new search. Repeated initials cycle through matching options, and Space continues an
-active query, so you can type `new y` to find **New York** without selecting **Newark**.
+Focus the closed trigger and type to select a matching option without opening the popup or moving
+focus. Repeated initials cycle through matches; `new y` selects **New York**. Closed-trigger search
+is available in single mode and skips disabled options. A disabled/read-only Select and a multiple
+Select keep their values unchanged when typed into while closed.
 
-Typing changes only the highlight. Enter selects it; Space selects it when there is no active search.
-Disabled options are skipped by text matching. Search also works while the open Select is read-only,
-and in multiple mode selection still requires Enter or an idle Space. Closing or reopening the popup,
-changing the selected item, or leaving the control clears the search, including with `keepMounted`.
+In the open popup, typing changes only the highlight. Enter selects it; Space selects it when there
+is no active search. During a query, Space continues the label, so multiword names remain searchable.
+Open-popup search remains available in read-only and multiple modes without committing by itself.
 
-A new session starts after the selected item; with no selection it starts after the current highlight.
-A query with no match clears immediately so the next character can start another search.
+Both modes use a 750ms session. Typing a value while closed keeps the prefix so later letters can
+refine it. A query with no match clears immediately. Opening the popup, leaving the control, a form
+reset or an external Angular form write clears the session. An idle Space opens the closed popup.
+
+Closed matches emit the usual cancelable `onValueChange` with reason `none` and update Angular Forms
+through Root. They do not emit an open request or lock page scrolling. Option metadata loads only
+when needed and stays hidden; temporary views are released after a pause or blur. Use the
+`keepMounted` Storybook control to compare retained views. The `textValue` input provides an explicit
+search alias; otherwise matching reads the current ItemText.
 
 ```typescript
-import { Component, signal } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { demoSelect } from '../../storybook/styles';
 import { _importsSelect } from '../index';
@@ -33,7 +40,7 @@ import { _importsSelect } from '../index';
                     <span #display="rdxSelectedValue" rdxSelectValue>{{ display.slotText() }}</span>
                     <svg [class]="s.icon" lucideChevronDown size="16" aria-hidden="true" />
                 </button>
-                <ng-template [keepMounted]="true" rdxSelectPortal>
+                <ng-template [keepMounted]="keepMounted()" rdxSelectPortal>
                     <div [class]="s.positioner" sideOffset="6" rdxSelectPositioner>
                         <div [class]="s.popup" rdxSelectPopup>
                             <div class="max-h-64 overflow-y-auto" [class]="s.list" rdxSelectList>
@@ -56,11 +63,12 @@ import { _importsSelect } from '../index';
                 </ng-template>
             </ng-container>
             <p class="text-muted-foreground text-sm">
-                Open the list and type “new y” to find New York. Press B repeatedly to cycle through Berlin and Bern.
+                Focus the button and type “new y” to select New York without opening. Press B repeatedly to cycle
+                through Berlin and Bern.
             </p>
             <p class="text-muted-foreground text-sm">
-                Typing highlights a destination; Enter selects it. Pause briefly to start a new search. Tokyo is
-                unavailable.
+                In the open list, typing only highlights a destination; Enter selects it. Pause briefly to start a new
+                search. Tokyo is unavailable.
             </p>
             <output class="text-muted-foreground font-mono text-xs" data-testid="typeahead-value">
                 Selected: {{ value() }}
@@ -70,6 +78,7 @@ import { _importsSelect } from '../index';
 })
 export class SelectTypeahead {
     protected readonly s = demoSelect;
+    readonly keepMounted = input(false);
     readonly value = signal<string | null | undefined>('amsterdam');
     readonly cities: readonly { value: string; label: string; disabled?: boolean }[] = [
         { value: 'amsterdam', label: 'Amsterdam' },
