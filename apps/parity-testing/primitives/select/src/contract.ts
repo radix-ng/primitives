@@ -2,6 +2,7 @@ export type CaseName =
     | 'single'
     | 'multiple'
     | 'disabled'
+    | 'disabled-navigation'
     | 'read-only'
     | 'cancel-open'
     | 'cancel-value'
@@ -60,6 +61,7 @@ export function fixtureConfig(): FixtureConfig {
         'single',
         'multiple',
         'disabled',
+        'disabled-navigation',
         'read-only',
         'cancel-open',
         'cancel-value',
@@ -76,6 +78,15 @@ export function fixtureConfig(): FixtureConfig {
         { key: 'blueberry', label: 'Blueberry', value: 'blueberry', disabled: true },
         { key: 'cherry', label: 'Cherry', value: 'cherry' }
     ];
+    if (name === 'disabled-navigation')
+        options = [
+            { key: 'apple', label: 'Apple', value: 'apple', disabled: true },
+            { key: 'apricot', label: 'Apricot', value: 'apricot' },
+            { key: 'banana', label: 'Banana', value: 'banana' },
+            { key: 'blueberry', label: 'Blueberry', value: 'blueberry', disabled: true },
+            { key: 'blackberry', label: 'Blackberry', value: 'blackberry' },
+            { key: 'cherry', label: 'Cherry', value: 'cherry', disabled: true }
+        ];
     if (name === 'objects')
         options = options.map((option) => ({ ...option, value: { id: option.key, label: option.label } }));
     if (name === 'array')
@@ -83,10 +94,11 @@ export function fixtureConfig(): FixtureConfig {
             { key: '10:20', label: '10 × 20', value: [10, 20] },
             { key: '30:40', label: '30 × 40', value: [30, 40] }
         ];
+    const initial = name === 'disabled-navigation' ? options[2].value : options[0].value;
     return {
         name: name as CaseName,
         options,
-        initial: name === 'multiple' ? [options[0].value] : options[0].value,
+        initial: name === 'multiple' ? [initial] : initial,
         multiple: name === 'multiple',
         disabled: name === 'disabled',
         readOnly: name === 'read-only',

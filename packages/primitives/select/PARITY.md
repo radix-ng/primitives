@@ -6,7 +6,7 @@ Audited on 2026-11-08; close-lifecycle, focus-policy and arbitrary-Value increme
 reproducible reference. Its package version is 1.9.0; it is not the release tag itself.
 
 This is an API/source audit with linked regression coverage, **not a certification of complete
-behavioral parity**. A shared React/Angular differential runner now checks 18 scenarios against this
+behavioral parity**. A shared React/Angular differential runner now checks 20 scenarios against this
 pin and records exact known differences ([runner documentation](../../../apps/parity-testing/primitives/select/README.md),
 [ADR 0029](../../../docs/adr/0029-select-differential-behavior-checks.md)). Rows marked as gaps remain open.
 
@@ -39,6 +39,21 @@ during item alignment and returns in the anchored touch/pinch-zoom fallback.
 | `actionsRef` and deferred unmount                  | Root `close()` / `unmount()`; per-close opt-out; Portal `keepMounted`                                                                            | `popup-lifecycle.spec.ts`, `select-actions.spec.ts`, AOT fixtures and `select-actions.behavior.spec.ts`: cancelable imperative reason, held exit, single completion, batched actions, keep-mounted view, late-hook and reopen safety, inert closed content and focus. **Adaptation:** Angular template/view references replace a React ref; model writes are Angular-owned. Shared lifecycle and Presence integration are recorded in ADR 0026.                                                  |
 | Typed application wrapper                          | Extends Root and rebinds providers with `provideRdxSelectRoot`                                                                                   | `select-typed-control.ts`, `select-typed-wrapper.spec.ts`, AOT fixtures and browser tests. This is an Angular integration, not a new primitive model.                                                                                                                                                                                                                                                                                                                                            |
 
+## Disabled-option navigation
+
+ArrowUp/ArrowDown and Home/End now highlight disabled options, matching the pinned reference. Enter,
+Space and pointer activation leave the value and popup unchanged for a disabled item; typeahead
+continues matching enabled options only. This uses the existing shared `useListHighlight` predicate;
+navigation eligibility and selection eligibility remain separate caller policies. The Angular virtual
+focus model is unchanged.
+
+**Migration:** arrow navigation no longer skips disabled options. A selected disabled option can
+also be highlighted on open. `select-navigation.spec.ts` covers selection guards, ARIA, boundary
+stopping, all-disabled lists and live disabling/removal. Differential scenarios check disabled
+boundaries, unchanged callbacks/form data and enabled-only typeahead cycling; the
+`disabled-item-navigation` exception category is removed. Mixed Space/typeahead sessions remain a
+separate open behavioral gap documented in the runner's Select guide.
+
 ## Browser bridge decision
 
 The technical input supports HTML form behavior, independent of the framework. Angular CVA and
@@ -52,11 +67,11 @@ to retain the current bridge, ownership boundaries and migration implications.
 
 ## Next parity increments
 
-| Order | Work                                 | Shared boundary / completion evidence                                                                                                                                      |
-| ----- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1     | Default focus policy / real AT       | Browser coverage and opt-in are available (ADR 0027). Compare virtual vs item focus and run the documented real-screen-reader scenarios before changing the default.       |
-| 2     | Behavioral equivalence               | 18 pinned React/Angular scenarios now run in CI. Review recorded focus/navigation, retention, native-reset and array-label differences; expand uncovered modes (ADR 0029). |
-| 3     | Browser and native autofill coverage | Expand browser/assistive-technology runs and verify real saved-profile autofill separately from synthetic events.                                                          |
+| Order | Work                                 | Shared boundary / completion evidence                                                                                                                                                                   |
+| ----- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1     | Default focus policy / real AT       | Browser coverage and opt-in are available (ADR 0027). Compare virtual vs item focus and run the documented real-screen-reader scenarios before changing the default.                                    |
+| 2     | Behavioral equivalence               | 20 pinned React/Angular scenarios now run in CI. Review recorded focus, retention, native-reset and array-label differences; compare mixed Space/typeahead sessions; expand uncovered modes (ADR 0029). |
+| 3     | Browser and native autofill coverage | Expand browser/assistive-technology runs and verify real saved-profile autofill separately from synthetic events.                                                                                       |
 
 Rows with an implemented API still carry the verification limitations listed above. Completing a part
 or a shared helper does not certify complete behavioral parity.

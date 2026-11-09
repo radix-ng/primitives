@@ -192,7 +192,8 @@ export class RdxSelectPopup {
      */
     readonly highlight = useListHighlight<RdxSelectCompositeItem>({
         items: this.items,
-        isNavigable: (item) => !item.metadata()?.disabled,
+        // Base UI permits keyboard navigation to disabled options; selection and typeahead filter them separately.
+        isNavigable: () => true,
         getId: (item) => item.element.id,
         loop: signal(false),
         injector: this.injector
@@ -403,7 +404,7 @@ export class RdxSelectPopup {
         });
     }
 
-    /** Highlights the selected item (or the first enabled one) when the popup opens. */
+    /** Highlights the selected item (or the first rendered one), including disabled options. */
     highlightSelectedItem() {
         const items = this.items();
         const selected = items.find((item) =>

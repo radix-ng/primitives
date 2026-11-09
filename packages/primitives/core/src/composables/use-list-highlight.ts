@@ -5,8 +5,9 @@ export interface UseListHighlightOptions<T> {
     /** All items in DOM order (e.g. a collection provider's `items()`). */
     items: Signal<readonly T[]>;
     /**
-     * Whether an item can be highlighted — must return `false` for hidden (filtered-out) and
-     * disabled items. Navigation and self-healing both consult this.
+     * Whether an item can be highlighted. Navigation and self-healing both consult this.
+     * Exclude hidden/filtered items; whether disabled items remain navigable is the caller's policy,
+     * independent of whether the caller permits selecting them.
      */
     isNavigable: (item: T) => boolean;
     /** Resolves the item's element id, exposed as {@link ListHighlight.activeId} for `aria-activedescendant`. */
@@ -43,9 +44,9 @@ export interface ListHighlight<T> {
  * Unlike roving `tabindex`, the highlight is pure state: callers move it with the keyboard while DOM
  * focus stays on a single controlling element (e.g. a combobox `<input>`), which exposes
  * {@link ListHighlight.activeId} as `aria-activedescendant`. Navigation only ever lands on items for
- * which `isNavigable` returns `true`, so hidden (filtered-out) and disabled items are skipped. A
+ * which `isNavigable` returns `true`; callers own filtering and disabled-item navigation policy. A
  * self-healing effect clears the highlight if its item stops being navigable or leaves the list, so
- * `activeId` never references a detached or hidden element.
+ * `activeId` never references an item removed from the collection or excluded by that policy.
  *
  * Must be called in an injection context, or given an `injector`.
  */
@@ -95,7 +96,7 @@ export function useListHighlight<T>(options: UseListHighlightOptions<T>): ListHi
         highlighted.set(list[nextIndex]);
     };
 
-    // Self-heal: drop a highlight that is no longer navigable (filtered out, disabled, destroyed).
+    // Self-heal: drop a highlight that leaves the list or no longer satisfies the caller's navigation policy.
     effect(
         () => {
             const list = navigable();

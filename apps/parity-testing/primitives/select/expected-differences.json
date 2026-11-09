@@ -352,19 +352,11 @@
     },
     {
         "scenario": "keyboard and typeahead",
-        "checkpoint": "skip disabled",
-        "field": "highlighted",
-        "angular": ["cherry"],
-        "react": ["blueberry"],
-        "category": "disabled-item-navigation"
-    },
-    {
-        "scenario": "keyboard and typeahead",
-        "checkpoint": "skip disabled",
+        "checkpoint": "disabled option",
         "field": "focus",
         "angular": "popup",
         "react": "option:blueberry",
-        "category": "disabled-item-navigation"
+        "category": "dom-focus"
     },
     {
         "scenario": "keyboard and typeahead",
@@ -605,6 +597,86 @@
         "field": "selected",
         "angular": [],
         "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "disabled options: navigation and blocked activation",
+        "checkpoint": "disabled middle",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:blueberry",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "disabled options: navigation and blocked activation",
+        "checkpoint": "activation ignored",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:blueberry",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "disabled options: navigation and blocked activation",
+        "checkpoint": "disabled first",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "disabled options: navigation and blocked activation",
+        "checkpoint": "disabled last",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:cherry",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "disabled options: navigation and blocked activation",
+        "checkpoint": "enabled selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "disabled options: navigation and blocked activation",
+        "checkpoint": "enabled selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["blackberry"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "typeahead skips disabled options",
+        "checkpoint": "first enabled match",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:blackberry",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead skips disabled options",
+        "checkpoint": "cycles enabled matches",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead skips disabled options",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "typeahead skips disabled options",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["blackberry"],
         "category": "closed-dom-retention"
     }
 ]

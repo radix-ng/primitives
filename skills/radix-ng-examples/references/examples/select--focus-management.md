@@ -8,6 +8,10 @@ The popup owns DOM focus and uses `aria-activedescendant` for virtual navigation
 typeahead update the highlight; Enter or Space commits a selection. The existing default keeps
 Tab/Shift+Tab inside the open Select and does not close on focus-out.
 
+ArrowDown, ArrowUp, Home and End can highlight disabled options, including an already selected
+disabled option. Their `aria-disabled` state remains exposed; Enter, Space and pointer activation
+cannot select them or close the popup. Typeahead skips disabled options when matching labels.
+
 Set `[closeOnFocusOut]="true"` on **Popup** to opt into the shared focus manager's focus-out policy.
 Forward Tab moves to the next control after the trigger and closes with reason `focus-out`, without
 committing the highlight. Shift+Tab requests closing back to the trigger. A canceled `onOpenChange`

@@ -27,7 +27,10 @@ categories in the summary; a passing check means no unreviewed drift, not full p
 
 Keep virtual/default focus behavior until ADR 0023's real-AT gate is met. Preserve Angular native
 reset, explicit array selection mode and inert held exits instead of reproducing upstream differences.
-Review disabled-option navigation separately as part of the focus policy. Do not patch the reference
+Disabled options participate in arrow/Home/End navigation, independently of selection eligibility;
+typeahead matches enabled options only. Select uses the existing shared highlight predicate without
+changing item DOM focus or the default focus-out policy. Mixed Space/typeahead search sessions
+remain separate parity work. Do not patch the reference
 to make a comparison pass. Its Portal currently lacks `keepMounted`; existing Angular coverage remains
 necessary for that contract.
 

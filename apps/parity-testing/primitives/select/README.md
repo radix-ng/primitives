@@ -16,7 +16,7 @@ Shared preparation, TypeScript tooling and commands are documented in the
 
 ## What is compared
 
-The 18 scenarios exercise keyboard/typeahead, pointer/multiple selection, disabled/read-only states,
+The 20 scenarios exercise keyboard/typeahead, pointer/multiple selection, disabled/read-only states,
 open/value/close cancellation, imperative close and deferred unmount/reopen, native form reset,
 object/array values, Tab/Shift+Tab and focus outside. The default and opt-in Angular focus policies
 are separate scenarios. Both fixtures use uncontrolled defaults and their real public actions.
@@ -33,6 +33,12 @@ transpiled by Vite, as source fixtures; the runner does not patch upstream imple
 claim to type-check the upstream project. Exact external dev dependency versions are in the root
 lockfile. None of them becomes a consumer dependency of the Angular package.
 
+Arrow/Home/End navigation now includes disabled options in both implementations. Shared assertions
+cover disabled first/middle/last items, boundary stopping, blocked Enter/Space activation, unchanged
+form values/callbacks, and typeahead cycling through enabled matches. Unit coverage additionally
+checks pointer activation, dynamic disabling/removal, all-disabled lists and an already selected
+disabled option. The remaining item DOM focus differences are still recorded as `dom-focus`.
+
 ## Recorded differences
 
 `expected-differences.json` records exact Angular/React pairs for a specific scenario, checkpoint and
@@ -43,8 +49,6 @@ still apply to both implementations. The report preserves all raw observations e
   Changing this remains gated on real assistive-technology review (ADR 0023 / 0027).
 - `default-tab-policy`: Angular's current default prevents Tab; Base UI closes on Tab/Shift+Tab.
   The opt-in Angular `closeOnFocusOut` scenario closes and restores focus correctly.
-- `disabled-item-navigation`: this reference allows keyboard focus on a disabled option; Angular
-  skips it. Selection remains blocked. This is an open navigation/focus parity decision.
 - `closed-dom-retention`: the reference keeps a hidden popup and selected option nodes after close
   or canceled opening; Angular releases that view. Logical state, visibility and form values are
   compared separately and cannot be hidden by this exception.
@@ -65,6 +69,17 @@ keep-mounted coverage stays in its existing unit and Storybook browser tests. Ch
 nonmodal anchored positioning and one set of options are the current scope. Modal/item-aligned
 positioning, touch/RTL, animation timing, saved-profile autofill, additional browsers and actual screen
 readers are not certified by this check.
+
+## Further typeahead parity work
+
+A mixed sequence found while extending coverage remains open: pressing Space on a highlighted
+disabled item leaves the popup/value unchanged in both implementations, but this reference seeds a
+search session with that Space. The next printable character is consumed without matching, while
+Angular starts a fresh search. The current typeahead scenario starts its own session and verifies
+disabled-option filtering and cycling; it does not certify mixed Space/search-buffer behavior.
+Compare session start/reset rules, multiword labels and search origin after arrow navigation in a
+separate increment. Do not change navigation policy or add a React-style typing store to the Angular
+adapter to hide this difference.
 
 ## Evidence and CI
 

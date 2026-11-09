@@ -1,5 +1,5 @@
 import type { CaseName } from '../src/contract';
-import { SelectDriver } from './driver';
+import { SelectDriver, type Snapshot } from './driver';
 
 export interface Scenario {
     name: string;
@@ -17,7 +17,8 @@ export const scenarios: Scenario[] = [
             await d.highlighted('banana');
             await d.checkpoint('arrow');
             await d.key('ArrowDown');
-            await d.checkpoint('skip disabled');
+            await d.highlighted('blueberry');
+            await d.checkpoint('disabled option', { highlighted: ['blueberry'] });
             await d.key('Home');
             await d.key('b');
             await d.highlighted('banana');
@@ -25,6 +26,59 @@ export const scenarios: Scenario[] = [
             await d.key('Enter');
             await d.closed();
             await d.checkpoint('selected', { label: 'Banana', entries: [['choice', 'banana']] });
+        }
+    },
+    {
+        name: 'disabled options: navigation and blocked activation',
+        fixture: 'disabled-navigation',
+        async run(d) {
+            const unchanged: Partial<Snapshot> = {
+                open: true,
+                label: 'Banana',
+                entries: [['choice', 'banana']],
+                events: [
+                    { type: 'open', open: true, reason: 'trigger-press', canceled: false, held: false },
+                    { type: 'complete', open: true }
+                ]
+            };
+            await d.open();
+            await d.key('ArrowDown');
+            await d.highlighted('blueberry');
+            await d.checkpoint('disabled middle', { ...unchanged, highlighted: ['blueberry'] });
+            await d.key('Enter');
+            await d.key('Space');
+            await d.checkpoint('activation ignored', { ...unchanged, highlighted: ['blueberry'] });
+            await d.key('Home');
+            await d.highlighted('apple');
+            await d.key('ArrowUp');
+            await d.checkpoint('disabled first', { ...unchanged, highlighted: ['apple'] });
+            await d.key('End');
+            await d.highlighted('cherry');
+            await d.key('ArrowDown');
+            await d.checkpoint('disabled last', { ...unchanged, highlighted: ['cherry'] });
+            await d.key('ArrowUp');
+            await d.highlighted('blackberry');
+            await d.key('Enter');
+            await d.closed();
+            await d.checkpoint('enabled selected', { label: 'Blackberry', entries: [['choice', 'blackberry']] });
+        }
+    },
+    {
+        name: 'typeahead skips disabled options',
+        fixture: 'disabled-navigation',
+        async run(d) {
+            await d.open();
+            await d.key('b');
+            await d.highlighted('blackberry');
+            await d.checkpoint('first enabled match', { highlighted: ['blackberry'], entries: [['choice', 'banana']] });
+            await d.key('b');
+            await d.highlighted('banana');
+            await d.checkpoint('cycles enabled matches', { highlighted: ['banana'], entries: [['choice', 'banana']] });
+            await d.key('b');
+            await d.highlighted('blackberry');
+            await d.key('Enter');
+            await d.closed();
+            await d.checkpoint('selected', { label: 'Blackberry', entries: [['choice', 'blackberry']] });
         }
     },
     {
