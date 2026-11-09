@@ -6,8 +6,9 @@ Audited on 2026-11-08; close-lifecycle, focus-policy and arbitrary-Value increme
 reproducible reference. Its package version is 1.9.0; it is not the release tag itself.
 
 This is an API/source audit with linked regression coverage, **not a certification of complete
-behavioral parity**. The tests run the Angular implementation; a shared React/Angular differential
-runner is not part of this pilot. Rows marked as gaps remain open.
+behavioral parity**. A shared React/Angular differential runner now checks 18 scenarios against this
+pin and records exact known differences ([runner documentation](../../../apps/parity-testing/primitives/select/README.md),
+[ADR 0029](../../../docs/adr/0029-select-differential-behavior-checks.md)). Rows marked as gaps remain open.
 
 Root and Item now accept an unconstrained `Value`, defaulting to `unknown`. Angular DI erases the
 family generic; typed application wrappers link the option collection and selection. Explicit
@@ -51,11 +52,11 @@ to retain the current bridge, ownership boundaries and migration implications.
 
 ## Next parity increments
 
-| Order | Work                                 | Shared boundary / completion evidence                                                                                                                                |
-| ----- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1     | Default focus policy / real AT       | Browser coverage and opt-in are available (ADR 0027). Compare virtual vs item focus and run the documented real-screen-reader scenarios before changing the default. |
-| 2     | Behavioral equivalence               | Run equivalent React/Angular scenarios against the pinned reference; source/API compatibility alone does not establish behavioral parity.                            |
-| 3     | Browser and native autofill coverage | Expand browser/assistive-technology runs and verify real saved-profile autofill separately from synthetic events.                                                    |
+| Order | Work                                 | Shared boundary / completion evidence                                                                                                                                      |
+| ----- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1     | Default focus policy / real AT       | Browser coverage and opt-in are available (ADR 0027). Compare virtual vs item focus and run the documented real-screen-reader scenarios before changing the default.       |
+| 2     | Behavioral equivalence               | 18 pinned React/Angular scenarios now run in CI. Review recorded focus/navigation, retention, native-reset and array-label differences; expand uncovered modes (ADR 0029). |
+| 3     | Browser and native autofill coverage | Expand browser/assistive-technology runs and verify real saved-profile autofill separately from synthetic events.                                                          |
 
 Rows with an implemented API still carry the verification limitations listed above. Completing a part
 or a shared helper does not certify complete behavioral parity.
@@ -63,6 +64,7 @@ or a shared helper does not certify complete behavioral parity.
 ## Reproduce the pilot checks
 
 ```bash
+pnpm test-parity:select
 pnpm exec nx run primitives:typecheck
 pnpm exec vitest run --config packages/primitives/vite.config.ts packages/primitives/select/__tests__
 # With Storybook running on :4400:

@@ -1,0 +1,18 @@
+{
+    "extends": "../../node_modules/.cache/radix-ng-parity/tsconfig.paths.json",
+    "compilerOptions": {
+        "strict": true,
+        "noEmit": false,
+        "module": "preserve",
+        "moduleResolution": "bundler",
+        "jsx": "react-jsx",
+        "allowJs": true,
+        "checkJs": false,
+        "types": ["node", "vite/client"],
+        "resolveJsonModule": true
+    },
+    "angularCompilerOptions": {
+        "strictTemplates": true,
+        "strictInjectionParameters": true
+    }
+}

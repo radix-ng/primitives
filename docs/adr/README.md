@@ -60,3 +60,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0023](0023-complete-floating-focus-manager-rollout.md)                      | Proposed               | Complete the floating focus manager rollout (remainder of ADR 0017)                  |
 | [0024](0024-share-label-registration-and-interaction.md)                     | Accepted               | Share label registration and interaction                                             |
 | [0025](0025-separate-angular-forms-from-browser-input-bridge.md)             | Accepted               | Separate Angular forms from the browser input bridge                                 |
+| [0029](0029-select-differential-behavior-checks.md)                          | Accepted               | Compare Select behavior against pinned Base UI sources                               |

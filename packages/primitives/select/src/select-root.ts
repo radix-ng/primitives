@@ -6,6 +6,7 @@ import {
     Directive,
     effect,
     ElementRef,
+    forwardRef,
     inject,
     Injector,
     input,
@@ -218,7 +219,8 @@ export function provideRdxSelectRoot<Value, Multiple extends boolean>(
 @Directive({
     selector: '[rdxSelectRoot]',
     exportAs: 'rdxSelectRoot',
-    providers: [provideRdxSelectRoot(RdxSelectRoot)],
+    // AOT static fields run before the outer class binding used by the provider helper is initialized.
+    providers: [forwardRef(() => provideRdxSelectRoot(RdxSelectRoot))],
     hostDirectives: [RdxPopper]
 })
 export class RdxSelectRoot<Value = unknown, Multiple extends boolean = boolean>

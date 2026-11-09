@@ -97,3 +97,12 @@ Storybook now serves the public documentation site on the main domain `https://r
 - Visual regressions: Chromatic dashboard (triggered on each `main` push)
 - Search: Algolia DocSearch (manually triggered crawler)
 - No application server monitoring (it's a library, not a running service)
+
+## Primitive differential comparisons
+
+Development and CI use Node.js 24 (`.nvmrc`, minimum 24.15.0). CI setup reads this file.
+The `parity` CI job runs `pnpm test-parity` on Ubuntu 24.04, discovers `primitives/*/suite.json`
+under `apps/parity-testing`, compares pinned Base UI sources with Angular fixtures, and uploads
+per-primitive observations and known-difference summaries. `pnpm test-parity select` runs one suite.
+The runner and shared tooling use native Node 24 TypeScript execution with a separate strict type check. See
+`apps/parity-testing/README.md` and ADR 0029; a passing drift check is not full behavioral parity.

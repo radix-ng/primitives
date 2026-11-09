@@ -18,6 +18,7 @@ Angular port of headless UI primitives. This is a **signals-first, headless** co
 
 **Reference priority:** [Base UI](https://base-ui.com/) is the primary reference we align to — match its component APIs, naming, and behavior when designing or updating primitives. [Radix UI](https://www.radix-ui.com/) was the original foundation of this library and remains a valid secondary reference to consult, especially for patterns Base UI doesn't cover.
 
+- **Development runtime**: Node.js 24 (`.nvmrc`; minimum 24.15.0). CI reads the same file.
 - **Monorepo**: Nx 22, pnpm workspaces
 - **Angular**: 21 / 22 (peer range `^21.0.0 || ^22.0.0`; signals API: `input()`, `model()`, `computed()`, `signal()`, `linkedSignal()`)
 - **TypeScript**: 5.9
@@ -49,6 +50,7 @@ apps/
   radix-ssr-testing/   ← SSR smoke-test app
   radix-perf-testing/  ← performance benchmark app
   visual-regression/   ← Playwright visual and behavior specs
+  parity-testing/      ← pinned Base UI / Angular differential scenarios
 skills/                ← LLM consumer Agent Skills (generated from Storybook docs)
 tools/
   scripts/             ← build helpers (incl. skills bundle generator)

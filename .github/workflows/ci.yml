@@ -95,11 +95,43 @@ jobs:
             exit 1
           fi
 
+  parity:
+    # Chromium's system dependencies are supported on Ubuntu 24.04.
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout code repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - uses: ./.github/actions/setup
+
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Compare primitives with pinned Base UI
+        run: pnpm test-parity
+
+      - name: Publish comparison summary
+        if: always()
+        run: |
+          for report in dist/parity-testing/*/results/summary.md; do
+            if [ -f "$report" ]; then
+              cat "$report" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+
+      - name: Upload comparison evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: primitive-parity
+          path: dist/parity-testing/*/results
+          retention-days: 14
+
   summary:
     if: ${{ always() }}
-    needs: [lint, unit, builds, skills]
+    needs: [lint, unit, builds, skills, parity]
     runs-on: ubuntu-latest
     steps:
       - name: On error
-        if: ${{ needs.builds.result != 'success' || needs.unit.result != 'success' || needs.lint.result != 'success' || needs.skills.result != 'success' }}
+        if: ${{ needs.builds.result != 'success' || needs.unit.result != 'success' || needs.lint.result != 'success' || needs.skills.result != 'success' || needs.parity.result != 'success' }}
         run: exit 1

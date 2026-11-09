@@ -463,7 +463,13 @@ export class RdxSelectPopup {
             event.preventDefault();
             const item = this.highlight.highlightedItem();
             const metadata = item?.metadata();
-            if (item && metadata && !metadata.disabled) {
+            if (
+                item &&
+                metadata &&
+                !metadata.disabled &&
+                !this.rootContext.disabled() &&
+                !this.rootContext.readOnly()
+            ) {
                 this.rootContext.onValueChange(metadata.value, 'item-press', event);
                 if (!this.rootContext.multiple()) {
                     this.rootContext.onOpenChange(false, 'item-press', event);

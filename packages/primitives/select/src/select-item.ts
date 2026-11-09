@@ -134,7 +134,7 @@ export class RdxSelectItem<Value = unknown> {
     onPointerUp(event: PointerEvent | KeyboardEvent) {
         if (!this.rootContext.open()) return;
         if (event.defaultPrevented) return;
-        if (this.disabled()) return;
+        if (this.disabled() || this.rootContext.disabled() || this.rootContext.readOnly()) return;
 
         const eventDetail = { originalEvent: event, value: this.value() };
 

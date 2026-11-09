@@ -32,6 +32,13 @@ git checkout -b my-new-branch
 
 ### Install dependencies
 
+Use Node.js 24 (at least 24.15.0, as required by Angular 22):
+
+```bash
+nvm install
+nvm use
+```
+
 The repository is an Nx monorepo managed with [pnpm](https://pnpm.io) (see `packageManager` in
 `package.json`; with corepack enabled the right version is picked up automatically):
 

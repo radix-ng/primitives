@@ -1,0 +1,6 @@
+{
+    "repository": "https://github.com/mui/base-ui.git",
+    "commit": "cf696d6f6e08c699c5bda24d5a033430909f2285",
+    "packageVersion": "1.9.0",
+    "paths": ["packages/react", "packages/utils", "LICENSE"]
+}

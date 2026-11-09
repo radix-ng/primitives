@@ -88,6 +88,7 @@ apps/
   radix-ssr-testing/   ← SSR smoke-test app
   radix-perf-testing/  ← performance benchmark app
   visual-regression/   ← Playwright visual and behavior specs
+  parity-testing/      ← pinned Base UI comparisons: shared infrastructure + primitives/<name>/ suites
 skills/                ← LLM consumer Agent Skills (radix-ng, radix-ng-examples)
 tools/scripts/         ← build helpers (typedoc/api-docs, skills bundle generator)
 ```
