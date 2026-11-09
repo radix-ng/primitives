@@ -41,6 +41,7 @@ for (const scenario of scenarios) {
                 body: JSON.stringify(
                     {
                         scenario: scenario.name,
+                        browser: { name: browser.browserType().name(), version: browser.version() },
                         reference: react.metadata?.reference,
                         angular: {
                             checkpoints: angular.checkpoints,

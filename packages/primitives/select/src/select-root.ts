@@ -612,12 +612,12 @@ export class RdxSelectRoot<Value = unknown, Multiple extends boolean = boolean>
 
         this.destroyRef.onDestroy(() => this.resetTypeahead());
         effect(() => {
-            if (this.open()) {
-                this.autofillProbe.set(false);
-                this.resetTypeahead();
-            } else if (this.disabledState() || this.readOnly() || this.multiple()) {
-                this.resetTypeahead();
-            }
+            if (this.open()) this.autofillProbe.set(false);
+            // Logical open/close owns the session; browsers need not blur a removed popup.
+            this.resetTypeahead();
+        });
+        effect(() => {
+            if (this.disabledState() || this.readOnly() || this.multiple()) this.resetTypeahead();
         });
 
         // Root is also valid on ng-container. Forward its logical id without host bindings on
@@ -763,6 +763,7 @@ export class RdxSelectRoot<Value = unknown, Multiple extends boolean = boolean>
             return false;
         }
 
+        this.resetTypeahead();
         this.open.set(open);
         transaction.commit();
 

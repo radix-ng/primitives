@@ -1,11 +1,11 @@
 import { expect, Page, test } from '@playwright/test';
 
-async function openExample(page: Page): Promise<string[]> {
+async function openExample(page: Page, story = 'items'): Promise<string[]> {
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));
     page.on('console', (message) => message.type() === 'error' && errors.push(message.text()));
-    await page.goto('/iframe.html?id=primitives-select--items&viewMode=story');
-    await expect(page.getByRole('combobox', { name: 'Preferred language' })).toBeVisible();
+    await page.goto(`/iframe.html?id=primitives-select--${story}&viewMode=story`);
+    await expect(page.locator('[rdxSelectTrigger]')).toBeVisible();
     return errors;
 }
 
@@ -54,5 +54,54 @@ test('enabling hover updates the highlighted item on pointer movement', async ({
     await expect(english).toHaveAttribute('data-highlighted', '');
     await page.mouse.move(0, 0);
     await expect(english).not.toHaveAttribute('data-highlighted', '');
+    expect(errors).toEqual([]);
+});
+
+test('the first pointer move after keyboard navigation updates highlight without selecting', async ({ page }) => {
+    const errors = await openExample(page);
+    await page.getByRole('checkbox', { name: 'Highlight items on hover' }).check();
+    await page.getByRole('combobox', { name: 'Preferred language' }).press('Enter');
+    await expect(page.locator('[rdxSelectPopup]')).toBeFocused();
+    await page.keyboard.press('Home');
+    const english = page.getByRole('option', { name: 'English', exact: true });
+    // Give WebKit a prior pointer location so the actual hover carries a nonzero delta.
+    await page.mouse.move(0, 0);
+    await english.hover();
+    await expect(english).toHaveAttribute('data-highlighted', '');
+    await expect(page.getByTestId('language-value')).toHaveText('fr');
+    expect(errors).toEqual([]);
+});
+
+test('clicking a multiple option updates highlight even when the first move has no delta', async ({ page }) => {
+    const errors = await openExample(page, 'multiple');
+    await page.getByRole('combobox', { name: 'Pick fruits' }).press('Enter');
+    const popup = page.locator('[rdxSelectPopup]');
+    await expect(popup).toBeFocused();
+    const banana = page.getByRole('option', { name: 'Banana', exact: true });
+    await banana.click();
+    await expect(banana).toHaveAttribute('data-highlighted', '');
+    await expect(banana).toHaveAttribute('aria-selected', 'true');
+    const apple = page.getByRole('option', { name: 'Apple', exact: true });
+    await apple.click();
+    await expect(apple).toHaveAttribute('data-highlighted', '');
+    await expect(apple).toHaveAttribute('aria-selected', 'false');
+    await expect(popup).toBeVisible();
+    expect(errors).toEqual([]);
+});
+
+test('a stationary cursor does not undo keyboard highlight when the list scrolls beneath it', async ({ page }) => {
+    const errors = await openExample(page, 'with-scroll');
+    await page.locator('[rdxSelectTrigger]').click();
+    const popup = page.locator('[rdxSelectPopup]');
+    await expect(popup).toBeFocused();
+    await page.locator('[rdxSelectItem]').first().hover();
+    await page.keyboard.press('End');
+    const last = page.locator('[rdxSelectItem]').last();
+    await expect(last).toHaveAttribute('data-highlighted', '');
+    await page.evaluate(
+        () => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+    );
+    await expect(last).toHaveAttribute('data-highlighted', '');
+    await expect(popup).toBeFocused();
     expect(errors).toEqual([]);
 });

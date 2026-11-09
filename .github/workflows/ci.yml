@@ -96,7 +96,7 @@ jobs:
           fi
 
   parity:
-    # Chromium's system dependencies are supported on Ubuntu 24.04.
+    # Playwright's browser system dependencies are supported on Ubuntu 24.04.
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout code repository
@@ -104,11 +104,14 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      - name: Install Chromium
-        run: pnpm exec playwright install --with-deps chromium
+      - name: Install browsers
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
 
       - name: Compare primitives with pinned Base UI
         run: pnpm test-parity
+
+      - name: Check Select stories across browser engines
+        run: pnpm test-browser:select
 
       - name: Publish comparison summary
         if: always()
@@ -124,7 +127,10 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: primitive-parity
-          path: dist/parity-testing/*/results
+          path: |
+            dist/parity-testing/*/results
+            apps/visual-regression/test-results
+            apps/visual-regression/playwright-report
           retention-days: 14
 
   summary:

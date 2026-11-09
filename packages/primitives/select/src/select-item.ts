@@ -11,12 +11,7 @@ import {
     signal
 } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
-import {
-    createContext,
-    handleAndDispatchCustomEvent,
-    injectId,
-    isStationaryWebKitPointer
-} from '@radix-ng/primitives/core';
+import { createContext, handleAndDispatchCustomEvent, injectId } from '@radix-ng/primitives/core';
 import { injectSelectPopupContext } from './select-popup';
 import { injectSelectRootContext } from './select-root';
 import { SELECTION_KEYS, valueComparator } from './utils';
@@ -63,6 +58,7 @@ export type SelectEvent<Value = unknown> = CustomEvent<{ originalEvent: PointerE
         '[attr.data-selected]': 'isSelected() ? "" : undefined',
         '[attr.data-highlighted]': 'isHighlighted() ? "" : undefined',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
+        '(pointerdown)': 'onPointerDown($event)',
         '(pointerup)': 'onPointerUp($event)',
         '(pointerleave)': 'onPointerLeave($event)',
         '(pointermove)': 'onPointerMove($event)'
@@ -130,6 +126,23 @@ export class RdxSelectItem<Value = unknown> {
         });
     }
 
+    onPointerDown(event: PointerEvent) {
+        if (
+            !this.rootContext.open() ||
+            event.defaultPrevented ||
+            this.disabled() ||
+            this.rootContext.disabled() ||
+            event.button !== 0 ||
+            event.ctrlKey ||
+            event.pointerType === 'touch'
+        )
+            return;
+        // An explicit press must work even when WebKit reports a zero-delta first move.
+        // Read-only prevents selection, while pointer/keyboard highlighting remains available.
+        this.contentContext.setKeyboardActive(false);
+        this.contentContext.highlightItem(this.currentElement.nativeElement);
+    }
+
     onPointerUp(event: PointerEvent | KeyboardEvent) {
         if (!this.rootContext.open()) return;
         if (event.defaultPrevented) return;
@@ -151,25 +164,26 @@ export class RdxSelectItem<Value = unknown> {
         );
     }
 
-    onPointerLeave(event: Event) {
+    onPointerLeave(event: PointerEvent) {
         if (!this.rootContext.open()) return;
         if (event.defaultPrevented) return;
         if (!this.rootContext.highlightItemOnHover()) return;
+        // Keyboard scrolling can move the hovered item away without moving the pointer.
+        if (this.contentContext.isKeyboardActive() && this.contentContext.isStationaryPointerMove(event)) return;
         this.contentContext.onItemLeave?.();
     }
 
     onPointerMove(event: PointerEvent) {
         if (!this.rootContext.open()) return;
         if (!this.rootContext.highlightItemOnHover()) return;
-        // WebKit fires zero-delta moves while the list scrolls under a still cursor.
-        if (isStationaryWebKitPointer(event)) {
+        // Scrolling can generate zero-delta moves beneath a stationary cursor.
+        if (this.contentContext.isStationaryPointerMove(event)) {
             return;
         }
         if (event.defaultPrevented) return;
-        // Ignore pointer events synthesized by keyboard-driven scrolling (don't steal the highlight).
+        // A real move resumes hover after keyboard navigation; stationary moves were filtered above.
         if (this.contentContext.isKeyboardActive()) {
             this.contentContext.setKeyboardActive(false);
-            return;
         }
         if (!this.disabled()) {
             this.contentContext.highlightItem(this.currentElement.nativeElement);

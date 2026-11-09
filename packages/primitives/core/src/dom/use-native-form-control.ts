@@ -52,7 +52,7 @@ export interface RdxNativeFormControlOptions<T> {
     readonly syncNativeControl?: () => void;
     /** Value restored by a native form reset. Captured once after inputs bind. */
     readonly defaultValue?: () => T;
-    /** Applies the captured default value after a native form reset. */
+    /** Applies the captured default in the next task, after native reset and its default action finish. */
     readonly onReset?: (value: T) => void;
     /** Optional persistent input. When named, it submits instead of duplicating generated entries. */
     readonly input?: RdxNativeFormInputOptions;
@@ -126,6 +126,7 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
     let defaultValue: T | undefined;
     let defaultValues: readonly string[] = [];
     let hasDefaultValue = false;
+    const pendingResets = new Set<ReturnType<typeof setTimeout>>();
     let alive = true;
     let viewClaimed = false;
 
@@ -389,9 +390,11 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
             return;
         }
 
-        // Native controls reset after the event. Check `defaultPrevented` in the microtask so a later
-        // bubble listener can still cancel the reset before the model follows it.
-        queueMicrotask(() => {
+        // WebKit can flush microtasks between native event listeners and before reset's default
+        // action (including <output> restoration). Run after the whole dispatch/default action,
+        // so bubble cancellation is final and Angular's render cannot be overwritten by the browser.
+        const timer = setTimeout(() => {
+            pendingResets.delete(timer);
             if (alive && !event.defaultPrevented) {
                 untracked(() => {
                     clearValidationAnchor();
@@ -399,13 +402,16 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
                     sync();
                 });
             }
-        });
+        }, 0);
+        pendingResets.add(timer);
     };
 
     ownerDocument.addEventListener('reset', onReset, true);
 
     destroyRef.onDestroy(() => {
         alive = false;
+        pendingResets.forEach(clearTimeout);
+        pendingResets.clear();
         clearValidationAnchor();
         removeInputListeners();
         ownerDocument.removeEventListener('reset', onReset, true);

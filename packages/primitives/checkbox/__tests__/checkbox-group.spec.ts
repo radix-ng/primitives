@@ -292,7 +292,7 @@ describe('RdxCheckboxGroup native form contract', () => {
         expect(host.control.dirty).toBe(true);
 
         form.reset();
-        await Promise.resolve();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
         fixture.detectChanges();
 
         expect(host.control.value).toEqual(['b']);

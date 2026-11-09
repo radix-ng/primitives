@@ -45,13 +45,23 @@ directly; a separate strict check validates their erasable syntax and types.
 ## Consequences
 
 The development workspace includes exact React-only dev dependencies; the published Angular package
-has no additional peers. CI runs Chromium on Ubuntu 24.04 and Node 24 from `.nvmrc`. A reference
+has no additional peers. CI runs Chromium, Firefox and WebKit on Ubuntu 24.04 and Node 24 from `.nvmrc`. A reference
 upgrade requires reviewing the pinned sources and recorded differences together.
 
 The initial browser comparison also guards two Angular corrections: defer the Root provider helper
 through `forwardRef` so full AOT static initialization resolves the class, and ignore read-only
 selection before either pointer or keyboard handling closes the popup.
 
-Real screen readers, saved-profile autofill, other browsers and the remaining anatomy/positioning
+The desktop increment runs every scenario in all three engines. Reports distinguish engine/version
+and platform. Shared browser projects also drive the Angular Storybook behavior suite, without
+expanding screenshot baselines. Firefox's macOS app-data bookkeeping is isolated in the workspace
+cache; the host environment and installed profile are not changed.
+
+Cross-engine runs exposed and now guard logical-close query reset (a removed focused popup need not
+blur) and explicit pointer highlighting despite WebKit's zero-delta first move. No new difference
+exceptions were needed. The disabled trigger assertion allows native Safari Tab preference to skip
+other buttons too, retaining exact focus observations on both sides.
+
+Real screen readers, saved-profile autofill, real devices and differential coverage of the remaining anatomy/positioning
 modes still require their own validation. This runner closes the missing differential-test mechanism;
 it does not close those parity gaps.

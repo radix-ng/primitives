@@ -83,7 +83,7 @@ navigation with item focus, review:
 1. With VoiceOver/Safari, open by keyboard and pointer; check the label, selected option and expanded
    state announcements.
 2. Navigate by arrows, Home/End and typeahead; check that highlights announce once and disabled items
-   are skipped without changing the committed value.
+   announce their disabled state and cannot change the committed value.
 3. Enable `closeOnFocusOut`; check Tab, Shift+Tab and VoiceOver cursor movement, including canceled
    closes and repeated opens with `keepMounted`.
 4. Repeat inside Dialog and Popover; check one-layer Escape dismissal and return to the parent control.

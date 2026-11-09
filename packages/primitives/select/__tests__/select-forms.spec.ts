@@ -426,7 +426,7 @@ describe('Select native form contract', () => {
         fixture.detectChanges();
 
         nativeForm.reset();
-        await Promise.resolve();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
         fixture.detectChanges();
 
         expect(host.value()).toBe('apple');
@@ -441,7 +441,7 @@ describe('Select native form contract', () => {
         nativeForm.addEventListener('reset', (event) => event.preventDefault(), { once: true });
 
         nativeForm.reset();
-        await Promise.resolve();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
         fixture.detectChanges();
 
         expect(host.value()).toBe('banana');
@@ -463,7 +463,7 @@ describe('Select native reset with Reactive Forms', () => {
         fixture.detectChanges();
 
         (fixture.nativeElement.querySelector('form') as HTMLFormElement).reset();
-        await Promise.resolve();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
         fixture.detectChanges();
 
         expect(host.control.value).toBe('apple');

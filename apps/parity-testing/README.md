@@ -36,10 +36,11 @@ behavior shared by concrete suites as it appears; there is no universal control 
 Use Node.js 24 (`nvm use`) and install workspace dependencies, then:
 
 ```bash
-pnpm exec playwright install chromium
+pnpm exec playwright install chromium firefox webkit
 pnpm test-parity                 # every discovered suite
 pnpm test-parity select          # one primitive
 pnpm test-parity:select          # convenience alias
+pnpm test-parity select --project=webkit # one engine
 pnpm parity:build select         # type-check/build one suite without running browsers
 pnpm parity:build                # type-check/build every suite
 pnpm parity:typecheck            # Node tooling types only
@@ -50,6 +51,17 @@ The runner and shared tooling are TypeScript executed directly by Node 24 (`node
 not check types; the pnpm commands run a separate strict `tsc` check. Node-side imports include `.ts`
 extensions and use `import type` for types. `tsconfig.tools.json` enforces `erasableSyntaxOnly` and
 `verbatimModuleSyntax`. Angular/React browser fixtures use the Angular compiler and Vite.
+
+Every scenario runs in Chromium, Firefox and WebKit by default. The engine projects live in
+`tools/playwright/browser-projects.mts`, also used by the Select Storybook behavior checks
+(`pnpm test-browser:select`). The screenshot configuration keeps its existing Chromium baselines.
+
+On macOS, Firefox's app-data bookkeeping is isolated under
+`node_modules/.cache/radix-ng-parity/firefox-app-data` via its child-process `CFFIXED_USER_HOME`.
+Its temporary profile alone still reads the installed Firefox's app-data directory, which can stall
+startup on macOS 27 ([upstream issue](https://github.com/microsoft/playwright/issues/42768)). This
+isolation changes neither the host environment nor the installed browser profile. Linux CI uses
+Playwright's ordinary launch environment.
 
 The first run fetches the commit in `reference.json` into a bare cache. To prepare without fetching,
 use a local repository containing that object:
@@ -82,8 +94,11 @@ No changes to the shared runner, Vite config or Playwright config are needed to 
 
 `dist/parity-testing/<name>/fixtures/` contains each build and its reference manifest;
 `dist/parity-testing/<name>/results/` contains observations, a Markdown summary, an HTML report and
-failure traces. Reports retain all observed differences, including the reviewed ones.
+failure traces. Reports retain all observed differences, including the reviewed ones. Each row is
+identified by browser and scenario; observations also record the engine version and host platform.
 
-The `parity` CI job runs all discovered suites on Node 24 and Chromium / Ubuntu 24.04. It publishes
-per-primitive summaries and uploads their results. New, changed and disappeared differences require
+The `parity` CI job runs all discovered suites on Node 24 and Chromium/Firefox/WebKit on Ubuntu 24.04.
+It also builds Storybook and runs Select behavior checks in the same three engines, including native
+submission/validation, synthetic autofill, labels, focus, retained exits and positioning. It publishes
+per-primitive summaries and uploads differential results and Storybook reports/traces. New, changed and disappeared differences require
 review; a passing check means there is no unreviewed drift.

@@ -7,7 +7,7 @@ behavioral parity certification**.
 Use Node.js 24 (`nvm use`) and install workspace dependencies, then:
 
 ```bash
-pnpm exec playwright install chromium
+pnpm exec playwright install chromium firefox webkit
 pnpm test-parity:select
 ```
 
@@ -16,7 +16,8 @@ Shared preparation, TypeScript tooling and commands are documented in the
 
 ## What is compared
 
-The 41 scenarios exercise keyboard/typeahead, pointer/multiple selection, disabled/read-only states,
+The 41 scenarios run in Chromium, Firefox and WebKit (123 comparisons). They exercise
+keyboard/typeahead, pointer/multiple selection, disabled/read-only states,
 open/value/close cancellation, imperative close and deferred unmount/reopen, native form reset,
 object/array values, Tab/Shift+Tab and focus outside. The default and opt-in Angular focus policies
 are separate scenarios. Both fixtures use uncontrolled defaults and their real public actions.
@@ -68,10 +69,11 @@ still apply to both implementations. The report preserves all raw observations e
   its item label (ADR 0028). Wire values and callback reference identity still match.
 
 The pinned `Select.Portal` has no `keepMounted` prop. That comparison is explicitly excluded; Angular
-keep-mounted coverage stays in its existing unit and Storybook browser tests. Chromium desktop,
-nonmodal anchored positioning and one set of options are the current scope. Modal/item-aligned
-positioning, touch/RTL, animation timing, saved-profile autofill, additional browsers and actual screen
-readers are not certified by this check.
+keep-mounted coverage stays in its existing unit and Storybook browser tests. Desktop engines,
+nonmodal anchored positioning and one set of options are the differential scope. Modal/item-aligned
+positioning, touch/RTL and animation timing have separate Angular Storybook checks, now run in all
+three engines by `pnpm test-browser:select`. These do not establish differential parity for those
+modes. Real devices, saved-profile autofill and actual screen readers remain separate verification.
 
 ## Typeahead coverage and boundaries
 
@@ -103,17 +105,31 @@ respected. Opening, reset, disabled/read-only/multiple transitions, blur and des
 stale pending keyboard work. Canceled requests leave values, native entries and form dirty state
 unchanged. Reactive Forms, ngModel and Signal Forms have direct closed-query regression coverage.
 
-The Storybook Typeahead demo supports both closed selection and open highlighting. Keyboard tests
+The Storybook Typeahead demo supports both closed selection and open highlighting. Logical close
+resets the query even when the browser removes the focused popup without a blur event. Explicit
+pointer presses highlight enabled items even when WebKit reports a zero-delta first move; the first
+genuine move resumes hover after keyboard input. Read-only still prevents selection. These fixes
+pass the existing exact exceptions unchanged; no browser-specific value/focus exceptions were added.
+
+Select's open scope uses the shared viewport-coordinate move guard, so actual zero-delta travel is
+recognized while stationary cursor/list scrolling remains filtered. Storybook checks also exercise
+native reset cancellation in all engines; the common form bridge waits until dispatch/default action
+finishes, and demo `<output>` readouts bind the live element rather than text nodes replaced by WebKit.
+
+Keyboard tests
 wait for actual focus inside a visible popup before sending open-list keys, without forcing focus or
-changing state; snapshots still record the exact framework-specific focus target. Real AT,
-additional browsers and saved-profile autofill remain separate verification work.
+changing state; snapshots still record the exact framework-specific focus target. The disabled
+trigger case checks that Tab skips it without requiring every browser to tab to buttons: Safari's
+default Tab preference can skip the trailing button too. Both implementations' actual focus remains
+in the comparison. Real AT and saved-profile autofill remain separate verification work.
 
 ## Evidence and CI
 
-CI uses Node 24 from `.nvmrc` and Chromium on Ubuntu 24.04. It publishes a job summary and uploads
+CI uses Node 24 from `.nvmrc` and all three engines on Ubuntu 24.04. It publishes a job summary and uploads
 `dist/parity-testing/select/results`: `observations.json`, `summary.md`, the HTML report and traces for failed
 scenarios. Fixture `dist/parity-testing/select/fixtures/reference.json` and every scenario observation record the full
-reference commit, package version and digest. The report labels recorded differences even when the
+reference commit, package version and digest. Browser/version and host platform are included so
+results from different engines cannot be conflated. The report labels recorded differences even when the
 regression check passes.
 
 To inspect the pages manually after `pnpm parity:build select`:

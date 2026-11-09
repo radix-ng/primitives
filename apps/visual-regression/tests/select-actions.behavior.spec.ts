@@ -67,7 +67,10 @@ test('finishing an external exit restores trigger focus and preserves deliberate
     await page.keyboard.press('Escape');
     await pauseExit(page);
     const finish = page.getByRole('button', { name: 'Finish exit' });
-    await finish.click();
+    // Explicit outside keyboard focus, independent of Safari's pointer-focus preference.
+    await finish.focus();
+    await expect(finish).toBeFocused();
+    await finish.press('Enter');
     await expect(page.locator('[rdxSelectPopup]')).toHaveCount(0);
     await expect(finish).toBeFocused();
     await expect.poll(() => closeCount(page)).toBe(2);

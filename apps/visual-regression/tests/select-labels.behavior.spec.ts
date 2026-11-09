@@ -30,9 +30,9 @@ test('label preserves nested button activation and root id is assigned only to t
     const errors = await openExample(page);
     const help = page.getByRole('button', { name: 'Help', exact: true });
     await help.click();
-    await expect(help).toBeFocused();
     await expect(page.getByText('Choose the country you live in.')).toBeVisible();
     const trigger = page.getByRole('combobox', { name: 'Country Help', exact: true });
+    await expect(trigger).not.toBeFocused();
     await expect(trigger).toHaveAttribute('aria-expanded', 'false');
     await expect(page.locator('#labelled-country')).toHaveCount(1);
     await expect(trigger).toHaveAttribute('id', 'labelled-country');

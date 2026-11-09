@@ -172,6 +172,7 @@ describe('Select Base UI 1.9 source-contract scenarios', () => {
             root().setValue('a');
             await settle();
             fixture.nativeElement.querySelector('form').reset();
+            await new Promise<void>((resolve) => setTimeout(resolve, 0));
             await settle();
             expect(root().value()).toEqual(emptyValue);
             expect(text()).toBe('Choose');

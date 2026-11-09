@@ -1,5 +1,6 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig } from '@playwright/test';
 import { resolve } from 'node:path';
+import { desktopBrowserProjects } from '../../tools/playwright/browser-projects.mts';
 import { appRoot, workspaceRoot } from './shared/reference.ts';
 import { suiteFromEnvironment } from './shared/suites.ts';
 
@@ -19,7 +20,7 @@ export default defineConfig({
         [resolve(appRoot, 'shared/reporter.ts'), { title: suite.title, outputDirectory: suite.resultsDirectory }],
         ['html', { outputFolder: resolve(suite.resultsDirectory, 'html'), open: 'never' }]
     ],
-    projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+    projects: desktopBrowserProjects(workspaceRoot),
     webServer: {
         command: 'pnpm exec vite preview --config apps/parity-testing/vite.config.mts',
         cwd: workspaceRoot,

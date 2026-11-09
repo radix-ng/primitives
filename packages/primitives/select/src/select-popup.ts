@@ -11,11 +11,13 @@ import {
     output,
     OutputRef,
     signal,
-    Signal
+    Signal,
+    untracked
 } from '@angular/core';
 import { RdxCompositeItemRegistration, RdxCompositeList } from '@radix-ng/primitives/composite';
 import {
     createContext,
+    createPointerMoveGuard,
     getActiveElement,
     RDX_FLOATING_REGISTRATION,
     RDX_FLOATING_ROOT_CONTEXT,
@@ -46,6 +48,7 @@ export interface RdxSelectPopupContext {
     isHighlighted: (element: HTMLElement) => boolean;
     highlightItem: (element: HTMLElement) => void;
     isKeyboardActive: () => boolean;
+    isStationaryPointerMove: (event: PointerEvent) => boolean;
     setKeyboardActive: (value: boolean) => void;
     onViewportChange: (node: HTMLElement | undefined) => void;
     onItemLeave: () => void;
@@ -70,6 +73,7 @@ const context = (): RdxSelectPopupContext => {
             }
         },
         isKeyboardActive: () => context.isKeyboardActive(),
+        isStationaryPointerMove: (event) => context.isStationaryPointerMove(event),
         setKeyboardActive: (value: boolean) => context.setKeyboardActive(value),
         onViewportChange: (node: HTMLElement | undefined) => {
             context.viewport.set(node);
@@ -226,6 +230,7 @@ export class RdxSelectPopup {
     // Tracks whether the last interaction was the keyboard, so the highlight doesn't jump to an item
     // the cursor happens to rest on when arrow-key navigation scrolls the list.
     private keyboardActive = false;
+    private pointerMoveGuard = createPointerMoveGuard();
     private hasHighlightedOpen = false;
 
     private readonly selectedIndex = computed(() =>
@@ -277,6 +282,24 @@ export class RdxSelectPopup {
             const open = this.rootContext.open();
             this.selectedIndex();
             if (open) this.rootContext.resetTypeahead();
+        });
+
+        effect((onCleanup) => {
+            if (!this.rootContext.open()) return;
+            const document = this.currentElement.nativeElement.ownerDocument;
+            const view = document.defaultView;
+            const { origin, method } = untracked(() => ({
+                origin: this.rootContext.triggerPointerDownPosRef(),
+                method: this.rootContext.openMethod()
+            }));
+            const guard = createPointerMoveGuard(
+                origin && (method === 'mouse' || method === 'pen')
+                    ? { clientX: origin.x - (view?.scrollX ?? 0), clientY: origin.y - (view?.scrollY ?? 0) }
+                    : undefined
+            );
+            this.pointerMoveGuard = guard;
+            document.addEventListener('pointermove', guard, true);
+            onCleanup(() => document.removeEventListener('pointermove', guard, true));
         });
 
         effect(() => {
@@ -455,6 +478,10 @@ export class RdxSelectPopup {
 
     isKeyboardActive() {
         return this.keyboardActive;
+    }
+
+    isStationaryPointerMove(event: PointerEvent): boolean {
+        return this.pointerMoveGuard(event);
     }
 
     handleKeyDown(event: Event) {

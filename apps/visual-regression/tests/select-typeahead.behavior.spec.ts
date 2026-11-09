@@ -13,6 +13,21 @@ async function setup(page: Page, keepMounted = false) {
 }
 const option = (page: Page, text: string) => page.getByRole('option', { name: text, exact: true });
 
+test('closing an open search starts a fresh query on the trigger', async ({ page }) => {
+    const { errors, trigger, popup, selected } = await setup(page);
+    await trigger.press('Enter');
+    await expect(popup).toBeFocused();
+    await page.keyboard.press('n');
+    await expect(option(page, 'New York')).toHaveAttribute('data-highlighted', '');
+    await page.keyboard.press('Escape');
+    await expect(trigger).toBeFocused();
+    await page.keyboard.press('b');
+    await expect(trigger).toContainText('Berlin');
+    await expect(selected).toContainText('berlin');
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(errors).toEqual([]);
+});
+
 test('Select Typeahead story searches multiword labels without committing on Space', async ({ page }) => {
     const { errors, trigger, popup, selected } = await setup(page);
     await trigger.press('Enter');

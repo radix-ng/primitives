@@ -107,7 +107,7 @@ for (const finalFocus of ['after', 'none']) {
 for (const shell of ['dialog', 'popover']) {
     test(`closing the retained Select preserves its ${shell} and restores nested focus`, async ({ page }) => {
         const errors = await example(page, `shell:${shell};closeOnFocusOut:true`);
-        await page.getByRole('button', { name: `Open ${shell}` }).click();
+        await page.getByRole('button', { name: `Open ${shell}` }).press('Enter');
         await expect(page.locator(`[rdx${shell === 'dialog' ? 'Dialog' : 'Popover'}Popup]`)).toBeVisible();
         await openSelect(page);
         await page.keyboard.press('Escape');

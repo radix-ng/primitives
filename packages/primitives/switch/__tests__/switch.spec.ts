@@ -319,7 +319,7 @@ describe('RdxSwitch native form contract', () => {
         expect(new FormData(form).get('notifications')).toBe('enabled');
 
         form.reset();
-        await Promise.resolve();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
         fixture.detectChanges();
         expect(host.control.value).toBe(false);
         expect(host.control.pristine).toBe(true);

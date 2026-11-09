@@ -15,6 +15,8 @@ its item matching and temporary hidden option mounting stay Select-side. Single 
 the main named input (including empty strings); multiple values retain repeated hidden entries and a
 nameless validation input. Angular forms/Field remain the application validation owners. Extend this
 bridge for future consumers rather than copying native-input lifecycle into another primitive.
+Reset synchronization runs after native dispatch/default actions in the next task, with teardown
+cancellation; WebKit can flush capture-listener microtasks before bubbling cancellation (ADR 0025).
 The bridge serves browser behavior: CVA and Signal Forms work independently and need no extra input
 for their Angular model connection. Direct access to a button/div does not turn it into an editable
 HTML form control. Reuse an existing native input when it represents the submitted value. Prefer
@@ -61,8 +63,21 @@ query, 750ms timeout and origin; it does not mirror selection or copy a React st
 commits through Root, while open typing only highlights. Root shares lazy option preparation with
 autofill, coalescing reads/keys across Angular rendering and releasing hidden query views at session
 end. Metadata uses current DOM order, explicit aliases and live ItemText rather than a mount-time
-text cache. Blur/open/reset/mode changes and destruction invalidate stale work. Menu retains its own
+text cache. Logical open/close, blur, reset, mode changes and destruction invalidate stale work;
+query reset does not depend on browsers dispatching blur for a removed popup. Menu retains its own
 session and timeout policy; focus, eligibility and mounting remain primitive-owned (Select `PARITY.md`).
+
+**Desktop browser verification:** `tools/playwright/browser-projects.mts` is shared by the pinned
+React/Angular comparisons and Select Storybook behavior checks. Both run Chromium, Firefox and
+WebKit; screenshot baselines retain their existing configuration. Reports preserve per-engine
+versions/platform and exact differences. Firefox child processes on macOS use isolated app-data in
+the workspace cache rather than the installed browser's protected data. Desktop automation does not
+close real-AT, real-device or saved-profile autofill gates.
+
+**Pointer movement:** core `createPointerMoveGuard` tracks scope-local viewport coordinates to
+distinguish real travel from stationary scroll/leave events, including real WebKit travel with zero
+movement deltas. Select observes moves in document capture while open and reuses the same event
+classification in items. Other consumers of the existing pure `isStationaryWebKitPointer` are unchanged.
 
 ## Tech stack
 

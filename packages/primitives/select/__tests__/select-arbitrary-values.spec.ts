@@ -138,6 +138,7 @@ describe('Select arbitrary item values', () => {
         expect(host.value()).toBe(second);
         expect(formValues()).toEqual(['3:4']);
         fixture.nativeElement.querySelector('form').reset();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
         await settle();
         expect(host.value()).toBe(first);
         expect(formValues()).toEqual(['1:2']);

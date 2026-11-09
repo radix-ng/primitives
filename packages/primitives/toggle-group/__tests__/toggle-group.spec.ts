@@ -255,7 +255,7 @@ describe('RdxToggleGroup native form contract', () => {
         expect(new FormData(form).getAll('style')).toEqual(['bold', 'italic']);
 
         form.reset();
-        await Promise.resolve();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
         fixture.detectChanges();
         expect(host.control.value).toEqual(['bold']);
         expect(host.control.pristine).toBe(true);

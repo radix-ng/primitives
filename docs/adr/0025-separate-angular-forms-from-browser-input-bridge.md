@@ -32,6 +32,15 @@ input access, event coalescing, committed-value restoration, reset coordination 
 accepts a native-control ownership signal so a consumer-rendered input can take over submission.
 Existing submission-only consumers retain their hidden entries.
 
+Native reset synchronization runs in the next task, after dispatch and the browser's default action.
+WebKit can flush microtasks between native listeners; resetting in a capture-listener microtask can
+precede a bubbling listener's cancellation. Pending reset tasks are canceled on destruction. This
+sequencing belongs in the shared bridge and applies to its other primitive consumers too.
+
+WebKit also replaces an `<output>` element's text children on native reset. Storybook model readouts
+in the arbitrary-value example bind the element's `textContent`, so Angular updates the live element
+rather than a detached interpolation text node. The library does not take over native output DOM.
+
 Reuse an existing native input when it represents the submitted value. An editable query or one
 slot of a compound input may represent only part of that value; the primitive decides whether reuse
 is appropriate. A separate technical input is justified for Select's current button/popup anatomy.
@@ -68,8 +77,9 @@ A named empty single Select now contributes an empty string to `FormData`; previ
 no entry. Multiple empty selections still contribute no entries. Field names take precedence when
 provided. These changes require the Select migration note and a breaking-change commit marker.
 
-Automated checks simulate native autofill events in Chromium. Real saved-profile autofill,
-non-Chromium behavior and assistive-technology equivalence remain separate verification work.
+Automated Select checks now cover Chromium, Firefox and WebKit, including native reset/cancellation
+and synthetic autofill. Real saved-profile autofill, real devices and assistive-technology
+equivalence remain separate verification work.
 
 ## Alternatives Considered
 

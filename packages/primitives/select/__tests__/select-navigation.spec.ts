@@ -13,7 +13,13 @@ interface Fruit {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsSelect],
     template: `
-        <div [(value)]="value" [(open)]="open" (onValueChange)="onValueChange($event)" rdxSelectRoot>
+        <div
+            [(value)]="value"
+            [(open)]="open"
+            [readOnly]="readOnly()"
+            (onValueChange)="onValueChange($event)"
+            rdxSelectRoot
+        >
             <button rdxSelectTrigger>
                 <span rdxSelectValue placeholder="Select…"></span>
             </button>
@@ -34,6 +40,7 @@ interface Fruit {
 class Host {
     readonly value = signal<string | undefined>(undefined);
     readonly open = signal(false);
+    readonly readOnly = signal(false);
     readonly onValueChange = vi.fn();
     readonly fruits = signal<Fruit[]>([
         { label: 'Apple', value: 'apple', disabled: false },
@@ -73,6 +80,49 @@ describe('Select highlight navigation', () => {
         expect(content().getAttribute('role')).toBe('listbox');
         expect(items()[0].getAttribute('role')).toBe('option');
         expect(items()[0].hasAttribute('tabindex')).toBe(false);
+    });
+
+    it('the first genuine pointer move resumes hover after keyboard navigation', async () => {
+        key('ArrowDown');
+        await settle();
+        expect(items()[1]).toHaveAttribute('data-highlighted');
+        items()[2].dispatchEvent(
+            Object.assign(new MouseEvent('pointermove', { bubbles: true }), { movementX: 8, movementY: 2 })
+        );
+        await settle();
+        expect(items()[2]).toHaveAttribute('data-highlighted');
+        expect(host.onValueChange).not.toHaveBeenCalled();
+    });
+
+    it('ignores stationary leave events during keyboard scrolling but clears on real pointer departure', async () => {
+        const pointer = (type: string, clientX: number, movementX = 0) =>
+            Object.assign(new MouseEvent(type, { bubbles: true, clientX, clientY: 20 }), { movementX, movementY: 0 });
+        items()[0].dispatchEvent(pointer('pointermove', 10, 1));
+        key('End');
+        await settle();
+        items()[0].dispatchEvent(pointer('pointerleave', 10));
+        await settle();
+        expect(items()[2]).toHaveAttribute('data-highlighted');
+        items()[0].dispatchEvent(pointer('pointerleave', 40));
+        await settle();
+        expect(items()[2]).not.toHaveAttribute('data-highlighted');
+        expect(host.onValueChange).not.toHaveBeenCalled();
+    });
+
+    it.each([false, true])('an explicit press highlights with zero movement while readOnly=%s', async (readOnly) => {
+        host.readOnly.set(readOnly);
+        await settle();
+        items()[2].dispatchEvent(new MouseEvent('pointerdown', { button: 0, bubbles: true }));
+        await settle();
+        expect(items()[2]).toHaveAttribute('data-highlighted');
+        expect(content()).toHaveAttribute('aria-activedescendant', items()[2].id);
+        expect(host.onValueChange).not.toHaveBeenCalled();
+        items()[2].dispatchEvent(new MouseEvent('pointerup', { button: 0, bubbles: true }));
+        await settle();
+        if (readOnly) {
+            expect(host.open()).toBe(true);
+            expect(host.onValueChange).not.toHaveBeenCalled();
+        } else expect(host.value()).toBe('grape');
     });
 
     it('highlights disabled options with arrows and exposes their ids without selecting them', async () => {

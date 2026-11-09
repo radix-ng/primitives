@@ -231,12 +231,31 @@ describe('Closed Select typeahead', () => {
         await key('b');
         expect(host.value()).toBe('berlin');
         fixture.nativeElement.querySelector('form').reset();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
         await settle();
         expect(host.value()).toBe('amsterdam');
         expect(popup()).toBeNull();
         await key('b');
         expect(host.value()).toBe('berlin');
     });
+    it.each(['action', 'model'] as const)(
+        'starts a fresh closed query after a %s close without a blur event',
+        async (close) => {
+            host.open.set(true);
+            await settle();
+            document
+                .querySelector('[rdxSelectPopup]')!
+                .dispatchEvent(new KeyboardEvent('keydown', { key: 'n', bubbles: true }));
+            await settle();
+            expect(document.querySelector('[rdxSelectItem][data-highlighted]')).toHaveTextContent('New York');
+            if (close === 'action') root.close();
+            else host.open.set(false);
+            await settle();
+            await key('b');
+            expect(host.value()).toBe('berlin');
+            expect(host.open()).toBe(false);
+        }
+    );
     it('cancels pending search on destruction', async () => {
         dispatch('b');
         fixture.destroy();

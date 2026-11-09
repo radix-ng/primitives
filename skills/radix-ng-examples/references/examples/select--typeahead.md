@@ -14,7 +14,7 @@ is no active search. During a query, Space continues the label, so multiword nam
 Open-popup search remains available in read-only and multiple modes without committing by itself.
 
 Both modes use a 750ms session. Typing a value while closed keeps the prefix so later letters can
-refine it. A query with no match clears immediately. Opening the popup, leaving the control, a form
+refine it. A query with no match clears immediately. Opening or closing the popup, leaving the control, a form
 reset or an external Angular form write clears the session. An idle Space opens the closed popup.
 
 Closed matches emit the usual cancelable `onValueChange` with reason `none` and update Angular Forms

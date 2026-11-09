@@ -93,7 +93,16 @@ describe('shared persistent native input', () => {
         host.autoComplete.set('country');
         await settle();
         expect(input.autocomplete).toBe('country');
+        fixture.nativeElement
+            .querySelector('form')
+            .addEventListener('reset', (event: Event) => event.preventDefault(), { once: true });
         fixture.nativeElement.querySelector('form').reset();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+        await settle();
+        expect(host.value()).toBe('next');
+        expect(input.value).toBe('next');
+        fixture.nativeElement.querySelector('form').reset();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
         await settle();
         expect(host.value()).toBe('initial');
     });

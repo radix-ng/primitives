@@ -51,9 +51,11 @@ import { SelectTypedControl } from './select-typed-control';
                         [itemToStringLabel]="booleanLabel"
                         rdxNgControlField
                     />
-                    <output class="text-muted-foreground text-xs" data-testid="boolean-value">
-                        {{ enabled.value }}
-                    </output>
+                    <output
+                        class="text-muted-foreground text-xs"
+                        [textContent]="enabled.value.toString()"
+                        data-testid="boolean-value"
+                    ></output>
                 </div>
                 <div class="grid gap-2" name="date" rdxFieldRoot>
                     <label class="text-foreground text-sm font-medium" rdxFieldLabel>Date · Signal Forms</label>
@@ -65,9 +67,11 @@ import { SelectTypedControl } from './select-typed-control';
                         [isItemEqualToValue]="equalDates"
                         rdxSignalField
                     />
-                    <output class="text-muted-foreground text-xs" data-testid="date-value">
-                        {{ dateLabel(model().date) }}
-                    </output>
+                    <output
+                        class="text-muted-foreground text-xs"
+                        [textContent]="dateLabel(model().date)"
+                        data-testid="date-value"
+                    ></output>
                 </div>
                 <div class="grid gap-2" name="coordinates" rdxFieldRoot>
                     <label class="text-foreground text-sm font-medium" rdxFieldLabel>Array · Single value</label>
@@ -77,9 +81,11 @@ import { SelectTypedControl } from './select-typed-control';
                         [itemToStringLabel]="coordinateLabel"
                         [itemToStringValue]="coordinateValue"
                     />
-                    <output class="text-muted-foreground text-xs" data-testid="coordinate-value">
-                        {{ coordinateText() }}
-                    </output>
+                    <output
+                        class="text-muted-foreground text-xs"
+                        [textContent]="coordinateText()"
+                        data-testid="coordinate-value"
+                    ></output>
                 </div>
                 <div class="grid gap-2" name="tokens" rdxFieldRoot>
                     <label class="text-foreground text-sm font-medium" rdxFieldLabel>Symbols · Multiple values</label>
@@ -90,16 +96,22 @@ import { SelectTypedControl } from './select-typed-control';
                         [itemToStringLabel]="tokenLabel"
                         [itemToStringValue]="tokenLabel"
                     />
-                    <output class="text-muted-foreground text-xs" data-testid="token-value">{{ tokenValues() }}</output>
+                    <output
+                        class="text-muted-foreground text-xs"
+                        [textContent]="tokenValues()"
+                        data-testid="token-value"
+                    ></output>
                 </div>
             </div>
             <div class="flex gap-2">
                 <button [class]="buttonClass" type="submit">Submit</button>
                 <button [class]="buttonClass" type="reset">Reset</button>
             </div>
-            <output class="text-muted-foreground max-w-xl font-mono text-xs break-all" data-testid="submitted-values">
-                {{ submitted() }}
-            </output>
+            <output
+                class="text-muted-foreground max-w-xl font-mono text-xs break-all"
+                [textContent]="submitted()"
+                data-testid="submitted-values"
+            ></output>
         </form>
     `
 })

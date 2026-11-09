@@ -128,3 +128,20 @@ test('focusing the native input redirects focus to the visible trigger', async (
     await expect(page.getByRole('combobox', { name: 'Country', exact: true })).toBeFocused();
     expect(errors).toEqual([]);
 });
+
+test('a bubbling listener can cancel a native reset before Angular forms follow it', async ({ page }) => {
+    const errors = await openExample(page);
+    await autofill(page, 'CA');
+    await expect(page.getByTestId('country-value')).toHaveText('CA');
+    await page.locator('#native-select-form').evaluate((form) => {
+        form.addEventListener('reset', (event) => event.preventDefault(), { once: true });
+    });
+    await page.getByRole('button', { name: 'Reset', exact: true }).click();
+    // Observe the next rendering opportunity, after the native default action and queued bridge work.
+    await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => resolve())));
+    await expect(page.getByTestId('country-value')).toHaveText('CA');
+    await expect(page.locator('input[name="country"]')).toHaveValue('CA');
+    await page.getByRole('button', { name: 'Reset', exact: true }).click();
+    await expect(page.getByTestId('country-value')).toHaveText('none');
+    expect(errors).toEqual([]);
+});
