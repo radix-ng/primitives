@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { isItemEqualToValue, itemToStringLabel, itemToStringValue } from '../src/item-helpers';
+import { describe, expect, it, vi } from 'vitest';
+import { compareItemEquality, isItemEqualToValue, itemToStringLabel, itemToStringValue } from '../src/item-helpers';
 
 describe('itemToStringLabel', () => {
     it('passes strings through unchanged', () => {
@@ -39,6 +39,15 @@ describe('itemToStringValue', () => {
 });
 
 describe('isItemEqualToValue', () => {
+    it('keeps nullish selections out of a non-null comparator', () => {
+        const comparator = vi.fn((a: Date, b: Date) => a.getTime() === b.getTime());
+        const value = new Date('2026-01-01');
+        expect(compareItemEquality<Date | null>(null, value, comparator)).toBe(false);
+        expect(compareItemEquality<Date | undefined>(undefined, value, comparator)).toBe(false);
+        expect(compareItemEquality<Date | null>(null, null, comparator)).toBe(true);
+        expect(comparator).not.toHaveBeenCalled();
+        expect(compareItemEquality(value, new Date(value), comparator)).toBe(true);
+    });
     it('uses a function comparator when provided', () => {
         const byId = (a: { id: number }, b: { id: number }) => a.id === b.id;
         expect(isItemEqualToValue({ id: 1 }, { id: 1 }, byId)).toBe(true);

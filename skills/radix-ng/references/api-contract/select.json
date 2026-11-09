@@ -90,7 +90,7 @@
         },
         {
           "name": "value",
-          "type": "AcceptableValue"
+          "type": "Value"
         }
       ],
       "outputs": []

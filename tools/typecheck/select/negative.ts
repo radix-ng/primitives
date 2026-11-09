@@ -11,7 +11,7 @@ interface Country {
 @Component({
     imports: [RdxSelectRoot, SelectTypedControl, FormField],
     template: `
-        <!-- @expect-error single-array -->
+        <!-- @expect-error single-array-for-scalar-label -->
         <div [(value)]="countries" [multiple]="false" [itemToStringLabel]="label" rdxSelectRoot></div>
         <!-- @expect-error multiple-scalar -->
         <example-select [(value)]="country" [options]="options" [multiple]="true" [itemToStringLabel]="label" />
@@ -28,6 +28,25 @@ interface Country {
         ></div>
         <!-- @expect-error input-ref-type -->
         <div [inputRef]="numberLabel" rdxSelectRoot></div>
+        <!-- @expect-error boolean-value -->
+        <example-select [value]="18" [options]="[true, false]" [itemToStringLabel]="booleanLabel" />
+        <!-- @expect-error date-form-type -->
+        <example-select [options]="dates" [itemToStringLabel]="dateLabel" [formField]="fields.age" />
+        <!-- @expect-error array-item-mode -->
+        <example-select
+            [value]="[1, 2]"
+            [options]="coordinates"
+            [multiple]="true"
+            [itemToStringLabel]="coordinateLabel"
+        />
+        <!-- @expect-error symbol-event -->
+        <div
+            [value]="token"
+            [multiple]="false"
+            [itemToStringLabel]="symbolLabel"
+            (onValueChange)="consumeDate($event.value)"
+            rdxSelectRoot
+        ></div>
     `
 })
 export class NegativeSelectTypes {
@@ -38,4 +57,17 @@ export class NegativeSelectTypes {
     readonly numberLabel = (value: number) => String(value);
     readonly fields = form(signal({ age: 18 }));
     missing: unknown;
+    readonly booleanLabel = (value: boolean) => String(value);
+    readonly dateLabel = (value: Date) => value.toISOString();
+    readonly coordinateLabel = (value: readonly number[]) => value.join(':');
+    readonly symbolLabel = (value: symbol) => String(value);
+    readonly dates = [new Date('2026-01-01')];
+    readonly coordinates = [
+        [1, 2],
+        [3, 4]
+    ] as const;
+    readonly token = Symbol('token');
+    consumeDate(value: Date | null | undefined): void {
+        void value;
+    }
 }

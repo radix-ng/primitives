@@ -144,6 +144,7 @@ class SelectFieldReactiveFormsHost {
                 #nativeRoot="rdxSelectRoot"
                 [(value)]="value"
                 [defaultValue]="defaultValue()"
+                [multiple]="multiple()"
                 [disabled]="disabled()"
                 [itemToStringValue]="serializeItem"
                 [name]="name()"
@@ -155,6 +156,7 @@ class SelectFieldReactiveFormsHost {
     `
 })
 class SelectNativeFormHost {
+    readonly multiple = signal(false);
     readonly nativeRoot = viewChild.required<RdxSelectRoot>('nativeRoot');
     readonly defaultValue = signal<AcceptableValue | AcceptableValue[]>('apple');
     readonly value = signal<AcceptableValue | AcceptableValue[]>('apple');
@@ -363,6 +365,7 @@ describe('Select native form contract', () => {
         expect(new FormData(externalForm).getAll('external')).toEqual(['pear']);
 
         host.value.set(['apple', 'banana']);
+        host.multiple.set(true);
         fixture.detectChanges();
         expect(new FormData(nativeForm).getAll('fruit')).toEqual(['apple', 'banana']);
 
@@ -374,6 +377,7 @@ describe('Select native form contract', () => {
     it('serializes object values with itemToStringValue instead of object coercion', () => {
         const nativeForm = fixture.nativeElement.querySelector('#native-form') as HTMLFormElement;
 
+        host.multiple.set(true);
         host.value.set([
             { id: 'angular', label: 'Angular' },
             { id: 'vue', label: 'Vue' }

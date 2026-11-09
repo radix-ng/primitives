@@ -1,19 +1,19 @@
-import { AcceptableValue, itemToStringValue } from '@radix-ng/primitives/core';
+import { itemToStringValue } from '@radix-ng/primitives/core';
 
 /** Text labels are the Angular counterpart of the labels rendered by Base UI Select.Value. */
 export type RdxSelectLabelValue = string | number | null | undefined;
 
-export interface RdxSelectItemOption<Value = AcceptableValue> {
+export interface RdxSelectItemOption<Value = unknown> {
     value: Value | null;
     label: RdxSelectLabelValue;
 }
 
-export interface RdxSelectItemGroup<Value = AcceptableValue> {
+export interface RdxSelectItemGroup<Value = unknown> {
     [key: string]: unknown;
     items: readonly RdxSelectItemOption<Value>[];
 }
 
-export type RdxSelectItems<Value = AcceptableValue> =
+export type RdxSelectItems<Value = unknown> =
     | Readonly<Record<string, RdxSelectLabelValue>>
     | readonly RdxSelectItemOption<Value>[]
     | readonly RdxSelectItemGroup<Value>[];
@@ -34,10 +34,10 @@ export function hasSelectNullLabel(items: RdxSelectItems | undefined): boolean {
 }
 
 /** Mirrors Base UI internals/resolveValueLabel.tsx for Angular text labels. */
-export function resolveSelectLabel(
-    value: AcceptableValue | undefined,
-    items: RdxSelectItems | undefined,
-    customLabel: ((value: AcceptableValue) => string) | undefined
+export function resolveSelectLabel<Value>(
+    value: Value | null | undefined,
+    items: RdxSelectItems<Value> | undefined,
+    customLabel: ((value: Value) => string) | undefined
 ): string {
     if (customLabel && value != null) return customLabel(value) ?? '';
     if (value && typeof value === 'object' && 'label' in value && value['label'] != null) {

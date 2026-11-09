@@ -4,6 +4,8 @@ import { SelectAlignedPosition } from './select-aligned-position';
 import { SelectAlignedPositionWithScroll } from './select-aligned-position-with-scroll';
 import alignedPositionWithScrollSource from './select-aligned-position-with-scroll?raw';
 import alignedPositionSource from './select-aligned-position?raw';
+import { SelectArbitraryValues } from './select-arbitrary-values';
+import arbitraryValuesSource from './select-arbitrary-values?raw';
 import { SelectArrowExample } from './select-arrow';
 import arrowSource from './select-arrow?raw';
 import { SelectDefault } from './select-default';
@@ -45,6 +47,7 @@ export default {
         moduleMetadata({
             imports: [
                 SelectDefault,
+                SelectArbitraryValues,
                 SelectDeferredUnmount,
                 SelectArrowExample,
                 SelectEvents,
@@ -73,6 +76,15 @@ export const Default: Story = {
     render: () => ({
         template: html`
             <select-default />
+        `
+    })
+};
+
+export const ArbitraryValues: Story = {
+    parameters: source(arbitraryValuesSource),
+    render: () => ({
+        template: html`
+            <select-arbitrary-values />
         `
     })
 };

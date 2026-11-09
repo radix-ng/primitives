@@ -72,13 +72,18 @@ export interface RdxNativeFormControl {
 
 /**
  * Converts a scalar or array model to HTML form values. `null` and `undefined` represent no
- * successful control; arrays deliberately become repeated entries under the same field name.
+ * successful control. By default arrays become repeated entries. An explicit selection mode lets
+ * controls serialize an array-valued single item without flattening it.
  */
-export function serializeNativeFormValue(
-    value: unknown,
-    itemToStringValue: (entry: unknown) => string = defaultItemToStringValue
+export function serializeNativeFormValue<Value = unknown>(
+    value: Value | readonly Value[] | null | undefined,
+    itemToStringValue: (entry: Value) => string = defaultItemToStringValue,
+    options: { multiple?: boolean } = {}
 ): readonly string[] {
-    const values = Array.isArray(value) ? value : [value];
+    const values: readonly (Value | null | undefined)[] =
+        (options.multiple ?? Array.isArray(value)) && Array.isArray(value)
+            ? value
+            : [value as Value | null | undefined];
     return values.flatMap((entry) => (entry == null ? [] : [itemToStringValue(entry)]));
 }
 

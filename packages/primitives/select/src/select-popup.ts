@@ -15,7 +15,6 @@ import {
 } from '@angular/core';
 import { RdxCompositeItemRegistration, RdxCompositeList } from '@radix-ng/primitives/composite';
 import {
-    AcceptableValue,
     createContext,
     getActiveElement,
     RDX_FLOATING_REGISTRATION,
@@ -205,7 +204,12 @@ export class RdxSelectPopup {
         const items = this.items();
         return (
             items.find((item) =>
-                valueComparator(this.rootContext.value(), item.metadata()?.value, this.rootContext.isItemEqualToValue())
+                valueComparator(
+                    this.rootContext.value(),
+                    item.metadata()?.value,
+                    this.rootContext.isItemEqualToValue(),
+                    this.rootContext.multiple()
+                )
             ) ?? items.find((item) => !item.metadata()?.disabled)
         );
     });
@@ -405,8 +409,9 @@ export class RdxSelectPopup {
         const selected = items.find((item) =>
             valueComparator(
                 this.rootContext.value(),
-                item.metadata()?.value as AcceptableValue,
-                this.rootContext.isItemEqualToValue()
+                item.metadata()?.value,
+                this.rootContext.isItemEqualToValue(),
+                this.rootContext.multiple()
             )
         );
         if (selected) {
@@ -459,7 +464,7 @@ export class RdxSelectPopup {
             const item = this.highlight.highlightedItem();
             const metadata = item?.metadata();
             if (item && metadata && !metadata.disabled) {
-                this.rootContext.onValueChange(metadata.value as AcceptableValue, 'item-press', event);
+                this.rootContext.onValueChange(metadata.value, 'item-press', event);
                 if (!this.rootContext.multiple()) {
                     this.rootContext.onOpenChange(false, 'item-press', event);
                 }

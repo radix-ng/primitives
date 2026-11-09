@@ -1,38 +1,40 @@
-import { AcceptableValue, getActiveElement } from '@radix-ng/primitives/core';
+import { compareItemEquality, getActiveElement, ItemValueComparator } from '@radix-ng/primitives/core';
 
 export const OPEN_KEYS = [' ', 'Enter', 'ArrowUp', 'ArrowDown'];
 export const SELECTION_KEYS = [' ', 'Enter'];
 export const CONTENT_MARGIN = 10;
 
-export interface RdxSelectItemMetadata {
+export interface RdxSelectItemMetadata<Value = unknown> {
     [key: string]: unknown;
-    value: AcceptableValue | undefined;
+    value: Value | undefined;
     disabled: boolean;
     textValue?: string;
     textElement?: HTMLElement;
 }
 
 export function valueComparator<T>(
-    value: T | T[] | undefined,
+    value: T | T[] | null | undefined,
     currentValue: T | undefined,
-    comparator?: string | ((a: T, b: T) => boolean)
+    comparator?: ItemValueComparator<T>,
+    multiple = Array.isArray(value)
 ) {
     if (value === undefined) return false;
-    else if (Array.isArray(value)) return value.some((val) => compare(val, currentValue, comparator));
-    else return compare(value, currentValue, comparator);
+    else if (multiple) return Array.isArray(value) && value.some((val: T) => compare(val, currentValue, comparator));
+    // `multiple` identifies the outer collection; T itself may be an array.
+    else return compare(value as T | null, currentValue, comparator);
 }
 
-export function compare<T>(value?: T, currentValue?: T, comparator?: string | ((a: T, b: T) => boolean)) {
+export function compare<T>(value?: T | null, currentValue?: T | null, comparator?: ItemValueComparator<T>) {
     if (value === undefined || currentValue === undefined) return false;
 
-    if (typeof comparator === 'function') return comparator(value, currentValue);
-
-    if (typeof comparator === 'string') return value?.[comparator as keyof T] === currentValue?.[comparator as keyof T];
-
-    return Object.is(value, currentValue);
+    return compareItemEquality(value, currentValue, (a, b) => {
+        if (typeof comparator === 'function') return comparator(a, b);
+        if (typeof comparator === 'string') return a[comparator as keyof T] === b[comparator as keyof T];
+        return Object.is(a, b);
+    });
 }
 
-export function shouldShowPlaceholder(value?: AcceptableValue | AcceptableValue[]): boolean {
+export function shouldShowPlaceholder(value?: unknown): boolean {
     return value === undefined || value === null || value === '' || (Array.isArray(value) && value.length === 0);
 }
 

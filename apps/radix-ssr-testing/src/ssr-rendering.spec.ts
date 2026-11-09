@@ -151,6 +151,25 @@ class SelectArrowsPage {}
 })
 class RetainedSelectPage {}
 
+@Component({
+    selector: 'app-arbitrary-select',
+    imports: [_importsSelect],
+    template: `
+        @for (value of values; track $index) {
+            <div [value]="value" [multiple]="false" [itemToStringLabel]="label" rdxSelectRoot>
+                <button rdxSelectTrigger>
+                    <span #display="rdxSelectedValue" rdxSelectValue>{{ display.slotText() }}</span>
+                </button>
+            </div>
+        }
+    `
+})
+class ArbitrarySelectPage {
+    readonly values = [false, new Date('2026-01-01T00:00:00Z'), [10, 20], Symbol('server-token')];
+    readonly label = (value: unknown) =>
+        typeof value === 'symbol' ? (value.description ?? '') : JSON.stringify(value);
+}
+
 function renderToString(selector: string, component: Type<unknown>): Promise<string> {
     return renderApplication(
         (context: BootstrapContext) =>
@@ -166,6 +185,14 @@ function renderToString(selector: string, component: Type<unknown>): Promise<str
 }
 
 describe('SSR rendering', () => {
+    it('renders arbitrary single-item labels without coercing the selection shape', async () => {
+        const html = await renderToString('app-arbitrary-select', ArbitrarySelectPage);
+        expect(html).toContain('false');
+        expect(html).toContain('2026-01-01T00:00:00.000Z');
+        expect(html).toContain('[10,20]');
+        expect(html).toContain('server-token');
+        expect(html).toMatch(/ngh=/);
+    });
     it('renders a keep-mounted Select in place without a browser HTMLElement constructor', async () => {
         vi.stubGlobal('HTMLElement', undefined);
         try {

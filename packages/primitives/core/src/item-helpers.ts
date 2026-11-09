@@ -9,6 +9,16 @@ import { isEqual, isNullish } from './predicates';
  */
 export type ItemValueComparator<T = unknown> = ((a: T, b: T) => boolean) | string;
 
+/** Empty selections compare by identity without calling a consumer's non-null item comparator. */
+export function compareItemEquality<T>(
+    a: T,
+    b: T,
+    comparator: (a: NonNullable<T>, b: NonNullable<T>) => boolean
+): boolean {
+    if (a == null || b == null) return Object.is(a, b);
+    return comparator(a, b);
+}
+
 /**
  * Converts an item value to the string shown to the user.
  *
@@ -64,7 +74,7 @@ function serializeValue(value: unknown): string {
  */
 export function isItemEqualToValue<T>(a: T, b: T, comparator?: ItemValueComparator<T>): boolean {
     if (typeof comparator === 'function') {
-        return comparator(a, b);
+        return compareItemEquality(a, b, comparator);
     }
 
     if (typeof comparator === 'string') {

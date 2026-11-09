@@ -119,3 +119,7 @@ export class SelectTypedWrapper {
 The strict Angular AOT fixtures in `tools/typecheck/select` check both valid consumers and invalid
 value, mode, label, event and Signal Forms bindings. Classic CVA bindings retain Angular's runtime
 interface; `formControl` does not by itself infer or validate a custom control's generic value type.
+Angular DI also does not connect an independently declared Item's generic to its parent Root. The
+wrapper's `options: readonly Value[]` ties the collection to the public selection/callback types.
+Internal part communication uses `unknown`; no `any` fallback is required. See
+[ADR 0028](https://github.com/radix-ng/primitives/blob/main/docs/adr/0028-select-arbitrary-value-contract.md).

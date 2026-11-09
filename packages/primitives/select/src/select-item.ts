@@ -13,7 +13,6 @@ import {
 } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import {
-    AcceptableValue,
     createContext,
     handleAndDispatchCustomEvent,
     injectId,
@@ -23,8 +22,8 @@ import { injectSelectPopupContext } from './select-popup';
 import { injectSelectRootContext } from './select-root';
 import { SELECTION_KEYS, valueComparator } from './utils';
 
-export interface RdxSelectItemContext {
-    value: Signal<AcceptableValue | undefined>;
+export interface RdxSelectItemContext<Value = unknown> {
+    value: Signal<Value | undefined>;
     disabled: Signal<boolean>;
     isSelected: Signal<boolean>;
     textId: string;
@@ -51,7 +50,7 @@ export const [injectSelectItemContext, provideSelectItemContext] = createContext
     'components/select'
 );
 
-export type SelectEvent = CustomEvent<{ originalEvent: PointerEvent | KeyboardEvent; value?: AcceptableValue }>;
+export type SelectEvent<Value = unknown> = CustomEvent<{ originalEvent: PointerEvent | KeyboardEvent; value?: Value }>;
 
 @Directive({
     selector: '[rdxSelectItem]',
@@ -71,14 +70,14 @@ export type SelectEvent = CustomEvent<{ originalEvent: PointerEvent | KeyboardEv
         '(pointermove)': 'onPointerMove($event)'
     }
 })
-export class RdxSelectItem {
+export class RdxSelectItem<Value = unknown> {
     private readonly rootContext = injectSelectRootContext();
     private readonly contentContext = injectSelectPopupContext();
     private readonly listItem = inject(RdxCompositeListItem, { self: true });
 
     private readonly currentElement = inject<ElementRef<HTMLElement>>(ElementRef);
 
-    readonly value = input<AcceptableValue>();
+    readonly value = input<Value>();
 
     readonly textValue = input<string>('');
 
@@ -101,7 +100,12 @@ export class RdxSelectItem {
     }
 
     readonly isSelected = computed(() =>
-        valueComparator(this.rootContext.value(), this.value(), this.rootContext.isItemEqualToValue())
+        valueComparator(
+            this.rootContext.value(),
+            this.value(),
+            this.rootContext.isItemEqualToValue(),
+            this.rootContext.multiple()
+        )
     );
 
     /** Highlighted via the highlight model (keyboard / hover), not DOM focus. */

@@ -20,7 +20,6 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 import {
-    AcceptableValue,
     BooleanInput,
     createCancelableChangeEventDetails,
     createContext,
@@ -54,12 +53,12 @@ import { injectFieldRootContext } from '@radix-ng/primitives/field';
 import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 import { RdxSelectItems, resolveSelectLabel } from './select-items';
-import { compare, valueComparator } from './utils';
+import { compare } from './utils';
 
 export type { RdxSelectItemGroup, RdxSelectItemOption, RdxSelectItems, RdxSelectLabelValue } from './select-items';
 
-export interface SelectOption {
-    value: AcceptableValue | undefined;
+export interface SelectOption<Value = unknown> {
+    value: Value | undefined;
     disabled?: boolean;
     textContent: string;
 }
@@ -100,12 +99,12 @@ export type RdxSelectValueType<Value, Multiple extends boolean = boolean> =
     | (Multiple extends true ? Value[] : Value | null)
     | undefined;
 
-export interface RdxSelectValueChangeEvent<Value = AcceptableValue, Multiple extends boolean = boolean> {
+export interface RdxSelectValueChangeEvent<Value = unknown, Multiple extends boolean = boolean> {
     value: RdxSelectValueType<Value, Multiple>;
     eventDetails: RdxSelectValueChangeEventDetails;
 }
 
-export interface RdxSelectRootContext extends RdxFormUiStateContext, RdxLabelRegistry {
+export interface RdxSelectRootContext<Value = unknown> extends RdxFormUiStateContext, RdxLabelRegistry {
     present: Signal<boolean>;
     skipExitAnimation: Signal<boolean>;
     registerPresence: (presence: RdxPopupPresenceRegistration) => () => void;
@@ -117,12 +116,12 @@ export interface RdxSelectRootContext extends RdxFormUiStateContext, RdxLabelReg
     triggerPointerDownPosRef: WritableSignal<{ x: number; y: number } | null>;
     contentId: string;
     dir: Signal<Direction>;
-    value: Signal<AcceptableValue | AcceptableValue[] | undefined>;
+    value: Signal<RdxSelectValueType<Value>>;
     multiple: Signal<boolean>;
-    items: Signal<RdxSelectItems | undefined>;
+    items: Signal<RdxSelectItems<Value> | undefined>;
     highlightItemOnHover: Signal<boolean>;
-    isItemEqualToValue: Signal<ItemValueComparator<AcceptableValue> | undefined>;
-    itemToStringLabel: Signal<((value: AcceptableValue) => string) | undefined>;
+    isItemEqualToValue: Signal<ItemValueComparator<Value> | undefined>;
+    itemToStringLabel: Signal<((value: Value) => string) | undefined>;
     open: Signal<boolean>;
     openedByTouch: Signal<boolean>;
     openMethod: Signal<RdxSelectOpenMethod>;
@@ -135,15 +134,17 @@ export interface RdxSelectRootContext extends RdxFormUiStateContext, RdxLabelReg
     isEmptyModelValue: Signal<boolean>;
     transitionStatus: Signal<RdxTransitionStatus>;
     registerTransitionElement: (element: HTMLElement) => () => void;
-    optionsSet: Signal<Set<SelectOption>>;
-    onOptionAdd: (option: () => SelectOption) => void;
-    onOptionRemove: (option: () => SelectOption) => void;
-    onValueChange: (value: AcceptableValue | undefined, reason?: RdxSelectValueChangeReason, event?: Event) => boolean;
+    optionsSet: Signal<Set<SelectOption<Value>>>;
+    onOptionAdd: (option: () => SelectOption<Value>) => void;
+    onOptionRemove: (option: () => SelectOption<Value>) => void;
+    onValueChange: (value: Value | undefined, reason?: RdxSelectValueChangeReason, event?: Event) => boolean;
     onTriggerChange: (node: ElementRef<HTMLElement>) => void;
     onValueElementChange: (node: HTMLElement) => void;
     onOpenChange: (value: boolean, reason?: RdxSelectOpenChangeReason, event?: Event) => boolean;
 }
 
+// Angular DI erases a family's template generics. Independent child directives exchange unknown
+// here; Root and application wrappers retain their own precise public Value contract.
 const context = (): RdxSelectRootContext => {
     const context = inject(RdxSelectRoot);
 
@@ -183,7 +184,7 @@ const context = (): RdxSelectRootContext => {
         onOptionAdd: (option) => context.optionGetters.update((current) => [...current, option]),
         onOptionRemove: (option) =>
             context.optionGetters.update((current) => current.filter((entry) => entry !== option)),
-        onValueChange: (value: AcceptableValue | undefined, reason?: RdxSelectValueChangeReason, event?: Event) =>
+        onValueChange: (value: unknown, reason?: RdxSelectValueChangeReason, event?: Event) =>
             context.setValue(value, reason, event),
         onTriggerChange: (node: ElementRef<HTMLElement>) => {
             context.triggerElement.set(node.nativeElement);
@@ -202,7 +203,7 @@ export const [injectSelectRootContext, provideSelectRootContext] = createContext
 );
 
 /** Rebind the root's DI and form providers when a design-system component extends RdxSelectRoot. */
-export function provideRdxSelectRoot<Value extends AcceptableValue, Multiple extends boolean>(
+export function provideRdxSelectRoot<Value, Multiple extends boolean>(
     root: Type<RdxSelectRoot<Value, Multiple>>
 ): Provider[] {
     return [
@@ -220,7 +221,7 @@ export function provideRdxSelectRoot<Value extends AcceptableValue, Multiple ext
     providers: [provideRdxSelectRoot(RdxSelectRoot)],
     hostDirectives: [RdxPopper]
 })
-export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Multiple extends boolean = boolean>
+export class RdxSelectRoot<Value = unknown, Multiple extends boolean = boolean>
     extends RdxFormUiControlBase
     implements ControlValueAccessor, RdxFormValueControl<RdxSelectValueType<Value, Multiple>>, RdxSelectRootActions
 {
@@ -369,10 +370,7 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
         disabled: this.disabledState,
         value: this.value,
         serialize: (value) => {
-            const itemToStringValue = this.itemToStringValue();
-            return itemToStringValue
-                ? serializeNativeFormValue(value, (entry) => itemToStringValue(entry as Value))
-                : serializeNativeFormValue(value);
+            return serializeNativeFormValue<Value>(value, this.itemToStringValue(), { multiple: this.multiple() });
         },
         input: {
             anchor: () => this.triggerElement(),
@@ -424,7 +422,7 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
     readonly nativeInput = this.nativeFormControl.inputElement;
 
     private scalarNativeValue(): boolean {
-        return !this.multiple() && !Array.isArray(this.value());
+        return !this.multiple();
     }
 
     private async handleAutofill(text: string, event: Event): Promise<void> {
@@ -458,17 +456,10 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
                         ((
                             this.itemToStringValue()?.(option.value as Value) ?? stringifyValue(option.value)
                         ).toLowerCase() === key ||
-                            resolveSelectLabel(
-                                option.value,
-                                undefined,
-                                this.itemToStringLabel() as ((value: AcceptableValue) => string) | undefined
-                            ).toLowerCase() === key)
+                            resolveSelectLabel(option.value, undefined, this.itemToStringLabel()).toLowerCase() === key)
                 ) ?? options.find((option) => option.value != null && option.textContent.toLowerCase() === key);
-            if (
-                match &&
-                !compare(this.value(), match.value, this.isItemEqualToValue() as ItemValueComparator<AcceptableValue>)
-            ) {
-                this.setValue(match.value as Value, 'none', event);
+            if (match && !compare(this.value() as Value, match.value, this.isItemEqualToValue())) {
+                this.setValue(match.value, 'none', event);
             }
         } finally {
             this.forceMount.set(false);
@@ -544,7 +535,9 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
     }
 
     /** @internal Live getters retain option identity and read current rendered labels for autofill. */
-    readonly optionGetters = signal<readonly (() => SelectOption)[]>([], { debugName: 'RdxSelectRoot.optionGetters' });
+    readonly optionGetters = signal<readonly (() => SelectOption<Value>)[]>([], {
+        debugName: 'RdxSelectRoot.optionGetters'
+    });
     readonly optionsSet = computed(() => new Set(this.optionGetters().map((option) => option())), {
         debugName: 'RdxSelectRoot.optionsSet'
     });
@@ -552,7 +545,7 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
     /** Legacy option-key view of the live option registry. */
     readonly nativeSelectKey = computed(() => {
         return Array.from(this.optionsSet())
-            .map((option) => option.value)
+            .map(({ value }) => (value == null ? '' : (this.itemToStringValue()?.(value) ?? stringifyValue(value))))
             .join(';');
     });
 
@@ -563,10 +556,8 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
         y: 0
     });
 
-    getOption(value: SelectOption['value']) {
-        return Array.from(this.optionsSet()).find((option) =>
-            valueComparator(value as Value, option.value as Value, this.isItemEqualToValue())
-        );
+    getOption(value: Value | undefined) {
+        return Array.from(this.optionsSet()).find((option) => compare(value, option.value, this.isItemEqualToValue()));
     }
 
     setValue(

@@ -48,6 +48,13 @@ destruction. Keep initial/return-focus ownership in this shared path; Select pla
 effects must not separately steal or return focus. Select Popup exposes `closeOnFocusOut` as an opt-in,
 default `false`; changing the default or switching to item DOM focus remains gated on real AT review.
 
+**Select arbitrary Value (ADR 0028):** Root/Item and their public contracts are unconstrained and
+default to `unknown`. Angular DI erases family generics; typed application wrappers connect options
+to selection and callbacks. Use explicit `multiple` to distinguish a selection collection from an
+array-valued item. Select passes that mode to the shared generic `serializeNativeFormValue`; other
+callers retain automatic array detection. Core `compareItemEquality` guards nullish selections before
+custom comparison; Select keeps identity defaults and Combobox keeps its existing equality policy.
+
 ## Tech stack
 
 | Layer                  | Choice                                                   | Why                                                                                            |

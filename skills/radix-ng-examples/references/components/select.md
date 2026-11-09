@@ -11,6 +11,7 @@ A control that presents a list of options for the user to pick from, triggered b
 - ✅ Controlled and uncontrolled value via `[(value)]`, with `defaultValue` / `defaultOpen` seeds.
 - ✅ `readOnly` and `required` state, reflected on the trigger as `aria-readonly` / `aria-required`.
 - ✅ Single and multiple selection with the `multiple` input.
+- ✅ Arbitrary item values, including booleans, Dates, symbols and array-valued items.
 - ✅ Angular forms integration through `ControlValueAccessor`: Reactive Forms, `formControlName`, and `ngModel`.
 - ✅ Cancelable `onOpenChange` and `onValueChange` outputs with reason-aware `eventDetails`.
 - ✅ Imperative `close()` / `unmount()` actions and per-close deferred unmount for external animations.
@@ -19,7 +20,7 @@ A control that presents a list of options for the user to pick from, triggered b
 - ✅ Scroll buttons appear automatically when the list overflows the viewport.
 - ✅ Typeahead: type a character to jump to matching items.
 - ✅ Custom comparison (`isItemEqualToValue`), labels (`itemToStringLabel`), and native form serialization
-  (`itemToStringValue`) for object values.
+  (`itemToStringValue`) for arbitrary values.
 - ✅ Highlight-model navigation (`aria-activedescendant`) — focus stays on the listbox, not the items.
 - ✅ Full keyboard navigation: ArrowDown / ArrowUp, Home, End, Enter / Space, Escape.
 - ✅ Public interaction state via `openMethod`, `openInteractionType`, and `closeInteractionType`.
@@ -126,6 +127,7 @@ the behavior of a native `<select>`. Use `rdxSelectItemAlignedPosition` and
 - [Deferred unmount and imperative actions](../examples/select--deferred-unmount-and-imperative-actions.md)
 - [Focus management](../examples/select--focus-management.md)
 - [Object values](../examples/select--object-values.md)
+- [Arbitrary values](../examples/select--arbitrary-values.md)
 - [Reactive Forms](../examples/select--reactive-forms.md)
 - [Template-driven Forms](../examples/select--template-driven-forms.md)
 - [Native forms and autofill](../examples/select--native-forms-and-autofill.md)

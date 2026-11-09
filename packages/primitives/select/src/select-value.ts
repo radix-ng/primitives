@@ -33,7 +33,8 @@ export class RdxSelectValue {
         const customLabel = this.rootContext.itemToStringLabel();
 
         const value = this.rootContext.value();
-        return (Array.isArray(value) ? value : [value]).map((entry) => resolveSelectLabel(entry, items, customLabel));
+        const values = this.rootContext.multiple() && Array.isArray(value) ? value : [value];
+        return values.map((entry) => resolveSelectLabel(entry, items, customLabel));
     });
 
     constructor() {

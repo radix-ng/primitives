@@ -13,6 +13,10 @@
 
 - Empty uncontrolled values now start as `null` (single) or `[]` (multiple), replacing `undefined`.
   Angular bindings may still write `undefined`; use nullish checks for an empty single value.
+- Unparameterized TypeScript Root/Item references now use `unknown` instead of `AcceptableValue`.
+  Supply `RdxSelectRoot<MyValue, false/true>` / `RdxSelectItem<MyValue>` or narrow before reading values.
+- A single-mode array is now one item for labels, selection and submission. Set `[multiple]="true"`
+  when the array represents a collection of selected values.
 - Selection now uses `Object.is` instead of structural equality. Keep object references stable or
   supply `[isItemEqualToValue]="'id'"` / an explicit comparator. To retain the previous deep comparison,
   import `isEqual` from `@radix-ng/primitives/core` and pass it as the comparator.

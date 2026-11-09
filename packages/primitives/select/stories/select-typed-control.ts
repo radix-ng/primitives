@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
-import { AcceptableValue } from '@radix-ng/primitives/core';
 import { demoSelect } from '../../storybook/styles';
 import {
     provideRdxSelectRoot,
@@ -57,10 +56,10 @@ import {
         </div>
     `
 })
-export class SelectTypedControl<
-    Value extends AcceptableValue = AcceptableValue,
-    Multiple extends boolean = false
-> extends RdxSelectRoot<Value, Multiple> {
+export class SelectTypedControl<Value = unknown, Multiple extends boolean = false> extends RdxSelectRoot<
+    Value,
+    Multiple
+> {
     protected readonly s = demoSelect;
 
     readonly options = input.required<readonly Value[]>();

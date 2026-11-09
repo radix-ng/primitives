@@ -26,6 +26,7 @@ native `<select>` behavior).
 - ✅ Controlled and uncontrolled value via `[(value)]`, with `defaultValue` / `defaultOpen` seeds.
 - ✅ `readOnly` and `required` state, reflected on the trigger as `aria-readonly` / `aria-required`.
 - ✅ Single and multiple selection with the `multiple` input.
+- ✅ Arbitrary item values, including booleans, Dates, symbols and array-valued items.
 - ✅ Angular forms integration through `ControlValueAccessor`: Reactive Forms, `formControlName`, and `ngModel`.
 - ✅ Cancelable `onOpenChange` and `onValueChange` outputs with reason-aware `eventDetails`.
 - ✅ Imperative `close()` / `unmount()` actions and per-close deferred unmount for external animations.
@@ -34,7 +35,7 @@ native `<select>` behavior).
 - ✅ Scroll buttons appear automatically when the list overflows the viewport.
 - ✅ Typeahead: type a character to jump to matching items.
 - ✅ Custom comparison (`isItemEqualToValue`), labels (`itemToStringLabel`), and native form serialization
-  (`itemToStringValue`) for object values.
+  (`itemToStringValue`) for arbitrary values.
 - ✅ Highlight-model navigation (`aria-activedescendant`) — focus stays on the listbox, not the items.
 - ✅ Full keyboard navigation: ArrowDown / ArrowUp, Home, End, Enter / Space, Escape.
 - ✅ Public interaction state via `openMethod`, `openInteractionType`, and `closeInteractionType`.
@@ -233,6 +234,26 @@ items from the selected object.
 
 <Canvas of={Stories.ObjectValues} />
 
+### Arbitrary values
+
+`RdxSelectRoot<Value, Multiple>` and `RdxSelectItem<Value>` accept an unconstrained Value. Values are
+kept intact in Angular models and change events. Equality defaults to `Object.is`; for distinct Date
+instances representing the same date, supply a comparator such as `(a, b) => a.getTime() === b.getTime()`.
+Empty selections are handled before calling a custom comparator. Falsy values such as `false`, `0`
+and `0n` are selectable values.
+
+The `multiple` input defines the selection shape. With `[multiple]="false"`, an array can be **one
+item**: its label/value formatter receives the whole array and the native form submits one entry.
+With `[multiple]="true"`, the outer array is the selection collection; each selected item produces its
+own entry, including when the item itself is an array.
+
+Use `itemToStringLabel` for display and `itemToStringValue` for the strings expected by your form
+endpoint. Without a formatter the shared JSON/String fallback applies. The example uses boolean
+Reactive Forms, Date Signal Forms, a readonly coordinate array and multiple symbol values, with
+native submission and reset.
+
+<Canvas of={Stories.ArbitraryValues} />
+
 ### Reactive Forms
 
 Bind `formControl` directly on `rdxSelectRoot`. Angular owns programmatic writes, disabled state,
@@ -305,6 +326,10 @@ object values in Reactive Forms, Signal Forms and multiple selection, including 
 The strict Angular AOT fixtures in `tools/typecheck/select` check both valid consumers and invalid
 value, mode, label, event and Signal Forms bindings. Classic CVA bindings retain Angular's runtime
 interface; `formControl` does not by itself infer or validate a custom control's generic value type.
+Angular DI also does not connect an independently declared Item's generic to its parent Root. The
+wrapper's `options: readonly Value[]` ties the collection to the public selection/callback types.
+Internal part communication uses `unknown`; no `any` fallback is required. See
+[ADR 0028](https://github.com/radix-ng/primitives/blob/main/docs/adr/0028-select-arbitrary-value-contract.md).
 
 ### Base UI compatibility
 
@@ -368,6 +393,10 @@ movement and pointer leave; clicking an item still selects it. The default is `t
 
 - Empty uncontrolled values now start as `null` (single) or `[]` (multiple), replacing `undefined`.
   Angular bindings may still write `undefined`; use nullish checks for an empty single value.
+- Unparameterized TypeScript Root/Item references now use `unknown` instead of `AcceptableValue`.
+  Supply `RdxSelectRoot<MyValue, false/true>` / `RdxSelectItem<MyValue>` or narrow before reading values.
+- A single-mode array is now one item for labels, selection and submission. Set `[multiple]="true"`
+  when the array represents a collection of selected values.
 - Selection now uses `Object.is` instead of structural equality. Keep object references stable or
   supply `[isItemEqualToValue]="'id'"` / an explicit comparator. To retain the previous deep comparison,
   import `isEqual` from `@radix-ng/primitives/core` and pass it as the comparator.
