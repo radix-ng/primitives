@@ -41,6 +41,7 @@ export * from './src/dom/use-native-form-control';
 export * from './src/dom/use-resize-observer';
 export * from './src/dom/use-scroll-lock';
 
+export * from './src/composables/typeahead';
 export * from './src/composables/use-arrow-navigation';
 export * from './src/composables/use-filter';
 export * from './src/composables/use-grace-area';

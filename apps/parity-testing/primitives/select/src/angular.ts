@@ -70,7 +70,7 @@ class AngularSelectFixture {
     readonly s = demoSelect;
     readonly config = fixtureConfig();
     readonly trace = installProbe('angular', this.config);
-    readonly label = itemLabel;
+    readonly label = (value: ItemValue) => itemLabel(value, this.config.options);
     readonly key = itemKey;
     private readonly root = viewChild.required(RdxSelectRoot);
 

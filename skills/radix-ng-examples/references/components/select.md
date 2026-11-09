@@ -22,7 +22,7 @@ A control that presents a list of options for the user to pick from, triggered b
 - ✅ Custom comparison (`isItemEqualToValue`), labels (`itemToStringLabel`), and native form serialization
   (`itemToStringValue`) for arbitrary values.
 - ✅ Highlight-model navigation (`aria-activedescendant`) — focus stays on the listbox, not the items.
-- ✅ Full keyboard navigation: ArrowDown / ArrowUp, Home, End, Enter / Space, Escape.
+- ✅ Keyboard navigation: ArrowDown / ArrowUp, Home, End, Enter / Space, Escape.
 - ✅ Public interaction state via `openMethod`, `openInteractionType`, and `closeInteractionType`.
 - ✅ `modal` (default) locks page scroll and makes outside content inert, with an optional `Backdrop`.
 - ✅ Field integration on the trigger (invalid / disabled / required / focused state + `aria-describedby`).
@@ -125,6 +125,7 @@ the behavior of a native `<select>`. Use `rdxSelectItemAlignedPosition` and
 - [Arrow](../examples/select--arrow.md)
 - [Change details and interaction state](../examples/select--change-details-and-interaction-state.md)
 - [Deferred unmount and imperative actions](../examples/select--deferred-unmount-and-imperative-actions.md)
+- [Typeahead](../examples/select--typeahead.md)
 - [Focus management](../examples/select--focus-management.md)
 - [Object values](../examples/select--object-values.md)
 - [Arbitrary values](../examples/select--arbitrary-values.md)

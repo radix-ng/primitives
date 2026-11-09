@@ -1,12 +1,9 @@
-import type { CaseName } from '../src/contract';
-import { SelectDriver, type Snapshot } from './driver';
+import { type Snapshot } from './driver';
+import type { Scenario } from './scenario';
+import { typeaheadScenarios } from './typeahead.scenarios';
 
-export interface Scenario {
-    name: string;
-    fixture: CaseName;
-    run(driver: SelectDriver): Promise<void>;
-}
 export const scenarios: Scenario[] = [
+    ...typeaheadScenarios,
     {
         name: 'keyboard and typeahead',
         fixture: 'single',

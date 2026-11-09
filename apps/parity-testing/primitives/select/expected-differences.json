@@ -678,5 +678,165 @@
         "angular": [],
         "react": ["blackberry"],
         "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "typeahead: close and reopen reset",
+        "checkpoint": "fresh on reopen",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:berlin",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: duplicate labels remain distinct",
+        "checkpoint": "second identical label",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:berlin-two",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: duplicate labels remain distinct",
+        "checkpoint": "selected second value",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "typeahead: duplicate labels remain distinct",
+        "checkpoint": "selected second value",
+        "field": "selected",
+        "angular": [],
+        "react": ["berlin-two"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "typeahead: miss resets immediately",
+        "checkpoint": "recovered",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:berlin",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: multiple search then commit",
+        "checkpoint": "search only",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:new-york",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: multiple search then commit",
+        "checkpoint": "added",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:new-york",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: multiword prefix and commit",
+        "checkpoint": "multiword",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:new-delhi",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: multiword prefix and commit",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "typeahead: multiword prefix and commit",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["new-delhi"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "typeahead: no selection uses active item",
+        "checkpoint": "active origin",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:berlin",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: origin after arrows",
+        "checkpoint": "search starts after selection",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:berlin",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: origin after arrows",
+        "checkpoint": "cycles",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:bern",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: read-only multiword search",
+        "checkpoint": "not committed",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:new-york",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: repeated letters inside labels",
+        "checkpoint": "double initial",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:aachen",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: repeated letters inside labels",
+        "checkpoint": "longer prefix",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:aardvark",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: Space on disabled then recovery",
+        "checkpoint": "leading space miss",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:cherry",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: Space on disabled then recovery",
+        "checkpoint": "fresh query",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:blackberry",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "typeahead: timeout and Space activation",
+        "checkpoint": "committed after timeout",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "typeahead: timeout and Space activation",
+        "checkpoint": "committed after timeout",
+        "field": "selected",
+        "angular": [],
+        "react": ["new-york"],
+        "category": "closed-dom-retention"
     }
 ]

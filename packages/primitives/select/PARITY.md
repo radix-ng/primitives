@@ -6,7 +6,7 @@ Audited on 2026-11-08; close-lifecycle, focus-policy and arbitrary-Value increme
 reproducible reference. Its package version is 1.9.0; it is not the release tag itself.
 
 This is an API/source audit with linked regression coverage, **not a certification of complete
-behavioral parity**. A shared React/Angular differential runner now checks 20 scenarios against this
+behavioral parity**. A shared React/Angular differential runner now checks 31 scenarios against this
 pin and records exact known differences ([runner documentation](../../../apps/parity-testing/primitives/select/README.md),
 [ADR 0029](../../../docs/adr/0029-select-differential-behavior-checks.md)). Rows marked as gaps remain open.
 
@@ -51,8 +51,30 @@ focus model is unchanged.
 also be highlighted on open. `select-navigation.spec.ts` covers selection guards, ARIA, boundary
 stopping, all-disabled lists and live disabling/removal. Differential scenarios check disabled
 boundaries, unchanged callbacks/form data and enabled-only typeahead cycling; the
-`disabled-item-navigation` exception category is removed. Mixed Space/typeahead sessions remain a
-separate open behavioral gap documented in the runner's Select guide.
+`disabled-item-navigation` exception category is removed.
+
+## Open-popup typeahead
+
+The existing Angular highlight model now matches the pinned reference for open-popup search: a
+750ms session, selected-item origin (active item if nothing is selected), multiword prefixes, repeated
+initials and double-letter labels, immediate miss recovery, and index-based matching for duplicate
+labels. Space extends an active query and commits only when idle. A Space on a disabled item retains
+the reference's uncommitted search session. Closing/reopening, external selected-index changes and
+leaving the composite reset the search, including retained views. A late placement notification no
+longer overwrites a newer search/highlight after reopening a retained view.
+
+The pure `findTypeaheadMatch` utility in core is used by both Select and Menu. Select owns its session
+and Angular effect/DestroyRef cleanup; Menu retains its existing timeout and focus policy. There is
+no controlled-value mirror or React store. `select-typeahead*.spec.ts` and eleven differential cases
+cover this increment; `select-typeahead.behavior.spec.ts` drives the new Storybook example.
+
+**Migration:** the open search timeout changes from 1000ms to 750ms. Space inside a query continues
+the label instead of selecting immediately. Search after arrows starts after the selected value, and
+identical labels are no longer collapsed onto the first item. No new application input is required.
+
+**Gap:** closed-trigger typing does not yet select a value without opening. This is distinct from the
+verified open-popup session; add differential coverage and use Angular option/view ownership when
+implementing it. Default focus-policy and real-AT gates remain open.
 
 ## Browser bridge decision
 
@@ -67,11 +89,11 @@ to retain the current bridge, ownership boundaries and migration implications.
 
 ## Next parity increments
 
-| Order | Work                                 | Shared boundary / completion evidence                                                                                                                                                                   |
-| ----- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1     | Default focus policy / real AT       | Browser coverage and opt-in are available (ADR 0027). Compare virtual vs item focus and run the documented real-screen-reader scenarios before changing the default.                                    |
-| 2     | Behavioral equivalence               | 20 pinned React/Angular scenarios now run in CI. Review recorded focus, retention, native-reset and array-label differences; compare mixed Space/typeahead sessions; expand uncovered modes (ADR 0029). |
-| 3     | Browser and native autofill coverage | Expand browser/assistive-technology runs and verify real saved-profile autofill separately from synthetic events.                                                                                       |
+| Order | Work                                 | Shared boundary / completion evidence                                                                                                                                                         |
+| ----- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1     | Default focus policy / real AT       | Browser coverage and opt-in are available (ADR 0027). Compare virtual vs item focus and run the documented real-screen-reader scenarios before changing the default.                          |
+| 2     | Behavioral equivalence               | 31 pinned React/Angular scenarios now run in CI. Review recorded focus, retention, native-reset and array-label differences; add closed-trigger typeahead; expand uncovered modes (ADR 0029). |
+| 3     | Browser and native autofill coverage | Expand browser/assistive-technology runs and verify real saved-profile autofill separately from synthetic events.                                                                             |
 
 Rows with an implemented API still carry the verification limitations listed above. Completing a part
 or a shared helper does not certify complete behavioral parity.

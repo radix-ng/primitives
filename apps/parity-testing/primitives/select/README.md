@@ -16,7 +16,7 @@ Shared preparation, TypeScript tooling and commands are documented in the
 
 ## What is compared
 
-The 20 scenarios exercise keyboard/typeahead, pointer/multiple selection, disabled/read-only states,
+The 31 scenarios exercise keyboard/typeahead, pointer/multiple selection, disabled/read-only states,
 open/value/close cancellation, imperative close and deferred unmount/reopen, native form reset,
 object/array values, Tab/Shift+Tab and focus outside. The default and opt-in Angular focus policies
 are separate scenarios. Both fixtures use uncontrolled defaults and their real public actions.
@@ -70,16 +70,29 @@ nonmodal anchored positioning and one set of options are the current scope. Moda
 positioning, touch/RTL, animation timing, saved-profile autofill, additional browsers and actual screen
 readers are not certified by this check.
 
-## Further typeahead parity work
+## Typeahead coverage and boundaries
 
-A mixed sequence found while extending coverage remains open: pressing Space on a highlighted
-disabled item leaves the popup/value unchanged in both implementations, but this reference seeds a
-search session with that Space. The next printable character is consumed without matching, while
-Angular starts a fresh search. The current typeahead scenario starts its own session and verifies
-disabled-option filtering and cycling; it does not certify mixed Space/search-buffer behavior.
-Compare session start/reset rules, multiword labels and search origin after arrow navigation in a
-separate increment. Do not change navigation policy or add a React-style typing store to the Angular
-adapter to hide this difference.
+`tests/typeahead.scenarios.ts` adds eleven pinned-reference comparisons for multiword labels, search
+origin after arrows, Space on disabled items, immediate recovery from misses, repeated initials and
+double-letter labels, duplicate labels, the 750ms timeout, close/reopen, read-only and multiple modes,
+and the active-item origin with no selection. Shared assertions check actual highlight, value, open
+state and form entries. No typeahead exception category is needed; only the existing DOM focus and
+closed-view retention differences remain on these checkpoints.
+
+Select keeps ephemeral session state locally. The case-insensitive, indexed prefix matcher is shared
+with Menu in core; Menu retains its own timeout and session policy. Index matching preserves distinct
+values when labels are equal. Unit coverage verifies exact timeout boundaries, composition/modifiers,
+external value changes, focus leaving and logical close/reset with and without retained Angular views.
+Late positioner notifications cannot reinitialize the highlight over a newer keyboard search.
+The Storybook Typeahead demo exercises multiword search, cycling, idle-Space activation and disabled
+items through real keyboard interactions.
+
+**Remaining:** closed-trigger typeahead (selecting a single value without opening the popup) is an
+unimplemented Angular behavior and has no differential coverage yet. The pinned reference mounts
+options on trigger focus. An Angular implementation should use its option metadata and view lifecycle
+when a search needs them, preserving model ownership and cancellation instead of copying React refs
+or a render flag. Saved-profile autofill, real AT, additional browsers and the other scope limits above
+remain separate verification work.
 
 ## Evidence and CI
 

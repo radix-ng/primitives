@@ -37,7 +37,7 @@ native `<select>` behavior).
 - ✅ Custom comparison (`isItemEqualToValue`), labels (`itemToStringLabel`), and native form serialization
   (`itemToStringValue`) for arbitrary values.
 - ✅ Highlight-model navigation (`aria-activedescendant`) — focus stays on the listbox, not the items.
-- ✅ Full keyboard navigation: ArrowDown / ArrowUp, Home, End, Enter / Space, Escape.
+- ✅ Keyboard navigation: ArrowDown / ArrowUp, Home, End, Enter / Space, Escape.
 - ✅ Public interaction state via `openMethod`, `openInteractionType`, and `closeInteractionType`.
 - ✅ `modal` (default) locks page scroll and makes outside content inert, with an optional `Backdrop`.
 - ✅ Field integration on the trigger (invalid / disabled / required / focused state + `aria-describedby`).
@@ -202,6 +202,22 @@ The shared lifecycle is documented in
 [ADR 0026](https://github.com/radix-ng/primitives/blob/main/docs/adr/0026-popup-close-lifecycle-and-presence.md).
 
 <Canvas of={Stories.DeferredUnmount} />
+
+### Typeahead
+
+Open the popup and start typing to highlight a matching option. Characters form a prefix for 750 ms;
+a pause starts a new search. Repeated initials cycle through matching options, and Space continues an
+active query, so you can type `new y` to find **New York** without selecting **Newark**.
+
+Typing changes only the highlight. Enter selects it; Space selects it when there is no active search.
+Disabled options are skipped by text matching. Search also works while the open Select is read-only,
+and in multiple mode selection still requires Enter or an idle Space. Closing or reopening the popup,
+changing the selected item, or leaving the control clears the search, including with `keepMounted`.
+
+A new session starts after the selected item; with no selection it starts after the current highlight.
+A query with no match clears immediately so the next character can start another search.
+
+<Canvas of={Stories.Typeahead} />
 
 ### Focus management
 

@@ -31,7 +31,7 @@ import {
 import { composedContains } from '@radix-ng/primitives/focus-scope';
 import { RdxPopperContent } from '@radix-ng/primitives/popper';
 import { injectSelectRootContext } from './select-root';
-import { getNextMatch } from './useTypeahead';
+import { createSelectTypeahead, SELECT_TYPEAHEAD_RESET_MS } from './select-typeahead';
 import { RdxSelectItemMetadata, SELECTION_KEYS, valueComparator } from './utils';
 
 type RdxSelectCompositeItem = RdxCompositeItemRegistration<RdxSelectItemMetadata>;
@@ -160,6 +160,7 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
         '[dir]': 'rootContext.dir()',
 
         '(keydown)': 'handleKeyDown($event)',
+        '(focusout)': 'onSearchFocusOut($event)',
 
         '[style]': `{
             display: rootContext.autofillProbe() && !rootContext.open() ? 'none' : 'flex',
@@ -228,9 +229,17 @@ export class RdxSelectPopup {
     private keyboardActive = false;
     private hasHighlightedOpen = false;
 
-    // Typeahead buffer (APG listbox): printable characters accumulate for 1s and jump the highlight to
-    // the next item whose text matches.
-    private typeaheadSearch = '';
+    private readonly typeahead = createSelectTypeahead();
+    private readonly selectedIndex = computed(() =>
+        this.items().findIndex((item) =>
+            valueComparator(
+                this.rootContext.value(),
+                item.metadata()?.value,
+                this.rootContext.isItemEqualToValue(),
+                this.rootContext.multiple()
+            )
+        )
+    );
     private typeaheadTimer?: ReturnType<typeof setTimeout>;
 
     /**
@@ -265,6 +274,12 @@ export class RdxSelectPopup {
             if (this.rootContext.open() && !event.defaultPrevented) {
                 this.rootContext.onOpenChange(false, 'focus-out', event);
             }
+        });
+
+        effect(() => {
+            this.rootContext.open();
+            this.selectedIndex();
+            this.resetTypeahead();
         });
 
         effect(() => {
@@ -309,7 +324,7 @@ export class RdxSelectPopup {
         // The popup's animation determines when the open/close transition (onOpenChangeComplete) is done.
         const unregisterTransition = this.rootContext.registerTransitionElement(this.currentElement.nativeElement);
         inject(DestroyRef).onDestroy(unregisterTransition);
-        inject(DestroyRef).onDestroy(() => clearTimeout(this.typeaheadTimer));
+        inject(DestroyRef).onDestroy(() => this.resetTypeahead());
 
         // The popup (listbox) is this layer's floating element — the inside surface for containment.
         this.floatingContext.setFloatingElement(this.currentElement.nativeElement);
@@ -423,7 +438,9 @@ export class RdxSelectPopup {
     }
 
     private highlightSelectedItemAfterPositioned() {
-        if (this.items().length === 0) {
+        // A retained view may report placement after its open effect has already initialized the
+        // highlight. Late placement must not overwrite an arrow/typeahead choice made meanwhile.
+        if (this.items().length === 0 || this.hasHighlightedOpen) {
             return;
         }
 
@@ -445,7 +462,7 @@ export class RdxSelectPopup {
     }
 
     handleKeyDown(event: Event) {
-        if (!this.rootContext.open()) return;
+        if (!this.rootContext.open() || this.rootContext.disabled()) return;
         const keyEvent = event as KeyboardEvent;
         if (keyEvent.isComposing) return;
 
@@ -457,6 +474,12 @@ export class RdxSelectPopup {
                 event.preventDefault();
                 this.rootContext.onOpenChange(false, 'focus-out', event);
             }
+            return;
+        }
+
+        if (keyEvent.key === ' ' && this.typeahead.active) {
+            keyEvent.preventDefault();
+            if (!keyEvent.ctrlKey && !keyEvent.altKey && !keyEvent.metaKey) this.handleTypeahead(' ');
             return;
         }
 
@@ -476,6 +499,15 @@ export class RdxSelectPopup {
                     this.rootContext.onOpenChange(false, 'item-press', event);
                 }
             }
+            // A Space that cannot commit (e.g. a disabled/read-only item) still starts a search session.
+            if (
+                keyEvent.key === ' ' &&
+                this.rootContext.open() &&
+                !keyEvent.ctrlKey &&
+                !keyEvent.altKey &&
+                !keyEvent.metaKey
+            )
+                this.handleTypeahead(' ');
             return;
         }
 
@@ -501,30 +533,47 @@ export class RdxSelectPopup {
 
         // Typeahead: a single printable character jumps the highlight to the next matching item.
         if (keyEvent.key.length === 1 && !keyEvent.ctrlKey && !keyEvent.altKey && !keyEvent.metaKey) {
+            keyEvent.preventDefault();
             this.handleTypeahead(keyEvent.key);
         }
     }
 
-    /** Accumulates printable keys for 1s and moves the highlight to the next item whose text matches. */
-    private handleTypeahead(key: string) {
-        this.typeaheadSearch += key;
+    private handleTypeahead(key: string): void {
         clearTimeout(this.typeaheadTimer);
-        this.typeaheadTimer = setTimeout(() => (this.typeaheadSearch = ''), 1000);
-
-        const navigableItems = this.items().filter((item) => !item.metadata()?.disabled);
-        const values = navigableItems.map((item) => this.itemText(item));
+        this.typeaheadTimer = setTimeout(() => this.resetTypeahead(), SELECT_TYPEAHEAD_RESET_MS);
+        const items = this.items();
+        const selected = this.selectedIndex();
         const current = this.highlight.highlightedItem();
-        const nextMatch = getNextMatch(values, this.typeaheadSearch, current ? this.itemText(current) : undefined);
-
-        if (nextMatch === undefined) {
-            return;
-        }
-
-        const match = navigableItems[values.indexOf(nextMatch)];
-        if (match) {
+        const origin = selected >= 0 ? selected : current ? items.indexOf(current) : -1;
+        const index = this.typeahead.match(
+            key,
+            items.map((item) => ({
+                text: this.itemText(item),
+                disabled: !!item.metadata()?.disabled
+            })),
+            origin
+        );
+        if (index !== undefined) {
             this.keyboardActive = true;
-            this.highlight.set(match);
+            this.highlight.set(items[index]);
         }
+    }
+
+    private resetTypeahead(): void {
+        clearTimeout(this.typeaheadTimer);
+        this.typeaheadTimer = undefined;
+        this.typeahead.reset();
+    }
+
+    onSearchFocusOut(event: FocusEvent): void {
+        const next = event.relatedTarget;
+        if (
+            next instanceof Node &&
+            (composedContains(this.currentElement.nativeElement, next) ||
+                this.rootContext.triggerElement()?.contains(next))
+        )
+            return;
+        this.resetTypeahead();
     }
 
     private itemText(item: RdxSelectCompositeItem): string {

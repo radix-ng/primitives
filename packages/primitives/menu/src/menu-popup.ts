@@ -2,6 +2,7 @@ import { computed, DestroyRef, Directive, effect, ElementRef, inject, isDevMode,
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
 import { RdxCompositeList } from '@radix-ng/primitives/composite';
 import {
+    findTypeaheadMatch,
     RDX_FLOATING_REGISTRATION,
     RDX_FLOATING_ROOT_CONTEXT,
     rdxDevWarning,
@@ -364,9 +365,12 @@ export class RdxMenuPopup {
                     const query =
                         this.search.length > 1 && [...this.search].every((c) => c === char) ? char : this.search;
                     const startIndex = currentIndex >= 0 ? currentIndex + 1 : 0;
-                    const rotated = [...items.slice(startIndex), ...items.slice(0, startIndex)];
-                    const match = rotated.find((item) => item.label.startsWith(query));
-                    this.focusMenuItem(match);
+                    const index = findTypeaheadMatch(
+                        items.map((item) => item.label),
+                        query,
+                        startIndex
+                    );
+                    this.focusMenuItem(index === undefined ? undefined : items[index]);
                 }
                 break;
             }

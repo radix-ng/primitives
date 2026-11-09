@@ -10,7 +10,13 @@ export type CaseName =
     | 'deferred'
     | 'objects'
     | 'array'
-    | 'focus-out';
+    | 'focus-out'
+    | 'typeahead'
+    | 'typeahead-read-only'
+    | 'typeahead-multiple'
+    | 'typeahead-double-letter'
+    | 'typeahead-duplicate-labels'
+    | 'typeahead-no-selection';
 export type ItemValue = string | { id: string; label: string } | number[];
 export type Selection = ItemValue | ItemValue[] | null;
 export interface Option {
@@ -69,7 +75,13 @@ export function fixtureConfig(): FixtureConfig {
         'deferred',
         'objects',
         'array',
-        'focus-out'
+        'focus-out',
+        'typeahead',
+        'typeahead-read-only',
+        'typeahead-multiple',
+        'typeahead-double-letter',
+        'typeahead-duplicate-labels',
+        'typeahead-no-selection'
     ];
     if (!names.includes(name as CaseName)) throw new Error(`Unknown fixture case: ${name}`);
     let options: Option[] = [
@@ -87,6 +99,30 @@ export function fixtureConfig(): FixtureConfig {
             { key: 'blackberry', label: 'Blackberry', value: 'blackberry' },
             { key: 'cherry', label: 'Cherry', value: 'cherry', disabled: true }
         ];
+    if (name.startsWith('typeahead'))
+        options = [
+            { key: 'amsterdam', label: 'Amsterdam', value: 'amsterdam' },
+            { key: 'berlin', label: 'Berlin', value: 'berlin' },
+            { key: 'bern', label: 'Bern', value: 'bern' },
+            { key: 'new-york', label: 'New York', value: 'new-york' },
+            { key: 'newark', label: 'Newark', value: 'newark' },
+            { key: 'new-delhi', label: 'New Delhi', value: 'new-delhi' },
+            { key: 'tokyo', label: 'Tokyo', value: 'tokyo', disabled: true }
+        ];
+    if (name === 'typeahead-double-letter')
+        options = [
+            { key: 'amsterdam', label: 'Amsterdam', value: 'amsterdam' },
+            { key: 'aachen', label: 'Aachen', value: 'aachen' },
+            { key: 'aardvark', label: 'Aardvark', value: 'aardvark' },
+            { key: 'athens', label: 'Athens', value: 'athens' }
+        ];
+    if (name === 'typeahead-duplicate-labels')
+        options = [
+            { key: 'amsterdam', label: 'Amsterdam', value: 'amsterdam' },
+            { key: 'berlin-one', label: 'Berlin', value: 'berlin-one' },
+            { key: 'berlin-two', label: 'Berlin', value: 'berlin-two' },
+            { key: 'bern', label: 'Bern', value: 'bern' }
+        ];
     if (name === 'objects')
         options = options.map((option) => ({ ...option, value: { id: option.key, label: option.label } }));
     if (name === 'array')
@@ -94,14 +130,16 @@ export function fixtureConfig(): FixtureConfig {
             { key: '10:20', label: '10 × 20', value: [10, 20] },
             { key: '30:40', label: '30 × 40', value: [30, 40] }
         ];
-    const initial = name === 'disabled-navigation' ? options[2].value : options[0].value;
+    const multiple = name === 'multiple' || name === 'typeahead-multiple';
+    const initial =
+        name === 'typeahead-no-selection' ? null : name === 'disabled-navigation' ? options[2].value : options[0].value;
     return {
         name: name as CaseName,
         options,
-        initial: name === 'multiple' ? [initial] : initial,
-        multiple: name === 'multiple',
+        initial: multiple ? [initial as ItemValue] : initial,
+        multiple,
         disabled: name === 'disabled',
-        readOnly: name === 'read-only',
+        readOnly: name === 'read-only' || name === 'typeahead-read-only',
         defer: name === 'deferred',
         closeOnFocusOut: name === 'focus-out'
     };
@@ -110,7 +148,9 @@ export function fixtureConfig(): FixtureConfig {
 export function itemKey(value: ItemValue): string {
     return typeof value === 'string' ? value : Array.isArray(value) ? value.join(':') : value.id;
 }
-export function itemLabel(value: ItemValue): string {
+export function itemLabel(value: ItemValue, options?: readonly Option[]): string {
+    const option = options?.find((option) => Object.is(option.value, value));
+    if (option) return option.label;
     return typeof value === 'string'
         ? value[0].toUpperCase() + value.slice(1)
         : Array.isArray(value)

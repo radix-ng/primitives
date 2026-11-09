@@ -29,8 +29,8 @@ Keep virtual/default focus behavior until ADR 0023's real-AT gate is met. Preser
 reset, explicit array selection mode and inert held exits instead of reproducing upstream differences.
 Disabled options participate in arrow/Home/End navigation, independently of selection eligibility;
 typeahead matches enabled options only. Select uses the existing shared highlight predicate without
-changing item DOM focus or the default focus-out policy. Mixed Space/typeahead search sessions
-remain separate parity work. Do not patch the reference
+changing item DOM focus or the default focus-out policy. Open-popup typeahead now has dedicated differential coverage, including mixed Space sessions.
+Closed-trigger typing remains a separate behavior gap. Do not patch the reference
 to make a comparison pass. Its Portal currently lacks `keepMounted`; existing Angular coverage remains
 necessary for that contract.
 

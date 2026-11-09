@@ -26,7 +26,7 @@ function ReactSelectFixture() {
                 readOnly={config.readOnly}
                 modal={false}
                 name="choice"
-                itemToStringLabel={itemLabel}
+                itemToStringLabel={(value) => itemLabel(value, config.options)}
                 itemToStringValue={itemKey}
                 actionsRef={actions}
                 onOpenChange={(open, details) => {

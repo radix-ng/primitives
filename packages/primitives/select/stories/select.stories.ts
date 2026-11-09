@@ -30,6 +30,8 @@ import { SelectReactiveForms } from './select-reactive-forms';
 import reactiveFormsSource from './select-reactive-forms?raw';
 import { SelectTemplateDrivenForms } from './select-template-driven-forms';
 import templateDrivenFormsSource from './select-template-driven-forms?raw';
+import { SelectTypeahead } from './select-typeahead';
+import typeaheadSource from './select-typeahead?raw';
 import { SelectTypedWrapper } from './select-typed-wrapper';
 import typedWrapperSource from './select-typed-wrapper?raw';
 import { SelectWithScroll } from './select-with-scroll';
@@ -62,7 +64,8 @@ export default {
                 SelectTypedWrapper,
                 SelectItems,
                 SelectLabels,
-                SelectNativeForms
+                SelectNativeForms,
+                SelectTypeahead
             ]
         }),
         tailwindDemoDecorator()
@@ -85,6 +88,15 @@ export const ArbitraryValues: Story = {
     render: () => ({
         template: html`
             <select-arbitrary-values />
+        `
+    })
+};
+
+export const Typeahead: Story = {
+    parameters: source(typeaheadSource),
+    render: () => ({
+        template: html`
+            <select-typeahead />
         `
     })
 };
