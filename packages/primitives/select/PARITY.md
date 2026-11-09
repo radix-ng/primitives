@@ -6,9 +6,9 @@ Audited on 2026-11-08; close-lifecycle, focus-policy and arbitrary-Value increme
 reproducible reference. Its package version is 1.9.0; it is not the release tag itself.
 
 This is an API/source audit with linked regression coverage, **not a certification of complete
-behavioral parity**. A shared React/Angular differential runner now defines 77 scenarios:
-65 desktop/dynamic-list cases in all three engines, eight tap cases in Chromium/WebKit,
-and four native touch-gesture cases in Chromium (215 comparisons; 16 capability skips).
+behavioral parity**. A shared React/Angular differential runner now defines 90 scenarios:
+78 desktop/dynamic/geometry cases in all three engines, eight tap cases in Chromium/WebKit,
+and four native touch-gesture cases in Chromium (254 comparisons; 16 capability skips).
 It checks this pin and records exact known differences ([runner documentation](../../../apps/parity-testing/primitives/select/README.md),
 [ADR 0029](../../../docs/adr/0029-select-differential-behavior-checks.md)). Rows marked as gaps remain open.
 
@@ -186,13 +186,47 @@ now opts into the native click sequence; dismissal keeps its shared touch timing
 touch highlight through the ensuing pointer leave and ignores touch motion for mouse hover.
 These checks do not validate real iOS/Android behavior or screen-reader interaction.
 
+## Viewport and scroll-container geometry
+
+Thirteen new differential scenarios cover long lists near the top/bottom/right edges, middle and
+RTL alignment, `overflow` clipping, scrolled parents, custom portal containers and scroll-arrow
+start/stop. Native wheel input changes the ancestor before opening and verifies that an anchored
+popup follows a moving trigger while open. Anchored custom portals also exercise a transformed
+containing block. Item-aligned custom portals currently use an untransformed container.
+
+Common assertions require viewport containment, a usable list, visible selected/highlighted items,
+correct Home/End selection and unchanged form/event contracts. Selected text aligns within 2 CSS
+pixels in the interior. At the RTL viewport edge, horizontal clamping takes precedence; the actual
+text delta is retained. Rectangles, scroll offsets and native hover movement are recorded. These
+checks do not assert identical popup dimensions, margin constants or expansion curves.
+
+Keyboard scrolling now belongs to Popup alone, using the shared `resizeEffect` with Angular
+cleanup. A resize of the list rechecks the active item: newly visible in-flow scroll buttons can
+otherwise cover the End target. Boundary items scroll through list padding to the actual start/end.
+The redundant unconditional scroll effect in each scroll button is removed, so hover/touch highlight
+cannot independently move the list. The common resize helper tolerates missing browser APIs.
+The **Viewport Edges** story and `select-geometry.behavior.spec.ts` guard these layouts in all engines.
+
+**Recorded reference gap:** `reference-webkit-hover` is scoped to the hover checkpoint in WebKit:
+Angular scrolls after native mouse travel, while the pin rejects zero `movementX/Y`. The exact
+`listScrolled: true/false` pair is recorded separately from focus; values/events stay comparable.
+The same guarded handler leaves the reference's `item-0` highlight active; that exact pair is
+scoped to the same engine/checkpoint too.
+Angular's WebKit hover/stop behavior remains required by the Storybook test.
+
+**Still open:** the legacy item-aligned algorithm differs in sizing, scroll expansion and edge
+fallback from Base UI. A transformed custom container exposes incorrect item-aligned geometry in
+both implementations at this pin; this remains a tracked gap, not a passing geometry scenario.
+Changing container scroll _while item-aligned mode is open_, real pinch zoom and mobile visual
+viewport movement also need further differential/device evidence.
+
 ## Next parity increments
 
-| Order | Work                             | Shared boundary / completion evidence                                                                                                                                                          |
-| ----- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1     | Default focus policy / real AT   | Browser coverage and opt-in are available (ADR 0027). Compare virtual vs item focus and run the documented real-screen-reader scenarios before changing the default.                           |
-| 2     | Behavioral equivalence           | 77 pinned scenarios now include dynamic options and emulated touch. Next: clipping/scroll containers and collision geometry for item alignment, then closed/unmounted data changes (ADR 0029). |
-| 3     | Real devices and native autofill | Desktop automation covers the bridge and Storybook modes. Verify real Safari/devices, saved-profile autofill and assistive technology separately.                                              |
+| Order | Work                             | Shared boundary / completion evidence                                                                                                                                                   |
+| ----- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1     | Default focus policy / real AT   | Browser coverage and opt-in are available (ADR 0027). Compare virtual vs item focus and run the documented real-screen-reader scenarios before changing the default.                    |
+| 2     | Behavioral equivalence           | 90 pinned scenarios include viewport/scroll/clipping constraints. Next: item-aligned sizing/expansion and transformed containing blocks, then closed/unmounted data changes (ADR 0029). |
+| 3     | Real devices and native autofill | Desktop automation covers the bridge and Storybook modes. Verify real Safari/devices, saved-profile autofill and assistive technology separately.                                       |
 
 Rows with an implemented API still carry the verification limitations listed above. Completing a part
 or a shared helper does not certify complete behavioral parity.

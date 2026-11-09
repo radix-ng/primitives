@@ -81,6 +81,13 @@ Keep one native pointer dismissal path rather than reproducing the pinned React 
 retry after cancellation. Anchored Select alignment defaults to `center`; explicit `align="start"`
 retains the previous default (Select `PARITY.md`).
 
+Select Popup owns scrolling to the keyboard highlight. The shared `resizeEffect` observes the list
+so scroll-button layout changes cannot cover the active option; first/last items include list
+padding. Do not add unconditional highlight-scroll effects to individual buttons. The common resize
+helper tolerates an unavailable ResizeObserver. Geometry fixtures exercise bounds and navigation,
+not pixel-identical legacy item-aligned sizing. Transformed item-aligned portal containers remain a
+tracked gap; native WebKit hover differences from the pinned reference are explicitly scoped.
+
 **Pointer movement:** core `createPointerMoveGuard` tracks scope-local viewport coordinates to
 distinguish real travel from stationary scroll/leave events, including real WebKit travel with zero
 movement deltas. Select observes moves in document capture while open and reuses the same event

@@ -37,7 +37,7 @@ for (const scenario of scenarios) {
             scenario.input === 'touch-gesture' && engine !== 'chromium',
             'Native touch move/cancel uses Chromium CDP; no public WebKit gesture API'
         );
-        const options = { baseURL, hasTouch: !!scenario.input };
+        const options = { baseURL, hasTouch: !!scenario.input, viewport: scenario.viewport };
         const angular = new SelectDriver(await browser.newPage(options), 'angular');
         const react = new SelectDriver(await browser.newPage(options), 'react');
         const failures: string[] = [];

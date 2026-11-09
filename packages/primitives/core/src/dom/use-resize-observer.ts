@@ -17,7 +17,7 @@ export function resizeEffect(options: {
     return effect(
         (onCleanup) => {
             const elementOrRef = options.element();
-            if (!elementOrRef) return;
+            if (!elementOrRef || typeof ResizeObserver !== 'function') return;
 
             // Extract native element from ElementRef or use directly if it's HTMLElement
             const element = elementOrRef instanceof ElementRef ? elementOrRef.nativeElement : elementOrRef;

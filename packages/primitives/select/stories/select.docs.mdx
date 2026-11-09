@@ -244,6 +244,15 @@ the list stays open. Restore options returns the original collection.
 
 <Canvas of={Stories.DynamicOptions} />
 
+### Viewport edges and long lists
+
+This example keeps the item-aligned trigger near an edge of the viewport. Use the `edge` and `dir`
+controls to try top, middle, bottom and RTL layouts. Home and End reveal the first and last options,
+including list padding. When scroll buttons change the list's height, Select keeps the keyboard
+highlight visible after layout settles. Hovering an option does not scroll the list.
+
+<Canvas of={Stories.ViewportEdges} />
+
 ### Focus management
 
 The popup owns DOM focus and uses `aria-activedescendant` for virtual navigation. Arrow keys and

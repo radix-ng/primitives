@@ -36,6 +36,8 @@ import { SelectTypeahead } from './select-typeahead';
 import typeaheadSource from './select-typeahead?raw';
 import { SelectTypedWrapper } from './select-typed-wrapper';
 import typedWrapperSource from './select-typed-wrapper?raw';
+import { SelectViewportEdges } from './select-viewport-edges';
+import viewportEdgesSource from './select-viewport-edges?raw';
 import { SelectWithScroll } from './select-with-scroll';
 import withScrollSource from './select-with-scroll?raw';
 
@@ -62,6 +64,7 @@ export default {
                 SelectReactiveForms,
                 SelectTemplateDrivenForms,
                 SelectWithScroll,
+                SelectViewportEdges,
                 SelectAlignedPosition,
                 SelectAlignedPositionWithScroll,
                 SelectTypedWrapper,
@@ -76,6 +79,21 @@ export default {
 } as Meta;
 
 type Story = StoryObj;
+
+export const ViewportEdges: Story = {
+    parameters: source(viewportEdgesSource),
+    args: { edge: 'top', dir: 'ltr' },
+    argTypes: {
+        edge: { control: 'select', options: ['top', 'middle', 'bottom'] },
+        dir: { control: 'select', options: ['ltr', 'rtl'] }
+    },
+    render: (args) => ({
+        props: args,
+        template: html`
+            <select-viewport-edges [edge]="edge" [dir]="dir" />
+        `
+    })
+};
 
 export const DynamicOptions: Story = {
     parameters: source(dynamicOptionsSource),

@@ -23,6 +23,7 @@ import {
     RDX_FLOATING_REGISTRATION,
     RDX_FLOATING_ROOT_CONTEXT,
     RdxFloatingNodeRegistration,
+    resizeEffect,
     useAnchoredScrollLock,
     useListHighlight
 } from '@radix-ng/primitives/core';
@@ -337,8 +338,22 @@ export class RdxSelectPopup {
         effect(() => {
             const item = this.highlight.highlightedItem();
             if (item && this.keyboardActive) {
-                item.element.scrollIntoView?.({ block: 'nearest' });
+                untracked(() => this.scrollHighlightedIntoView());
             }
+        });
+        afterNextRender(() => {
+            resizeEffect({
+                injector: this.injector,
+                element: this.viewport,
+                onResize: () => {
+                    // Scroll buttons can shrink the list after the keyboard's first scroll.
+                    // Observe actual layout so the active descendant remains visible after that
+                    // change too. Hover/touch highlighting must not cause programmatic scrolling.
+                    if (this.rootContext.open() && this.keyboardActive) {
+                        this.scrollHighlightedIntoView();
+                    }
+                }
+            });
         });
 
         // Activation policy (ADR 0016 §2 + §3). Lock page scroll while the popup is OPEN and either modal
@@ -483,6 +498,16 @@ export class RdxSelectPopup {
         this.highlightSelectedItem();
         this.scrollSelectedIntoView();
         this.hasHighlightedOpen = true;
+    }
+
+    private scrollHighlightedIntoView() {
+        const item = this.highlight.highlightedItem();
+        const viewport = this.viewport();
+        if (!item || !viewport) return;
+        const items = this.items();
+        if (item === items[0]) viewport.scrollTop = 0;
+        else if (item === items.at(-1)) viewport.scrollTop = viewport.scrollHeight;
+        else item.element.scrollIntoView?.({ block: 'nearest' });
     }
 
     private scrollSelectedIntoView() {

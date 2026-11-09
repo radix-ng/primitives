@@ -111,3 +111,27 @@ The tests exposed a WebKit backdrop compatibility-event gap. Fix it in the commo
 backdrop with a native click listener; do not duplicate dismiss timing in Select. Touch pointer
 leave/move must not erase selection highlight or apply mouse hover. Closed/unmounted collection
 changes and clipped item-alignment geometry remain follow-up scenarios.
+
+## Viewport and container constraints increment
+
+Add twelve shared long-list layouts and one scroll-arrow scenario. Native wheel changes ancestor
+scroll position; identical application classes exercise viewport edges, RTL, clipping and custom
+portals. Create the small viewport before navigating rather than racing a resize event against
+open. Preserve rectangles/scroll offsets as evidence. Compare visible/usable bounds and the value
+contract, without claiming pixel-identical legacy item-aligned sizing or expansion.
+
+Popup owns keyboard scrolling. The existing core resize effect observes list dimensions and
+rechecks highlight after in-flow buttons change its height. First/last keyboard targets include
+list padding. Remove unconditional scrolling from each button; hover/touch do not independently
+force a scroll. A capability guard in the shared resize helper handles browser-free environments.
+
+The pin's zero-movement guard blocks native WebKit hover scrolling. Keep identical physical input,
+retain coordinates/deltas and record the exact `listScrolled` true/false pair only for that engine
+and checkpoint (`reference-webkit-hover`). Assert Angular hover behavior independently in Storybook.
+The same exception records the reference's retained `item-0` highlight, rather than allowing
+arbitrary highlight or value differences.
+
+Anchored transformed portals pass common bounds; item-aligned transformed containers fail in both
+implementations at this pin and remain a tracked gap. Remaining work includes legacy item-aligned
+sizing/expansion, collision fallback, live ancestor scrolling while aligned, mobile visual viewport
+and pinch zoom, closed/unmounted collection changes, real AT and saved-profile autofill.

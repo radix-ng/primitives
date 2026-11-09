@@ -18,6 +18,7 @@ export interface Snapshot {
     backgroundActivations: number;
     pageScrolled: boolean;
     direction: string;
+    listScrolled?: boolean;
 }
 export interface Checkpoint {
     name: string;
@@ -221,47 +222,55 @@ export class SelectDriver {
         await expect.poll(() => this.page.evaluate(() => window.scrollY > 0)).toBe(scrolled);
     }
 
-    async alignment(name: string, mode: 'item' | 'anchor' | 'center'): Promise<void> {
+    async alignment(name: string, mode: 'item' | 'anchor' | 'center', allowInlineClamping = false): Promise<void> {
         let bounds: unknown;
         try {
             await expect
                 .poll(async () => {
-                    const measurement = await this.page.evaluate((mode) => {
-                        const trigger = document.querySelector<HTMLElement>('[data-testid="trigger"]')!;
-                        const value = trigger.querySelector<HTMLElement>('[data-testid="value"]')!;
-                        const popup = document.querySelector<HTMLElement>('[data-testid="popup"]')!;
-                        const selected = popup.querySelector<HTMLElement>('[aria-selected="true"] [data-option-text]')!;
-                        const rtl = getComputedStyle(trigger).direction === 'rtl';
-                        const a = (mode === 'item' ? value : trigger).getBoundingClientRect();
-                        const b = (
-                            mode === 'item'
-                                ? selected
-                                : document.querySelector<HTMLElement>('[data-testid="positioner"]')!
-                        ).getBoundingClientRect();
-                        const popupBounds = popup.getBoundingClientRect();
-                        const inlineDelta =
-                            mode === 'center'
-                                ? a.left + a.width / 2 - (b.left + b.width / 2)
-                                : rtl
-                                  ? a.right - b.right
-                                  : a.left - b.left;
-                        const blockDelta = a.top + a.height / 2 - (b.top + b.height / 2);
-                        return {
-                            mode,
-                            rtl,
-                            reference: a.toJSON(),
-                            candidate: b.toJSON(),
-                            popup: popupBounds.toJSON(),
-                            inlineDelta,
-                            blockDelta,
-                            aligned: Math.abs(inlineDelta) <= 2 && (mode !== 'item' || Math.abs(blockDelta) <= 2),
-                            withinViewport:
-                                popupBounds.left >= 0 &&
-                                popupBounds.top >= 0 &&
-                                popupBounds.right <= innerWidth &&
-                                popupBounds.bottom <= innerHeight
-                        };
-                    }, mode);
+                    const measurement = await this.page.evaluate(
+                        ({ mode, allowInlineClamping }) => {
+                            const trigger = document.querySelector<HTMLElement>('[data-testid="trigger"]')!;
+                            const value = trigger.querySelector<HTMLElement>('[data-testid="value"]')!;
+                            const popup = document.querySelector<HTMLElement>('[data-testid="popup"]')!;
+                            const selected = popup.querySelector<HTMLElement>(
+                                '[aria-selected="true"] [data-option-text]'
+                            )!;
+                            const rtl = getComputedStyle(trigger).direction === 'rtl';
+                            const a = (mode === 'item' ? value : trigger).getBoundingClientRect();
+                            const b = (
+                                mode === 'item'
+                                    ? selected
+                                    : document.querySelector<HTMLElement>('[data-testid="positioner"]')!
+                            ).getBoundingClientRect();
+                            const popupBounds = popup.getBoundingClientRect();
+                            const inlineDelta =
+                                mode === 'center'
+                                    ? a.left + a.width / 2 - (b.left + b.width / 2)
+                                    : rtl
+                                      ? a.right - b.right
+                                      : a.left - b.left;
+                            const blockDelta = a.top + a.height / 2 - (b.top + b.height / 2);
+                            return {
+                                mode,
+                                allowInlineClamping,
+                                rtl,
+                                reference: a.toJSON(),
+                                candidate: b.toJSON(),
+                                popup: popupBounds.toJSON(),
+                                inlineDelta,
+                                blockDelta,
+                                aligned:
+                                    (allowInlineClamping || Math.abs(inlineDelta) <= 2) &&
+                                    (mode !== 'item' || Math.abs(blockDelta) <= 2),
+                                withinViewport:
+                                    popupBounds.left >= 0 &&
+                                    popupBounds.top >= 0 &&
+                                    popupBounds.right <= innerWidth &&
+                                    popupBounds.bottom <= innerHeight
+                            };
+                        },
+                        { mode, allowInlineClamping }
+                    );
                     bounds = measurement;
                     return measurement.aligned && measurement.withinViewport;
                 }, `${this.framework}: ${name}`)
@@ -275,9 +284,83 @@ export class SelectDriver {
         return this.page.evaluate(() => window.parity?.nativeEvents ?? []).catch(() => []);
     }
 
-    async checkpoint(name: string, expected: Partial<Snapshot> = {}): Promise<void> {
+    async scrollAncestor(): Promise<void> {
+        const scroller = this.page.getByTestId('scroller');
+        const previous = await scroller.evaluate((el) => el.scrollTop);
+        const bounds = (await scroller.boundingBox())!;
+        await this.page.mouse.move(bounds.x + bounds.width - 20, bounds.y + bounds.height - 20);
+        await this.page.mouse.wheel(0, 30);
+        await expect.poll(() => scroller.evaluate((el) => el.scrollTop)).toBeGreaterThan(previous);
+    }
+
+    async anchorGap(name: string): Promise<void> {
+        let bounds: unknown;
+        try {
+            await expect
+                .poll(async () => {
+                    const result = await this.page.evaluate(() => {
+                        const trigger = document
+                            .querySelector<HTMLElement>('[data-testid="trigger"]')!
+                            .getBoundingClientRect();
+                        const positioner = document.querySelector<HTMLElement>('[data-testid="positioner"]')!;
+                        const popup = document
+                            .querySelector<HTMLElement>('[data-testid="popup"]')!
+                            .getBoundingClientRect();
+                        const side = positioner.getAttribute('data-side');
+                        return {
+                            side,
+                            trigger: trigger.toJSON(),
+                            popup: popup.toJSON(),
+                            gap: side === 'top' ? trigger.top - popup.bottom : popup.top - trigger.bottom
+                        };
+                    });
+                    bounds = result;
+                    return result.gap >= 3 && result.gap <= 7;
+                }, `${this.framework}: ${name}`)
+                .toBe(true);
+        } finally {
+            this.measurements.push({ name, bounds });
+        }
+    }
+
+    async geometry(name: string, option?: string): Promise<void> {
+        let bounds: unknown;
+        try {
+            await expect
+                .poll(async () => {
+                    const measurement = await this.page.evaluate((option) => {
+                        const popup = document.querySelector<HTMLElement>('[data-testid="popup"]')!;
+                        const list = document.querySelector<HTMLElement>('[data-testid="list"]')!;
+                        const selected = option
+                            ? document.querySelector<HTMLElement>(`[data-option-key="${option}"]`)
+                            : popup.querySelector<HTMLElement>('[aria-selected="true"]');
+                        const p = popup.getBoundingClientRect();
+                        const l = list.getBoundingClientRect();
+                        const s = selected?.getBoundingClientRect();
+                        return {
+                            popup: p.toJSON(),
+                            list: l.toJSON(),
+                            option: s?.toJSON(),
+                            scrollTop: list.scrollTop,
+                            scrollHeight: list.scrollHeight,
+                            withinViewport:
+                                p.top >= -2 && p.left >= -2 && p.right <= innerWidth + 2 && p.bottom <= innerHeight + 2,
+                            optionVisible: !!s && s.top >= l.top - 2 && s.bottom <= l.bottom + 2,
+                            usable: l.height > 0 && l.height <= p.height + 2
+                        };
+                    }, option);
+                    bounds = measurement;
+                    return measurement.withinViewport && measurement.optionVisible && measurement.usable;
+                }, `${this.framework}: ${name}`)
+                .toBe(true);
+        } finally {
+            this.measurements.push({ name, bounds });
+        }
+    }
+
+    async checkpoint(name: string, expected: Partial<Snapshot> = {}, listScrollBaseline?: number): Promise<void> {
         // Wait for observable state to stabilize, without forcing focus, values or completion callbacks.
-        const state = await this.page.evaluate(async () => {
+        const state = await this.page.evaluate(async (listScrollBaseline) => {
             const read = (): Snapshot => {
                 const trigger = document.querySelector<HTMLElement>('[data-testid="trigger"]')!;
                 const popup = document.querySelector<HTMLElement>('[data-testid="popup"]');
@@ -286,6 +369,13 @@ export class SelectDriver {
                 const style = popup && getComputedStyle(popup);
                 const options = [...document.querySelectorAll<HTMLElement>('[data-option-key]')];
                 return {
+                    ...(listScrollBaseline === undefined
+                        ? {}
+                        : {
+                              listScrolled:
+                                  (document.querySelector<HTMLElement>('[data-testid="list"]')?.scrollTop ?? 0) >
+                                  listScrollBaseline
+                          }),
                     open: trigger.getAttribute('aria-expanded') === 'true',
                     label: trigger.textContent!.trim().replace(/\s+/g, ' '),
                     disabled: trigger.hasAttribute('disabled'),
@@ -330,7 +420,7 @@ export class SelectDriver {
                 previous = json;
             }
             throw new Error('Fixture did not settle within 120 animation frames');
-        });
+        }, listScrollBaseline);
         this.checkpoints.push({ name, state });
         for (const event of state.events) {
             if (event.type === 'value')

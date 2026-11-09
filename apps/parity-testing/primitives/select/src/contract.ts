@@ -1,4 +1,7 @@
+import { geometryConfig, geometryNames, type GeometryConfig, type GeometryName } from './geometry';
+
 export type CaseName =
+    | GeometryName
     | 'single'
     | 'multiple'
     | 'disabled'
@@ -52,6 +55,7 @@ export interface FixtureConfig {
     dir: 'ltr' | 'rtl';
     scrollable: boolean;
     dynamic: boolean;
+    geometry?: GeometryConfig;
 }
 export type SelectionKeys = string | string[] | null;
 export type TraceEvent =
@@ -83,6 +87,7 @@ declare global {
 export function fixtureConfig(): FixtureConfig {
     const name = new URLSearchParams(location.search).get('case') ?? 'single';
     const names: CaseName[] = [
+        ...geometryNames,
         'single',
         'multiple',
         'disabled',
@@ -167,14 +172,23 @@ export function fixtureConfig(): FixtureConfig {
             { key: '10:20', label: '10 × 20', value: [10, 20] },
             { key: '30:40', label: '30 × 40', value: [30, 40] }
         ];
+    const geometry = geometryConfig(name);
+    if (geometry)
+        options = Array.from({ length: 40 }, (_, i) => ({
+            key: `item-${i}`,
+            label: `Item ${String(i).padStart(2, '0')}`,
+            value: `item-${i}`
+        }));
     const multiple = name === 'multiple' || name === 'typeahead-multiple' || name === 'dynamic-multiple';
-    const initial = name.startsWith('aligned')
-        ? options[1].value
-        : name === 'typeahead-no-selection'
-          ? null
-          : name === 'disabled-navigation'
-            ? options[2].value
-            : options[0].value;
+    const initial = geometry
+        ? options[geometry.selectedIndex].value
+        : name.startsWith('aligned')
+          ? options[1].value
+          : name === 'typeahead-no-selection'
+            ? null
+            : name === 'disabled-navigation'
+              ? options[2].value
+              : options[0].value;
     return {
         name: name as CaseName,
         options,
@@ -185,10 +199,11 @@ export function fixtureConfig(): FixtureConfig {
         defer: name === 'deferred',
         closeOnFocusOut: name === 'focus-out',
         modal: name === 'modal' || name === 'modal-cancel-close' || name === 'aligned-modal',
-        aligned: name.startsWith('aligned'),
-        dir: name === 'rtl' || name === 'aligned-rtl' ? 'rtl' : 'ltr',
+        aligned: geometry?.aligned ?? name.startsWith('aligned'),
+        dir: geometry?.dir ?? (name === 'rtl' || name === 'aligned-rtl' ? 'rtl' : 'ltr'),
         scrollable: name.startsWith('modal') || name.startsWith('aligned') || name === 'rtl',
-        dynamic: name.startsWith('dynamic')
+        dynamic: name.startsWith('dynamic'),
+        geometry
     };
 }
 

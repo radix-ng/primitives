@@ -16,7 +16,7 @@ Shared preparation, TypeScript tooling and commands are documented in the
 
 ## What is compared
 
-The 77 scenarios produce 215 comparisons and 16 capability skips: 65 desktop/dynamic cases in
+The 90 scenarios produce 254 comparisons and 16 capability skips: 78 desktop/dynamic/geometry cases in
 Chromium, Firefox and WebKit, eight touch-tap cases in Chromium/WebKit and four touch-gesture cases
 in Chromium. They exercise
 keyboard/typeahead, pointer/multiple selection, disabled/read-only states,
@@ -48,6 +48,10 @@ disabled option. The remaining item DOM focus differences are still recorded as 
 field, optionally scoped to one browser. Any new, changed **or disappeared** difference fails and requires review. Shared assertions
 still apply to both implementations. The report preserves all raw observations even on failure.
 
+- `reference-webkit-hover`: the pin ignores native hover moves with zero `movementX/Y` in WebKit.
+  The hover checkpoint records the exact Angular `listScrolled: true` / React `false` pair; the
+  reference also retains `item-0` highlight instead of clearing it on hover. Both fields are
+  scoped to WebKit. The Angular Storybook hover check still has to pass. Native coordinates/deltas are retained.
 - `dom-focus`: Angular focuses the popup and exposes virtual highlight; Base UI focuses an item.
   On removal of a focused option, Firefox/WebKit may leave native focus on body while Chromium
   focuses the replacement item. Those exact pairs are browser-scoped. Changing Angular's focus
@@ -82,8 +86,9 @@ still apply to both implementations. The report preserves all raw observations e
 
 The pinned `Select.Portal` has no `keepMounted` prop. That comparison is explicitly excluded; Angular
 keep-mounted coverage stays in its existing unit and Storybook browser tests. The differential scope
-now includes desktop anchored/modal/item-aligned modes and whole-page RTL. Touch, long/clipped
-alignment, dynamic data and animation timing are not certified by these comparisons. Additional
+now includes desktop anchored/modal/item-aligned modes, whole-page RTL, emulated touch, dynamic
+data and the geometry constraints below. Pixel-identical sizing, animation timing and the remaining
+geometry/device gaps are not certified by these comparisons. Additional
 Angular Storybook checks run in all three engines via `pnpm test-browser:select`; they do not replace
 differential evidence for the uncovered modes. Real devices, saved-profile autofill and actual screen
 readers remain separate verification.
@@ -189,6 +194,36 @@ callback comparison. No real mobile device, saved profile or assistive technolog
 The common backdrop click listener lets WebKit deliver its native compatibility mouse sequence;
 the shared dismiss touch state machine still owns closing. Select touch highlight survives the
 pointer leave at gesture end, while touch moves do not apply mouse-hover navigation.
+
+## Viewport and container constraints
+
+`geometry.scenarios.ts` adds twelve 640×480 layouts plus a scroll-arrow scenario. Shared
+`geometry.ts` supplies application classes/options only. Viewport size is set before navigation,
+so resize-dismissal cannot race the opening under test. Consumers constrain the flex/scroller
+surfaces using Tailwind. The native scroll arrows have identical absolute edge classes in both
+fixtures; Storybook additionally covers in-flow buttons changing list height.
+
+Both sides must keep the popup within the viewport and the chosen/highlighted option inside a
+nonempty list, navigate to both ends and commit the same value. Interior item text alignment uses
+2 CSS pixels; RTL edge clamping checks block alignment and containment while retaining inline delta.
+Native wheel input scrolls the parent and checks anchored tracking. Portals must escape a clipping
+ancestor or mount in the requested custom host. Anchored portals include a transformed host;
+item-aligned portals do not yet cover transformed containing blocks.
+
+Hover tests use actual travel across the arrow and a controlled browser clock, then require scroll
+stop after leaving. The pin ignores WebKit's zero-delta native MouseEvents: its exact failed hover
+is an engine-scoped observation, not a skipped Angular test. At the bottom, the reference can leave
+4px list padding after End; native wheel reaches the actual boundary before arrow-hide assertions.
+
+Popup uses the common ResizeObserver effect to keep keyboard highlight visible after scroll-button
+layout changes. It owns scrolling instead of an unconditional duplicate effect in each button.
+First/last keyboard targets include list padding. The helper's capability guard keeps browser-free
+rendering/tests valid; Angular destroys the observer with its view.
+
+Raw dimensions are evidence, not pixel-equivalence assertions. Legacy item-aligned height/expansion,
+collision margins and edge fallback still differ. Transformed item-aligned portals fail geometry in
+both implementations at this pin and remain a source-audit gap. Live ancestor scrolling during an
+open item-aligned session, pinch zoom and mobile visual viewport changes are further work.
 
 ## Evidence and CI
 

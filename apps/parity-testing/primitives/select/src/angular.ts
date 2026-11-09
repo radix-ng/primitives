@@ -26,11 +26,15 @@ document.documentElement.dir = config.dir;
 
 @Component({
     selector: 'parity-select',
-    host: { '(document:keydown)': 'onCommand($event)' },
+    host: {
+        '(document:keydown)': 'onCommand($event)',
+        '[class]': 'config.geometry?.shellClass',
+        'data-testid': 'scroller'
+    },
     imports: [_importsSelect, RdxDirectionProvider],
     template: `
         <form
-            class="grid w-64 gap-3"
+            [class]="config.geometry?.formClass ?? 'grid w-64 gap-3'"
             [direction]="config.dir"
             [attr.dir]="config.dir"
             (submit)="$event.preventDefault()"
@@ -67,11 +71,28 @@ document.documentElement.dir = config.dir;
                         {{ display.slotText() }}
                     </span>
                 </button>
-                <ng-template rdxSelectPortal>
+                <ng-template [container]="config.geometry?.customPortal ? portalHost : undefined" rdxSelectPortal>
                     @if (config.aligned) {
                         <div [class]="s.positioner" data-testid="positioner" rdxSelectItemAlignedPosition>
-                            <div [closeOnFocusOut]="config.closeOnFocusOut" data-testid="popup" rdxSelectPopup>
-                                <div [class]="s.popup" rdxSelectItemAlignedPositionContent>
+                            <div
+                                [class]="config.geometry ? 'min-h-0 flex-1' : ''"
+                                [closeOnFocusOut]="config.closeOnFocusOut"
+                                data-testid="popup"
+                                rdxSelectPopup
+                            >
+                                <div
+                                    [class]="s.popup + (config.geometry ? ' min-h-0 flex-1 overflow-hidden' : '')"
+                                    rdxSelectItemAlignedPositionContent
+                                >
+                                    @if (config.geometry?.arrows) {
+                                        <div
+                                            [class]="s.scrollButton + ' absolute inset-x-0 top-0 z-10'"
+                                            data-testid="scroll-up"
+                                            rdxSelectScrollUpButton
+                                        >
+                                            Up
+                                        </div>
+                                    }
                                     <div [class]="listClass" data-testid="list" rdxSelectList>
                                         @for (option of options(); track option.key) {
                                             <div
@@ -87,6 +108,15 @@ document.documentElement.dir = config.dir;
                                             </div>
                                         }
                                     </div>
+                                    @if (config.geometry?.arrows) {
+                                        <div
+                                            [class]="s.scrollButton + ' absolute inset-x-0 bottom-0 z-10'"
+                                            data-testid="scroll-down"
+                                            rdxSelectScrollDownButton
+                                        >
+                                            Down
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -119,7 +149,10 @@ document.documentElement.dir = config.dir;
                             rdxSelectPositioner
                         >
                             <div
-                                [class]="config.dir === 'rtl' ? s.popup + ' w-48 min-w-48!' : s.popup"
+                                [class]="
+                                    (config.dir === 'rtl' ? s.popup + ' w-48 min-w-48!' : s.popup) +
+                                    (config.geometry ? ' max-h-[var(--available-height)]' : '')
+                                "
                                 [closeOnFocusOut]="config.closeOnFocusOut"
                                 data-testid="popup"
                                 rdxSelectPopup
@@ -152,6 +185,10 @@ document.documentElement.dir = config.dir;
                 After
             </button>
         </form>
+        @if (config.geometry?.spacerClass) {
+            <div [class]="config.geometry!.spacerClass" aria-hidden="true"></div>
+        }
+        <div #portalHost [class]="config.geometry?.portalClass ?? 'contents'" data-testid="portal-host"></div>
         @if (config.dynamic) {
             <div class="mt-4 grid w-64 gap-2" aria-label="Option data actions">
                 @for (action of optionActions; track action.key) {
@@ -173,7 +210,13 @@ document.documentElement.dir = config.dir;
 class AngularSelectFixture {
     readonly s = demoSelect;
     readonly config = config;
-    readonly listClass = demoSelect.list + (config.name === 'touch-scroll' ? ' max-h-48 overflow-y-auto' : '');
+    readonly listClass =
+        demoSelect.list +
+        (config.name === 'touch-scroll'
+            ? ' max-h-48 overflow-y-auto'
+            : config.geometry
+              ? ' min-h-0 overflow-y-auto'
+              : '');
     readonly options = signal(config.options);
     readonly optionActions = optionActions;
     readonly trace = installProbe('angular', this.config);
