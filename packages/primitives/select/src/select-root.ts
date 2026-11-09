@@ -42,11 +42,12 @@ import {
     RdxFormValueControl,
     RdxLabelRegistry,
     RdxNativeInputRef,
+    RdxPopupPresenceRegistration,
     RdxTransitionStatus,
     serializeNativeFormValue,
     itemToStringValue as stringifyValue,
     useNativeFormControl,
-    useTransitionStatus
+    usePopupLifecycle
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { injectFieldRootContext } from '@radix-ng/primitives/field';
@@ -74,6 +75,7 @@ export type RdxSelectOpenChangeReason =
     | 'focus-out'
     | 'list-navigation'
     | 'cancel-open'
+    | 'imperative-action'
     | 'none';
 
 export type RdxSelectValueChangeReason = RdxSelectOpenChangeReason;
@@ -83,6 +85,12 @@ export type RdxSelectOpenChangeEventDetails = RdxCancelableChangeEventDetails<Rd
 export interface RdxSelectOpenChangeEvent {
     open: boolean;
     eventDetails: RdxSelectOpenChangeEventDetails;
+}
+
+/** Imperative actions available directly on a Root template reference or view query. */
+export interface RdxSelectRootActions {
+    close: () => boolean;
+    unmount: () => void;
 }
 
 export type RdxSelectValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxSelectValueChangeReason>;
@@ -99,6 +107,8 @@ export interface RdxSelectValueChangeEvent<Value = AcceptableValue, Multiple ext
 
 export interface RdxSelectRootContext extends RdxFormUiStateContext, RdxLabelRegistry {
     present: Signal<boolean>;
+    skipExitAnimation: Signal<boolean>;
+    registerPresence: (presence: RdxPopupPresenceRegistration) => () => void;
     autofillProbe: Signal<boolean>;
     id: Signal<string>;
     triggerId: WritableSignal<string | undefined>;
@@ -139,6 +149,8 @@ const context = (): RdxSelectRootContext => {
 
     return {
         present: context.present,
+        skipExitAnimation: context.skipExitAnimation,
+        registerPresence: context.registerPresence,
         autofillProbe: context.autofillProbe,
         ...context.labelRegistry,
         id: context.controlId,
@@ -210,7 +222,7 @@ export function provideRdxSelectRoot<Value extends AcceptableValue, Multiple ext
 })
 export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Multiple extends boolean = boolean>
     extends RdxFormUiControlBase
-    implements ControlValueAccessor, RdxFormValueControl<RdxSelectValueType<Value, Multiple>>
+    implements ControlValueAccessor, RdxFormValueControl<RdxSelectValueType<Value, Multiple>>, RdxSelectRootActions
 {
     private readonly popper = inject(RdxPopper, { self: true });
     private readonly hostElement = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
@@ -231,8 +243,10 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
     private readonly forceMount = signal(false, { debugName: 'RdxSelectRoot.forceMount' });
     /** @internal Retained until the next open so a probe cannot flash during presence cleanup. */
     readonly autofillProbe = signal(false, { debugName: 'RdxSelectRoot.autofillProbe' });
-    /** @internal Closed popup mounting is used only to resolve browser-autofilled items. */
-    readonly present = computed(() => this.open() || this.forceMount(), { debugName: 'RdxSelectRoot.present' });
+    /** @internal Mount while open, during a deferred close, or to resolve browser-autofilled items. */
+    readonly present = computed(() => this.lifecycle.present() || this.forceMount(), {
+        debugName: 'RdxSelectRoot.present'
+    });
     private autofillRequest = 0;
 
     /** Whether the current open was initiated by **touch** (ADR 0016 §3 — gates the anchored scroll lock). */
@@ -322,13 +336,21 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
     /** Emits after the open/close transition (including any exit animation) finishes. */
     readonly onOpenChangeComplete = output<boolean>();
 
-    private readonly transition = useTransitionStatus((open) => this.onOpenChangeComplete.emit(open));
+    private readonly lifecycle = usePopupLifecycle(
+        this.open,
+        (open) => this.onOpenChangeComplete.emit(open),
+        'RdxSelectRoot'
+    );
 
     /** Open/close transition phase, for `data-starting-style` / `data-ending-style`. */
-    readonly transitionStatus = this.transition.status;
+    readonly transitionStatus = this.lifecycle.status;
 
     /** Registers the popup element whose animation determines transition completion. */
-    readonly registerTransitionElement = this.transition.registerElement;
+    readonly registerTransitionElement = this.lifecycle.registerElement;
+    /** @internal Presence reports when the live popup view has actually finished exiting. */
+    readonly registerPresence = this.lifecycle.registerPresence;
+    /** @internal An imperative completion bypasses a second CSS exit wait in Presence. */
+    readonly skipExitAnimation = this.lifecycle.skipExitAnimation;
 
     readonly isEmptyModelValue = computed(() => {
         const value = this.value();
@@ -499,16 +521,6 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
             }
         });
 
-        let previousOpen = untracked(this.open);
-        effect(() => {
-            const open = this.open();
-            if (open === previousOpen) {
-                return;
-            }
-            previousOpen = open;
-            untracked(() => this.transition.start(open));
-        });
-
         // A fresh open starts non-touch; the trigger flips it on a touch open. Reset whenever it closes.
         effect(() => {
             if (!this.open()) {
@@ -604,6 +616,8 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
             resolvedEvent,
             this.triggerElement() ?? undefined
         );
+        const transaction = this.lifecycle.prepareOpenChange(open);
+        eventDetails.preventUnmountOnClose = transaction.preventUnmountOnClose;
 
         this.onOpenChange.emit({ open, eventDetails });
 
@@ -612,6 +626,7 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
         }
 
         this.open.set(open);
+        transaction.commit();
 
         if (open) {
             this.openedByTouch.set((event as PointerEvent | undefined)?.pointerType === 'touch');
@@ -621,6 +636,16 @@ export class RdxSelectRoot<Value extends AcceptableValue = AcceptableValue, Mult
         }
 
         return true;
+    }
+
+    /** Request a cancelable close with the Base UI `imperative-action` reason. */
+    close(): boolean {
+        return this.open() ? this.setOpen(false, 'imperative-action') : false;
+    }
+
+    /** Finish a pending close after an external animation; ignored while open or already complete. */
+    unmount(): void {
+        this.lifecycle.unmount();
     }
 
     /** @ignore Bridge the CVA touched callback into the shared Signal Forms UI-state path. */

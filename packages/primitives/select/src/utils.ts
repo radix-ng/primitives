@@ -9,6 +9,7 @@ export interface RdxSelectItemMetadata {
     value: AcceptableValue | undefined;
     disabled: boolean;
     textValue?: string;
+    textElement?: HTMLElement;
 }
 
 export function valueComparator<T>(

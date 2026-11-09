@@ -51,8 +51,6 @@ export interface RdxSelectPopupContext {
     setKeyboardActive: (value: boolean) => void;
     onViewportChange: (node: HTMLElement | undefined) => void;
     onItemLeave: () => void;
-    itemRefCallback: (node: HTMLElement, value: AcceptableValue | undefined, disabled: boolean) => void;
-    itemTextRefCallback: (node: HTMLElement, value: AcceptableValue | undefined, disabled: boolean) => void;
 }
 
 const context = (): RdxSelectPopupContext => {
@@ -80,34 +78,6 @@ const context = (): RdxSelectPopupContext => {
         },
         onItemLeave: () => {
             context.highlight.clear();
-        },
-        itemRefCallback: (node: HTMLElement, value: AcceptableValue | undefined, disabled: boolean) => {
-            const isFirstValidItem = !context.firstValidItemFoundRef() && !disabled;
-            const isSelectedItem = valueComparator(
-                context.rootContext.value(),
-                value,
-                context.rootContext.isItemEqualToValue()
-            );
-
-            if (isSelectedItem || isFirstValidItem) {
-                context.selectedItem.set(node);
-            }
-
-            if (isFirstValidItem) {
-                context.firstValidItemFoundRef.set(true);
-            }
-        },
-        itemTextRefCallback: (node: HTMLElement, value: AcceptableValue | undefined, disabled: boolean) => {
-            const isFirstValidItem = !context.firstValidItemFoundRef() && !disabled;
-            const isSelectedItem = valueComparator(
-                context.rootContext.value(),
-                value,
-                context.rootContext.isItemEqualToValue()
-            );
-
-            if (isSelectedItem || isFirstValidItem) {
-                context.selectedItemText.set(node);
-            }
         }
     };
 };
@@ -228,11 +198,20 @@ export class RdxSelectPopup {
         injector: this.injector
     });
 
-    readonly selectedItem = signal<HTMLElement | undefined>(undefined);
+    // Derive positioning refs from Angular's reactive collection instead of mount-only callbacks.
+    // The same view can be retained across opens while its value or item text changes.
+    private readonly positioningItem = computed(() => {
+        const items = this.items();
+        return (
+            items.find((item) =>
+                valueComparator(this.rootContext.value(), item.metadata()?.value, this.rootContext.isItemEqualToValue())
+            ) ?? items.find((item) => !item.metadata()?.disabled)
+        );
+    });
 
-    readonly selectedItemText = signal<HTMLElement | undefined>(undefined);
+    readonly selectedItem = computed(() => this.positioningItem()?.element);
 
-    readonly firstValidItemFoundRef = signal(false);
+    readonly selectedItemText = computed(() => this.positioningItem()?.metadata()?.textElement);
 
     readonly viewport = signal<HTMLElement | undefined>(undefined);
 
@@ -288,9 +267,6 @@ export class RdxSelectPopup {
         effect(() => {
             if (!this.rootContext.open()) {
                 this.hasHighlightedOpen = false;
-                // Reset the "first valid item" seed so the next open re-resolves it (otherwise the
-                // selected/first-item highlight seed is stale on reopen).
-                this.firstValidItemFoundRef.set(false);
                 return;
             }
 
@@ -358,7 +334,7 @@ export class RdxSelectPopup {
         });
 
         effect((onCleanup) => {
-            if (!this.content()) return;
+            if (!this.content() || !this.rootContext.open()) return;
 
             let pointerMoveDelta = { x: 0, y: 0 };
 
@@ -378,7 +354,10 @@ export class RdxSelectPopup {
                     event.preventDefault();
                 } else {
                     // otherwise, if the event was outside the content, close.
-                    if (!this.content()?.contains(event.target as HTMLElement)) {
+                    if (
+                        !this.content()?.contains(event.target as HTMLElement) &&
+                        !this.floatingContext.triggers.contains(event.target)
+                    ) {
                         this.rootContext.onOpenChange(false, 'outside-press', event);
                     }
                 }
@@ -463,6 +442,7 @@ export class RdxSelectPopup {
     }
 
     handleKeyDown(event: Event) {
+        if (!this.rootContext.open()) return;
         const keyEvent = event as KeyboardEvent;
         if (keyEvent.isComposing) return;
 

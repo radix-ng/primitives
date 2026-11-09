@@ -1,5 +1,6 @@
 import {
     afterNextRender,
+    afterRenderEffect,
     computed,
     contentChild,
     Directive,
@@ -8,7 +9,8 @@ import {
     inject,
     Injector,
     output,
-    signal
+    signal,
+    untracked
 } from '@angular/core';
 import { clamp, rdxPlatform, resizeEffect } from '@radix-ng/primitives/core';
 import { RdxSelectItemAlignedPositionContent } from './select-item-aligned-position-content';
@@ -25,8 +27,10 @@ import { CONTENT_MARGIN } from './utils';
         }
     ],
     host: {
+        '[attr.inert]': 'rootContext.open() ? undefined : ""',
+        '[hidden]': '!visible()',
         '[style]': `{
-            display: rootContext.autofillProbe() && !rootContext.open() ? 'none' : 'flex',
+            display: !visible() || (rootContext.autofillProbe() && !rootContext.open()) ? 'none' : 'flex',
             flexDirection: 'column',
             position: 'fixed',
             zIndex: contentZIndex(),
@@ -36,6 +40,9 @@ import { CONTENT_MARGIN } from './utils';
 export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
     private readonly currentElement = inject(ElementRef);
     protected readonly rootContext = injectSelectRootContext();
+    protected readonly visible = computed(
+        () => this.rootContext.open() || this.rootContext.transitionStatus() === 'ending'
+    );
 
     /**
      * The popup is now a **descendant** (item-aligned-position is the outer positioner), so read the
@@ -67,8 +74,19 @@ export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
 
     constructor() {
         const injector = inject(Injector);
+        afterRenderEffect(() => {
+            if (!this.rootContext.open()) return;
+            // Retained views need fresh geometry when their selected item or text changes.
+            this.rootContext.triggerElement();
+            this.rootContext.valueElement();
+            this.rootContext.dir();
+            this.rootContext.openedByTouch();
+            this.popup().selectedItem();
+            this.popup().selectedItemText();
+            this.popup().viewport();
+            untracked(() => this.position());
+        });
         afterNextRender(() => {
-            this.position();
             if (this.contentElement().currentElementRef.nativeElement) {
                 this.contentZIndex.set(
                     window.getComputedStyle(this.contentElement().currentElementRef.nativeElement).zIndex
@@ -93,6 +111,7 @@ export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
     }
 
     position() {
+        if (!this.rootContext.open()) return;
         this.pinchZoomFallback.set(this.isPinchZoomed());
 
         // Base UI parity: a touch-opened select does NOT align the item with the trigger (the macOS-style
@@ -184,6 +203,7 @@ export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
 
             if (willAlignWithoutTopOverflow) {
                 const isLastItem = this.popup().selectedItem()! === items[items.length - 1];
+                this.contentWrapperElement()!.style.top = '';
                 this.contentWrapperElement()!.style.bottom = `${0}px`;
                 const viewportOffsetBottom =
                     this.currentElement.nativeElement.clientHeight -
@@ -201,6 +221,7 @@ export class RdxSelectItemAlignedPosition implements RdxPositionerImpl {
                 this.contentWrapperElement()!.style.height = `${height}px`;
             } else {
                 const isFirstItem = this.popup().selectedItem()! === items[0];
+                this.contentWrapperElement()!.style.bottom = '';
                 this.contentWrapperElement()!.style.top = `${0}px`;
                 const clampedTopEdgeToTriggerMiddle = Math.max(
                     topEdgeToTriggerMiddle,

@@ -1,5 +1,5 @@
 import { Component, signal } from '@angular/core';
-import { RdxSelectRoot, RdxSelectValueChangeEvent } from '@radix-ng/primitives/select';
+import { RdxSelectRoot, RdxSelectRootActions, RdxSelectValueChangeEvent } from '@radix-ng/primitives/select';
 import { SelectItems } from '../../../packages/primitives/select/stories/select-items';
 import { SelectLabels } from '../../../packages/primitives/select/stories/select-labels';
 import { SelectNativeForms } from '../../../packages/primitives/select/stories/select-native-forms';
@@ -14,6 +14,10 @@ interface Country {
 @Component({
     imports: [RdxSelectRoot, SelectTypedControl, SelectTypedWrapper, SelectItems, SelectLabels, SelectNativeForms],
     template: `
+        <div #actions="rdxSelectRoot" rdxSelectRoot>
+            <button (click)="actions.close()" type="button">Close</button>
+            <button (click)="actions.unmount()" type="button">Finish</button>
+        </div>
         <div
             [(value)]="country"
             [multiple]="false"
@@ -43,6 +47,9 @@ interface Country {
     `
 })
 export class PositiveSelectTypes {
+    acceptActions(root: RdxSelectRoot): RdxSelectRootActions {
+        return root;
+    }
     readonly country = signal<Country | null | undefined>(undefined);
     readonly countries = signal<Country[] | undefined>([]);
     readonly options: Country[] = [{ code: 'fr', name: 'France' }];

@@ -8,6 +8,8 @@ import { SelectArrowExample } from './select-arrow';
 import arrowSource from './select-arrow?raw';
 import { SelectDefault } from './select-default';
 import defaultSource from './select-default?raw';
+import { SelectDeferredUnmount } from './select-deferred-unmount';
+import deferredUnmountSource from './select-deferred-unmount?raw';
 import { SelectEvents } from './select-events';
 import eventsSource from './select-events?raw';
 import { SelectItems } from './select-items';
@@ -41,6 +43,7 @@ export default {
         moduleMetadata({
             imports: [
                 SelectDefault,
+                SelectDeferredUnmount,
                 SelectArrowExample,
                 SelectEvents,
                 SelectMultiple,
@@ -87,6 +90,15 @@ export const Arrow: Story = {
         props: args,
         template: html`
             <select-arrow-example [side]="side" [align]="align" [alignOffset]="alignOffset" [dir]="dir" />
+        `
+    })
+};
+
+export const DeferredUnmount: Story = {
+    parameters: source(deferredUnmountSource),
+    render: () => ({
+        template: html`
+            <select-deferred-unmount />
         `
     })
 };
@@ -173,10 +185,12 @@ export const WithScroll: Story = {
 };
 
 export const AlignedPosition: Story = {
+    args: { keepMounted: false },
     parameters: source(alignedPositionSource),
-    render: () => ({
+    render: (args) => ({
+        props: args,
         template: html`
-            <select-aligned-position />
+            <select-aligned-position [keepMounted]="keepMounted" />
         `
     })
 };

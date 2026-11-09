@@ -16,8 +16,17 @@ import { injectSelectRootContext } from './select-root';
 @Directive({
     selector: 'ng-template[rdxSelectPortal]',
     exportAs: 'rdxSelectPortal',
-    hostDirectives: [{ directive: RdxPortalPresence, inputs: ['container'] }],
-    providers: [provideRdxPresenceContext(() => ({ present: injectSelectRootContext().present }))]
+    hostDirectives: [{ directive: RdxPortalPresence, inputs: ['container', 'keepMounted'] }],
+    providers: [
+        provideRdxPresenceContext(() => {
+            const root = injectSelectRootContext();
+            return {
+                present: root.present,
+                skipExitAnimation: root.skipExitAnimation,
+                registerPresence: root.registerPresence
+            };
+        })
+    ]
 })
 export class RdxSelectPortal {}
 

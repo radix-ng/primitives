@@ -13,6 +13,7 @@ A control that presents a list of options for the user to pick from, triggered b
 - ✅ Single and multiple selection with the `multiple` input.
 - ✅ Angular forms integration through `ControlValueAccessor`: Reactive Forms, `formControlName`, and `ngModel`.
 - ✅ Cancelable `onOpenChange` and `onValueChange` outputs with reason-aware `eventDetails`.
+- ✅ Imperative `close()` / `unmount()` actions and per-close deferred unmount for external animations.
 - ✅ Two positioning modes: Popper (Floating UI) and Item-aligned (native-like).
 - ✅ Optional popup arrow with shared positioning and open/closed, side, alignment and uncentered states.
 - ✅ Scroll buttons appear automatically when the list overflows the viewport.
@@ -122,6 +123,7 @@ the behavior of a native `<select>`. Use `rdxSelectItemAlignedPosition` and
 - [Multiple](../examples/select--multiple.md)
 - [Arrow](../examples/select--arrow.md)
 - [Change details and interaction state](../examples/select--change-details-and-interaction-state.md)
+- [Deferred unmount and imperative actions](../examples/select--deferred-unmount-and-imperative-actions.md)
 - [Object values](../examples/select--object-values.md)
 - [Reactive Forms](../examples/select--reactive-forms.md)
 - [Template-driven Forms](../examples/select--template-driven-forms.md)

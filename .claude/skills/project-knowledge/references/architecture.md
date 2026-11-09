@@ -28,6 +28,20 @@ control identity, Field state and popup/value policy remain outside core. Extrac
 responsibilities with concrete consumers during parity work, rather than waiting for every primitive
 to be finished or building a universal control engine.
 
+**Framework adaptation during parity work:** preserve the observable Base UI contract while using
+Angular's `model`, outputs, DI, reactive queries/collections and view lifecycle. Derive state with
+`computed` when it follows existing signals. A React ref, store, controlled-prop mirror or forced
+render requires an independent Angular need; its presence upstream is not a reason to port it.
+Keep browser requirements separate from framework workarounds (ADR 0025/0026).
+
+**Popup close lifecycle (ADR 0026):** `core/floating/use-popup-lifecycle.ts` coordinates an accepted
+close transaction, an external-animation hold, transition completion and registered Presence views.
+Select is the first consumer: Root exposes `close()` / `unmount()`, and Portal forwards `keepMounted`.
+Presence optionally registers its live view and can bypass exit waiting after explicit completion.
+Reopening invalidates the prior close; canceled/open requests cannot retain the next close. Other
+popup families have not yet migrated to this helper. Keep these lifetime mechanics shared when
+extending parity instead of adding another per-primitive retained-mount flag.
+
 ## Tech stack
 
 | Layer                  | Choice                                                   | Why                                                                                            |

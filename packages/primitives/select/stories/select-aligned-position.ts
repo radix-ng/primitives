@@ -46,38 +46,40 @@ import { RdxSelectValue } from '../src/select-value';
                 <svg [class]="s.icon" lucideChevronDown size="16" aria-hidden="true" />
             </button>
 
-            <div *rdxSelectPortal [class]="s.positioner" rdxSelectItemAlignedPosition>
-                <div class="min-w-40" rdxSelectPopup>
-                    <div [class]="s.popup" rdxSelectItemAlignedPositionContent>
-                        <div [class]="s.arrow" rdxSelectArrow></div>
-                        <div [class]="s.list" rdxSelectList>
-                            <div [class]="s.groupLabel" rdxSelectGroupLabel>Fruits</div>
-                            <div rdxSelectGroup>
-                                @for (option of options; track option) {
-                                    <div [class]="s.item" [value]="option" rdxSelectItem>
-                                        <span [class]="s.itemIndicator" rdxSelectItemIndicator>
-                                            <svg [class]="s.icon" lucideCheck size="16" aria-hidden="true" />
-                                        </span>
-                                        <span rdxSelectItemText>{{ option }}</span>
-                                    </div>
-                                }
-                            </div>
-                            <div [class]="s.separator"></div>
-                            <div [class]="s.groupLabel" rdxSelectGroupLabel>Vegetables</div>
-                            <div rdxSelectGroup>
-                                @for (vegetable of vegetables; track vegetable) {
-                                    <div [class]="s.item" [value]="vegetable" rdxSelectItem>
-                                        <span [class]="s.itemIndicator" rdxSelectItemIndicator>
-                                            <svg [class]="s.icon" lucideCheck size="16" aria-hidden="true" />
-                                        </span>
-                                        <span rdxSelectItemText>{{ vegetable }}</span>
-                                    </div>
-                                }
+            <ng-template [keepMounted]="keepMounted()" rdxSelectPortal>
+                <div [class]="s.positioner" rdxSelectItemAlignedPosition>
+                    <div class="min-w-40" rdxSelectPopup>
+                        <div [class]="s.popup" rdxSelectItemAlignedPositionContent>
+                            <div [class]="s.arrow" rdxSelectArrow></div>
+                            <div [class]="s.list" rdxSelectList>
+                                <div [class]="s.groupLabel" rdxSelectGroupLabel>Fruits</div>
+                                <div rdxSelectGroup>
+                                    @for (option of options; track option) {
+                                        <div [class]="s.item" [value]="option" rdxSelectItem>
+                                            <span [class]="s.itemIndicator" rdxSelectItemIndicator>
+                                                <svg [class]="s.icon" lucideCheck size="16" aria-hidden="true" />
+                                            </span>
+                                            <span rdxSelectItemText>{{ option }}</span>
+                                        </div>
+                                    }
+                                </div>
+                                <div [class]="s.separator"></div>
+                                <div [class]="s.groupLabel" rdxSelectGroupLabel>Vegetables</div>
+                                <div rdxSelectGroup>
+                                    @for (vegetable of vegetables; track vegetable) {
+                                        <div [class]="s.item" [value]="vegetable" rdxSelectItem>
+                                            <span [class]="s.itemIndicator" rdxSelectItemIndicator>
+                                                <svg [class]="s.icon" lucideCheck size="16" aria-hidden="true" />
+                                            </span>
+                                            <span rdxSelectItemText>{{ vegetable }}</span>
+                                        </div>
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </ng-template>
         </ng-container>
     `
 })
@@ -86,6 +88,8 @@ export class SelectAlignedPosition {
 
     /** Whether the select is modal. Exposed so a story can demonstrate the non-modal item-aligned lock. */
     readonly modal = input(true, { transform: booleanAttribute });
+
+    readonly keepMounted = input(false, { transform: booleanAttribute });
 
     readonly fruit = signal('Apple');
 

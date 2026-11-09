@@ -1,5 +1,4 @@
 import {
-    afterNextRender,
     booleanAttribute,
     computed,
     DestroyRef,
@@ -9,7 +8,8 @@ import {
     inject,
     input,
     linkedSignal,
-    Signal
+    Signal,
+    signal
 } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import {
@@ -85,18 +85,18 @@ export class RdxSelectItem {
     readonly disabled = input(false, { transform: booleanAttribute });
 
     readonly textValue$ = linkedSignal(this.textValue);
-    private itemTextElement: HTMLElement | undefined;
+    private readonly itemTextElement = signal<HTMLElement | undefined>(undefined);
     private readonly option = () => ({
         value: this.value(),
         disabled: this.disabled(),
-        textContent: (this.itemTextElement?.textContent ?? this.currentElement.nativeElement.textContent ?? '').trim()
+        textContent: (this.itemTextElement()?.textContent ?? this.currentElement.nativeElement.textContent ?? '').trim()
     });
 
     /** @internal Item text owns cleanup, including replacement before the old view is destroyed. */
     registerItemText(node: HTMLElement): () => void {
-        this.itemTextElement = node;
+        this.itemTextElement.set(node);
         return () => {
-            if (this.itemTextElement === node) this.itemTextElement = undefined;
+            if (this.itemTextElement() === node) this.itemTextElement.set(undefined);
         };
     }
 
@@ -112,10 +112,6 @@ export class RdxSelectItem {
 
     readonly textId = injectId('rdx-select-item-text-');
 
-    private readonly afterNextRender = afterNextRender(() => {
-        this.contentContext.itemRefCallback(this.currentElement.nativeElement, this.value(), this.disabled());
-    });
-
     private SELECT_SELECT = 'select.select';
 
     constructor() {
@@ -125,12 +121,14 @@ export class RdxSelectItem {
             this.listItem.setMetadata({
                 value: this.value(),
                 disabled: this.disabled(),
-                textValue: this.textValue$()
+                textValue: this.textValue$(),
+                textElement: this.itemTextElement()
             });
         });
     }
 
     onPointerUp(event: PointerEvent | KeyboardEvent) {
+        if (!this.rootContext.open()) return;
         if (event.defaultPrevented) return;
         if (this.disabled()) return;
 
@@ -151,12 +149,14 @@ export class RdxSelectItem {
     }
 
     onPointerLeave(event: Event) {
+        if (!this.rootContext.open()) return;
         if (event.defaultPrevented) return;
         if (!this.rootContext.highlightItemOnHover()) return;
         this.contentContext.onItemLeave?.();
     }
 
     onPointerMove(event: PointerEvent) {
+        if (!this.rootContext.open()) return;
         if (!this.rootContext.highlightItemOnHover()) return;
         // WebKit fires zero-delta moves while the list scrolls under a still cursor.
         if (isStationaryWebKitPointer(event)) {

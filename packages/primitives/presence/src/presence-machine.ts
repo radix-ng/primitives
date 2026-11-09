@@ -14,7 +14,7 @@ type PresenceEvent = 'MOUNT' | 'UNMOUNT' | 'ANIMATION_OUT' | 'ANIMATION_END';
  */
 const MACHINE: Record<PresenceState, Partial<Record<PresenceEvent, PresenceState>>> = {
     mounted: { UNMOUNT: 'unmounted', ANIMATION_OUT: 'unmountSuspended' },
-    unmountSuspended: { MOUNT: 'mounted', ANIMATION_END: 'unmounted' },
+    unmountSuspended: { MOUNT: 'mounted', ANIMATION_END: 'unmounted', UNMOUNT: 'unmounted' },
     unmounted: { MOUNT: 'mounted' }
 };
 
@@ -35,6 +35,8 @@ const EXIT_FALLBACK_BUFFER = 50;
 export interface PresenceMachineHost {
     /** Reactive `present` flag driving the machine. */
     readonly present: Signal<boolean>;
+    /** An imperative completion already finished the exit; remove the view without another wait. */
+    readonly skipExitAnimation?: Signal<boolean>;
     /** Whether we are running in a browser (animation/computed-style logic is skipped on the server). */
     readonly isBrowser: boolean;
     /** Injection context for the internal `effect` / `afterNextRender`. */
@@ -103,6 +105,12 @@ export class PresenceMachine {
         effect(
             () => {
                 const present = host.present();
+
+                if (host.skipExitAnimation?.() && !present) {
+                    this.prevPresent = false;
+                    this.send('UNMOUNT');
+                    return;
+                }
 
                 if (present === this.prevPresent) {
                     return;

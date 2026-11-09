@@ -131,6 +131,26 @@ class LabelledSelectPage {}
 })
 class SelectArrowsPage {}
 
+@Component({
+    selector: 'app-retained-select',
+    imports: [_importsSelect],
+    template: `
+        <ng-container rdxSelectRoot>
+            <button rdxSelectTrigger>Fruit</button>
+            <ng-template [keepMounted]="true" rdxSelectPortal>
+                <div rdxSelectPositioner>
+                    <div rdxSelectPopup>
+                        <div rdxSelectList>
+                            <div value="Apple" rdxSelectItem><span rdxSelectItemText>Apple</span></div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </ng-container>
+    `
+})
+class RetainedSelectPage {}
+
 function renderToString(selector: string, component: Type<unknown>): Promise<string> {
     return renderApplication(
         (context: BootstrapContext) =>
@@ -146,6 +166,18 @@ function renderToString(selector: string, component: Type<unknown>): Promise<str
 }
 
 describe('SSR rendering', () => {
+    it('renders a keep-mounted Select in place without a browser HTMLElement constructor', async () => {
+        vi.stubGlobal('HTMLElement', undefined);
+        try {
+            const html = await renderToString('app-retained-select', RetainedSelectPage);
+            expect(html).toContain('role="listbox"');
+            expect(html).toContain('Apple');
+            expect(html).toContain('inert=""');
+            expect(html).toMatch(/ngh=/);
+        } finally {
+            vi.unstubAllGlobals();
+        }
+    });
     it('renders decorative Select arrows without running browser geometry on the server', async () => {
         const html = await renderToString('app-select-arrows', SelectArrowsPage);
         expect(html).toContain('id="server-popper-arrow"');

@@ -57,7 +57,8 @@ export class RdxPortalPresence {
     readonly keepMounted = input(false, { transform: booleanAttribute });
 
     /** The layer's own open/present flag, OR'd with {@link keepMounted} to gate mount/unmount. */
-    private readonly contextPresent = inject(RDX_PRESENCE_CONTEXT).present;
+    private readonly presenceContext = inject(RDX_PRESENCE_CONTEXT);
+    private readonly contextPresent = this.presenceContext.present;
     private readonly present = computed(() => this.contextPresent() || this.keepMounted());
 
     private readonly _computedContainer = linkedSignal(this.container);
@@ -70,10 +71,16 @@ export class RdxPortalPresence {
     /** The live view's root nodes, exposed as a signal so the relocation effect re-runs on (re)mount. */
     private readonly mountedNodes = signal<Node[]>([]);
     private viewRef: EmbeddedViewRef<void> | null = null;
+    private readonly mounted = signal(false);
 
     constructor() {
+        const unregister = this.presenceContext.registerPresence?.({
+            mounted: this.mounted.asReadonly(),
+            keepMounted: this.keepMounted
+        });
         const machine = new PresenceMachine({
             present: this.present,
+            skipExitAnimation: this.presenceContext.skipExitAnimation,
             isBrowser: this.isBrowser,
             injector: inject(Injector),
             mountView: () => this.mountView(),
@@ -93,7 +100,10 @@ export class RdxPortalPresence {
             }
         });
 
-        inject(DestroyRef).onDestroy(() => machine.dispose());
+        inject(DestroyRef).onDestroy(() => {
+            machine.dispose();
+            unregister?.();
+        });
     }
 
     /** Imperatively override the portal container (parity with `RdxPortal.setContainer`). */
@@ -103,10 +113,11 @@ export class RdxPortalPresence {
 
     private mountView(): HTMLElement[] {
         this.viewRef = this.viewContainerRef.createEmbeddedView(this.templateRef);
+        this.mounted.set(true);
         const rootNodes = this.viewRef.rootNodes as Node[];
         this.mountedNodes.set(rootNodes);
         // Watch every element root for exit animations (dialog returns backdrop + popup).
-        return rootNodes.filter((node): node is HTMLElement => node instanceof HTMLElement);
+        return rootNodes.filter((node): node is HTMLElement => node.nodeType === 1);
     }
 
     private destroyView(): void {
@@ -114,6 +125,7 @@ export class RdxPortalPresence {
         // no anchor-comment juggling, unlike `RdxPortal` which restores its host element.
         this.viewRef?.destroy();
         this.viewRef = null;
+        this.mounted.set(false);
         this.mountedNodes.set([]);
     }
 }

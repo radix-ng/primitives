@@ -28,6 +28,7 @@ native `<select>` behavior).
 - ✅ Single and multiple selection with the `multiple` input.
 - ✅ Angular forms integration through `ControlValueAccessor`: Reactive Forms, `formControlName`, and `ngModel`.
 - ✅ Cancelable `onOpenChange` and `onValueChange` outputs with reason-aware `eventDetails`.
+- ✅ Imperative `close()` / `unmount()` actions and per-close deferred unmount for external animations.
 - ✅ Two positioning modes: Popper (Floating UI) and Item-aligned (native-like).
 - ✅ Optional popup arrow with shared positioning and open/closed, side, alignment and uncentered states.
 - ✅ Scroll buttons appear automatically when the list overflows the viewport.
@@ -167,6 +168,39 @@ the independently positioned popup.
 `closeInteractionType`, so app logic can distinguish keyboard, mouse, and touch flows explicitly.
 
 <Canvas of={Stories.Events} />
+
+### Deferred unmount and imperative actions
+
+Use `#select="rdxSelectRoot"` or a `viewChild(RdxSelectRoot)` query to call `close()` and `unmount()`.
+`close()` requests a cancelable close with reason `imperative-action` and returns whether it was
+accepted. Calling it while already closed does nothing. These methods adapt Base UI's `actionsRef`
+capabilities to Angular template references and view queries; a React ref object is unnecessary.
+
+In an accepted closing `onOpenChange` event, call `eventDetails.preventUnmountOnClose()` to retain
+the popup for an external animation. The logical `open` state still becomes `false`, and the popup
+has `data-closed` / `data-ending-style`. Its positioner is inert while closed, so retained options do
+not keep accepting selections. Finish the animation, then call `unmount()` to complete the closing
+phase and release the portal. The example runs a Web Animations API exit and completes closing
+automatically; **Finish exit** skips to the animation's end.
+
+The opt-out belongs to that accepted close. A canceled request or an opening request cannot retain a
+later close. A late call is accepted only while the same close is pending. Reopening clears it; a
+stale `unmount()` while open does nothing. Cancel an old application animation on reopening so its
+callback cannot finish a different, later close. Repeated `unmount()` calls do not repeat
+`onOpenChangeComplete(false)`. Calling `close(); unmount()` in one batch is also supported.
+
+Normal closing still waits for Presence to finish its CSS exit. Manual completion bypasses another
+exit wait, and `onOpenChangeComplete(false)` runs once after the close finishes. Focus returns to the
+trigger unless the user deliberately moved focus elsewhere.
+
+`<ng-template rdxSelectPortal [keepMounted]="true">` retains the view even after closing completes.
+Here `unmount()` ends the closing phase; it does not destroy a keep-mounted view. The positioner hides
+after closing completes and stops tracking its anchor. Reopening reuses the view and resolves the
+current selected item. Changing `keepMounted` is independent of the per-close animation opt-out.
+The shared lifecycle is documented in
+[ADR 0026](https://github.com/radix-ng/primitives/blob/main/docs/adr/0026-popup-close-lifecycle-and-presence.md).
+
+<Canvas of={Stories.DeferredUnmount} />
 
 ### Object values
 
@@ -369,6 +403,14 @@ while `openMethod`, `openInteractionType`, and `closeInteractionType` expose how
 or closed.
 
 <ArgTypes of={RdxSelectRoot} />
+
+| Action | Result | Behavior |
+| --- | --- | --- |
+| `close()` | `boolean` | Requests an `imperative-action` close through `onOpenChange`; returns `false` if canceled or already closed. |
+| `unmount()` | `void` | Completes a pending closing phase; ignored while open or already complete. |
+
+The methods are also described by the exported `RdxSelectRootActions` interface. `keepMounted` on
+`rdxSelectPortal` determines whether the view remains after close completion.
 
 ### RdxSelectTrigger
 
