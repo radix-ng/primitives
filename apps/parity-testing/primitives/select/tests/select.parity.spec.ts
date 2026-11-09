@@ -60,6 +60,45 @@ for (const scenario of scenarios) {
                 expected,
                 engine
             );
+            const sizingComparison: { name: string; metric: string; angular: number; react: number; delta: number }[] =
+                [];
+            if (scenario.compareSizing) {
+                const measured = ['initial sizing', 'expanded', 'height cap', 'reopened'];
+                for (const name of measured) {
+                    const a = angular.measurements.find((m) => m.name === name)?.bounds as
+                        | Record<string, any>
+                        | undefined;
+                    const b = react.measurements.find((m) => m.name === name)?.bounds as
+                        | Record<string, any>
+                        | undefined;
+                    if (!a && !b) continue;
+                    if (!a || !b) {
+                        failures.push(`Missing sizing checkpoint: ${name}`);
+                        continue;
+                    }
+                    for (const metric of [
+                        'positioner.x',
+                        'positioner.y',
+                        'positioner.width',
+                        'positioner.height',
+                        'popup.x',
+                        'popup.y',
+                        'popup.width',
+                        'popup.height',
+                        'scrollTop',
+                        'clientHeight'
+                    ]) {
+                        const read = (value: Record<string, any>) =>
+                            metric.split('.').reduce((v, key) => v[key], value) as number;
+                        const av = read(a),
+                            rv = read(b);
+                        const delta = Math.abs(av - rv);
+                        sizingComparison.push({ name, metric, angular: av, react: rv, delta });
+                        if (!Number.isFinite(delta) || delta > 2)
+                            failures.push(`Sizing ${name}/${metric}: Angular ${av}, Base UI ${rv}`);
+                    }
+                }
+            }
             for (const category of new Set<string>(comparison.differences.map((difference) => difference.category))) {
                 testInfo.annotations.push({ type: 'recorded-difference', description: category });
             }
@@ -85,6 +124,7 @@ for (const scenario of scenarios) {
                             measurements: react.measurements
                         },
                         failures,
+                        sizingComparison,
                         ...comparison
                     },
                     null,

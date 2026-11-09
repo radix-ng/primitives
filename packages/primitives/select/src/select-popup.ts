@@ -53,6 +53,9 @@ export interface RdxSelectPopupContext {
     isStationaryPointerMove: (event: PointerEvent) => boolean;
     setKeyboardActive: (value: boolean) => void;
     onViewportChange: (node: HTMLElement | undefined) => void;
+    onViewportScroll: (node: HTMLElement) => void;
+    canScrollUp: Signal<boolean>;
+    canScrollDown: Signal<boolean>;
     onItemLeave: () => void;
 }
 
@@ -80,6 +83,9 @@ const context = (): RdxSelectPopupContext => {
         onViewportChange: (node: HTMLElement | undefined) => {
             context.viewport.set(node);
         },
+        onViewportScroll: (node) => context.onViewportScroll(node),
+        canScrollUp: context.canScrollUp,
+        canScrollDown: context.canScrollDown,
         onItemLeave: () => {
             context.highlight.clear();
         }
@@ -93,6 +99,9 @@ export const [injectSelectPopupContext, provideSelectPopupContext] = createConte
 
 export interface RdxPositionerImpl {
     placed: OutputRef<void>;
+    onScroll?: (viewport: HTMLElement) => boolean | void;
+    readyToFocus?: Signal<boolean>;
+    isPositioned?: Signal<boolean>;
     /**
      * Whether **item-aligned** positioning is currently active (Base UI `alignItemWithTriggerActive`).
      * `true` only for the item-aligned positioner while open **and not touch-opened** — a touch open
@@ -110,10 +119,9 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
  *
  * Since ADR 0010 §6 the popup is the **inner** element (the positioner is its ancestor): it carries
  * `role="listbox"`, the `contentId`, and — via the composed {@link RdxPopperContent} — the
- * `data-side` / `data-align` attributes and the until-positioned animation guard previously held by
- * the deleted `rdxSelectPositionerContent`. `RdxPopperContent` also makes the popup the element the
- * `RdxPopperContentWrapper` ancestor reads its content z-index from. In item-aligned mode there is no
- * wrapper, so `RdxPopperContent` no-ops.
+ * `data-side` / `data-align` attributes and the until-positioned animation guard. Both positioner
+ * modes compose the common wrapper; its rendered side is `none` during item alignment. Initial
+ * geometry readiness only gates activation of the existing focus manager, which still owns focus.
  *
  * @group Components
  */
@@ -130,10 +138,13 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
         provideFloatingFocusManagerConfig(() => {
             const rootContext = injectSelectRootContext();
             const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+            const positioner = inject(RDX_SELECT_POSITIONER_TOKEN, { optional: true });
 
             return {
                 modal: () => false,
-                enabled: () => rootContext.open() || rootContext.transitionStatus() === 'ending',
+                enabled: () =>
+                    (rootContext.open() || rootContext.transitionStatus() === 'ending') &&
+                    (positioner?.readyToFocus?.() ?? true),
                 closeOnFocusOut: () => false,
                 // The listbox owns DOM focus; items are navigated virtually through aria-activedescendant.
                 initialFocus: () => host,
@@ -170,6 +181,8 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
         '[style]': `{
             display: rootContext.autofillProbe() && !rootContext.open() ? 'none' : 'flex',
             flexDirection: 'column',
+            flex: '1 1 auto',
+            minHeight: '0',
             outline: 'none'
         }`
     }
@@ -228,6 +241,8 @@ export class RdxSelectPopup {
     readonly viewport = signal<HTMLElement | undefined>(undefined);
 
     readonly isPositioned = signal(false);
+    readonly canScrollUp = signal(false);
+    readonly canScrollDown = signal(false);
 
     // Tracks whether the last interaction was the keyboard, so the highlight doesn't jump to an item
     // the cursor happens to rest on when arrow-key navigation scrolls the list.
@@ -265,7 +280,7 @@ export class RdxSelectPopup {
      * (Popper or item-aligned). We react to its `placed` to highlight and scroll the selected item
      * into view and flag the popup as positioned.
      */
-    private readonly positioner = inject(RDX_SELECT_POSITIONER_TOKEN, { optional: true });
+    protected readonly positioner = inject(RDX_SELECT_POSITIONER_TOKEN, { optional: true });
 
     constructor() {
         let populated = false;
@@ -286,6 +301,8 @@ export class RdxSelectPopup {
             if (!this.rootContext.open()) return;
             this.isPositioned.set(true);
             this.highlightSelectedItemAfterPositioned();
+            if (this.keyboardActive) this.scrollHighlightedIntoView();
+            this.updateScrollEdges();
         });
 
         this.focusManager.focusOut.subscribe((event) => {
@@ -352,6 +369,7 @@ export class RdxSelectPopup {
                     if (this.rootContext.open() && this.keyboardActive) {
                         this.scrollHighlightedIntoView();
                     }
+                    this.updateScrollEdges();
                 }
             });
         });
@@ -503,11 +521,24 @@ export class RdxSelectPopup {
     private scrollHighlightedIntoView() {
         const item = this.highlight.highlightedItem();
         const viewport = this.viewport();
-        if (!item || !viewport) return;
+        if (!item || !viewport || (this.positioner?.isPositioned && !this.positioner.isPositioned())) return;
         const items = this.items();
         if (item === items[0]) viewport.scrollTop = 0;
         else if (item === items.at(-1)) viewport.scrollTop = viewport.scrollHeight;
         else item.element.scrollIntoView?.({ block: 'nearest' });
+    }
+
+    onViewportScroll(viewport: HTMLElement) {
+        if (!this.positioner?.onScroll?.(viewport)) this.updateScrollEdges();
+    }
+
+    /** Both arrow parts read the same native metrics, including library-driven offset writes. */
+    updateScrollEdges() {
+        const viewport = this.viewport();
+        if (!viewport) return;
+        const max = Math.max(0, viewport.scrollHeight - viewport.clientHeight);
+        this.canScrollUp.set(viewport.scrollTop > 0);
+        this.canScrollDown.set(Math.ceil(viewport.scrollTop) < max);
     }
 
     private scrollSelectedIntoView() {

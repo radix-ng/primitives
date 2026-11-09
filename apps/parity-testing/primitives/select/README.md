@@ -16,7 +16,7 @@ Shared preparation, TypeScript tooling and commands are documented in the
 
 ## What is compared
 
-The 90 scenarios produce 254 comparisons and 16 capability skips: 78 desktop/dynamic/geometry cases in
+The 100 scenarios produce 284 comparisons and 16 capability skips: 88 desktop/dynamic/geometry cases in
 Chromium, Firefox and WebKit, eight touch-tap cases in Chromium/WebKit and four touch-gesture cases
 in Chromium. They exercise
 keyboard/typeahead, pointer/multiple selection, disabled/read-only states,
@@ -52,6 +52,13 @@ still apply to both implementations. The report preserves all raw observations e
   The hover checkpoint records the exact Angular `listScrolled: true` / React `false` pair; the
   reference also retains `item-0` highlight instead of clearing it on hover. Both fields are
   scoped to WebKit. The Angular Storybook hover check still has to pass. Native coordinates/deltas are retained.
+- `transformed-alignment-fallback`: in the two transformed item-aligned cases, Angular uses the
+  common anchored engine and stays in the viewport; the pin keeps item mode and overflows. Only
+  exact `itemAligned` / `popupWithinViewport` pairs are excepted; keyboard selection and form events
+  still match.
+- `retained-view-safety`: the explicit Angular retained view is mounted/inert initially and keeps
+  inert/highlight state after close, while the reference's ordinary Portal has different retention.
+  These are exact DOM pairs, not claims of a reference keepMounted API.
 - `dom-focus`: Angular focuses the popup and exposes virtual highlight; Base UI focuses an item.
   On removal of a focused option, Firefox/WebKit may leave native focus on body while Chromium
   focuses the replacement item. Those exact pairs are browser-scoped. Changing Angular's focus
@@ -84,8 +91,9 @@ still apply to both implementations. The report preserves all raw observations e
   gesture. Only the exact canceled sequences are exceptions; accepted-close callbacks, values,
   background activation, open state and wheel scrolling remain checked against both implementations.
 
-The pinned `Select.Portal` has no `keepMounted` prop. That comparison is explicitly excluded; Angular
-keep-mounted coverage stays in its existing unit and Storybook browser tests. The differential scope
+The pinned `Select.Portal` has no `keepMounted` prop. Equivalent-prop coverage is excluded. The sizing reopen case compares an explicit Angular retained
+view to the reference's normal open/close path, with exact safety differences recorded; additional
+Angular unit and Storybook checks still apply. The differential scope
 now includes desktop anchored/modal/item-aligned modes, whole-page RTL, emulated touch, dynamic
 data and the geometry constraints below. Pixel-identical sizing, animation timing and the remaining
 geometry/device gaps are not certified by these comparisons. Additional
@@ -208,7 +216,7 @@ nonempty list, navigate to both ends and commit the same value. Interior item te
 2 CSS pixels; RTL edge clamping checks block alignment and containment while retaining inline delta.
 Native wheel input scrolls the parent and checks anchored tracking. Portals must escape a clipping
 ancestor or mount in the requested custom host. Anchored portals include a transformed host;
-item-aligned portals do not yet cover transformed containing blocks.
+item-aligned transformed containing blocks are covered separately by the sizing safety cases.
 
 Hover tests use actual travel across the arrow and a controlled browser clock, then require scroll
 stop after leaving. The pin ignores WebKit's zero-delta native MouseEvents: its exact failed hover
@@ -220,10 +228,25 @@ layout changes. It owns scrolling instead of an unconditional duplicate effect i
 First/last keyboard targets include list padding. The helper's capability guard keeps browser-free
 rendering/tests valid; Angular destroys the observer with its view.
 
-Raw dimensions are evidence, not pixel-equivalence assertions. Legacy item-aligned height/expansion,
-collision margins and edge fallback still differ. Transformed item-aligned portals fail geometry in
-both implementations at this pin and remain a source-audit gap. Live ancestor scrolling during an
-open item-aligned session, pinch zoom and mobile visual viewport changes are further work.
+The original bounds checks do not assert identical dimensions. `sizing.scenarios.ts` adds ten cases:
+eight compare coordinates, panel/positioner dimensions, native offsets and client heights within 2
+CSS pixels; raw deltas live in `sizingComparison`. Shared assertions also cover native wheel growth
+in both directions, explicit max-height, short lists, edge fallback, no selection and retained reopen.
+The two transformed cases instead assert and record the exact safe-fallback/reference-overflow gap.
+Neither fixture writes model, focus, open state or completion to make geometry agree.
+
+Both visual panels use equivalent consumer constraints; anchored heights are capped through their
+rendered side, while item-aligned height is allowed to expand. Popup/Content remain separate Angular
+parts. Popper supplies both modes' initial measurements and the entire fallback/arrow engine;
+Select's initial/expansion arithmetic is pure and local. A single rendered-side writer prevents
+competing host-directive attributes from applying anchored max-height to an item-aligned panel.
+Popup owns shared scroll-edge state, including native/library scroll writes and ResizeObserver.
+Readiness activates the existing focus manager after the layout settles; no direct focus is forced.
+
+Live ancestor changes while aligned, broader CSS/scale and nested modal portal configurations,
+actual pinch zoom/mobile visual viewport changes, AT and saved profiles remain further work. The
+Angular Storybook suite independently checks pending-measurement close/reopen and in-flow buttons;
+different framework completion timing is not a shared pre-placement phase boundary.
 
 ## Evidence and CI
 

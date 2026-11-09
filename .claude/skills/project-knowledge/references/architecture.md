@@ -84,9 +84,16 @@ retains the previous default (Select `PARITY.md`).
 Select Popup owns scrolling to the keyboard highlight. The shared `resizeEffect` observes the list
 so scroll-button layout changes cannot cover the active option; first/last items include list
 padding. Do not add unconditional highlight-scroll effects to individual buttons. The common resize
-helper tolerates an unavailable ResizeObserver. Geometry fixtures exercise bounds and navigation,
-not pixel-identical legacy item-aligned sizing. Transformed item-aligned portal containers remain a
-tracked gap; native WebKit hover differences from the pinned reference are explicitly scoped.
+helper tolerates an unavailable ResizeObserver. Popup also owns scroll-edge signals shared by both
+arrow parts; refresh them after native/library offset writes rather than relying on separate arrow
+listeners. Item alignment now composes the common Popper wrapper for measurement, collision fallback
+and arrow geometry (ADR 0030). A pure Select helper owns initial sizing and scroll expansion; native
+height/offset writes are atomic. Render phases settle in-flow chrome before enabling the existing
+focus manager. Request versions discard stale placement, and retained reopening measures afresh.
+Rendered content side is separate from physical anchor-engine side; keep a single attribute writer.
+Numeric geometry cases use a 2px tolerance. Transformed containers use a safe anchored fallback,
+with the pin's overflow explicitly recorded; broader scale/modal and real-device coverage remains
+open. Native WebKit hover differences from the pin remain explicitly scoped.
 
 **Pointer movement:** core `createPointerMoveGuard` tracks scope-local viewport coordinates to
 distinguish real travel from stationary scroll/leave events, including real WebKit travel with zero

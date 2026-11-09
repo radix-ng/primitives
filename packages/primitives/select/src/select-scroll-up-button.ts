@@ -1,4 +1,4 @@
-import { Directive, effect, inject, signal } from '@angular/core';
+import { Directive, inject } from '@angular/core';
 import { injectSelectPopupContext } from './select-popup';
 import { RdxSelectScrollButtonBase } from './select-scroll-button-base';
 
@@ -12,7 +12,7 @@ import { RdxSelectScrollButtonBase } from './select-scroll-button-base';
 export class RdxSelectScrollUpButton {
     private readonly contentContext = injectSelectPopupContext();
 
-    readonly canScrollUp = signal<boolean>(false);
+    readonly canScrollUp = this.contentContext.canScrollUp;
 
     constructor() {
         inject(RdxSelectScrollButtonBase).autoScroll.subscribe(() => {
@@ -20,21 +20,6 @@ export class RdxSelectScrollUpButton {
 
             if (viewport() && selectedItem()) {
                 viewport()!.scrollTop = viewport()!.scrollTop - selectedItem()!.offsetHeight;
-            }
-        });
-
-        effect((cleanup) => {
-            if (this.contentContext.viewport() && this.contentContext.isPositioned()) {
-                const viewport = this.contentContext.viewport()!;
-
-                const handleScroll = () => {
-                    this.canScrollUp.set(viewport.scrollTop > 0);
-                };
-
-                handleScroll();
-                viewport.addEventListener('scroll', handleScroll);
-
-                cleanup(() => viewport.removeEventListener('scroll', handleScroll));
             }
         });
     }

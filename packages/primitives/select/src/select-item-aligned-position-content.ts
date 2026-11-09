@@ -6,7 +6,10 @@ import { Directive, ElementRef, inject } from '@angular/core';
         '[style]': `{
             boxSizing: 'border-box',
             display: 'flex',
-            flexDirection: 'column'
+            flexDirection: 'column',
+            flex: '1 1 auto',
+            minHeight: '0',
+            overflow: 'hidden'
         }`
     }
 })

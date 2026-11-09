@@ -95,6 +95,42 @@ export const ViewportEdges: Story = {
     })
 };
 
+export const SizingAndFallback: Story = {
+    parameters: source(viewportEdgesSource),
+    args: {
+        edge: 'middle',
+        dir: 'ltr',
+        initialIndex: 0,
+        capped: false,
+        transformed: false,
+        keepMounted: false,
+        showArrow: true
+    },
+    argTypes: {
+        edge: { control: 'select', options: ['top', 'middle', 'bottom', 'near-top'] },
+        dir: { control: 'select', options: ['ltr', 'rtl'] },
+        initialIndex: { control: { type: 'number', min: 0, max: 39 } },
+        capped: { control: 'boolean' },
+        transformed: { control: 'boolean' },
+        keepMounted: { control: 'boolean' },
+        showArrow: { control: 'boolean' }
+    },
+    render: (args) => ({
+        props: args,
+        template: html`
+            <select-viewport-edges
+                [edge]="edge"
+                [dir]="dir"
+                [initialIndex]="initialIndex"
+                [capped]="capped"
+                [transformed]="transformed"
+                [keepMounted]="keepMounted"
+                [showArrow]="showArrow"
+            />
+        `
+    })
+};
+
 export const DynamicOptions: Story = {
     parameters: source(dynamicOptionsSource),
     render: () => ({

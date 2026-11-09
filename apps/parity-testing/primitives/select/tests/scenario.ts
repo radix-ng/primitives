@@ -6,5 +6,6 @@ export interface Scenario {
     fixture: CaseName;
     input?: 'touch-tap' | 'touch-gesture';
     viewport?: { width: number; height: number };
+    compareSizing?: boolean;
     run(driver: SelectDriver): Promise<void>;
 }

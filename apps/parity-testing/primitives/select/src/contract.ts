@@ -174,14 +174,16 @@ export function fixtureConfig(): FixtureConfig {
         ];
     const geometry = geometryConfig(name);
     if (geometry)
-        options = Array.from({ length: 40 }, (_, i) => ({
+        options = Array.from({ length: geometry.optionCount }, (_, i) => ({
             key: `item-${i}`,
             label: `Item ${String(i).padStart(2, '0')}`,
             value: `item-${i}`
         }));
     const multiple = name === 'multiple' || name === 'typeahead-multiple' || name === 'dynamic-multiple';
     const initial = geometry
-        ? options[geometry.selectedIndex].value
+        ? geometry.selectedIndex === null
+            ? null
+            : options[geometry.selectedIndex].value
         : name.startsWith('aligned')
           ? options[1].value
           : name === 'typeahead-no-selection'

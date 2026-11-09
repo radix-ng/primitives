@@ -19,6 +19,8 @@ export interface Snapshot {
     pageScrolled: boolean;
     direction: string;
     listScrolled?: boolean;
+    itemAligned?: boolean;
+    popupWithinViewport?: boolean;
 }
 export interface Checkpoint {
     name: string;
@@ -323,6 +325,33 @@ export class SelectDriver {
         }
     }
 
+    async sizing(name: string) {
+        const bounds = await this.page.evaluate(() => {
+            const positioner = document.querySelector<HTMLElement>('[data-testid="positioner"]')!;
+            const popup = document.querySelector<HTMLElement>('[data-testid="popup"]')!;
+            const panel = popup.querySelector<HTMLElement>('[rdxSelectItemAlignedPositionContent]') ?? popup;
+            const list = document.querySelector<HTMLElement>('[data-testid="list"]')!;
+            return {
+                positioner: positioner.getBoundingClientRect().toJSON(),
+                popup: panel.getBoundingClientRect().toJSON(),
+                trigger: document.querySelector('[data-testid="trigger"]')!.getBoundingClientRect().toJSON(),
+                scrollTop: list.scrollTop,
+                scrollHeight: list.scrollHeight,
+                clientHeight: list.clientHeight,
+                side: positioner.getAttribute('data-side')
+            };
+        });
+        this.measurements.push({ name, bounds });
+        return bounds;
+    }
+
+    async wheelList(delta: number) {
+        const box = (await this.page.getByTestId('list').boundingBox())!;
+        // Use the list's padding so wheel geometry is not coupled to hovering a particular row.
+        await this.page.mouse.move(box.x + 1, box.y + box.height / 2);
+        await this.page.mouse.wheel(0, delta);
+    }
+
     async geometry(name: string, option?: string): Promise<void> {
         let bounds: unknown;
         try {
@@ -334,7 +363,9 @@ export class SelectDriver {
                         const selected = option
                             ? document.querySelector<HTMLElement>(`[data-option-key="${option}"]`)
                             : popup.querySelector<HTMLElement>('[aria-selected="true"]');
-                        const p = popup.getBoundingClientRect();
+                        const panel =
+                            popup.querySelector<HTMLElement>('[rdxSelectItemAlignedPositionContent]') ?? popup;
+                        const p = panel.getBoundingClientRect();
                         const l = list.getBoundingClientRect();
                         const s = selected?.getBoundingClientRect();
                         return {
@@ -358,69 +389,93 @@ export class SelectDriver {
         }
     }
 
-    async checkpoint(name: string, expected: Partial<Snapshot> = {}, listScrollBaseline?: number): Promise<void> {
+    async checkpoint(
+        name: string,
+        expected: Partial<Snapshot> = {},
+        listScrollBaseline?: number,
+        geometryState = false
+    ): Promise<void> {
         // Wait for observable state to stabilize, without forcing focus, values or completion callbacks.
-        const state = await this.page.evaluate(async (listScrollBaseline) => {
-            const read = (): Snapshot => {
-                const trigger = document.querySelector<HTMLElement>('[data-testid="trigger"]')!;
-                const popup = document.querySelector<HTMLElement>('[data-testid="popup"]');
-                const active = document.activeElement;
-                const option = active?.closest<HTMLElement>('[data-option-key]');
-                const style = popup && getComputedStyle(popup);
-                const options = [...document.querySelectorAll<HTMLElement>('[data-option-key]')];
-                return {
-                    ...(listScrollBaseline === undefined
-                        ? {}
-                        : {
-                              listScrolled:
-                                  (document.querySelector<HTMLElement>('[data-testid="list"]')?.scrollTop ?? 0) >
-                                  listScrollBaseline
-                          }),
-                    open: trigger.getAttribute('aria-expanded') === 'true',
-                    label: trigger.textContent!.trim().replace(/\s+/g, ' '),
-                    disabled: trigger.hasAttribute('disabled'),
-                    readOnly: trigger.getAttribute('aria-readonly') === 'true',
-                    controlsLinked: !!document.getElementById(trigger.getAttribute('aria-controls') ?? ''),
-                    popupMounted: !!popup,
-                    popupVisible:
-                        !!popup &&
-                        !!popup.getClientRects().length &&
-                        style!.visibility !== 'hidden' &&
-                        style!.display !== 'none',
-                    inert: !!popup?.closest('[inert]'),
-                    selected: options
-                        .filter((node) => node.getAttribute('aria-selected') === 'true')
-                        .map((node) => node.dataset.optionKey!),
-                    highlighted: options
-                        .filter((node) => node.hasAttribute('data-highlighted'))
-                        .map((node) => node.dataset.optionKey!),
-                    focus: option
-                        ? `option:${option.dataset.optionKey}`
-                        : active === popup
-                          ? 'popup'
-                          : active === document.body
-                            ? 'body'
-                            : (active?.getAttribute('data-testid') ?? 'other'),
-                    entries: [
-                        ...new FormData(document.querySelector<HTMLFormElement>('[data-testid="form"]')!).entries()
-                    ].map(([key, value]) => [key, String(value)]),
-                    events: window.parity.events,
-                    backgroundActivations: window.parity.backgroundActivations,
-                    pageScrolled: window.scrollY > 0,
-                    direction: getComputedStyle(trigger).direction
+        const state = await this.page.evaluate(
+            async ({ listScrollBaseline, geometryState }) => {
+                const read = (): Snapshot => {
+                    const trigger = document.querySelector<HTMLElement>('[data-testid="trigger"]')!;
+                    const popup = document.querySelector<HTMLElement>('[data-testid="popup"]');
+                    const active = document.activeElement;
+                    const option = active?.closest<HTMLElement>('[data-option-key]');
+                    const style = popup && getComputedStyle(popup);
+                    const options = [...document.querySelectorAll<HTMLElement>('[data-option-key]')];
+                    const panel = popup?.querySelector<HTMLElement>('[rdxSelectItemAlignedPositionContent]') ?? popup;
+                    const bounds = geometryState ? panel?.getBoundingClientRect() : undefined;
+                    return {
+                        ...(geometryState
+                            ? {
+                                  itemAligned:
+                                      document
+                                          .querySelector('[data-testid="positioner"]')
+                                          ?.getAttribute('data-side') === 'none',
+                                  popupWithinViewport:
+                                      !!bounds &&
+                                      bounds.top >= -2 &&
+                                      bounds.left >= -2 &&
+                                      bounds.right <= innerWidth + 2 &&
+                                      bounds.bottom <= innerHeight + 2
+                              }
+                            : {}),
+                        ...(listScrollBaseline === undefined
+                            ? {}
+                            : {
+                                  listScrolled:
+                                      (document.querySelector<HTMLElement>('[data-testid="list"]')?.scrollTop ?? 0) >
+                                      listScrollBaseline
+                              }),
+                        open: trigger.getAttribute('aria-expanded') === 'true',
+                        label: trigger.textContent!.trim().replace(/\s+/g, ' '),
+                        disabled: trigger.hasAttribute('disabled'),
+                        readOnly: trigger.getAttribute('aria-readonly') === 'true',
+                        controlsLinked: !!document.getElementById(trigger.getAttribute('aria-controls') ?? ''),
+                        popupMounted: !!popup,
+                        popupVisible:
+                            !!popup &&
+                            !!popup.getClientRects().length &&
+                            style!.visibility !== 'hidden' &&
+                            style!.display !== 'none',
+                        inert: !!popup?.closest('[inert]'),
+                        selected: options
+                            .filter((node) => node.getAttribute('aria-selected') === 'true')
+                            .map((node) => node.dataset.optionKey!),
+                        highlighted: options
+                            .filter((node) => node.hasAttribute('data-highlighted'))
+                            .map((node) => node.dataset.optionKey!),
+                        focus: option
+                            ? `option:${option.dataset.optionKey}`
+                            : active === popup
+                              ? 'popup'
+                              : active === document.body
+                                ? 'body'
+                                : (active?.getAttribute('data-testid') ?? 'other'),
+                        entries: [
+                            ...new FormData(document.querySelector<HTMLFormElement>('[data-testid="form"]')!).entries()
+                        ].map(([key, value]) => [key, String(value)]),
+                        events: window.parity.events,
+                        backgroundActivations: window.parity.backgroundActivations,
+                        pageScrolled: window.scrollY > 0,
+                        direction: getComputedStyle(trigger).direction
+                    };
                 };
-            };
-            let previous = '';
-            let stable = 0;
-            for (let frame = 0; frame < 120; frame++) {
-                await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
-                const json = JSON.stringify(read());
-                stable = json === previous ? stable + 1 : 0;
-                if (stable === 3) return JSON.parse(json) as Snapshot;
-                previous = json;
-            }
-            throw new Error('Fixture did not settle within 120 animation frames');
-        }, listScrollBaseline);
+                let previous = '';
+                let stable = 0;
+                for (let frame = 0; frame < 120; frame++) {
+                    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+                    const json = JSON.stringify(read());
+                    stable = json === previous ? stable + 1 : 0;
+                    if (stable === 3) return JSON.parse(json) as Snapshot;
+                    previous = json;
+                }
+                throw new Error('Fixture did not settle within 120 animation frames');
+            },
+            { listScrollBaseline, geometryState }
+        );
         this.checkpoints.push({ name, state });
         for (const event of state.events) {
             if (event.type === 'value')

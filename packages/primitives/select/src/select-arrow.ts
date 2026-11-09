@@ -1,5 +1,5 @@
 import { computed, Directive, effect, inject } from '@angular/core';
-import { RdxPopperArrow, RdxPopperContentWrapper, useFixedArrowPosition } from '@radix-ng/primitives/popper';
+import { RdxPopperArrow, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
 import { RdxSelectItemAlignedPosition } from './select-item-aligned-position';
 import { RDX_SELECT_POSITIONER_TOKEN } from './select-popup';
 import { injectSelectRootContext } from './select-root';
@@ -29,7 +29,7 @@ export class RdxSelectArrow {
     protected readonly arrow = inject(RdxPopperArrow);
 
     protected readonly side = computed(() =>
-        this.wrapper ? this.wrapper.placedSide() : this.arrow.positioningEnabled() ? 'bottom' : 'none'
+        !this.arrow.positioningEnabled() ? 'none' : this.wrapper ? this.wrapper.placedSide() : 'bottom'
     );
     protected readonly align = computed(() => (this.wrapper ? this.wrapper.placedAlign() : 'start'));
 
@@ -37,17 +37,6 @@ export class RdxSelectArrow {
         if (this.positioner instanceof RdxSelectItemAlignedPosition) {
             const positioner = this.positioner;
             this.arrow.positioningEnabled.set(false);
-            this.arrow.positioningContext.set(
-                useFixedArrowPosition({
-                    enabled: () => this.rootContext.open() && !positioner.alignItemWithTriggerActive(),
-                    anchor: this.rootContext.triggerElement,
-                    floating: positioner.contentWrapperElement,
-                    arrow: this.arrow.elementRef.nativeElement,
-                    side: 'bottom',
-                    align: 'start',
-                    placed: positioner.placed
-                })
-            );
             effect(() => {
                 // Preserve the final geometry through exit; open=false alone must not reveal an
                 // item-aligned arrow while presence is waiting for the popup's closing animation.

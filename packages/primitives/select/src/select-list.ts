@@ -1,4 +1,4 @@
-import { afterNextRender, Directive, ElementRef, inject, signal } from '@angular/core';
+import { afterNextRender, Directive, ElementRef, inject } from '@angular/core';
 import { injectSelectPopupContext } from './select-popup';
 
 @Directive({
@@ -19,8 +19,6 @@ export class RdxSelectList {
     private readonly contentContext = injectSelectPopupContext();
     private readonly elementRef = inject(ElementRef<HTMLElement>);
 
-    private readonly prevScrollTopRef = signal(0);
-
     constructor() {
         afterNextRender(() => {
             this.contentContext?.onViewportChange(this.elementRef.nativeElement);
@@ -28,8 +26,6 @@ export class RdxSelectList {
     }
 
     handleScroll(event: Event) {
-        const viewport = event.currentTarget as HTMLElement;
-
-        this.prevScrollTopRef.set(viewport.scrollTop);
+        this.contentContext.onViewportScroll(event.currentTarget as HTMLElement);
     }
 }

@@ -5,6 +5,7 @@ import { dynamicScenarios } from './dynamic.scenarios';
 import { geometryScenarios } from './geometry.scenarios';
 import { positioningScenarios } from './positioning.scenarios';
 import type { Scenario } from './scenario';
+import { sizingScenarios } from './sizing.scenarios';
 import { touchScenarios } from './touch.scenarios';
 import { typeaheadScenarios } from './typeahead.scenarios';
 
@@ -14,6 +15,7 @@ export const scenarios: Scenario[] = [
     ...positioningScenarios,
     ...dynamicScenarios,
     ...geometryScenarios,
+    ...sizingScenarios,
     ...touchScenarios,
     {
         name: 'keyboard and typeahead',

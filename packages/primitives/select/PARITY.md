@@ -6,9 +6,9 @@ Audited on 2026-11-08; close-lifecycle, focus-policy and arbitrary-Value increme
 reproducible reference. Its package version is 1.9.0; it is not the release tag itself.
 
 This is an API/source audit with linked regression coverage, **not a certification of complete
-behavioral parity**. A shared React/Angular differential runner now defines 90 scenarios:
-78 desktop/dynamic/geometry cases in all three engines, eight tap cases in Chromium/WebKit,
-and four native touch-gesture cases in Chromium (254 comparisons; 16 capability skips).
+behavioral parity**. A shared React/Angular differential runner now defines 100 scenarios:
+88 desktop/dynamic/geometry cases in all three engines, eight tap cases in Chromium/WebKit,
+and four native touch-gesture cases in Chromium (284 comparisons; 16 capability skips).
 It checks this pin and records exact known differences ([runner documentation](../../../apps/parity-testing/primitives/select/README.md),
 [ADR 0029](../../../docs/adr/0029-select-differential-behavior-checks.md)). Rows marked as gaps remain open.
 
@@ -21,7 +21,7 @@ during item alignment and returns in the anchored touch/pinch-zoom fallback.
 | Contract                                           | Angular implementation                                                                                                                           | Evidence / remaining difference                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Compound parts                                     | Root, Trigger, Value, Icon, Portal, Positioner, Popup, List, Item, ItemText, ItemIndicator, Group, GroupLabel, Separator, Backdrop, Label, Arrow | Same roles; `ScrollUpButton` / `ScrollDownButton` correspond to upstream ScrollUpArrow / ScrollDownArrow. Angular also exposes the legacy item-aligned positioning parts.                                                                                                                                                                                                                                                                                                                                              |
-| `Arrow`                                            | `rdxSelectArrow`, composed from `RdxPopperArrow`                                                                                                 | `select-arrow.spec.ts`, `select-arrow.behavior.spec.ts`: placement, dimensions, states, logical sides, collision/uncentered visibility, item-aligned hiding, anchored touch fallback and cleanup. The fallback computes only arrow geometry with the shared Floating UI middleware; item-aligned popup coordinates remain owned by its positioner.                                                                                                                                                                     |
+| `Arrow`                                            | `rdxSelectArrow`, composed from `RdxPopperArrow`                                                                                                 | `select-arrow.spec.ts`, `select-arrow.behavior.spec.ts`: placement, dimensions, states, logical sides, collision/uncentered visibility, item-aligned hiding, anchored touch fallback and cleanup. Both positioners now compose the same Popper engine; fallback arrows use its actual flipped side and geometry (ADR 0030).                                                                                                                                                                                            |
 | `Value`, `Multiple` type parameters                | Generic Root, Item and value-change events; `unknown` defaults                                                                                   | `tools/typecheck/select`: strict AOT accepts typed single/multiple consumers and rejects ten invalid bindings. Specify the mode for TypeScript references; templates infer from typed bindings/callbacks. Angular DI does not check an independent child's generic against Root.                                                                                                                                                                                                                                       |
 | Arbitrary item value types                         | Unconstrained Root/Item, descriptors, metadata and contexts                                                                                      | `select-arbitrary-values.spec.ts`, `select-values.behavior.spec.ts`, AOT and SSR: falsy values, Dates, symbols, functions, single/multiple arrays, native submission/reset and autofill. Shared null-safe equality and explicit-mode serialization are recorded in ADR 0028. **Migration:** unparameterized references use unknown; an array in single mode is one item.                                                                                                                                               |
 | `multiple`                                         | One Root; single value or array according to the mode                                                                                            | `select-typed-wrapper.spec.ts`; Angular boolean attribute coercion is retained.                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -131,7 +131,7 @@ does not invent a pointer gesture. The ordinary close/reopen typeahead scenario 
 completion; the existing deferred fast-reopen scenario still tests cancellation of pending completion.
 
 **Migration:** the anchored Positioner default changes from `start` to Base UI's `center`. Set
-`align="start"` explicitly to retain edge alignment. The separate item-aligned positioner is unchanged.
+`align="start"` explicitly to retain edge alignment. The later item-alignment migration is recorded below and in ADR 0030.
 
 One additional difference is recorded explicitly: after an outside request is canceled, the pinned
 React implementation reports both `pointerdown` and compatibility `mousedown` requests; Angular's
@@ -192,7 +192,7 @@ Thirteen new differential scenarios cover long lists near the top/bottom/right e
 RTL alignment, `overflow` clipping, scrolled parents, custom portal containers and scroll-arrow
 start/stop. Native wheel input changes the ancestor before opening and verifies that an anchored
 popup follows a moving trigger while open. Anchored custom portals also exercise a transformed
-containing block. Item-aligned custom portals currently use an untransformed container.
+containing block. The sizing increment below adds item-aligned transformed-container safety cases.
 
 Common assertions require viewport containment, a usable list, visible selected/highlighted items,
 correct Home/End selection and unchanged form/event contracts. Selected text aligns within 2 CSS
@@ -214,19 +214,45 @@ The same guarded handler leaves the reference's `item-0` highlight active; that 
 scoped to the same engine/checkpoint too.
 Angular's WebKit hover/stop behavior remains required by the Storybook test.
 
-**Still open:** the legacy item-aligned algorithm differs in sizing, scroll expansion and edge
-fallback from Base UI. A transformed custom container exposes incorrect item-aligned geometry in
-both implementations at this pin; this remains a tracked gap, not a passing geometry scenario.
-Changing container scroll _while item-aligned mode is open_, real pinch zoom and mobile visual
-viewport movement also need further differential/device evidence.
+## Item-aligned sizing, expansion and anchored fallback
+
+Ten additional scenarios cover expansion in both directions, max-height constraints, edge fallback,
+short intrinsic lists, no selection, retained reopening and transformed LTR/RTL portals. Eight compare
+positioner/panel coordinates, dimensions, scroll offset and list client height within **2 CSS pixels**,
+with every delta retained in the report. The two transformed cases record the pin's overflow and
+Angular's safe anchored fallback as exact `transformed-alignment-fallback` observations.
+
+`RdxSelectItemAlignedPosition` now composes `RdxPopperContentWrapper`: initial measurements, offsets,
+collision handling, fallback tracking and arrow geometry share the engine used by anchored Select.
+Initial sizing and scroll expansion remain a pure Select policy derived from the pinned source.
+Angular render phases settle in-flow arrow chrome before the existing focus manager activates;
+request versions reject stale measurements after close/reopen. The positioner never moves focus.
+Popup owns both scroll-edge signals and refreshes them after library writes, native scroll and resize.
+Native scroll expansion applies height/offset atomically before updating arrow visibility.
+
+Touch, pinch zoom, viewport/min-height collisions and fixed containing blocks use the common anchored
+fallback. A transformed container is an intentional Angular adaptation: it cannot use viewport item
+coordinates safely. Its placement and keyboard selection are tested; nested modal stacking, arbitrary
+scales and real mobile visual viewport movement still require further checks. Angular retained views
+remain inert with retained highlight during closing; `retained-view-safety` records the exact DOM
+pairs against the reference's default retention (its Portal still has no equivalent keepMounted prop).
+
+**Migration:** large item-aligned lists now expand on scroll; short lists retain intrinsic height.
+The fallback inherits Popper inputs, defaults to center alignment, can flip above the trigger, and
+reports the actual side on Arrow. Inline collision padding is 5px. Keep z-index on the positioner;
+the extra Angular Popup/Content wrappers now carry their functional flex constraints. The old internal
+fixed-arrow-only helper is removed. Existing selectors and Angular form ownership remain intact.
+See [ADR 0030](../../../docs/adr/0030-select-item-alignment-and-anchored-fallback.md) and the
+**Sizing And Fallback** Storybook example. Angular browser checks also cover an early close during
+measurement, native wheel growth, in-flow initial text alignment and retained view identity.
 
 ## Next parity increments
 
-| Order | Work                             | Shared boundary / completion evidence                                                                                                                                                   |
-| ----- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1     | Default focus policy / real AT   | Browser coverage and opt-in are available (ADR 0027). Compare virtual vs item focus and run the documented real-screen-reader scenarios before changing the default.                    |
-| 2     | Behavioral equivalence           | 90 pinned scenarios include viewport/scroll/clipping constraints. Next: item-aligned sizing/expansion and transformed containing blocks, then closed/unmounted data changes (ADR 0029). |
-| 3     | Real devices and native autofill | Desktop automation covers the bridge and Storybook modes. Verify real Safari/devices, saved-profile autofill and assistive technology separately.                                       |
+| Order | Work                             | Shared boundary / completion evidence                                                                                                                                                                     |
+| ----- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1     | Default focus policy / real AT   | Browser coverage and opt-in are available (ADR 0027). Compare virtual vs item focus and run the documented real-screen-reader scenarios before changing the default.                                      |
+| 2     | Behavioral equivalence           | 100 pinned scenarios include numeric sizing/expansion and safe fallback. Next: live aligned ancestor changes, broader CSS/scale and modal-container coverage, then closed/unmounted data (ADR 0029/0030). |
+| 3     | Real devices and native autofill | Desktop automation covers the bridge and Storybook modes. Verify real Safari/devices, saved-profile autofill and assistive technology separately.                                                         |
 
 Rows with an implemented API still carry the verification limitations listed above. Completing a part
 or a shared helper does not certify complete behavioral parity.

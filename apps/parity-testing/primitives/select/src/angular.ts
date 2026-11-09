@@ -20,6 +20,7 @@ import {
     OptionAction,
     optionActions
 } from './contract';
+import { anchoredHeightClass } from './geometry';
 
 const config = fixtureConfig();
 document.documentElement.dir = config.dir;
@@ -71,17 +72,32 @@ document.documentElement.dir = config.dir;
                         {{ display.slotText() }}
                     </span>
                 </button>
-                <ng-template [container]="config.geometry?.customPortal ? portalHost : undefined" rdxSelectPortal>
+                <ng-template
+                    [container]="config.geometry?.customPortal ? portalHost : undefined"
+                    [keepMounted]="config.geometry?.retained ?? false"
+                    rdxSelectPortal
+                >
                     @if (config.aligned) {
-                        <div [class]="s.positioner" data-testid="positioner" rdxSelectItemAlignedPosition>
+                        <div
+                            [class]="s.positioner + ' pointer-events-auto'"
+                            align="start"
+                            sideOffset="5"
+                            data-testid="positioner"
+                            rdxSelectItemAlignedPosition
+                        >
                             <div
-                                [class]="config.geometry ? 'min-h-0 flex-1' : ''"
+                                [class]="config.geometry ? 'min-h-0 flex-1' + anchoredHeightClass : ''"
                                 [closeOnFocusOut]="config.closeOnFocusOut"
                                 data-testid="popup"
                                 rdxSelectPopup
                             >
                                 <div
-                                    [class]="s.popup + (config.geometry ? ' min-h-0 flex-1 overflow-hidden' : '')"
+                                    [class]="
+                                        s.popup +
+                                        (config.geometry
+                                            ? ' min-h-0 flex-1 overflow-hidden' + config.geometry.heightClass
+                                            : '')
+                                    "
                                     rdxSelectItemAlignedPositionContent
                                 >
                                     @if (config.geometry?.arrows) {
@@ -208,6 +224,7 @@ document.documentElement.dir = config.dir;
     `
 })
 class AngularSelectFixture {
+    readonly anchoredHeightClass = anchoredHeightClass;
     readonly s = demoSelect;
     readonly config = config;
     readonly listClass =

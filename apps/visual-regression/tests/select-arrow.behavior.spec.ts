@@ -95,7 +95,7 @@ test('item alignment hides the arrow; a touch fallback restores and positions it
     await trigger.dispatchEvent('pointerup', { pointerType: 'touch', pointerId: 1, button: 0 });
     await expect(arrow).toBeVisible();
     await expect(arrow).toHaveAttribute('data-side', 'bottom');
-    await expect(arrow).toHaveAttribute('data-align', 'start');
+    await expect(arrow).toHaveAttribute('data-align', 'center');
     await expect
         .poll(() =>
             arrow.evaluate((element) => {

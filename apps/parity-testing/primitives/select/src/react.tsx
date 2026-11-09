@@ -14,6 +14,7 @@ import {
     OptionAction,
     optionActions
 } from './contract';
+import { anchoredHeightClass } from './geometry';
 
 const config = fixtureConfig();
 document.documentElement.dir = config.dir;
@@ -96,7 +97,7 @@ function ReactSelectFixture() {
                         </Select.Trigger>
                         <Select.Portal container={config.geometry?.customPortal ? portalHost : undefined}>
                             <Select.Positioner
-                                className={demoSelect.positioner}
+                                className={demoSelect.positioner + ' pointer-events-auto'}
                                 sideOffset={5}
                                 align={config.name === 'anchor-default' ? undefined : 'start'}
                                 alignItemWithTrigger={config.aligned}
@@ -108,7 +109,9 @@ function ReactSelectFixture() {
                                             ? demoSelect.popup + ' w-48 min-w-48!'
                                             : demoSelect.popup) +
                                         (config.geometry
-                                            ? ' flex max-h-[var(--available-height)] min-h-0 flex-col overflow-hidden'
+                                            ? ' flex min-h-0 flex-col overflow-hidden' +
+                                              config.geometry.heightClass +
+                                              anchoredHeightClass
                                             : '')
                                     }
                                     data-testid="popup"

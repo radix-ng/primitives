@@ -253,6 +253,24 @@ highlight visible after layout settles. Hovering an option does not scroll the l
 
 <Canvas of={Stories.ViewportEdges} />
 
+### Sizing and anchored fallback
+
+Item-aligned lists start at the height needed to align the selected text. Native scrolling expands
+long lists until the viewport or a custom `max-height` is reached; short lists keep intrinsic height.
+The extra Angular content wrapper supplies the flex constraints needed for scrolling.
+
+Touch, pinch zoom, proximity to a viewport edge and transformed portal containers use the common
+anchored engine. The item-aligned part inherits `side`, `align`, offsets and collision inputs for
+that fallback; alignment defaults to center. `data-side="none"` identifies item alignment. An anchored
+fallback reports its actual side, and the optional arrow follows flips above/below the trigger.
+
+Try the initial item, height cap, transformed portal and retained-view controls below. F10 closes
+the popup; reopening recalculates geometry for the current selection. Application values and focus
+remain owned by Root and the existing focus manager.
+
+<Canvas of={Stories.SizingAndFallback} />
+
+
 ### Focus management
 
 The popup owns DOM focus and uses `aria-activedescendant` for virtual navigation. Arrow keys and

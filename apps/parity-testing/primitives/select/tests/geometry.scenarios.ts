@@ -1,40 +1,42 @@
 import { expect } from '@playwright/test';
-import { geometryNames } from '../src/geometry';
+import { geometryNames, sizingNames } from '../src/geometry';
 import type { Scenario } from './scenario';
 
-export const geometryScenarios: Scenario[] = geometryNames.map((fixture) => ({
-    name: `geometry: ${fixture.slice('geometry-'.length)}`,
-    fixture,
-    viewport: { width: 640, height: 480 },
-    async run(d) {
-        if (fixture.endsWith('-scroll')) await d.scrollAncestor();
-        await d.open();
-        await d.geometry('initial layout');
-        if (fixture === 'geometry-aligned-middle' || fixture === 'geometry-aligned-rtl')
-            await d.alignment('selected text in constrained viewport', 'item', fixture === 'geometry-aligned-rtl');
-        await d.checkpoint('positioned', { open: true });
-        if (fixture === 'geometry-anchor-scroll') {
-            await d.scrollAncestor();
-            await d.anchorGap('follows scrolling anchor');
-            await d.checkpoint('ancestor scrolled', { open: true });
+export const geometryScenarios: Scenario[] = geometryNames
+    .filter((name) => !sizingNames.some((sizing) => sizing === name))
+    .map((fixture) => ({
+        name: `geometry: ${fixture.slice('geometry-'.length)}`,
+        fixture,
+        viewport: { width: 640, height: 480 },
+        async run(d) {
+            if (fixture.endsWith('-scroll')) await d.scrollAncestor();
+            await d.open();
+            await d.geometry('initial layout');
+            if (fixture === 'geometry-aligned-middle' || fixture === 'geometry-aligned-rtl')
+                await d.alignment('selected text in constrained viewport', 'item', fixture === 'geometry-aligned-rtl');
+            await d.checkpoint('positioned', { open: true });
+            if (fixture === 'geometry-anchor-scroll') {
+                await d.scrollAncestor();
+                await d.anchorGap('follows scrolling anchor');
+                await d.checkpoint('ancestor scrolled', { open: true });
+            }
+            if (fixture.endsWith('-portal')) {
+                await expect(d.page.getByTestId('portal-host').getByTestId('positioner')).toHaveCount(1);
+            } else if (fixture.endsWith('-clipped')) {
+                // The portal must escape the clipping ancestor, not merely fit inside it.
+                await expect(d.page.getByTestId('scroller').getByTestId('positioner')).toHaveCount(0);
+            }
+            await d.key('End');
+            await d.highlighted('item-39');
+            await d.geometry('last option visible', 'item-39');
+            await d.key('Home');
+            await d.highlighted('item-0');
+            await d.geometry('first option visible', 'item-0');
+            await d.key('Enter');
+            await d.closed(true);
+            await d.checkpoint('selected', { open: false, label: 'Item 00', entries: [['choice', 'item-0']] });
         }
-        if (fixture.endsWith('-portal')) {
-            await expect(d.page.getByTestId('portal-host').getByTestId('positioner')).toHaveCount(1);
-        } else if (fixture.endsWith('-clipped')) {
-            // The portal must escape the clipping ancestor, not merely fit inside it.
-            await expect(d.page.getByTestId('scroller').getByTestId('positioner')).toHaveCount(0);
-        }
-        await d.key('End');
-        await d.highlighted('item-39');
-        await d.geometry('last option visible', 'item-39');
-        await d.key('Home');
-        await d.highlighted('item-0');
-        await d.geometry('first option visible', 'item-0');
-        await d.key('Enter');
-        await d.closed(true);
-        await d.checkpoint('selected', { open: false, label: 'Item 00', entries: [['choice', 'item-0']] });
-    }
-}));
+    }));
 
 geometryScenarios.push({
     name: 'geometry: scroll arrows start and stop',
