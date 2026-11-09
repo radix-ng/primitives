@@ -85,3 +85,29 @@ canceled. Preserve Angular's single native pointer path, recording exact cancele
 close/reopen and deferred fast-reopen remain distinct scenario sequences.
 
 These desktop comparisons do not close real-device, touch or AT gates.
+
+## Dynamic collections and emulated touch increment
+
+Eleven new dynamic-data scenarios use identical application F-key commands rather than test-side
+state writes. Angular uses a signal and `@for`; React uses state and keyed children. The adapters
+register newly supplied object identities for callback provenance, without changing primitive
+selection. Reconciliation belongs to Root's cancelable value path; the popup requests it after
+Angular's `afterRenderEffect` observes a settled, previously populated open collection. Initial
+loads, empty collections and close/unmount are excluded. An initial-selection snapshot supplies
+the upstream fallback without mirroring current controlled state.
+
+Keep Angular's element-based highlight semantics. Record the pin's ordinal/reset behavior under
+`dynamic-highlight-identity`, with exact fields only. Browser-specific native focus after node
+removal is scoped to that engine; comparison tests ensure such exceptions cannot apply elsewhere.
+Value and form-event differences are not covered by these categories.
+
+Eight tap scenarios use trusted Playwright touch input in Chromium/WebKit. Four cancel/pan
+scenarios use Chromium's public CDP input API. Firefox cannot create `hasTouch` contexts; WebKit
+does not expose an equivalent public move/cancel API. Record these capability skips with reasons,
+input mode and raw trusted input events. Keep desktop viewport/UA to isolate input behavior;
+this is not real-device or AT validation.
+
+The tests exposed a WebKit backdrop compatibility-event gap. Fix it in the common internal
+backdrop with a native click listener; do not duplicate dismiss timing in Select. Touch pointer
+leave/move must not erase selection highlight or apply mouse hover. Closed/unmounted collection
+changes and clipped item-alignment geometry remain follow-up scenarios.

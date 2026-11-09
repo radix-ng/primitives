@@ -12,6 +12,8 @@ import { SelectDefault } from './select-default';
 import defaultSource from './select-default?raw';
 import { SelectDeferredUnmount } from './select-deferred-unmount';
 import deferredUnmountSource from './select-deferred-unmount?raw';
+import { SelectDynamicOptions } from './select-dynamic-options';
+import dynamicOptionsSource from './select-dynamic-options?raw';
 import { SelectEvents } from './select-events';
 import eventsSource from './select-events?raw';
 import { SelectFocusManagement } from './select-focus-management';
@@ -51,6 +53,7 @@ export default {
                 SelectDefault,
                 SelectArbitraryValues,
                 SelectDeferredUnmount,
+                SelectDynamicOptions,
                 SelectArrowExample,
                 SelectEvents,
                 SelectFocusManagement,
@@ -73,6 +76,15 @@ export default {
 } as Meta;
 
 type Story = StoryObj;
+
+export const DynamicOptions: Story = {
+    parameters: source(dynamicOptionsSource),
+    render: () => ({
+        template: html`
+            <select-dynamic-options />
+        `
+    })
+};
 
 export const Default: Story = {
     parameters: source(defaultSource),

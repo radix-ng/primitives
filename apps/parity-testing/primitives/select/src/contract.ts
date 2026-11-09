@@ -18,6 +18,11 @@ export type CaseName =
     | 'rtl'
     | 'aligned-rtl'
     | 'anchor-default'
+    | 'dynamic'
+    | 'dynamic-multiple'
+    | 'dynamic-objects'
+    | 'dynamic-cancel-value'
+    | 'touch-scroll'
     | 'typeahead'
     | 'typeahead-read-only'
     | 'typeahead-multiple'
@@ -46,6 +51,7 @@ export interface FixtureConfig {
     aligned: boolean;
     dir: 'ltr' | 'rtl';
     scrollable: boolean;
+    dynamic: boolean;
 }
 export type SelectionKeys = string | string[] | null;
 export type TraceEvent =
@@ -96,6 +102,11 @@ export function fixtureConfig(): FixtureConfig {
         'rtl',
         'aligned-rtl',
         'anchor-default',
+        'dynamic',
+        'dynamic-multiple',
+        'dynamic-objects',
+        'dynamic-cancel-value',
+        'touch-scroll',
         'typeahead',
         'typeahead-read-only',
         'typeahead-multiple',
@@ -144,14 +155,19 @@ export function fixtureConfig(): FixtureConfig {
             { key: 'berlin-two', label: 'Berlin', value: 'berlin-two' },
             { key: 'bern', label: 'Bern', value: 'bern' }
         ];
-    if (name === 'objects')
+    if (name === 'touch-scroll')
+        options = [
+            ...options,
+            ...Array.from({ length: 30 }, (_, i) => ({ key: `fruit-${i}`, label: `Fruit ${i}`, value: `fruit-${i}` }))
+        ];
+    if (name === 'objects' || name === 'dynamic-objects')
         options = options.map((option) => ({ ...option, value: { id: option.key, label: option.label } }));
     if (name === 'array')
         options = [
             { key: '10:20', label: '10 × 20', value: [10, 20] },
             { key: '30:40', label: '30 × 40', value: [30, 40] }
         ];
-    const multiple = name === 'multiple' || name === 'typeahead-multiple';
+    const multiple = name === 'multiple' || name === 'typeahead-multiple' || name === 'dynamic-multiple';
     const initial = name.startsWith('aligned')
         ? options[1].value
         : name === 'typeahead-no-selection'
@@ -171,7 +187,8 @@ export function fixtureConfig(): FixtureConfig {
         modal: name === 'modal' || name === 'modal-cancel-close' || name === 'aligned-modal',
         aligned: name.startsWith('aligned'),
         dir: name === 'rtl' || name === 'aligned-rtl' ? 'rtl' : 'ltr',
-        scrollable: name.startsWith('modal') || name.startsWith('aligned') || name === 'rtl'
+        scrollable: name.startsWith('modal') || name.startsWith('aligned') || name === 'rtl',
+        dynamic: name.startsWith('dynamic')
     };
 }
 
@@ -188,8 +205,41 @@ export function itemLabel(value: ItemValue, options?: readonly Option[]): string
           : value.label;
 }
 
+export const optionActions = [
+    { key: 'add', shortcut: 'F2', label: 'Add Apricot' },
+    { key: 'remove-banana', shortcut: 'F3', label: 'Remove Banana' },
+    { key: 'remove-apple', shortcut: 'F4', label: 'Remove Apple' },
+    { key: 'reverse', shortcut: 'F6', label: 'Reverse options' },
+    { key: 'rename', shortcut: 'F7', label: 'Rename Banana to Pear' },
+    { key: 'disable', shortcut: 'F8', label: 'Disable Banana' },
+    { key: 'replace', shortcut: 'F9', label: 'Reload object values' }
+] as const;
+export type OptionAction = (typeof optionActions)[number]['key'];
+
+/** Application data changes only; Root still owns selection, highlight, focus and lifecycle. */
+export function changeOptions(options: readonly Option[], action: OptionAction): Option[] {
+    switch (action) {
+        case 'add':
+            if (options.some((option) => option.key === 'apricot')) return [...options];
+            return [options[0], { key: 'apricot', label: 'Apricot', value: 'apricot' }, ...options.slice(1)];
+        case 'remove-banana':
+            return options.filter((option) => option.key !== 'banana');
+        case 'remove-apple':
+            return options.filter((option) => option.key !== 'apple');
+        case 'reverse':
+            return [...options].reverse();
+        case 'rename':
+            return options.map((option) => (option.key === 'banana' ? { ...option, label: 'Pear' } : option));
+        case 'disable':
+            return options.map((option) => (option.key === 'banana' ? { ...option, disabled: true } : option));
+        case 'replace':
+            return options.map((option) => ({ ...option, value: { id: option.key, label: option.label } }));
+    }
+}
+
 /** Only adapts callback signatures / serializable representation. Never commits component state. */
 export function installProbe(framework: 'angular' | 'react', config: FixtureConfig) {
+    const providedValues = new Set(config.options.map((option) => option.value));
     const probe: Window['parity'] = {
         framework,
         config,
@@ -207,6 +257,9 @@ export function installProbe(framework: 'angular' | 'react', config: FixtureConf
     window.parity = probe;
     return {
         probe,
+        observeOptions(options: readonly Option[]) {
+            for (const option of options) providedValues.add(option.value);
+        },
         open(open: boolean, reason: string, canceled: boolean, event: Event, held: boolean) {
             probe.events.push({ type: 'open', open, reason, canceled, held });
             probe.nativeEvents.push(event.type);
@@ -223,7 +276,7 @@ export function installProbe(framework: 'angular' | 'react', config: FixtureConf
                 reason,
                 canceled,
                 kinds: items.map((item) => (Array.isArray(item) ? 'array' : typeof item)),
-                references: items.every((item) => config.options.some((option) => Object.is(option.value, item)))
+                references: items.every((item) => providedValues.has(item))
             });
             probe.nativeEvents.push(event.type);
         },

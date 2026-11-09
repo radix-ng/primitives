@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { afterNextRender, Component, provideZonelessChangeDetection, viewChild } from '@angular/core';
+import { afterNextRender, Component, provideZonelessChangeDetection, signal, viewChild } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { RdxDirectionProvider } from '@radix-ng/primitives/direction-provider';
 import {
@@ -10,13 +10,23 @@ import {
 } from '@radix-ng/primitives/select';
 import { demoSelect } from '../../../../../packages/primitives/storybook/styles';
 import '../../../../radix-storybook/.storybook/tailwind.css';
-import { fixtureConfig, installProbe, itemKey, itemLabel, ItemValue } from './contract';
+import {
+    changeOptions,
+    fixtureConfig,
+    installProbe,
+    itemKey,
+    itemLabel,
+    ItemValue,
+    OptionAction,
+    optionActions
+} from './contract';
 
 const config = fixtureConfig();
 document.documentElement.dir = config.dir;
 
 @Component({
     selector: 'parity-select',
+    host: { '(document:keydown)': 'onCommand($event)' },
     imports: [_importsSelect, RdxDirectionProvider],
     template: `
         <form
@@ -41,6 +51,8 @@ document.documentElement.dir = config.dir;
                 [disabled]="config.disabled"
                 [readOnly]="config.readOnly"
                 [modal]="config.modal"
+                [items]="config.dynamic ? options() : undefined"
+                [isItemEqualToValue]="config.name === 'dynamic-objects' ? equalByKey : undefined"
                 [itemToStringLabel]="label"
                 [itemToStringValue]="key"
                 (onOpenChange)="openChange($event)"
@@ -60,8 +72,8 @@ document.documentElement.dir = config.dir;
                         <div [class]="s.positioner" data-testid="positioner" rdxSelectItemAlignedPosition>
                             <div [closeOnFocusOut]="config.closeOnFocusOut" data-testid="popup" rdxSelectPopup>
                                 <div [class]="s.popup" rdxSelectItemAlignedPositionContent>
-                                    <div [class]="s.list" rdxSelectList>
-                                        @for (option of config.options; track option.key) {
+                                    <div [class]="listClass" data-testid="list" rdxSelectList>
+                                        @for (option of options(); track option.key) {
                                             <div
                                                 [class]="s.item"
                                                 [value]="option.value"
@@ -81,8 +93,8 @@ document.documentElement.dir = config.dir;
                     } @else if (config.name === 'anchor-default') {
                         <div [class]="s.positioner" sideOffset="5" data-testid="positioner" rdxSelectPositioner>
                             <div [class]="s.popup + ' w-48 min-w-48!'" data-testid="popup" rdxSelectPopup>
-                                <div [class]="s.list" rdxSelectList>
-                                    @for (option of config.options; track option.key) {
+                                <div [class]="listClass" data-testid="list" rdxSelectList>
+                                    @for (option of options(); track option.key) {
                                         <div
                                             [class]="s.item"
                                             [value]="option.value"
@@ -112,8 +124,8 @@ document.documentElement.dir = config.dir;
                                 data-testid="popup"
                                 rdxSelectPopup
                             >
-                                <div [class]="s.list" rdxSelectList>
-                                    @for (option of config.options; track option.key) {
+                                <div [class]="listClass" data-testid="list" rdxSelectList>
+                                    @for (option of options(); track option.key) {
                                         <div
                                             [class]="s.item"
                                             [value]="option.value"
@@ -140,6 +152,19 @@ document.documentElement.dir = config.dir;
                 After
             </button>
         </form>
+        @if (config.dynamic) {
+            <div class="mt-4 grid w-64 gap-2" aria-label="Option data actions">
+                @for (action of optionActions; track action.key) {
+                    <button
+                        class="border-border rounded border px-2 py-1 text-start text-xs"
+                        (click)="mutate(action.key)"
+                        type="button"
+                    >
+                        {{ action.label }} ({{ action.shortcut }})
+                    </button>
+                }
+            </div>
+        }
         @if (config.scrollable) {
             <div class="h-[150vh]" aria-hidden="true"></div>
         }
@@ -148,9 +173,13 @@ document.documentElement.dir = config.dir;
 class AngularSelectFixture {
     readonly s = demoSelect;
     readonly config = config;
+    readonly listClass = demoSelect.list + (config.name === 'touch-scroll' ? ' max-h-48 overflow-y-auto' : '');
+    readonly options = signal(config.options);
+    readonly optionActions = optionActions;
     readonly trace = installProbe('angular', this.config);
-    readonly label = (value: ItemValue) => itemLabel(value, this.config.options);
+    readonly label = (value: ItemValue) => itemLabel(value, this.options());
     readonly key = itemKey;
+    readonly equalByKey = (a: ItemValue, b: ItemValue) => itemKey(a) === itemKey(b);
     private readonly root = viewChild.required(RdxSelectRoot);
 
     constructor() {
@@ -160,6 +189,18 @@ class AngularSelectFixture {
             };
             this.trace.probe.unmount = () => this.root().unmount();
         });
+    }
+
+    mutate(action: OptionAction) {
+        const next = changeOptions(this.options(), action);
+        this.trace.observeOptions(next);
+        this.options.set(next);
+    }
+    onCommand(event: KeyboardEvent) {
+        const action = this.config.dynamic && optionActions.find((action) => action.shortcut === event.key);
+        if (!action) return;
+        event.preventDefault();
+        this.mutate(action.key);
     }
 
     openChange({ open, eventDetails }: RdxSelectOpenChangeEvent): void {
@@ -173,7 +214,12 @@ class AngularSelectFixture {
         this.trace.open(open, eventDetails.reason, eventDetails.isCanceled(), eventDetails.event, held);
     }
     valueChange({ value, eventDetails }: RdxSelectValueChangeEvent<ItemValue>): void {
-        if (this.config.name === 'cancel-value' || this.config.name === 'typeahead-cancel-value') eventDetails.cancel();
+        if (
+            this.config.name === 'cancel-value' ||
+            this.config.name === 'typeahead-cancel-value' ||
+            this.config.name === 'dynamic-cancel-value'
+        )
+            eventDetails.cancel();
         this.trace.value(value, eventDetails.reason, eventDetails.isCanceled(), eventDetails.event);
     }
 }

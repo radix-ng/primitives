@@ -3,7 +3,7 @@
         "scenario": "array-valued item",
         "checkpoint": "initial",
         "field": "label",
-        "angular": "10 × 20",
+        "angular": "10 \u00d7 20",
         "react": ",",
         "category": "array-item-label"
     },
@@ -11,7 +11,7 @@
         "scenario": "array-valued item",
         "checkpoint": "selected",
         "field": "label",
-        "angular": "30 × 40",
+        "angular": "30 \u00d7 40",
         "react": ",",
         "category": "array-item-label"
     },
@@ -35,7 +35,7 @@
         "scenario": "array-valued item",
         "checkpoint": "reopened",
         "field": "label",
-        "angular": "30 × 40",
+        "angular": "30 \u00d7 40",
         "react": ",",
         "category": "array-item-label"
     },
@@ -1519,6 +1519,498 @@
         "field": "selected",
         "angular": [],
         "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: disable highlighted option",
+        "checkpoint": "activation ignored",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "dynamic: disable highlighted option",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: disable highlighted option",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["cherry"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: insert during navigation",
+        "checkpoint": "inserted",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apricot",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "dynamic: insert during navigation",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: insert during navigation",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["apricot"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: multiple prunes removed values",
+        "checkpoint": "removed",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "dynamic: multiple prunes removed values",
+        "checkpoint": "removed",
+        "field": "highlighted",
+        "angular": ["banana"],
+        "react": ["blueberry"],
+        "category": "dynamic-highlight-identity"
+    },
+    {
+        "scenario": "dynamic: multiple prunes removed values",
+        "checkpoint": "selected",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:cherry",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "dynamic: reload objects with key equality",
+        "checkpoint": "reloaded",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "dynamic: reload objects with key equality",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: reload objects with key equality",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: removal change can be canceled",
+        "checkpoint": "canceled",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus",
+        "browser": "chromium"
+    },
+    {
+        "scenario": "dynamic: removal change can be canceled",
+        "checkpoint": "canceled",
+        "field": "focus",
+        "angular": "popup",
+        "react": "body",
+        "category": "dom-focus",
+        "browser": "firefox"
+    },
+    {
+        "scenario": "dynamic: removal change can be canceled",
+        "checkpoint": "canceled",
+        "field": "focus",
+        "angular": "popup",
+        "react": "body",
+        "category": "dom-focus",
+        "browser": "webkit"
+    },
+    {
+        "scenario": "dynamic: removal change can be canceled",
+        "checkpoint": "canceled",
+        "field": "highlighted",
+        "angular": [],
+        "react": ["banana"],
+        "category": "dynamic-highlight-identity"
+    },
+    {
+        "scenario": "dynamic: removal change can be canceled",
+        "checkpoint": "retained",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: remove highlighted option",
+        "checkpoint": "removed",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:blueberry",
+        "category": "dom-focus",
+        "browser": "chromium"
+    },
+    {
+        "scenario": "dynamic: remove highlighted option",
+        "checkpoint": "removed",
+        "field": "focus",
+        "angular": "popup",
+        "react": "body",
+        "category": "dom-focus",
+        "browser": "firefox"
+    },
+    {
+        "scenario": "dynamic: remove highlighted option",
+        "checkpoint": "removed",
+        "field": "focus",
+        "angular": "popup",
+        "react": "body",
+        "category": "dom-focus",
+        "browser": "webkit"
+    },
+    {
+        "scenario": "dynamic: remove highlighted option",
+        "checkpoint": "removed",
+        "field": "highlighted",
+        "angular": [],
+        "react": ["blueberry"],
+        "category": "dynamic-highlight-identity"
+    },
+    {
+        "scenario": "dynamic: remove highlighted option",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: remove highlighted option",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["cherry"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: remove selected option",
+        "checkpoint": "removed",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus",
+        "browser": "chromium"
+    },
+    {
+        "scenario": "dynamic: remove selected option",
+        "checkpoint": "removed",
+        "field": "focus",
+        "angular": "popup",
+        "react": "body",
+        "category": "dom-focus",
+        "browser": "firefox"
+    },
+    {
+        "scenario": "dynamic: remove selected option",
+        "checkpoint": "removed",
+        "field": "focus",
+        "angular": "popup",
+        "react": "body",
+        "category": "dom-focus",
+        "browser": "webkit"
+    },
+    {
+        "scenario": "dynamic: remove selected option",
+        "checkpoint": "removed",
+        "field": "highlighted",
+        "angular": [],
+        "react": ["banana"],
+        "category": "dynamic-highlight-identity"
+    },
+    {
+        "scenario": "dynamic: remove selected option",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: remove selected option",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["cherry"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: removed selection falls back to initial",
+        "checkpoint": "restored initial",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:blueberry",
+        "category": "dom-focus",
+        "browser": "chromium"
+    },
+    {
+        "scenario": "dynamic: removed selection falls back to initial",
+        "checkpoint": "restored initial",
+        "field": "focus",
+        "angular": "popup",
+        "react": "body",
+        "category": "dom-focus",
+        "browser": "firefox"
+    },
+    {
+        "scenario": "dynamic: removed selection falls back to initial",
+        "checkpoint": "restored initial",
+        "field": "focus",
+        "angular": "popup",
+        "react": "body",
+        "category": "dom-focus",
+        "browser": "webkit"
+    },
+    {
+        "scenario": "dynamic: removed selection falls back to initial",
+        "checkpoint": "restored initial",
+        "field": "highlighted",
+        "angular": [],
+        "react": ["blueberry"],
+        "category": "dynamic-highlight-identity"
+    },
+    {
+        "scenario": "dynamic: rename selected label while closed",
+        "checkpoint": "renamed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: rename selected label while closed",
+        "checkpoint": "renamed",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: rename selected label while closed",
+        "checkpoint": "reopened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "dynamic: reorder during navigation",
+        "checkpoint": "reordered",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "dynamic: reorder during navigation",
+        "checkpoint": "reordered",
+        "field": "highlighted",
+        "angular": ["banana"],
+        "react": ["apple"],
+        "category": "dynamic-highlight-identity"
+    },
+    {
+        "scenario": "dynamic: reorder during navigation",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: reorder during navigation",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: typeahead uses live labels",
+        "checkpoint": "renamed match",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "dynamic: typeahead uses live labels",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "dynamic: typeahead uses live labels",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "touch: aligned popup falls below trigger",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "touch: aligned popup falls below trigger",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["cherry"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "touch: canceled option gesture",
+        "checkpoint": "next tap selects",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "touch: canceled option gesture",
+        "checkpoint": "next tap selects",
+        "field": "selected",
+        "angular": [],
+        "react": ["cherry"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "touch: canceled option gesture",
+        "checkpoint": "no selection",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "touch: canceled trigger gesture",
+        "checkpoint": "next tap opens",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "touch: modal outside tap",
+        "checkpoint": "dismissed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "touch: modal outside tap",
+        "checkpoint": "dismissed",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "touch: multiple toggle",
+        "checkpoint": "added",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "touch: multiple toggle",
+        "checkpoint": "removed",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "touch: read-only selection",
+        "checkpoint": "unchanged",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:banana",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "touch: scroll options without selecting",
+        "checkpoint": "list scrolled",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "touch: single outside tap",
+        "checkpoint": "dismissed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "touch: single outside tap",
+        "checkpoint": "dismissed",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "touch: tap selection",
+        "checkpoint": "opened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "touch: tap selection",
+        "checkpoint": "selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "touch: tap selection",
+        "checkpoint": "selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
         "category": "closed-dom-retention"
     }
 ]

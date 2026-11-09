@@ -6,8 +6,10 @@ Audited on 2026-11-08; close-lifecycle, focus-policy and arbitrary-Value increme
 reproducible reference. Its package version is 1.9.0; it is not the release tag itself.
 
 This is an API/source audit with linked regression coverage, **not a certification of complete
-behavioral parity**. A shared React/Angular differential runner now checks 54 scenarios in
-Chromium, Firefox and WebKit (162 comparisons) against this pin and records exact known differences ([runner documentation](../../../apps/parity-testing/primitives/select/README.md),
+behavioral parity**. A shared React/Angular differential runner now defines 77 scenarios:
+65 desktop/dynamic-list cases in all three engines, eight tap cases in Chromium/WebKit,
+and four native touch-gesture cases in Chromium (215 comparisons; 16 capability skips).
+It checks this pin and records exact known differences ([runner documentation](../../../apps/parity-testing/primitives/select/README.md),
 [ADR 0029](../../../docs/adr/0029-select-differential-behavior-checks.md)). Rows marked as gaps remain open.
 
 Root and Item now accept an unconstrained `Value`, defaulting to `unknown`. Angular DI erases the
@@ -149,13 +151,48 @@ Reuse an existing native control when it represents the submitted value. Prefer 
 [ADR 0025](../../../docs/adr/0025-separate-angular-forms-from-browser-input-bridge.md) records the decision
 to retain the current bridge, ownership boundaries and migration implications.
 
+## Dynamic options and emulated touch
+
+Eleven differential scenarios cover insertion, removal, reordering, disabled/renamed options,
+multiple selection, initial-value fallback, cancellation and replacement object instances with
+explicit key equality. The Storybook **Dynamic Options** example exposes live changes through
+F2/F3/F6 while the popup keeps focus. `select-dynamic-options.spec.ts` and its browser behavior
+spec cover reconciliation and usable navigation after changes.
+
+**Migration:** removing a selected option from an already populated open list now requests a
+cancelable value change with reason `none`. Single mode returns to the initial selection when it
+is still available, otherwise `null`; multiple mode removes missing values. Closing/unmounting,
+an initially empty collection and its first load do not clear selection. A completely empty
+collection is not reconciled, matching the reference's current guard. This increment does not
+claim closed/unmounted collection reconciliation.
+
+Selection reconciliation runs after Angular finishes rendering/collecting options. It shares
+Root's existing value commit path and form notifications. No React store or mutable current-value
+mirror is introduced. The only initial-selection snapshot supplies the defined fallback.
+`dynamic-highlight-identity` records a deliberate difference: Angular preserves a highlighted
+element during reorder and clears it when removed; the pin can move highlight to another ordinal
+or reset it to the selected item. Exact values, callbacks and form entries still match. Native
+focus after a focused item is removed varies by engine; those exact pairs are engine-scoped.
+
+Touch contexts use trusted Playwright taps in Chromium/WebKit, plus public Chromium CDP input
+for cancel and pan gestures. Coverage includes disabled/read-only states, multiple toggles,
+outside modal/nonmodal taps, item-alignment fallback, trigger pan/cancel, option cancellation and
+list scrolling without committing a value. Reports retain input mode, trusted native input events,
+geometry and explicit capability skip reasons. Firefox has no Playwright `hasTouch` support;
+WebKit has no public equivalent of CDP touch move/cancel. The viewport remains desktop-sized.
+
+WebKit touch tests found missing backdrop compatibility mouse events. The common internal backdrop
+now opts into the native click sequence; dismissal keeps its shared touch timing. Select preserves
+touch highlight through the ensuing pointer leave and ignores touch motion for mouse hover.
+These checks do not validate real iOS/Android behavior or screen-reader interaction.
+
 ## Next parity increments
 
-| Order | Work                             | Shared boundary / completion evidence                                                                                                                                                 |
-| ----- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1     | Default focus policy / real AT   | Browser coverage and opt-in are available (ADR 0027). Compare virtual vs item focus and run the documented real-screen-reader scenarios before changing the default.                  |
-| 2     | Behavioral equivalence           | 54 pinned React/Angular scenarios cover desktop modal/item-aligned and whole-page RTL modes. Add emulated touch, clipped/scrolling alignment and dynamic-option scenarios (ADR 0029). |
-| 3     | Real devices and native autofill | Desktop automation covers the bridge and Storybook modes. Verify real Safari/devices, saved-profile autofill and assistive technology separately.                                     |
+| Order | Work                             | Shared boundary / completion evidence                                                                                                                                                          |
+| ----- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1     | Default focus policy / real AT   | Browser coverage and opt-in are available (ADR 0027). Compare virtual vs item focus and run the documented real-screen-reader scenarios before changing the default.                           |
+| 2     | Behavioral equivalence           | 77 pinned scenarios now include dynamic options and emulated touch. Next: clipping/scroll containers and collision geometry for item alignment, then closed/unmounted data changes (ADR 0029). |
+| 3     | Real devices and native autofill | Desktop automation covers the bridge and Storybook modes. Verify real Safari/devices, saved-profile autofill and assistive technology separately.                                              |
 
 Rows with an implemented API still carry the verification limitations listed above. Completing a part
 or a shared helper does not certify complete behavioral parity.

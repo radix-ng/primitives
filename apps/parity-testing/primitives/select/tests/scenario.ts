@@ -4,5 +4,6 @@ import type { SelectDriver } from './driver';
 export interface Scenario {
     name: string;
     fixture: CaseName;
+    input?: 'touch-tap' | 'touch-gesture';
     run(driver: SelectDriver): Promise<void>;
 }

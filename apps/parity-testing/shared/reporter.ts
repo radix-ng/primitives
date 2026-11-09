@@ -16,6 +16,7 @@ export default class ParityReporter implements Reporter {
         status: string;
         observations: unknown;
         errors: string[];
+        annotations: { type: string; description?: string }[];
     }[] = [];
     private readonly options: { title: string; outputDirectory: string };
     constructor(options: { title: string; outputDirectory: string }) {
@@ -30,7 +31,8 @@ export default class ParityReporter implements Reporter {
             scenario: test.title,
             status: result.status,
             observations: data ? JSON.parse(data.toString()) : null,
-            errors: result.errors.map((error) => error.message ?? '')
+            errors: result.errors.map((error) => error.message ?? ''),
+            annotations: result.annotations ?? []
         });
     }
     onEnd(result: FullResult): void {
@@ -71,13 +73,19 @@ export default class ParityReporter implements Reporter {
                   ]
                 : []),
             '',
-            '| Browser | Scenario | Result | Recorded differences |',
-            '| --- | --- | --- | --- |'
+            '| Browser | Scenario | Result | Recorded differences | Skip reason |',
+            '| --- | --- | --- | --- | --- |'
         ];
         for (const row of this.rows) {
             const observation = row.observations as Observation | null;
             const categories = [...new Set(observation?.differences?.map((difference) => difference.category) ?? [])];
-            lines.push(`| ${row.browser} | ${row.scenario} | ${row.status} | ${categories.join(', ') || 'none'} |`);
+            const skip = row.annotations
+                .filter((a) => a.type === 'skip')
+                .map((a) => a.description)
+                .join('; ');
+            lines.push(
+                `| ${row.browser} | ${row.scenario} | ${row.status} | ${categories.join(', ') || 'none'} | ${skip} |`
+            );
         }
         lines.push(
             '',

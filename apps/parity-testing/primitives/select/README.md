@@ -16,7 +16,9 @@ Shared preparation, TypeScript tooling and commands are documented in the
 
 ## What is compared
 
-The 54 scenarios run in Chromium, Firefox and WebKit (162 comparisons). They exercise
+The 77 scenarios produce 215 comparisons and 16 capability skips: 65 desktop/dynamic cases in
+Chromium, Firefox and WebKit, eight touch-tap cases in Chromium/WebKit and four touch-gesture cases
+in Chromium. They exercise
 keyboard/typeahead, pointer/multiple selection, disabled/read-only states,
 open/value/close cancellation, imperative close and deferred unmount/reopen, native form reset,
 object/array values, Tab/Shift+Tab and focus outside. The default and opt-in Angular focus policies
@@ -43,11 +45,17 @@ disabled option. The remaining item DOM focus differences are still recorded as 
 ## Recorded differences
 
 `expected-differences.json` records exact Angular/React pairs for a specific scenario, checkpoint and
-field. Any new, changed **or disappeared** difference fails and requires review. Shared assertions
+field, optionally scoped to one browser. Any new, changed **or disappeared** difference fails and requires review. Shared assertions
 still apply to both implementations. The report preserves all raw observations even on failure.
 
 - `dom-focus`: Angular focuses the popup and exposes virtual highlight; Base UI focuses an item.
-  Changing this remains gated on real assistive-technology review (ADR 0023 / 0027).
+  On removal of a focused option, Firefox/WebKit may leave native focus on body while Chromium
+  focuses the replacement item. Those exact pairs are browser-scoped. Changing Angular's focus
+  model remains gated on real assistive-technology review (ADR 0023 / 0027).
+- `dynamic-highlight-identity`: Angular keeps highlight on the same live element during reorder
+  and clears it when removed; the pin can reassign it by ordinal or reset to the selected item.
+  This preserves Angular's existing shared highlight semantics. Actual DOM order and subsequent
+  keyboard navigation are asserted; values/form data/callbacks are compared without exceptions.
 - `default-tab-policy`: Angular's current default prevents Tab; Base UI closes on Tab/Shift+Tab.
   The opt-in Angular `closeOnFocusOut` scenario closes and restores focus correctly.
 - `closed-dom-retention`: the reference keeps a hidden popup and selected option nodes after close
@@ -155,6 +163,32 @@ and restores a cancelable `trigger-press` close when the open Trigger is pressed
 alignment now matches the pin's `center`; explicit `align="start"` retains the previous Angular default.
 Canceled pointer/mouse compatibility retries remain a documented difference rather than an extra
 Angular event path.
+
+## Dynamic collections and touch input
+
+`dynamic.scenarios.ts` drives eleven application-data changes through identical F-key commands
+in both fixtures. The commands only change options: they never assign selection, focus, open state
+or lifecycle completion. New option objects are tracked as supplied values so reference checks
+accept genuine additions/reloads and continue rejecting invented callback values. Native toolbar
+buttons expose the same actions for manual inspection.
+
+Removal now shares the cancelable Root commit path: scalar values fall back to the initial option
+or null, multiple values prune missing options. Angular reconciles settled, previously populated
+open collections with `afterRenderEffect`; initial async loads, close/unmount and empty lists are
+excluded. Reordering retains Angular's element identity policy instead of duplicating upstream
+index bookkeeping. Changes to a closed/unmounted collection remain follow-up work.
+
+`touch.scenarios.ts` uses `hasTouch: true` while retaining the same desktop viewport and UA.
+Playwright `tap` exercises trusted browser input in Chromium/WebKit. Chromium's public
+`Input.dispatchTouchEvent` API adds native pan/cancel and list scrolling. No synthetic DOM event
+or private WebKit protocol stands in for a gesture. Firefox touch and WebKit move/cancel are skipped
+with reasons retained in both JSON and Markdown. Skips are capability limits, not passing tests.
+Observations record input mode and trusted pointer/touch/click events independently of canonical
+callback comparison. No real mobile device, saved profile or assistive technology is emulated.
+
+The common backdrop click listener lets WebKit deliver its native compatibility mouse sequence;
+the shared dismiss touch state machine still owns closing. Select touch highlight survives the
+pointer leave at gesture end, while touch moves do not apply mouse-hover navigation.
 
 ## Evidence and CI
 

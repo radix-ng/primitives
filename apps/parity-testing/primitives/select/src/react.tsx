@@ -1,16 +1,42 @@
 import { DirectionProvider } from '@base-ui/react/direction-provider';
 import { Select } from '@base-ui/react/select';
-import { useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { demoSelect } from '../../../../../packages/primitives/storybook/styles';
 import '../../../../radix-storybook/.storybook/tailwind.css';
-import { fixtureConfig, installProbe, itemKey, itemLabel, ItemValue } from './contract';
+import {
+    changeOptions,
+    fixtureConfig,
+    installProbe,
+    itemKey,
+    itemLabel,
+    ItemValue,
+    OptionAction,
+    optionActions
+} from './contract';
 
 const config = fixtureConfig();
 document.documentElement.dir = config.dir;
 const trace = installProbe('react', config);
 
 function ReactSelectFixture() {
+    const [options, setOptions] = useState(config.options);
+    const mutate = (action: OptionAction) => {
+        const next = changeOptions(options, action);
+        trace.observeOptions(next);
+        setOptions(next);
+    };
+    useLayoutEffect(() => {
+        if (!config.dynamic) return;
+        const onCommand = (event: KeyboardEvent) => {
+            const action = optionActions.find((action) => action.shortcut === event.key);
+            if (!action) return;
+            event.preventDefault();
+            mutate(action.key);
+        };
+        document.addEventListener('keydown', onCommand);
+        return () => document.removeEventListener('keydown', onCommand);
+    });
     const actions = useRef<Select.Root.Actions | null>(null);
     useLayoutEffect(() => {
         trace.probe.close = () => actions.current?.close();
@@ -33,8 +59,12 @@ function ReactSelectFixture() {
                     disabled={config.disabled}
                     readOnly={config.readOnly}
                     modal={config.modal}
+                    items={config.dynamic ? options : undefined}
+                    isItemEqualToValue={
+                        config.name === 'dynamic-objects' ? (a, b) => itemKey(a) === itemKey(b) : undefined
+                    }
                     name="choice"
-                    itemToStringLabel={(value) => itemLabel(value, config.options)}
+                    itemToStringLabel={(value) => itemLabel(value, options)}
                     itemToStringValue={itemKey}
                     actionsRef={actions}
                     onOpenChange={(open, details) => {
@@ -48,7 +78,11 @@ function ReactSelectFixture() {
                         trace.open(open, details.reason, details.isCanceled, details.event, held);
                     }}
                     onValueChange={(value, details) => {
-                        if (config.name === 'cancel-value' || config.name === 'typeahead-cancel-value')
+                        if (
+                            config.name === 'cancel-value' ||
+                            config.name === 'typeahead-cancel-value' ||
+                            config.name === 'dynamic-cancel-value'
+                        )
                             details.cancel();
                         trace.value(value, details.reason, details.isCanceled, details.event);
                     }}
@@ -74,8 +108,14 @@ function ReactSelectFixture() {
                                 }
                                 data-testid="popup"
                             >
-                                <Select.List className={demoSelect.list}>
-                                    {config.options.map((option) => (
+                                <Select.List
+                                    className={
+                                        demoSelect.list +
+                                        (config.name === 'touch-scroll' ? ' max-h-48 overflow-y-auto' : '')
+                                    }
+                                    data-testid="list"
+                                >
+                                    {options.map((option) => (
                                         <Select.Item
                                             key={option.key}
                                             value={option.value}
@@ -97,6 +137,20 @@ function ReactSelectFixture() {
                     After
                 </button>
             </form>
+            {config.dynamic && (
+                <div className="mt-4 grid w-64 gap-2" aria-label="Option data actions">
+                    {optionActions.map((action) => (
+                        <button
+                            key={action.key}
+                            className="border-border rounded border px-2 py-1 text-start text-xs"
+                            type="button"
+                            onClick={() => mutate(action.key)}
+                        >
+                            {action.label} ({action.shortcut})
+                        </button>
+                    ))}
+                </div>
+            )}
             {config.scrollable && <div className="h-[150vh]" aria-hidden="true" />}
         </DirectionProvider>
     );

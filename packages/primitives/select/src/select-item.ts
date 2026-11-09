@@ -146,6 +146,15 @@ export class RdxSelectItem<Value = unknown> {
     onPointerUp(event: PointerEvent | KeyboardEvent) {
         if (!this.rootContext.open()) return;
         if (event.defaultPrevented) return;
+        if (
+            'pointerType' in event &&
+            event.pointerType === 'touch' &&
+            !this.disabled() &&
+            !this.rootContext.disabled()
+        ) {
+            this.contentContext.setKeyboardActive(false);
+            this.contentContext.highlightItem(this.currentElement.nativeElement);
+        }
         if (this.disabled() || this.rootContext.disabled() || this.rootContext.readOnly()) return;
 
         const eventDetail = { originalEvent: event, value: this.value() };
@@ -165,6 +174,7 @@ export class RdxSelectItem<Value = unknown> {
     }
 
     onPointerLeave(event: PointerEvent) {
+        if (event.pointerType === 'touch') return;
         if (!this.rootContext.open()) return;
         if (event.defaultPrevented) return;
         if (!this.rootContext.highlightItemOnHover()) return;
@@ -174,6 +184,7 @@ export class RdxSelectItem<Value = unknown> {
     }
 
     onPointerMove(event: PointerEvent) {
+        if (event.pointerType === 'touch') return;
         if (!this.rootContext.open()) return;
         if (!this.rootContext.highlightItemOnHover()) return;
         // Scrolling can generate zero-delta moves beneath a stationary cursor.

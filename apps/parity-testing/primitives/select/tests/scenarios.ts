@@ -1,14 +1,18 @@
 import { expect } from '@playwright/test';
 import { closedTypeaheadScenarios } from './closed-typeahead.scenarios';
 import { type Snapshot } from './driver';
+import { dynamicScenarios } from './dynamic.scenarios';
 import { positioningScenarios } from './positioning.scenarios';
 import type { Scenario } from './scenario';
+import { touchScenarios } from './touch.scenarios';
 import { typeaheadScenarios } from './typeahead.scenarios';
 
 export const scenarios: Scenario[] = [
     ...typeaheadScenarios,
     ...closedTypeaheadScenarios,
     ...positioningScenarios,
+    ...dynamicScenarios,
+    ...touchScenarios,
     {
         name: 'keyboard and typeahead',
         fixture: 'single',

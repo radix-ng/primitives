@@ -9,8 +9,21 @@ const expected = JSON.parse(readFileSync(new URL('../expected-differences.json',
 
 const exceptionKeys = new Set<string>();
 for (const entry of expected) {
-    const key = JSON.stringify([entry.scenario, entry.checkpoint, entry.field]);
+    if (entry.browser && !['chromium', 'firefox', 'webkit'].includes(entry.browser))
+        throw new Error(`Unknown difference browser: ${entry.browser}`);
+    const key = JSON.stringify([entry.scenario, entry.checkpoint, entry.field, entry.browser]);
     if (exceptionKeys.has(key)) throw new Error(`Duplicate difference: ${key}`);
+    if (
+        expected.some(
+            (other) =>
+                other !== entry &&
+                other.scenario === entry.scenario &&
+                other.checkpoint === entry.checkpoint &&
+                other.field === entry.field &&
+                (!other.browser || !entry.browser)
+        )
+    )
+        throw new Error(`Overlapping browser difference: ${key}`);
     if (!scenarios.some((scenario) => scenario.name === entry.scenario))
         throw new Error(`Difference refers to a missing scenario: ${entry.scenario}`);
     exceptionKeys.add(key);
@@ -18,8 +31,15 @@ for (const entry of expected) {
 
 for (const scenario of scenarios) {
     test(scenario.name, async ({ browser, baseURL }, testInfo) => {
-        const angular = new SelectDriver(await browser.newPage({ baseURL }), 'angular');
-        const react = new SelectDriver(await browser.newPage({ baseURL }), 'react');
+        const engine = browser.browserType().name();
+        test.skip(!!scenario.input && engine === 'firefox', 'Playwright Firefox does not support hasTouch contexts');
+        test.skip(
+            scenario.input === 'touch-gesture' && engine !== 'chromium',
+            'Native touch move/cancel uses Chromium CDP; no public WebKit gesture API'
+        );
+        const options = { baseURL, hasTouch: !!scenario.input };
+        const angular = new SelectDriver(await browser.newPage(options), 'angular');
+        const react = new SelectDriver(await browser.newPage(options), 'react');
         const failures: string[] = [];
         try {
             // Collect both sides even if a shared contract assertion fails on one implementation.
@@ -33,7 +53,13 @@ for (const scenario of scenarios) {
                     failures.push(`${driver.framework}: ${String(error)}`);
                 }
             }
-            const comparison = compareObservations(scenario.name, angular.checkpoints, react.checkpoints, expected);
+            const comparison = compareObservations(
+                scenario.name,
+                angular.checkpoints,
+                react.checkpoints,
+                expected,
+                engine
+            );
             for (const category of new Set<string>(comparison.differences.map((difference) => difference.category))) {
                 testInfo.annotations.push({ type: 'recorded-difference', description: category });
             }
@@ -42,16 +68,19 @@ for (const scenario of scenarios) {
                     {
                         scenario: scenario.name,
                         browser: { name: browser.browserType().name(), version: browser.version() },
+                        input: { mode: scenario.input ?? 'desktop', hasTouch: !!scenario.input, mobileViewport: false },
                         reference: react.metadata?.reference,
                         angular: {
                             checkpoints: angular.checkpoints,
                             nativeEvents: await angular.nativeEvents(),
+                            inputEvents: await angular.inputEvents(),
                             errors: angular.errors,
                             measurements: angular.measurements
                         },
                         react: {
                             checkpoints: react.checkpoints,
                             nativeEvents: await react.nativeEvents(),
+                            inputEvents: await react.inputEvents(),
                             errors: react.errors,
                             measurements: react.measurements
                         },

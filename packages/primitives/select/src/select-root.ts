@@ -145,6 +145,7 @@ export interface RdxSelectRootContext<Value = unknown> extends RdxFormUiStateCon
     optionsSet: Signal<Set<SelectOption<Value>>>;
     onOptionAdd: (option: () => SelectOption<Value>) => void;
     onOptionRemove: (option: () => SelectOption<Value>) => void;
+    reconcileOptions: (values: readonly Value[]) => void;
     onValueChange: (value: Value | undefined, reason?: RdxSelectValueChangeReason, event?: Event) => boolean;
     onTriggerChange: (node: ElementRef<HTMLElement>) => void;
     onValueElementChange: (node: HTMLElement) => void;
@@ -197,6 +198,7 @@ const context = (): RdxSelectRootContext => {
         onOptionAdd: (option) => context.optionGetters.update((current) => [...current, option]),
         onOptionRemove: (option) =>
             context.optionGetters.update((current) => current.filter((entry) => entry !== option)),
+        reconcileOptions: (values) => context.reconcileOptions(values),
         onValueChange: (value: unknown, reason?: RdxSelectValueChangeReason, event?: Event) =>
             context.setValue(value, reason, event),
         onTriggerChange: (node: ElementRef<HTMLElement>) => {
@@ -610,6 +612,11 @@ export class RdxSelectRoot<Value = unknown, Multiple extends boolean = boolean>
     constructor() {
         super();
 
+        // An initial selection is a reset/fallback snapshot, independent of later model writes.
+        afterNextRender(() => {
+            this.initialSelection = this.value();
+        });
+
         this.destroyRef.onDestroy(() => this.resetTypeahead());
         effect(() => {
             if (this.open()) this.autofillProbe.set(false);
@@ -729,6 +736,31 @@ export class RdxSelectRoot<Value = unknown, Multiple extends boolean = boolean>
                 : value
         ) as RdxSelectValueType<Value, Multiple>;
 
+        return this.commitValue(nextValue, reason, event);
+    }
+
+    private initialSelection: RdxSelectValueType<Value, Multiple> | undefined;
+
+    /** @internal Reconcile a settled, previously populated collection; closing/unmounting never calls this. */
+    reconcileOptions(values: readonly Value[]): void {
+        if (this.disabledState() || this.readOnly() || !values.length) return;
+        const current = this.value();
+        const includes = (value: Value) => values.some((item) => compare(item, value, this.isItemEqualToValue()));
+        if (this.multiple() && Array.isArray(current)) {
+            const next = current.filter((value) => includes(value));
+            if (next.length !== current.length) this.commitValue(next as RdxSelectValueType<Value, Multiple>);
+        } else if (current != null && !includes(current as Value)) {
+            const initial = this.initialSelection;
+            const next = initial != null && includes(initial as Value) ? initial : null;
+            this.commitValue(next as RdxSelectValueType<Value, Multiple>);
+        }
+    }
+
+    private commitValue(
+        nextValue: RdxSelectValueType<Value, Multiple>,
+        reason: RdxSelectValueChangeReason = 'none',
+        event: Event = new Event('select.value-change')
+    ): boolean {
         const { eventDetails } = createCancelableChangeEventDetails(reason, event, this.triggerElement() ?? undefined);
         this.onValueChange.emit({ value: nextValue, eventDetails });
 

@@ -56,3 +56,28 @@ test('the same scenario retains separate browser results, versions and failure e
         rmSync(directory, { recursive: true, force: true });
     }
 });
+
+test('capability skips retain their reason in JSON and Markdown', () => {
+    const directory = mkdtempSync(join(tmpdir(), 'radix-parity-skip-'));
+    try {
+        const reporter = new ParityReporter({ title: 'Select', outputDirectory: directory });
+        reporter.onTestEnd(
+            { title: 'touch', parent: { project: () => ({ name: 'firefox' }) } } as TestCase,
+            {
+                status: 'skipped',
+                attachments: [],
+                errors: [],
+                annotations: [{ type: 'skip', description: 'hasTouch unsupported' }]
+            } as unknown as TestResult
+        );
+        reporter.onEnd({ status: 'passed' } as FullResult);
+        const report = JSON.parse(readFileSync(join(directory, 'observations.json'), 'utf8'));
+        assert.equal(report.scenarios[0].annotations[0].description, 'hasTouch unsupported');
+        assert.match(
+            readFileSync(join(directory, 'summary.md'), 'utf8'),
+            /\| firefox \| touch \| skipped \| none \| hasTouch unsupported \|/
+        );
+    } finally {
+        rmSync(directory, { recursive: true, force: true });
+    }
+});

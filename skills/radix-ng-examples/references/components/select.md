@@ -126,6 +126,7 @@ the behavior of a native `<select>`. Use `rdxSelectItemAlignedPosition` and
 - [Change details and interaction state](../examples/select--change-details-and-interaction-state.md)
 - [Deferred unmount and imperative actions](../examples/select--deferred-unmount-and-imperative-actions.md)
 - [Typeahead](../examples/select--typeahead.md)
+- [Dynamic options](../examples/select--dynamic-options.md)
 - [Focus management](../examples/select--focus-management.md)
 - [Object values](../examples/select--object-values.md)
 - [Arbitrary values](../examples/select--arbitrary-values.md)

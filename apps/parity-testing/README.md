@@ -96,6 +96,8 @@ No changes to the shared runner, Vite config or Playwright config are needed to 
 `dist/parity-testing/<name>/results/` contains observations, a Markdown summary, an HTML report and
 failure traces. Reports retain all observed differences, including the reviewed ones. Each row is
 identified by browser and scenario; observations also record the engine version and host platform.
+Input capability skips retain their reason in JSON and the Markdown summary. Select's touch cases
+run only where Playwright exposes the required native input API; see its suite guide for limits.
 
 The `parity` CI job runs all discovered suites on Node 24 and Chromium/Firefox/WebKit on Ubuntu 24.04.
 It also builds Storybook and runs Select behavior checks in the same three engines, including native

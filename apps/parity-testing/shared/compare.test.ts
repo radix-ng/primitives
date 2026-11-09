@@ -43,6 +43,14 @@ test('disappeared exceptions and missing/reordered checkpoints require review', 
     );
 });
 
+test('an engine-specific exception cannot hide a difference in another engine', () => {
+    const scoped = expected.map((entry) => ({ ...entry, browser: 'chromium' }));
+    assert.equal(compareObservations('keyboard', angular, react, scoped, 'chromium').unexpected.length, 0);
+    assert.equal(compareObservations('keyboard', angular, react, scoped, 'webkit').unexpected.length, 1);
+    assert.equal(compareObservations('keyboard', angular, angular, scoped, 'webkit').stale.length, 0);
+    assert.equal(compareObservations('keyboard', angular, angular, scoped, 'chromium').stale.length, 1);
+});
+
 test('bounded held-exit focus alternatives reject every unlisted target and changes on the reference side', () => {
     const held = [{ ...expected[0], angular: 'body', angularAlternatives: ['trigger'] }];
     const state = (focus: string) => [{ ...angular[0], state: { ...angular[0].state, focus } }];

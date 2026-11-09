@@ -1,5 +1,6 @@
 import {
     afterNextRender,
+    afterRenderEffect,
     computed,
     DestroyRef,
     Directive,
@@ -266,6 +267,20 @@ export class RdxSelectPopup {
     private readonly positioner = inject(RDX_SELECT_POSITIONER_TOKEN, { optional: true });
 
     constructor() {
+        let populated = false;
+        afterRenderEffect(() => {
+            const open = this.rootContext.open();
+            const values = this.items().map((item) => item.metadata()?.value);
+            if (!open) {
+                populated = false;
+                return;
+            }
+            if (!values.length) return;
+            // Angular has finished registering/removing the view's items. Don't reconcile a
+            // partially constructed collection, a closed retained view, or the first async load.
+            if (populated) untracked(() => this.rootContext.reconcileOptions(values));
+            populated = true;
+        });
         this.positioner?.placed.subscribe(() => {
             if (!this.rootContext.open()) return;
             this.isPositioned.set(true);

@@ -226,6 +226,24 @@ search alias; otherwise matching reads the current ItemText.
 
 <Canvas of={Stories.Typeahead} />
 
+### Dynamic options
+
+Update a signal-backed collection and render options with `@for`, tracking a stable key. Select
+reads the current DOM order for navigation and current item labels for typeahead. Reordering keeps
+the highlighted element; removing it clears highlight so `aria-activedescendant` cannot reference
+a detached option.
+
+Removing a selected option from an already populated open list requests `onValueChange` with
+reason `none`. In single mode, Select falls back to the initial selection if it is still available,
+otherwise `null`. Multiple mode removes missing values. Cancel the event to retain the current
+value. Closing the popup and its initial asynchronous load do not clear selection. A completely
+empty collection retains its value until a later populated update.
+
+In this example, F2 adds Apricot, F3 removes the selected fruit and F6 reverses the options while
+the list stays open. Restore options returns the original collection.
+
+<Canvas of={Stories.DynamicOptions} />
+
 ### Focus management
 
 The popup owns DOM focus and uses `aria-activedescendant` for virtual navigation. Arrow keys and

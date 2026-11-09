@@ -1,4 +1,4 @@
-import { expect, Page } from '@playwright/test';
+import { expect, Page, type Locator } from '@playwright/test';
 import type { CaseName, Reference, TraceEvent } from '../src/contract';
 
 export interface Snapshot {
@@ -40,6 +40,37 @@ export class SelectDriver {
         });
     }
     async goto(name: CaseName): Promise<void> {
+        await this.page.addInitScript(() => {
+            const events: { type: string; trusted: boolean; pointerType?: string; target: string | null }[] = [];
+            Object.assign(window, { parityInput: events });
+            for (const type of [
+                'pointerdown',
+                'pointerup',
+                'pointercancel',
+                'touchstart',
+                'touchmove',
+                'touchend',
+                'touchcancel',
+                'click'
+            ]) {
+                document.addEventListener(
+                    type,
+                    (event) => {
+                        const target = event.target instanceof Element ? event.target : null;
+                        events.push({
+                            type,
+                            trusted: event.isTrusted,
+                            pointerType: event instanceof PointerEvent ? event.pointerType : undefined,
+                            target:
+                                target?.closest('[data-option-key]')?.getAttribute('data-option-key') ??
+                                target?.closest('[data-testid]')?.getAttribute('data-testid') ??
+                                null
+                        });
+                    },
+                    { capture: true, passive: true }
+                );
+            }
+        });
         await this.page.goto(`/${this.framework}.html?case=${name}`);
         await expect(this.trigger).toBeVisible();
         this.metadata = await this.page.evaluate(() => ({
@@ -82,6 +113,73 @@ export class SelectDriver {
     }
     async choose(key: string): Promise<void> {
         await this.option(key).click();
+    }
+    async openByTouch(): Promise<void> {
+        const count = await this.page.evaluate(
+            () => window.parity.events.filter((event) => event.type === 'complete' && event.open).length
+        );
+        await this.trigger.tap();
+        await expect(this.trigger).toHaveAttribute('aria-expanded', 'true');
+        await expect(this.page.getByTestId('popup')).toBeVisible();
+        await expect
+            .poll(() =>
+                this.page.evaluate(
+                    () => window.parity.events.filter((event) => event.type === 'complete' && event.open).length
+                )
+            )
+            .toBe(count + 1);
+    }
+
+    async tapBackground(): Promise<void> {
+        const { x, y } = await this.center(this.page.getByTestId('before'));
+        await this.page.touchscreen.tap(x, y);
+    }
+
+    /** Public Chromium input API: trusted browser events, never DOM dispatchEvent. */
+    async gesture(target: Locator, end: 'cancel' | 'pan'): Promise<void> {
+        const start = await this.center(target);
+        const session = await this.page.context().newCDPSession(this.page);
+        try {
+            await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ ...start, id: 1 }] });
+            if (end === 'pan') {
+                for (const delta of [20, 40, 70, 100]) {
+                    await session.send('Input.dispatchTouchEvent', {
+                        type: 'touchMove',
+                        touchPoints: [{ x: start.x, y: start.y - delta, id: 1 }]
+                    });
+                }
+            }
+            await session.send('Input.dispatchTouchEvent', {
+                type: end === 'cancel' ? 'touchCancel' : 'touchEnd',
+                touchPoints: []
+            });
+        } finally {
+            await session.detach();
+        }
+    }
+
+    private async center(target: Locator): Promise<{ x: number; y: number }> {
+        const bounds = await target.boundingBox();
+        if (!bounds) throw new Error('Touch target has no bounds');
+        return { x: Math.round(bounds.x + bounds.width / 2), y: Math.round(bounds.y + bounds.height / 2) };
+    }
+
+    async inputEvents(): Promise<{ type: string; trusted: boolean; pointerType?: string; target: string | null }[]> {
+        return this.page
+            .evaluate(
+                () =>
+                    (
+                        window as unknown as {
+                            parityInput: {
+                                type: string;
+                                trusted: boolean;
+                                pointerType?: string;
+                                target: string | null;
+                            }[];
+                        }
+                    ).parityInput ?? []
+            )
+            .catch(() => []);
     }
     async highlighted(key: string): Promise<void> {
         await expect(this.option(key)).toHaveAttribute('data-highlighted', '');
