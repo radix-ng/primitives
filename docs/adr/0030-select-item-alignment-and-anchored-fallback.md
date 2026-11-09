@@ -59,6 +59,13 @@ the pin has no equivalent `keepMounted` prop. Storybook separately checks in-flo
 close/reopen during measurement; callback scheduling across different renderers is not a shared
 before-placement phase boundary.
 
+Native wheel requests are not scroll-distance assertions. WebKitGTK applies scrolling incrementally,
+and expansion can consume the first increment by changing height/offset in the native scroll turn.
+Compare stable boundaries after repeated native input, retaining pulse counts and intermediate
+measurements. Wait for unchanged layout/offsets before numeric comparison; keep the 2px tolerance.
+This avoids platform-dependent intermediate samples without modifying either implementation or
+writing scroll offsets from the adapter.
+
 Further work includes live ancestor changes during an aligned session, more custom CSS/scale and
 nested portal/modal configurations, mobile visual viewport movement, actual pinch zoom, real AT and
 saved-profile autofill. These checks do not certify complete geometry or device parity.

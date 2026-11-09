@@ -32,6 +32,7 @@ export class SelectDriver {
     readonly errors: string[] = [];
     readonly measurements: { name: string; bounds: unknown }[] = [];
     metadata: { reference: Reference; framework: string } | undefined;
+    private controlledClock = false;
 
     constructor(
         readonly page: Page,
@@ -113,6 +114,17 @@ export class SelectDriver {
     }
     async key(key: string): Promise<void> {
         await this.page.keyboard.press(key);
+        if (this.controlledClock) await this.page.clock.runFor(32);
+    }
+    async openWithControlledClock(): Promise<void> {
+        await this.page.clock.install({ time: 0 });
+        await this.open();
+        await this.page.clock.pauseAt(60_000);
+        this.controlledClock = true;
+        this.measurements.push({
+            name: 'controlled clock',
+            bounds: { pausedAt: 60_000, keyStepMs: 32, checkpointStepMs: 100 }
+        });
     }
     async choose(key: string): Promise<void> {
         await this.option(key).click();
@@ -326,12 +338,12 @@ export class SelectDriver {
     }
 
     async sizing(name: string) {
-        const bounds = await this.page.evaluate(() => {
+        const bounds = await this.page.evaluate(async () => {
             const positioner = document.querySelector<HTMLElement>('[data-testid="positioner"]')!;
             const popup = document.querySelector<HTMLElement>('[data-testid="popup"]')!;
             const panel = popup.querySelector<HTMLElement>('[rdxSelectItemAlignedPositionContent]') ?? popup;
             const list = document.querySelector<HTMLElement>('[data-testid="list"]')!;
-            return {
+            const measure = () => ({
                 positioner: positioner.getBoundingClientRect().toJSON(),
                 popup: panel.getBoundingClientRect().toJSON(),
                 trigger: document.querySelector('[data-testid="trigger"]')!.getBoundingClientRect().toJSON(),
@@ -339,7 +351,20 @@ export class SelectDriver {
                 scrollHeight: list.scrollHeight,
                 clientHeight: list.clientHeight,
                 side: positioner.getAttribute('data-side')
-            };
+            });
+            // Wheel dispatch does not await native scrolling, particularly in WebKitGTK.
+            // Sample actual layout until it stops changing; two frames can still be mid-gesture.
+            let previous = '';
+            let stableFrames = 0;
+            for (let frame = 0; frame < 120; frame++) {
+                await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+                const current = measure();
+                const key = JSON.stringify(current);
+                stableFrames = key === previous ? stableFrames + 1 : 0;
+                if (stableFrames >= 6) return current;
+                previous = key;
+            }
+            throw new Error(`Select sizing did not settle: ${previous}`);
         });
         this.measurements.push({ name, bounds });
         return bounds;
@@ -350,6 +375,29 @@ export class SelectDriver {
         // Use the list's padding so wheel geometry is not coupled to hovering a particular row.
         await this.page.mouse.move(box.x + 1, box.y + box.height / 2);
         await this.page.mouse.wheel(0, delta);
+    }
+
+    async wheelListToBoundary(direction: 'start' | 'end', minHeight = 0) {
+        let pulses = 0;
+        try {
+            await expect
+                .poll(
+                    async () => {
+                        await this.wheelList(direction === 'start' ? -1200 : 1200);
+                        pulses++;
+                        const bounds = await this.sizing('native wheel sample');
+                        const remaining =
+                            direction === 'start'
+                                ? bounds.scrollTop
+                                : bounds.scrollHeight - bounds.clientHeight - bounds.scrollTop;
+                        return remaining <= 1 && bounds.positioner.height >= minHeight;
+                    },
+                    { message: `${this.framework}: native wheel reaches ${direction}`, timeout: 10_000 }
+                )
+                .toBe(true);
+        } finally {
+            this.measurements.push({ name: 'native wheel input', bounds: { direction, pulses, delta: 1200 } });
+        }
     }
 
     async geometry(name: string, option?: string): Promise<void> {
@@ -395,9 +443,12 @@ export class SelectDriver {
         listScrollBaseline?: number,
         geometryState = false
     ): Promise<void> {
+        // With paused time, advance rendering explicitly without spending the query's 750ms
+        // timeout on protocol/trace collection. Ordinary scenarios retain frame-based settling.
+        if (this.controlledClock) await this.page.clock.runFor(100);
         // Wait for observable state to stabilize, without forcing focus, values or completion callbacks.
         const state = await this.page.evaluate(
-            async ({ listScrollBaseline, geometryState }) => {
+            async ({ listScrollBaseline, geometryState, controlledClock }) => {
                 const read = (): Snapshot => {
                     const trigger = document.querySelector<HTMLElement>('[data-testid="trigger"]')!;
                     const popup = document.querySelector<HTMLElement>('[data-testid="popup"]');
@@ -463,6 +514,7 @@ export class SelectDriver {
                         direction: getComputedStyle(trigger).direction
                     };
                 };
+                if (controlledClock) return read();
                 let previous = '';
                 let stable = 0;
                 for (let frame = 0; frame < 120; frame++) {
@@ -474,7 +526,7 @@ export class SelectDriver {
                 }
                 throw new Error('Fixture did not settle within 120 animation frames');
             },
-            { listScrollBaseline, geometryState }
+            { listScrollBaseline, geometryState, controlledClock: this.controlledClock }
         );
         this.checkpoints.push({ name, state });
         for (const event of state.events) {

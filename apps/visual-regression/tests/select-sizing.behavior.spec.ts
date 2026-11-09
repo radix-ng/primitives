@@ -34,10 +34,26 @@ for (const index of [0, 39]) {
         const { errors, positioner, list, trigger } = await setup(page, `initialIndex:${index}`);
         await expect(positioner).toHaveAttribute('data-side', 'none');
         const initial = (await positioner.boundingBox())!.height;
-        const rect = (await list.boundingBox())!;
-        await page.mouse.move(rect.x + 1, rect.y + rect.height / 2);
-        await page.mouse.wheel(0, index === 0 ? 120 : -120);
-        await expect.poll(async () => (await positioner.boundingBox())!.height).toBeGreaterThan(initial + 20);
+        const availableHeight = await positioner.evaluate((el) => {
+            const style = getComputedStyle(el);
+            return innerHeight - parseFloat(style.marginTop) - parseFloat(style.marginBottom);
+        });
+        // Native wheel deltas are input requests, not guaranteed travel (WebKitGTK scrolls
+        // incrementally). Exercise growth to its observable limit instead of one input packet.
+        await expect
+            .poll(
+                async () => {
+                    const rect = (await list.boundingBox())!;
+                    await page.mouse.move(rect.x + 1, rect.y + rect.height / 2);
+                    await page.mouse.wheel(0, index === 0 ? 1200 : -1200);
+                    return (await positioner.boundingBox())!.height;
+                },
+                { timeout: 10_000, intervals: [100] }
+            )
+            .toBeGreaterThanOrEqual(availableHeight - 1);
+        const grown = (await positioner.boundingBox())!.height;
+        expect(grown).toBeGreaterThan(initial + 20);
+        expect(grown).toBeLessThanOrEqual(availableHeight + 1);
         await expect(trigger).toContainText(index === 0 ? 'Item 00' : 'Item 39');
         await inViewport(page);
         expect(errors).toEqual([]);

@@ -23,26 +23,30 @@ export const sizingScenarios: Scenario[] = sizingNames.map((fixture) => ({
         const selected = config.geometry!.selectedIndex;
         if (!referenceGap) await d.geometry('selected item visible', `item-${selected ?? 0}`);
         if (fixture.includes('-grow-')) {
-            await d.wheelList(fixture.endsWith('-up') ? -120 : 120);
-            await expect
-                .poll(async () => (await d.page.getByTestId('positioner').boundingBox())!.height)
-                .toBeGreaterThan(initial.positioner.height + 20);
+            const availableHeight = await d.page.getByTestId('positioner').evaluate((el) => {
+                const style = getComputedStyle(el);
+                return innerHeight - parseFloat(style.marginTop) - parseFloat(style.marginBottom);
+            });
+            await d.wheelListToBoundary(fixture.endsWith('-up') ? 'start' : 'end', availableHeight - 1);
             const grown = await d.sizing('expanded');
-            expect(grown.positioner.height).toBeLessThanOrEqual(461);
+            expect(grown.positioner.height).toBeGreaterThan(initial.positioner.height + 20);
+            expect(Math.abs(grown.positioner.height - availableHeight)).toBeLessThanOrEqual(1);
             await d.checkpoint('expanded', { open: true, popupWithinViewport: true }, undefined, true);
         }
         if (fixture.endsWith('-capped')) {
-            await d.wheelList(200);
-            await d.page.evaluate(
-                () =>
-                    new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
-            );
+            await d.wheelListToBoundary('end');
             const capped = await d.sizing('height cap');
             expect(capped.popup.height).toBeLessThanOrEqual(241);
             expect(Math.abs(capped.positioner.height - initial.positioner.height)).toBeLessThanOrEqual(1);
             await d.checkpoint('capped', { open: true, popupWithinViewport: true }, undefined, true);
         }
         if (fixture.endsWith('-short')) expect(initial.popup.height).toBeLessThan(150);
+        // Wheel scrolling retains highlight. Move it before Home so an already highlighted
+        // first option is reached through navigation, not an unchanged-highlight key press.
+        await d.key('ArrowDown');
+        await d.key('Home');
+        await d.highlighted('item-0');
+        if (!referenceGap) await d.geometry('first option visible', 'item-0');
         const last = `item-${config.options.length - 1}`;
         await d.key('End');
         await d.highlighted(last);

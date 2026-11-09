@@ -110,6 +110,11 @@ and the active-item origin with no selection. Shared assertions check actual hig
 state and form entries. No typeahead exception category is needed; only the existing DOM focus and
 closed-view retention differences remain on these checkpoints.
 
+The origin-after-arrows case pauses Playwright time after opening, advances 32ms per native key and
+100ms per checkpoint, and retains those settings in the observations. Its intermediate Berlin
+checkpoint cannot consume the 750ms query timeout on a busy runner before the cycling key arrives.
+DOM assertions still read the real rendered state; the separate timeout scenario advances beyond 750ms.
+
 Trigger and Popup share one ephemeral session owned by Root. The case-insensitive, indexed prefix
 matcher is shared with Menu in core; Menu retains its own timeout and focus policy. Index matching
 preserves distinct values when labels are equal. Unit coverage verifies exact timeout boundaries,
@@ -234,6 +239,14 @@ CSS pixels; raw deltas live in `sizingComparison`. Shared assertions also cover 
 in both directions, explicit max-height, short lists, edge fallback, no selection and retained reopen.
 The two transformed cases instead assert and record the exact safe-fallback/reference-overflow gap.
 Neither fixture writes model, focus, open state or completion to make geometry agree.
+
+Wheel deltas describe native input, not guaranteed CSS-pixel travel. In particular, Linux WebKitGTK
+can apply a gesture incrementally while item-aligned expansion changes the scroll range. Growth
+checks use repeated native wheel input until the available height and the requested scroll boundary
+are reached; the capped case reaches the list's end. Measurements wait for six unchanged animation
+frames rather than sampling an in-flight gesture. Every input pulse and intermediate measurement is
+retained, and the 2px comparison tolerance is unchanged. Home/End then verifies keyboard navigation
+across the full list before committing a value.
 
 Both visual panels use equivalent consumer constraints; anchored heights are capped through their
 rendered side, while item-aligned height is allowed to expand. Popup/Content remain separate Angular

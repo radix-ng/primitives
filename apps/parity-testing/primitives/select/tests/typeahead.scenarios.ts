@@ -18,7 +18,7 @@ export const typeaheadScenarios: Scenario[] = [
         name: 'typeahead: origin after arrows',
         fixture: 'typeahead',
         async run(d) {
-            await d.open();
+            await d.openWithControlledClock();
             await d.key('End');
             await d.highlighted('tokyo');
             await d.key('b');
