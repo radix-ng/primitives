@@ -14104,6 +14104,8 @@ The return arrow (Left in LTR, Right in RTL) closes the popup and returns focus 
 Triggers move through the shared Composite focus model: only one trigger is in the tab order at a time.
 The table describes a horizontal bar. With `orientation="vertical"`, Up/Down move between closed
 triggers and Right (LTR) / Left (RTL) opens the focused menu. Popup item navigation remains vertical.
+The opposite arrow returns focus to the trigger; preserved interaction mode reopens the same popup
+without moving focus back inside. Escape closes the menu and ends that mode.
 Horizontal trigger navigation follows text direction. Home/End always follow DOM order.
 With menus closed, arrow keys move focus between triggers; with a menu open, sibling switching focuses
 the new popup. Disabled triggers are skipped.
@@ -14157,7 +14159,9 @@ native events. Whole-bar `disabled` is inherited by the child menus.
 | `[data-disabled]`   | The trigger is disabled.      |
 
 The menubar root exposes `data-orientation`, `data-modal` (when modal), and `data-has-submenu-open`
-(present while any directly owned menu is open, including after a nested submenu closes).
+(present in open-on-focus interaction mode). Opening a directly owned menu enables this mode;
+accepted `sibling-open` and `list-navigation` closes preserve it. Other accepted closes end the mode,
+even when a canceled sibling close has left another popup open. Nested child closing does not end it.
 
 ### Menu parts
 

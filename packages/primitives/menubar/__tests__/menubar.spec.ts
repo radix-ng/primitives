@@ -14,7 +14,12 @@ const flushMicrotasks = () => Promise.resolve();
     imports: [RdxMenubarRoot, RdxMenuModule],
     template: `
         <div [orientation]="orientation()" rdxMenubarRoot>
-            <ng-container #fileMenu="rdxMenuRoot" [disabled]="fileDisabled()" rdxMenuRoot>
+            <ng-container
+                #fileMenu="rdxMenuRoot"
+                [defaultOpen]="fileDefaultOpen()"
+                [disabled]="fileDisabled()"
+                rdxMenuRoot
+            >
                 <button rdxMenuTrigger>File</button>
                 @if (fileMenu.open()) {
                     <div rdxMenuPositioner>
@@ -52,8 +57,28 @@ const flushMicrotasks = () => Promise.resolve();
 })
 class MenubarHost {
     readonly fileDisabled = signal(false);
+    readonly fileDefaultOpen = signal(false);
     readonly orientation = signal<'horizontal' | 'vertical'>('horizontal');
     readonly fileMenu = viewChild.required(RdxMenuRoot);
+}
+
+@Component({
+    imports: [RdxMenubarRoot, RdxMenuModule],
+    template: `
+        <div rdxMenubarRoot>
+            <ng-container #menu="rdxMenuRoot" [open]="open()" rdxMenuRoot>
+                <button rdxMenuTrigger>File</button>
+                @if (menu.open()) {
+                    <div rdxMenuPositioner>
+                        <div rdxMenuPopup><button rdxMenuItem>New</button></div>
+                    </div>
+                }
+            </ng-container>
+        </div>
+    `
+})
+class BoundMenubarHost {
+    readonly open = signal(false);
 }
 
 @Component({
@@ -163,6 +188,30 @@ describe('Menubar', () => {
         expect(root.hasAttribute('tabindex')).toBe(false);
     });
 
+    it('enters interaction mode for an initially default-open menu', async () => {
+        fixture.destroy();
+        fixture = TestBed.createComponent(MenubarHost);
+        fixture.componentInstance.fileDefaultOpen.set(true);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(fixture.componentInstance.fileMenu().open()).toBe(true);
+        expect(fixture.nativeElement.querySelector('[rdxMenubarRoot]').hasAttribute('data-has-submenu-open')).toBe(
+            true
+        );
+    });
+
+    it('updates interaction mode when an Angular binding changes open state', async () => {
+        const bound = TestBed.createComponent(BoundMenubarHost);
+        bound.detectChanges();
+        const bar: HTMLElement = bound.nativeElement.querySelector('[rdxMenubarRoot]');
+        bound.componentInstance.open.set(true);
+        await bound.whenStable();
+        expect(bar.hasAttribute('data-has-submenu-open')).toBe(true);
+        bound.componentInstance.open.set(false);
+        await bound.whenStable();
+        expect(bar.hasAttribute('data-has-submenu-open')).toBe(false);
+    });
+
     it('triggers have role="menuitem" and aria-haspopup="menu"', () => {
         triggers.forEach((t) => {
             expect(t.getAttribute('role')).toBe('menuitem');
@@ -199,7 +248,7 @@ describe('Menubar', () => {
         expect(document.activeElement).toBe(triggers[2]);
     });
 
-    it('closes a vertical popup through its owner with the original navigation event', async () => {
+    it('reopens a vertical navigation return through native trigger focus', async () => {
         fixture.componentInstance.orientation.set('vertical');
         fixture.detectChanges();
         keydown(triggers[0], 'ArrowRight');
@@ -208,25 +257,42 @@ describe('Menubar', () => {
         const root = fixture.componentInstance.fileMenu();
         const changes: RdxMenuOpenChange[] = [];
         const preventedAtClose: boolean[] = [];
+        const completions: boolean[] = [];
+        root.onOpenChangeComplete.subscribe((open) => completions.push(open));
         root.onOpenChange.subscribe((change) => {
             changes.push(change);
             if (!change.open) preventedAtClose.push(change.event.defaultPrevented);
         });
         const popup = fixture.nativeElement.querySelector('[rdxMenuPopup]') as HTMLElement;
         popup.querySelector<HTMLElement>('[rdxMenuItem]')!.focus();
+        const highlightedIndex = root.activeIndex();
         const event = new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true, cancelable: true });
         popup.dispatchEvent(event);
         fixture.detectChanges();
         await fixture.whenStable();
 
-        expect(root.open()).toBe(false);
-        expect(changes.at(-1)?.reason).toBe('list-navigation');
-        expect(changes.at(-1)?.event).toBe(event);
-        expect(preventedAtClose).toEqual([true]);
-        expect(document.activeElement).toBe(triggers[0]);
-        keydown(triggers[0], 'ArrowRight');
-        fixture.detectChanges();
         expect(root.open()).toBe(true);
+        expect(changes.map(({ open, reason }) => ({ open, reason }))).toEqual([
+            { open: false, reason: 'list-navigation' },
+            { open: true, reason: 'trigger-focus' }
+        ]);
+        expect(changes[0].event).toBe(event);
+        expect(changes[1].event).toBeInstanceOf(FocusEvent);
+        expect(preventedAtClose).toEqual([true]);
+        expect(root.activeIndex()).toBe(highlightedIndex);
+        expect(fixture.nativeElement.querySelector('[rdxMenuPopup]')).toBe(popup);
+        expect(completions).not.toContain(false);
+        expect(document.activeElement).toBe(triggers[0]);
+        expect(fixture.nativeElement.querySelector('[rdxMenubarRoot]').hasAttribute('data-has-submenu-open')).toBe(
+            true
+        );
+        keydown(triggers[0], 'Escape');
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(root.open()).toBe(false);
+        expect(fixture.nativeElement.querySelector('[rdxMenubarRoot]').hasAttribute('data-has-submenu-open')).toBe(
+            false
+        );
     });
 
     it('does not close a disabled vertical menu through its return arrow', async () => {

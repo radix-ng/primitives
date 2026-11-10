@@ -2,6 +2,9 @@
 
 Status: Accepted
 
+The interaction-mode decision and two overlapping-state exceptions below are superseded by
+[ADR 0040](0040-menu-navigation-return.md).
+
 Date: 2026-11-10
 
 ## Context

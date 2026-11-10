@@ -14,7 +14,7 @@ The fixture keeps uncontrolled Menu roots rather than mirroring state into a coo
 Angular composes Menubar through a consumer `hostDirectives` directive, so its original selector
 attribute is absent. Focus containment and the backdrop cutout use the registered native host.
 Reports retain native events, trusted coordinates, timestamps and source commit/digest. There are
-forty exact expected pairs for the reviewed differences described in the source matrix.
+sixteen exact expected pairs for the reviewed differences described in the source matrix.
 
 Five collection cases cover insertion, closed focused removal, keyed reordering, unfocused disabling
 and labels, followed by forward switching. Native focus repair is shared with floating menus.
@@ -27,7 +27,9 @@ and retry. Four vertical cases cover bar roving, LTR/RTL opening, popup items an
 cases cover child Escape and pointer/forward-key switching, including composed popup hosts. A
 three-enabled-destination RTL case checks actual direction. Bar state is recorded alongside focus.
 
-Two return-arrow cases record the pin's immediate reopening in LTR/RTL; Angular completes the close.
+Two return-arrow cases match immediate reopening in LTR/RTL through native trigger focus. The bar
+retains interaction mode across sibling/navigation closes and resets it on other accepted closes.
+Actual state, highlight, callback order and completion agree without vertical-return or overlap exceptions.
 Four child keyboard-cancellation cases compare opening, Escape/arrow closing and retry, including
 the independent focus/highlight handoff when an arrow close is canceled. A composed case wraps
 popup, item and submenu-trigger directives without their original selector attributes.

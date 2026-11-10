@@ -9,7 +9,8 @@ import {
     inject,
     input,
     signal,
-    Signal
+    Signal,
+    untracked
 } from '@angular/core';
 import { findNonDisabledListIndex, RdxCompositeList, RdxCompositeRoot } from '@radix-ng/primitives/composite';
 import { BooleanInput, createContext, getActiveElement, provideFloatingTree } from '@radix-ng/primitives/core';
@@ -114,6 +115,8 @@ export class RdxMenubarRoot {
     private readonly ids = new WeakMap<RdxMenuRoot, string>();
     private items: RdxMenubarItem[] = [];
     private readonly itemsVersion = signal(0);
+    private readonly interactionMode = signal(false);
+    private readonly observedOpenStates = new WeakMap<RdxMenuRoot, boolean>();
     // Capture Escape ownership before an earlier document listener closes/unmounts its menu.
     private readonly escapeOwners = new WeakMap<KeyboardEvent, string | undefined>();
 
@@ -133,8 +136,8 @@ export class RdxMenubarRoot {
     readonly isAnyOpen = computed(
         () => this.activeId() !== null || this.menuRoots().some((root) => !root.isSubmenu() && root.open())
     );
-    /** Menus directly owned by the bar are its submenus. */
-    readonly hasSubmenuOpen = computed(() => this.menuRoots().some((root) => !root.isSubmenu() && root.open()));
+    /** Open-on-focus mode, retained while navigating between the bar and its menus. */
+    readonly hasSubmenuOpen = this.interactionMode.asReadonly();
 
     constructor() {
         inject(DestroyRef).onDestroy(
@@ -187,6 +190,22 @@ export class RdxMenubarRoot {
 
             onCleanup(() => {
                 registered.forEach((cleanup) => cleanup());
+            });
+        });
+
+        effect(() => {
+            const states = this.menuRoots()
+                .filter((root) => !root.isSubmenu())
+                .map((root) => ({ root, open: root.open() }));
+            // Input/default changes need no imperative open request. Observe only changed Roots;
+            // an unchanged open sibling must not reactivate a mode ended by another menu's close.
+            untracked(() => {
+                for (const { root, open } of states) {
+                    const previous = this.observedOpenStates.get(root);
+                    if (previous === open) continue;
+                    if (previous !== undefined || open) this.updateInteractionMode(open, root.lastOpenChangeReason());
+                    this.observedOpenStates.set(root, open);
+                }
             });
         });
 
@@ -265,6 +284,13 @@ export class RdxMenubarRoot {
 
     private registerMenuRoot(root: RdxMenuRoot, trigger: HTMLElement): () => void {
         const id = this.idFor(root);
+        const handleOpenChange = ({ open, reason }: { open: boolean; reason?: string }) => {
+            this.observedOpenStates.set(root, open);
+            this.updateInteractionMode(open, reason);
+        };
+        // Observe accepted requests synchronously: returning native focus after a navigation close
+        // must still see open-on-focus mode. Nested Roots have their own return-focus policy.
+        root.floatingContext.events.on('openchange', handleOpenChange);
         const unregisterPopupArrowNavigation = root.registerPopupArrowNavigationHandler((offset, event) => {
             if (this.disabled()) {
                 return false;
@@ -314,6 +340,7 @@ export class RdxMenubarRoot {
         const unregisterItem = this.registerResolvedItem(id, trigger, root);
 
         return () => {
+            root.floatingContext.events.off('openchange', handleOpenChange);
             unregisterItem();
             unregisterCompositeItem();
             unregisterTriggerInteraction();
@@ -341,6 +368,11 @@ export class RdxMenubarRoot {
             if (this.activeId() === id) this.activeId.set(null);
             this.markItemsChanged();
         };
+    }
+
+    private updateInteractionMode(open: boolean, reason?: string): void {
+        if (open) this.interactionMode.set(true);
+        else if (reason !== 'sibling-open' && reason !== 'list-navigation') this.interactionMode.set(false);
     }
 
     private handleTriggerInteraction(
@@ -386,7 +418,7 @@ export class RdxMenubarRoot {
                 return true;
             }
             case 'pointerenter': {
-                if (interaction.event.pointerType === 'touch' || !this.hasOpenMenu()) {
+                if (interaction.event.pointerType === 'touch' || !this.hasSubmenuOpen()) {
                     return false;
                 }
 
@@ -516,10 +548,17 @@ export class RdxMenubarRoot {
 
         this.highlightItem(focusedItem);
 
-        if (this.hasOpenMenu() && this.activeId() !== focusedItem.id) {
-            focusedItem.open('trigger-focus', event);
+        if (this.hasSubmenuOpen() && (this.activeId() !== focusedItem.id || !focusedItem.root?.open())) {
+            if (focusedItem.root && this.activeId() === focusedItem.id) {
+                // A navigation return keeps focus on its trigger and the mounted popup's highlight.
+                this.openMenu(focusedItem.id, focusedItem.root, false, 'trigger-focus', event);
+            } else focusedItem.open('trigger-focus', event);
             if (!focusedItem.root) this.activateItem(focusedItem.id);
-        } else if (focusedItem.root?.open() && focusedItem.root.lastOpenChangeReason() === 'trigger-hover') {
+        } else if (
+            this.hasSubmenuOpen() &&
+            focusedItem.root?.open() &&
+            focusedItem.root.lastOpenChangeReason() === 'trigger-hover'
+        ) {
             focusedItem.open('trigger-focus', event);
         }
     }

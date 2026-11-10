@@ -15,14 +15,15 @@ This is incremental evidence, not complete API or accessibility certification.
 | Dynamic insertion/removal/reordering, labels and unfocused disabling  | Pinned suite                            | Covered                                        |
 | Current-trigger disabling, backward LTR/RTL and single-menu switching | Pinned suite                            | Covered with exact pin limitations below       |
 | Vertical bar opening/roving, popup navigation and Escape              | Pinned suite                            | Covered for vertical popup lists               |
-| Vertical return arrow, LTR/RTL                                        | Pinned suite                            | Compared; intentional close/reopen difference  |
+| Vertical return arrow, LTR/RTL                                        | Pinned suite                            | Covered; native trigger-focus reopen           |
 | Nested keyboard/pointer switching and composed popup hosts            | Pinned suite                            | Covered with child-completion limitation       |
-| Canceled sibling open/close and retry                                 | Pinned suite                            | Covered with overlapping-state limitation      |
+| Canceled sibling open/close and retry                                 | Pinned suite                            | Covered, including interaction mode            |
 | Child opening/closing cancellation and retry                          | Pinned suite                            | Keyboard open, Escape and return arrow covered |
+| Default and externally bound open state                               | Angular unit checks                     | Regression; differential cases pending         |
 | Touch, real devices and assistive technology                          | Not established                         | Pending                                        |
 
 The [runner](../../../apps/parity-testing/primitives/menubar/README.md) defines 42 scenarios and
-126 comparisons. Forty exact pairs document six reviewed differences below.
+126 comparisons. Sixteen exact pairs document four reviewed differences below.
 
 Five dynamic cases insert/remove/reorder top-level menus and change an unfocused trigger's
 `disabled` state or a label. Roving tabindex follows the actual focused trigger as DOM order changes;
@@ -47,17 +48,9 @@ same trigger leaves its existing popup and focus in place.
   same close/reopen cycle and leaves focus on the trigger. Angular preserves the focused item and
   popup. Three exact focus/callback pairs record the difference; forward navigation agrees.
 
-- `overlapping-menu-open-state`: a canceled sibling close can leave two menus open. After closing
-  one, the pin resets `data-has-submenu-open` despite another menu remaining open. Angular derives
-  the flag from actual directly owned Roots. Two exact bar-state pairs retain that behavior.
 - `nested-exit-completion`: switching away from an open nested branch loses its close-completion
   callback in the pin. Six exact completion-array pairs retain Angular's actual completion, as in
   [Menu's matrix](../menu/PARITY.md). Open requests, callback order and native focus agree.
-
-- `vertical-close-reopen`: the pin's nested close-key handler closes the vertical popup, then its
-  trigger-focus handler reopens it immediately. Angular completes the close and leaves focus on the
-  trigger. Twenty-two exact pairs cover visible/open state and callbacks in LTR/RTL. This is an
-  intentional library policy; these scenarios do not establish identical vertical-arrow behavior.
 
 These pairs retain Angular's reachable Tab entry and atomic sibling transition rather than copying
 incidental React interaction plumbing. Changed or stale exceptions fail. See
@@ -90,13 +83,17 @@ The composed case also wraps items. Semantic DOM fallback preserves initial focu
 original directive attributes; Composite metadata continues to own item navigation.
 Child forward navigation delegates through its DI owner instead of registering as a bar item.
 
-Two return-arrow cases compare LTR/RTL vertical closing. Four child-cancellation cases veto opening,
-Escape closing and arrow closing, then retry through the native application F5 command. A canceled
+Two return-arrow cases compare LTR/RTL vertical close requests and native trigger-focus reopening.
+Menubar stores interaction mode independently of actual open menus, matching the pin: accepted
+opening enables it, sibling/navigation closing preserves it, and other accepted closing ends it.
+The popup remains mounted with its highlight; focus stays on the trigger and no extra completion
+is emitted. Twenty-two vertical-return and two overlapping-state exceptions have been removed.
+Four child-cancellation cases veto opening, Escape closing and arrow closing, then retry through the native application F5 command. A canceled
 arrow close keeps the child open but returns focus to its trigger and clears child highlight; a
 canceled Escape keeps child focus. Menu and Menubar use the same Root navigation-return operation.
-It consumes and forwards the original KeyboardEvent before callbacks, clears highlight and resolves
-a surviving trigger through DI. Submenu classification uses Root ownership, including a composed
-trigger without its original attribute. No parallel keyboard-focus state is introduced.
+It consumes and forwards the original KeyboardEvent before callbacks and resolves a surviving
+trigger through DI. Only nested returns clear highlight; a top-level navigation reopen preserves it.
+Submenu classification uses Root ownership, including a composed trigger without its original attribute. No parallel keyboard-focus state is introduced.
 
 Custom horizontal popup orientation, nested pointer/selection cancellation, retained coordinator
 portals and real device/AT work remain separate audits. See

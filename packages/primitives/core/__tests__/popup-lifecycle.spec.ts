@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useTransitionStatus } from '../src/composables/use-transition-status';
 import { usePopupLifecycle } from '../src/floating/use-popup-lifecycle';
 
@@ -50,6 +50,44 @@ describe('shared popup lifecycle', () => {
         host.lifecycle.unmount();
         await settle();
         expect(closedCompletions()).toEqual([false]);
+    });
+
+    it('does not replay an enter completion when a close reopens before render', async () => {
+        change(true);
+        await settle();
+        await vi.waitFor(() => expect(host.completions).toEqual([true]));
+        const close = change(false, true);
+        change(true);
+        await settle();
+        close.preventUnmountOnClose();
+        expect(host.lifecycle.present()).toBe(true);
+        expect(host.lifecycle.status()).toBeUndefined();
+        expect(host.completions).toEqual([true]);
+        change(false);
+        await settle();
+        expect(host.completions).toEqual([true, false]);
+    });
+
+    it('preserves an unfinished enter when a close reopens before render', async () => {
+        let finishAnimation!: () => void;
+        const finished = new Promise<void>((resolve) => {
+            finishAnimation = resolve;
+        });
+        const element: HTMLElement = fixture.nativeElement;
+        element.style.transitionDuration = '1s';
+        const getAnimations = vi.fn(() => [{ finished }]);
+        Object.defineProperty(element, 'getAnimations', { value: getAnimations });
+        host.lifecycle.registerElement(element);
+        change(true);
+        await settle();
+        await vi.waitFor(() => expect(getAnimations).toHaveBeenCalledOnce());
+        expect(host.completions).toEqual([]);
+        change(false);
+        change(true);
+        await settle();
+        finishAnimation();
+        await vi.waitFor(() => expect(host.completions).toEqual([true]));
+        expect(host.lifecycle.status()).toBeUndefined();
     });
 
     it('holds the closing phase until manual completion, including a batched close/unmount', async () => {
@@ -165,6 +203,17 @@ describe('shared popup lifecycle', () => {
         await settle();
         expect(host.lifecycle.present()).toBe(false);
         expect(closedCompletions()).toEqual([false, false]);
+    });
+
+    it('starts a fresh enter when immediate unmount completion reopens before render', async () => {
+        change(true);
+        await settle();
+        await vi.waitFor(() => expect(host.completions).toEqual([true]));
+        host.reopenOnComplete = true;
+        change(false);
+        host.lifecycle.unmount();
+        await settle();
+        await vi.waitFor(() => expect(host.completions).toEqual([true, false, true]));
     });
 
     it('ignores retained callbacks after destruction', async () => {

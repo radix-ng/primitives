@@ -72,14 +72,17 @@ Coordinator inside elements inherit through Menu DI, preserving cancellation acr
 Logical highlight survives those transfers. The shared dismissal Escape predicate receives its original
 KeyboardEvent; the coordinator records ownership per native event before earlier listeners mutate
 Root state. Synchronous return respects focus on another trigger. Vertical bar roving and cross-axis
-opening follow orientation/direction; child forward arrows delegate to their owning Root. The bar open
-flag derives from directly owned Roots; exact pin exceptions retain that flag and child completion.
+opening follow orientation/direction; child forward arrows delegate to their owning Root. The bar interaction
+mode observes accepted events from directly owned Roots; exact pin exceptions retain child completion.
 Navigation return (ADR 0040) is shared by submenu Popup and vertical Menubar through Menu Root.
-It consumes/forwards the original KeyboardEvent, requests closing, clears the existing highlight
-and focuses a surviving DI owner trigger. A canceled arrow-close still returns focus; a canceled
-Escape keeps child focus. Exact vertical-arrow exceptions retain an intentional complete close
-where the pin preserves interaction mode and reopens the same popup through trigger focus. This is
-an intentional library policy, independent of framework limitations.
+It consumes/forwards the original KeyboardEvent, requests closing and focuses a surviving DI owner
+trigger. Nested menus clear their highlight even when the arrow close is canceled; a canceled Escape
+keeps child focus. Menubar retains open-on-focus mode through accepted sibling/navigation closes
+and clears it on other accepted closes, matching Base UI. This mode has independent semantics and
+uses one signal rather than an aggregate of open Roots. Native vertical return focus reopens the
+same popup without autofocus, preserving highlight/view identity and avoiding close completion.
+A reactive query observes default/external open inputs; a WeakMap of handled per-Root values
+prevents unchanged open siblings from re-enabling interaction mode after another menu closes.
 Dialog/Drawer shared demo styles use current boolean states; Drawer uses CSS transitions so gesture
 updates do not replay entry keyframes. Browser exit tests pause/seek/finish actual WAAPI effects.
 

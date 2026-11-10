@@ -23,6 +23,8 @@ export async function runComposition(d: MenubarDriver, name: CompositionCase) {
         await d.page.keyboard.press('Escape');
         if (name.startsWith('cancel-switch-close')) {
             await d.checkpoint('closed one overlapping menu');
+            await file.hover();
+            await d.checkpoint('hover after interaction mode ended', { open: ['edit'] });
             await d.page.keyboard.press('Escape');
         }
         await d.checkpoint('closed after retry', { open: [] });

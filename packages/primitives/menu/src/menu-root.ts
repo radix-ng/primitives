@@ -747,7 +747,9 @@ export class RdxMenuRoot {
         event?.preventDefault();
         event?.stopPropagation();
         this.close('list-navigation', event);
-        this.setActiveIndex(null);
+        // A Menubar return can reopen synchronously from trigger focus. Preserve that menu's
+        // highlight; nested menus hand their highlight back even when the close is canceled.
+        if (this.parentType() !== 'menubar') this.setActiveIndex(null);
         this.getReturnFocusElement()?.focus({ preventScroll: true });
     }
 

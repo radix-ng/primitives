@@ -18,28 +18,53 @@ application callback policy. Menu state remains uncontrolled, and browser input 
 
 Use one `RdxMenuRoot.closeForNavigation` operation for submenu Popup and the vertical coordinator.
 Consume the original KeyboardEvent before emitting the cancelable `list-navigation` close request,
-then clear the existing highlight signal and focus the surviving return element through the existing
-DI owner chain. Popup classifies submenus through Root ownership rather than a trigger selector;
-composed popup/item/submenu-trigger hosts omit their original directive attributes. A canceled arrow-close retains open state but still performs that focus/highlight
-handoff. A canceled Escape retains child focus. No new focus store or pending-navigation flag is needed.
+then focus the surviving return element through the existing DI owner chain. A nested menu clears
+its highlight; a directly owned Menubar menu preserves highlight across a synchronous reopen.
+Popup classifies submenus through Root ownership rather than a trigger selector; composed
+popup/item/submenu-trigger hosts omit their original directive attributes. A canceled child arrow-close
+retains open state but still performs that focus/highlight handoff. A canceled Escape retains child focus. No new focus store or pending-navigation flag is needed.
 
 Popup-arrow delegation forwards the same optional KeyboardEvent through parent Roots. A unit checks
-event identity and `defaultPrevented` at callback time, actual close, return focus and reopening.
-The vertical Storybook check verifies closing and reopening through the public keyboard path.
+event identity and `defaultPrevented` at callback time, native trigger-focus reopening, retained popup
+identity/highlight and absence of intermediate close completion. The vertical Storybook check exercises
+the public keyboard path and Escape dismissal.
 
-## Intentional reference difference
+## Menubar interaction mode
 
-The pin's `utils/popups/interactions/useListNavigation.ts` nested close-key handler requests a close
-and focuses the reference. Menubar's trigger-focus handler immediately reopens the same popup, so
-its visible/open state remains true. Its coordinator preserves interaction mode for a
-`list-navigation` close. Angular completes the close and leaves focus on the trigger,
-consistent with its existing direct navigation policy. This is an intentional library contract,
-not an Angular restriction or a claim of identical behavior.
+Match the pin's observable behavior. The original complete-close policy has been removed: it was a
+library choice and had no Angular requirement behind it.
 
-Twenty-two exact LTR/RTL pairs retain that visible-state and callback difference. The prior eighteen
-reviewed pairs remain. Source measurements, complete snapshots and callbacks are retained without
-normalization; changed or disappeared pairs fail. The difference is a library policy choice;
-it does not follow from a React or Angular limitation.
+Base UI's `menubar/Menubar.tsx` retains `hasSubmenuOpen` after accepted `sibling-open` and
+`list-navigation` closes. Its `menu/trigger/MenuTrigger.tsx` enables open-on-focus in that mode.
+The nested close-key handler in `utils/popups/interactions/useListNavigation.ts` returns native focus
+to the trigger, producing `close(list-navigation)` followed by `open(trigger-focus)`.
+
+Angular represents this independent interaction mode with one signal on Menubar. It observes accepted
+open-change events from directly owned Menu Roots, sets the mode on opening, preserves it through
+sibling/navigation closing and clears it on other accepted closes. The flag is not an aggregate of
+current open Roots: a canceled sibling close can leave another popup open after interaction mode ends.
+Nested child events do not change the bar's mode. Hover switching uses the same mode, including
+after an overlapping popup has closed.
+
+A reactive query effect also observes `defaultOpen` and external Angular `open` bindings. A WeakMap
+records which per-Root values have already been handled, including synchronous accepted events;
+unchanged open siblings cannot re-enable a mode ended by another Root. This is input-change
+observation, not a second source of open state. Unit checks cover both input paths.
+
+A native navigation return reopens without moving focus back into the popup. The existing highlight
+and mounted view survive, and no intermediate close completion is emitted. Other focus transfers
+continue through the existing coordinator and Menu focus policy. Cancellation still gates accepted
+state changes. There is no React store, deferred-focus flag or synthetic focus event.
+
+The LTR/RTL cases compare actual state, callbacks, completion and focus without vertical-return
+exceptions. The two overlapping-state exceptions have also disappeared. Changed or disappeared
+exceptions in other cases still fail review.
+
+The shared popup lifecycle starts enter transitions from its Angular render effect. Logical changes
+still invalidate close transactions synchronously, but a close/reopen before render preserves the
+existing enter transition or its completed state. It neither repeats the open completion nor loses
+an unfinished enter completion. Real rendered closing/reopening retains the normal transition path;
+all floating consumers share this rule.
 
 ## Browser test timing
 

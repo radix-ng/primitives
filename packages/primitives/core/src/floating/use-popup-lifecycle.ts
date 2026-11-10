@@ -47,6 +47,7 @@ export function usePopupLifecycle(
     const disposablePresence = computed(() => presences().some((presence) => !presence.keepMounted()));
 
     let previousOpen = untracked(open);
+    let renderedOpen = previousOpen;
     let pendingClose: object | undefined;
     let closingTransition: object | undefined;
 
@@ -63,6 +64,8 @@ export function usePopupLifecycle(
         }
         pendingClose = undefined;
         closing.set(false);
+        // Explicit completion is a lifecycle boundary even if unmount() ran before the render effect.
+        renderedOpen = false;
         onComplete(false);
     };
 
@@ -87,11 +90,9 @@ export function usePopupLifecycle(
         if (nextOpen) {
             pendingClose = undefined;
             closing.set(false);
-            transition.start(true);
         } else {
             pendingClose = {};
             closing.set(true);
-            transition.cancel();
         }
     };
 
@@ -122,8 +123,15 @@ export function usePopupLifecycle(
     );
     effect(
         () => {
-            open();
-            untracked(syncOpen);
+            const nextOpen = open();
+            untracked(() => {
+                syncOpen();
+                // Native focus can close/reopen in one event before Angular renders. Keep the
+                // existing enter transition (or its completed state) when no exit was rendered.
+                if (nextOpen === renderedOpen) return;
+                renderedOpen = nextOpen;
+                if (nextOpen) transition.start(true);
+            });
         },
         { debugName: `${debugName}.open` }
     );
