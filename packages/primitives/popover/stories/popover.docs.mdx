@@ -240,8 +240,14 @@ The deprecated `--radix-popover-*` aliases of these variables are still emitted 
 
 `RdxPopoverPopup` owns dialog semantics, dismissal events, and focus lifecycle events. Bind
 `[initialFocus]` to control the element focused on open and `[finalFocus]` to control where focus
-returns on close. Both inputs accept the same policy values as `RdxFloatingFocusManager`: `false`,
-`true`, an element, or a callback that receives the interaction type.
+returns on close. Initial focus accepts `false`, an element/getter, or a callback receiving the
+open interaction type. Final focus additionally accepts `true` for the default return policy;
+its callback receives the close interaction type.
+
+Default autofocus waits for positioning and focuses the first tabbable control. Layout updates
+do not run autofocus again. Managed modal and trap-focus popovers wrap at both Tab edges. On close,
+default focus returns to the trigger if the user has not deliberately focused something elsewhere.
+Native button click-focus behavior follows the browser; use an explicit focus target when needed.
 
 <ArgTypes of={RdxPopoverPopup} />
 

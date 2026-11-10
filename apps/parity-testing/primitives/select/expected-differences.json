@@ -3,7 +3,7 @@
         "scenario": "array-valued item",
         "checkpoint": "initial",
         "field": "label",
-        "angular": "10 \u00d7 20",
+        "angular": "10 × 20",
         "react": ",",
         "category": "array-item-label"
     },
@@ -11,7 +11,7 @@
         "scenario": "array-valued item",
         "checkpoint": "selected",
         "field": "label",
-        "angular": "30 \u00d7 40",
+        "angular": "30 × 40",
         "react": ",",
         "category": "array-item-label"
     },
@@ -35,7 +35,7 @@
         "scenario": "array-valued item",
         "checkpoint": "reopened",
         "field": "label",
-        "angular": "30 \u00d7 40",
+        "angular": "30 × 40",
         "react": ",",
         "category": "array-item-label"
     },
@@ -3245,6 +3245,342 @@
         "field": "selected",
         "angular": [],
         "react": ["item-39"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: dialog",
+        "checkpoint": "child opened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "nested: dialog",
+        "checkpoint": "child escaped",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: dialog",
+        "checkpoint": "child escaped",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: dialog",
+        "checkpoint": "parent control pressed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: dialog",
+        "checkpoint": "parent control pressed",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: dialog",
+        "checkpoint": "child selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: dialog",
+        "checkpoint": "child selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: popover",
+        "checkpoint": "child opened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "nested: popover",
+        "checkpoint": "child escaped",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: popover",
+        "checkpoint": "child escaped",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: popover",
+        "checkpoint": "parent control pressed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: popover",
+        "checkpoint": "parent control pressed",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: popover",
+        "checkpoint": "child selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: popover",
+        "checkpoint": "child selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: dialog-modal-select",
+        "checkpoint": "child opened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "nested: dialog-modal-select",
+        "checkpoint": "child escaped",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: dialog-modal-select",
+        "checkpoint": "child escaped",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: dialog-modal-select",
+        "checkpoint": "parent control pressed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: dialog-modal-select",
+        "checkpoint": "parent control pressed",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: dialog-modal-select",
+        "checkpoint": "child selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: dialog-modal-select",
+        "checkpoint": "child selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: popover-modal-select",
+        "checkpoint": "child opened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "nested: popover-modal-select",
+        "checkpoint": "child escaped",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: popover-modal-select",
+        "checkpoint": "child escaped",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: popover-modal-select",
+        "checkpoint": "parent control pressed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: popover-modal-select",
+        "checkpoint": "parent control pressed",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: popover-modal-select",
+        "checkpoint": "child selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: popover-modal-select",
+        "checkpoint": "child selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: dialog-custom-portal",
+        "checkpoint": "child opened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "nested: dialog-custom-portal",
+        "checkpoint": "child escaped",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: dialog-custom-portal",
+        "checkpoint": "child escaped",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: dialog-custom-portal",
+        "checkpoint": "parent control pressed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: dialog-custom-portal",
+        "checkpoint": "parent control pressed",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: dialog-custom-portal",
+        "checkpoint": "child selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: dialog-custom-portal",
+        "checkpoint": "child selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: popover-custom-portal",
+        "checkpoint": "child opened",
+        "field": "focus",
+        "angular": "popup",
+        "react": "option:apple",
+        "category": "dom-focus"
+    },
+    {
+        "scenario": "nested: popover-custom-portal",
+        "checkpoint": "child escaped",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: popover-custom-portal",
+        "checkpoint": "child escaped",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: popover-custom-portal",
+        "checkpoint": "parent control pressed",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: popover-custom-portal",
+        "checkpoint": "parent control pressed",
+        "field": "selected",
+        "angular": [],
+        "react": ["apple"],
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: popover-custom-portal",
+        "checkpoint": "child selected",
+        "field": "popupMounted",
+        "angular": false,
+        "react": true,
+        "category": "closed-dom-retention"
+    },
+    {
+        "scenario": "nested: popover-custom-portal",
+        "checkpoint": "child selected",
+        "field": "selected",
+        "angular": [],
+        "react": ["banana"],
         "category": "closed-dom-retention"
     }
 ]

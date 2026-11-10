@@ -27,9 +27,8 @@ import { injectRdxPopoverRootContext } from './popover-root';
  *   isolation key off the full modal (`modal === true`).
  * - No `disablePointerDismissal` — outside-press + focus-out always close.
  *
- * Note: a positioned popover does **not** auto-focus into the popup on open (pre-existing — the legacy
- * behaved the same; verified). The trap holds focus once it is inside; portal tab-order handoff is owned
- * by `RdxFloatingFocusManager` and anchored to the active trigger below.
+ * Initial focus waits for the shared positioner before activating its focus scope. Otherwise a
+ * hidden measurement surface can consume autofocus before the target becomes focusable.
  */
 @Directive({
     selector: '[rdxPopoverPopup]',
@@ -41,7 +40,9 @@ import { injectRdxPopoverRootContext } from './popover-root';
     providers: [
         provideFloatingFocusManagerConfig(() => {
             const rootContext = injectRdxPopoverRootContext();
+            const positioner = inject(RdxPopperContentWrapper, { optional: true });
             return {
+                initialFocusReady: () => positioner?.isPositioned() ?? true,
                 modal: () =>
                     rootContext.modal() === 'trap-focus' ||
                     (rootContext.modal() === true && rootContext.hasPopupClose()),

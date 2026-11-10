@@ -1,33 +1,17 @@
 import { expect, test } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { compareObservations } from '../../../shared/compare.ts';
+import { validateExpectedDifferences } from '../../../shared/validate-differences.ts';
 import { SelectDriver } from './driver';
 import { scenarios } from './scenarios';
 
 const reference = JSON.parse(readFileSync(new URL('../../../reference.json', import.meta.url), 'utf8'));
 const expected = JSON.parse(readFileSync(new URL('../expected-differences.json', import.meta.url), 'utf8'));
 
-const exceptionKeys = new Set<string>();
-for (const entry of expected) {
-    if (entry.browser && !['chromium', 'firefox', 'webkit'].includes(entry.browser))
-        throw new Error(`Unknown difference browser: ${entry.browser}`);
-    const key = JSON.stringify([entry.scenario, entry.checkpoint, entry.field, entry.browser]);
-    if (exceptionKeys.has(key)) throw new Error(`Duplicate difference: ${key}`);
-    if (
-        expected.some(
-            (other) =>
-                other !== entry &&
-                other.scenario === entry.scenario &&
-                other.checkpoint === entry.checkpoint &&
-                other.field === entry.field &&
-                (!other.browser || !entry.browser)
-        )
-    )
-        throw new Error(`Overlapping browser difference: ${key}`);
-    if (!scenarios.some((scenario) => scenario.name === entry.scenario))
-        throw new Error(`Difference refers to a missing scenario: ${entry.scenario}`);
-    exceptionKeys.add(key);
-}
+validateExpectedDifferences(
+    expected,
+    scenarios.map((scenario) => scenario.name)
+);
 
 for (const scenario of scenarios) {
     test(scenario.name, async ({ browser, baseURL }, testInfo) => {

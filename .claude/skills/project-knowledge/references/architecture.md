@@ -50,6 +50,14 @@ destruction. Keep initial/return-focus ownership in this shared path; Select pla
 effects must not separately steal or return focus. Select Popup exposes `closeOnFocusOut` as an opt-in,
 default `false`; changing the default or switching to item DOM focus remains gated on real AT review.
 
+**Floating focus readiness and composition (ADR 0032):** Popover/Menu supply Positioner readiness to
+the shared manager. A render effect and per-open linked latch wait for layout without reactivating
+autofocus on resize. Portal tab order is restored before default candidates are collected. Managed
+modal scopes loop; logical close releases traps immediately. Paused parents cannot race child
+return focus. Default interaction-driven return uses the actual trigger behind the moved-focus
+guard; programmatic opens retain previous-focus semantics. The independent Select/Popover pinned
+suites and three-engine floating consumer regressions are tracked in `apps/parity-testing/COVERAGE.md`.
+
 **Select arbitrary Value (ADR 0028):** Root/Item and their public contracts are unconstrained and
 default to `unknown`. Angular DI erases family generics; typed application wrappers connect options
 to selection and callbacks. Use explicit `multiple` to distinguish a selection collection from an

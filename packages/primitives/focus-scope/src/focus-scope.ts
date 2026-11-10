@@ -43,7 +43,7 @@ const rootContext = (): FocusScopeContext => {
     const context = inject(RdxFocusScope);
 
     return {
-        loop: context.loop,
+        loop: context.isLooping,
         trapped: context.isTrapped
     };
 };
@@ -77,6 +77,9 @@ export class RdxFocusScope {
      * @defaultValue false
      */
     readonly loop = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+    readonly isLooping = computed(
+        () => (this.config.trapActive?.() ?? true) && (this.loop() || (this.config.loop?.() ?? false))
+    );
 
     /**
      * When `true`, focus cannot escape the focus scope via keyboard,
@@ -90,7 +93,9 @@ export class RdxFocusScope {
     });
 
     private readonly enabled = computed(() => this.config.enabled?.() ?? true);
-    readonly isTrapped = computed(() => this.enabled() && (this.trapped() ?? this.config.trapped()));
+    readonly isTrapped = computed(
+        () => this.enabled() && (this.config.trapActive?.() ?? true) && (this.trapped() ?? this.config.trapped())
+    );
 
     /**
      * Event handler called when auto-focusing on mount.
@@ -133,7 +138,7 @@ export class RdxFocusScope {
 
                     if (this.isTrapped()) {
                         const handleFocusIn = (event: FocusEvent) => {
-                            if (this.focusScope.paused() || !container) {
+                            if (this.focusScope.paused() || !this.isTrapped() || !container) {
                                 return;
                             }
 
@@ -146,7 +151,7 @@ export class RdxFocusScope {
                         };
 
                         const handleFocusOut = (event: FocusEvent) => {
-                            if (this.focusScope.paused() || !container) {
+                            if (this.focusScope.paused() || !this.isTrapped() || !container) {
                                 return;
                             }
                             const relatedTarget = event.relatedTarget as HTMLElement | null;
@@ -171,6 +176,7 @@ export class RdxFocusScope {
                         };
 
                         const handleMutations = () => {
+                            if (!this.isTrapped() || this.focusScope.paused()) return;
                             const isLastFocusedElementExist = composedContains(container, this.lastFocusedElement());
 
                             if (!isLastFocusedElementExist) {
@@ -262,7 +268,12 @@ export class RdxFocusScope {
                                     if (override) {
                                         focus(override, { select: true });
                                     } else if (!this.shouldPreserveMovedFocus()) {
-                                        focus(previouslyFocusedElement ?? this.ownerDocument.body, { select: true });
+                                        focus(
+                                            this.config.defaultReturnFocus?.() ??
+                                                previouslyFocusedElement ??
+                                                this.ownerDocument.body,
+                                            { select: true }
+                                        );
                                     }
                                 }
 
@@ -299,7 +310,7 @@ export class RdxFocusScope {
         // strand focus at the boundary, defeating the guard). A paused scope (a nested scope took over)
         // also stands down so it can't double-handle a bubbled Tab. Mirrors Base UI / Radix `FocusScope`:
         // `if ((!loop && !trapped) || focusScope.paused) return`.
-        if ((!this.loop() && !this.isTrapped()) || this.focusScope.paused()) {
+        if ((!this.isLooping() && !this.isTrapped()) || this.focusScope.paused()) {
             return;
         }
 
@@ -319,12 +330,12 @@ export class RdxFocusScope {
             } else {
                 if (!event.shiftKey && focusedElement === last) {
                     event.preventDefault();
-                    if (this.loop()) {
+                    if (this.isLooping()) {
                         focus(first, { select: true });
                     }
                 } else if (event.shiftKey && focusedElement === first) {
                     event.preventDefault();
-                    if (this.loop()) {
+                    if (this.isLooping()) {
                         focus(last, { select: true });
                     }
                 }

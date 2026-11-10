@@ -23,6 +23,8 @@ export interface Snapshot {
     popupWithinViewport?: boolean;
     anchorHidden?: boolean;
     selectedTextAligned?: boolean;
+    shellOpen?: boolean;
+    popupInShell?: boolean | null;
 }
 export interface Checkpoint {
     name: string;
@@ -78,6 +80,11 @@ export class SelectDriver {
             }
         });
         await this.page.goto(`/${this.framework}.html?case=${name}`);
+        if (name.startsWith('nested-')) {
+            await this.page.getByTestId('shell-trigger').press('Enter');
+            await expect(this.page.getByTestId('shell-popup')).toBeVisible();
+            await expect(this.page.getByTestId('before')).toBeFocused();
+        }
         await expect(this.trigger).toBeVisible();
         this.metadata = await this.page.evaluate(() => ({
             framework: window.parity.framework,
@@ -226,11 +233,11 @@ export class SelectDriver {
         await this.page.mouse.click(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
     }
 
-    async wheelPage(scrolled: boolean): Promise<void> {
+    async wheelPage(scrolled: boolean, point?: { x: number; y: number }): Promise<void> {
         const viewport = this.page.viewportSize()!;
         // Stay outside the popup and native scrollbar. A locked scroller may consume wheel input
         // without delivering a DOM wheel event, so wait for rendering rather than event delivery.
-        await this.page.mouse.move(viewport.width / 2, viewport.height - 40);
+        await this.page.mouse.move(point?.x ?? viewport.width / 2, point?.y ?? viewport.height - 40);
         await this.page.mouse.wheel(0, 240);
         await this.page.evaluate(
             () => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
@@ -470,6 +477,19 @@ export class SelectDriver {
                         ?.getBoundingClientRect();
                     const value = document.querySelector('[data-testid="value"]')?.getBoundingClientRect();
                     return {
+                        ...(window.parity.config.nested
+                            ? {
+                                  shellOpen:
+                                      document
+                                          .querySelector('[data-testid="shell-trigger"]')
+                                          ?.getAttribute('aria-expanded') === 'true',
+                                  popupInShell:
+                                      trigger.getAttribute('aria-expanded') === 'true'
+                                          ? !!popup &&
+                                            !!document.querySelector('[data-testid="shell-popup"]')?.contains(popup)
+                                          : null
+                              }
+                            : {}),
                         ...(geometryState === 'live'
                             ? {
                                   anchorHidden:

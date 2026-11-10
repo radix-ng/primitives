@@ -16,7 +16,7 @@ Shared preparation, TypeScript tooling and commands are documented in the
 
 ## What is compared
 
-The 112 scenarios produce 320 comparisons and 16 capability skips: 100 desktop/dynamic/geometry cases in
+The 118 scenarios produce 338 comparisons and 16 capability skips: 106 desktop/dynamic/geometry/composition cases in
 Chromium, Firefox and WebKit, eight touch-tap cases in Chromium/WebKit and four touch-gesture cases
 in Chromium. They exercise
 keyboard/typeahead, pointer/multiple selection, disabled/read-only states,
@@ -299,3 +299,8 @@ PARITY_PRIMITIVE=select pnpm exec vite preview --config apps/parity-testing/vite
 # http://127.0.0.1:4500/angular.html?case=single
 # http://127.0.0.1:4500/react.html?case=single
 ```
+
+Six nested cases exercise Dialog/Popover parents, a modal child and custom portal containers.
+They compare child/parent Escape ownership, native parent-control activation, return focus,
+reopening/selection and wheel lock release. Parent controls remain part of the active floating
+chain even when the child is modal. Known virtual-focus and closed-DOM differences remain exact.

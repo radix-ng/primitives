@@ -49,13 +49,16 @@ const DIALOG_INTERNAL_BACKDROP_ATTR = 'data-rdx-dialog-internal-backdrop';
  *   `modal="trap-focus"` leaves outside pointer interaction enabled.
  * - **`returnFocus` orchestration (resolved 2026-06-16):** the manager now owns the return-focus *target*
  *   via the focus scope's `returnFocus` config seam (the scope owns the *timing* — its queued post-unmount
- *   frame). Dialog leaves it at the default (`returnFocus: true` → return to the element focused before
- *   open), so behavior is unchanged; a consumer can now also pass `false` / an element / a callback.
+ *   frame). The guarded default returns to the interaction trigger, or previous focus for a
+ *   programmatic open. A consumer can also pass `false` / an element / a callback.
  */
 @Directive({
     selector: '[rdxDialogPopup]',
     exportAs: 'rdxDialogPopup',
-    hostDirectives: [RdxFloatingNodeRegistration, RdxFloatingFocusManager],
+    hostDirectives: [
+        RdxFloatingNodeRegistration,
+        { directive: RdxFloatingFocusManager, inputs: ['getInsideElements'] }
+    ],
     providers: [
         provideFloatingFocusManagerConfig(() => {
             const rootContext = injectRdxDialogRootContext();
@@ -66,8 +69,8 @@ const DIALOG_INTERNAL_BACKDROP_ATTR = 'data-rdx-dialog-internal-backdrop';
                 inert: () => rootContext.modal() === true,
                 // Active for the whole MOUNTED lifetime — including an explicit
                 // `preventUnmountOnClose()` cycle after the exit transition — matching Base UI's
-                // `FloatingFocusManager disabled={!mounted}` (NOT `open`) for trap/return-focus.
-                // Marker + isolation are additionally gated on `open` inside the manager.
+                // `FloatingFocusManager disabled={!mounted}` (NOT `open`) for scope/return-focus.
+                // Trapping, marker and isolation are additionally gated on logical `open`.
                 enabled: () => rootContext.present(),
                 restoreFocus: () => 'popup',
                 openInteractionType: () => rootContext.openInteractionType(),

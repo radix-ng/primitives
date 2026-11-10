@@ -1,5 +1,6 @@
 import { isPlatformBrowser } from '@angular/common';
 import {
+    afterRenderEffect,
     booleanAttribute,
     computed,
     DestroyRef,
@@ -9,6 +10,7 @@ import {
     inject,
     InjectionToken,
     input,
+    linkedSignal,
     output,
     PLATFORM_ID,
     Provider,
@@ -129,6 +131,8 @@ export interface RdxFloatingFocusManagerConfig {
     enabled?: () => boolean;
     closeOnFocusOut?: () => boolean;
     initialFocus?: () => RdxInitialFocus;
+    /** Render/layout readiness for the first focus activation. A later resize must not reactivate the scope. */
+    initialFocusReady?: () => boolean;
     returnFocus?: () => RdxReturnFocus;
     restoreFocus?: () => boolean | 'popup';
     previousFocusableElement?: () => RdxFocusTarget;
@@ -165,7 +169,10 @@ function coerceOptionalBoolean(value: BooleanInput | undefined): boolean | undef
  * construction order (the manager later injects this same config and writes the signal).
  */
 function provideManagedFocusScopeConfig(): Provider {
-    return provideRdxFocusScopeConfig((): RdxFocusScopeConfig => ({ trapped: signal(false), enabled: signal(false) }));
+    return provideRdxFocusScopeConfig((): RdxFocusScopeConfig => {
+        const modal = signal(false);
+        return { trapped: modal, loop: modal, enabled: signal(false) };
+    });
 }
 
 /**
@@ -251,6 +258,18 @@ export class RdxFloatingFocusManager {
 
     /** Effective gates: `input ?? config ?? default`. */
     readonly effectiveEnabled = computed(() => this.enabled() ?? this.config?.enabled?.() ?? true);
+    private readonly scopeReady = linkedSignal({
+        source: () => ({
+            enabled: this.effectiveEnabled(),
+            open: this.isFloatingOpen(),
+            ready: this.config?.initialFocusReady?.() ?? true
+        }),
+        computation: (state, previous): boolean => {
+            if (!state.enabled) return false;
+            if (!state.open) return previous?.value ?? state.ready;
+            return state.ready || (previous?.source.open === true && previous.value === true);
+        }
+    });
     readonly effectiveModal = computed(() => this.modal() ?? this.config?.modal?.() ?? false);
     readonly effectiveInert = computed(() => this.inert() ?? this.config?.inert?.() ?? this.effectiveModal());
     readonly effectiveCloseOnFocusOut = computed(
@@ -295,7 +314,7 @@ export class RdxFloatingFocusManager {
 
     // The config this directive provides — its `trapped` signal is writable so we can drive it, and we
     // attach a `returnFocus` resolver the composed focus scope calls at unmount (ADR 0017 `returnFocus`).
-    private readonly focusScopeConfig = inject(RdxFocusScopeConfigToken) as {
+    private readonly focusScopeConfig = inject(RdxFocusScopeConfigToken) as RdxFocusScopeConfig & {
         trapped: WritableSignal<boolean>;
         enabled: WritableSignal<boolean>;
         returnFocus?: () => HTMLElement | false | undefined;
@@ -306,6 +325,7 @@ export class RdxFloatingFocusManager {
 
     /** The shared per-popup context (open / triggers / elements), if a primitive root provides one. */
     private readonly rootContext = inject(RDX_FLOATING_ROOT_CONTEXT, { optional: true });
+    private readonly managedScope = inject(RdxFocusScope);
     /** The registration handle for this node, used to read the shared tree (ancestors / descendants). */
     private readonly registration = inject(RDX_FLOATING_REGISTRATION, { optional: true });
 
@@ -314,14 +334,23 @@ export class RdxFloatingFocusManager {
     readonly interactionType = this._interactionType.asReadonly();
 
     constructor() {
-        effect(() => {
+        afterRenderEffect(() => {
             this.focusScopeConfig.trapped.set(this.trapped());
-            this.focusScopeConfig.enabled.set(this.effectiveEnabled());
+            this.focusScopeConfig.enabled.set(this.effectiveEnabled() && this.scopeReady());
         });
 
         // Own the return-focus *target* (the composed focus scope owns the *timing*): the scope calls this
         // in its queued post-unmount frame, resolving the `returnFocus` policy against the close interaction.
         this.focusScopeConfig.returnFocus = () => this.resolveReturnFocusTarget();
+        this.focusScopeConfig.trapActive = () => this.isFloatingOpen();
+        this.focusScopeConfig.defaultReturnFocus = () => {
+            if (this.effectiveOpenInteractionType() == null) return undefined;
+            const reference = this.rootContext?.referenceElement;
+            const view = this.host.ownerDocument.defaultView;
+            return view && reference instanceof view.HTMLElement
+                ? reference
+                : resolveFocusTarget(this.effectivePreviousFocusableElement());
+        };
 
         if (!this.isBrowser) {
             return; // SSR: no DOM marking / listeners.
@@ -413,6 +442,9 @@ export class RdxFloatingFocusManager {
                 event.preventDefault();
                 return;
             }
+            // Portal order guards temporarily remove inner controls from the tab order while focus
+            // is outside. Restore those controls before the scope discovers its initial candidates.
+            enableFocusInside(this.rootContext?.floatingElement ?? this.host);
             if (target) {
                 event.preventDefault(); // override the scope's first-tabbable default
                 target.focus();
@@ -468,7 +500,7 @@ export class RdxFloatingFocusManager {
      */
     private wireInitialFocusFallback(): void {
         effect((onCleanup) => {
-            if (!this.effectiveEnabled() || !this.isFloatingOpen()) {
+            if (!this.effectiveEnabled() || !this.isFloatingOpen() || !this.scopeReady()) {
                 return;
             }
 
@@ -583,7 +615,12 @@ export class RdxFloatingFocusManager {
 
             const view = ownerDocument.defaultView ?? globalThis;
             view.requestAnimationFrame(() => {
-                if (!this.effectiveEnabled() || !this.effectiveRestoreFocus() || !this.isFloatingOpen()) {
+                if (
+                    !this.effectiveEnabled() ||
+                    !this.effectiveRestoreFocus() ||
+                    !this.isFloatingOpen() ||
+                    this.scopePaused()
+                ) {
                     return;
                 }
                 if (ownerDocument.activeElement !== ownerDocument.body) {
@@ -599,6 +636,10 @@ export class RdxFloatingFocusManager {
 
         ownerDocument.addEventListener('focusout', onFocusOut, true);
         inject(DestroyRef).onDestroy(() => ownerDocument.removeEventListener('focusout', onFocusOut, true));
+    }
+
+    private scopePaused(): boolean {
+        return this.managedScope.focusScope.paused();
     }
 
     /**

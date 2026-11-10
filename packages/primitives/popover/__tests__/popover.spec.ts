@@ -885,7 +885,7 @@ describe('Popover', () => {
         expect(positioner.anchor()).toBe(buttons[1]);
     });
 
-    it('locks scrolling and traps focus for a modal popover with a close button', () => {
+    it('locks scrolling and traps focus for a modal popover with a close button', async () => {
         const modalFixture = TestBed.createComponent(ModalHostComponent);
         modalFixture.componentInstance.modal = true;
         modalFixture.detectChanges();
@@ -893,6 +893,7 @@ describe('Popover', () => {
         const modalTrigger: HTMLButtonElement = modalFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
         modalTrigger.click();
         modalFixture.detectChanges();
+        await modalFixture.whenStable();
 
         const focusScope = modalFixture.debugElement.query(By.directive(RdxFocusScope)).injector.get(RdxFocusScope);
 
@@ -903,7 +904,7 @@ describe('Popover', () => {
         expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
     });
 
-    it('does not trap focus for modal=true without a close button', () => {
+    it('does not trap focus for modal=true without a close button', async () => {
         const modalFixture = TestBed.createComponent(ModalHostComponent);
         modalFixture.componentInstance.modal = true;
         modalFixture.componentInstance.withClose = false;
@@ -912,6 +913,7 @@ describe('Popover', () => {
         const modalTrigger: HTMLButtonElement = modalFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
         modalTrigger.click();
         modalFixture.detectChanges();
+        await modalFixture.whenStable();
 
         const focusScope = modalFixture.debugElement.query(By.directive(RdxFocusScope)).injector.get(RdxFocusScope);
 
@@ -920,7 +922,7 @@ describe('Popover', () => {
         modalFixture.destroy();
     });
 
-    it('traps focus without locking scrolling when modal=trap-focus', () => {
+    it('traps focus without locking scrolling when modal=trap-focus', async () => {
         const modalFixture = TestBed.createComponent(ModalHostComponent);
         modalFixture.componentInstance.modal = 'trap-focus';
         modalFixture.detectChanges();
@@ -928,6 +930,7 @@ describe('Popover', () => {
         const modalTrigger: HTMLButtonElement = modalFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
         modalTrigger.click();
         modalFixture.detectChanges();
+        await modalFixture.whenStable();
 
         const focusScope = modalFixture.debugElement.query(By.directive(RdxFocusScope)).injector.get(RdxFocusScope);
 

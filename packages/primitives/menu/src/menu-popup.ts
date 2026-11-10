@@ -37,8 +37,10 @@ import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
         provideFloatingFocusManagerConfig(() => {
             const rootContext = injectRdxMenuRootContext();
             const popup = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+            const positioner = inject(RdxPopperContentWrapper, { optional: true });
 
             return {
+                initialFocusReady: () => positioner?.isPositioned() ?? true,
                 // Only a (modal) **context menu** traps focus — Base UI's `FloatingFocusManager modal` is
                 // true for `context-menu` alone. Other menus stay non-modal and close on focus-out.
                 modal: () => rootContext.parentType() === 'context-menu',
@@ -198,6 +200,7 @@ export class RdxMenuPopup {
         effect(() => {
             if (
                 !this.rootContext.isOpen() ||
+                (this.wrapper && !this.wrapper.isPositioned()) ||
                 this.rootContext.parentType() !== 'menu' ||
                 this.rootContext.openInteractionType() !== 'keyboard'
             ) {

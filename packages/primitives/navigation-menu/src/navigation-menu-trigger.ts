@@ -1,6 +1,7 @@
 import {
     booleanAttribute,
     computed,
+    DestroyRef,
     Directive,
     effect,
     ElementRef,
@@ -49,6 +50,7 @@ export class RdxNavigationMenuTrigger {
     protected readonly rootContext = injectNavigationMenuRootContext();
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly document = injectDocument();
+    private readonly destroyRef = inject(DestroyRef);
 
     /**
      * Whether the trigger should ignore user interaction.
@@ -153,9 +155,16 @@ export class RdxNavigationMenuTrigger {
         // `visibility: hidden`, so its tabbables aren't focusable yet. Poll across animation frames
         // until focus actually lands inside the panel (don't give up just because the element exists).
         const contentId = this.item.contentId();
+        const origin = this.document.activeElement;
         let attempts = 0;
 
         const tryFocus = () => {
+            // Positioning may take several frames. A later Tab/click/focus move owns focus now;
+            // a stale entry request must not pull it back into a panel (or a destroyed view).
+            if (this.destroyRef.destroyed || !this.open() || this.document.activeElement !== origin) {
+                return;
+            }
+
             const content = this.document.getElementById(contentId);
             const candidates = content ? getTabbableCandidates(content) : [];
 

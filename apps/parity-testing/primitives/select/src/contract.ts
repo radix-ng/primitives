@@ -1,7 +1,9 @@
 import { geometryConfig, geometryNames, type GeometryConfig, type GeometryName } from './geometry';
+import { nestedConfig, nestedNames, type NestedName } from './nested';
 
 export type CaseName =
     | GeometryName
+    | NestedName
     | 'single'
     | 'multiple'
     | 'disabled'
@@ -56,6 +58,7 @@ export interface FixtureConfig {
     scrollable: boolean;
     dynamic: boolean;
     geometry?: GeometryConfig;
+    nested?: NonNullable<ReturnType<typeof nestedConfig>>;
 }
 export type SelectionKeys = string | string[] | null;
 export type TraceEvent =
@@ -102,6 +105,7 @@ export function fixtureConfig(): FixtureConfig {
         'focus-out',
         'modal',
         'modal-cancel-close',
+        ...nestedNames,
         'aligned',
         'aligned-modal',
         'rtl',
@@ -200,12 +204,17 @@ export function fixtureConfig(): FixtureConfig {
         readOnly: name === 'read-only' || name === 'typeahead-read-only',
         defer: name === 'deferred',
         closeOnFocusOut: name === 'focus-out',
-        modal: name === 'modal' || name === 'modal-cancel-close' || name === 'aligned-modal',
+        modal:
+            name === 'modal' ||
+            name === 'modal-cancel-close' ||
+            name === 'aligned-modal' ||
+            !!nestedConfig(name)?.modalSelect,
         aligned: geometry?.aligned ?? name.startsWith('aligned'),
         dir: geometry?.dir ?? (name === 'rtl' || name === 'aligned-rtl' ? 'rtl' : 'ltr'),
         scrollable: name.startsWith('modal') || name.startsWith('aligned') || name === 'rtl',
         dynamic: name.startsWith('dynamic'),
-        geometry
+        geometry,
+        nested: nestedConfig(name)
     };
 }
 

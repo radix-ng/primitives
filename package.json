@@ -17,6 +17,7 @@
         "test-visual:update": "nx run radix-storybook:build-storybook && playwright test -c apps/visual-regression/playwright.config.ts --update-snapshots",
         "test-visual:report": "playwright show-report apps/visual-regression/playwright-report",
         "test-browser:select": "nx run radix-storybook:build-storybook && playwright test -c apps/visual-regression/playwright.select.config.ts",
+        "test-browser:floating": "nx run radix-storybook:build-storybook && playwright test -c apps/visual-regression/playwright.floating.config.ts",
         "----Radix Primitives---": "-----------------------------------------------------------------",
         "primitives:build": "nx run primitives:build",
         "primitives:build:schematics": "nx run primitives:build:schematics",

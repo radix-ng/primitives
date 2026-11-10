@@ -103,6 +103,99 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
     afterEach(() => appended.splice(0).forEach((el) => el.remove()));
     beforeEach(() => TestBed.resetTestingModule());
 
+    it('waits for positioning before autofocus and does not reactivate on later layout updates', async () => {
+        const ready = signal(false);
+        TestBed.overrideComponent(ManagerHost, {
+            add: { providers: [provideFloatingFocusManagerConfig(() => ({ initialFocusReady: () => ready() }))] }
+        });
+        const opener = document.createElement('button');
+        document.body.append(opener);
+        appended.push(opener);
+        opener.focus();
+        const fixture = TestBed.createComponent(ManagerHost);
+        fixture.autoDetectChanges();
+        await flush();
+        expect(document.activeElement).toBe(opener);
+        ready.set(true);
+        await fixture.whenStable();
+        await flush();
+        expect(document.activeElement).toBe(fixture.componentInstance.a().nativeElement);
+        fixture.componentInstance.b().nativeElement.focus();
+        ready.set(false);
+        await fixture.whenStable();
+        await flush();
+        ready.set(true);
+        await fixture.whenStable();
+        await flush();
+        expect(document.activeElement).toBe(fixture.componentInstance.b().nativeElement);
+    });
+
+    it('releases a modal trap synchronously at logical close before scope teardown', async () => {
+        const open = signal(true);
+        const context = createFloatingRootContext({ ownerDocument: document, open: () => open() });
+        TestBed.overrideComponent(ManagerHost, {
+            add: { providers: [provideFloatingRootContext(() => context)] }
+        });
+        const outside = document.createElement('input');
+        document.body.append(outside);
+        appended.push(outside);
+        const fixture = TestBed.createComponent(ManagerHost);
+        fixture.componentInstance.modal.set(true);
+        fixture.autoDetectChanges();
+        await flush();
+        expect(document.activeElement).toBe(fixture.componentInstance.a().nativeElement);
+        open.set(false);
+        outside.focus();
+        expect(document.activeElement).toBe(outside);
+        await fixture.whenStable();
+        await flush();
+        expect(document.activeElement).toBe(outside);
+    });
+
+    it('returns an interaction-opened popup to its trigger even when native click never focused it', async () => {
+        const trigger = document.createElement('button');
+        const previous = document.createElement('input');
+        document.body.append(trigger, previous);
+        appended.push(trigger, previous);
+        previous.focus();
+        const context = createFloatingRootContext({
+            ownerDocument: document,
+            open: () => true,
+            referenceElement: trigger
+        });
+        TestBed.overrideComponent(ManagerHost, {
+            add: {
+                providers: [
+                    provideFloatingRootContext(() => context),
+                    provideFloatingFocusManagerConfig(() => ({ openInteractionType: () => 'mouse' }))
+                ]
+            }
+        });
+        const fixture = TestBed.createComponent(ManagerHost);
+        fixture.autoDetectChanges();
+        await flush();
+        expect(document.activeElement).toBe(fixture.componentInstance.a().nativeElement);
+        fixture.componentInstance.enabled.set(false);
+        await fixture.whenStable();
+        await flush();
+        expect(document.activeElement).toBe(trigger);
+    });
+
+    it('wraps both Tab edges of a managed modal scope', async () => {
+        const fixture = TestBed.createComponent(ManagerHost);
+        fixture.componentInstance.modal.set(true);
+        fixture.autoDetectChanges();
+        await flush();
+        const first = fixture.componentInstance.a().nativeElement as HTMLElement;
+        const last = fixture.componentInstance.b().nativeElement as HTMLElement;
+        first.dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true, bubbles: true, cancelable: true })
+        );
+        expect(document.activeElement).toBe(last);
+        last.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true }));
+        expect(document.activeElement).toBe(first);
+    });
+
     it('deactivates a retained child scope and resumes its parent', async () => {
         const fixture = TestBed.createComponent(RetainedChildHost);
         fixture.autoDetectChanges();

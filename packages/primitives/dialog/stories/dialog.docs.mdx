@@ -226,6 +226,11 @@ It reads everything from context and exposes no inputs.
 
 `RdxDialogPopup` owns dialog semantics, dismissal events, scroll locking, and focus lifecycle events.
 
+For controls rendered outside the popup DOM but belonging to the dialog (such as an external
+scrollbar), bind `[getInsideElements]` to a getter returning those native elements. They remain
+interactive during modal background isolation. Also apply `rdxFloatingInside` to prevent their
+pointer/focus interactions from dismissing the dialog. See the outside-scroll example.
+
 <ArgTypes of={RdxDialogPopup} />
 
 **Data attributes**

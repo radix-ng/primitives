@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, viewChild } from '@angular/core';
 import { LucideX } from '@lucide/angular';
 import { dialogImports } from '@radix-ng/primitives/dialog';
+import { RdxFloatingInsideElement } from '@radix-ng/primitives/dismissable-layer';
 import {
     RdxScrollAreaContent,
     RdxScrollAreaRoot,
@@ -24,6 +25,7 @@ import { cn, demoButton, demoCard, demoDialog } from '../../storybook/styles';
     selector: 'rdx-dialog-outside-scroll',
     imports: [
         ...dialogImports,
+        RdxFloatingInsideElement,
         RdxScrollAreaRoot,
         RdxScrollAreaViewport,
         RdxScrollAreaContent,
@@ -41,9 +43,8 @@ import { cn, demoButton, demoCard, demoDialog } from '../../storybook/styles';
                 <!-- Full-screen viewport hosting a custom scroll area (not native overflow). -->
                 <div class="group/dialog fixed inset-0 z-50" rdxDialogViewport>
                     <!--
-                        Modal dialogs set \`body { pointer-events: none }\`, which the scroll surface inherits —
-                        re-enable it here so the wheel works anywhere in the viewport (not only over the popup),
-                        and drop it again during the exit animation. Outside-press dismissal still fires.
+                        The viewport remains a scroll surface outside the popup. Disable its pointer
+                        interaction during exit; presses on the empty surface still dismiss the dialog.
                     -->
                     <div
                         class="pointer-events-auto h-full overscroll-contain group-data-[ending-style]/dialog:pointer-events-none"
@@ -59,6 +60,7 @@ import { cn, demoButton, demoCard, demoDialog } from '../../storybook/styles';
                                             d.popupAnimated
                                         )
                                     "
+                                    [getInsideElements]="getInsideElements"
                                     rdxDialogPopup
                                 >
                                     <div class="relative flex flex-col gap-1 pr-8">
@@ -93,7 +95,9 @@ import { cn, demoButton, demoCard, demoDialog } from '../../storybook/styles';
 
                         <div
                             class="bg-foreground/10 pointer-events-none flex w-4 touch-none justify-center opacity-0 transition-opacity duration-200 hover:pointer-events-auto hover:opacity-100 hover:duration-75 data-[scrolling]:pointer-events-auto data-[scrolling]:opacity-100 data-[scrolling]:duration-75"
+                            #scrollbar
                             rdxScrollAreaScrollbar
+                            rdxFloatingInside
                             orientation="vertical"
                         >
                             <div class="bg-foreground/50 w-full rounded-full" rdxScrollAreaThumb></div>
@@ -105,6 +109,8 @@ import { cn, demoButton, demoCard, demoDialog } from '../../storybook/styles';
     `
 })
 export class RdxDialogOutsideScrollComponent {
+    private readonly scrollbar = viewChild('scrollbar', { read: ElementRef });
+    protected readonly getInsideElements = () => [this.scrollbar()?.nativeElement];
     protected readonly cn = cn;
     protected readonly b = demoButton;
     protected readonly d = demoDialog;

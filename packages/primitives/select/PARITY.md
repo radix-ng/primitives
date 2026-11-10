@@ -6,9 +6,9 @@ Audited on 2026-11-08; close-lifecycle, focus-policy and arbitrary-Value increme
 reproducible reference. Its package version is 1.9.0; it is not the release tag itself.
 
 This is an API/source audit with linked regression coverage, **not a certification of complete
-behavioral parity**. A shared React/Angular differential runner now defines 112 scenarios:
-100 desktop/dynamic/geometry cases in all three engines, eight tap cases in Chromium/WebKit,
-and four native touch-gesture cases in Chromium (320 comparisons; 16 capability skips).
+behavioral parity**. A shared React/Angular differential runner now defines 118 scenarios:
+106 desktop/dynamic/geometry/composition cases in all three engines, eight tap cases in Chromium/WebKit,
+and four native touch-gesture cases in Chromium (338 comparisons; 16 capability skips).
 It checks this pin and records exact known differences ([runner documentation](../../../apps/parity-testing/primitives/select/README.md),
 [ADR 0029](../../../docs/adr/0029-select-differential-behavior-checks.md)). Rows marked as gaps remain open.
 
@@ -308,3 +308,18 @@ CI runs this checker as part of the primitives `typecheck` target.
 The next parity changes should close specific rows with their upstream scenarios and a migration note
 where existing behavior changes. They must not silently turn a source-audit row into a claim of full
 browser or assistive-technology equivalence.
+
+## Nested floating composition (2026-11-10)
+
+Six differential scenarios cover Select in Dialog and Popover, modal child selection, and a custom
+portal container inside either parent. Each compares opening, Escape returning to the child trigger,
+pressing a native parent control, reopening/selecting, parent dismissal and native wheel locking.
+The parent remains open when only its child closes. A modal parent keeps its lock after child close;
+a non-modal Popover releases the child's lock. Parent controls belong to the active floating chain
+and remain interactive even with a modal child, matching the pin. Custom portal ancestry is observed
+from real DOM. The parent's paused focus scope cannot race the child's return focus.
+
+All 18 engine comparisons pass with the existing exact `dom-focus` and `closed-dom-retention`
+limitations extended to these checkpoints. Default Select virtual focus and opt-in focus-out closing
+are unchanged. See [ADR 0032](../../../docs/adr/0032-floating-focus-readiness-and-composition.md) and
+[the cross-primitive coverage matrix](../../../apps/parity-testing/COVERAGE.md).

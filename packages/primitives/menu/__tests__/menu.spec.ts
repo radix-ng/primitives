@@ -469,7 +469,7 @@ class StructureMenuComponent {}
     `
 })
 class FinalFocusMenuComponent {
-    open = false;
+    readonly open = signal(false);
     finalFocus: RdxReturnFocus | undefined = undefined;
 }
 
@@ -517,12 +517,14 @@ describe('Menu', () => {
             trigger.focus();
             trigger.click();
             fixture.detectChanges();
+            await fixture.whenStable();
             await nextFrame();
         }
 
         async function close() {
-            fixture.componentInstance.open = false;
+            fixture.componentInstance.open.set(false);
             fixture.detectChanges();
+            await fixture.whenStable();
             await nextFrame();
             await nextFrame();
         }

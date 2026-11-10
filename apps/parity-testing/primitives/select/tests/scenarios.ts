@@ -4,6 +4,7 @@ import { type Snapshot } from './driver';
 import { dynamicScenarios } from './dynamic.scenarios';
 import { geometryScenarios } from './geometry.scenarios';
 import { liveLayoutScenarios } from './live-layout.scenarios';
+import { nestedScenarios } from './nested.scenarios';
 import { positioningScenarios } from './positioning.scenarios';
 import type { Scenario } from './scenario';
 import { sizingScenarios } from './sizing.scenarios';
@@ -18,6 +19,7 @@ export const scenarios: Scenario[] = [
     ...geometryScenarios,
     ...sizingScenarios,
     ...liveLayoutScenarios,
+    ...nestedScenarios,
     ...touchScenarios,
     {
         name: 'keyboard and typeahead',

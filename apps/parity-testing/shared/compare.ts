@@ -12,6 +12,7 @@ export interface Difference {
 }
 export interface ExpectedDifference extends Difference {
     browser?: string;
+    platform?: string;
     scenario: string;
     checkpoint: string;
     field: string;
@@ -28,13 +29,17 @@ export function compareObservations(
     angular: Checkpoint[],
     react: Checkpoint[],
     expected: ExpectedDifference[],
-    browser?: string
+    browser?: string,
+    platform: string = process.platform
 ) {
     const differences: RecordedDifference[] = [];
     const unexpected: Difference[] = [];
     const stale: ExpectedDifference[] = [];
     const relevant = expected.filter(
-        (entry) => entry.scenario === scenario && (!entry.browser || entry.browser === browser)
+        (entry) =>
+            entry.scenario === scenario &&
+            (!entry.browser || entry.browser === browser) &&
+            (!entry.platform || entry.platform === platform)
     );
     const used = new Set<ExpectedDifference>();
     for (let index = 0; index < Math.max(angular.length, react.length); index++) {

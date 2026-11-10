@@ -330,6 +330,7 @@ describe('Menubar', () => {
         triggers[0].focus();
         keydown(triggers[0], 'ArrowDown');
         fixture.detectChanges();
+        await fixture.whenStable();
         await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
         fixture.detectChanges();
 
@@ -372,6 +373,7 @@ describe('Menubar', () => {
         triggers[1].focus();
         keydown(triggers[1], 'ArrowDown');
         fixture.detectChanges();
+        await fixture.whenStable();
         await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
         fixture.detectChanges();
 
@@ -412,6 +414,7 @@ describe('Menubar', () => {
         triggers[0].focus();
         keydown(triggers[0], 'Enter');
         fixture.detectChanges();
+        await fixture.whenStable();
         await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
         fixture.detectChanges();
 
@@ -430,6 +433,7 @@ describe('Menubar', () => {
         triggers[0].focus();
         keydown(triggers[0], 'ArrowDown');
         fixture.detectChanges();
+        await fixture.whenStable();
         await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
         fixture.detectChanges();
 
@@ -443,6 +447,7 @@ describe('Menubar', () => {
         triggers[0].focus();
         keydown(triggers[0], 'ArrowUp');
         fixture.detectChanges();
+        await fixture.whenStable();
         await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 
         const items: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('[rdxMenuItem]'));

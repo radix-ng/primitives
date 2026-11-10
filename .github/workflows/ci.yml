@@ -110,8 +110,8 @@ jobs:
       - name: Compare primitives with pinned Base UI
         run: pnpm test-parity
 
-      - name: Check Select stories across browser engines
-        run: pnpm test-browser:select
+      - name: Check floating primitive consumers across browser engines
+        run: pnpm test-browser:floating
 
       - name: Publish comparison summary
         if: always()

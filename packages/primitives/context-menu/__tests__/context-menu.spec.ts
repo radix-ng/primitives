@@ -126,6 +126,7 @@ describe('ContextMenu', () => {
         pointerDown(trigger);
         rightClick(trigger);
         fixture.detectChanges();
+        await fixture.whenStable();
         await flushRaf();
         fixture.detectChanges();
 
@@ -138,6 +139,7 @@ describe('ContextMenu', () => {
         // No preceding pointerdown — treated as keyboard-initiated.
         rightClick(trigger);
         fixture.detectChanges();
+        await fixture.whenStable();
         await flushRaf();
         fixture.detectChanges();
 

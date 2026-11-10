@@ -2,7 +2,8 @@
 
 The same Playwright actions run against Angular primitives and unmodified, pinned Base UI React
 sources. These are regression checks with reviewed differences, not full parity certification.
-[Select](primitives/select/README.md) is the first suite.
+[Select](primitives/select/README.md) and [Popover](primitives/popover/README.md) have independent suites.
+The [coverage matrix](COVERAGE.md) distinguishes pinned comparisons from Angular regression checks.
 
 ## Structure
 
@@ -39,6 +40,7 @@ Use Node.js 24 (`nvm use`) and install workspace dependencies, then:
 pnpm exec playwright install chromium firefox webkit
 pnpm test-parity                 # every discovered suite
 pnpm test-parity select          # one primitive
+pnpm test-parity popover         # independent floating/focus suite
 pnpm test-parity:select          # convenience alias
 pnpm test-parity select --project=webkit # one engine
 pnpm parity:build select         # type-check/build one suite without running browsers
@@ -104,3 +106,8 @@ It also builds Storybook and runs Select behavior checks in the same three engin
 submission/validation, synthetic autofill, labels, focus, retained exits and positioning. It publishes
 per-primitive summaries and uploads differential results and Storybook reports/traces. New, changed and disappeared differences require
 review; a passing check means there is no unreviewed drift.
+
+An exception may additionally specify `platform` (`darwin`, `linux` or `win32`) when native engine
+preferences differ across operating systems. This never broadens its exact expected values. A pair
+for one platform cannot suppress another platform's difference or require a stale exception there;
+intersecting browser/platform scopes are rejected. Untested platforms are not certified.

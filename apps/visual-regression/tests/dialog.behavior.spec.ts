@@ -68,6 +68,11 @@ test.describe('Dialog structural portal', () => {
         // Modal dialog locks page scroll while open.
         expect(await scrollLocked()).toBe(true);
 
+        // Do not replace an in-flight entry animation before Presence has observed its finish.
+        await page.locator(popup).evaluate(async (el) => {
+            await Promise.all(el.getAnimations().map((animation) => animation.finished));
+        });
+
         await page.locator('[rdxDialogClose][aria-label="Close"]').click();
 
         // Mid-exit: the popup is closing but still mounted, yet the scroll lock is already released
@@ -112,8 +117,22 @@ test.describe('Dialog outside-scroll (custom scroll area)', () => {
 
         // The custom scrollbar is hidden at rest and fades in while scrolling.
         await expect(page.locator(scrollbar)).toHaveCSS('opacity', '0');
-        await page.locator(scrollArea).evaluate((el) => (el.scrollTop = el.scrollHeight));
+        // ScrollArea deliberately distinguishes user scrolling from programmatic scrollTop changes.
+        await page.locator(popup).hover();
+        await page.mouse.wheel(0, 350);
+        await expect(page.locator(scrollbar)).toHaveAttribute('data-scrolling', '');
         await expect(page.locator(scrollbar)).not.toHaveCSS('opacity', '0');
+        await expect(page.locator(scrollbar)).not.toHaveAttribute('inert', '');
+
+        const thumb = page.locator('[rdxScrollAreaThumb]');
+        const box = (await thumb.boundingBox())!;
+        const before = await page.locator(scrollArea).evaluate((el) => el.scrollTop);
+        await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+        await page.mouse.down();
+        await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2 + 60, { steps: 4 });
+        await page.mouse.up();
+        await expect.poll(() => page.locator(scrollArea).evaluate((el) => el.scrollTop)).toBeGreaterThan(before);
+        await expect(page.locator(popup)).toBeVisible();
     });
 
     test('wheel over the viewport OUTSIDE the popup still scrolls (modal pointer-events)', async ({ page }) => {
@@ -220,10 +239,12 @@ test.describe('Dialog — new floating engine migration', () => {
         // Pressing it dismisses the dialog AND moves focus onto it — the return-focus must not yank
         // focus back to the trigger.
         await page.evaluate(() => {
-            const button = document.createElement('button');
-            button.id = 'rdx-outside-target';
-            button.textContent = 'Outside';
-            document.body.appendChild(button);
+            // A text input receives native click focus in all three engines, including Safari
+            // configurations where clicking a native button deliberately does not focus it.
+            const input = document.createElement('input');
+            input.id = 'rdx-outside-target';
+            input.setAttribute('aria-label', 'Outside');
+            document.body.appendChild(input);
         });
 
         await page.locator(trigger).first().click();
@@ -365,12 +386,16 @@ test.describe('Dialog uncontained (elements outside the popup)', () => {
         await page.setViewportSize({ width: 900, height: 700 });
         await open(page);
 
-        const closeBox = (await page.locator(close).boundingBox())!;
-        const cardTop = await page
-            .locator('[rdxDialogTitle]')
-            .evaluate((el) => el.closest('div')!.getBoundingClientRect().top);
-        // The close button's bottom edge sits at or above the card's top edge.
-        expect(closeBox.y + closeBox.height).toBeLessThanOrEqual(cardTop + 1);
+        // Visibility precedes the end of the card's entry animation. Measure the settled layout.
+        await expect
+            .poll(async () => {
+                const closeBox = (await page.locator(close).boundingBox())!;
+                const cardTop = await page
+                    .locator('[rdxDialogTitle]')
+                    .evaluate((el) => el.closest('div')!.getBoundingClientRect().top);
+                return closeBox.y + closeBox.height - cardTop;
+            })
+            .toBeLessThanOrEqual(1);
     });
 
     test('dismisses via Escape, the outside close button, and outside-press', async ({ page }) => {

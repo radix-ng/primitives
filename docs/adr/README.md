@@ -62,3 +62,5 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0025](0025-separate-angular-forms-from-browser-input-bridge.md)             | Accepted               | Separate Angular forms from the browser input bridge                                 |
 | [0029](0029-select-differential-behavior-checks.md)                          | Accepted               | Compare Select behavior against pinned Base UI sources                               |
 | [0030](0030-select-item-alignment-and-anchored-fallback.md)                  | Accepted               | Compose Select item alignment with the common Popper engine                          |
+| [0031](0031-select-live-anchor-tracking.md)                                  | Accepted               | Share Select anchor tracking and preserve manual placement sessions                  |
+| [0032](0032-floating-focus-readiness-and-composition.md)                     | Accepted               | Activate floating focus after layout and preserve nested scope ownership             |

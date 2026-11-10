@@ -1,0 +1,118 @@
+[
+    {
+        "scenario": "outside",
+        "checkpoint": "outside closed",
+        "field": "changes",
+        "angular": [
+            {
+                "open": true,
+                "reason": "trigger-press",
+                "canceled": false,
+                "trigger": "primary"
+            },
+            {
+                "open": false,
+                "reason": "outside-press",
+                "canceled": false,
+                "trigger": "primary"
+            }
+        ],
+        "react": [
+            {
+                "open": true,
+                "reason": "trigger-press",
+                "canceled": false,
+                "trigger": "primary"
+            },
+            {
+                "open": false,
+                "reason": "focus-out",
+                "canceled": false,
+                "trigger": "primary"
+            }
+        ],
+        "browser": "chromium",
+        "category": "outside-close-reason"
+    },
+    {
+        "scenario": "outside",
+        "checkpoint": "outside closed",
+        "field": "changes",
+        "angular": [
+            {
+                "open": true,
+                "reason": "trigger-press",
+                "canceled": false,
+                "trigger": "primary"
+            },
+            {
+                "open": false,
+                "reason": "outside-press",
+                "canceled": false,
+                "trigger": "primary"
+            }
+        ],
+        "react": [
+            {
+                "open": true,
+                "reason": "trigger-press",
+                "canceled": false,
+                "trigger": "primary"
+            },
+            {
+                "open": false,
+                "reason": "focus-out",
+                "canceled": false,
+                "trigger": "primary"
+            }
+        ],
+        "browser": "firefox",
+        "category": "outside-close-reason"
+    },
+    {
+        "scenario": "cancel-close",
+        "checkpoint": "close canceled",
+        "field": "focus",
+        "angular": "popup",
+        "react": "close",
+        "browser": "webkit",
+        "category": "native-button-focus",
+        "platform": "darwin"
+    },
+    {
+        "scenario": "outside",
+        "checkpoint": "outside closed",
+        "field": "changes",
+        "angular": [
+            {
+                "open": true,
+                "reason": "trigger-press",
+                "canceled": false,
+                "trigger": "primary"
+            },
+            {
+                "open": false,
+                "reason": "outside-press",
+                "canceled": false,
+                "trigger": "primary"
+            }
+        ],
+        "react": [
+            {
+                "open": true,
+                "reason": "trigger-press",
+                "canceled": false,
+                "trigger": "primary"
+            },
+            {
+                "open": false,
+                "reason": "focus-out",
+                "canceled": false,
+                "trigger": "primary"
+            }
+        ],
+        "browser": "webkit",
+        "category": "outside-close-reason",
+        "platform": "linux"
+    }
+]

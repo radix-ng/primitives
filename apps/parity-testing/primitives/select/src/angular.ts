@@ -1,7 +1,9 @@
 import '@angular/compiler';
 import { afterNextRender, Component, provideZonelessChangeDetection, signal, viewChild } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
+import { dialogImports } from '@radix-ng/primitives/dialog';
 import { RdxDirectionProvider } from '@radix-ng/primitives/direction-provider';
+import { popoverImports } from '@radix-ng/primitives/popover';
 import {
     _importsSelect,
     RdxSelectOpenChangeEvent,
@@ -22,12 +24,13 @@ import {
 } from './contract';
 import { anchoredHeightClass } from './geometry';
 import { liveCommands, liveFormClass, liveHeightClass, liveItemClass, type LiveState } from './live';
+import { shellStyles } from './nested';
 
 const config = fixtureConfig();
 document.documentElement.dir = config.dir;
 
 @Component({
-    selector: 'parity-select',
+    selector: 'parity-select-content',
     host: {
         '(document:keydown)': 'onCommand($event)',
         '[class]': 'config.geometry?.shellClass',
@@ -74,7 +77,7 @@ document.documentElement.dir = config.dir;
                     </span>
                 </button>
                 <ng-template
-                    [container]="config.geometry?.customPortal ? portalHost : undefined"
+                    [container]="config.geometry?.customPortal || config.nested?.customPortal ? portalHost : undefined"
                     [keepMounted]="config.geometry?.retained ?? false"
                     rdxSelectPortal
                 >
@@ -304,4 +307,58 @@ class AngularSelectFixture {
     }
 }
 
-void bootstrapApplication(AngularSelectFixture, { providers: [provideZonelessChangeDetection()] });
+@Component({
+    selector: 'parity-select',
+    imports: [AngularSelectFixture, dialogImports, popoverImports],
+    template: `
+        @switch (config.nested?.kind) {
+            @case ('dialog') {
+                <div class="min-h-[180vh]">
+                    <ng-container rdxDialogRoot>
+                        <button [class]="s.trigger" data-testid="shell-trigger" rdxDialogTrigger>Open container</button>
+                        <ng-template rdxDialogPortal>
+                            <div class="fixed inset-0 z-30" rdxDialogBackdrop></div>
+                            <div [class]="s.dialog" data-testid="shell-popup" rdxDialogPopup>
+                                <h2 rdxDialogTitle>Nested Select</h2>
+                                <p rdxDialogDescription>Choose a fruit and continue.</p>
+                                <parity-select-content />
+                                <button [class]="s.trigger" data-testid="shell-close" rdxDialogClose>
+                                    Close container
+                                </button>
+                            </div>
+                        </ng-template>
+                    </ng-container>
+                </div>
+            }
+            @case ('popover') {
+                <div class="min-h-[180vh]">
+                    <ng-container rdxPopoverRoot>
+                        <button [class]="s.trigger" data-testid="shell-trigger" rdxPopoverTrigger>
+                            Open container
+                        </button>
+                        <ng-template rdxPopoverPortal>
+                            <div class="z-40" sideOffset="5" align="start" rdxPopoverPositioner>
+                                <div [class]="s.popover" data-testid="shell-popup" rdxPopoverPopup>
+                                    <h2 rdxPopoverTitle>Nested Select</h2>
+                                    <p rdxPopoverDescription>Choose a fruit and continue.</p>
+                                    <parity-select-content />
+                                    <button [class]="s.trigger" data-testid="shell-close" rdxPopoverClose>
+                                        Close container
+                                    </button>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </ng-container>
+                </div>
+            }
+            @default {
+                <parity-select-content />
+            }
+        }
+    `
+})
+class AngularSelectShell {
+    readonly config = config;
+    readonly s = shellStyles;
+}
+void bootstrapApplication(AngularSelectShell, { providers: [provideZonelessChangeDetection()] });
