@@ -11,7 +11,7 @@ function cutoutElement(rootContext: RdxMenuRootContext): HTMLElement | null {
     const trigger = rootContext.trigger() ?? null;
     if (type === 'menubar') {
         // Keep the whole menubar interactive so hover/click switching between its menus still works.
-        return trigger?.closest<HTMLElement>('[rdxMenubarRoot]') ?? trigger;
+        return rootContext.triggerInteractionScope() ?? trigger;
     }
     if (type === 'context-menu') {
         return null; // right-click anywhere — no cutout

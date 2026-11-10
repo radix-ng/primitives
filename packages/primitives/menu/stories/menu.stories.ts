@@ -21,6 +21,8 @@ import { RdxMenuNestedComponent } from './menu-nested';
 import { RdxMenuNestedRtlComponent } from './menu-nested-rtl';
 import nestedRtlSource from './menu-nested-rtl?raw';
 import nestedSource from './menu-nested?raw';
+import { RdxMenuPointerComponent } from './menu-pointer';
+import pointerSource from './menu-pointer?raw';
 import { RdxMenuViewportExampleComponent } from './menu-viewport';
 import viewportSource from './menu-viewport?raw';
 
@@ -170,4 +172,10 @@ export const Lifecycle: Story = {
             <rdx-menu-lifecycle />
         `
     })
+};
+
+export const Pointer: Story = {
+    decorators: [moduleMetadata({ imports: [RdxMenuPointerComponent] })],
+    parameters: source(pointerSource),
+    render: () => ({ template: '<rdx-menu-pointer />' })
 };

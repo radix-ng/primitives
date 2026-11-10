@@ -1,4 +1,7 @@
 import { lifecycleCases, lifecycleConfig } from '../../../shared/lifecycle';
+import { collectionCases } from '../../../shared/menu-collection';
+import { createMenuProbe, type MenuProbe } from '../../../shared/menu-probe';
+import { pointerCases, pointerConfig } from './pointer';
 
 export const basicCases = [
     'keyboard-enter',
@@ -36,40 +39,16 @@ export const basicCases = [
     'custom-ids',
     'dynamic-ids'
 ] as const;
-export const cases = [...basicCases, ...lifecycleCases, 'lifecycle-submenu-css'] as const;
+export const cases = [
+    ...basicCases,
+    ...lifecycleCases,
+    ...pointerCases,
+    ...collectionCases,
+    'lifecycle-submenu-css'
+] as const;
 export type CaseName = (typeof cases)[number];
 export type Layer = 'main' | 'sub';
-export interface Change {
-    layer: Layer;
-    open: boolean;
-    reason: string;
-    canceled: boolean;
-    trigger: string | null;
-}
-export interface ValueChange {
-    value: boolean | string;
-    reason: string;
-    canceled: boolean;
-}
-export interface Probe {
-    framework: string;
-    reference: { commit: string; packageVersion: string; digest: string };
-    config: ReturnType<typeof config>;
-    changes: Change[];
-    completions: Record<Layer, boolean[]>;
-    nativeEvents: { layer: Layer; type: string; trusted: boolean }[];
-    pointerMoves: {
-        trusted: boolean;
-        clientX: number;
-        clientY: number;
-        movementX: number;
-        movementY: number;
-        pointerType: string;
-    }[];
-    values: ValueChange[];
-    selected: string[];
-    activations: number;
-}
+export type Probe = MenuProbe<ReturnType<typeof config>, Layer>;
 declare global {
     const __PARITY_REFERENCE__: Probe['reference'];
     interface Window {
@@ -81,71 +60,26 @@ export function config() {
     if (!cases.includes(name as CaseName)) throw new Error(`Unknown Menu case: ${name}`);
     return {
         name: name as CaseName,
-        dir: name === 'submenu-rtl' ? ('rtl' as const) : ('ltr' as const),
+        dir: name.endsWith('-rtl') ? ('rtl' as const) : ('ltr' as const),
         modal: name.startsWith('lifecycle-')
             ? name === 'lifecycle-modal-keep'
             : !['outside-nonmodal', 'focus-out'].includes(name),
         loop: name !== 'no-loop',
-        disabled: name === 'disabled-trigger',
-        checkbox: name.startsWith('checkbox') || name.startsWith('lifecycle-'),
-        radio: name.startsWith('radio'),
-        submenu: name.startsWith('submenu') || name === 'lifecycle-submenu-css',
+        disabled: name === 'disabled-trigger' || name === 'hover-root-disabled',
+        checkbox: name.startsWith('checkbox') || name.startsWith('lifecycle-') || name === 'drag-checkbox',
+        radio: name.startsWith('radio') || name === 'drag-radio',
+        submenu: name.startsWith('submenu') || name.startsWith('hover-submenu') || name === 'lifecycle-submenu-css',
         label: name === 'explicit-label' ? 'Zebra' : undefined,
         ids: name.endsWith('-ids'),
-        lifecycle: lifecycleConfig(name === 'lifecycle-submenu-css' ? 'lifecycle-css-exit' : name)
+        lifecycle: lifecycleConfig(name === 'lifecycle-submenu-css' ? 'lifecycle-css-exit' : name),
+        pointer: pointerConfig(name)
     };
 }
 export function installProbe(framework: string) {
-    const settings = config();
-    document.documentElement.dir = settings.dir;
-    const probe: Probe = {
-        framework,
-        reference: __PARITY_REFERENCE__,
-        config: settings,
-        changes: [],
-        completions: { main: [], sub: [] },
-        nativeEvents: [],
-        pointerMoves: [],
-        values: [],
-        selected: [],
-        activations: 0
-    };
-    window.menuParity = probe;
-    document.addEventListener(
-        'pointermove',
-        (event) =>
-            probe.pointerMoves.push({
-                trusted: event.isTrusted,
-                clientX: event.clientX,
-                clientY: event.clientY,
-                movementX: event.movementX,
-                movementY: event.movementY,
-                pointerType: event.pointerType
-            }),
-        true
-    );
-    return {
-        probe,
-        change(layer: Layer, open: boolean, reason: string, canceled: boolean, event: Event, trigger?: Element | null) {
-            probe.changes.push({
-                layer,
-                open,
-                reason,
-                canceled,
-                trigger: trigger?.getAttribute('data-testid') ?? null
-            });
-            probe.nativeEvents.push({ layer, type: event.type, trusted: event.isTrusted });
-        },
-        value(value: boolean | string, reason: string, canceled: boolean) {
-            probe.values.push({ value, reason, canceled });
-        },
-        complete(layer: Layer, open: boolean) {
-            probe.completions[layer].push(open);
-        },
-        select(id: string) {
-            probe.selected.push(id);
-        }
-    };
+    const trace = createMenuProbe(framework, __PARITY_REFERENCE__, config(), ['main', 'sub'] as const);
+    document.documentElement.dir = trace.probe.config.dir;
+    window.menuParity = trace.probe;
+    return trace;
 }
 export const classes = {
     layout: 'fixed start-24 top-16 grid w-60 gap-3',

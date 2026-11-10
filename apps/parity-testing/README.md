@@ -3,7 +3,8 @@
 The same Playwright actions run against Angular primitives and unmodified, pinned Base UI React
 sources. These are regression checks with reviewed differences, not full parity certification.
 [Select](primitives/select/README.md), [Popover](primitives/popover/README.md) and
-[Menu](primitives/menu/README.md) have independent suites.
+[Menu](primitives/menu/README.md), [Context Menu](primitives/context-menu/README.md) and
+[Menubar](primitives/menubar/README.md) have independent suites.
 The [coverage matrix](COVERAGE.md) distinguishes pinned comparisons from Angular regression checks.
 
 ## Structure
@@ -31,7 +32,11 @@ parity-testing/
 
 Drivers, DOM snapshots, recording contracts and scenario lists stay with their primitive. Shared
 infrastructure handles reference integrity, exact difference matching, builds and reporting.
-`shared/run-scenario.ts` also shares the browser-page and report lifecycle for Menu/Popover. Extract
+`shared/run-scenario.ts` also shares the browser-page and report lifecycle for popup suites.
+Menu, Context Menu and Menubar reuse native event recording in `shared/menu-probe.ts`.
+The latter two also share a Menu-parts DOM recorder and a static fixture fragment; their action lists
+remain independent. The Angular fragment keeps actual directives in the owning Root view, preserving
+query boundaries rather than introducing a wrapper component. Extract
 behavior shared by concrete suites as it appears; there is no universal control driver.
 `shared/lifecycle.ts` supplies their common lifecycle fixture settings and actual CSS exit class;
 each suite observes its own public actions and component state.
@@ -46,6 +51,8 @@ pnpm test-parity                 # every discovered suite
 pnpm test-parity select          # one primitive
 pnpm test-parity popover         # independent floating/focus suite
 pnpm test-parity menu            # native items, transactions and submenu suite
+pnpm test-parity context-menu    # native context gestures, point anchor and focus
+pnpm test-parity menubar         # native opening, roving and sibling ownership
 pnpm test-parity:select          # convenience alias
 pnpm test-parity select --project=webkit # one engine
 pnpm parity:build select         # type-check/build one suite without running browsers

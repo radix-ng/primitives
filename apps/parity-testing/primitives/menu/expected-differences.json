@@ -3,8 +3,14 @@
         "scenario": "lifecycle-submenu-css",
         "checkpoint": "whole chain completed",
         "field": "completions",
-        "angular": { "main": [true, false], "sub": [true, false] },
-        "react": { "main": [true, false], "sub": [true] },
+        "angular": {
+            "main": [true, false],
+            "sub": [true, false]
+        },
+        "react": {
+            "main": [true, false],
+            "sub": [true]
+        },
         "category": "nested-exit-completion"
     },
     {
@@ -191,5 +197,695 @@
         "browser": "webkit",
         "platform": "linux",
         "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-root",
+        "checkpoint": "landed through grace area",
+        "field": "focus",
+        "angular": "alpha",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-root",
+        "checkpoint": "landed through grace area",
+        "field": "highlighted",
+        "angular": ["alpha"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-root-reenter",
+        "checkpoint": "landed through grace area",
+        "field": "focus",
+        "angular": "alpha",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-root-reenter",
+        "checkpoint": "landed through grace area",
+        "field": "highlighted",
+        "angular": ["alpha"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "drag-too-soon",
+        "checkpoint": "released",
+        "field": "focus",
+        "angular": "alpha",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "drag-too-soon",
+        "checkpoint": "released",
+        "field": "highlighted",
+        "angular": ["alpha"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-root-click",
+        "checkpoint": "hover click",
+        "field": "focus",
+        "angular": "popup",
+        "react": "primary",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "native-button-focus"
+    },
+    {
+        "scenario": "hover-root-click",
+        "checkpoint": "press owns lifetime",
+        "field": "focus",
+        "angular": "popup",
+        "react": "primary",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "native-button-focus"
+    },
+    {
+        "scenario": "hover-root-click",
+        "checkpoint": "landed through grace area",
+        "field": "focus",
+        "angular": "alpha",
+        "react": "primary",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-root-click",
+        "checkpoint": "landed through grace area",
+        "field": "highlighted",
+        "angular": ["alpha"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu",
+        "checkpoint": "landed through grace area",
+        "field": "focus",
+        "angular": "sub-bravo",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu",
+        "checkpoint": "landed through grace area",
+        "field": "highlighted",
+        "angular": ["sub-bravo"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu",
+        "checkpoint": "left floating content",
+        "field": "focus",
+        "angular": "sub-popup",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu",
+        "checkpoint": "left grace area",
+        "field": "focus",
+        "angular": "bravo",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu",
+        "checkpoint": "left grace area",
+        "field": "highlighted",
+        "angular": ["bravo"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-click",
+        "checkpoint": "landed through grace area",
+        "field": "focus",
+        "angular": "sub-bravo",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-click",
+        "checkpoint": "landed through grace area",
+        "field": "highlighted",
+        "angular": ["sub-bravo"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-click",
+        "checkpoint": "left floating content",
+        "field": "focus",
+        "angular": "sub-popup",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-click",
+        "checkpoint": "left grace area",
+        "field": "focus",
+        "angular": "bravo",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-click",
+        "checkpoint": "left grace area",
+        "field": "highlighted",
+        "angular": ["bravo"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-rtl",
+        "checkpoint": "landed through grace area",
+        "field": "focus",
+        "angular": "sub-bravo",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-rtl",
+        "checkpoint": "landed through grace area",
+        "field": "highlighted",
+        "angular": ["sub-bravo"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-rtl",
+        "checkpoint": "left floating content",
+        "field": "focus",
+        "angular": "sub-popup",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-rtl",
+        "checkpoint": "left grace area",
+        "field": "focus",
+        "angular": "bravo",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-rtl",
+        "checkpoint": "left grace area",
+        "field": "highlighted",
+        "angular": ["bravo"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-sibling",
+        "checkpoint": "landed through grace area",
+        "field": "focus",
+        "angular": "sub-bravo",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-sibling",
+        "checkpoint": "landed through grace area",
+        "field": "highlighted",
+        "angular": ["sub-bravo"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-sibling",
+        "checkpoint": "sibling owns highlight",
+        "field": "focus",
+        "angular": "bravo",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-sibling",
+        "checkpoint": "sibling owns highlight",
+        "field": "highlighted",
+        "angular": ["bravo"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-root",
+        "checkpoint": "landed through grace area",
+        "field": "focus",
+        "angular": "alpha",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-root",
+        "checkpoint": "landed through grace area",
+        "field": "highlighted",
+        "angular": ["alpha"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-root-reenter",
+        "checkpoint": "landed through grace area",
+        "field": "focus",
+        "angular": "alpha",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-root-reenter",
+        "checkpoint": "landed through grace area",
+        "field": "highlighted",
+        "angular": ["alpha"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "drag-too-soon",
+        "checkpoint": "released",
+        "field": "focus",
+        "angular": "alpha",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "drag-too-soon",
+        "checkpoint": "released",
+        "field": "highlighted",
+        "angular": ["alpha"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-root-click",
+        "checkpoint": "press owns lifetime",
+        "field": "focus",
+        "angular": "popup",
+        "react": "primary",
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-root-click",
+        "checkpoint": "landed through grace area",
+        "field": "focus",
+        "angular": "alpha",
+        "react": "primary",
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-root-click",
+        "checkpoint": "landed through grace area",
+        "field": "highlighted",
+        "angular": ["alpha"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu",
+        "checkpoint": "landed through grace area",
+        "field": "focus",
+        "angular": "sub-bravo",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu",
+        "checkpoint": "landed through grace area",
+        "field": "highlighted",
+        "angular": ["sub-bravo"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu",
+        "checkpoint": "left floating content",
+        "field": "focus",
+        "angular": "sub-popup",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu",
+        "checkpoint": "left grace area",
+        "field": "focus",
+        "angular": "bravo",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu",
+        "checkpoint": "left grace area",
+        "field": "highlighted",
+        "angular": ["bravo"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-click",
+        "checkpoint": "landed through grace area",
+        "field": "focus",
+        "angular": "sub-bravo",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-click",
+        "checkpoint": "landed through grace area",
+        "field": "highlighted",
+        "angular": ["sub-bravo"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-click",
+        "checkpoint": "left floating content",
+        "field": "focus",
+        "angular": "sub-popup",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-click",
+        "checkpoint": "left grace area",
+        "field": "focus",
+        "angular": "bravo",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-click",
+        "checkpoint": "left grace area",
+        "field": "highlighted",
+        "angular": ["bravo"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-rtl",
+        "checkpoint": "landed through grace area",
+        "field": "focus",
+        "angular": "sub-bravo",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-rtl",
+        "checkpoint": "landed through grace area",
+        "field": "highlighted",
+        "angular": ["sub-bravo"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-rtl",
+        "checkpoint": "left floating content",
+        "field": "focus",
+        "angular": "sub-popup",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-rtl",
+        "checkpoint": "left grace area",
+        "field": "focus",
+        "angular": "bravo",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-rtl",
+        "checkpoint": "left grace area",
+        "field": "highlighted",
+        "angular": ["bravo"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-sibling",
+        "checkpoint": "landed through grace area",
+        "field": "focus",
+        "angular": "sub-bravo",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-sibling",
+        "checkpoint": "landed through grace area",
+        "field": "highlighted",
+        "angular": ["sub-bravo"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-sibling",
+        "checkpoint": "sibling owns highlight",
+        "field": "focus",
+        "angular": "bravo",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "hover-submenu-sibling",
+        "checkpoint": "sibling owns highlight",
+        "field": "highlighted",
+        "angular": ["bravo"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "collection-remove",
+        "checkpoint": "collection changed",
+        "field": "focus",
+        "angular": "blocked",
+        "react": "body",
+        "browser": "firefox",
+        "platform": "darwin",
+        "category": "removed-item-focus"
+    },
+    {
+        "scenario": "collection-remove",
+        "checkpoint": "navigated updated order",
+        "field": "focus",
+        "angular": "bravo",
+        "react": "body",
+        "browser": "firefox",
+        "platform": "darwin",
+        "category": "removed-item-focus"
+    },
+    {
+        "scenario": "collection-remove",
+        "checkpoint": "navigated updated order",
+        "field": "highlighted",
+        "angular": ["bravo"],
+        "react": ["blocked"],
+        "browser": "firefox",
+        "platform": "darwin",
+        "category": "removed-item-focus"
+    },
+    {
+        "scenario": "collection-remove",
+        "checkpoint": "collection changed",
+        "field": "focus",
+        "angular": "blocked",
+        "react": "body",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "removed-item-focus"
+    },
+    {
+        "scenario": "collection-remove",
+        "checkpoint": "navigated updated order",
+        "field": "focus",
+        "angular": "bravo",
+        "react": "body",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "removed-item-focus"
+    },
+    {
+        "scenario": "collection-remove",
+        "checkpoint": "navigated updated order",
+        "field": "highlighted",
+        "angular": ["bravo"],
+        "react": ["blocked"],
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "removed-item-focus"
+    },
+    {
+        "scenario": "collection-remove",
+        "checkpoint": "collection changed",
+        "field": "focus",
+        "angular": "blocked",
+        "react": "body",
+        "browser": "firefox",
+        "platform": "linux",
+        "category": "removed-item-focus"
+    },
+    {
+        "scenario": "collection-remove",
+        "checkpoint": "navigated updated order",
+        "field": "focus",
+        "angular": "bravo",
+        "react": "body",
+        "browser": "firefox",
+        "platform": "linux",
+        "category": "removed-item-focus"
+    },
+    {
+        "scenario": "collection-remove",
+        "checkpoint": "navigated updated order",
+        "field": "highlighted",
+        "angular": ["bravo"],
+        "react": ["blocked"],
+        "browser": "firefox",
+        "platform": "linux",
+        "category": "removed-item-focus"
+    },
+    {
+        "scenario": "collection-remove",
+        "checkpoint": "collection changed",
+        "field": "focus",
+        "angular": "blocked",
+        "react": "body",
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "removed-item-focus"
+    },
+    {
+        "scenario": "collection-remove",
+        "checkpoint": "navigated updated order",
+        "field": "focus",
+        "angular": "bravo",
+        "react": "body",
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "removed-item-focus"
+    },
+    {
+        "scenario": "collection-remove",
+        "checkpoint": "navigated updated order",
+        "field": "highlighted",
+        "angular": ["bravo"],
+        "react": ["blocked"],
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "removed-item-focus"
     }
 ]

@@ -187,8 +187,7 @@ describe('ContextMenu', () => {
         expect(fixture.nativeElement.querySelector('[rdxMenuItem][data-highlighted]')).toBeNull();
     });
 
-    it('a keyboard context menu highlights the first item', async () => {
-        // No preceding pointerdown — treated as keyboard-initiated.
+    it('a contextmenu without a preceding pointerdown keeps popup focus until navigation', async () => {
         rightClick(trigger);
         fixture.detectChanges();
         await fixture.whenStable();
@@ -196,8 +195,8 @@ describe('ContextMenu', () => {
         fixture.detectChanges();
 
         const items: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('[rdxMenuItem]'));
-        expect(document.activeElement).toBe(items[0]);
-        expect(items[0].getAttribute('data-highlighted')).toBe('');
+        expect(document.activeElement).toBe(fixture.nativeElement.querySelector('[rdxMenuPopup]'));
+        expect(items.every((item) => !item.hasAttribute('data-highlighted'))).toBe(true);
     });
 
     it('prevents the native context menu', () => {

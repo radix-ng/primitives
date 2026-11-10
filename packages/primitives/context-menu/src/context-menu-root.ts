@@ -1,6 +1,6 @@
-import { Directive, inject, Signal } from '@angular/core';
+import { Directive, DOCUMENT, inject, Signal } from '@angular/core';
 import type { VirtualElement } from '@floating-ui/dom';
-import { createContext } from '@radix-ng/primitives/core';
+import { createContext, getActiveElement } from '@radix-ng/primitives/core';
 import { RdxMenuAutoFocusInput, RdxMenuOpenChangeReason, RdxMenuRoot } from '@radix-ng/primitives/menu';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 
@@ -22,7 +22,7 @@ const contextFactory = (): RdxContextMenuRootContext => {
     const root = inject(RdxContextMenuRoot);
     return {
         isOpen: root.menuRoot.open,
-        disabled: root.menuRoot.disabled,
+        disabled: root.menuRoot.effectiveDisabled,
         openAt: (clientX, clientY, autoFocus, event) => root.openAt(clientX, clientY, autoFocus, event),
         close: (reason, event) => root.menuRoot.close(reason, event)
     };
@@ -42,7 +42,7 @@ const contextFactory = (): RdxContextMenuRootContext => {
     hostDirectives: [
         {
             directive: RdxMenuRoot,
-            inputs: ['open', 'modal', 'loopFocus', 'highlightItemOnHover'],
+            inputs: ['open', 'disabled', 'modal', 'loopFocus', 'highlightItemOnHover'],
             outputs: ['openChange', 'onOpenChange', 'onOpenChangeComplete']
         }
     ],
@@ -51,6 +51,7 @@ const contextFactory = (): RdxContextMenuRootContext => {
 export class RdxContextMenuRoot {
     readonly menuRoot = inject(RdxMenuRoot);
     private readonly popper = inject(RdxPopper);
+    private readonly document = inject(DOCUMENT);
 
     constructor() {
         // Tell the composed menu root it is a Context Menu, so its per-kind policy (modal focus trap,
@@ -72,13 +73,21 @@ export class RdxContextMenuRoot {
      * Open the menu with the popup anchored at the given viewport coordinates.
      *
      * `autoFocus` defaults to `'popup'` so a right-click opens with the popup focused but no item
-     * highlighted (matching Base UI's pointer behavior). Pass `'first'` for keyboard opening. `event` is
+     * highlighted (matching Base UI's native context-menu behavior). Pass `'first'` to opt into initial item focus. `event` is
      * the originating pointer event (threaded to the menu so a touch long-press is recorded for the
      * anchored scroll-lock policy, ADR 0016 §3).
      */
     openAt(clientX: number, clientY: number, autoFocus: RdxMenuAutoFocusInput = 'popup', event?: Event): void {
-        if (this.menuRoot.disabled()) {
+        if (this.menuRoot.effectiveDisabled()) {
             return;
+        }
+
+        // A context area need not receive focus (e.g. a right-click on macOS WebKit). Capture the
+        // actual focused element before the popup mounts, without making the area a Menu trigger.
+        if (!this.menuRoot.open()) {
+            this.menuRoot.contextMenuPreviousFocus.set(
+                (getActiveElement(this.document) as HTMLElement | null) ?? undefined
+            );
         }
 
         // A touch long-press gets a small 10×10 anchor box (Base UI) so the popup is offset from the

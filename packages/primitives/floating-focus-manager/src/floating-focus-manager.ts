@@ -40,6 +40,7 @@ import {
     getTabbableCandidates,
     isOutsideEvent,
     isTypeableElement,
+    observeFocusRecovery,
     provideRdxFocusScopeConfig,
     RdxFocusScope,
     RdxFocusScopeConfig,
@@ -611,46 +612,41 @@ export class RdxFloatingFocusManager {
         });
     }
 
-    /**
-     * Restore focus when an inside focused element disappears and the document focus falls back to
-     * `<body>`. This mirrors the practical Base UI `restoreFocus` path used by Select while keeping the
-     * broader portal-guard navigation separate.
-     */
+    /** True only during managed DOM-focus repair; consumers can preserve logical highlight. */
+    private restoringFocus = false;
+    isRestoringFocus(): boolean {
+        return this.restoringFocus;
+    }
+
+    /** Restore focus lost to body according to the consumer's removal or popup ownership policy. */
     private wireRestoreFocus(): void {
-        const ownerDocument = this.host.ownerDocument;
-        const onFocusOut = (event: FocusEvent): void => {
-            if (!this.effectiveEnabled() || !this.effectiveRestoreFocus() || !this.isFloatingOpen()) {
-                return;
-            }
-
-            const target = event.target as Node | null;
-            if (!target || !this.isRelatedTargetInside(target)) {
-                return;
-            }
-
-            const view = ownerDocument.defaultView ?? globalThis;
-            view.requestAnimationFrame(() => {
-                if (
-                    !this.effectiveEnabled() ||
-                    !this.effectiveRestoreFocus() ||
-                    !this.isFloatingOpen() ||
-                    this.scopePaused()
-                ) {
-                    return;
+        const cleanup = observeFocusRecovery({
+            container: this.host,
+            enabled: () =>
+                !!(
+                    this.effectiveEnabled() &&
+                    this.effectiveRestoreFocus() &&
+                    this.isFloatingOpen() &&
+                    !this.scopePaused()
+                ),
+            target: (previous, moved, visible) => {
+                const content = this.rootContext?.floatingElement ?? this.host;
+                if (this.effectiveRestoreFocus() === 'popup') return content;
+                if (!moved && visible) return undefined;
+                return composedContains(content, previous) && visible
+                    ? previous
+                    : (getTabbableCandidates(content).at(-1) ?? content);
+            },
+            restore: (target) => {
+                this.restoringFocus = true;
+                try {
+                    focus(target);
+                } finally {
+                    this.restoringFocus = false;
                 }
-                if (ownerDocument.activeElement !== ownerDocument.body) {
-                    return;
-                }
-
-                const popup = this.rootContext?.floatingElement ?? this.host;
-                const targetToFocus =
-                    this.effectiveRestoreFocus() === 'popup' ? popup : (getTabbableCandidates(popup).at(-1) ?? popup);
-                focus(targetToFocus);
-            });
-        };
-
-        ownerDocument.addEventListener('focusout', onFocusOut, true);
-        inject(DestroyRef).onDestroy(() => ownerDocument.removeEventListener('focusout', onFocusOut, true));
+            }
+        });
+        inject(DestroyRef).onDestroy(cleanup);
     }
 
     private scopePaused(): boolean {

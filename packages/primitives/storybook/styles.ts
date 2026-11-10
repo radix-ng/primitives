@@ -194,7 +194,7 @@ export const demoCalendar = {
  * `data-nested` hooks let a parent popup react when a nested dialog opens.
  */
 export const demoDialog = {
-    backdropAnimated: 'data-[state=open]:animate-dialog-overlay-in data-[state=closed]:animate-dialog-overlay-out',
+    backdropAnimated: 'data-[open]:animate-dialog-overlay-in data-[closed]:animate-dialog-overlay-out',
     backdrop: 'fixed inset-0 z-50 bg-foreground/50',
     popup: cn(
         demoCard,
@@ -202,7 +202,7 @@ export const demoDialog = {
         'transition-[transform,scale] data-[nested-dialog-open]:scale-[0.96]',
         'focus:outline-none'
     ),
-    popupAnimated: 'data-[state=open]:animate-dialog-popup-in data-[state=closed]:animate-dialog-popup-out',
+    popupAnimated: 'data-[open]:animate-dialog-popup-in data-[closed]:animate-dialog-popup-out',
     /** Fixed full-screen scroll container; place the popup inside for outside-scroll dialogs. */
     viewport: 'fixed inset-0 z-50 flex justify-center overflow-y-auto p-6',
     /** Popup centered by the viewport's flex layout (not fixed-positioned). */
@@ -225,14 +225,12 @@ export const demoDialog = {
  */
 export const demoDrawer = {
     /**
-     * A presence root must carry an exit keyframe for the close to be awaited before unmount; without
-     * it the presence machine sees `animation-name: none` on every root and removes the drawer
-     * instantly, skipping the popup's slide-out (the slide is a CSS *transition*, which the machine
-     * does not wait for). This overlay-fade keyframe (sized to the 200ms slide-out) goes on the
-     * backdrop for modal drawers, or on the popup itself when there is no backdrop (non-modal) — both
-     * carry `data-state` (the drawer backdrop/popup compose the dialog backdrop/popup).
+     * The backdrop fades while the popup slides out. Presence observes native keyframes and
+     * transitions on every portal root and descendant. Drawer composes Dialog, so both roots expose
+     * `data-open` / `data-closed` rather than a string-valued state attribute.
      */
-    overlayAnimated: 'data-[state=open]:animate-drawer-overlay-in data-[state=closed]:animate-drawer-overlay-out',
+    overlayAnimated:
+        'transition-opacity duration-200 data-[starting-style]:opacity-0 data-[closed]:opacity-0 data-[swiping]:duration-0',
     backdrop: 'fixed inset-0 z-50 bg-foreground/50',
     popup: cn(
         'fixed z-50 flex flex-col bg-card text-card-foreground shadow-lg focus:outline-none',
@@ -247,22 +245,22 @@ export const demoDrawer = {
         bottom: cn(
             'inset-x-0 bottom-0 max-h-[90vh] rounded-t-2xl border-t border-b-0 border-border',
             'after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-[calc(3rem+max(0px,calc(-1*var(--drawer-swipe-movement-y))))] after:border-0 after:bg-[inherit] after:transition-[height] after:duration-300 after:ease after:content-[""] data-[swiping]:after:duration-0',
-            'data-[state=open]:animate-drawer-in-bottom data-[state=closed]:animate-drawer-out-bottom'
+            'data-[starting-style]:[transform:translateY(100%)] data-[closed]:[transform:translateY(100%)]'
         ),
         top: cn(
             'inset-x-0 top-0 max-h-[90vh] rounded-b-2xl border-b border-border',
             'after:pointer-events-none after:absolute after:inset-x-0 after:bottom-full after:h-[calc(3rem+max(0px,var(--drawer-swipe-movement-y)))] after:border-0 after:bg-[inherit] after:transition-[height] after:duration-300 after:ease after:content-[""] data-[swiping]:after:duration-0',
-            'data-[state=open]:animate-drawer-in-top data-[state=closed]:animate-drawer-out-top'
+            'data-[starting-style]:[transform:translateY(-100%)] data-[closed]:[transform:translateY(-100%)]'
         ),
         left: cn(
             'inset-y-0 left-0 w-80 max-w-[90vw] rounded-r-2xl border-r border-border',
             'after:pointer-events-none after:absolute after:inset-y-0 after:right-full after:w-[calc(3rem+max(0px,var(--drawer-swipe-movement-x)))] after:border-0 after:bg-[inherit] after:transition-[width] after:duration-300 after:ease after:content-[""] data-[swiping]:after:duration-0',
-            'data-[state=open]:animate-drawer-in-left data-[state=closed]:animate-drawer-out-left'
+            'data-[starting-style]:[transform:translateX(-100%)] data-[closed]:[transform:translateX(-100%)]'
         ),
         right: cn(
             'inset-y-0 right-0 w-80 max-w-[90vw] rounded-l-2xl border-l border-border',
             'after:pointer-events-none after:absolute after:inset-y-0 after:left-full after:w-[calc(3rem+max(0px,calc(-1*var(--drawer-swipe-movement-x))))] after:border-0 after:bg-[inherit] after:transition-[width] after:duration-300 after:ease after:content-[""] data-[swiping]:after:duration-0',
-            'data-[state=open]:animate-drawer-in-right data-[state=closed]:animate-drawer-out-right'
+            'data-[starting-style]:[transform:translateX(100%)] data-[closed]:[transform:translateX(100%)]'
         )
     },
     /** Visual grab handle hinting the swipe gesture. */

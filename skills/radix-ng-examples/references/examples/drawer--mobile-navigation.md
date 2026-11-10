@@ -100,7 +100,7 @@ const LONG_LIST = [
                                     [class]="
                                         cn(
                                             card,
-                                            'data-[state=open]:animate-drawer-in-bottom data-[state=closed]:animate-drawer-out-bottom',
+                                            'data-[closed]:[transform:translateY(100%)] data-[starting-style]:[transform:translateY(100%)]',
                                             'w-full max-w-[42rem] rounded-t-2xl rounded-b-none border-x-0 border-b-0',
                                             '[--drawer-swipe-movement-x:0px] [--drawer-swipe-movement-y:0px]',
                                             '[transform:translate3d(var(--drawer-swipe-movement-x),var(--drawer-swipe-movement-y),0)]',

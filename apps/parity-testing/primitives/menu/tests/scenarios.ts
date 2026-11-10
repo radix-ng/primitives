@@ -1,7 +1,9 @@
 import { expect } from '@playwright/test';
 import { basicCases } from '../src/contract';
+import { collectionScenarios } from './collection.scenarios';
 import type { MenuDriver } from './driver';
 import { lifecycleScenarios } from './lifecycle.scenarios';
+import { pointerScenarios } from './pointer.scenarios';
 
 export const scenarios = [
     ...basicCases.map((name) => ({
@@ -153,5 +155,7 @@ export const scenarios = [
             });
         }
     })),
-    ...lifecycleScenarios
+    ...lifecycleScenarios,
+    ...pointerScenarios,
+    ...collectionScenarios
 ];

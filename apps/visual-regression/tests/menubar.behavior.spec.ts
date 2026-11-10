@@ -63,7 +63,7 @@ test('hovering a sibling trigger switches menus — only one open at a time', as
     await expect(triggers.first()).toHaveAttribute('aria-expanded', 'false');
 });
 
-test('ArrowDown after switching an open menubar moves focus into the current popup', async ({ page }) => {
+test('switching an open menubar focuses the new popup and ArrowDown enters its first item', async ({ page }) => {
     await gotoStory(page, 'primitives-menubar--default');
     const triggers = page.locator(trigger);
 
@@ -71,14 +71,33 @@ test('ArrowDown after switching an open menubar moves focus into the current pop
     await expect(page.locator(openPopup)).toHaveCount(1);
 
     await page.keyboard.press('ArrowRight');
-    await expect(triggers.nth(1)).toBeFocused();
     await expect(triggers.nth(1)).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.locator(openPopup)).toBeFocused();
 
     await page.keyboard.press('ArrowDown');
 
     const firstItem = page.locator(`${openPopup} [rdxMenuItem]`).first();
     await expect(firstItem).toBeFocused();
     await expect(firstItem).toContainText('Undo');
+});
+
+test('native mouse-down opens before release and dragging selects a command', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    page.on('console', (message) => {
+        if (message.type() === 'error') errors.push(message.text());
+    });
+    await gotoStory(page, 'primitives-menubar--default');
+    const box = (await page.locator(trigger).first().boundingBox())!;
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await expect(page.locator(openPopup)).toHaveCount(1);
+    await page.waitForTimeout(240);
+    const item = (await page.locator(`${openPopup} [rdxMenuItem]`).first().boundingBox())!;
+    await page.mouse.move(item.x + item.width / 2, item.y + item.height / 2, { steps: 3 });
+    await page.mouse.up();
+    await expect(page.locator(openPopup)).toHaveCount(0);
+    expect(errors).toEqual([]);
 });
 
 test('Escape closes the open menu', async ({ page }) => {

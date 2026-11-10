@@ -57,41 +57,40 @@ The `drawerImports` array re-exports every part for standalone `imports`.
 
 ## Anatomy
 
-Apply the parts to your own markup. `rdxDrawerPortal` is a **structural** directive: it teleports the
-backdrop and popup into `document.body` while the drawer is open and waits for the closed-state CSS
-exit keyframes on every root element before unmounting. At least one root **must** have a
-`data-[state=closed]` `@keyframes` exit animation, otherwise presence sees no animation on the roots
-and unmounts the drawer instantly, skipping the slide-out (the popup's slide is a CSS _transition_,
-which presence does not wait for). Give the backdrop an overlay fade sized to at least the popup's
-slide duration:
+Apply the parts to your own markup. `rdxDrawerPortal` teleports every template root into the target
+container. Presence waits for native CSS exits on roots or descendants, including transitions and
+keyframes. With no exit effect it unmounts immediately. Drawer inherits Dialog's boolean `data-open`
+and `data-closed` attributes; `data-starting-style` identifies the entry frame. No decoy keyframe is
+needed for a transitioning popup.
+
+The shared demos use transitions so swipe/snap updates do not restart an entry keyframe. For a
+bottom drawer, keep the resting transform tied to the swipe variables and disable transitions
+while a gesture is active:
 
 ```css
-[rdxDrawerBackdrop][data-state='open'] {
-    animation: overlay-in 250ms ease-out;
+[rdxDrawerBackdrop] {
+    opacity: 1;
+    transition: opacity 200ms ease;
 }
-[rdxDrawerBackdrop][data-state='closed'] {
-    animation: overlay-out 200ms ease-in forwards;
+[rdxDrawerBackdrop][data-starting-style],
+[rdxDrawerBackdrop][data-closed] {
+    opacity: 0;
 }
-```
-
-For a non-modal drawer (no backdrop) put the overlay-fade keyframe on the popup instead — it carries
-`data-state` too.
-
-The popup's resting transform should read the swipe variables so the gesture and snap-back are visible,
-and its slide-out keyframe should hold the closed position with `forwards`:
-
-```css
 [rdxDrawerPopup] {
     transform: translate3d(var(--drawer-swipe-movement-x, 0), var(--drawer-swipe-movement-y, 0), 0);
-    transition: transform 0.3s ease;
+    transition: transform 300ms ease;
+}
+[rdxDrawerPopup][data-starting-style],
+[rdxDrawerPopup][data-closed] {
+    transform: translateY(100%);
 }
 [rdxDrawerPopup][data-swiping] {
     transition: none;
 }
-[rdxDrawerPopup][data-state='closed'] {
-    animation: slide-out-bottom 200ms ease-in forwards;
-}
 ```
+
+The same popup transition works without a backdrop. If you choose exit keyframes instead, use
+`forwards` to retain their final frame until the portal unmounts.
 
 ```html
 <div rdxDrawerRoot>

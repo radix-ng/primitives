@@ -34,6 +34,8 @@ import { RdxPopper } from '@radix-ng/primitives/popper';
 import { getFocusableMenuItems } from './menu-focus';
 import type { MenuSide } from './menu-safe-polygon';
 
+export const RDX_MENU_AMBIENT_DISABLED = new InjectionToken<Signal<boolean>>('RdxMenuAmbientDisabled');
+
 export type RdxMenuTransitionStatus = 'starting' | 'ending' | undefined;
 /**
  * Why an open/close happened instantly (no transition). Mirrors Base UI's menu `data-instant`:
@@ -100,6 +102,7 @@ export interface RdxMenuRootContext {
     loopFocus: Signal<boolean>;
     highlightItemOnHover: Signal<boolean>;
     isStationaryPointerMove: (event: PointerEvent) => boolean;
+    onItemHover: (item: HTMLElement, event: PointerEvent) => void;
     orientation: Signal<RdxMenuOrientation>;
     dir: Signal<Direction>;
     closeParentOnEsc: Signal<boolean>;
@@ -134,7 +137,9 @@ export interface RdxMenuRootContext {
     openInteractionType: Signal<RdxInteractionType>;
     closeInteractionType: Signal<RdxInteractionType>;
     hasTriggerInteractionHandler: Signal<boolean>;
+    triggerInteractionScope: Signal<HTMLElement | undefined>;
     trigger: Signal<HTMLElement | undefined>;
+    contextMenuPreviousFocus: Signal<HTMLElement | undefined>;
     triggerId: Signal<string | undefined>;
     contentId: Signal<string>;
     defaultContentId: string;
@@ -156,14 +161,14 @@ export interface RdxMenuRootContext {
     closeEntireMenu: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
     toggle: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
     show: (autoFocus?: RdxMenuAutoFocusInput, reason?: RdxMenuOpenChangeReason, event?: Event) => void;
-    /** Open the menu without moving focus into the popup (used for menubar hover-switching). */
+    /** Open the menu without moving focus into the popup. */
     showWithoutAutoFocus: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
     registerTrigger: (el: HTMLElement, getId?: () => string) => () => void;
     registerPopup: (el: HTMLElement, physicalSide?: Signal<MenuSide | undefined>, getId?: () => string) => () => void;
     setBeforeContentFocusGuard: (element: HTMLElement | null) => void;
     registerTransitionElement: (element: HTMLElement) => () => void;
     registerPopupArrowNavigationHandler: (handler: (offset: 1 | -1) => boolean) => () => void;
-    registerTriggerInteractionHandler: (handler: RdxMenuTriggerInteractionHandler) => () => void;
+    registerTriggerInteractionHandler: (handler: RdxMenuTriggerInteractionHandler, scope?: HTMLElement) => () => void;
     markAsSubmenu: () => void;
     /** Marks this menu as the root of a Context Menu (called by `RdxContextMenuRoot`). */
     markAsContextMenu: () => void;
@@ -174,7 +179,8 @@ export interface RdxMenuRootContext {
 }
 
 export type RdxMenuTriggerInteraction =
-    | { type: 'click' }
+    | { type: 'click'; event?: MouseEvent }
+    | { type: 'mousedown'; event: MouseEvent }
     | { type: 'enter'; event: Event }
     | { type: 'space'; event: Event }
     | { type: 'pointerenter'; event: PointerEvent }
@@ -210,6 +216,7 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         loopFocus: instance.loopFocus,
         highlightItemOnHover: instance.highlightItemOnHover,
         isStationaryPointerMove: (event) => instance.isStationaryPointerMove(event),
+        onItemHover: (item, event) => instance.onItemHover(item, event),
         orientation: instance.orientation,
         dir: instance.dir,
         closeParentOnEsc: instance.closeParentOnEsc,
@@ -227,7 +234,9 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         openInteractionType: instance.openInteractionType.asReadonly(),
         closeInteractionType: instance.closeInteractionType.asReadonly(),
         hasTriggerInteractionHandler: instance.hasTriggerInteractionHandler.asReadonly(),
+        triggerInteractionScope: instance.triggerInteractionScope.asReadonly(),
         trigger: instance.trigger.asReadonly(),
+        contextMenuPreviousFocus: instance.contextMenuPreviousFocus.asReadonly(),
         triggerId: instance.triggerId,
         contentId: instance.contentId,
         defaultContentId: instance.defaultContentId,
@@ -248,7 +257,8 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         setBeforeContentFocusGuard: (element) => instance.setBeforeContentFocusGuard(element),
         registerTransitionElement: (el) => instance.registerTransitionElement(el),
         registerPopupArrowNavigationHandler: (handler) => instance.registerPopupArrowNavigationHandler(handler),
-        registerTriggerInteractionHandler: (handler) => instance.registerTriggerInteractionHandler(handler),
+        registerTriggerInteractionHandler: (handler, scope) =>
+            instance.registerTriggerInteractionHandler(handler, scope),
         markAsSubmenu: () => instance.markAsSubmenu(),
         markAsContextMenu: () => instance.markAsContextMenu(),
         setAllowMouseUpTrigger: (value) => instance.setAllowMouseUpTrigger(value),
@@ -282,6 +292,7 @@ export class RdxMenuRoot {
     private readonly providedDirection = injectDirection();
     /** Ambient modality from an enclosing coordinator (e.g. Menubar). Overrides own `modal` for top-level menus. */
     private readonly ambientModal = inject(RDX_MENU_AMBIENT_MODAL, { optional: true });
+    private readonly ambientDisabled = inject(RDX_MENU_AMBIENT_DISABLED, { optional: true });
 
     /**
      * The shared per-popup floating context (ADR 0015 §1) — `open` mirrors this menu's open state, the
@@ -345,6 +356,8 @@ export class RdxMenuRoot {
     readonly skipExitAnimation = this.lifecycle.skipExitAnimation;
 
     readonly trigger = signal<HTMLElement | undefined>(undefined);
+    /** Context areas are not Menu triggers; preserve native pre-open focus separately. */
+    readonly contextMenuPreviousFocus = signal<HTMLElement | undefined>(undefined);
     readonly popupElement = signal<HTMLElement | undefined>(undefined);
     private pointerMoveGuard = createPointerMoveGuard();
     private pointerOrigin?: { clientX: number; clientY: number };
@@ -363,7 +376,7 @@ export class RdxMenuRoot {
     readonly beforeContentFocusGuard = signal<HTMLElement | null>(null);
     readonly transitionStatus = this.lifecycle.status;
     readonly activeIndex = signal<number | null>(null);
-    /** Whether the popup grabs focus when it opens. Set false for menubar hover-switching. */
+    /** How focus moves into the popup when it opens; false preserves the current focus. */
     readonly autoFocus = signal<RdxMenuAutoFocus>('first');
     readonly isSubmenu = signal(false);
     /** Set by `RdxContextMenuRoot` (it composes this root) — distinguishes a context menu from a dropdown. */
@@ -381,6 +394,8 @@ export class RdxMenuRoot {
         () => this.localIsContextMenu() || (this.parentRoot?.isContextMenu() ?? false)
     );
     readonly hasTriggerInteractionHandler = signal(false);
+    /** Native coordinator boundary, including composition through hostDirectives. */
+    readonly triggerInteractionScope = signal<HTMLElement | undefined>(undefined);
 
     /**
      * What kind of parent this menu has (Base UI `MenuParent.type`). A submenu wins over everything (its
@@ -416,7 +431,7 @@ export class RdxMenuRoot {
     readonly closeInteractionType = signal<RdxInteractionType>(null);
 
     readonly effectiveDisabled: Signal<boolean> = computed(
-        () => this.disabled() || (this.parentRoot?.effectiveDisabled() ?? false)
+        () => this.disabled() || (this.ambientDisabled?.() ?? false) || (this.parentRoot?.effectiveDisabled() ?? false)
     );
     readonly dir: Signal<Direction> = computed(() => {
         return this.dirInput() ?? this.parentRoot?.dir() ?? this.providedDirection();
@@ -497,6 +512,24 @@ export class RdxMenuRoot {
         this.autoFocus.set(nextAutoFocus);
 
         if (this.open()) {
+            if (
+                (reason === 'trigger-press' && this.lastOpenChangeReason() === 'trigger-hover') ||
+                (reason === 'trigger-focus' &&
+                    this.parentType() === 'menubar' &&
+                    this.lastOpenChangeReason() !== reason)
+            ) {
+                const change = this.createOpenChangeEvent(true, reason, event);
+                this.onOpenChange.emit(change.payload);
+                if (change.eventDetails.isCanceled()) return;
+                this.lastOpenChangeReason.set(reason);
+                this.openInteractionType.set(getInteractionTypeFromEvent(event));
+                change.commit();
+                this.floatingContext.events.emit('openchange', {
+                    open: true,
+                    reason,
+                    event: change.eventDetails.event
+                });
+            }
             this.focusOpenPopup(nextAutoFocus);
             return;
         }
@@ -524,6 +557,12 @@ export class RdxMenuRoot {
             // Publish reason + native event on the per-popup floating channel (Base UI open-change) so the
             // dismissal / future focus policy can read why the menu opened (e.g. hover vs press).
             this.floatingContext.events.emit('openchange', { open: true, reason, event: change.eventDetails.event });
+        }
+    }
+
+    onItemHover(item: HTMLElement, event: PointerEvent): void {
+        for (const child of this.childRoots()) {
+            if (child.trigger() !== item) child.close('sibling-open', event);
         }
     }
 
@@ -675,14 +714,16 @@ export class RdxMenuRoot {
         return this.popupArrowNavigationHandler?.(offset) ?? false;
     }
 
-    registerTriggerInteractionHandler(handler: RdxMenuTriggerInteractionHandler): () => void {
+    registerTriggerInteractionHandler(handler: RdxMenuTriggerInteractionHandler, scope?: HTMLElement): () => void {
         this.triggerInteractionHandler = handler;
         this.hasTriggerInteractionHandler.set(true);
+        this.triggerInteractionScope.set(scope);
 
         return () => {
             if (this.triggerInteractionHandler === handler) {
                 this.triggerInteractionHandler = undefined;
                 this.hasTriggerInteractionHandler.set(false);
+                this.triggerInteractionScope.set(undefined);
             }
         };
     }
@@ -703,7 +744,11 @@ export class RdxMenuRoot {
         const change = createCancelableChangeEventDetails(
             reason,
             event ?? new Event('menu.open-change'),
-            reason === 'focus-out' && event?.target !== this.beforeContentFocusGuard() ? undefined : this.trigger()
+            reason === 'focus-out' &&
+                this.parentType() !== 'menubar' &&
+                event?.target !== this.beforeContentFocusGuard()
+                ? undefined
+                : this.trigger()
         );
         const transaction = this.lifecycle.prepareOpenChange(open);
         change.eventDetails.preventUnmountOnClose = transaction.preventUnmountOnClose;

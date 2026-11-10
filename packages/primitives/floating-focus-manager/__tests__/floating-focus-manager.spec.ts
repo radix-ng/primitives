@@ -30,6 +30,7 @@ const flush = (): Promise<void> => new Promise((resolve) => requestAnimationFram
             [closeOnFocusOut]="closeOnFocusOut()"
             [initialFocus]="initialFocus()"
             [returnFocus]="returnFocus()"
+            [restoreFocus]="restoreFocus()"
             rdxFloatingFocusManager
         >
             <button #a>A</button>
@@ -43,6 +44,7 @@ class ManagerHost {
     readonly closeOnFocusOut = signal(true);
     readonly initialFocus = signal<RdxInitialFocus>(null);
     readonly returnFocus = signal<RdxReturnFocus>(true);
+    readonly restoreFocus = signal<boolean | 'popup'>(false);
     readonly scope = viewChild.required('scope', { read: ElementRef });
     readonly a = viewChild.required('a', { read: ElementRef });
     readonly b = viewChild.required('b', { read: ElementRef });
@@ -103,6 +105,36 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
 
     afterEach(() => appended.splice(0).forEach((el) => el.remove()));
     beforeEach(() => TestBed.resetTestingModule());
+
+    it('restoreFocus=true repairs removal even when the browser sends no focusout', async () => {
+        const fixture = TestBed.createComponent(ManagerHost),
+            host = fixture.componentInstance;
+        host.restoreFocus.set(true);
+        host.closeOnFocusOut.set(false);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        await flush();
+        host.a().nativeElement.focus();
+        host.a().nativeElement.remove();
+        await flush();
+        await flush();
+        expect(document.activeElement).toBe(host.b().nativeElement);
+    });
+
+    it('restoreFocus=true preserves an explicit blur of a visible control', async () => {
+        const fixture = TestBed.createComponent(ManagerHost),
+            host = fixture.componentInstance;
+        host.restoreFocus.set(true);
+        host.closeOnFocusOut.set(false);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        await flush();
+        host.a().nativeElement.focus();
+        host.a().nativeElement.blur();
+        await flush();
+        await flush();
+        expect(document.activeElement).toBe(document.body);
+    });
 
     it('recognizes native keyboard PointerEvent clicks without reclassifying real touch clicks', () => {
         const keyboardClick = new MouseEvent('click', { detail: 0 });

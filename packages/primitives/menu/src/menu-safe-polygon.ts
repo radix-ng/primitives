@@ -44,7 +44,7 @@ export interface SafePolygonOptions {
     /** Cursor Y at the moment it left the trigger. */
     y: number;
     /** Close the submenu (callers apply their own close delay). */
-    onClose: () => void;
+    onClose: (event?: MouseEvent) => void;
     /** Cancel a pending close — called on every move that decides to stay open. */
     cancelClose: () => void;
     /** Whether a descendant submenu is open; if so, never close (mirrors Floating UI's tree check). */
@@ -121,6 +121,7 @@ export function createSafePolygonHandler(options: SafePolygonOptions): SafePolyg
     let lastY: number | null = null;
     let lastCursorTime = typeof performance !== 'undefined' ? performance.now() : 0;
     let restTimer: ReturnType<typeof setTimeout> | undefined;
+    let lastEvent: MouseEvent | undefined;
 
     function isCursorMovingSlowly(nextX: number, nextY: number): boolean {
         const currentTime = typeof performance !== 'undefined' ? performance.now() : 0;
@@ -147,11 +148,12 @@ export function createSafePolygonHandler(options: SafePolygonOptions): SafePolyg
 
     function closeIfNoOpenChild(): void {
         if (!hasOpenChild()) {
-            onClose();
+            onClose(lastEvent);
         }
     }
 
     function onMouseMove(event: MouseEvent): void {
+        lastEvent = event;
         cancelClose();
         clearTimeout(restTimer);
 

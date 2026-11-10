@@ -2,6 +2,7 @@ import {
     booleanAttribute,
     computed,
     contentChildren,
+    DestroyRef,
     Directive,
     effect,
     ElementRef,
@@ -11,8 +12,15 @@ import {
     Signal
 } from '@angular/core';
 import { RdxCompositeList, RdxCompositeRoot } from '@radix-ng/primitives/composite';
-import { BooleanInput, createContext, provideFloatingTree } from '@radix-ng/primitives/core';
-import { RDX_MENU_AMBIENT_MODAL, RdxMenuRoot, RdxMenuTriggerInteraction } from '@radix-ng/primitives/menu';
+import { BooleanInput, createContext, getActiveElement, provideFloatingTree } from '@radix-ng/primitives/core';
+import { observeFocusRecovery } from '@radix-ng/primitives/focus-scope';
+import {
+    RDX_MENU_AMBIENT_DISABLED,
+    RDX_MENU_AMBIENT_MODAL,
+    RdxMenuOpenChangeReason,
+    RdxMenuRoot,
+    RdxMenuTriggerInteraction
+} from '@radix-ng/primitives/menu';
 
 export type RdxMenubarOrientation = 'horizontal' | 'vertical';
 
@@ -20,7 +28,7 @@ interface RdxMenubarItem {
     id: string;
     el: HTMLElement;
     root?: RdxMenuRoot;
-    open: () => void;
+    open: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
     close: () => void;
     disabled: () => boolean;
 }
@@ -34,7 +42,7 @@ export interface RdxMenubarContext {
     registerItem: (
         id: string,
         el: HTMLElement,
-        open: () => void,
+        open: (reason?: RdxMenuOpenChangeReason, event?: Event) => void,
         close: () => void,
         disabled: () => boolean
     ) => () => void;
@@ -84,7 +92,8 @@ let nextMenubarItemId = 0;
         provideFloatingTree(),
         // Thread the menubar's `modal` to every child menu (Base UI `Menubar` passes `modal` into each
         // `Menu.Root`). Child `RdxMenuRoot`s inherit it via the ambient token instead of each defaulting.
-        { provide: RDX_MENU_AMBIENT_MODAL, useFactory: () => inject(RdxMenubarRoot).modal }
+        { provide: RDX_MENU_AMBIENT_MODAL, useFactory: () => inject(RdxMenubarRoot).modal },
+        { provide: RDX_MENU_AMBIENT_DISABLED, useFactory: () => inject(RdxMenubarRoot).disabled }
     ],
     host: {
         role: 'menubar',
@@ -123,6 +132,22 @@ export class RdxMenubarRoot {
     readonly hasSubmenuOpen = computed(() => this.menuRoots().some((root) => root.isSubmenu() && root.open()));
 
     constructor() {
+        inject(DestroyRef).onDestroy(
+            observeFocusRecovery({
+                container: this.elementRef.nativeElement,
+                enabled: () => !this.disabled() && !this.hasOpenMenu(),
+                target: (previous, moved, visible) =>
+                    moved && visible && this.items.some((item) => item.el === previous) ? previous : undefined
+            })
+        );
+        effect(() => {
+            this.compositeList.items();
+            this.orderItems();
+            const focused = getActiveElement(this.elementRef.nativeElement.ownerDocument);
+            const item = this.items.find((item) => item.el === focused);
+            if (item && !item.disabled()) this.highlightItem(item);
+        });
+
         effect(() => {
             this.compositeRoot.setOrientation(this.orientation());
             this.compositeRoot.setLoopFocus(this.loopFocus());
@@ -184,7 +209,7 @@ export class RdxMenubarRoot {
     registerItem(
         id: string,
         el: HTMLElement,
-        open: () => void,
+        open: (reason?: RdxMenuOpenChangeReason, event?: Event) => void,
         close: () => void,
         disabled: () => boolean
     ): () => void {
@@ -243,8 +268,9 @@ export class RdxMenubarRoot {
             this.focusAdjacent(id, offset, true);
             return true;
         });
-        const unregisterTriggerInteraction = root.registerTriggerInteractionHandler((interaction) =>
-            this.handleTriggerInteraction(id, root, trigger, interaction)
+        const unregisterTriggerInteraction = root.registerTriggerInteractionHandler(
+            (interaction) => this.handleTriggerInteraction(id, root, trigger, interaction),
+            this.elementRef.nativeElement
         );
         const unregisterCompositeItem = this.compositeList.registerItem({
             element: trigger,
@@ -271,8 +297,8 @@ export class RdxMenubarRoot {
             id,
             el,
             root,
-            open: () => root.show(false),
-            close: () => root.close('none'),
+            open: (reason = 'trigger-focus', event?: Event) => root.show('popup', reason, event),
+            close: () => root.close('sibling-open'),
             disabled: () =>
                 this.disabled() ||
                 root.disabled() ||
@@ -299,13 +325,19 @@ export class RdxMenubarRoot {
         }
 
         switch (interaction.type) {
+            case 'mousedown': {
+                if (root.open()) return false;
+                root.show('popup', 'trigger-press', interaction.event);
+                if (root.open()) this.activateItem(id);
+                return true;
+            }
             case 'click': {
                 if (root.open()) {
-                    root.close('none');
-                    this.deactivateAll();
+                    root.close('trigger-press', interaction.event);
+                    if (!root.open()) this.deactivateAll();
                 } else {
-                    root.show();
-                    this.activateItem(id);
+                    root.show(interaction.event?.detail === 0 ? 'first' : 'popup', 'trigger-press', interaction.event);
+                    if (root.open()) this.activateItem(id);
                 }
                 return true;
             }
@@ -333,21 +365,22 @@ export class RdxMenubarRoot {
                     return true;
                 }
 
-                trigger.focus({ preventScroll: true });
-                root.show(false, 'trigger-hover');
+                root.show('popup', 'trigger-hover', interaction.event);
+                if (!root.open()) return true;
                 this.activateItem(id);
+                trigger.focus({ preventScroll: true });
                 return true;
             }
             case 'arrowdown': {
                 interaction.event.preventDefault();
-                root.show('first');
-                this.activateItem(id);
+                root.show('first', 'list-navigation', interaction.event);
+                if (root.open()) this.activateItem(id);
                 return true;
             }
             case 'arrowup': {
                 interaction.event.preventDefault();
-                root.show('last');
-                this.activateItem(id);
+                root.show('last', 'list-navigation', interaction.event);
+                if (root.open()) this.activateItem(id);
                 return true;
             }
             case 'arrowleft': {
@@ -434,8 +467,10 @@ export class RdxMenubarRoot {
         this.highlightItem(focusedItem);
 
         if (this.hasOpenMenu() && this.activeId() !== focusedItem.id) {
-            focusedItem.open();
+            focusedItem.open('trigger-focus', event);
             this.activateItem(focusedItem.id);
+        } else if (focusedItem.root?.open() && focusedItem.root.lastOpenChangeReason() === 'trigger-hover') {
+            focusedItem.open('trigger-focus', event);
         }
     }
 
@@ -455,8 +490,14 @@ export class RdxMenubarRoot {
     }
 
     private sortItems(): void {
-        this.items.sort((a, b) => (a.el.compareDocumentPosition(b.el) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
+        this.orderItems();
         this.markItemsChanged();
+    }
+
+    private orderItems(): void {
+        this.items.sort((a, b) =>
+            a === b ? 0 : a.el.compareDocumentPosition(b.el) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1
+        );
     }
 
     private markItemsChanged(): void {
@@ -475,7 +516,13 @@ export class RdxMenubarRoot {
         const highlightedIndex = this.compositeRoot.highlightedIndex();
 
         this.items.forEach((item, index) => {
-            item.el.tabIndex = index === highlightedIndex && !item.disabled() ? 0 : -1;
+            item.el.tabIndex = this.disabled()
+                ? index === 0
+                    ? 0
+                    : -1
+                : index === highlightedIndex && !item.disabled()
+                  ? 0
+                  : -1;
         });
     }
 }

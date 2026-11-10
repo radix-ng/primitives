@@ -13,6 +13,10 @@ items, submenus, checkbox/radio items, and separators. The only difference is th
 of a button that anchors the popup to itself, `rdxContextMenuTrigger` opens the menu at the pointer
 position on a right click or long-press.
 
+Set `disabled` on `rdxContextMenuRoot` to disable the whole menu, including every context area and
+imperative opening. Closing restores the element focused before opening; the right-click area is
+not necessarily focusable or focused by the browser. `finalFocus` on the popup overrides that policy.
+
 <Canvas sourceState="hidden" of={Stories.Default} />
 
 ## Features
@@ -20,10 +24,14 @@ position on a right click or long-press.
 - ✅ Opens at the pointer on right click; on touch, opens after a long-press.
 - ✅ Suppresses the native browser context menu.
 - ✅ Reuses every Menu popup part — items, submenus, checkbox/radio items, groups, separators.
-- ✅ Opened by pointer, the popup is focused with no item highlighted; opened by keyboard, the first item is highlighted.
+- ✅ Native pointer and keyboard context-menu opening focus the popup without highlighting an item; arrow keys enter the list.
 - ✅ Full keyboard navigation once open (ArrowDown / ArrowUp / Home / End / typeahead).
 - ✅ Closes on Escape, outside pointer interaction, and item selection — restoring focus.
 - ✅ Headless — state is exposed via `data-popup-open` / `data-pressed`; styling is up to the consumer.
+
+Long-press waits 500 ms by default. Moving more than 10 px on either axis, native cancellation,
+or a second finger cancels the pending request. Diagonal movement within 10 px per axis remains
+eligible. A touch anchor is 10 × 10 px; pointer/keyboard context-menu events use a point anchor.
 
 ## Import
 
@@ -81,10 +89,11 @@ Right-click the dashed area to open the menu at the pointer.
 
 ### Keyboard Interactions
 
-When opened with a pointer (right click / long-press) the popup itself receives focus and no item
-is highlighted; pressing `ArrowDown` / `ArrowUp` then moves into the items. When opened from the
-keyboard (the Menu key / `Shift` + `F10`) the first item is highlighted right
-away. Otherwise the popup behaves exactly like a [Menu](?path=/docs/primitives-menu--docs):
+Native pointer and keyboard context-menu events focus the popup without highlighting an item,
+matching Base UI. Press `ArrowDown` / `ArrowUp` to enter the list. The Menu key and `Shift` + `F10`
+follow native browser/OS support; the primitive does not synthesize unavailable platform events.
+Applications calling `root.openAt(x, y, 'first')` can explicitly choose initial item focus.
+The popup then behaves like a [Menu](?path=/docs/primitives-menu--docs):
 `ArrowDown` / `ArrowUp` move between items, `Home` / `End` jump to the first / last item, typeahead matches
 item text, and `Escape` closes the menu.
 
@@ -93,7 +102,7 @@ item text, and `Escape` closes the menu.
 ### RdxContextMenuRoot
 
 Groups all parts of the context menu and provides the Menu context consumed by the popup. Composes
-the Menu primitive, so it forwards the `open` (two-way), `modal`, `loopFocus`, and
+the Menu primitive, so it forwards the `open` (two-way), `disabled`, `modal`, `loopFocus`, and
 `highlightItemOnHover` inputs and the `onOpenChange` / `onOpenChangeComplete` outputs from
 `rdxMenuRoot`.
 
@@ -113,7 +122,7 @@ The area that opens the menu on right click or touch long-press.
 | Attribute           | Present when                          |
 | ------------------- | ------------------------------------- |
 | `data-popup-open`   | The context menu is open.             |
-| `data-pressed`      | The trigger is pressed.               |
+| `data-pressed`      | The context menu is open.               |
 | `data-disabled`     | The trigger is disabled.              |
 
 ### Menu parts

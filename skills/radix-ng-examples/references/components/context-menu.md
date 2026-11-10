@@ -11,10 +11,14 @@ A menu that appears at the pointer on right click (or touch long-press), built o
 - ✅ Opens at the pointer on right click; on touch, opens after a long-press.
 - ✅ Suppresses the native browser context menu.
 - ✅ Reuses every Menu popup part — items, submenus, checkbox/radio items, groups, separators.
-- ✅ Opened by pointer, the popup is focused with no item highlighted; opened by keyboard, the first item is highlighted.
+- ✅ Native pointer and keyboard context-menu opening focus the popup without highlighting an item; arrow keys enter the list.
 - ✅ Full keyboard navigation once open (ArrowDown / ArrowUp / Home / End / typeahead).
 - ✅ Closes on Escape, outside pointer interaction, and item selection — restoring focus.
 - ✅ Headless — state is exposed via `data-popup-open` / `data-pressed`; styling is up to the consumer.
+
+Long-press waits 500 ms by default. Moving more than 10 px on either axis, native cancellation,
+or a second finger cancels the pending request. Diagonal movement within 10 px per axis remains
+eligible. A touch anchor is 10 × 10 px; pointer/keyboard context-menu events use a point anchor.
 
 ## Import
 

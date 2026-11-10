@@ -44,6 +44,26 @@ Angular DI registers child Roots and parent presence derives a hold while accept
 preserving the embedded view that owns their completion outputs. The pin drops one nested CSS
 completion; an exact exception records this rather than copying its disposal race.
 
+**Menu pointer/composition contracts (ADR 0036):** Menu hover focuses the popup, a click promotes it
+to press ownership, and native down/move/up drives selection through the 200ms guard. Existing child
+Root DI registration closes sibling branches on parent-item hover; grace callbacks retain native
+events. Context Menu and Menubar have independent pinned suites and reuse actual Menu parts and
+native recording. Menubar inherits disabling through a DI signal and includes the bar in the existing
+focus manager's inside elements while switching. Context Menu captures actual pre-open focus for
+that manager; its area is not an ordinary Menu trigger or ARIA identity. Preserve Angular queries
+and DI ownership when sharing fixtures, rather than introducing a wrapper or React interaction store.
+
+**Native input and collection focus (ADR 0037):** `focus-scope/observeFocusRecovery` observes actual
+inside focus and DOM mutations, including removals/moves without focusout in Firefox/WebKit. Floating
+Focus Manager and Menubar supply target policies. Boolean restoration does not steal a visible
+control's deliberate blur; virtual-focus Select explicitly restores to Popup. Menu highlight remains
+index-based and is independent of DOM focus; managed refocus preserves that index. Menubar derives
+roving identity from the focused trigger and current composite DOM order. Context Menu uses Pointer
+Events with per-axis touch slop, cancels multi-touch, and native keyboard contextmenu focuses Popup.
+Its pressed attribute derives from open state. Native input capabilities are probed/skipped explicitly.
+Dialog/Drawer shared demo styles use current boolean states; Drawer uses CSS transitions so gesture
+updates do not replay entry keyframes. Browser exit tests pause/seek/finish actual WAAPI effects.
+
 **Framework adaptation during parity work:** preserve the observable Base UI contract while using
 Angular's `model`, outputs, DI, reactive queries/collections and view lifecycle. Derive state with
 `computed` when it follows existing signals. A React ref, store, controlled-prop mirror or forced

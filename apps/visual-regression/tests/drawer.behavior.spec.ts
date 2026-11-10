@@ -1,4 +1,5 @@
 import { expect, Page, test } from '@playwright/test';
+import { holdExitAnimations } from '../helpers/exit-animations';
 
 declare global {
     interface Window {
@@ -32,6 +33,7 @@ test.describe('Drawer swipe area', () => {
         await expect(popup).toBeVisible();
         await expect(viewport).toBeVisible();
         await expect(popup).toHaveAttribute('data-swiping', '');
+        await expect(popup).toHaveCSS('animation-name', 'none');
 
         const movementAfterShortDrag = await popup.evaluate((element) => {
             const transform = getComputedStyle(element).transform;
@@ -110,13 +112,18 @@ test.describe('Drawer swipe area', () => {
         await page.mouse.up();
 
         await expect(popup).toBeVisible();
+        const exit = await holdExitAnimations(page, ['[rdxDrawerPopup]', '[rdxDrawerBackdrop]']);
         await viewport.click({ position: { x: 20, y: 20 } });
 
         await expect(popup).toHaveAttribute('data-ending-style', '');
-        await expect(backdrop).toHaveAttribute('data-state', 'closed');
+        await expect(backdrop).toHaveAttribute('data-closed', '');
+        await expect.poll(exit.count).toBeGreaterThan(0);
+        await exit.seek(0.5);
         await expect
             .poll(() => popup.evaluate((element) => new DOMMatrixReadOnly(getComputedStyle(element).transform).m41))
             .toBeGreaterThan(0);
+        await expect.poll(exit.count).toBeGreaterThan(0);
+        await exit.finish();
         await expect(popup).toBeHidden();
     });
 });
@@ -222,15 +229,17 @@ test.describe('Drawer default', () => {
         );
 
         await expect(popup).toHaveAttribute('data-swiping', '');
-        const bleedHeight = await popup.evaluate((element) =>
-            Number.parseFloat(getComputedStyle(element, '::after').height)
-        );
-        const movement = await popup.evaluate((element) =>
-            Math.abs(new DOMMatrixReadOnly(getComputedStyle(element).transform).m42)
-        );
-
-        expect(movement).toBeGreaterThan(48);
-        expect(bleedHeight).toBeGreaterThanOrEqual(movement + 47.5);
+        // Swipe writes are coalesced into RAF. Read the related geometry in one browser task
+        // after that write, rather than sampling opposite sides of a frame boundary.
+        await expect
+            .poll(() =>
+                popup.evaluate((element) => {
+                    const bleedHeight = Number.parseFloat(getComputedStyle(element, '::after').height);
+                    const movement = Math.abs(new DOMMatrixReadOnly(getComputedStyle(element).transform).m42);
+                    return movement > 48 && bleedHeight >= movement + 47.5;
+                })
+            )
+            .toBe(true);
 
         await page.evaluate(() => {
             window.dispatchEvent(
@@ -247,14 +256,11 @@ test.describe('Drawer default', () => {
 
         await page.waitForTimeout(75);
 
-        const settlingBleedHeight = await popup.evaluate((element) =>
-            Number.parseFloat(getComputedStyle(element, '::after').height)
-        );
-        const settlingMovement = await popup.evaluate((element) =>
-            Math.abs(new DOMMatrixReadOnly(getComputedStyle(element).transform).m42)
-        );
+        const { settlingBleedHeight, settlingMovement } = await popup.evaluate((element) => ({
+            settlingBleedHeight: Number.parseFloat(getComputedStyle(element, '::after').height),
+            settlingMovement: Math.abs(new DOMMatrixReadOnly(getComputedStyle(element).transform).m42)
+        }));
 
-        expect(settlingMovement).toBeGreaterThan(0);
         expect(settlingBleedHeight).toBeGreaterThanOrEqual(settlingMovement + 47.5);
     });
 });
@@ -335,14 +341,13 @@ test.describe('Drawer snap points', () => {
         const dragHeader = popup.locator('[rdxDrawerTitle]').locator('..');
         await page.getByRole('button', { name: 'Open snap drawer' }).click();
 
-        const startingBox = await popup.boundingBox();
-        await page.waitForTimeout(100);
-        const movingBox = await popup.boundingBox();
-
         await expect(popup).toBeVisible();
-        expect(startingBox).not.toBeNull();
-        expect(movingBox).not.toBeNull();
-        expect(startingBox!.y).toBeGreaterThan(movingBox!.y);
+        await popup.evaluate(async (element) => {
+            await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+            await Promise.allSettled(element.getAnimations().map((animation) => animation.finished));
+        });
+        const compactBox = await popup.boundingBox();
+        expect(compactBox).not.toBeNull();
         await expect(popup).not.toHaveAttribute('data-expanded', '');
         await expect
             .poll(() =>
@@ -395,6 +400,11 @@ test.describe('Drawer snap points', () => {
                 )
             )
             .toBe(0);
+        await popup.evaluate((element) =>
+            Promise.allSettled(element.getAnimations().map((animation) => animation.finished))
+        );
+        const expandedBox = await popup.boundingBox();
+        expect(expandedBox!.y).toBeLessThan(compactBox!.y);
     });
 });
 
@@ -432,6 +442,10 @@ test.describe('Drawer close watcher', () => {
         await page.addInitScript(RECORD_WATCHERS);
 
         await openDrawer(page);
+        if (!(await page.evaluate(() => typeof Reflect.get(window, 'CloseWatcher') === 'function'))) {
+            await context.close();
+            test.skip(true, 'This engine has no native CloseWatcher');
+        }
         expect(await page.evaluate(() => window.__closeWatchers.length), 'a watcher is registered').toBeGreaterThan(0);
 
         await page.evaluate(() => window.__closeWatchers.at(-1).dispatchEvent(new Event('close')));

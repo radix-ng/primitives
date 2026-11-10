@@ -53,6 +53,9 @@ test('hovering a scroll button scrolls until the pointer leaves', async ({ page 
     await page.clock.install();
     const { errors } = await setup(page, 'middle');
     await page.keyboard.press('Home');
+    // Home scrolls after Angular's render. Capture the hover baseline only after that move,
+    // otherwise a late keyboard scroll can be mistaken for the hover scrolling backwards.
+    await visibleOption(page, 'Item 00');
     const list = page.locator('[rdxSelectList]');
     const down = page.locator('[rdxSelectScrollDownButton]');
     await expect(down).toBeVisible();

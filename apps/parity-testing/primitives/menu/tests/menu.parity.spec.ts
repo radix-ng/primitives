@@ -11,7 +11,8 @@ const run = createParityRunner({
     readNativeEvents: (driver) =>
         driver.page.evaluate(() => ({
             changes: window.menuParity?.nativeEvents,
-            pointerMoves: window.menuParity?.pointerMoves
+            pointerMoves: window.menuParity?.pointerMoves,
+            gestures: window.menuParity?.gestures
         }))
 });
 for (const scenario of scenarios)

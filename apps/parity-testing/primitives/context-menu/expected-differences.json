@@ -1,0 +1,22 @@
+[
+    {
+        "scenario": "right-release",
+        "checkpoint": "right release",
+        "field": "focus",
+        "angular": "context-alpha",
+        "react": "context-popup",
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "right-release",
+        "checkpoint": "right release",
+        "field": "highlighted",
+        "angular": ["context-alpha"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    }
+]

@@ -1,4 +1,5 @@
 import { expect, Page, test } from '@playwright/test';
+import { holdExitAnimations } from '../helpers/exit-animations';
 
 /**
  * Behavioral checks for the structural `*rdxDialogPortal` (ADR 0010), exercising the **multi-root**
@@ -34,6 +35,7 @@ test.describe('Dialog structural portal', () => {
 
         await page.locator(trigger).first().click();
         await expect(page.locator(popup)).toBeVisible();
+        const exit = await holdExitAnimations(page, [backdrop, popup]);
 
         // Close via the popup's X button.
         await page.locator('[rdxDialogClose][aria-label="Close"]').click();
@@ -42,8 +44,10 @@ test.describe('Dialog structural portal', () => {
         // presence machine keeps them mounted until both finish.
         await expect(page.locator(backdrop)).toHaveAttribute('data-closed', '');
         await expect(page.locator(popup)).toHaveAttribute('data-closed', '');
+        await expect.poll(exit.count).toBe(2);
 
         // Once the exit animations end, the whole view is destroyed — no orphans in <body>.
+        await exit.finish();
         await expect(page.locator(backdrop)).toHaveCount(0);
         await expect(page.locator(popup)).toHaveCount(0);
     });
@@ -53,13 +57,6 @@ test.describe('Dialog structural portal', () => {
     }) => {
         await gotoStory(page, 'primitives-dialog--default');
 
-        // Slow the 150ms exit keyframes to a comfortable window so the transitional state below is
-        // observable without a race: the lock must already be released while the popup is still
-        // mounted-and-animating-out (`open && modal` gating, not mounted-lifetime gating).
-        await page.addStyleTag({
-            content: `[rdxDialogBackdrop][data-closed], [rdxDialogPopup][data-closed] { animation-duration: 2000ms !important; }`
-        });
-
         // `useScrollLock` marks `<html>` with `data-rdx-scroll-locked` (strategy-independent).
         const scrollLocked = () => page.locator('html').evaluate((el) => el.hasAttribute('data-rdx-scroll-locked'));
 
@@ -68,10 +65,7 @@ test.describe('Dialog structural portal', () => {
         // Modal dialog locks page scroll while open.
         expect(await scrollLocked()).toBe(true);
 
-        // Do not replace an in-flight entry animation before Presence has observed its finish.
-        await page.locator(popup).evaluate(async (el) => {
-            await Promise.all(el.getAnimations().map((animation) => animation.finished));
-        });
+        const exit = await holdExitAnimations(page, [backdrop, popup]);
 
         await page.locator('[rdxDialogClose][aria-label="Close"]').click();
 
@@ -82,6 +76,7 @@ test.describe('Dialog structural portal', () => {
         expect(await scrollLocked()).toBe(false);
 
         // Still released after unmount.
+        await exit.finish();
         await expect(page.locator(popup)).toHaveCount(0);
         expect(await scrollLocked()).toBe(false);
     });
@@ -322,11 +317,6 @@ test.describe('Dialog — new floating engine migration', () => {
     test('releases marker and inert at close-start, before the exit animation finishes', async ({ page }) => {
         await gotoStory(page, 'primitives-dialog--default');
 
-        // Slow the exit keyframes so the mid-exit state is observable without a race.
-        await page.addStyleTag({
-            content: `[rdxDialogBackdrop][data-closed], [rdxDialogPopup][data-closed] { animation-duration: 2000ms !important; }`
-        });
-
         const rootState = () =>
             page.locator('#storybook-root').evaluate((el) => ({
                 inert: el.hasAttribute('inert'),
@@ -336,6 +326,7 @@ test.describe('Dialog — new floating engine migration', () => {
         await page.locator(trigger).first().click();
         await expect(page.locator(popup)).toBeVisible();
         expect(await rootState()).toEqual({ inert: true, marked: true });
+        const exit = await holdExitAnimations(page, [backdrop, popup]);
 
         await page.locator('[rdxDialogClose][aria-label="Close"]').click();
 
@@ -345,6 +336,7 @@ test.describe('Dialog — new floating engine migration', () => {
         expect(await rootState()).toEqual({ inert: false, marked: false });
 
         // Still released after unmount.
+        await exit.finish();
         await expect(page.locator(popup)).toHaveCount(0);
         expect(await rootState()).toEqual({ inert: false, marked: false });
     });

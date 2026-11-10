@@ -1,12 +1,12 @@
 import {
     booleanAttribute,
+    computed,
     DestroyRef,
     Directive,
     ElementRef,
     inject,
     input,
-    numberAttribute,
-    signal
+    numberAttribute
 } from '@angular/core';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
 import { findMenuOwnerId, RdxMenuRoot } from '@radix-ng/primitives/menu';
@@ -23,8 +23,8 @@ import { injectRdxContextMenuRootContext } from './context-menu-root';
     exportAs: 'rdxContextMenuTrigger',
     host: {
         '[attr.data-popup-open]': 'rootContext.isOpen() ? "" : undefined',
-        '[attr.data-pressed]': 'pressed() ? "" : undefined',
-        '[attr.data-disabled]': 'disabled() ? "" : undefined',
+        '[attr.data-pressed]': 'rootContext.isOpen() ? "" : undefined',
+        '[attr.data-disabled]': 'effectiveDisabled() ? "" : undefined',
         '(contextmenu)': 'onContextMenu($event)',
         '(pointerdown)': 'onPointerDown($event)',
         '(pointermove)': 'onPointerMove($event)',
@@ -40,17 +40,14 @@ export class RdxContextMenuTrigger {
 
     /** Whether the trigger is disabled. */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+    protected readonly effectiveDisabled = computed(() => this.disabled() || this.rootContext.disabled());
 
     /** How long (ms) a touch must be held before the menu opens. */
     readonly longPressDelay = input<number, NumberInput>(500, { transform: numberAttribute });
 
-    /** Whether the trigger is mid-press (Base UI `data-pressed`). */
-    protected readonly pressed = signal(false);
-
     private longPressTimer: ReturnType<typeof setTimeout> | undefined;
     private allowMouseUpTimer: ReturnType<typeof setTimeout> | undefined;
     private longPressOrigin: { x: number; y: number } | undefined;
-    private lastPointerDownTime = 0;
     private allowMouseUp = false;
     private readonly handleDocumentMouseUp = (event: MouseEvent): void => {
         this.clearContextMenuMouseUpGuard();
@@ -99,39 +96,35 @@ export class RdxContextMenuTrigger {
     }
 
     protected onContextMenu(event: MouseEvent): void {
-        if (this.disabled()) {
+        if (this.effectiveDisabled()) {
             return;
         }
 
         // Suppress the native context menu and open ours at the pointer.
         event.preventDefault();
         this.cancelLongPress();
-        this.pressed.set(true);
 
-        // A keyboard-initiated context menu (the Menu key / Shift+F10) is not preceded by a pointerdown,
-        // so it opens with the first item highlighted; a pointer opens the popup without highlighting.
-        const fromKeyboard = event.timeStamp - this.lastPointerDownTime > 300;
         // Where the gesture started, and permission for an item to act on the release that ends it —
         // both consumed by the items' `mouseup` handling (Base UI `ContextMenuTrigger`).
-        this.menuRoot.setInitialCursorPoint(fromKeyboard ? null : { x: event.clientX, y: event.clientY });
-        this.menuRoot.setAllowMouseUpTrigger(!fromKeyboard);
+        this.menuRoot.setInitialCursorPoint({ x: event.clientX, y: event.clientY });
+        this.menuRoot.setAllowMouseUpTrigger(true);
         // A right-click `contextmenu` event has no `pointerType`, so this records a non-touch open.
-        this.rootContext.openAt(event.clientX, event.clientY, fromKeyboard ? 'first' : 'popup', event);
+        // Native keyboard context-menu events use the same popup focus policy as Base UI. Elapsed
+        // time since a pointerdown cannot reliably identify their origin.
+        this.rootContext.openAt(event.clientX, event.clientY, 'popup', event);
         this.armContextMenuMouseUpGuard(this.elementRef.nativeElement);
     }
 
     protected onPointerDown(event: PointerEvent): void {
-        this.lastPointerDownTime = event.timeStamp;
-        this.pressed.set(true);
-
-        // Ignore non-primary pointers (a second finger in a multi-touch gesture must not arm long-press).
-        if (this.disabled() || event.pointerType !== 'touch' || event.isPrimary === false) {
+        if (this.effectiveDisabled() || event.pointerType !== 'touch') {
             return;
         }
 
+        // A second finger cancels the first finger's pending long-press as well.
+        this.cancelLongPress();
+        if (event.isPrimary === false) return;
         const { clientX, clientY } = event;
         this.longPressOrigin = { x: clientX, y: clientY };
-        this.cancelLongPress();
         this.longPressTimer = setTimeout(() => {
             this.longPressTimer = undefined;
             // Pass the touch pointer event so the menu records a touch open (ADR 0016 §3).
@@ -147,13 +140,12 @@ export class RdxContextMenuTrigger {
 
         const dx = event.clientX - this.longPressOrigin.x;
         const dy = event.clientY - this.longPressOrigin.y;
-        if (Math.hypot(dx, dy) > 10) {
+        if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
             this.cancelLongPress();
         }
     }
 
     protected cancelLongPress(): void {
-        this.pressed.set(false);
         clearTimeout(this.longPressTimer);
         this.longPressTimer = undefined;
         this.longPressOrigin = undefined;

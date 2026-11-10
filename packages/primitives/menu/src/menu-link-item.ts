@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, dispatchClickWithModifiers } from '@radix-ng/primitives/core';
+import { RdxFloatingFocusManager } from '@radix-ng/primitives/floating-focus-manager';
 import { shouldActivateOnMouseUp } from './menu-mouse-up';
 import { injectRdxMenuRootContext } from './menu-root';
 
@@ -29,7 +30,7 @@ import { injectRdxMenuRootContext } from './menu-root';
         '[attr.data-highlighted]': 'highlighted() ? "" : undefined',
         '[attr.data-label]': 'label() ?? undefined',
         '(focus)': 'onFocus()',
-        '(blur)': 'onBlur()',
+        '(blur)': 'onBlur($event)',
         '(pointermove)': 'onPointerMove($event)',
         '(pointerleave)': 'onPointerLeave($event)',
         '(mouseup)': 'onMouseUp($event)',
@@ -43,6 +44,7 @@ export class RdxMenuLinkItem {
     private readonly listItem = inject(RdxCompositeListItem, { self: true });
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly isFocused = signal(false);
+    private readonly focusManager = inject(RdxFloatingFocusManager, { optional: true });
 
     /** Whether this item is disabled. */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
@@ -59,7 +61,7 @@ export class RdxMenuLinkItem {
     protected readonly highlighted = computed(
         () =>
             this.rootContext?.isOpen() !== false &&
-            (this.rootContext?.activeIndex() === this.listItem.index() || this.isFocused())
+            (this.rootContext ? this.rootContext.activeIndex() === this.listItem.index() : this.isFocused())
     );
     protected readonly effectiveDisabled = computed(() => this.disabled() || (this.rootContext?.disabled() ?? false));
 
@@ -77,12 +79,12 @@ export class RdxMenuLinkItem {
         if (!this.rootContext?.disabled()) {
             this.isFocused.set(true);
         }
-        this.setActiveIndex();
+        if (!this.focusManager?.isRestoringFocus()) this.setActiveIndex();
     }
 
-    onBlur(): void {
+    onBlur(event?: FocusEvent): void {
         this.isFocused.set(false);
-        this.clearActiveIndex();
+        if (event?.relatedTarget !== null) this.clearActiveIndex();
     }
 
     onPointerMove(event: PointerEvent): void {
@@ -90,9 +92,10 @@ export class RdxMenuLinkItem {
         if (this.rootContext?.isStationaryPointerMove(event)) {
             return;
         }
-        if (event.defaultPrevented || event.pointerType !== 'mouse' || this.effectiveDisabled()) {
+        if (event.defaultPrevented || event.pointerType !== 'mouse' || this.rootContext?.disabled()) {
             return;
         }
+        this.rootContext?.onItemHover(this.elementRef.nativeElement, event);
         if (this.rootContext && !this.rootContext.highlightItemOnHover()) {
             return;
         }

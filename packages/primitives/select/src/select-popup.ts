@@ -157,7 +157,8 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
                     }
                     return rootContext.triggerElement() ?? true;
                 },
-                restoreFocus: () => true,
+                // This virtual-focus listbox owns DOM focus even after an explicit inside blur.
+                restoreFocus: () => 'popup',
                 openInteractionType: () => rootContext.openInteractionType(),
                 closeInteractionType: () => rootContext.closeInteractionType()
             };

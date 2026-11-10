@@ -13,6 +13,62 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
 const trigger = '[rdxMenuTrigger]';
 const popup = '[rdxMenuPopup]';
 
+for (const press of [false, true]) {
+    test(`hover menu uses its ${press ? 'press' : 'hover'} lifetime after leaving`, async ({ page }) => {
+        const errors: string[] = [];
+        page.on('pageerror', (error) => errors.push(error.message));
+        page.on('console', (message) => {
+            if (message.type() === 'error') errors.push(message.text());
+        });
+        await gotoStory(page, 'primitives-menu--pointer');
+        await page.locator(trigger).hover();
+        await expect(page.locator(popup)).toBeVisible();
+        await expect(page.locator(popup)).toBeFocused();
+        await expect(page.locator('[data-highlighted]')).toHaveCount(0);
+        if (press) {
+            await page.locator(trigger).click();
+            await expect(page.locator('body')).toHaveCSS('pointer-events', 'auto');
+            await page.keyboard.press('ArrowDown');
+            await expect(page.getByRole('menuitem', { name: 'New tab', exact: true })).toBeFocused();
+        }
+        await page.mouse.move(10, 10);
+        if (press) {
+            await page.waitForTimeout(200); // Beyond the authored 80ms hover close delay.
+            await expect(page.locator(popup)).toBeVisible();
+            await page.keyboard.press('Escape');
+        }
+        await expect(page.locator(popup)).toHaveCount(0);
+        expect(errors).toEqual([]);
+    });
+}
+
+for (const disabled of [false, true]) {
+    test(`press-drag-release ${disabled ? 'cannot activate a disabled' : 'selects an enabled'} command`, async ({
+        page
+    }) => {
+        const errors: string[] = [];
+        page.on('pageerror', (error) => errors.push(error.message));
+        page.on('console', (message) => {
+            if (message.type() === 'error') errors.push(message.text());
+        });
+        await gotoStory(page, 'primitives-menu--pointer');
+        const box = (await page.locator(trigger).boundingBox())!;
+        await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+        await page.mouse.down();
+        await expect(page.locator(popup)).toBeVisible();
+        await page.waitForTimeout(240);
+        const item = (await page
+            .getByRole('menuitem', { name: disabled ? 'Unavailable' : 'New tab', exact: true })
+            .boundingBox())!;
+        await page.mouse.move(item.x + item.width / 2, item.y + item.height / 2, { steps: 3 });
+        await page.mouse.up();
+        await expect(page.locator('output')).toHaveText(disabled ? 'No command selected' : 'New tab');
+        if (disabled) await expect(page.locator(popup)).toBeVisible();
+        else await expect(page.locator(popup)).toHaveCount(0);
+        expect(errors).toEqual([]);
+    });
+}
+
 for (const retained of [false, true]) {
     test(`deferred menu close completes once and preserves state only with keepMounted=${retained}`, async ({
         page

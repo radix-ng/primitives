@@ -10,6 +10,7 @@ import {
 } from '@radix-ng/primitives/menu';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { exitClass } from '../../../shared/lifecycle';
+import { changeCollection, menuEntries } from '../../../shared/menu-collection';
 import { classes, config, installProbe, type Layer } from './contract';
 
 const settings = config();
@@ -33,6 +34,9 @@ const settings = config();
                 <button
                     [id]="settings.ids ? triggerId() : undefined"
                     [class]="s.trigger"
+                    [openOnHover]="settings.pointer.rootHover"
+                    [delay]="settings.pointer.delay"
+                    [closeDelay]="settings.pointer.closeDelay"
                     data-testid="primary"
                     rdxMenuTrigger
                 >
@@ -53,34 +57,34 @@ const settings = config();
                             data-testid="popup"
                             rdxMenuPopup
                         >
-                            <button
-                                [class]="s.item"
-                                [label]="settings.label"
-                                (onSelect)="trace.select('alpha')"
-                                data-testid="alpha"
-                                rdxMenuItem
-                            >
-                                Alpha
-                            </button>
-                            <button
-                                [class]="s.item"
-                                [disabled]="true"
-                                (onSelect)="trace.select('blocked')"
-                                data-testid="blocked"
-                                rdxMenuItem
-                            >
-                                Blocked
-                            </button>
-                            <button [class]="s.item" (onSelect)="trace.select('bravo')" data-testid="bravo" rdxMenuItem>
-                                Bravo
-                            </button>
+                            @for (item of items(); track item.id) {
+                                <button
+                                    [class]="s.item"
+                                    [label]="item.id === 'alpha' ? settings.label : undefined"
+                                    [disabled]="item.disabled"
+                                    [attr.data-testid]="item.id"
+                                    (onSelect)="trace.select(item.id)"
+                                    rdxMenuItem
+                                >
+                                    {{ item.label }}
+                                </button>
+                            }
                             @if (settings.submenu) {
                                 <ng-container
                                     (onOpenChange)="change('sub', $event)"
                                     (onOpenChangeComplete)="trace.complete('sub', $event)"
                                     rdxMenuRoot
                                 >
-                                    <button [class]="s.item" data-testid="more" rdxMenuSubTrigger>More</button>
+                                    <button
+                                        [class]="s.item"
+                                        [disabled]="settings.pointer.disabledSubmenu"
+                                        [delay]="settings.pointer.delay"
+                                        [closeDelay]="settings.pointer.closeDelay"
+                                        data-testid="more"
+                                        rdxMenuSubTrigger
+                                    >
+                                        More
+                                    </button>
                                     <ng-template rdxMenuPortal>
                                         <div
                                             class="z-50"
@@ -164,9 +168,16 @@ class AngularMenu {
     readonly settings = settings;
     readonly s = classes;
     readonly trace = installProbe('angular');
+    readonly items = signal(menuEntries);
     readonly triggerId = signal('custom-trigger');
     readonly popupId = signal('custom-popup');
     command(event: KeyboardEvent) {
+        if (event.key === 'F3' && settings.name.startsWith('collection-')) {
+            event.preventDefault();
+            this.items.update((items) =>
+                changeCollection(items, settings.name, { id: 'new', label: 'New', disabled: false })
+            );
+        }
         if (['F8', 'F9', 'F10'].includes(event.key)) {
             event.preventDefault();
             if (event.key === 'F8') this.root().close();

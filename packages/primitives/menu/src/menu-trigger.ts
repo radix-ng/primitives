@@ -150,6 +150,8 @@ export class RdxMenuTrigger {
         effect((onCleanup) => {
             const open = this.rootContext.isOpen();
             const popup = this.rootContext.popupElement();
+            // A click promotes the still-open menu; release its hover tunnel when the reason changes.
+            const hover = this.rootContext.lastOpenChangeReason() === 'trigger-hover';
 
             if (!open) {
                 this.openedByHover = false;
@@ -157,7 +159,7 @@ export class RdxMenuTrigger {
                 return;
             }
 
-            if (!popup || !this.openedByHover || !this.lastPointer || !this.isBrowser) {
+            if (!popup || !hover || !this.openedByHover || !this.lastPointer || !this.isBrowser) {
                 return;
             }
 
@@ -171,7 +173,9 @@ export class RdxMenuTrigger {
                 side: () => this.rootContext.popupPhysicalSide() ?? 'bottom',
                 x: this.lastPointer.x,
                 y: this.lastPointer.y,
-                onClose: () => this.scheduleClose(),
+                onClose: (event) => {
+                    if (this.openedByHover) this.scheduleClose(event);
+                },
                 cancelClose: () => this.clearCloseTimer(),
                 hasOpenChild: () => hasOpenChildSubmenu(trigger, popup),
                 onLanded: () => {
@@ -213,7 +217,16 @@ export class RdxMenuTrigger {
             return;
         }
 
+        this.clearOpenTimer();
+        this.clearCloseTimer();
+
         if (this.rootContext.hasTriggerInteractionHandler()) {
+            const wasOpen = this.rootContext.isOpen();
+            if (this.rootContext.handleTriggerInteraction({ type: 'mousedown', event })) {
+                this.ignoreNextClick = 'mouse';
+                this.openedByHover = false;
+                if (!wasOpen && this.rootContext.isOpen()) this.armMouseUpGuard(event.currentTarget as HTMLElement);
+            }
             return;
         }
 
@@ -222,6 +235,9 @@ export class RdxMenuTrigger {
             this.rootContext.isOpen() &&
             this.rootContext.lastOpenChangeReason() === 'trigger-hover'
         ) {
+            this.ignoreNextClick = 'mouse';
+            this.rootContext.show(false, 'trigger-press', event);
+            this.openedByHover = this.rootContext.lastOpenChangeReason() === 'trigger-hover';
             return;
         }
 
@@ -250,7 +266,23 @@ export class RdxMenuTrigger {
 
         const wasOpen = this.rootContext.isOpen();
 
-        if (this.rootContext.handleTriggerInteraction({ type: 'click' })) {
+        if (this.ignoreNextClick === 'mouse' && event.detail > 0) {
+            this.ignoreNextClick = null;
+            // Safari can blur the hovered popup onto body while applying the button's native
+            // mousedown action. Keep an accepted promotion keyboard-ready without stealing focus
+            // from a trigger/control the browser or consumer actually focused.
+            if (
+                this.openOnHover() &&
+                this.rootContext.isOpen() &&
+                this.rootContext.lastOpenChangeReason() === 'trigger-press' &&
+                this.elementRef.nativeElement.ownerDocument.activeElement ===
+                    this.elementRef.nativeElement.ownerDocument.body
+            ) {
+                this.rootContext.show('popup', 'trigger-press', event);
+            }
+            return;
+        }
+        if (this.rootContext.handleTriggerInteraction({ type: 'click', event })) {
             if (event.detail === 0 && !wasOpen && this.rootContext.isOpen()) {
                 this.restoreKeyboardPopupFocus();
             }
@@ -282,7 +314,7 @@ export class RdxMenuTrigger {
         }
 
         event.preventDefault();
-        if (!this.isDisabled() && !this.rootContext.isOpen()) {
+        if (!this.isDisabled()) {
             this.rootContext.show('first', 'list-navigation', event);
         }
     }
@@ -293,7 +325,7 @@ export class RdxMenuTrigger {
         }
 
         event.preventDefault();
-        if (!this.isDisabled() && !this.rootContext.isOpen()) {
+        if (!this.isDisabled()) {
             this.rootContext.show('last', 'list-navigation', event);
         }
     }
@@ -358,17 +390,19 @@ export class RdxMenuTrigger {
         this.clearOpenTimer();
         this.lastPointer = { x: event.clientX, y: event.clientY };
 
+        if (this.rootContext.isOpen()) return;
+
         const delay = this.delay() ?? 100;
         if (delay <= 0) {
             this.openedByHover = true;
-            this.rootContext.show('first', 'trigger-hover');
+            this.rootContext.show('popup', 'trigger-hover', event);
             return;
         }
 
         this.openTimer = setTimeout(() => {
             this.openTimer = undefined;
             this.openedByHover = true;
-            this.rootContext.show('first', 'trigger-hover');
+            this.rootContext.show('popup', 'trigger-hover', event);
         }, delay);
     }
 
@@ -381,10 +415,6 @@ export class RdxMenuTrigger {
 
         this.clearOpenTimer();
         this.lastPointer = { x: event.clientX, y: event.clientY };
-
-        if (!this.rootContext.isOpen() || !this.openedByHover) {
-            this.scheduleClose();
-        }
     }
 
     protected handlePointerMove(event: PointerEvent): void {
@@ -393,12 +423,12 @@ export class RdxMenuTrigger {
         }
     }
 
-    private scheduleClose(): void {
+    private scheduleClose(event?: MouseEvent): void {
         this.clearCloseTimer();
         const closeDelay = this.closeDelay() ?? 0;
         this.closeTimer = setTimeout(() => {
             this.closeTimer = undefined;
-            this.rootContext.close('none');
+            this.rootContext.close('trigger-hover', event);
         }, closeDelay);
     }
 

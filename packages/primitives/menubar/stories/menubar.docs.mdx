@@ -108,8 +108,9 @@ Click a trigger to open it, then hover the other triggers to switch, or use the 
 | `Escape`          | Closes the open menu and returns focus to its trigger.              |
 | `Enter` / `Space` | Activates the focused item (handled by the Menu primitive).         |
 
-Triggers move through the shared Composite focus model: only one trigger is in the tab order at a time, and
-arrow keys move focus between them without leaving the menubar. Disabled triggers are skipped.
+Triggers move through the shared Composite focus model: only one trigger is in the tab order at a time.
+With menus closed, arrow keys move focus between triggers; with a menu open, sibling switching focuses
+the new popup. Disabled triggers are skipped.
 
 ## API Reference
 
@@ -127,10 +128,16 @@ menu of `rdxMenubarRoot`, the menubar wires it for Composite focus, hover switch
 ArrowRight navigation. There is no separate menubar trigger directive — the menu trigger reports its
 interactions to the menubar through context, mirroring [Base UI](https://base-ui.com/react/components/menubar).
 
-During hover-switching the trigger keeps focus (the popup opens without grabbing it), so the bar
-stays keyboard-navigable. It also reports `role="menuitem"`. The menubar's Composite root owns tabindex:
+Sibling switching opens the new popup before closing the old one and moves focus into that popup.
+Native trigger focus remains inside the bar during the transfer, so it does not cause a premature
+focus-out close. The trigger reports `role="menuitem"`. The menubar's Composite root owns tabindex:
 the current trigger uses `tabindex="0"` and the other triggers use `tabindex="-1"`, so Tab enters
 the menubar on a trigger rather than focusing the container.
+
+Native mouse-down opens with `trigger-press` before release; arrow opening reports `list-navigation`.
+Sibling switching closes the old menu with `sibling-open`. Pointer switching reports `trigger-hover`
+and then `trigger-focus` when the new trigger receives focus. These requests retain their original
+native events. Whole-bar `disabled` is inherited by the child menus.
 
 | Data attribute      | Present when                  |
 | ------------------- | ----------------------------- |

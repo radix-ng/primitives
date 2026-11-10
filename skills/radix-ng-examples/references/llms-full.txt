@@ -7567,6 +7567,10 @@ items, submenus, checkbox/radio items, and separators. The only difference is th
 of a button that anchors the popup to itself, `rdxContextMenuTrigger` opens the menu at the pointer
 position on a right click or long-press.
 
+Set `disabled` on `rdxContextMenuRoot` to disable the whole menu, including every context area and
+imperative opening. Closing restores the element focused before opening; the right-click area is
+not necessarily focusable or focused by the browser. `finalFocus` on the popup overrides that policy.
+
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideDot } from '@lucide/angular';
@@ -7683,10 +7687,14 @@ export class RdxContextMenuDefaultComponent {
 - ✅ Opens at the pointer on right click; on touch, opens after a long-press.
 - ✅ Suppresses the native browser context menu.
 - ✅ Reuses every Menu popup part — items, submenus, checkbox/radio items, groups, separators.
-- ✅ Opened by pointer, the popup is focused with no item highlighted; opened by keyboard, the first item is highlighted.
+- ✅ Native pointer and keyboard context-menu opening focus the popup without highlighting an item; arrow keys enter the list.
 - ✅ Full keyboard navigation once open (ArrowDown / ArrowUp / Home / End / typeahead).
 - ✅ Closes on Escape, outside pointer interaction, and item selection — restoring focus.
 - ✅ Headless — state is exposed via `data-popup-open` / `data-pressed`; styling is up to the consumer.
+
+Long-press waits 500 ms by default. Moving more than 10 px on either axis, native cancellation,
+or a second finger cancels the pending request. Diagonal movement within 10 px per axis remains
+eligible. A touch anchor is 10 × 10 px; pointer/keyboard context-menu events use a point anchor.
 
 ## Import
 
@@ -7853,10 +7861,11 @@ export class RdxContextMenuDefaultComponent {
 
 ### Keyboard Interactions
 
-When opened with a pointer (right click / long-press) the popup itself receives focus and no item
-is highlighted; pressing `ArrowDown` / `ArrowUp` then moves into the items. When opened from the
-keyboard (the Menu key / `Shift` + `F10`) the first item is highlighted right
-away. Otherwise the popup behaves exactly like a [Menu](?path=/docs/primitives-menu--docs):
+Native pointer and keyboard context-menu events focus the popup without highlighting an item,
+matching Base UI. Press `ArrowDown` / `ArrowUp` to enter the list. The Menu key and `Shift` + `F10`
+follow native browser/OS support; the primitive does not synthesize unavailable platform events.
+Applications calling `root.openAt(x, y, 'first')` can explicitly choose initial item focus.
+The popup then behaves like a [Menu](?path=/docs/primitives-menu--docs):
 `ArrowDown` / `ArrowUp` move between items, `Home` / `End` jump to the first / last item, typeahead matches
 item text, and `Escape` closes the menu.
 
@@ -7865,7 +7874,7 @@ item text, and `Escape` closes the menu.
 ### RdxContextMenuRoot
 
 Groups all parts of the context menu and provides the Menu context consumed by the popup. Composes
-the Menu primitive, so it forwards the `open` (two-way), `modal`, `loopFocus`, and
+the Menu primitive, so it forwards the `open` (two-way), `disabled`, `modal`, `loopFocus`, and
 `highlightItemOnHover` inputs and the `onOpenChange` / `onOpenChangeComplete` outputs from
 `rdxMenuRoot`.
 
@@ -7883,7 +7892,7 @@ The area that opens the menu on right click or touch long-press.
 | Attribute           | Present when                          |
 | ------------------- | ------------------------------------- |
 | `data-popup-open`   | The context menu is open.             |
-| `data-pressed`      | The trigger is pressed.               |
+| `data-pressed`      | The context menu is open.               |
 | `data-disabled`     | The trigger is disabled.              |
 
 ### Menu parts
@@ -9744,41 +9753,40 @@ The `drawerImports` array re-exports every part for standalone `imports`.
 
 ## Anatomy
 
-Apply the parts to your own markup. `rdxDrawerPortal` is a **structural** directive: it teleports the
-backdrop and popup into `document.body` while the drawer is open and waits for the closed-state CSS
-exit keyframes on every root element before unmounting. At least one root **must** have a
-`data-[state=closed]` `@keyframes` exit animation, otherwise presence sees no animation on the roots
-and unmounts the drawer instantly, skipping the slide-out (the popup's slide is a CSS _transition_,
-which presence does not wait for). Give the backdrop an overlay fade sized to at least the popup's
-slide duration:
+Apply the parts to your own markup. `rdxDrawerPortal` teleports every template root into the target
+container. Presence waits for native CSS exits on roots or descendants, including transitions and
+keyframes. With no exit effect it unmounts immediately. Drawer inherits Dialog's boolean `data-open`
+and `data-closed` attributes; `data-starting-style` identifies the entry frame. No decoy keyframe is
+needed for a transitioning popup.
+
+The shared demos use transitions so swipe/snap updates do not restart an entry keyframe. For a
+bottom drawer, keep the resting transform tied to the swipe variables and disable transitions
+while a gesture is active:
 
 ```css
-[rdxDrawerBackdrop][data-state='open'] {
-    animation: overlay-in 250ms ease-out;
+[rdxDrawerBackdrop] {
+    opacity: 1;
+    transition: opacity 200ms ease;
 }
-[rdxDrawerBackdrop][data-state='closed'] {
-    animation: overlay-out 200ms ease-in forwards;
+[rdxDrawerBackdrop][data-starting-style],
+[rdxDrawerBackdrop][data-closed] {
+    opacity: 0;
 }
-```
-
-For a non-modal drawer (no backdrop) put the overlay-fade keyframe on the popup instead — it carries
-`data-state` too.
-
-The popup's resting transform should read the swipe variables so the gesture and snap-back are visible,
-and its slide-out keyframe should hold the closed position with `forwards`:
-
-```css
 [rdxDrawerPopup] {
     transform: translate3d(var(--drawer-swipe-movement-x, 0), var(--drawer-swipe-movement-y, 0), 0);
-    transition: transform 0.3s ease;
+    transition: transform 300ms ease;
+}
+[rdxDrawerPopup][data-starting-style],
+[rdxDrawerPopup][data-closed] {
+    transform: translateY(100%);
 }
 [rdxDrawerPopup][data-swiping] {
     transition: none;
 }
-[rdxDrawerPopup][data-state='closed'] {
-    animation: slide-out-bottom 200ms ease-in forwards;
-}
 ```
+
+The same popup transition works without a backdrop. If you choose exit keyframes instead, use
+`forwards` to retain their final frame until the portal unmounts.
 
 ```html
 <div rdxDrawerRoot>
@@ -10011,7 +10019,6 @@ function toViewportSnapPoint(heightRem: number): RdxDrawerSnapPoint {
                             'bg-foreground/20 fixed inset-0 min-h-dvh opacity-[calc(1-var(--drawer-swipe-progress))]',
                             'transition-opacity duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)]',
                             d.overlayAnimated,
-                            'data-[state=closed]:[animation-duration:450ms] data-[state=open]:[animation-duration:450ms]',
                             'data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0'
                         )
                     "
@@ -10020,7 +10027,7 @@ function toViewportSnapPoint(heightRem: number): RdxDrawerSnapPoint {
 
                 <div class="fixed inset-0 flex touch-none items-end justify-center" rdxDrawerViewport>
                     <div
-                        class="border-border bg-card text-card-foreground data-[state=open]:animate-drawer-in-bottom relative flex h-[calc(100dvh-var(--top-margin))] min-h-0 w-full [transform:translateY(var(--drawer-swipe-movement-y))] touch-none flex-col overflow-visible border-t shadow-lg outline-none [--bleed:3rem] [--top-margin:1rem] [transition:transform_450ms_cubic-bezier(0.32,0.72,0,1),box-shadow_450ms_cubic-bezier(0.32,0.72,0,1)] after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-[var(--bleed)] after:bg-[inherit] after:content-[''] data-[ending-style]:[transform:translateY(calc(100%+2px))] data-[starting-style]:[transform:translateY(calc(100%+2px))] data-[state=open]:[animation-duration:450ms] data-[swiping]:select-none data-[swiping]:[transition:none]"
+                        class="border-border bg-card text-card-foreground relative flex h-[calc(100dvh-var(--top-margin))] min-h-0 w-full [transform:translateY(var(--drawer-swipe-movement-y))] touch-none flex-col overflow-visible border-t shadow-lg outline-none [--bleed:3rem] [--top-margin:1rem] [transition:transform_450ms_cubic-bezier(0.32,0.72,0,1),box-shadow_450ms_cubic-bezier(0.32,0.72,0,1)] after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-[var(--bleed)] after:bg-[inherit] after:content-[''] data-[ending-style]:[transform:translateY(calc(100%+2px))] data-[starting-style]:[transform:translateY(calc(100%+2px))] data-[swiping]:select-none data-[swiping]:[transition:none]"
                         rdxDrawerPopup
                     >
                         <div class="border-border shrink-0 touch-none border-b px-6 pt-3.5 pb-4">
@@ -10107,7 +10114,6 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
                                 'bg-foreground/20 absolute inset-0 opacity-[calc(1-var(--drawer-swipe-progress))]',
                                 'transition-opacity duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)]',
                                 d.overlayAnimated,
-                                'data-[state=closed]:[animation-duration:450ms] data-[state=open]:[animation-duration:450ms]',
                                 'data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0'
                             )
                         "
@@ -10240,7 +10246,7 @@ const LONG_LIST = [
                                     [class]="
                                         cn(
                                             card,
-                                            'data-[state=open]:animate-drawer-in-bottom data-[state=closed]:animate-drawer-out-bottom',
+                                            'data-[closed]:[transform:translateY(100%)] data-[starting-style]:[transform:translateY(100%)]',
                                             'w-full max-w-[42rem] rounded-t-2xl rounded-b-none border-x-0 border-b-0',
                                             '[--drawer-swipe-movement-x:0px] [--drawer-swipe-movement-y:0px]',
                                             '[transform:translate3d(var(--drawer-swipe-movement-x),var(--drawer-swipe-movement-y),0)]',
@@ -12483,6 +12489,8 @@ export class RdxMenuDefaultComponent {
 ## Features
 
 - ✅ Opens and closes from a trigger button with click or arrow-key interaction.
+- ✅ Optional hover opening with grace areas; a click promotes it to a press-opened menu.
+- ✅ Hold, drag onto a command and release to select it after the native opening guard.
 - ✅ Supports uncontrolled state, `defaultOpen`, and two-way binding with `[(open)]`.
 - ✅ `onOpenChange` reports the new `open` state together with `reason`, `trigger`, and source `event`.
 - ✅ Positions the popup with the shared Floating UI-based Popper primitive.
@@ -12641,6 +12649,67 @@ export class RdxMenuDefaultComponent {
     protected readonly cn = cn;
     protected readonly b = demoButton;
     protected readonly m = demoMenu;
+}
+```
+
+### Pointer gestures
+
+Set `openOnHover` on the trigger to open after `delay`; `closeDelay` and the grace area protect
+travel into the popup. Hover opening focuses the popup without highlighting a command. Clicking
+promotes an open hover menu to `trigger-press`, so moving away keeps it open. A press before the
+hover delay also keeps its press lifetime. Hover dismissal reports `trigger-hover` with the native
+mouse event; it does not restore focus to the trigger.
+
+Hold the primary mouse button, move onto a command, and release after the 200 ms opening guard to
+select it. Disabled commands may receive hover focus but cannot activate. Checkbox/radio and
+`closeOnClick=false` items keep their usual stay-open behavior.
+
+Submenus protect diagonal travel, including RTL. After entering the submenu, moving outside it
+does not dismiss it; hovering another parent item closes that branch.
+
+```typescript
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { RdxMenuModule } from '@radix-ng/primitives/menu';
+import { cn, demoButton, demoMenu } from '../../storybook/styles';
+
+@Component({
+    selector: 'rdx-menu-pointer',
+    imports: [RdxMenuModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
+        <div class="flex max-w-sm flex-col gap-4">
+            <p class="text-muted-foreground text-sm">
+                Hover to open. Click to keep it open, or hold the mouse button, drag onto a command and release.
+            </p>
+            <ng-container rdxMenuRoot>
+                <button
+                    [class]="cn(b.base, b.outline, b.size.md)"
+                    [openOnHover]="true"
+                    [delay]="180"
+                    [closeDelay]="80"
+                    rdxMenuTrigger
+                >
+                    Commands
+                </button>
+                <div *rdxMenuPortal [class]="m.positioner" sideOffset="8" rdxMenuPositioner>
+                    <div [class]="m.popup" rdxMenuPopup>
+                        <button [class]="m.item" (click)="selected.set('New tab')" rdxMenuItem>New tab</button>
+                        <button [class]="m.item" [disabled]="true" rdxMenuItem>Unavailable</button>
+                        <button [class]="m.item" (click)="selected.set('Save page')" rdxMenuItem>Save page</button>
+                    </div>
+                </div>
+            </ng-container>
+            <output class="text-muted-foreground text-sm" aria-live="polite">
+                {{ selected() || 'No command selected' }}
+            </output>
+        </div>
+    `
+})
+export class RdxMenuPointerComponent {
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly m = demoMenu;
+    protected readonly selected = signal('');
 }
 ```
 
@@ -13963,8 +14032,9 @@ export class RdxMenubarDefaultComponent {
 | `Escape`          | Closes the open menu and returns focus to its trigger.              |
 | `Enter` / `Space` | Activates the focused item (handled by the Menu primitive).         |
 
-Triggers move through the shared Composite focus model: only one trigger is in the tab order at a time, and
-arrow keys move focus between them without leaving the menubar. Disabled triggers are skipped.
+Triggers move through the shared Composite focus model: only one trigger is in the tab order at a time.
+With menus closed, arrow keys move focus between triggers; with a menu open, sibling switching focuses
+the new popup. Disabled triggers are skipped.
 
 ## API Reference
 
@@ -13980,10 +14050,16 @@ menu of `rdxMenubarRoot`, the menubar wires it for Composite focus, hover switch
 ArrowRight navigation. There is no separate menubar trigger directive — the menu trigger reports its
 interactions to the menubar through context, mirroring [Base UI](https://base-ui.com/react/components/menubar).
 
-During hover-switching the trigger keeps focus (the popup opens without grabbing it), so the bar
-stays keyboard-navigable. It also reports `role="menuitem"`. The menubar's Composite root owns tabindex:
+Sibling switching opens the new popup before closing the old one and moves focus into that popup.
+Native trigger focus remains inside the bar during the transfer, so it does not cause a premature
+focus-out close. The trigger reports `role="menuitem"`. The menubar's Composite root owns tabindex:
 the current trigger uses `tabindex="0"` and the other triggers use `tabindex="-1"`, so Tab enters
 the menubar on a trigger rather than focusing the container.
+
+Native mouse-down opens with `trigger-press` before release; arrow opening reports `list-navigation`.
+Sibling switching closes the old menu with `sibling-open`. Pointer switching reports `trigger-hover`
+and then `trigger-focus` when the new trigger receives focus. These requests retain their original
+native events. Whole-bar `disabled` is inherited by the child menus.
 
 | Data attribute      | Present when                  |
 | ------------------- | ----------------------------- |

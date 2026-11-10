@@ -1,4 +1,4 @@
-import { expect, type Browser, type Page, type TestInfo } from '@playwright/test';
+import { expect, type Browser, type BrowserContextOptions, type Page, type TestInfo } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { compareObservations, type Checkpoint, type ExpectedDifference } from './compare.ts';
 import { validateExpectedDifferences } from './validate-differences.ts';
@@ -19,6 +19,7 @@ export function createParityRunner<Driver extends ParityDriver>(config: {
     createDriver: (page: Page, framework: 'angular' | 'react') => Driver;
     readNativeEvents: (driver: Driver) => Promise<unknown>;
     viewport?: { width: number; height: number };
+    pageOptions?: (scenario: string) => BrowserContextOptions;
 }) {
     const reference = JSON.parse(readFileSync(new URL('../reference.json', import.meta.url), 'utf8'));
     const expected: ExpectedDifference[] = JSON.parse(readFileSync(config.differences, 'utf8'));
@@ -32,8 +33,9 @@ export function createParityRunner<Driver extends ParityDriver>(config: {
         info: TestInfo
     ) => {
         const viewport = config.viewport ?? { width: 640, height: 480 };
-        const angular = config.createDriver(await browser.newPage({ baseURL, viewport }), 'angular');
-        const react = config.createDriver(await browser.newPage({ baseURL, viewport }), 'react');
+        const options = { baseURL, viewport, ...config.pageOptions?.(scenario.name) };
+        const angular = config.createDriver(await browser.newPage(options), 'angular');
+        const react = config.createDriver(await browser.newPage(options), 'react');
         const failures: string[] = [];
         try {
             for (const driver of [angular, react]) {

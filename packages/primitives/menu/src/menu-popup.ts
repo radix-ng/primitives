@@ -49,7 +49,9 @@ import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
                 // disabled while open, or if `preventUnmountOnClose()` keeps it mounted after close.
                 enabled: () => rootContext.present() || rootContext.transitionStatus() === 'ending',
                 restoreFocus: () => true,
-                previousFocusableElement: () => rootContext.trigger() ?? null,
+                previousFocusableElement: () => rootContext.trigger() ?? rootContext.contextMenuPreviousFocus() ?? null,
+                getInsideElements: () =>
+                    rootContext.parentType() === 'menubar' ? [rootContext.triggerInteractionScope()] : [],
                 beforeContentFocusGuardRef: () => (element) => rootContext.setBeforeContentFocusGuard(element),
                 // Base UI's submenu policy: a submenu mount does not steal focus from its trigger.
                 // Root menus still choose first / last item vs popup container from the menu's own
@@ -77,9 +79,11 @@ import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
                     };
                 },
                 returnFocus: () => {
+                    if (rootContext.lastOpenChangeReason() === 'trigger-hover') return false;
                     const parentType = rootContext.parentType();
+                    if (parentType === 'context-menu') return true;
 
-                    if (rootContext.trigger() || parentType === undefined || parentType === 'context-menu') {
+                    if (rootContext.trigger() || parentType === undefined) {
                         return true;
                     }
 
@@ -463,15 +467,11 @@ export class RdxMenuPopup {
     }
 
     private currentItemIndex(items: readonly RdxMenuCompositeItem[]): number {
-        const current = this.elementRef.nativeElement.ownerDocument.activeElement as HTMLElement | null;
-        const focusedIndex = items.findIndex((item) => item.element === current);
-
-        if (focusedIndex !== -1) {
-            return focusedIndex;
-        }
-
         const activeIndex = this.rootContext.activeIndex();
-        return items.findIndex((item) => item.index === activeIndex);
+        const highlighted = items.findIndex((item) => item.index === activeIndex);
+        if (highlighted !== -1) return highlighted;
+        const current = this.elementRef.nativeElement.ownerDocument.activeElement;
+        return items.findIndex((item) => item.element === current);
     }
 
     private focusMenuItem(item: RdxMenuCompositeItem | undefined): void {

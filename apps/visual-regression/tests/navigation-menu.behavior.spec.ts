@@ -1,4 +1,5 @@
 import { expect, Page, test } from '@playwright/test';
+import { holdExitAnimations } from '../helpers/exit-animations';
 
 /**
  * Behavioral check for the structural `*rdxNavigationMenuPortal` (ADR 0010): the positioner is
@@ -41,6 +42,7 @@ test.describe('Navigation Menu — new floating engine migration', () => {
         await gotoStory(page, 'primitives-navigation-menu--default');
         await page.locator(trigger).first().click();
         await expect(page.locator(popup)).toBeVisible();
+        const exit = await holdExitAnimations(page, [popup], 'data-ending-style');
 
         await page.keyboard.press('Escape');
 
@@ -49,6 +51,9 @@ test.describe('Navigation Menu — new floating engine migration', () => {
         await expect(closingPopup).toHaveCSS('animation-fill-mode', 'forwards');
         await expect(page.locator('[rdxNavigationMenuViewport] > [data-current]')).toHaveCount(1);
         await expect(page.locator('[rdxNavigationMenuViewport] > [data-previous]')).toHaveCount(0);
+        await expect.poll(exit.count).toBeGreaterThan(0);
+        await exit.finish();
+        await expect(page.locator(popup)).toHaveCount(0);
     });
 
     test('an outside press closes the menu', async ({ page }) => {

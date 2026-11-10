@@ -27,6 +27,8 @@ headless — state is exposed through `data-*` attributes and the consumer provi
 ## Features
 
 - ✅ Opens and closes from a trigger button with click or arrow-key interaction.
+- ✅ Optional hover opening with grace areas; a click promotes it to a press-opened menu.
+- ✅ Hold, drag onto a command and release to select it after the native opening guard.
 - ✅ Supports uncontrolled state, `defaultOpen`, and two-way binding with `[(open)]`.
 - ✅ `onOpenChange` reports the new `open` state together with `reason`, `trigger`, and source `event`.
 - ✅ Positions the popup with the shared Floating UI-based Popper primitive.
@@ -156,6 +158,23 @@ content multi-root.
 A basic dropdown with regular items, a disabled item, and a separator.
 
 <Canvas of={Stories.Default} />
+
+### Pointer gestures
+
+Set `openOnHover` on the trigger to open after `delay`; `closeDelay` and the grace area protect
+travel into the popup. Hover opening focuses the popup without highlighting a command. Clicking
+promotes an open hover menu to `trigger-press`, so moving away keeps it open. A press before the
+hover delay also keeps its press lifetime. Hover dismissal reports `trigger-hover` with the native
+mouse event; it does not restore focus to the trigger.
+
+Hold the primary mouse button, move onto a command, and release after the 200 ms opening guard to
+select it. Disabled commands may receive hover focus but cannot activate. Checkbox/radio and
+`closeOnClick=false` items keep their usual stay-open behavior.
+
+Submenus protect diagonal travel, including RTL. After entering the submenu, moving outside it
+does not dismiss it; hovering another parent item closes that branch.
+
+<Canvas of={Stories.Pointer} />
 
 ### Events
 

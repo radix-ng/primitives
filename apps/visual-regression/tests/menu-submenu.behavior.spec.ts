@@ -33,6 +33,23 @@ async function openFindSubmenu(page: Page): Promise<void> {
     await expect(page.locator(findSubmenu)).toBeVisible();
 }
 
+async function traverseGraceArea(page: Page, from: { x: number; y: number }, to: { x: number; y: number }) {
+    // Test a continuous 60Hz gesture. CI protocol latency must not turn a ten-step traversal into
+    // a deliberate pause beyond the native hover intent's 40ms rest budget. Mouse events/positions
+    // stay native; only the clock advances by a defined frame between their delivery.
+    await page.clock.install();
+    await page.clock.pauseAt(new Date(Date.now() + 100));
+    try {
+        await page.mouse.move(from.x, from.y);
+        for (let step = 1; step <= 10; step++) {
+            await page.clock.runFor(16);
+            await page.mouse.move(from.x + ((to.x - from.x) * step) / 10, from.y + ((to.y - from.y) * step) / 10);
+        }
+    } finally {
+        await page.clock.resume();
+    }
+}
+
 test('diagonal traversal keeps the open submenu and does not steal to the sibling', async ({ page }) => {
     await openEditMenu(page);
     await openFindSubmenu(page);
@@ -43,8 +60,11 @@ test('diagonal traversal keeps the open submenu and does not steal to the siblin
 
     // Start at the right edge of "Find" (the cursor's natural exit point toward the submenu) and
     // move to the lower-left corner of the Find submenu — a diagonal that crosses "Spelling".
-    await page.mouse.move(find.x + find.width - 4, find.y + find.height / 2);
-    await page.mouse.move(submenu.x + 8, submenu.y + submenu.height - 8, { steps: 10 });
+    await traverseGraceArea(
+        page,
+        { x: find.x + find.width - 4, y: find.y + find.height / 2 },
+        { x: submenu.x + 8, y: submenu.y + submenu.height - 8 }
+    );
 
     // The Find submenu stays open; the sibling never opened.
     await expect(page.locator(findSubmenu)).toBeVisible();
@@ -72,8 +92,11 @@ test('RTL: diagonal traversal toward a left-placed submenu keeps it open', async
     // Exit from the LEFT edge of "بحث" into the left-placed submenu's near (right) lower edge. Mirror
     // the LTR diagonal in the opposite direction so we still cross the sibling row while staying on a
     // realistic path toward the popup, regardless of the popup's measured height.
-    await page.mouse.move(find.x + 4, find.y + find.height / 2);
-    await page.mouse.move(submenu.x + submenu.width - 8, submenu.y + submenu.height - 8, { steps: 5 });
+    await traverseGraceArea(
+        page,
+        { x: find.x + 4, y: find.y + find.height / 2 },
+        { x: submenu.x + submenu.width - 8, y: submenu.y + submenu.height - 8 }
+    );
     await expect(page.locator(findRtlSubmenu)).toBeVisible();
     await expect(page.locator(spellingRtlSubmenu)).toHaveCount(0);
 });

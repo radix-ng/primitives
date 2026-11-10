@@ -23,6 +23,7 @@ export default defineConfig(base, {
             'autocomplete',
             'toast',
             'dialog',
+            'drawer',
             'alert-dialog'
         ].map((name) => `**/${name}.behavior.spec.ts`)
     ],

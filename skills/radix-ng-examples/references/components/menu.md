@@ -9,6 +9,8 @@ A headless dropdown menu anchored to a trigger button.
 ## Features
 
 - ✅ Opens and closes from a trigger button with click or arrow-key interaction.
+- ✅ Optional hover opening with grace areas; a click promotes it to a press-opened menu.
+- ✅ Hold, drag onto a command and release to select it after the native opening guard.
 - ✅ Supports uncontrolled state, `defaultOpen`, and two-way binding with `[(open)]`.
 - ✅ `onOpenChange` reports the new `open` state together with `reason`, `trigger`, and source `event`.
 - ✅ Positions the popup with the shared Floating UI-based Popper primitive.
@@ -134,6 +136,7 @@ content multi-root.
 ## Examples
 
 - [Default](../examples/menu--default.md)
+- [Pointer gestures](../examples/menu--pointer-gestures.md)
 - [Events](../examples/menu--events.md)
 - [Radio items](../examples/menu--radio-items.md)
 - [Checkbox items](../examples/menu--checkbox-items.md)

@@ -4,11 +4,13 @@ import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { exitClass } from '../../../shared/lifecycle';
+import { changeCollection, menuEntries } from '../../../shared/menu-collection';
 import { config, installProbe, classes as s, type Layer } from './contract';
 
 const settings = config();
 const trace = installProbe('react');
 function ReactMenu() {
+    const [items, setItems] = useState(menuEntries);
     const actions = useRef<Menu.Root.Actions | null>(null);
     const closes = useRef(0);
     const lateHold = useRef<(() => void) | undefined>(undefined);
@@ -29,6 +31,12 @@ function ReactMenu() {
         };
         document.addEventListener('click', outside);
         const command = (event: KeyboardEvent) => {
+            if (event.key === 'F3' && settings.name.startsWith('collection-')) {
+                event.preventDefault();
+                setItems((items) =>
+                    changeCollection(items, settings.name, { id: 'new', label: 'New', disabled: false })
+                );
+            }
             if (['F8', 'F9', 'F10'].includes(event.key)) {
                 event.preventDefault();
                 if (event.key === 'F8') actions.current?.close();
@@ -61,7 +69,14 @@ function ReactMenu() {
                     onOpenChange={(open, details) => change('main', open, details)}
                     onOpenChangeComplete={(open) => trace.complete('main', open)}
                 >
-                    <Menu.Trigger id={settings.ids ? triggerId : undefined} className={s.trigger} data-testid="primary">
+                    <Menu.Trigger
+                        id={settings.ids ? triggerId : undefined}
+                        className={s.trigger}
+                        data-testid="primary"
+                        openOnHover={settings.pointer.rootHover}
+                        delay={settings.pointer.delay}
+                        closeDelay={settings.pointer.closeDelay}
+                    >
                         Actions
                     </Menu.Trigger>
                     <Menu.Portal keepMounted={settings.lifecycle?.keepMounted ?? false}>
@@ -77,35 +92,20 @@ function ReactMenu() {
                                 className={s.popup + (settings.lifecycle?.animated ? exitClass : '')}
                                 data-testid="popup"
                             >
-                                <Menu.Item
-                                    render={<button />}
-                                    nativeButton
-                                    className={s.item}
-                                    label={settings.label}
-                                    data-testid="alpha"
-                                    onClick={() => trace.select('alpha')}
-                                >
-                                    Alpha
-                                </Menu.Item>
-                                <Menu.Item
-                                    render={<button />}
-                                    nativeButton
-                                    className={s.item}
-                                    disabled
-                                    data-testid="blocked"
-                                    onClick={() => trace.select('blocked')}
-                                >
-                                    Blocked
-                                </Menu.Item>
-                                <Menu.Item
-                                    render={<button />}
-                                    nativeButton
-                                    className={s.item}
-                                    data-testid="bravo"
-                                    onClick={() => trace.select('bravo')}
-                                >
-                                    Bravo
-                                </Menu.Item>
+                                {items.map((item) => (
+                                    <Menu.Item
+                                        key={item.id}
+                                        render={<button />}
+                                        nativeButton
+                                        className={s.item}
+                                        disabled={item.disabled}
+                                        label={item.id === 'alpha' ? settings.label : undefined}
+                                        data-testid={item.id}
+                                        onClick={() => trace.select(item.id)}
+                                    >
+                                        {item.label}
+                                    </Menu.Item>
+                                ))}
                                 {settings.submenu && (
                                     <Menu.SubmenuRoot
                                         onOpenChange={(open, details) => change('sub', open, details)}
@@ -116,6 +116,9 @@ function ReactMenu() {
                                             nativeButton
                                             className={s.item}
                                             data-testid="more"
+                                            disabled={settings.pointer.disabledSubmenu}
+                                            delay={settings.pointer.delay}
+                                            closeDelay={settings.pointer.closeDelay}
                                         >
                                             More
                                         </Menu.SubmenuTrigger>
