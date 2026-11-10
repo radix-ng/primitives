@@ -10,7 +10,7 @@ import {
 } from '@radix-ng/primitives/menu';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { exitClass } from '../../../shared/lifecycle';
-import { changeCollection, menuEntries } from '../../../shared/menu-collection';
+import { changeCollection, menuEntries, submenuEntries } from '../../../shared/menu-collection';
 import { classes, config, installProbe, type Layer } from './contract';
 
 const settings = config();
@@ -69,89 +69,91 @@ const settings = config();
                                     {{ item.label }}
                                 </button>
                             }
-                            @if (settings.submenu) {
-                                <ng-container
-                                    (onOpenChange)="change('sub', $event)"
-                                    (onOpenChangeComplete)="trace.complete('sub', $event)"
-                                    rdxMenuRoot
-                                >
-                                    <button
-                                        [class]="s.item"
-                                        [disabled]="settings.pointer.disabledSubmenu"
-                                        [delay]="settings.pointer.delay"
-                                        [closeDelay]="settings.pointer.closeDelay"
-                                        data-testid="more"
-                                        rdxMenuSubTrigger
+                            @if (!settings.collectionOnly) {
+                                @if (settings.submenu && submenuPresent()) {
+                                    <ng-container
+                                        (onOpenChange)="change('sub', $event)"
+                                        (onOpenChangeComplete)="trace.complete('sub', $event)"
+                                        rdxMenuRoot
                                     >
-                                        More
-                                    </button>
-                                    <ng-template rdxMenuPortal>
-                                        <div
-                                            class="z-50"
-                                            [side]="settings.dir === 'rtl' ? 'left' : 'right'"
-                                            [collisionPadding]="5"
-                                            align="start"
-                                            sideOffset="4"
-                                            rdxMenuPositioner
+                                        <button
+                                            [class]="s.item"
+                                            [disabled]="settings.pointer.disabledSubmenu"
+                                            [delay]="settings.pointer.delay"
+                                            [closeDelay]="settings.pointer.closeDelay"
+                                            data-testid="more"
+                                            rdxMenuSubTrigger
                                         >
+                                            More
+                                        </button>
+                                        <ng-template rdxMenuPortal>
                                             <div
-                                                [class]="s.popup + (settings.lifecycle?.animated ? exitClass : '')"
-                                                data-testid="sub-popup"
-                                                rdxMenuPopup
+                                                class="z-50"
+                                                [side]="settings.dir === 'rtl' ? 'left' : 'right'"
+                                                [collisionPadding]="5"
+                                                align="start"
+                                                sideOffset="4"
+                                                rdxMenuPositioner
                                             >
-                                                <button
-                                                    [class]="s.item"
-                                                    (onSelect)="trace.select('sub-alpha')"
-                                                    data-testid="sub-alpha"
-                                                    rdxMenuItem
+                                                <div
+                                                    [class]="s.popup + (settings.lifecycle?.animated ? exitClass : '')"
+                                                    data-testid="sub-popup"
+                                                    rdxMenuPopup
                                                 >
-                                                    Archive
-                                                </button>
-                                                <button
-                                                    [class]="s.item"
-                                                    (onSelect)="trace.select('sub-bravo')"
-                                                    data-testid="sub-bravo"
-                                                    rdxMenuItem
-                                                >
-                                                    Browse
-                                                </button>
+                                                    @for (item of subItems(); track item.id) {
+                                                        <button
+                                                            [class]="s.item"
+                                                            [disabled]="item.disabled"
+                                                            [attr.data-testid]="item.id"
+                                                            (onSelect)="trace.select(item.id)"
+                                                            rdxMenuItem
+                                                        >
+                                                            {{ item.label }}
+                                                        </button>
+                                                    }
+                                                </div>
                                             </div>
-                                        </div>
-                                    </ng-template>
-                                </ng-container>
-                            }
-                            <button
-                                [class]="s.item"
-                                [closeOnClick]="false"
-                                (onSelect)="trace.select('stay')"
-                                data-testid="stay"
-                                rdxMenuItem
-                            >
-                                Stay open
-                            </button>
-                            @if (settings.checkbox) {
+                                        </ng-template>
+                                    </ng-container>
+                                }
                                 <button
                                     [class]="s.item"
-                                    (onCheckedChange)="checked($event)"
-                                    data-testid="check"
-                                    rdxMenuCheckboxItem
+                                    [closeOnClick]="false"
+                                    (onSelect)="trace.select('stay')"
+                                    data-testid="stay"
+                                    rdxMenuItem
                                 >
-                                    Notifications
+                                    Stay open
+                                </button>
+                                @if (settings.checkbox) {
+                                    <button
+                                        [class]="s.item"
+                                        (onCheckedChange)="checked($event)"
+                                        data-testid="check"
+                                        rdxMenuCheckboxItem
+                                    >
+                                        Notifications
+                                    </button>
+                                }
+                                @if (settings.radio) {
+                                    <div (onValueChange)="radio($event)" defaultValue="one" rdxMenuRadioGroup>
+                                        <button [class]="s.item" value="one" data-testid="radio-one" rdxMenuRadioItem>
+                                            Small
+                                        </button>
+                                        <button [class]="s.item" value="two" data-testid="radio-two" rdxMenuRadioItem>
+                                            Large
+                                        </button>
+                                    </div>
+                                }
+                                <button
+                                    [class]="s.item"
+                                    (onSelect)="trace.select('omega')"
+                                    data-testid="omega"
+                                    rdxMenuItem
+                                >
+                                    Omega
                                 </button>
                             }
-                            @if (settings.radio) {
-                                <div (onValueChange)="radio($event)" defaultValue="one" rdxMenuRadioGroup>
-                                    <button [class]="s.item" value="one" data-testid="radio-one" rdxMenuRadioItem>
-                                        Small
-                                    </button>
-                                    <button [class]="s.item" value="two" data-testid="radio-two" rdxMenuRadioItem>
-                                        Large
-                                    </button>
-                                </div>
-                            }
-                            <button [class]="s.item" (onSelect)="trace.select('omega')" data-testid="omega" rdxMenuItem>
-                                Omega
-                            </button>
                         </div>
                     </div>
                 </ng-template>
@@ -169,14 +171,24 @@ class AngularMenu {
     readonly s = classes;
     readonly trace = installProbe('angular');
     readonly items = signal(menuEntries);
+    readonly subItems = signal(submenuEntries);
+    readonly submenuPresent = signal(true);
     readonly triggerId = signal('custom-trigger');
     readonly popupId = signal('custom-popup');
     command(event: KeyboardEvent) {
-        if (event.key === 'F3' && settings.name.startsWith('collection-')) {
+        if (['F3', 'F4'].includes(event.key) && settings.name.startsWith('collection-')) {
             event.preventDefault();
-            this.items.update((items) =>
-                changeCollection(items, settings.name, { id: 'new', label: 'New', disabled: false })
-            );
+            if (settings.name === 'collection-submenu-unmount') this.submenuPresent.set(event.key === 'F4');
+            else {
+                const nested = settings.name.startsWith('collection-submenu');
+                (nested ? this.subItems : this.items).update((items) =>
+                    changeCollection(items, settings.name, {
+                        id: nested ? 'sub-new' : 'new',
+                        label: 'New',
+                        disabled: false
+                    })
+                );
+            }
         }
         if (['F8', 'F9', 'F10'].includes(event.key)) {
             event.preventDefault();

@@ -21,10 +21,11 @@ This is incremental behavioral evidence, not complete API or accessibility certi
 | Hover grace areas and pointer drag/release                                      | Pinned suite, three engines           | Covered; exact WebKit coordinate-travel limits below            |
 | Context Menu and Menubar composition                                            | Independent pinned suites             | Initial scope covered; see each family matrix                   |
 | Dynamic insertion/removal/reordering, disabled state and labels                 | Pinned suite                          | Covered with removed-item-focus limits                          |
+| Empty/refilled lists and removal/replacement of an open submenu owner           | Pinned suite                          | Four collection cases covered                                   |
 | Real touch, devices and assistive technology                                    | Not established by this suite         | Pending                                                         |
 
-The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 69 scenarios and
-207 comparisons. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
+The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 73 scenarios and
+219 comparisons. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
 state. Checkbox/radio change requests are observed before cancellation; original event types and
 trusted pointer coordinates are retained. No adapter forces focus, open state or completion.
 
@@ -32,7 +33,11 @@ Five collection scenarios insert/remove/reorder options and update disabled stat
 open. Fixtures mutate application data through a native F3 shortcut; Angular uses `signal`/`@for`
 and React uses state with stable keys. Highlight stays index-based, independently of DOM focus.
 Restoring a surviving moved node does not rewrite that logical index. Both sets keep the primitive
-state uncontrolled and record the actual native focus and item order.
+state uncontrolled and record the actual native focus and item order. Four further cases cover
+empty/refilled root and child lists, keyed child reordering and removal/replacement of an open
+owning branch. The root's empty-list ArrowDown request retains index zero until data returns.
+Removing a submenu and its trigger returns focus through the surviving DI owner chain. The common
+focus manager ignores a disconnected default anchor; explicit final-focus policies remain authoritative.
 
 ## Known differences
 
@@ -107,6 +112,6 @@ commands. The 200ms release guard is observed without fake clocks. WebKit report
 trusted viewport coordinates change; exact focus/highlight pairs retain our coordinate guard. The
 macOS click-promotion focus pairs also reflect native button focus behavior.
 
-Next: empty lists, removal of open submenu branches, touch emulation and deeper composition in the independent
+Next: entire-root removal, empty-list keyboard promotion, touch emulation and deeper composition in the independent
 [Context Menu](../context-menu/PARITY.md) and [Menubar](../menubar/PARITY.md) suites.
-Device/assistive-technology work remains open. See [ADR 0036](../../../docs/adr/0036-menu-pointer-and-composition-contracts.md).
+Device/assistive-technology work remains open. See [ADR 0038](../../../docs/adr/0038-menu-collection-boundaries.md).

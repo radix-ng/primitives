@@ -11,7 +11,7 @@ import {
     signal,
     Signal
 } from '@angular/core';
-import { RdxCompositeList, RdxCompositeRoot } from '@radix-ng/primitives/composite';
+import { findNonDisabledListIndex, RdxCompositeList, RdxCompositeRoot } from '@radix-ng/primitives/composite';
 import { BooleanInput, createContext, getActiveElement, provideFloatingTree } from '@radix-ng/primitives/core';
 import { observeFocusRecovery } from '@radix-ng/primitives/focus-scope';
 import {
@@ -427,17 +427,24 @@ export class RdxMenubarRoot {
     }
 
     focusAdjacent(currentId: string, offset: 1 | -1, openOnMove: boolean): void {
-        const enabled = this.enabledItems();
-        const currentIndex = enabled.findIndex((item) => item.id === currentId);
-        if (currentIndex === -1 || enabled.length === 0) return;
-
-        const nextIndex = currentIndex + offset;
-        if (!this.loopFocus() && (nextIndex < 0 || nextIndex >= enabled.length)) {
-            return;
+        // The current menu may have become disabled while its popup still owns focus.
+        // Keep its DOM position as the origin, then skip unavailable destinations.
+        const currentIndex = this.items.findIndex((item) => item.id === currentId);
+        if (currentIndex === -1) return;
+        const elements = this.items.map((item) => item.el);
+        const options = {
+            decrement: offset < 0,
+            disabledIndices: this.items.flatMap((item, index) => (item.disabled() ? [index] : []))
+        };
+        let next = findNonDisabledListIndex(elements, { ...options, startingIndex: currentIndex });
+        if (next === -1 && this.loopFocus()) {
+            next = findNonDisabledListIndex(elements, {
+                ...options,
+                startingIndex: offset > 0 ? -1 : elements.length
+            });
         }
-
-        const next = enabled[(nextIndex + enabled.length) % enabled.length];
-        this.focusItem(next, openOnMove);
+        // Wrapping to the same trigger is not a sibling transition.
+        if (next !== -1 && next !== currentIndex) this.focusItem(this.items[next], openOnMove);
     }
 
     private focusItem(item: RdxMenubarItem | undefined, openOnMove: boolean): void {

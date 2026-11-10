@@ -12500,6 +12500,7 @@ export class RdxMenuDefaultComponent {
 - ✅ Full keyboard navigation: ArrowDown, ArrowUp, Home, End, and character typeahead.
 - ✅ Focus loop at list boundaries, configurable with `loopFocus`.
 - ✅ Includes disabled items in keyboard navigation while preventing activation.
+- ✅ Dynamic lists can become empty and refill while open. With return focus enabled, removing an open submenu returns focus to a surviving owner trigger.
 - ✅ `closeOnClick` per item — defaults to `true` for regular items, `false` for checkbox, radio, and link items.
 - ✅ Checkbox items toggle state independently; radio groups enforce single selection.
 - ✅ Grouped items with optional group labels and visual separators.
@@ -14035,6 +14036,10 @@ export class RdxMenubarDefaultComponent {
 Triggers move through the shared Composite focus model: only one trigger is in the tab order at a time.
 With menus closed, arrow keys move focus between triggers; with a menu open, sibling switching focuses
 the new popup. Disabled triggers are skipped.
+
+If the current menu becomes disabled while its popup owns focus, horizontal arrows can still switch
+to an enabled sibling. Disabling a focused closed trigger keeps an enabled trigger in the Tab order.
+When only one enabled menu remains, horizontal arrows preserve its popup and focus without reopening it.
 
 ## API Reference
 

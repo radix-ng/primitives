@@ -61,6 +61,12 @@ index-based and is independent of DOM focus; managed refocus preserves that inde
 roving identity from the focused trigger and current composite DOM order. Context Menu uses Pointer
 Events with per-axis touch slop, cancels multi-touch, and native keyboard contextmenu focuses Popup.
 Its pressed attribute derives from open state. Native input capabilities are probed/skipped explicitly.
+Menu collection boundaries (ADR 0038) retain an empty list's first-index request in the existing
+highlight signal and resolve a removed submenu trigger through surviving DI owners. The focus
+manager excludes disconnected default anchors. Menubar uses the shared Composite search from the
+current trigger's full DOM position, even after disabling it; a wrap onto itself preserves the popup.
+Exact pin exceptions retain an enabled Tab entry and direct sibling switching without intermediate
+close/reopen requests. These are intentional contracts rather than React store/lifecycle ports.
 Dialog/Drawer shared demo styles use current boolean states; Drawer uses CSS transitions so gesture
 updates do not replay entry keyframes. Browser exit tests pause/seek/finish actual WAAPI effects.
 

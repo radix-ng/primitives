@@ -112,6 +112,10 @@ Triggers move through the shared Composite focus model: only one trigger is in t
 With menus closed, arrow keys move focus between triggers; with a menu open, sibling switching focuses
 the new popup. Disabled triggers are skipped.
 
+If the current menu becomes disabled while its popup owns focus, horizontal arrows can still switch
+to an enabled sibling. Disabling a focused closed trigger keeps an enabled trigger in the Tab order.
+When only one enabled menu remains, horizontal arrows preserve its popup and focus without reopening it.
+
 ## API Reference
 
 ### RdxMenubarRoot

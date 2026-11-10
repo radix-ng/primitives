@@ -360,7 +360,7 @@ export class RdxFloatingFocusManager {
             if (this.effectiveOpenInteractionType() == null) return undefined;
             const reference = this.rootContext?.referenceElement;
             const view = this.host.ownerDocument.defaultView;
-            return view && reference instanceof view.HTMLElement
+            return view && reference instanceof view.HTMLElement && reference.isConnected
                 ? reference
                 : resolveFocusTarget(this.effectivePreviousFocusableElement());
         };

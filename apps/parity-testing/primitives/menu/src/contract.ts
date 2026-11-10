@@ -1,5 +1,5 @@
 import { lifecycleCases, lifecycleConfig } from '../../../shared/lifecycle';
-import { collectionCases } from '../../../shared/menu-collection';
+import { menuCollectionCases } from '../../../shared/menu-collection';
 import { createMenuProbe, type MenuProbe } from '../../../shared/menu-probe';
 import { pointerCases, pointerConfig } from './pointer';
 
@@ -43,7 +43,7 @@ export const cases = [
     ...basicCases,
     ...lifecycleCases,
     ...pointerCases,
-    ...collectionCases,
+    ...menuCollectionCases,
     'lifecycle-submenu-css'
 ] as const;
 export type CaseName = (typeof cases)[number];
@@ -68,7 +68,12 @@ export function config() {
         disabled: name === 'disabled-trigger' || name === 'hover-root-disabled',
         checkbox: name.startsWith('checkbox') || name.startsWith('lifecycle-') || name === 'drag-checkbox',
         radio: name.startsWith('radio') || name === 'drag-radio',
-        submenu: name.startsWith('submenu') || name.startsWith('hover-submenu') || name === 'lifecycle-submenu-css',
+        submenu:
+            name.startsWith('submenu') ||
+            name.startsWith('hover-submenu') ||
+            name.startsWith('collection-submenu') ||
+            name === 'lifecycle-submenu-css',
+        collectionOnly: name === 'collection-empty-refill',
         label: name === 'explicit-label' ? 'Zebra' : undefined,
         ids: name.endsWith('-ids'),
         lifecycle: lifecycleConfig(name === 'lifecycle-submenu-css' ? 'lifecycle-css-exit' : name),

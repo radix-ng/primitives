@@ -20,6 +20,7 @@ A headless dropdown menu anchored to a trigger button.
 - ✅ Full keyboard navigation: ArrowDown, ArrowUp, Home, End, and character typeahead.
 - ✅ Focus loop at list boundaries, configurable with `loopFocus`.
 - ✅ Includes disabled items in keyboard navigation while preventing activation.
+- ✅ Dynamic lists can become empty and refill while open. With return focus enabled, removing an open submenu returns focus to a surviving owner trigger.
 - ✅ `closeOnClick` per item — defaults to `true` for regular items, `false` for checkbox, radio, and link items.
 - ✅ Checkbox items toggle state independently; radio groups enforce single selection.
 - ✅ Grouped items with optional group labels and visual separators.

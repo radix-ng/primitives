@@ -7,7 +7,7 @@ import { RdxMenubarRoot } from '@radix-ng/primitives/menubar';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { changeCollection, type MenuEntry } from '../../../shared/menu-collection';
 import { menuClasses, menuPopupTemplate } from '../../../shared/menu-fixture';
-import { config, installProbe, type Layer } from './contract';
+import { config, installProbe, menubarEntries, type Layer } from './contract';
 const settings = config();
 // A consumer can compose Menubar without authoring the original selector attribute.
 @Directive({
@@ -61,11 +61,9 @@ const template = `
 })
 class AngularMenubar {
     readonly s = menuClasses;
-    readonly menus = signal<MenuEntry<Layer>[]>([
-        { id: 'file', label: 'file', disabled: false },
-        { id: 'blocked', label: 'blocked', disabled: true },
-        { id: 'edit', label: 'edit', disabled: false }
-    ]);
+    readonly menus = signal<MenuEntry<Layer>[]>(
+        menubarEntries.slice(0, settings.name === 'single-menu-switch' ? 1 : undefined)
+    );
     command(event: KeyboardEvent) {
         if (event.key === 'F3' && settings.name.startsWith('collection-')) {
             event.preventDefault();

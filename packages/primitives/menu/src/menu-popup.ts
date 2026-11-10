@@ -49,7 +49,7 @@ import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
                 // disabled while open, or if `preventUnmountOnClose()` keeps it mounted after close.
                 enabled: () => rootContext.present() || rootContext.transitionStatus() === 'ending',
                 restoreFocus: () => true,
-                previousFocusableElement: () => rootContext.trigger() ?? rootContext.contextMenuPreviousFocus() ?? null,
+                previousFocusableElement: () => rootContext.getReturnFocusElement() ?? null,
                 getInsideElements: () =>
                     rootContext.parentType() === 'menubar' ? [rootContext.triggerInteractionScope()] : [],
                 beforeContentFocusGuardRef: () => (element) => rootContext.setBeforeContentFocusGuard(element),
@@ -82,6 +82,7 @@ import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
                     if (rootContext.lastOpenChangeReason() === 'trigger-hover') return false;
                     const parentType = rootContext.parentType();
                     if (parentType === 'context-menu') return true;
+                    if (parentType === 'menu') return true;
 
                     if (rootContext.trigger() || parentType === undefined) {
                         return true;
@@ -271,7 +272,9 @@ export class RdxMenuPopup {
     }
 
     protected handleKeydown(event: KeyboardEvent): void {
-        if (this.rootContext.disabled()) {
+        const menubarArrow =
+            this.rootContext.parentType() === 'menubar' && (event.key === 'ArrowLeft' || event.key === 'ArrowRight');
+        if (this.rootContext.disabled() && !menubarArrow) {
             return;
         }
 
@@ -282,6 +285,8 @@ export class RdxMenuPopup {
             case 'ArrowDown': {
                 event.preventDefault();
                 event.stopPropagation();
+                // Retain the requested first index while an application-owned list is empty.
+                if (items.length === 0) this.rootContext.setActiveIndex(0);
                 const atEnd = currentIndex >= items.length - 1;
                 const next = atEnd
                     ? this.rootContext.loopFocus()

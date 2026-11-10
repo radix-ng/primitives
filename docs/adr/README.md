@@ -69,3 +69,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0035](0035-menu-shared-close-lifecycle.md)                                  | Accepted               | Reuse popup lifecycle for Menu and preserve nested view ownership                    |
 | [0036](0036-menu-pointer-and-composition-contracts.md)                       | Accepted               | Compare Menu pointer gestures, Context Menu and Menubar                              |
 | [0037](0037-native-input-and-collection-focus.md)                            | Accepted               | Compare native context input and repair focus through collection changes             |
+| [0038](0038-menu-collection-boundaries.md)                                   | Accepted               | Compare empty/nested collections and Menubar navigation boundaries                   |

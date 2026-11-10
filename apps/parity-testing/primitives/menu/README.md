@@ -5,7 +5,7 @@ port is 4505. Angular fixtures are AOT compiled and React imports the unmodified
 Base UI 1.9.0 pin: `cf696d6f6e08c699c5bda24d5a033430909f2285`, archive SHA-256
 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 
-69 scenarios run in Chromium, Firefox and WebKit (207 comparisons). They cover native keyboard and
+73 scenarios run in Chromium, Firefox and WebKit (219 comparisons). They cover native keyboard and
 pointer opening, disabled/focusable items, roving focus, edges and looping, repeated and explicit-label
 typeahead, selection and stay-open items, cancelable transactions, modal/background activation,
 forward/backward Tab, checkbox/radio values, LTR/RTL submenu ownership and custom identity links.
@@ -32,9 +32,11 @@ Raw records include source commit/digest, browser versions, open/change completi
 event types, trusted pointer coordinates/deltas and native press/release timestamps. CSS layout and default focus are observed;
 the adapters do not synthesize state, focus, pointer deltas or lifecycle completion.
 
-Five collection cases use native F3 application commands for insertion, focused removal, keyed
+Nine collection cases use native F3/F4 application commands for insertion, focused removal, keyed
 reordering, disabling and label updates. They observe index-based highlight, native arrow continuation
-and pointer selection. Shared focus recovery observes DOM updates rather than copying a React store.
+and pointer selection. Empty/refilled root and child lists, keyed submenu reordering and removal/replacement
+of an open owning branch are included. Removed submenu triggers fall back through surviving Menu owners.
+Shared focus recovery observes DOM updates rather than copying a React store.
 
 ## Reviewed limitations
 
@@ -49,5 +51,5 @@ scope. Unchanged/disappeared exceptions fail; there is no blanket normalization 
 Custom IDs change between opens in the differential scenario: the pin keys trigger registration
 by id. Angular additionally supports live ID changes without replacing the popup, checked through
 the Events story and unit/browser regressions. Pending work includes
-empty/nested collection updates, broader Context Menu/Menubar composition (their independent suites now exist),
+removal of entire root menus, empty-list keyboard promotion, broader Context Menu/Menubar composition,
 and real device/AT verification.

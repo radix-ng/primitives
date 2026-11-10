@@ -11,6 +11,46 @@ export const scenarios = cases.map((name) => ({
     async run(d: MenubarDriver) {
         const file = d.page.getByTestId('file-trigger'),
             edit = d.page.getByTestId('edit-trigger');
+        if (name === 'collection-disable-focused' || name === 'collection-disable-open') {
+            await file.focus();
+            if (name === 'collection-disable-open') await file.press('ArrowDown');
+            await d.checkpoint('before disabling current menu');
+            await d.page.keyboard.press('F3');
+            await expect(file).toHaveAttribute('aria-disabled', 'true');
+            await d.checkpoint('current menu disabled');
+            await d.page.keyboard.press('ArrowRight');
+            await d.checkpoint('navigated from disabled menu');
+            await edit.press('ArrowDown');
+            await expect(d.page.getByTestId('edit-popup')).toBeVisible();
+            await d.checkpoint('opened enabled sibling', { open: ['edit'] });
+            await d.page.keyboard.press('Escape');
+            await d.checkpoint('closed enabled sibling', { open: [] });
+            return;
+        }
+        if (name === 'single-menu-switch') {
+            await file.focus();
+            await d.page.keyboard.press('ArrowRight');
+            await d.checkpoint('roved single trigger', { focus: 'file-trigger', open: [] });
+            await file.press('ArrowDown');
+            await d.checkpoint('opened single menu', { open: ['file'] });
+            for (const key of ['ArrowRight', 'ArrowLeft']) {
+                await d.page.keyboard.press(key);
+                await d.checkpoint(`single menu ${key}`);
+            }
+            await d.page.keyboard.press('Escape');
+            await d.checkpoint('closed single menu', { open: [] });
+            return;
+        }
+        if (name === 'switch-backward' || name === 'switch-backward-rtl') {
+            await edit.press('ArrowDown');
+            await d.checkpoint('opened last menu', { open: ['edit'] });
+            await d.page.keyboard.press(name.endsWith('-rtl') ? 'ArrowRight' : 'ArrowLeft');
+            await expect(d.page.getByTestId('file-popup')).toBeVisible();
+            await d.checkpoint('switched backward', { open: ['file'] });
+            await d.page.keyboard.press('Escape');
+            await d.checkpoint('closed after backward switch', { open: [] });
+            return;
+        }
         if (name.startsWith('collection-')) {
             await file.focus();
             await d.checkpoint('before collection change', { open: [], focus: 'file-trigger' });

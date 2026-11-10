@@ -1,1 +1,548 @@
-[]
+[
+    {
+        "scenario": "collection-disable-focused",
+        "checkpoint": "current menu disabled",
+        "field": "triggers",
+        "angular": [
+            {
+                "id": "file-trigger",
+                "expanded": "false",
+                "disabled": true,
+                "tabIndex": -1,
+                "controlsLinked": false
+            },
+            {
+                "id": "blocked-trigger",
+                "expanded": "false",
+                "disabled": true,
+                "tabIndex": -1,
+                "controlsLinked": false
+            },
+            {
+                "id": "edit-trigger",
+                "expanded": "false",
+                "disabled": false,
+                "tabIndex": 0,
+                "controlsLinked": false
+            }
+        ],
+        "react": [
+            {
+                "id": "file-trigger",
+                "expanded": "false",
+                "disabled": true,
+                "tabIndex": 0,
+                "controlsLinked": false
+            },
+            {
+                "id": "blocked-trigger",
+                "expanded": "false",
+                "disabled": true,
+                "tabIndex": -1,
+                "controlsLinked": false
+            },
+            {
+                "id": "edit-trigger",
+                "expanded": "false",
+                "disabled": false,
+                "tabIndex": -1,
+                "controlsLinked": false
+            }
+        ],
+        "category": "disabled-trigger-tab-stop"
+    },
+    {
+        "scenario": "collection-disable-focused",
+        "checkpoint": "navigated from disabled menu",
+        "field": "triggers",
+        "angular": [
+            {
+                "id": "file-trigger",
+                "expanded": "false",
+                "disabled": true,
+                "tabIndex": -1,
+                "controlsLinked": false
+            },
+            {
+                "id": "blocked-trigger",
+                "expanded": "false",
+                "disabled": true,
+                "tabIndex": -1,
+                "controlsLinked": false
+            },
+            {
+                "id": "edit-trigger",
+                "expanded": "false",
+                "disabled": false,
+                "tabIndex": 0,
+                "controlsLinked": false
+            }
+        ],
+        "react": [
+            {
+                "id": "file-trigger",
+                "expanded": "false",
+                "disabled": true,
+                "tabIndex": 0,
+                "controlsLinked": false
+            },
+            {
+                "id": "blocked-trigger",
+                "expanded": "false",
+                "disabled": true,
+                "tabIndex": -1,
+                "controlsLinked": false
+            },
+            {
+                "id": "edit-trigger",
+                "expanded": "false",
+                "disabled": false,
+                "tabIndex": -1,
+                "controlsLinked": false
+            }
+        ],
+        "category": "disabled-trigger-tab-stop"
+    },
+    {
+        "scenario": "collection-disable-open",
+        "checkpoint": "current menu disabled",
+        "field": "triggers",
+        "angular": [
+            {
+                "id": "file-trigger",
+                "expanded": "true",
+                "disabled": true,
+                "tabIndex": -1,
+                "controlsLinked": true
+            },
+            {
+                "id": "blocked-trigger",
+                "expanded": "false",
+                "disabled": true,
+                "tabIndex": -1,
+                "controlsLinked": false
+            },
+            {
+                "id": "edit-trigger",
+                "expanded": "false",
+                "disabled": false,
+                "tabIndex": 0,
+                "controlsLinked": false
+            }
+        ],
+        "react": [
+            {
+                "id": "file-trigger",
+                "expanded": "true",
+                "disabled": true,
+                "tabIndex": 0,
+                "controlsLinked": true
+            },
+            {
+                "id": "blocked-trigger",
+                "expanded": "false",
+                "disabled": true,
+                "tabIndex": -1,
+                "controlsLinked": false
+            },
+            {
+                "id": "edit-trigger",
+                "expanded": "false",
+                "disabled": false,
+                "tabIndex": -1,
+                "controlsLinked": false
+            }
+        ],
+        "category": "disabled-trigger-tab-stop"
+    },
+    {
+        "scenario": "switch-backward",
+        "checkpoint": "switched backward",
+        "field": "changes",
+        "angular": [
+            {
+                "layer": "edit",
+                "open": true,
+                "reason": "list-navigation",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            },
+            {
+                "layer": "file",
+                "open": true,
+                "reason": "trigger-focus",
+                "canceled": false,
+                "trigger": "file-trigger"
+            },
+            {
+                "layer": "edit",
+                "open": false,
+                "reason": "sibling-open",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            }
+        ],
+        "react": [
+            {
+                "layer": "edit",
+                "open": true,
+                "reason": "list-navigation",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            },
+            {
+                "layer": "edit",
+                "open": false,
+                "reason": "list-navigation",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            },
+            {
+                "layer": "edit",
+                "open": true,
+                "reason": "trigger-focus",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            },
+            {
+                "layer": "file",
+                "open": true,
+                "reason": "trigger-focus",
+                "canceled": false,
+                "trigger": "file-trigger"
+            },
+            {
+                "layer": "edit",
+                "open": false,
+                "reason": "sibling-open",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            }
+        ],
+        "category": "backward-close-reopen"
+    },
+    {
+        "scenario": "switch-backward",
+        "checkpoint": "closed after backward switch",
+        "field": "changes",
+        "angular": [
+            {
+                "layer": "edit",
+                "open": true,
+                "reason": "list-navigation",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            },
+            {
+                "layer": "file",
+                "open": true,
+                "reason": "trigger-focus",
+                "canceled": false,
+                "trigger": "file-trigger"
+            },
+            {
+                "layer": "edit",
+                "open": false,
+                "reason": "sibling-open",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            },
+            {
+                "layer": "file",
+                "open": false,
+                "reason": "escape-key",
+                "canceled": false,
+                "trigger": "file-trigger"
+            }
+        ],
+        "react": [
+            {
+                "layer": "edit",
+                "open": true,
+                "reason": "list-navigation",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            },
+            {
+                "layer": "edit",
+                "open": false,
+                "reason": "list-navigation",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            },
+            {
+                "layer": "edit",
+                "open": true,
+                "reason": "trigger-focus",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            },
+            {
+                "layer": "file",
+                "open": true,
+                "reason": "trigger-focus",
+                "canceled": false,
+                "trigger": "file-trigger"
+            },
+            {
+                "layer": "edit",
+                "open": false,
+                "reason": "sibling-open",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            },
+            {
+                "layer": "file",
+                "open": false,
+                "reason": "escape-key",
+                "canceled": false,
+                "trigger": "file-trigger"
+            }
+        ],
+        "category": "backward-close-reopen"
+    },
+    {
+        "scenario": "switch-backward-rtl",
+        "checkpoint": "switched backward",
+        "field": "changes",
+        "angular": [
+            {
+                "layer": "edit",
+                "open": true,
+                "reason": "list-navigation",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            },
+            {
+                "layer": "file",
+                "open": true,
+                "reason": "trigger-focus",
+                "canceled": false,
+                "trigger": "file-trigger"
+            },
+            {
+                "layer": "edit",
+                "open": false,
+                "reason": "sibling-open",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            }
+        ],
+        "react": [
+            {
+                "layer": "edit",
+                "open": true,
+                "reason": "list-navigation",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            },
+            {
+                "layer": "edit",
+                "open": false,
+                "reason": "list-navigation",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            },
+            {
+                "layer": "edit",
+                "open": true,
+                "reason": "trigger-focus",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            },
+            {
+                "layer": "file",
+                "open": true,
+                "reason": "trigger-focus",
+                "canceled": false,
+                "trigger": "file-trigger"
+            },
+            {
+                "layer": "edit",
+                "open": false,
+                "reason": "sibling-open",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            }
+        ],
+        "category": "backward-close-reopen"
+    },
+    {
+        "scenario": "switch-backward-rtl",
+        "checkpoint": "closed after backward switch",
+        "field": "changes",
+        "angular": [
+            {
+                "layer": "edit",
+                "open": true,
+                "reason": "list-navigation",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            },
+            {
+                "layer": "file",
+                "open": true,
+                "reason": "trigger-focus",
+                "canceled": false,
+                "trigger": "file-trigger"
+            },
+            {
+                "layer": "edit",
+                "open": false,
+                "reason": "sibling-open",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            },
+            {
+                "layer": "file",
+                "open": false,
+                "reason": "escape-key",
+                "canceled": false,
+                "trigger": "file-trigger"
+            }
+        ],
+        "react": [
+            {
+                "layer": "edit",
+                "open": true,
+                "reason": "list-navigation",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            },
+            {
+                "layer": "edit",
+                "open": false,
+                "reason": "list-navigation",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            },
+            {
+                "layer": "edit",
+                "open": true,
+                "reason": "trigger-focus",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            },
+            {
+                "layer": "file",
+                "open": true,
+                "reason": "trigger-focus",
+                "canceled": false,
+                "trigger": "file-trigger"
+            },
+            {
+                "layer": "edit",
+                "open": false,
+                "reason": "sibling-open",
+                "canceled": false,
+                "trigger": "edit-trigger"
+            },
+            {
+                "layer": "file",
+                "open": false,
+                "reason": "escape-key",
+                "canceled": false,
+                "trigger": "file-trigger"
+            }
+        ],
+        "category": "backward-close-reopen"
+    },
+    {
+        "scenario": "single-menu-switch",
+        "checkpoint": "single menu ArrowLeft",
+        "field": "focus",
+        "angular": "file-alpha",
+        "react": "file-trigger",
+        "category": "single-menu-close-reopen"
+    },
+    {
+        "scenario": "single-menu-switch",
+        "checkpoint": "single menu ArrowLeft",
+        "field": "changes",
+        "angular": [
+            {
+                "layer": "file",
+                "open": true,
+                "reason": "list-navigation",
+                "canceled": false,
+                "trigger": "file-trigger"
+            }
+        ],
+        "react": [
+            {
+                "layer": "file",
+                "open": true,
+                "reason": "list-navigation",
+                "canceled": false,
+                "trigger": "file-trigger"
+            },
+            {
+                "layer": "file",
+                "open": false,
+                "reason": "list-navigation",
+                "canceled": false,
+                "trigger": "file-trigger"
+            },
+            {
+                "layer": "file",
+                "open": true,
+                "reason": "trigger-focus",
+                "canceled": false,
+                "trigger": "file-trigger"
+            }
+        ],
+        "category": "single-menu-close-reopen"
+    },
+    {
+        "scenario": "single-menu-switch",
+        "checkpoint": "closed single menu",
+        "field": "changes",
+        "angular": [
+            {
+                "layer": "file",
+                "open": true,
+                "reason": "list-navigation",
+                "canceled": false,
+                "trigger": "file-trigger"
+            },
+            {
+                "layer": "file",
+                "open": false,
+                "reason": "escape-key",
+                "canceled": false,
+                "trigger": "file-trigger"
+            }
+        ],
+        "react": [
+            {
+                "layer": "file",
+                "open": true,
+                "reason": "list-navigation",
+                "canceled": false,
+                "trigger": "file-trigger"
+            },
+            {
+                "layer": "file",
+                "open": false,
+                "reason": "list-navigation",
+                "canceled": false,
+                "trigger": "file-trigger"
+            },
+            {
+                "layer": "file",
+                "open": true,
+                "reason": "trigger-focus",
+                "canceled": false,
+                "trigger": "file-trigger"
+            },
+            {
+                "layer": "file",
+                "open": false,
+                "reason": "escape-key",
+                "canceled": false,
+                "trigger": "file-trigger"
+            }
+        ],
+        "category": "single-menu-close-reopen"
+    }
+]

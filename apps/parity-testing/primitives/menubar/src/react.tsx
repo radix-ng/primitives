@@ -7,15 +7,13 @@ import '../../../../radix-storybook/.storybook/tailwind.css';
 import { changeCollection, type MenuEntry } from '../../../shared/menu-collection';
 import { menuClasses as s } from '../../../shared/menu-fixture';
 import { MenuItems } from '../../../shared/menu-items';
-import { config, installProbe, type Layer } from './contract';
+import { config, installProbe, menubarEntries, type Layer } from './contract';
 const settings = config(),
     trace = installProbe('react');
 function ReactMenubar() {
-    const [menus, setMenus] = useState<MenuEntry<Layer>[]>([
-        { id: 'file', label: 'file', disabled: false },
-        { id: 'blocked', label: 'blocked', disabled: true },
-        { id: 'edit', label: 'edit', disabled: false }
-    ]);
+    const [menus, setMenus] = useState<MenuEntry<Layer>[]>(
+        menubarEntries.slice(0, settings.name === 'single-menu-switch' ? 1 : undefined)
+    );
     useEffect(() => {
         const command = (event: KeyboardEvent) => {
             if (event.key === 'F3' && settings.name.startsWith('collection-')) {

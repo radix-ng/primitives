@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { RdxMenubarRoot } from '@radix-ng/primitives/menubar';
@@ -14,7 +14,7 @@ const flushMicrotasks = () => Promise.resolve();
     imports: [RdxMenubarRoot, RdxMenuModule],
     template: `
         <div rdxMenubarRoot>
-            <ng-container #fileMenu="rdxMenuRoot" rdxMenuRoot>
+            <ng-container #fileMenu="rdxMenuRoot" [disabled]="fileDisabled()" rdxMenuRoot>
                 <button rdxMenuTrigger>File</button>
                 @if (fileMenu.open()) {
                     <div rdxMenuPositioner>
@@ -50,7 +50,9 @@ const flushMicrotasks = () => Promise.resolve();
         </div>
     `
 })
-class MenubarHost {}
+class MenubarHost {
+    readonly fileDisabled = signal(false);
+}
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -177,6 +179,22 @@ describe('Menubar', () => {
         expect(triggers[0].getAttribute('tabindex')).toBe('-1');
         expect(triggers[1].getAttribute('tabindex')).toBe('0');
         expect(triggers[2].getAttribute('tabindex')).toBe('-1');
+    });
+
+    it('keeps an enabled Tab entry when the focused trigger becomes disabled', async () => {
+        triggers[0].focus();
+        fixture.detectChanges();
+        fixture.componentInstance.fileDisabled.set(true);
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        expect(triggers[0].disabled).toBe(true);
+        expect(triggers[0].tabIndex).toBe(-1);
+        expect(triggers.filter((trigger) => !trigger.disabled && trigger.tabIndex === 0)).toHaveLength(1);
+        triggers[1].focus();
+        keydown(triggers[1], 'ArrowRight');
+        fixture.detectChanges();
+        expect(document.activeElement).toBe(triggers[2]);
     });
 
     it('click opens a menu', () => {

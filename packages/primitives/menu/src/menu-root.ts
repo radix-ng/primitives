@@ -140,6 +140,7 @@ export interface RdxMenuRootContext {
     triggerInteractionScope: Signal<HTMLElement | undefined>;
     trigger: Signal<HTMLElement | undefined>;
     contextMenuPreviousFocus: Signal<HTMLElement | undefined>;
+    getReturnFocusElement: () => HTMLElement | undefined;
     triggerId: Signal<string | undefined>;
     contentId: Signal<string>;
     defaultContentId: string;
@@ -237,6 +238,7 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         triggerInteractionScope: instance.triggerInteractionScope.asReadonly(),
         trigger: instance.trigger.asReadonly(),
         contextMenuPreviousFocus: instance.contextMenuPreviousFocus.asReadonly(),
+        getReturnFocusElement: () => instance.getReturnFocusElement(),
         triggerId: instance.triggerId,
         contentId: instance.contentId,
         defaultContentId: instance.defaultContentId,
@@ -670,6 +672,13 @@ export class RdxMenuRoot {
         };
     }
 
+    /** A removed submenu trigger falls back through its surviving owners. */
+    getReturnFocusElement(): HTMLElement | undefined {
+        const trigger = this.trigger();
+        if (trigger?.isConnected) return trigger;
+        return this.parentRoot?.getReturnFocusElement() ?? this.contextMenuPreviousFocus();
+    }
+
     registerPopup(el: HTMLElement, physicalSide?: Signal<MenuSide | undefined>, getId?: () => string): () => void {
         this.registeredPopupId = getId;
         this.popupElement.set(el);
@@ -783,6 +792,7 @@ export class RdxMenuRoot {
         }
 
         const items = getFocusableMenuItems(popup);
+        if (!items.length && autoFocus === 'first') this.setActiveIndex(0);
         const item = autoFocus === 'last' ? items.at(-1) : items[0];
         (item ?? popup).focus({ preventScroll: true });
     }

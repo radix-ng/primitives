@@ -4,13 +4,15 @@ import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { exitClass } from '../../../shared/lifecycle';
-import { changeCollection, menuEntries } from '../../../shared/menu-collection';
+import { changeCollection, menuEntries, submenuEntries } from '../../../shared/menu-collection';
 import { config, installProbe, classes as s, type Layer } from './contract';
 
 const settings = config();
 const trace = installProbe('react');
 function ReactMenu() {
     const [items, setItems] = useState(menuEntries);
+    const [subItems, setSubItems] = useState(submenuEntries);
+    const [submenuPresent, setSubmenuPresent] = useState(true);
     const actions = useRef<Menu.Root.Actions | null>(null);
     const closes = useRef(0);
     const lateHold = useRef<(() => void) | undefined>(undefined);
@@ -31,11 +33,19 @@ function ReactMenu() {
         };
         document.addEventListener('click', outside);
         const command = (event: KeyboardEvent) => {
-            if (event.key === 'F3' && settings.name.startsWith('collection-')) {
+            if (['F3', 'F4'].includes(event.key) && settings.name.startsWith('collection-')) {
                 event.preventDefault();
-                setItems((items) =>
-                    changeCollection(items, settings.name, { id: 'new', label: 'New', disabled: false })
-                );
+                if (settings.name === 'collection-submenu-unmount') setSubmenuPresent(event.key === 'F4');
+                else {
+                    const nested = settings.name.startsWith('collection-submenu');
+                    (nested ? setSubItems : setItems)((items) =>
+                        changeCollection(items, settings.name, {
+                            id: nested ? 'sub-new' : 'new',
+                            label: 'New',
+                            disabled: false
+                        })
+                    );
+                }
             }
             if (['F8', 'F9', 'F10'].includes(event.key)) {
                 event.preventDefault();
@@ -106,120 +116,120 @@ function ReactMenu() {
                                         {item.label}
                                     </Menu.Item>
                                 ))}
-                                {settings.submenu && (
-                                    <Menu.SubmenuRoot
-                                        onOpenChange={(open, details) => change('sub', open, details)}
-                                        onOpenChangeComplete={(open) => trace.complete('sub', open)}
-                                    >
-                                        <Menu.SubmenuTrigger
-                                            render={<button />}
-                                            nativeButton
-                                            className={s.item}
-                                            data-testid="more"
-                                            disabled={settings.pointer.disabledSubmenu}
-                                            delay={settings.pointer.delay}
-                                            closeDelay={settings.pointer.closeDelay}
-                                        >
-                                            More
-                                        </Menu.SubmenuTrigger>
-                                        <Menu.Portal>
-                                            <Menu.Positioner
-                                                className="z-50"
-                                                side={settings.dir === 'rtl' ? 'left' : 'right'}
-                                                align="start"
-                                                sideOffset={4}
-                                                collisionPadding={5}
+                                {!settings.collectionOnly && (
+                                    <>
+                                        {settings.submenu && submenuPresent && (
+                                            <Menu.SubmenuRoot
+                                                onOpenChange={(open, details) => change('sub', open, details)}
+                                                onOpenChangeComplete={(open) => trace.complete('sub', open)}
                                             >
-                                                <Menu.Popup
-                                                    className={
-                                                        s.popup + (settings.lifecycle?.animated ? exitClass : '')
-                                                    }
-                                                    data-testid="sub-popup"
+                                                <Menu.SubmenuTrigger
+                                                    render={<button />}
+                                                    nativeButton
+                                                    className={s.item}
+                                                    data-testid="more"
+                                                    disabled={settings.pointer.disabledSubmenu}
+                                                    delay={settings.pointer.delay}
+                                                    closeDelay={settings.pointer.closeDelay}
                                                 >
-                                                    <Menu.Item
-                                                        render={<button />}
-                                                        nativeButton
-                                                        className={s.item}
-                                                        data-testid="sub-alpha"
-                                                        onClick={() => trace.select('sub-alpha')}
+                                                    More
+                                                </Menu.SubmenuTrigger>
+                                                <Menu.Portal>
+                                                    <Menu.Positioner
+                                                        className="z-50"
+                                                        side={settings.dir === 'rtl' ? 'left' : 'right'}
+                                                        align="start"
+                                                        sideOffset={4}
+                                                        collisionPadding={5}
                                                     >
-                                                        Archive
-                                                    </Menu.Item>
-                                                    <Menu.Item
-                                                        render={<button />}
-                                                        nativeButton
-                                                        className={s.item}
-                                                        data-testid="sub-bravo"
-                                                        onClick={() => trace.select('sub-bravo')}
-                                                    >
-                                                        Browse
-                                                    </Menu.Item>
-                                                </Menu.Popup>
-                                            </Menu.Positioner>
-                                        </Menu.Portal>
-                                    </Menu.SubmenuRoot>
-                                )}
-                                <Menu.Item
-                                    render={<button />}
-                                    nativeButton
-                                    className={s.item}
-                                    closeOnClick={false}
-                                    data-testid="stay"
-                                    onClick={() => trace.select('stay')}
-                                >
-                                    Stay open
-                                </Menu.Item>
-                                {settings.checkbox && (
-                                    <Menu.CheckboxItem
-                                        render={<button />}
-                                        nativeButton
-                                        className={s.item}
-                                        data-testid="check"
-                                        onCheckedChange={(value, details) => {
-                                            if (settings.name === 'checkbox-cancel') details.cancel();
-                                            trace.value(value, details.reason, details.isCanceled);
-                                        }}
-                                    >
-                                        Notifications
-                                    </Menu.CheckboxItem>
-                                )}
-                                {settings.radio && (
-                                    <Menu.RadioGroup
-                                        defaultValue="one"
-                                        onValueChange={(value, details) => {
-                                            if (settings.name === 'radio-cancel') details.cancel();
-                                            trace.value(value, details.reason, details.isCanceled);
-                                        }}
-                                    >
-                                        <Menu.RadioItem
+                                                        <Menu.Popup
+                                                            className={
+                                                                s.popup +
+                                                                (settings.lifecycle?.animated ? exitClass : '')
+                                                            }
+                                                            data-testid="sub-popup"
+                                                        >
+                                                            {subItems.map((item) => (
+                                                                <Menu.Item
+                                                                    key={item.id}
+                                                                    render={<button />}
+                                                                    nativeButton
+                                                                    className={s.item}
+                                                                    disabled={item.disabled}
+                                                                    data-testid={item.id}
+                                                                    onClick={() => trace.select(item.id)}
+                                                                >
+                                                                    {item.label}
+                                                                </Menu.Item>
+                                                            ))}
+                                                        </Menu.Popup>
+                                                    </Menu.Positioner>
+                                                </Menu.Portal>
+                                            </Menu.SubmenuRoot>
+                                        )}
+                                        <Menu.Item
                                             render={<button />}
                                             nativeButton
                                             className={s.item}
-                                            value="one"
-                                            data-testid="radio-one"
+                                            closeOnClick={false}
+                                            data-testid="stay"
+                                            onClick={() => trace.select('stay')}
                                         >
-                                            Small
-                                        </Menu.RadioItem>
-                                        <Menu.RadioItem
+                                            Stay open
+                                        </Menu.Item>
+                                        {settings.checkbox && (
+                                            <Menu.CheckboxItem
+                                                render={<button />}
+                                                nativeButton
+                                                className={s.item}
+                                                data-testid="check"
+                                                onCheckedChange={(value, details) => {
+                                                    if (settings.name === 'checkbox-cancel') details.cancel();
+                                                    trace.value(value, details.reason, details.isCanceled);
+                                                }}
+                                            >
+                                                Notifications
+                                            </Menu.CheckboxItem>
+                                        )}
+                                        {settings.radio && (
+                                            <Menu.RadioGroup
+                                                defaultValue="one"
+                                                onValueChange={(value, details) => {
+                                                    if (settings.name === 'radio-cancel') details.cancel();
+                                                    trace.value(value, details.reason, details.isCanceled);
+                                                }}
+                                            >
+                                                <Menu.RadioItem
+                                                    render={<button />}
+                                                    nativeButton
+                                                    className={s.item}
+                                                    value="one"
+                                                    data-testid="radio-one"
+                                                >
+                                                    Small
+                                                </Menu.RadioItem>
+                                                <Menu.RadioItem
+                                                    render={<button />}
+                                                    nativeButton
+                                                    className={s.item}
+                                                    value="two"
+                                                    data-testid="radio-two"
+                                                >
+                                                    Large
+                                                </Menu.RadioItem>
+                                            </Menu.RadioGroup>
+                                        )}
+                                        <Menu.Item
                                             render={<button />}
                                             nativeButton
                                             className={s.item}
-                                            value="two"
-                                            data-testid="radio-two"
+                                            data-testid="omega"
+                                            onClick={() => trace.select('omega')}
                                         >
-                                            Large
-                                        </Menu.RadioItem>
-                                    </Menu.RadioGroup>
+                                            Omega
+                                        </Menu.Item>
+                                    </>
                                 )}
-                                <Menu.Item
-                                    render={<button />}
-                                    nativeButton
-                                    className={s.item}
-                                    data-testid="omega"
-                                    onClick={() => trace.select('omega')}
-                                >
-                                    Omega
-                                </Menu.Item>
                             </Menu.Popup>
                         </Menu.Positioner>
                     </Menu.Portal>
