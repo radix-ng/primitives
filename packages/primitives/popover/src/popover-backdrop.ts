@@ -9,6 +9,7 @@ import { injectRdxPopoverRootContext } from './popover-root';
     selector: '[rdxPopoverBackdrop]',
     host: {
         role: 'presentation',
+        '[hidden]': '!rootContext.isOpen() && rootContext.transitionStatus() !== "ending"',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
         '[attr.data-ending-style]': 'rootContext.transitionStatus() === "ending" ? "" : undefined',
         '[attr.data-instant]': 'rootContext.instantType()',

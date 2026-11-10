@@ -1,9 +1,10 @@
 import '@angular/compiler';
-import { Component, provideZonelessChangeDetection, signal } from '@angular/core';
+import { Component, provideZonelessChangeDetection, signal, viewChild } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { popoverImports, RdxPopoverOpenChange } from '@radix-ng/primitives/popover';
+import { popoverImports, RdxPopoverOpenChange, RdxPopoverRoot } from '@radix-ng/primitives/popover';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { classes, config, installProbe } from './contract';
+import { exitClass } from './lifecycle';
 
 const settings = config();
 @Component({
@@ -49,7 +50,7 @@ const settings = config();
                             Other details
                         </button>
                     }
-                    <ng-template rdxPopoverPortal>
+                    <ng-template [keepMounted]="settings.lifecycle?.keepMounted ?? false" rdxPopoverPortal>
                         @if (settings.modal === true) {
                             <div class="fixed inset-0 z-40" rdxPopoverBackdrop></div>
                         }
@@ -63,7 +64,7 @@ const settings = config();
                             rdxPopoverPositioner
                         >
                             <div
-                                [class]="s.popup"
+                                [class]="s.popup + (settings.lifecycle?.animated ? exitClass : '')"
                                 [initialFocus]="settings.initialFocus ? note : undefined"
                                 data-testid="popup"
                                 rdxPopoverPopup
@@ -89,9 +90,19 @@ class AngularPopover {
     readonly settings = settings;
     readonly s = classes;
     readonly trace = installProbe('angular');
+    readonly root = viewChild.required(RdxPopoverRoot);
+    readonly exitClass = exitClass;
+    private closes = 0;
+    private lateHold?: () => void;
     readonly wide = signal(false);
     readonly moved = signal(false);
     command(event: KeyboardEvent) {
+        if (['F8', 'F9', 'F10'].includes(event.key)) {
+            event.preventDefault();
+            if (event.key === 'F8') this.root().close();
+            if (event.key === 'F9') this.root().unmount();
+            if (event.key === 'F10') this.lateHold?.();
+        }
         if (event.key === 'F2') {
             event.preventDefault();
             this.wide.update((v) => !v);
@@ -102,6 +113,12 @@ class AngularPopover {
         }
     }
     change(change: RdxPopoverOpenChange) {
+        if (!change.open && ++this.closes === 1) {
+            const lifecycle = settings.lifecycle;
+            this.lateHold = change.eventDetails.preventUnmountOnClose;
+            if (lifecycle?.deferred || lifecycle?.canceled) change.eventDetails.preventUnmountOnClose();
+            if (lifecycle?.canceled) change.eventDetails.cancel();
+        }
         if ((change.open && settings.name === 'cancel-open') || (!change.open && settings.name === 'cancel-close'))
             change.eventDetails.cancel();
         this.trace.change(change.open, change.reason, change.eventDetails.isCanceled(), change.event, change.trigger);

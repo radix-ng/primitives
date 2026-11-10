@@ -1,16 +1,26 @@
 import { Popover } from '@base-ui/react/popover';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { config, installProbe, classes as s } from './contract';
+import { exitClass } from './lifecycle';
 
 const settings = config();
 const trace = installProbe('react');
 function ReactPopover() {
+    const actions = useRef<Popover.Root.Actions | null>(null);
+    const closes = useRef(0);
+    const lateHold = useRef<(() => void) | undefined>(undefined);
     const [wide, setWide] = useState(false),
         [moved, setMoved] = useState(false);
     useEffect(() => {
         const command = (event: KeyboardEvent) => {
+            if (['F8', 'F9', 'F10'].includes(event.key)) {
+                event.preventDefault();
+                if (event.key === 'F8') actions.current?.close();
+                if (event.key === 'F9') actions.current?.unmount();
+                if (event.key === 'F10') lateHold.current?.();
+            }
             if (event.key === 'F2') {
                 event.preventDefault();
                 setWide((v) => !v);
@@ -43,8 +53,15 @@ function ReactPopover() {
                     Outside
                 </button>
                 <Popover.Root
+                    actionsRef={actions}
                     modal={settings.modal}
                     onOpenChange={(open, details) => {
+                        if (!open && ++closes.current === 1) {
+                            const lifecycle = settings.lifecycle;
+                            lateHold.current = details.preventUnmountOnClose;
+                            if (lifecycle?.deferred || lifecycle?.canceled) details.preventUnmountOnClose();
+                            if (lifecycle?.canceled) details.cancel();
+                        }
                         if ((open && settings.name === 'cancel-open') || (!open && settings.name === 'cancel-close'))
                             details.cancel();
                         trace.change(open, details.reason, details.isCanceled, details.event, details.trigger);
@@ -64,7 +81,7 @@ function ReactPopover() {
                             Other details
                         </Popover.Trigger>
                     )}
-                    <Popover.Portal>
+                    <Popover.Portal keepMounted={settings.lifecycle?.keepMounted ?? false}>
                         {settings.modal === true && <Popover.Backdrop className="fixed inset-0 z-40" />}
                         <Popover.Positioner
                             className="z-50"
@@ -74,7 +91,11 @@ function ReactPopover() {
                             collisionPadding={5}
                             data-testid="positioner"
                         >
-                            <Popover.Popup className={s.popup} initialFocus={settings.initialFocus} data-testid="popup">
+                            <Popover.Popup
+                                className={s.popup + (settings.lifecycle?.animated ? exitClass : '')}
+                                initialFocus={settings.initialFocus}
+                                data-testid="popup"
+                            >
                                 <Popover.Title>Details</Popover.Title>
                                 <Popover.Description>Edit the note, then close.</Popover.Description>
                                 <label htmlFor="note">Note</label>

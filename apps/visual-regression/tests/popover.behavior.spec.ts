@@ -14,6 +14,45 @@ const trigger = '[rdxPopoverTrigger]';
 const positioner = '[rdxPopoverPositioner]';
 const popup = '[rdxPopoverPopup]';
 
+for (const keepMounted of [false, true]) {
+    test(`lifecycle: canceled close, deferred completion and reopen with keepMounted=${keepMounted}`, async ({
+        page
+    }) => {
+        const errors: string[] = [];
+        page.on('pageerror', (error) => errors.push(error.message));
+        page.on('console', (message) => {
+            if (message.type() === 'error') errors.push(message.text());
+        });
+        await gotoStory(page, 'primitives-popover--lifecycle');
+        await page.getByRole('checkbox', { name: 'Defer unmount' }).check();
+        await page.getByRole('checkbox', { name: 'Cancel next close' }).check();
+        if (keepMounted) await page.getByRole('checkbox', { name: 'Keep mounted' }).check();
+        const opener = page.getByRole('button', { name: 'Edit note', exact: true });
+        await opener.press('Enter');
+        const field = page.getByRole('textbox', { name: 'Note', exact: true });
+        await expect(field).toBeFocused();
+        await field.fill('saved draft');
+        await page.keyboard.press('Escape');
+        await expect(opener).toHaveAttribute('aria-expanded', 'true');
+        await expect(page.getByRole('checkbox', { name: 'Cancel next close' })).not.toBeChecked();
+        await page.keyboard.press('Escape');
+        await expect(opener).toHaveAttribute('aria-expanded', 'false');
+        await expect(page.locator(popup)).toHaveCount(1);
+        await expect(page.locator(popup)).toHaveAttribute('data-ending-style', '');
+        await expect(page.locator(positioner)).toHaveCSS('pointer-events', 'none');
+        await expect(page.locator('output')).toHaveText('Completed: open');
+        await page.getByRole('button', { name: 'Finish exit', exact: true }).click();
+        await expect(page.locator(popup)).toHaveCount(keepMounted ? 1 : 0);
+        if (keepMounted) await expect(page.locator(popup)).toBeHidden();
+        await expect(page.locator('output')).toHaveText('Completed: open, closed');
+        await opener.press('Enter');
+        await expect(field).toBeFocused();
+        await expect(field).toHaveValue(keepMounted ? 'saved draft' : 'draft');
+        await expect(page.locator('output')).toHaveText('Completed: open, closed, open');
+        expect(errors).toEqual([]);
+    });
+}
+
 test.describe('Popover structural portal', () => {
     test('teleports the positioner directly into <body> with no wrapper element', async ({ page }) => {
         await gotoStory(page, 'primitives-popover--default');
@@ -29,9 +68,15 @@ test.describe('Popover structural portal', () => {
 
     test('keeps content mounted through the exit animation, then unmounts it', async ({ page }) => {
         await gotoStory(page, 'primitives-popover--animated');
+        await page.addStyleTag({
+            content: '[rdxPopoverPopup][data-ending-style] { animation-duration: 1200ms !important; }'
+        });
 
         await page.locator(trigger).first().click();
         await expect(page.locator(positioner)).toBeVisible();
+        await page.locator(popup).evaluate(async (el) => {
+            await Promise.all(el.getAnimations().map((animation) => animation.finished));
+        });
 
         // Close via the popup's close button.
         await page.locator('[rdxPopoverClose]').click();
@@ -39,6 +84,7 @@ test.describe('Popover structural portal', () => {
         // While the closed-state exit keyframes run on the positioner, the presence machine keeps the
         // content mounted (it would be gone instantly if the structural portal unmounted eagerly).
         await expect(page.locator(positioner)).toHaveAttribute('data-closed', '');
+        await expect.poll(() => page.locator(popup).evaluate((el) => el.getAnimations().length)).toBeGreaterThan(0);
 
         // Once the exit animation finishes, the view is destroyed and leaves no orphan in <body>.
         await expect(page.locator(positioner)).toHaveCount(0);

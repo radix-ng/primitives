@@ -529,7 +529,10 @@ export class RdxFloatingFocusManager {
                     return;
                 }
 
-                const target = resolved ?? this.defaultInitialFocus(interactionType);
+                // A retained scope may stay active through an interrupted exit, so it will not
+                // emit mountAutoFocus again. Reuse its native first-tabbable default on reopen.
+                enableFocusInside(popup);
+                const target = resolved ?? this.defaultInitialFocus(interactionType) ?? getTabbableCandidates(popup)[0];
                 if (target && activeElement !== target) {
                     target.focus({ preventScroll: true });
                 }

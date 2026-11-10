@@ -35,7 +35,11 @@ export class PopoverDriver {
     }
     async closed() {
         await expect(this.trigger).toHaveAttribute('aria-expanded', 'false');
-        await expect(this.popup).toHaveCount(0);
+        const retained = await this.page.evaluate(() => window.popoverParity.config.lifecycle?.keepMounted ?? false);
+        if (retained) {
+            await expect(this.popup).toHaveCount(1);
+            await expect(this.popup).toBeHidden();
+        } else await expect(this.popup).toHaveCount(0);
         await expect.poll(() => this.page.evaluate(() => window.popoverParity.completions.at(-1))).toBe(false);
     }
     async outside() {
@@ -72,14 +76,27 @@ export class PopoverDriver {
                         ?.split(/\s+/)
                         .every((id) => document.getElementById(id)?.textContent?.trim());
                 const style = popup && getComputedStyle(popup);
+                const positioner = document.querySelector<HTMLElement>('[data-testid="positioner"]');
                 return {
+                    ...(window.popoverParity.config.lifecycle
+                        ? {
+                              ending: popup?.hasAttribute('data-ending-style') ?? false,
+                              inert: positioner?.hasAttribute('inert') ?? false,
+                              pointerBlocked: !!positioner && getComputedStyle(positioner).pointerEvents === 'none'
+                          }
+                        : {}),
                     open: triggers.some((el) => el.getAttribute('aria-expanded') === 'true'),
                     expanded: triggers
                         .filter((el) => el.getAttribute('aria-expanded') === 'true')
                         .map((el) => el.dataset.testid),
                     disabled: triggers[0].hasAttribute('disabled'),
                     mounted: !!popup,
-                    visible: !!popup && !popup.hidden && style?.display !== 'none' && style?.visibility !== 'hidden',
+                    visible:
+                        !!popup &&
+                        popup.getClientRects().length > 0 &&
+                        !popup.hidden &&
+                        style?.display !== 'none' &&
+                        style?.visibility !== 'hidden',
                     role: popup?.getAttribute('role') ?? null,
                     labelled: linked('aria-labelledby'),
                     described: linked('aria-describedby'),

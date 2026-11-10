@@ -23,8 +23,9 @@ import {
     provideFloatingTree,
     RdxCancelableChangeEventDetails,
     RdxFloatingRootContext,
+    RdxPopupLifecycle,
     RdxTransitionStatus,
-    useTransitionStatus
+    usePopupLifecycle
 } from '@radix-ng/primitives/core';
 import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopper } from '@radix-ng/primitives/popper';
@@ -111,6 +112,8 @@ export interface RdxPopoverRootContext {
     registerPopupClose: () => () => void;
     registerTransitionElement: (element: HTMLElement) => () => void;
     transitionStatus: Signal<RdxPopoverTransitionStatus>;
+    registerPresence: RdxPopupLifecycle['registerPresence'];
+    skipExitAnimation: Signal<boolean>;
     beforeContentFocusGuard: Signal<HTMLElement | null>;
     registerViewport: (onTriggerChange: (previous: HTMLElement, next: HTMLElement) => void) => () => void;
     setBeforeContentFocusGuard: (element: HTMLElement | null) => void;
@@ -155,16 +158,10 @@ export class RdxPopoverRoot {
     private hoverDelay = 300;
     private hoverCloseDelay = 0;
     private instantFrame: number | undefined;
-    private readonly transition = useTransitionStatus((open) => {
-        this.instant.set(false);
-        this.instantType.set(undefined);
-        this.onOpenChangeComplete.emit(open);
-    });
     readonly isHoverActive = signal(false);
     readonly instant = signal(false);
     readonly instantType = signal<RdxPopoverInstantType | undefined>(undefined);
     readonly openChangeReason = signal<RdxPopoverOpenChangeReason>('none');
-    readonly transitionStatus = this.transition.status;
 
     /**
      * Whether the popover is currently open.
@@ -210,32 +207,30 @@ export class RdxPopoverRoot {
     readonly openInteractionType = signal<RdxInteractionType>(null);
     readonly closeInteractionType = signal<RdxInteractionType>(null);
     readonly popupCloseCount = signal(0);
-    private readonly preventUnmountOnClose = signal(false);
     private readonly pendingTriggerOpenInteractionType = signal<RdxInteractionType>(null);
     readonly onOpenChange = output<RdxPopoverOpenChange>();
     readonly onOpenChangeComplete = output<boolean>();
+    private readonly lifecycle = usePopupLifecycle(
+        this.open,
+        (open) => {
+            this.instant.set(false);
+            this.instantType.set(undefined);
+            this.onOpenChangeComplete.emit(open);
+        },
+        'RdxPopoverRoot'
+    );
+    readonly transitionStatus = this.lifecycle.status;
+    readonly registerPresence = this.lifecycle.registerPresence;
+    readonly skipExitAnimation = this.lifecycle.skipExitAnimation;
     private readonly registeredTriggers = new Map<string, RdxPopoverRegisteredTrigger>();
     private readonly viewportTriggerChange = new Set<(previous: HTMLElement, next: HTMLElement) => void>();
 
     readonly state = computed(() => (this.open() ? 'open' : 'closed'), { debugName: 'RdxPopoverRoot.state' });
-    readonly present = computed(() => this.open() || this.preventUnmountOnClose(), {
-        debugName: 'RdxPopoverRoot.present'
-    });
+    readonly present = this.lifecycle.present;
 
     constructor() {
-        let previousOpen = this.open();
-
         // Keep the floating context's reference element in sync with the active trigger.
         effect(() => this.floatingContext.setReferenceElement(this.trigger() ?? null));
-
-        effect(
-            () => {
-                if (this.open() && this.preventUnmountOnClose()) {
-                    this.preventUnmountOnClose.set(false);
-                }
-            },
-            { debugName: 'RdxPopoverRoot.clearPreventUnmountOnOpen' }
-        );
 
         // `defaultOpen` / `defaultTriggerId` seed the controllable model exactly once. Unlike the
         // house `if (defaultValue() !== undefined) value.set(...)` guard, these must NOT re-assert the
@@ -273,18 +268,6 @@ export class RdxPopoverRoot {
                 untracked(() => this.syncTriggerId(triggerId));
             },
             { debugName: 'RdxPopoverRoot.syncTriggerId' }
-        );
-
-        effect(
-            () => {
-                const open = this.open();
-
-                if (open !== previousOpen) {
-                    previousOpen = open;
-                    untracked(() => this.transition.start(open));
-                }
-            },
-            { debugName: 'RdxPopoverRoot.startTransition' }
         );
 
         effect(
@@ -368,12 +351,12 @@ export class RdxPopoverRoot {
         }
 
         this.payload.set(payload);
-        this.preventUnmountOnClose.set(false);
         this.open.set(true);
+        change.commit();
         this.floatingContext.events.emit('openchange', { open: true, reason, event: change.eventDetails.event });
     }
 
-    close(reason: RdxPopoverOpenChangeReason = 'none', event?: Event) {
+    close(reason: RdxPopoverOpenChangeReason = 'imperative-action', event?: Event) {
         this.clearHoverTimers();
 
         if (!this.open()) {
@@ -398,8 +381,8 @@ export class RdxPopoverRoot {
         // (escape, outside press, focus-out, close button, imperative) reads as a `'dismiss'`.
         this.instantType.set(!closeInstant ? undefined : reason === 'trigger-press' ? 'click' : 'dismiss');
         this.openChangeReason.set(reason);
-        this.preventUnmountOnClose.set(change.shouldPreventUnmountOnClose());
         this.open.set(false);
+        change.commit();
         this.floatingContext.events.emit('openchange', { open: false, reason, event: change.eventDetails.event });
     }
 
@@ -512,7 +495,12 @@ export class RdxPopoverRoot {
     }
 
     registerTransitionElement(element: HTMLElement) {
-        return this.transition.registerElement(element);
+        return this.lifecycle.registerElement(element);
+    }
+
+    /** Finish a pending close after an external animation; ignored while open or already complete. */
+    unmount(): void {
+        this.lifecycle.unmount();
     }
 
     private syncTriggerId(triggerId: string | null) {
@@ -552,10 +540,12 @@ export class RdxPopoverRoot {
         triggerId: string | null
     ) {
         const change = createCancelableChangeEventDetails(reason, event, trigger);
+        const transaction = this.lifecycle.prepareOpenChange(open);
+        change.eventDetails.preventUnmountOnClose = transaction.preventUnmountOnClose;
 
         return {
             eventDetails: change.eventDetails,
-            shouldPreventUnmountOnClose: change.shouldPreventUnmountOnClose,
+            commit: transaction.commit,
             payload: {
                 open,
                 triggerId,
@@ -647,6 +637,8 @@ function contextFor(root: RdxPopoverRoot): RdxPopoverRootContext {
         },
         registerTransitionElement: (element) => root.registerTransitionElement(element),
         transitionStatus: root.transitionStatus,
+        registerPresence: root.registerPresence,
+        skipExitAnimation: root.skipExitAnimation,
         beforeContentFocusGuard: root.beforeContentFocusGuard.asReadonly(),
         registerViewport: (onTriggerChange) => root.registerViewport(onTriggerChange),
         setBeforeContentFocusGuard: (element) => root.setBeforeContentFocusGuard(element),

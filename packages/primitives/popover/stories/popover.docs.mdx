@@ -127,6 +127,28 @@ Bind both `[(open)]` and `[(triggerId)]` when application state should choose th
 
 <Canvas of={Stories.ControlledMultiple} />
 
+### Close lifecycle and retained content
+
+Use the exported Root directly: `#root="rdxPopoverRoot"`, `root.close()` and `root.unmount()`.
+Calling `close()` requests a cancelable close with reason `imperative-action`.
+In `onOpenChange`, call `eventDetails.preventUnmountOnClose()` for an external exit animation,
+then call `root.unmount()` when that animation finishes. The close completion fires once after
+the pending exit finishes. A canceled request cannot hold a later close; reopening invalidates
+the previous pending close. Calling `unmount()` while open or after completion does nothing.
+
+Bind `[keepMounted]="true"` on an explicit `<ng-template rdxPopoverPortal>` to preserve the
+Angular view and native input values. The Positioner and Backdrop hide after close completion;
+the inactive focus scope and anchor tracking also stop. During an exit the popup remains rendered
+with `data-ending-style`, while pointer events are disabled. Keyboard focus follows the browser
+until completion or an intentional focus move. Reopening before the exit ends restores initial focus.
+
+**Migration:** `root.close()` now reports `imperative-action` instead of `none`.
+`onOpenChangeComplete(false)` waits for the portal's actual exit or explicit `unmount()`, including
+a deferred close; consumers must not use an early close-completion event to finish that same hold.
+Begin external animation in `onOpenChange`, then finish it through `unmount()`.
+
+<Canvas of={Stories.Lifecycle} />
+
 ### Positioning
 
 Configure `side`, `sideOffset`, `align`, and collision behavior on `rdxPopoverPositioner`. The

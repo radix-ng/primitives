@@ -1,4 +1,4 @@
-import { Directive, effect, ElementRef, inject, signal } from '@angular/core';
+import { computed, Directive, effect, ElementRef, inject, signal } from '@angular/core';
 import { useGraceArea } from '@radix-ng/primitives/core';
 import {
     legacyPopperVars,
@@ -26,6 +26,7 @@ import { injectRdxPopoverRootContext } from './popover-root';
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
         '[attr.data-instant]': 'rootContext.instantType()',
+        '[hidden]': '!rootContext.isOpen() && rootContext.transitionStatus() !== "ending"',
         // `data-side`/`data-align`/`data-anchor-hidden` and the unified `--anchor-*`/`--available-*`/
         // `--transform-origin` vars come from the inherited wrapper (ADR 0012); only the deprecated
         // `--radix-popover-*` aliases remain, for one release of back-compat.
@@ -34,6 +35,9 @@ import { injectRdxPopoverRootContext } from './popover-root';
 })
 export class RdxPopoverPositioner extends RdxPopperContentWrapper {
     protected readonly rootContext = injectRdxPopoverRootContext();
+    protected override positioningActive = computed(
+        () => this.rootContext.isOpen() || this.rootContext.transitionStatus() === 'ending'
+    );
     protected readonly legacyVars = legacyPopperVars('popover');
     private readonly containerRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly triggerEl = signal<HTMLElement | null>(null);
@@ -44,6 +48,7 @@ export class RdxPopoverPositioner extends RdxPopperContentWrapper {
         super();
 
         effect(() => this.triggerEl.set(this.rootContext.trigger() ?? null));
+        effect(() => this.nonInteractive.set(!this.rootContext.isOpen()));
 
         this.graceArea.onPointerExit(() => {
             this.rootContext.closeOnHover();

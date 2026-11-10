@@ -1,4 +1,6 @@
-export const cases = [
+import { lifecycleCases, lifecycleConfig } from './lifecycle';
+
+export const basicCases = [
     'keyboard',
     'pointer-close',
     'trigger-toggle',
@@ -15,6 +17,7 @@ export const cases = [
     'frozen',
     'clipping'
 ] as const;
+export const cases = [...basicCases, ...lifecycleCases] as const;
 export type CaseName = (typeof cases)[number];
 export interface Change {
     open: boolean;
@@ -42,7 +45,12 @@ export function config() {
     if (!cases.includes(name as CaseName)) throw new Error(`Unknown Popover case: ${name}`);
     return {
         name: name as CaseName,
-        modal: name === 'modal' ? (true as const) : name === 'trap-focus' ? ('trap-focus' as const) : (false as const),
+        modal: ['modal', 'lifecycle-modal-keep'].includes(name)
+            ? (true as const)
+            : name === 'trap-focus'
+              ? ('trap-focus' as const)
+              : (false as const),
+        lifecycle: lifecycleConfig(name),
         initialFocus: ['initial-focus', 'trap-focus', 'modal'].includes(name) ? true : undefined,
         disabled: name === 'disabled',
         frozen: name === 'frozen',

@@ -349,7 +349,7 @@ export const demoToast = {
 export const demoPopover = {
     positioner: 'z-50',
     popup: cn(demoCard, 'relative w-80 p-4'),
-    popupAnimated: 'data-[state=open]:animate-popover-popup-in data-[state=closed]:animate-popover-popup-out',
+    popupAnimated: 'data-[starting-style]:animate-popover-popup-in data-[ending-style]:animate-popover-popup-out',
     backdrop: 'fixed inset-0 bg-foreground/10',
     arrow: demoArrow('text-card'),
     title: 'text-sm font-semibold text-popover-foreground',

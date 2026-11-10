@@ -96,6 +96,7 @@ the positioner — use the explicit `<ng-template rdxPopoverPortal>` form (and t
 - [Default](../examples/popover--default.md)
 - [Controlled](../examples/popover--controlled.md)
 - [Controlled mode with multiple triggers](../examples/popover--controlled-mode-with-multiple-triggers.md)
+- [Close lifecycle and retained content](../examples/popover--close-lifecycle-and-retained-content.md)
 - [Positioning](../examples/popover--positioning.md)
 - [Animation](../examples/popover--animation.md)
 - [Modal behavior](../examples/popover--modal-behavior.md)

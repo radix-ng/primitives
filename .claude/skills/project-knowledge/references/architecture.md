@@ -38,11 +38,18 @@ Keep browser requirements separate from framework workarounds (ADR 0025/0026).
 
 **Popup close lifecycle (ADR 0026):** `core/floating/use-popup-lifecycle.ts` coordinates an accepted
 close transaction, an external-animation hold, transition completion and registered Presence views.
-Select is the first consumer: Root exposes `close()` / `unmount()`, and Portal forwards `keepMounted`.
+Select and Popover compose this helper: Root exposes `close()` / `unmount()`, and Portal forwards `keepMounted`.
 Presence optionally registers its live view and can bypass exit waiting after explicit completion.
 Reopening invalidates the prior close; canceled/open requests cannot retain the next close. Other
-popup families have not yet migrated to this helper. Keep these lifetime mechanics shared when
+popup families have not yet migrated to this helper (Popover adoption: ADR 0033). Keep these lifetime mechanics shared when
 extending parity instead of adding another per-primitive retained-mount flag.
+
+**Popover lifecycle (ADR 0033):** Root uses the shared popup lifecycle rather than its own hold flag.
+Portal forwards `keepMounted`; `root.unmount()` ends an external exit and `root.close()` defaults to
+`imperative-action`. Completion follows actual Portal exit or CSS completion for a retained view.
+Inactive retained Positioner/Backdrop hide; tracking and focus scopes stop. Pending exits suppress
+pointer events while preserving native focus. The manager's post-open fallback restores natural
+portal candidates on interrupted exits even when the existing scope never deactivated.
 
 **Retained focus scopes (ADR 0027):** the floating focus manager drives `RdxFocusScopeConfig.enabled`
 so a retained Angular view can deactivate its scope, return focus and resume its parent without DOM

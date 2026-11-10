@@ -51,11 +51,12 @@ import { injectRdxPopoverRootContext } from './popover-root';
                 restoreFocus: () => 'popup',
                 previousFocusableElement: () => rootContext.trigger() ?? null,
                 beforeContentFocusGuardRef: () => (element) => rootContext.setBeforeContentFocusGuard(element),
-                // Active for the whole MOUNTED lifetime (Base UI `disabled={!mounted}`, not `open`) for
-                // trap/return-focus — including an explicit `preventUnmountOnClose()` cycle after the
-                // exit transition. Marker + isolation are additionally gated on `open` inside the
-                // manager. Still suppressed while hover-opened.
-                enabled: () => rootContext.present() && !rootContext.isHoverActive(),
+                // Keep return-focus ownership throughout a pending exit, including an external hold.
+                // A retained view deactivates after completion. Trapping/isolation follow logical
+                // open inside the manager; hover opening still suppresses autofocus.
+                enabled: () =>
+                    (rootContext.isOpen() || rootContext.transitionStatus() === 'ending') &&
+                    !rootContext.isHoverActive(),
                 openInteractionType: () => rootContext.openInteractionType(),
                 closeInteractionType: () => rootContext.closeInteractionType()
             };

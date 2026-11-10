@@ -118,20 +118,26 @@ test.describe('Dialog outside-scroll (custom scroll area)', () => {
         // The custom scrollbar is hidden at rest and fades in while scrolling.
         await expect(page.locator(scrollbar)).toHaveCSS('opacity', '0');
         // ScrollArea deliberately distinguishes user scrolling from programmatic scrollTop changes.
-        await page.locator(popup).hover();
+        // Hovering the tall popup asks Playwright to scroll its center into view first, which can
+        // put the thumb at an edge before the wheel gesture even begins. Use the visible viewport.
+        await page.mouse.move(60, 300);
         await page.mouse.wheel(0, 350);
         await expect(page.locator(scrollbar)).toHaveAttribute('data-scrolling', '');
         await expect(page.locator(scrollbar)).not.toHaveCSS('opacity', '0');
         await expect(page.locator(scrollbar)).not.toHaveAttribute('inert', '');
 
         const thumb = page.locator('[rdxScrollAreaThumb]');
-        const box = (await thumb.boundingBox())!;
         const before = await page.locator(scrollArea).evaluate((el) => el.scrollTop);
+        const maximum = await page.locator(scrollArea).evaluate((el) => el.scrollHeight - el.clientHeight);
+        const direction = before > maximum / 2 ? -1 : 1;
+        const box = (await thumb.boundingBox())!;
         await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
         await page.mouse.down();
-        await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2 + 60, { steps: 4 });
+        await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2 + direction * 60, { steps: 4 });
         await page.mouse.up();
-        await expect.poll(() => page.locator(scrollArea).evaluate((el) => el.scrollTop)).toBeGreaterThan(before);
+        await expect
+            .poll(async () => ((await page.locator(scrollArea).evaluate((el) => el.scrollTop)) - before) * direction)
+            .toBeGreaterThan(0);
         await expect(page.locator(popup)).toBeVisible();
     });
 

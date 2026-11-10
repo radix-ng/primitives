@@ -103,6 +103,28 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
     afterEach(() => appended.splice(0).forEach((el) => el.remove()));
     beforeEach(() => TestBed.resetTestingModule());
 
+    it('reapplies default initial focus when reopening before a retained scope deactivates', async () => {
+        const open = signal(true);
+        const context = createFloatingRootContext({ ownerDocument: document, open: () => open() });
+        TestBed.overrideComponent(ManagerHost, {
+            add: { providers: [provideFloatingRootContext(() => context)] }
+        });
+        const trigger = document.createElement('button');
+        document.body.append(trigger);
+        appended.push(trigger);
+        const fixture = TestBed.createComponent(ManagerHost);
+        fixture.autoDetectChanges();
+        await flush();
+        expect(document.activeElement).toBe(fixture.componentInstance.a().nativeElement);
+        open.set(false);
+        await fixture.whenStable();
+        trigger.focus();
+        open.set(true);
+        await fixture.whenStable();
+        await flush();
+        expect(document.activeElement).toBe(fixture.componentInstance.a().nativeElement);
+    });
+
     it('waits for positioning before autofocus and does not reactivate on later layout updates', async () => {
         const ready = signal(false);
         TestBed.overrideComponent(ManagerHost, {

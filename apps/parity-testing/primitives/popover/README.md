@@ -4,7 +4,7 @@ Reference: Base UI 1.9.0, commit `cf696d6f6e08c699c5bda24d5a033430909f2285`,
 archive SHA-256 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 The reference is unmodified. Run `pnpm test-parity popover` on Node 24.
 
-Fifteen scenarios run in Chromium, Firefox and WebKit (45 comparisons): keyboard opening and
+Twenty-five scenarios run in Chromium, Firefox and WebKit (75 comparisons): keyboard opening and
 Escape/return focus; pointer close; trigger toggling; disabled trigger; canceled open/close;
 outside press; modal and trap-focus Tab wrapping; explicit initial focus; trigger switching;
 native text editing; live anchor translation/resize; frozen tracking; clipping and recovery.
@@ -27,5 +27,13 @@ the floating focus manager; it does not reactivate autofocus on later layout upd
 
 These four browser/platform-scoped exception pairs (three per tested platform) are exact: changed or disappeared differences fail.
 They are limitations, not full parity. See [the source matrix](../../../../packages/primitives/popover/PARITY.md).
-Hover delays/grace areas, detached handles/payloads, animation/deferred unmount, retained reopening,
-custom portals, RTL/Arrow and real device/assistive-technology coverage remain separate work.
+Hover delays/grace areas, detached handles/payloads, custom portals, RTL/Arrow and real device/assistive-technology coverage remain separate work.
+
+## Close lifecycle
+
+Ten lifecycle scenarios compare `keepMounted`, natural CSS exit completion, explicit/duplicate
+`unmount`, deferred and late holds, cancellation, stale callbacks, modal background recovery and
+reopening during both CSS and deferred exits. F8 invokes the real Root close action, F9 the real
+unmount action, and F10 the original callback retained from the first close request. Framework
+fixtures leave open state uncontrolled and observe native draft/focus; they do not fake CSS finish.
+The default autofocus fallback is shared with Select and other floating consumers.
