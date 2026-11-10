@@ -50,8 +50,7 @@ import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
                 enabled: () => rootContext.present() || rootContext.transitionStatus() === 'ending',
                 restoreFocus: () => true,
                 previousFocusableElement: () => rootContext.getReturnFocusElement() ?? null,
-                getInsideElements: () =>
-                    rootContext.parentType() === 'menubar' ? [rootContext.triggerInteractionScope()] : [],
+                getInsideElements: () => rootContext.getCoordinatorElements(),
                 beforeContentFocusGuardRef: () => (element) => rootContext.setBeforeContentFocusGuard(element),
                 // Base UI's submenu policy: a submenu mount does not steal focus from its trigger.
                 // Root menus still choose first / last item vs popup container from the menu's own
@@ -231,7 +230,8 @@ export class RdxMenuPopup {
             // A disabled menu does not dismiss (Base UI `useDismiss({ enabled: !disabled })`): if an open
             // menu becomes disabled it stays put rather than closing on Escape / outside-press / focus-out.
             enabled: () => !this.rootContext.disabled(),
-            escapeKey: () => true,
+            escapeKey: (event) =>
+                this.rootContext.parentType() !== 'menubar' || this.rootContext.ownsCoordinatorEscape(event),
             escapeKeyBubbles: () => this.rootContext.closeParentOnEsc(),
             outsidePress: () => true,
             focusOutside: () => false,
@@ -246,7 +246,12 @@ export class RdxMenuPopup {
                 this.rootContext.close(menuReason, event);
                 // Escape should restore focus synchronously to the trigger / submenu trigger so the
                 // menu chain remains keyboard-stable even before the scope's queued unmount return-focus.
-                if (reason === 'escape-key' && !this.rootContext.isOpen()) {
+                const target = event.target as Node | null;
+                if (
+                    reason === 'escape-key' &&
+                    !this.rootContext.isOpen() &&
+                    (this.elementRef.nativeElement.contains(target) || this.rootContext.trigger()?.contains(target))
+                ) {
                     this.rootContext.trigger()?.focus({ preventScroll: true });
                 }
             }

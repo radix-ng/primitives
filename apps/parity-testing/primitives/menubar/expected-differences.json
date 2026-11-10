@@ -544,5 +544,189 @@
             }
         ],
         "category": "single-menu-close-reopen"
+    },
+    {
+        "scenario": "cancel-switch-close-keyboard",
+        "checkpoint": "closed one overlapping menu",
+        "field": "bar",
+        "angular": {
+            "orientation": "horizontal",
+            "hasSubmenuOpen": true
+        },
+        "react": {
+            "orientation": "horizontal",
+            "hasSubmenuOpen": false
+        },
+        "category": "overlapping-menu-open-state"
+    },
+    {
+        "scenario": "cancel-switch-close-pointer",
+        "checkpoint": "closed one overlapping menu",
+        "field": "bar",
+        "angular": {
+            "orientation": "horizontal",
+            "hasSubmenuOpen": true
+        },
+        "react": {
+            "orientation": "horizontal",
+            "hasSubmenuOpen": false
+        },
+        "category": "overlapping-menu-open-state"
+    },
+    {
+        "scenario": "nested-switch",
+        "checkpoint": "switched away from nested branch",
+        "field": "completions",
+        "angular": {
+            "file": [true, false],
+            "blocked": [],
+            "edit": [true],
+            "new": [],
+            "file-sub": [true, false],
+            "blocked-sub": [],
+            "edit-sub": [],
+            "new-sub": []
+        },
+        "react": {
+            "file": [true, false],
+            "blocked": [],
+            "edit": [true],
+            "new": [],
+            "file-sub": [true],
+            "blocked-sub": [],
+            "edit-sub": [],
+            "new-sub": []
+        },
+        "category": "nested-exit-completion"
+    },
+    {
+        "scenario": "nested-switch",
+        "checkpoint": "closed composition",
+        "field": "completions",
+        "angular": {
+            "file": [true, false],
+            "blocked": [],
+            "edit": [true, false],
+            "new": [],
+            "file-sub": [true, false],
+            "blocked-sub": [],
+            "edit-sub": [],
+            "new-sub": []
+        },
+        "react": {
+            "file": [true, false],
+            "blocked": [],
+            "edit": [true, false],
+            "new": [],
+            "file-sub": [true],
+            "blocked-sub": [],
+            "edit-sub": [],
+            "new-sub": []
+        },
+        "category": "nested-exit-completion"
+    },
+    {
+        "scenario": "nested-forward",
+        "checkpoint": "switched away from nested branch",
+        "field": "completions",
+        "angular": {
+            "file": [true, false],
+            "blocked": [],
+            "edit": [true],
+            "new": [],
+            "file-sub": [true, false],
+            "blocked-sub": [],
+            "edit-sub": [],
+            "new-sub": []
+        },
+        "react": {
+            "file": [true, false],
+            "blocked": [],
+            "edit": [true],
+            "new": [],
+            "file-sub": [true],
+            "blocked-sub": [],
+            "edit-sub": [],
+            "new-sub": []
+        },
+        "category": "nested-exit-completion"
+    },
+    {
+        "scenario": "nested-forward",
+        "checkpoint": "closed composition",
+        "field": "completions",
+        "angular": {
+            "file": [true, false],
+            "blocked": [],
+            "edit": [true, false],
+            "new": [],
+            "file-sub": [true, false],
+            "blocked-sub": [],
+            "edit-sub": [],
+            "new-sub": []
+        },
+        "react": {
+            "file": [true, false],
+            "blocked": [],
+            "edit": [true, false],
+            "new": [],
+            "file-sub": [true],
+            "blocked-sub": [],
+            "edit-sub": [],
+            "new-sub": []
+        },
+        "category": "nested-exit-completion"
+    },
+    {
+        "scenario": "nested-composed",
+        "checkpoint": "switched away from nested branch",
+        "field": "completions",
+        "angular": {
+            "file": [true, false],
+            "blocked": [],
+            "edit": [true],
+            "new": [],
+            "file-sub": [true, false],
+            "blocked-sub": [],
+            "edit-sub": [],
+            "new-sub": []
+        },
+        "react": {
+            "file": [true, false],
+            "blocked": [],
+            "edit": [true],
+            "new": [],
+            "file-sub": [true],
+            "blocked-sub": [],
+            "edit-sub": [],
+            "new-sub": []
+        },
+        "category": "nested-exit-completion"
+    },
+    {
+        "scenario": "nested-composed",
+        "checkpoint": "closed composition",
+        "field": "completions",
+        "angular": {
+            "file": [true, false],
+            "blocked": [],
+            "edit": [true, false],
+            "new": [],
+            "file-sub": [true, false],
+            "blocked-sub": [],
+            "edit-sub": [],
+            "new-sub": []
+        },
+        "react": {
+            "file": [true, false],
+            "blocked": [],
+            "edit": [true, false],
+            "new": [],
+            "file-sub": [true],
+            "blocked-sub": [],
+            "edit-sub": [],
+            "new-sub": []
+        },
+        "category": "nested-exit-completion"
     }
 ]

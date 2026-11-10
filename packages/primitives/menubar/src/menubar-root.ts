@@ -19,7 +19,8 @@ import {
     RDX_MENU_AMBIENT_MODAL,
     RdxMenuOpenChangeReason,
     RdxMenuRoot,
-    RdxMenuTriggerInteraction
+    RdxMenuTriggerInteraction,
+    type RdxMenuAutoFocusInput
 } from '@radix-ng/primitives/menu';
 
 export type RdxMenubarOrientation = 'horizontal' | 'vertical';
@@ -113,6 +114,8 @@ export class RdxMenubarRoot {
     private readonly ids = new WeakMap<RdxMenuRoot, string>();
     private items: RdxMenubarItem[] = [];
     private readonly itemsVersion = signal(0);
+    // Capture Escape ownership before an earlier document listener closes/unmounts its menu.
+    private readonly escapeOwners = new WeakMap<KeyboardEvent, string | undefined>();
 
     /** Whether every menubar trigger is disabled. */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
@@ -127,9 +130,11 @@ export class RdxMenubarRoot {
     readonly orientation = input<RdxMenubarOrientation>('horizontal');
 
     readonly activeId = signal<string | null>(null);
-    readonly isAnyOpen = computed(() => this.activeId() !== null);
-    /** Whether a **nested submenu** is currently open (Base UI `data-has-submenu-open` — not top-level menus). */
-    readonly hasSubmenuOpen = computed(() => this.menuRoots().some((root) => root.isSubmenu() && root.open()));
+    readonly isAnyOpen = computed(
+        () => this.activeId() !== null || this.menuRoots().some((root) => !root.isSubmenu() && root.open())
+    );
+    /** Menus directly owned by the bar are its submenus. */
+    readonly hasSubmenuOpen = computed(() => this.menuRoots().some((root) => !root.isSubmenu() && root.open()));
 
     constructor() {
         inject(DestroyRef).onDestroy(
@@ -173,7 +178,7 @@ export class RdxMenubarRoot {
             roots.forEach((root) => {
                 const trigger = root.trigger();
 
-                if (!trigger || trigger.closest('[rdxMenuPopup]')) {
+                if (!trigger || root.isSubmenu()) {
                     return;
                 }
 
@@ -195,7 +200,7 @@ export class RdxMenubarRoot {
             this.menuRoots().forEach((root) => {
                 const trigger = root.trigger();
 
-                if (!trigger || trigger.closest('[rdxMenuPopup]')) {
+                if (!trigger || root.isSubmenu()) {
                     return;
                 }
 
@@ -265,12 +270,32 @@ export class RdxMenubarRoot {
                 return false;
             }
 
-            this.focusAdjacent(id, offset, true);
+            if (this.orientation() === 'vertical') return false;
+            this.focusAdjacent(id, root.dir() === 'rtl' ? (offset === 1 ? -1 : 1) : offset, true);
             return true;
         });
         const unregisterTriggerInteraction = root.registerTriggerInteractionHandler(
             (interaction) => this.handleTriggerInteraction(id, root, trigger, interaction),
-            this.elementRef.nativeElement
+            this.elementRef.nativeElement,
+            {
+                insideElements: () =>
+                    this.menuRoots()
+                        .filter((menu) => menu.open())
+                        .map((menu) => menu.popupElement()),
+                ownsEscape: (event) => {
+                    if (!this.escapeOwners.has(event)) {
+                        const target = (event.composedPath()[0] ?? event.target) as Node;
+                        const owner = this.menuRoots().find(
+                            (menu) =>
+                                menu.open() &&
+                                (menu.trigger()?.contains(target) || menu.popupElement()?.contains(target))
+                        );
+                        this.escapeOwners.set(event, owner?.ownerId());
+                    }
+                    const owner = this.escapeOwners.get(event);
+                    return owner === undefined || owner === root.ownerId();
+                }
+            }
         );
         const unregisterCompositeItem = this.compositeList.registerItem({
             element: trigger,
@@ -297,7 +322,7 @@ export class RdxMenubarRoot {
             id,
             el,
             root,
-            open: (reason = 'trigger-focus', event?: Event) => root.show('popup', reason, event),
+            open: (reason = 'trigger-focus', event?: Event) => this.openMenu(id, root, 'popup', reason, event),
             close: () => root.close('sibling-open'),
             disabled: () =>
                 this.disabled() ||
@@ -365,30 +390,44 @@ export class RdxMenubarRoot {
                     return true;
                 }
 
-                root.show('popup', 'trigger-hover', interaction.event);
-                if (!root.open()) return true;
-                this.activateItem(id);
+                this.openMenu(id, root, 'popup', 'trigger-hover', interaction.event);
                 trigger.focus({ preventScroll: true });
                 return true;
             }
             case 'arrowdown': {
+                if (this.orientation() === 'vertical') {
+                    this.handleTriggerArrow(interaction.event, id, 1, root.open());
+                    return true;
+                }
                 interaction.event.preventDefault();
-                root.show('first', 'list-navigation', interaction.event);
-                if (root.open()) this.activateItem(id);
+                this.openMenu(id, root, 'first', 'list-navigation', interaction.event);
                 return true;
             }
             case 'arrowup': {
+                if (this.orientation() === 'vertical') {
+                    this.handleTriggerArrow(interaction.event, id, -1, root.open());
+                    return true;
+                }
                 interaction.event.preventDefault();
-                root.show('last', 'list-navigation', interaction.event);
-                if (root.open()) this.activateItem(id);
+                this.openMenu(id, root, 'last', 'list-navigation', interaction.event);
                 return true;
             }
             case 'arrowleft': {
-                this.handleTriggerArrow(interaction.event, id, -1, root.open());
+                if (this.orientation() === 'vertical') {
+                    if (root.dir() === 'rtl') {
+                        interaction.event.preventDefault();
+                        this.openMenu(id, root, 'first', 'list-navigation', interaction.event);
+                    }
+                } else this.handleTriggerArrow(interaction.event, id, root.dir() === 'rtl' ? 1 : -1, root.open());
                 return true;
             }
             case 'arrowright': {
-                this.handleTriggerArrow(interaction.event, id, 1, root.open());
+                if (this.orientation() === 'vertical') {
+                    if (root.dir() !== 'rtl') {
+                        interaction.event.preventDefault();
+                        this.openMenu(id, root, 'first', 'list-navigation', interaction.event);
+                    }
+                } else this.handleTriggerArrow(interaction.event, id, root.dir() === 'rtl' ? -1 : 1, root.open());
                 return true;
             }
             case 'home': {
@@ -452,9 +491,9 @@ export class RdxMenubarRoot {
 
         this.highlightItem(item);
         item.el.focus({ preventScroll: true });
-        if (openOnMove) {
+        if (openOnMove && !this.hasOpenMenu()) {
             item.open();
-            this.activateItem(item.id);
+            if (!item.root) this.activateItem(item.id);
         }
     }
 
@@ -475,10 +514,24 @@ export class RdxMenubarRoot {
 
         if (this.hasOpenMenu() && this.activeId() !== focusedItem.id) {
             focusedItem.open('trigger-focus', event);
-            this.activateItem(focusedItem.id);
+            if (!focusedItem.root) this.activateItem(focusedItem.id);
         } else if (focusedItem.root?.open() && focusedItem.root.lastOpenChangeReason() === 'trigger-hover') {
             focusedItem.open('trigger-focus', event);
         }
+    }
+
+    private openMenu(
+        id: string,
+        root: RdxMenuRoot,
+        autoFocus: RdxMenuAutoFocusInput,
+        reason: RdxMenuOpenChangeReason,
+        event?: Event
+    ): void {
+        const wasOpen = root.open();
+        root.show(autoFocus, reason, event);
+        if (!root.open()) return;
+        if (wasOpen) this.activeId.set(id);
+        else this.activateItem(id);
     }
 
     private highlightItem(item: RdxMenubarItem): void {

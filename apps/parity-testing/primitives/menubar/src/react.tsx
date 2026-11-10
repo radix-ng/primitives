@@ -7,15 +7,19 @@ import '../../../../radix-storybook/.storybook/tailwind.css';
 import { changeCollection, type MenuEntry } from '../../../shared/menu-collection';
 import { menuClasses as s } from '../../../shared/menu-fixture';
 import { MenuItems } from '../../../shared/menu-items';
-import { config, installProbe, menubarEntries, type Layer } from './contract';
+import { cancelChange } from './composition';
+import { config, initialMenus, installProbe, submenuId, type TopLayer } from './contract';
 const settings = config(),
     trace = installProbe('react');
 function ReactMenubar() {
-    const [menus, setMenus] = useState<MenuEntry<Layer>[]>(
-        menubarEntries.slice(0, settings.name === 'single-menu-switch' ? 1 : undefined)
-    );
+    const [menus, setMenus] = useState<MenuEntry<TopLayer>[]>(initialMenus(settings.name));
+    const [allowSwitch, setAllowSwitch] = useState(false);
     useEffect(() => {
         const command = (event: KeyboardEvent) => {
+            if (event.key === 'F5') {
+                event.preventDefault();
+                setAllowSwitch(true);
+            }
             if (event.key === 'F3' && settings.name.startsWith('collection-')) {
                 event.preventDefault();
                 setMenus((items) =>
@@ -35,7 +39,12 @@ function ReactMenubar() {
         <DirectionProvider direction={settings.dir}>
             <div className={s.layout + ' w-96!'}>
                 <input data-testid="before" aria-label="Before menubar" className={s.outside} />
-                <Menubar aria-label="Application" className="flex gap-2" disabled={settings.disabled}>
+                <Menubar
+                    aria-label="Application"
+                    orientation={settings.orientation}
+                    className={settings.orientation === 'vertical' ? 'flex flex-col gap-2' : 'flex gap-2'}
+                    disabled={settings.disabled}
+                >
                     {menus.map((entry) => {
                         const menu = entry.id;
                         return (
@@ -43,10 +52,7 @@ function ReactMenubar() {
                                 key={menu}
                                 disabled={entry.disabled}
                                 onOpenChange={(open, details) => {
-                                    if (
-                                        (open && settings.name === 'cancel-open') ||
-                                        (!open && settings.name === 'cancel-close')
-                                    )
+                                    if (cancelChange(settings.name, menu, open, details.reason, allowSwitch))
                                         details.cancel();
                                     trace.change(
                                         menu,
@@ -75,7 +81,61 @@ function ReactMenubar() {
                                             data-testid={`${menu}-popup`}
                                             data-menu-popup={menu}
                                         >
-                                            <MenuItems menu={menu} select={trace.select} />
+                                            <MenuItems menu={menu} select={trace.select}>
+                                                {settings.nested && (
+                                                    <Menu.SubmenuRoot
+                                                        onOpenChange={(open, details) =>
+                                                            trace.change(
+                                                                submenuId(menu),
+                                                                open,
+                                                                details.reason,
+                                                                details.isCanceled,
+                                                                details.event,
+                                                                details.trigger
+                                                            )
+                                                        }
+                                                        onOpenChangeComplete={(open) =>
+                                                            trace.complete(submenuId(menu), open)
+                                                        }
+                                                    >
+                                                        <Menu.SubmenuTrigger
+                                                            render={<button />}
+                                                            nativeButton
+                                                            className={s.item}
+                                                            data-testid={`${menu}-more`}
+                                                        >
+                                                            More
+                                                        </Menu.SubmenuTrigger>
+                                                        <Menu.Portal>
+                                                            <Menu.Positioner
+                                                                className="z-50"
+                                                                side={settings.dir === 'rtl' ? 'left' : 'right'}
+                                                                align="start"
+                                                                sideOffset={4}
+                                                            >
+                                                                <Menu.Popup
+                                                                    className={s.popup}
+                                                                    id={`${menu}-sub-popup`}
+                                                                    data-testid={`${menu}-sub-popup`}
+                                                                    data-menu-popup={`${menu}-sub`}
+                                                                >
+                                                                    <Menu.Item
+                                                                        render={<button />}
+                                                                        nativeButton
+                                                                        className={s.item}
+                                                                        data-testid={`${menu}-sub-alpha`}
+                                                                        onClick={() =>
+                                                                            trace.select(`${menu}-sub-alpha`)
+                                                                        }
+                                                                    >
+                                                                        Nested command
+                                                                    </Menu.Item>
+                                                                </Menu.Popup>
+                                                            </Menu.Positioner>
+                                                        </Menu.Portal>
+                                                    </Menu.SubmenuRoot>
+                                                )}
+                                            </MenuItems>
                                         </Menu.Popup>
                                     </Menu.Positioner>
                                 </Menu.Portal>

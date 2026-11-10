@@ -31,3 +31,12 @@ export const Default: Story = {
         `
     })
 };
+
+export const Vertical: Story = {
+    parameters: source(defaultSource + '\n// Usage: <rdx-menubar-default orientation="vertical" />'),
+    render: () => ({
+        template: html`
+            <rdx-menubar-default orientation="vertical" />
+        `
+    })
+};

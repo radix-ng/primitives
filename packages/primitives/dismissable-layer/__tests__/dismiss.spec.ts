@@ -72,6 +72,34 @@ describe('RdxDismiss', () => {
         expect(onDismiss).toHaveBeenCalledWith('escape-key', expect.any(KeyboardEvent));
     });
 
+    it('routes Escape by its original target even when an earlier listener moves focus', () => {
+        const first = el('button');
+        const second = el('button');
+        const closeFirst = vi.fn(() => second.focus());
+        const closeSecond = vi.fn();
+        build(
+            context(() => true, first),
+            () => null,
+            closeFirst,
+            {
+                escapeKey: (event) => event.target === first
+            }
+        );
+        build(
+            context(() => true, second),
+            () => null,
+            closeSecond,
+            {
+                escapeKey: (event) => event.target === second
+            }
+        );
+        first.focus();
+        first.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        expect(closeFirst).toHaveBeenCalledOnce();
+        expect(document.activeElement).toBe(second);
+        expect(closeSecond).not.toHaveBeenCalled();
+    });
+
     it('does not dismiss on Escape when the popup is closed (inactive)', () => {
         const open = signal(false);
         const onDismiss = vi.fn();

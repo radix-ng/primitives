@@ -13622,10 +13622,10 @@ menu is a `rdxMenuRoot` with a standard `rdxMenuTrigger`; the menubar manages wh
 up Base UI-style Composite focus, arrow-key navigation, and hover-to-switch behavior between them.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
 import { LucideCheck, LucideDot } from '@lucide/angular';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { RdxMenubarRoot } from '@radix-ng/primitives/menubar';
+import { RdxMenubarRoot, type RdxMenubarOrientation } from '@radix-ng/primitives/menubar';
 import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
 
 @Component({
@@ -13633,12 +13633,22 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
     imports: [RdxMenuModule, RdxMenubarRoot, LucideCheck, LucideDot],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-        <div [class]="mb.root" rdxMenubarRoot>
+        <div
+            [class]="cn(mb.root, orientation() === 'vertical' && 'w-48 flex-col items-stretch')"
+            [orientation]="orientation()"
+            rdxMenubarRoot
+        >
             <!-- File -->
             <ng-container #fileMenu="rdxMenuRoot" rdxMenuRoot>
                 <button [class]="mb.trigger" rdxMenuTrigger>File</button>
 
-                <div [class]="cn(m.positioner, 'data-[closed]:hidden')" align="start" sideOffset="4" rdxMenuPositioner>
+                <div
+                    [class]="cn(m.positioner, 'data-[closed]:hidden')"
+                    [side]="orientation() === 'vertical' ? 'right' : 'bottom'"
+                    align="start"
+                    sideOffset="4"
+                    rdxMenuPositioner
+                >
                     <div [class]="m.popup" rdxMenuPopup>
                         <button [class]="m.item" rdxMenuItem>
                             New Tab
@@ -13681,7 +13691,13 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
             <ng-container #editMenu="rdxMenuRoot" rdxMenuRoot>
                 <button [class]="mb.trigger" rdxMenuTrigger>Edit</button>
 
-                <div [class]="cn(m.positioner, 'data-[closed]:hidden')" align="start" sideOffset="4" rdxMenuPositioner>
+                <div
+                    [class]="cn(m.positioner, 'data-[closed]:hidden')"
+                    [side]="orientation() === 'vertical' ? 'right' : 'bottom'"
+                    align="start"
+                    sideOffset="4"
+                    rdxMenuPositioner
+                >
                     <div [class]="m.popup" rdxMenuPopup>
                         <button [class]="m.item" rdxMenuItem>
                             Undo
@@ -13712,7 +13728,13 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
             <ng-container #viewMenu="rdxMenuRoot" rdxMenuRoot>
                 <button [class]="mb.trigger" rdxMenuTrigger>View</button>
 
-                <div [class]="cn(m.positioner, 'data-[closed]:hidden')" align="start" sideOffset="4" rdxMenuPositioner>
+                <div
+                    [class]="cn(m.positioner, 'data-[closed]:hidden')"
+                    [side]="orientation() === 'vertical' ? 'right' : 'bottom'"
+                    align="start"
+                    sideOffset="4"
+                    rdxMenuPositioner
+                >
                     <div [class]="m.popup" rdxMenuPopup>
                         <label [(checked)]="showBookmarks" [class]="m.selectableItem" rdxMenuCheckboxItem>
                             <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>
@@ -13745,7 +13767,13 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
             <ng-container #profilesMenu="rdxMenuRoot" rdxMenuRoot>
                 <button [class]="mb.trigger" rdxMenuTrigger>Profiles</button>
 
-                <div [class]="cn(m.positioner, 'data-[closed]:hidden')" align="start" sideOffset="4" rdxMenuPositioner>
+                <div
+                    [class]="cn(m.positioner, 'data-[closed]:hidden')"
+                    [side]="orientation() === 'vertical' ? 'right' : 'bottom'"
+                    align="start"
+                    sideOffset="4"
+                    rdxMenuPositioner
+                >
                     <div [class]="m.popup" rdxMenuPopup>
                         <div [(value)]="activeProfile" rdxMenuRadioGroup>
                             <label [class]="m.selectableItem" value="andy" rdxMenuRadioItem>
@@ -13771,6 +13799,7 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
     `
 })
 export class RdxMenubarDefaultComponent {
+    readonly orientation = input<RdxMenubarOrientation>('horizontal');
     protected readonly cn = cn;
     protected readonly mb = demoMenubar;
     protected readonly m = demoMenu;
@@ -13859,10 +13888,10 @@ A four-menu bar (File, Edit, View, Profiles) with a submenu, checkbox items, and
 Click a trigger to open it, then hover the other triggers to switch, or use the arrow keys.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
 import { LucideCheck, LucideDot } from '@lucide/angular';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { RdxMenubarRoot } from '@radix-ng/primitives/menubar';
+import { RdxMenubarRoot, type RdxMenubarOrientation } from '@radix-ng/primitives/menubar';
 import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
 
 @Component({
@@ -13870,12 +13899,22 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
     imports: [RdxMenuModule, RdxMenubarRoot, LucideCheck, LucideDot],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-        <div [class]="mb.root" rdxMenubarRoot>
+        <div
+            [class]="cn(mb.root, orientation() === 'vertical' && 'w-48 flex-col items-stretch')"
+            [orientation]="orientation()"
+            rdxMenubarRoot
+        >
             <!-- File -->
             <ng-container #fileMenu="rdxMenuRoot" rdxMenuRoot>
                 <button [class]="mb.trigger" rdxMenuTrigger>File</button>
 
-                <div [class]="cn(m.positioner, 'data-[closed]:hidden')" align="start" sideOffset="4" rdxMenuPositioner>
+                <div
+                    [class]="cn(m.positioner, 'data-[closed]:hidden')"
+                    [side]="orientation() === 'vertical' ? 'right' : 'bottom'"
+                    align="start"
+                    sideOffset="4"
+                    rdxMenuPositioner
+                >
                     <div [class]="m.popup" rdxMenuPopup>
                         <button [class]="m.item" rdxMenuItem>
                             New Tab
@@ -13918,7 +13957,13 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
             <ng-container #editMenu="rdxMenuRoot" rdxMenuRoot>
                 <button [class]="mb.trigger" rdxMenuTrigger>Edit</button>
 
-                <div [class]="cn(m.positioner, 'data-[closed]:hidden')" align="start" sideOffset="4" rdxMenuPositioner>
+                <div
+                    [class]="cn(m.positioner, 'data-[closed]:hidden')"
+                    [side]="orientation() === 'vertical' ? 'right' : 'bottom'"
+                    align="start"
+                    sideOffset="4"
+                    rdxMenuPositioner
+                >
                     <div [class]="m.popup" rdxMenuPopup>
                         <button [class]="m.item" rdxMenuItem>
                             Undo
@@ -13949,7 +13994,13 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
             <ng-container #viewMenu="rdxMenuRoot" rdxMenuRoot>
                 <button [class]="mb.trigger" rdxMenuTrigger>View</button>
 
-                <div [class]="cn(m.positioner, 'data-[closed]:hidden')" align="start" sideOffset="4" rdxMenuPositioner>
+                <div
+                    [class]="cn(m.positioner, 'data-[closed]:hidden')"
+                    [side]="orientation() === 'vertical' ? 'right' : 'bottom'"
+                    align="start"
+                    sideOffset="4"
+                    rdxMenuPositioner
+                >
                     <div [class]="m.popup" rdxMenuPopup>
                         <label [(checked)]="showBookmarks" [class]="m.selectableItem" rdxMenuCheckboxItem>
                             <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>
@@ -13982,7 +14033,13 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
             <ng-container #profilesMenu="rdxMenuRoot" rdxMenuRoot>
                 <button [class]="mb.trigger" rdxMenuTrigger>Profiles</button>
 
-                <div [class]="cn(m.positioner, 'data-[closed]:hidden')" align="start" sideOffset="4" rdxMenuPositioner>
+                <div
+                    [class]="cn(m.positioner, 'data-[closed]:hidden')"
+                    [side]="orientation() === 'vertical' ? 'right' : 'bottom'"
+                    align="start"
+                    sideOffset="4"
+                    rdxMenuPositioner
+                >
                     <div [class]="m.popup" rdxMenuPopup>
                         <div [(value)]="activeProfile" rdxMenuRadioGroup>
                             <label [class]="m.selectableItem" value="andy" rdxMenuRadioItem>
@@ -14008,6 +14065,7 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
     `
 })
 export class RdxMenubarDefaultComponent {
+    readonly orientation = input<RdxMenubarOrientation>('horizontal');
     protected readonly cn = cn;
     protected readonly mb = demoMenubar;
     protected readonly m = demoMenu;
@@ -14016,6 +14074,15 @@ export class RdxMenubarDefaultComponent {
     showFullUrls = signal(false);
     activeProfile = signal<string | undefined>('andy');
 }
+```
+
+### Vertical
+
+Up/Down move between the closed triggers. The cross-axis arrow opens a menu: Right in LTR, Left in RTL.
+Inside the popup, Up/Down navigate its items; Escape returns to the trigger.
+
+```html
+<rdx-menubar-default orientation="vertical" />
 ```
 
 ## Accessibility
@@ -14034,12 +14101,21 @@ export class RdxMenubarDefaultComponent {
 | `Enter` / `Space` | Activates the focused item (handled by the Menu primitive).         |
 
 Triggers move through the shared Composite focus model: only one trigger is in the tab order at a time.
+The table describes a horizontal bar. With `orientation="vertical"`, Up/Down move between closed
+triggers and Right (LTR) / Left (RTL) opens the focused menu. Popup item navigation remains vertical.
+Horizontal trigger navigation follows text direction. Home/End always follow DOM order.
 With menus closed, arrow keys move focus between triggers; with a menu open, sibling switching focuses
 the new popup. Disabled triggers are skipped.
 
 If the current menu becomes disabled while its popup owns focus, horizontal arrows can still switch
 to an enabled sibling. Disabling a focused closed trigger keeps an enabled trigger in the Tab order.
 When only one enabled menu remains, horizontal arrows preserve its popup and focus without reopening it.
+
+Canceling the destination's opening keeps the current popup open. Canceling `sibling-open` keeps
+that source menu open even though the destination has already opened, so two popups can remain.
+Focus can move within the coordinator without bypassing cancellation through a focus-out close.
+Escape closes the menu that owns the original key event; focus already on another trigger is preserved.
+From a leaf in a nested submenu, the forward arrow switches to the next top-level menu.
 
 ## API Reference
 
@@ -14073,7 +14149,7 @@ native events. Whole-bar `disabled` is inherited by the child menus.
 | `[data-disabled]`   | The trigger is disabled.      |
 
 The menubar root exposes `data-orientation`, `data-modal` (when modal), and `data-has-submenu-open`
-(present only while a nested submenu is open).
+(present while any directly owned menu is open, including after a nested submenu closes).
 
 ### Menu parts
 

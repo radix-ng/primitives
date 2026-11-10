@@ -1,5 +1,15 @@
 import { RdxCompositeList, RdxCompositeMetadata, isElementVisible } from '@radix-ng/primitives/composite';
 
+/** A still-open menu keeps its logical highlight while focus visits its coordinator. */
+export function shouldClearMenuHighlight(
+    event: FocusEvent | undefined,
+    inside: Array<HTMLElement | undefined>
+): boolean {
+    const target = event?.relatedTarget;
+    if (target === null) return false;
+    return !target || !('nodeType' in target) || !inside.some((element) => element?.contains(target as Node));
+}
+
 export type RdxMenuCompositeItemType =
     | 'regular-item'
     | 'checkbox-item'
@@ -27,12 +37,15 @@ export const RDX_MENU_ITEM_SELECTOR = [
     '[rdxMenuCheckboxItem]',
     '[rdxMenuRadioItem]',
     '[rdxMenuLinkItem]',
-    '[rdxMenuSubTrigger]'
+    '[rdxMenuSubTrigger]',
+    '[role="menuitem"]',
+    '[role="menuitemcheckbox"]',
+    '[role="menuitemradio"]'
 ].join(',');
 
 export function getFocusableMenuItems(popup: HTMLElement): HTMLElement[] {
     return Array.from(popup.querySelectorAll<HTMLElement>(RDX_MENU_ITEM_SELECTOR)).filter(
-        (item) => item.closest('[rdxMenuPopup]') === popup
+        (item) => item.closest('[rdxMenuPopup], [role="menu"]') === popup
     );
 }
 
@@ -77,19 +90,25 @@ export function getMenuItemLabel(element: HTMLElement, metadata?: Pick<RdxMenuCo
 }
 
 function getMenuItemType(element: HTMLElement): RdxMenuCompositeItemType {
-    if (element.hasAttribute('rdxMenuCheckboxItem')) {
+    const role = element.getAttribute('role');
+    if (element.hasAttribute('rdxMenuCheckboxItem') || role === 'menuitemcheckbox') {
         return 'checkbox-item';
     }
 
-    if (element.hasAttribute('rdxMenuRadioItem')) {
+    if (element.hasAttribute('rdxMenuRadioItem') || role === 'menuitemradio') {
         return 'radio-item';
     }
 
-    if (element.hasAttribute('rdxMenuLinkItem')) {
+    const submenuTrigger =
+        element.hasAttribute('rdxMenuSubTrigger') || element.getAttribute('aria-haspopup') === 'menu';
+    if (
+        element.hasAttribute('rdxMenuLinkItem') ||
+        (!submenuTrigger && element.tagName === 'A' && role === 'menuitem')
+    ) {
         return 'link-item';
     }
 
-    if (element.hasAttribute('rdxMenuSubTrigger')) {
+    if (submenuTrigger) {
         return 'submenu-trigger';
     }
 

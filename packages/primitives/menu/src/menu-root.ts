@@ -93,6 +93,11 @@ export interface RdxMenuOpenChange {
     eventDetails: RdxMenuOpenChangeEventDetails;
 }
 
+export interface RdxMenuCoordinator {
+    insideElements: () => Array<HTMLElement | undefined>;
+    ownsEscape: (event: KeyboardEvent) => boolean;
+}
+
 export interface RdxMenuRootContext {
     isOpen: Signal<boolean>;
     present: Signal<boolean>;
@@ -138,6 +143,8 @@ export interface RdxMenuRootContext {
     closeInteractionType: Signal<RdxInteractionType>;
     hasTriggerInteractionHandler: Signal<boolean>;
     triggerInteractionScope: Signal<HTMLElement | undefined>;
+    getCoordinatorElements: () => Array<HTMLElement | undefined>;
+    ownsCoordinatorEscape: (event: KeyboardEvent) => boolean;
     trigger: Signal<HTMLElement | undefined>;
     contextMenuPreviousFocus: Signal<HTMLElement | undefined>;
     getReturnFocusElement: () => HTMLElement | undefined;
@@ -169,7 +176,11 @@ export interface RdxMenuRootContext {
     setBeforeContentFocusGuard: (element: HTMLElement | null) => void;
     registerTransitionElement: (element: HTMLElement) => () => void;
     registerPopupArrowNavigationHandler: (handler: (offset: 1 | -1) => boolean) => () => void;
-    registerTriggerInteractionHandler: (handler: RdxMenuTriggerInteractionHandler, scope?: HTMLElement) => () => void;
+    registerTriggerInteractionHandler: (
+        handler: RdxMenuTriggerInteractionHandler,
+        scope?: HTMLElement,
+        coordinator?: RdxMenuCoordinator
+    ) => () => void;
     markAsSubmenu: () => void;
     /** Marks this menu as the root of a Context Menu (called by `RdxContextMenuRoot`). */
     markAsContextMenu: () => void;
@@ -236,6 +247,8 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         closeInteractionType: instance.closeInteractionType.asReadonly(),
         hasTriggerInteractionHandler: instance.hasTriggerInteractionHandler.asReadonly(),
         triggerInteractionScope: instance.triggerInteractionScope.asReadonly(),
+        getCoordinatorElements: () => instance.getCoordinatorElements(),
+        ownsCoordinatorEscape: (event) => instance.ownsCoordinatorEscape(event),
         trigger: instance.trigger.asReadonly(),
         contextMenuPreviousFocus: instance.contextMenuPreviousFocus.asReadonly(),
         getReturnFocusElement: () => instance.getReturnFocusElement(),
@@ -259,8 +272,8 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         setBeforeContentFocusGuard: (element) => instance.setBeforeContentFocusGuard(element),
         registerTransitionElement: (el) => instance.registerTransitionElement(el),
         registerPopupArrowNavigationHandler: (handler) => instance.registerPopupArrowNavigationHandler(handler),
-        registerTriggerInteractionHandler: (handler, scope) =>
-            instance.registerTriggerInteractionHandler(handler, scope),
+        registerTriggerInteractionHandler: (handler, scope, coordinator) =>
+            instance.registerTriggerInteractionHandler(handler, scope, coordinator),
         markAsSubmenu: () => instance.markAsSubmenu(),
         markAsContextMenu: () => instance.markAsContextMenu(),
         setAllowMouseUpTrigger: (value) => instance.setAllowMouseUpTrigger(value),
@@ -720,19 +733,38 @@ export class RdxMenuRoot {
     }
 
     handlePopupArrowNavigation(offset: 1 | -1): boolean {
-        return this.popupArrowNavigationHandler?.(offset) ?? false;
+        return (
+            this.popupArrowNavigationHandler?.(offset) ?? this.parentRoot?.handlePopupArrowNavigation(offset) ?? false
+        );
     }
 
-    registerTriggerInteractionHandler(handler: RdxMenuTriggerInteractionHandler, scope?: HTMLElement): () => void {
+    private coordinator?: RdxMenuCoordinator;
+    getCoordinatorElements(): Array<HTMLElement | undefined> {
+        const scope = this.triggerInteractionScope();
+        return this.hasTriggerInteractionHandler()
+            ? [scope, ...(this.coordinator?.insideElements() ?? [])]
+            : (this.parentRoot?.getCoordinatorElements() ?? []);
+    }
+    ownsCoordinatorEscape(event: KeyboardEvent): boolean {
+        return this.coordinator?.ownsEscape(event) ?? true;
+    }
+
+    registerTriggerInteractionHandler(
+        handler: RdxMenuTriggerInteractionHandler,
+        scope?: HTMLElement,
+        coordinator?: RdxMenuCoordinator
+    ): () => void {
         this.triggerInteractionHandler = handler;
         this.hasTriggerInteractionHandler.set(true);
         this.triggerInteractionScope.set(scope);
+        this.coordinator = coordinator;
 
         return () => {
             if (this.triggerInteractionHandler === handler) {
                 this.triggerInteractionHandler = undefined;
                 this.hasTriggerInteractionHandler.set(false);
                 this.triggerInteractionScope.set(undefined);
+                this.coordinator = undefined;
             }
         };
     }

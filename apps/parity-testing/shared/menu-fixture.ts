@@ -8,14 +8,18 @@ export const menuClasses = {
 
 // A static Angular template fragment keeps the actual directives in their owning Root view.
 // A wrapper component would change Angular query boundaries while a React function is transparent.
-export const menuPopupTemplate = `
+export function createMenuPopupTemplate(extra = '', popupAttribute = 'rdxMenuPopup', itemAttribute = 'rdxMenuItem') {
+    return `
     <ng-template [keepMounted]="settings.keepMounted" rdxMenuPortal>
         <div class="z-50" [side]="settings.side" align="start" sideOffset="4" rdxMenuPositioner>
-            <div [class]="s.popup" [id]="menu + '-popup'" [attr.data-testid]="menu + '-popup'" [attr.data-menu-popup]="menu" rdxMenuPopup>
-                <button [class]="s.item" [attr.data-testid]="menu + '-alpha'" (onSelect)="trace.select(menu + '-alpha')" rdxMenuItem>Alpha</button>
-                <button [class]="s.item" [attr.data-testid]="menu + '-blocked'" [disabled]="true" (onSelect)="trace.select(menu + '-blocked')" rdxMenuItem>Blocked</button>
-                <button [class]="s.item" [attr.data-testid]="menu + '-bravo'" (onSelect)="trace.select(menu + '-bravo')" rdxMenuItem>Bravo</button>
+            <div [class]="s.popup" [id]="menu + '-popup'" [attr.data-testid]="menu + '-popup'" [attr.data-menu-popup]="menu" ${popupAttribute}>
+                <button [class]="s.item" [attr.data-testid]="menu + '-alpha'" (onSelect)="trace.select(menu + '-alpha')" ${itemAttribute}>Alpha</button>
+                <button [class]="s.item" [attr.data-testid]="menu + '-blocked'" [disabled]="true" (onSelect)="trace.select(menu + '-blocked')" ${itemAttribute}>Blocked</button>
+                <button [class]="s.item" [attr.data-testid]="menu + '-bravo'" (onSelect)="trace.select(menu + '-bravo')" ${itemAttribute}>Bravo</button>
+                ${extra}
             </div>
         </div>
     </ng-template>
 `;
+}
+export const menuPopupTemplate = createMenuPopupTemplate();

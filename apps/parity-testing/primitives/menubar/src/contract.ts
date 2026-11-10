@@ -1,5 +1,6 @@
 import { collectionCases, type MenuEntry } from '../../../shared/menu-collection';
 import { createMenuProbe, type MenuProbe } from '../../../shared/menu-probe';
+import { compositionCases } from './composition';
 export const cases = [
     'open-keyboard',
     'open-pointer',
@@ -18,7 +19,8 @@ export const cases = [
     'tab',
     ...collectionCases,
     'collection-disable-focused',
-    'collection-disable-open'
+    'collection-disable-open',
+    ...compositionCases
 ] as const;
 export function config() {
     const name = new URLSearchParams(location.search).get('case') ?? 'open-keyboard';
@@ -28,15 +30,27 @@ export function config() {
         dir: name === 'rtl-switch' || name.endsWith('-rtl') ? ('rtl' as const) : ('ltr' as const),
         disabled: name === 'disabled',
         keepMounted: false,
-        side: 'bottom' as const
+        side: 'bottom' as const,
+        orientation: name.startsWith('vertical-') ? ('vertical' as const) : ('horizontal' as const),
+        nested: name.startsWith('nested-'),
+        composed: name === 'nested-composed'
     };
 }
-export type Layer = 'file' | 'blocked' | 'edit' | 'new';
-export const menubarEntries: MenuEntry<Layer>[] = [
+export type TopLayer = 'file' | 'blocked' | 'edit' | 'new';
+export type Layer = TopLayer | `${TopLayer}-sub`;
+export function submenuId(menu: TopLayer): `${TopLayer}-sub` {
+    return `${menu}-sub`;
+}
+export const menubarEntries: MenuEntry<TopLayer>[] = [
     { id: 'file', label: 'file', disabled: false },
     { id: 'blocked', label: 'blocked', disabled: true },
     { id: 'edit', label: 'edit', disabled: false }
 ];
+export function initialMenus(name: string): MenuEntry<TopLayer>[] {
+    if (name === 'single-menu-switch') return menubarEntries.slice(0, 1);
+    if (name === 'roving-rtl') return [...menubarEntries, { id: 'new', label: 'new', disabled: false }];
+    return menubarEntries;
+}
 export type Probe = MenuProbe<ReturnType<typeof config>, Layer>;
 declare global {
     const __PARITY_REFERENCE__: Probe['reference'];
@@ -49,7 +63,11 @@ export function installProbe(framework: string) {
         'file',
         'blocked',
         'edit',
-        'new'
+        'new',
+        'file-sub',
+        'blocked-sub',
+        'edit-sub',
+        'new-sub'
     ] as const);
     document.documentElement.dir = trace.probe.config.dir;
     window.menubarParity = trace.probe;

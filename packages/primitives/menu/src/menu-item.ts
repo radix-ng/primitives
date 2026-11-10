@@ -12,6 +12,7 @@ import {
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, dispatchClickWithModifiers } from '@radix-ng/primitives/core';
 import { RdxFloatingFocusManager } from '@radix-ng/primitives/floating-focus-manager';
+import { shouldClearMenuHighlight } from './menu-focus';
 import { shouldActivateOnMouseUp } from './menu-mouse-up';
 import { injectRdxMenuRootContext } from './menu-root';
 
@@ -84,7 +85,7 @@ export class RdxMenuItem {
 
     onBlur(event?: FocusEvent): void {
         this.isFocused.set(false);
-        if (event?.relatedTarget !== null) this.clearActiveIndex();
+        if (shouldClearMenuHighlight(event, this.rootContext?.getCoordinatorElements() ?? [])) this.clearActiveIndex();
     }
 
     onPointerMove(event: PointerEvent): void {

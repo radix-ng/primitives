@@ -70,3 +70,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0036](0036-menu-pointer-and-composition-contracts.md)                       | Accepted               | Compare Menu pointer gestures, Context Menu and Menubar                              |
 | [0037](0037-native-input-and-collection-focus.md)                            | Accepted               | Compare native context input and repair focus through collection changes             |
 | [0038](0038-menu-collection-boundaries.md)                                   | Accepted               | Compare empty/nested collections and Menubar navigation boundaries                   |
+| [0039](0039-menubar-transactions-and-composition.md)                         | Accepted               | Preserve Menubar cancellation, orientation and nested ownership                      |

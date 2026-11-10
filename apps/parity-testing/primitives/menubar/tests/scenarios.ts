@@ -1,6 +1,8 @@
 import { expect } from '@playwright/test';
 import { MenuFamilyDriver } from '../../../shared/menu-family-driver';
+import { compositionCases } from '../src/composition';
 import { cases } from '../src/contract';
+import { runComposition } from './composition.scenarios';
 export class MenubarDriver extends MenuFamilyDriver {
     constructor(page: ConstructorParameters<typeof MenuFamilyDriver>[0], framework: 'angular' | 'react') {
         super(page, framework, 'menubarParity');
@@ -9,6 +11,8 @@ export class MenubarDriver extends MenuFamilyDriver {
 export const scenarios = cases.map((name) => ({
     name,
     async run(d: MenubarDriver) {
+        if ((compositionCases as readonly string[]).includes(name))
+            return runComposition(d, name as (typeof compositionCases)[number]);
         const file = d.page.getByTestId('file-trigger'),
             edit = d.page.getByTestId('edit-trigger');
         if (name === 'collection-disable-focused' || name === 'collection-disable-open') {

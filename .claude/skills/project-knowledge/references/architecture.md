@@ -67,6 +67,13 @@ manager excludes disconnected default anchors. Menubar uses the shared Composite
 current trigger's full DOM position, even after disabling it; a wrap onto itself preserves the popup.
 Exact pin exceptions retain an enabled Tab entry and direct sibling switching without intermediate
 close/reopen requests. These are intentional contracts rather than React store/lifecycle ports.
+Menubar transactions (ADR 0039) activate only accepted openings; native focus owns switch requests.
+Coordinator inside elements inherit through Menu DI, preserving cancellation across portaled children.
+Logical highlight survives those transfers. The shared dismissal Escape predicate receives its original
+KeyboardEvent; the coordinator records ownership per native event before earlier listeners mutate
+Root state. Synchronous return respects focus on another trigger. Vertical bar roving and cross-axis
+opening follow orientation/direction; child forward arrows delegate to their owning Root. The bar open
+flag derives from directly owned Roots; exact pin exceptions retain that flag and child completion.
 Dialog/Drawer shared demo styles use current boolean states; Drawer uses CSS transitions so gesture
 updates do not replay entry keyframes. Browser exit tests pause/seek/finish actual WAAPI effects.
 

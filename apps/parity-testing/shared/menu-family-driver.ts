@@ -32,9 +32,18 @@ export class MenuFamilyDriver {
         const state = await this.page.evaluate(async (key) => {
             const probe = (window as unknown as Record<string, MenuProbe<unknown, string>>)[key];
             const read = () => {
+                const bar = document.querySelector<HTMLElement>('[role="menubar"]');
                 const popups = [...document.querySelectorAll<HTMLElement>('[data-menu-popup]')];
                 const triggers = [...document.querySelectorAll<HTMLElement>('[data-menu-trigger]')];
                 return {
+                    ...(bar
+                        ? {
+                              bar: {
+                                  orientation: bar.getAttribute('aria-orientation'),
+                                  hasSubmenuOpen: bar.hasAttribute('data-has-submenu-open')
+                              }
+                          }
+                        : {}),
                     open: popups.filter((el) => el.hasAttribute('data-open')).map((el) => el.dataset.menuPopup),
                     mounted: popups.map((el) => el.dataset.menuPopup),
                     visible: popups

@@ -93,6 +93,13 @@ Click a trigger to open it, then hover the other triggers to switch, or use the 
 
 <Canvas of={Stories.Default} />
 
+### Vertical
+
+Up/Down move between the closed triggers. The cross-axis arrow opens a menu: Right in LTR, Left in RTL.
+Inside the popup, Up/Down navigate its items; Escape returns to the trigger.
+
+<Canvas of={Stories.Vertical} />
+
 ## Accessibility
 
 ### Keyboard Interactions
@@ -109,12 +116,21 @@ Click a trigger to open it, then hover the other triggers to switch, or use the 
 | `Enter` / `Space` | Activates the focused item (handled by the Menu primitive).         |
 
 Triggers move through the shared Composite focus model: only one trigger is in the tab order at a time.
+The table describes a horizontal bar. With `orientation="vertical"`, Up/Down move between closed
+triggers and Right (LTR) / Left (RTL) opens the focused menu. Popup item navigation remains vertical.
+Horizontal trigger navigation follows text direction. Home/End always follow DOM order.
 With menus closed, arrow keys move focus between triggers; with a menu open, sibling switching focuses
 the new popup. Disabled triggers are skipped.
 
 If the current menu becomes disabled while its popup owns focus, horizontal arrows can still switch
 to an enabled sibling. Disabling a focused closed trigger keeps an enabled trigger in the Tab order.
 When only one enabled menu remains, horizontal arrows preserve its popup and focus without reopening it.
+
+Canceling the destination's opening keeps the current popup open. Canceling `sibling-open` keeps
+that source menu open even though the destination has already opened, so two popups can remain.
+Focus can move within the coordinator without bypassing cancellation through a focus-out close.
+Escape closes the menu that owns the original key event; focus already on another trigger is preserved.
+From a leaf in a nested submenu, the forward arrow switches to the next top-level menu.
 
 ## API Reference
 
@@ -150,7 +166,7 @@ native events. Whole-bar `disabled` is inherited by the child menus.
 | `[data-disabled]`   | The trigger is disabled.      |
 
 The menubar root exposes `data-orientation`, `data-modal` (when modal), and `data-has-submenu-open`
-(present only while a nested submenu is open).
+(present while any directly owned menu is open, including after a nested submenu closes).
 
 ### Menu parts
 

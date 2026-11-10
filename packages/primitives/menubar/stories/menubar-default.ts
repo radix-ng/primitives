@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
 import { LucideCheck, LucideDot } from '@lucide/angular';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { RdxMenubarRoot } from '@radix-ng/primitives/menubar';
+import { RdxMenubarRoot, type RdxMenubarOrientation } from '@radix-ng/primitives/menubar';
 import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
 
 @Component({
@@ -9,12 +9,22 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
     imports: [RdxMenuModule, RdxMenubarRoot, LucideCheck, LucideDot],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-        <div [class]="mb.root" rdxMenubarRoot>
+        <div
+            [class]="cn(mb.root, orientation() === 'vertical' && 'w-48 flex-col items-stretch')"
+            [orientation]="orientation()"
+            rdxMenubarRoot
+        >
             <!-- File -->
             <ng-container #fileMenu="rdxMenuRoot" rdxMenuRoot>
                 <button [class]="mb.trigger" rdxMenuTrigger>File</button>
 
-                <div [class]="cn(m.positioner, 'data-[closed]:hidden')" align="start" sideOffset="4" rdxMenuPositioner>
+                <div
+                    [class]="cn(m.positioner, 'data-[closed]:hidden')"
+                    [side]="orientation() === 'vertical' ? 'right' : 'bottom'"
+                    align="start"
+                    sideOffset="4"
+                    rdxMenuPositioner
+                >
                     <div [class]="m.popup" rdxMenuPopup>
                         <button [class]="m.item" rdxMenuItem>
                             New Tab
@@ -57,7 +67,13 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
             <ng-container #editMenu="rdxMenuRoot" rdxMenuRoot>
                 <button [class]="mb.trigger" rdxMenuTrigger>Edit</button>
 
-                <div [class]="cn(m.positioner, 'data-[closed]:hidden')" align="start" sideOffset="4" rdxMenuPositioner>
+                <div
+                    [class]="cn(m.positioner, 'data-[closed]:hidden')"
+                    [side]="orientation() === 'vertical' ? 'right' : 'bottom'"
+                    align="start"
+                    sideOffset="4"
+                    rdxMenuPositioner
+                >
                     <div [class]="m.popup" rdxMenuPopup>
                         <button [class]="m.item" rdxMenuItem>
                             Undo
@@ -88,7 +104,13 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
             <ng-container #viewMenu="rdxMenuRoot" rdxMenuRoot>
                 <button [class]="mb.trigger" rdxMenuTrigger>View</button>
 
-                <div [class]="cn(m.positioner, 'data-[closed]:hidden')" align="start" sideOffset="4" rdxMenuPositioner>
+                <div
+                    [class]="cn(m.positioner, 'data-[closed]:hidden')"
+                    [side]="orientation() === 'vertical' ? 'right' : 'bottom'"
+                    align="start"
+                    sideOffset="4"
+                    rdxMenuPositioner
+                >
                     <div [class]="m.popup" rdxMenuPopup>
                         <label [(checked)]="showBookmarks" [class]="m.selectableItem" rdxMenuCheckboxItem>
                             <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>
@@ -121,7 +143,13 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
             <ng-container #profilesMenu="rdxMenuRoot" rdxMenuRoot>
                 <button [class]="mb.trigger" rdxMenuTrigger>Profiles</button>
 
-                <div [class]="cn(m.positioner, 'data-[closed]:hidden')" align="start" sideOffset="4" rdxMenuPositioner>
+                <div
+                    [class]="cn(m.positioner, 'data-[closed]:hidden')"
+                    [side]="orientation() === 'vertical' ? 'right' : 'bottom'"
+                    align="start"
+                    sideOffset="4"
+                    rdxMenuPositioner
+                >
                     <div [class]="m.popup" rdxMenuPopup>
                         <div [(value)]="activeProfile" rdxMenuRadioGroup>
                             <label [class]="m.selectableItem" value="andy" rdxMenuRadioItem>
@@ -147,6 +175,7 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
     `
 })
 export class RdxMenubarDefaultComponent {
+    readonly orientation = input<RdxMenubarOrientation>('horizontal');
     protected readonly cn = cn;
     protected readonly mb = demoMenubar;
     protected readonly m = demoMenu;

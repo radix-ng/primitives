@@ -109,6 +109,35 @@ test('Escape closes the open menu', async ({ page }) => {
     await expect(page.locator(openPopup)).toHaveCount(0);
 });
 
+test('vertical bar roves on Up/Down and opens across its axis', async ({ page }) => {
+    await gotoStory(page, 'primitives-menubar--vertical');
+    const triggers = page.locator(trigger);
+    await triggers.first().focus();
+    await page.keyboard.press('ArrowDown');
+    await expect(triggers.nth(1)).toBeFocused();
+    await expect(page.locator(openPopup)).toHaveCount(0);
+    await page.keyboard.press('ArrowRight');
+    await expect(triggers.nth(1)).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.locator(openPopup)).toHaveCount(1);
+    await page.keyboard.press('Escape');
+    await expect(triggers.nth(1)).toBeFocused();
+    await expect(page.locator(openPopup)).toHaveCount(0);
+});
+
+test('a nested forward arrow switches the owning top-level menu', async ({ page }) => {
+    await gotoStory(page, 'primitives-menubar--default');
+    const triggers = page.locator(trigger);
+    await triggers.first().press('ArrowDown');
+    await expect(page.locator(openPopup).first().locator('[rdxMenuItem]').first()).toBeFocused();
+    await page.locator('[rdxMenuSubTrigger]').first().press('ArrowRight');
+    await expect(page.locator(openPopup)).toHaveCount(2);
+    await expect(page.getByRole('menuitem', { name: 'Email Link', exact: true })).toBeFocused();
+    await page.keyboard.press('ArrowRight');
+    await expect(triggers.nth(1)).toHaveAttribute('aria-expanded', 'true');
+    await expect(triggers.first()).toHaveAttribute('aria-expanded', 'false');
+    await expect(page.locator(openPopup)).toHaveCount(1);
+});
+
 test('an outside press closes the open menu', async ({ page }) => {
     await gotoStory(page, 'primitives-menubar--default');
     await page.locator(trigger).first().click();

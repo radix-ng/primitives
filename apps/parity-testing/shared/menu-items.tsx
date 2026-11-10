@@ -1,7 +1,16 @@
 import { Menu } from '@base-ui/react/menu';
+import type { ReactNode } from 'react';
 import { menuClasses as s } from './menu-fixture';
 
-export function MenuItems({ menu, select }: { menu: string; select: (id: string) => void }) {
+export function MenuItems({
+    menu,
+    select,
+    children
+}: {
+    menu: string;
+    select: (id: string) => void;
+    children?: ReactNode;
+}) {
     return (
         <>
             <Menu.Item
@@ -32,6 +41,7 @@ export function MenuItems({ menu, select }: { menu: string; select: (id: string)
             >
                 Bravo
             </Menu.Item>
+            {children}
         </>
     );
 }

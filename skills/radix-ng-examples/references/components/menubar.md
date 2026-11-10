@@ -79,6 +79,7 @@ a standard `rdxMenuTrigger` opens a Menu popup. Keep the top-level popup mounted
 ## Examples
 
 - [Default](../examples/menubar--default.md)
+- [Vertical](../examples/menubar--vertical.md)
 
 ## API & styling contract
 

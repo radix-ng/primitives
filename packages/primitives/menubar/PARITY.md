@@ -4,21 +4,23 @@ Audited 2026-11-10 against Base UI 1.9.0 commit
 [`cf696d6f6e08c699c5bda24d5a033430909f2285`](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/menubar).
 This is incremental evidence, not complete API or accessibility certification.
 
-| Contract                                                              | Evidence                                | Status                                   |
-| --------------------------------------------------------------------- | --------------------------------------- | ---------------------------------------- |
-| Keyboard and native mouse-down opening                                | Independent pinned suite, three engines | Covered                                  |
-| Closed roving, Home/End and disabled-trigger skipping                 | Pinned suite                            | Covered                                  |
-| Keyboard/pointer sibling switching and RTL                            | Pinned suite                            | Covered                                  |
-| Whole-bar disabling                                                   | Pinned suite                            | Covered                                  |
-| Selection, cancellation, outside dismissal and Tab                    | Pinned suite                            | Covered for initial requests             |
-| Reason, native event, callback order and focus ownership              | Pinned suite                            | Covered in the cases above               |
-| Dynamic insertion/removal/reordering, labels and unfocused disabling  | Pinned suite                            | Covered                                  |
-| Current-trigger disabling, backward LTR/RTL and single-menu switching | Pinned suite                            | Covered with exact pin limitations below |
-| Vertical navigation and nested submenus                               | Angular regressions vary                | Pinned comparisons pending               |
-| Touch, real devices and assistive technology                          | Not established                         | Pending                                  |
+| Contract                                                              | Evidence                                | Status                                    |
+| --------------------------------------------------------------------- | --------------------------------------- | ----------------------------------------- |
+| Keyboard and native mouse-down opening                                | Independent pinned suite, three engines | Covered                                   |
+| Closed roving, Home/End and disabled-trigger skipping                 | Pinned suite                            | Covered                                   |
+| Keyboard/pointer sibling switching and RTL                            | Pinned suite                            | Covered                                   |
+| Whole-bar disabling                                                   | Pinned suite                            | Covered                                   |
+| Selection, cancellation, outside dismissal and Tab                    | Pinned suite                            | Covered for initial requests              |
+| Reason, native event, callback order and focus ownership              | Pinned suite                            | Covered in the cases above                |
+| Dynamic insertion/removal/reordering, labels and unfocused disabling  | Pinned suite                            | Covered                                   |
+| Current-trigger disabling, backward LTR/RTL and single-menu switching | Pinned suite                            | Covered with exact pin limitations below  |
+| Vertical bar opening/roving, popup navigation and Escape              | Pinned suite                            | Covered for vertical popup lists          |
+| Nested keyboard/pointer switching and composed popup hosts            | Pinned suite                            | Covered with child-completion limitation  |
+| Canceled sibling open/close and retry                                 | Pinned suite                            | Covered with overlapping-state limitation |
+| Touch, real devices and assistive technology                          | Not established                         | Pending                                   |
 
-The [runner](../../../apps/parity-testing/primitives/menubar/README.md) defines 22 scenarios and
-66 comparisons. Ten exact pairs document three reference limitations below.
+The [runner](../../../apps/parity-testing/primitives/menubar/README.md) defines 36 scenarios and
+108 comparisons. Eighteen exact pairs document five reference limitations below.
 
 Five dynamic cases insert/remove/reorder top-level menus and change an unfocused trigger's
 `disabled` state or a label. Roving tabindex follows the actual focused trigger as DOM order changes;
@@ -43,6 +45,13 @@ same trigger leaves its existing popup and focus in place.
   same close/reopen cycle and leaves focus on the trigger. Angular preserves the focused item and
   popup. Three exact focus/callback pairs record the difference; forward navigation agrees.
 
+- `overlapping-menu-open-state`: a canceled sibling close can leave two menus open. After closing
+  one, the pin resets `data-has-submenu-open` despite another menu remaining open. Angular derives
+  the flag from actual directly owned Roots. Two exact bar-state pairs retain that behavior.
+- `nested-exit-completion`: switching away from an open nested branch loses its close-completion
+  callback in the pin. Six exact completion-array pairs retain Angular's actual completion, as in
+  [Menu's matrix](../menu/PARITY.md). Open requests, callback order and native focus agree.
+
 These pairs retain Angular's reachable Tab entry and atomic sibling transition rather than copying
 incidental React interaction plumbing. Changed or stale exceptions fail. See
 [ADR 0038](../../../docs/adr/0038-menu-collection-boundaries.md).
@@ -60,6 +69,23 @@ The coordinator registers its actual native host alongside the trigger interacti
 focus containment and the internal backdrop cutout use that registration, so composition through
 `hostDirectives` does not require a literal `rdxMenubarRoot` attribute. Every Angular fixture in this
 suite exercises that consumer composition.
+
+Native cancellation cases cover keyboard/pointer requests and an application F5 command allowing a
+retry. Activation follows accepted openings; an already-open destination does not re-close siblings.
+Declared inside elements inherit through the DI owner chain. Escape uses original-event ownership,
+captured before an earlier document listener can close its target. `RdxDismiss` shares that native
+event gate. Logical highlight survives transfers within the coordinator.
+
+Four vertical cases cover closed roving, LTR/RTL cross-axis opening, vertical popup items and Escape.
+Closed RTL roving uses three enabled destinations. Five nested cases cover child Escape, LTR/RTL
+ownership, pointer/forward-key switching and composed popup hosts without the original selector.
+The composed case also wraps items. Semantic DOM fallback preserves initial focus without their
+original directive attributes; Composite metadata continues to own item navigation.
+Child forward navigation delegates through its DI owner instead of registering as a bar item.
+
+Vertical close-direction arrows, custom horizontal popup orientation, canceled nested requests,
+retained coordinator portals and real device/AT work remain separate audits. See
+[ADR 0039](../../../docs/adr/0039-menubar-transactions-and-composition.md).
 
 Consumers observing `none` for these actions should migrate to the explicit reasons above. Popup
 focus after sibling switching now follows the pin. Shared Menu limitations are tracked separately

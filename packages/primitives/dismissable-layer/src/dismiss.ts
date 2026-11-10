@@ -27,8 +27,8 @@ export type RdxOutsidePressEventConfig =
 export interface RdxDismissProps {
     /** Whole-capability gate (on top of `context.open()`). Default `() => true`. */
     enabled?: () => boolean;
-    /** Whether Escape requests dismissal. Default `() => true`. */
-    escapeKey?: () => boolean;
+    /** Whether this native Escape requests dismissal. Default `() => true`. */
+    escapeKey?: (event: KeyboardEvent) => boolean;
     /**
      * Whether this layer's Escape **bubbles** to ancestor layers (Base UI `bubbles.escapeKey`). Default
      * `() => false` — Escape closes only the deepest layer. `true` re-emits to the parent too (this is
@@ -340,7 +340,7 @@ export class RdxDismiss {
         };
 
         const handleKeyDown = (event: KeyboardEvent): void => {
-            if (event.key !== 'Escape' || !this.active() || !escapeKey() || isComposing) {
+            if (event.key !== 'Escape' || !this.active() || !escapeKey(event) || isComposing) {
                 return;
             }
             // A non-bubbling layer yields to a deeper non-bubbling open layer (Base UI:
