@@ -74,6 +74,12 @@ KeyboardEvent; the coordinator records ownership per native event before earlier
 Root state. Synchronous return respects focus on another trigger. Vertical bar roving and cross-axis
 opening follow orientation/direction; child forward arrows delegate to their owning Root. The bar open
 flag derives from directly owned Roots; exact pin exceptions retain that flag and child completion.
+Navigation return (ADR 0040) is shared by submenu Popup and vertical Menubar through Menu Root.
+It consumes/forwards the original KeyboardEvent, requests closing, clears the existing highlight
+and focuses a surviving DI owner trigger. A canceled arrow-close still returns focus; a canceled
+Escape keeps child focus. Exact vertical-arrow exceptions retain an intentional complete close
+where the pin preserves interaction mode and reopens the same popup through trigger focus. This is
+an intentional library policy, independent of framework limitations.
 Dialog/Drawer shared demo styles use current boolean states; Drawer uses CSS transitions so gesture
 updates do not replay entry keyframes. Browser exit tests pause/seek/finish actual WAAPI effects.
 

@@ -6,6 +6,7 @@
 
 Up/Down move between the closed triggers. The cross-axis arrow opens a menu: Right in LTR, Left in RTL.
 Inside the popup, Up/Down navigate its items; Escape returns to the trigger.
+The return arrow (Left in LTR, Right in RTL) closes the popup and returns focus to its trigger.
 
 ```html
 <rdx-menubar-default orientation="vertical" />

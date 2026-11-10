@@ -36,6 +36,7 @@ export interface MenuProbe<Config, Layer extends string> {
         clientY: number;
     }[];
     pointerMoves: {
+        timeStamp: number;
         trusted: boolean;
         clientX: number;
         clientY: number;
@@ -72,6 +73,7 @@ export function createMenuProbe<Config, Layer extends string>(
         'pointermove',
         (event) =>
             probe.pointerMoves.push({
+                timeStamp: event.timeStamp,
                 trusted: event.isTrusted,
                 clientX: event.clientX,
                 clientY: event.clientY,

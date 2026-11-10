@@ -109,7 +109,7 @@ test('Escape closes the open menu', async ({ page }) => {
     await expect(page.locator(openPopup)).toHaveCount(0);
 });
 
-test('vertical bar roves on Up/Down and opens across its axis', async ({ page }) => {
+test('vertical bar roves, opens and closes across its axis, then reopens', async ({ page }) => {
     await gotoStory(page, 'primitives-menubar--vertical');
     const triggers = page.locator(trigger);
     await triggers.first().focus();
@@ -119,6 +119,12 @@ test('vertical bar roves on Up/Down and opens across its axis', async ({ page })
     await page.keyboard.press('ArrowRight');
     await expect(triggers.nth(1)).toHaveAttribute('aria-expanded', 'true');
     await expect(page.locator(openPopup)).toHaveCount(1);
+    await expect(page.locator(openPopup).first().locator('[rdxMenuItem]').first()).toBeFocused();
+    await page.keyboard.press('ArrowLeft');
+    await expect(triggers.nth(1)).toBeFocused();
+    await expect(page.locator(openPopup)).toHaveCount(0);
+    await page.keyboard.press('ArrowRight');
+    await expect(triggers.nth(1)).toHaveAttribute('aria-expanded', 'true');
     await page.keyboard.press('Escape');
     await expect(triggers.nth(1)).toBeFocused();
     await expect(page.locator(openPopup)).toHaveCount(0);

@@ -326,9 +326,8 @@ export class RdxMenuPopup {
                 break;
             }
             case 'ArrowLeft': {
-                const trigger = this.rootContext.trigger();
-                if (!trigger?.hasAttribute('rdxMenuSubTrigger')) {
-                    if (this.rootContext.handlePopupArrowNavigation(-1)) {
+                if (!this.rootContext.isSubmenu()) {
+                    if (this.rootContext.handlePopupArrowNavigation(-1, event)) {
                         event.preventDefault();
                         event.stopPropagation();
                     }
@@ -336,7 +335,7 @@ export class RdxMenuPopup {
                 }
 
                 if (this.rootContext.dir() === 'rtl') {
-                    if (this.rootContext.handlePopupArrowNavigation(-1)) {
+                    if (this.rootContext.handlePopupArrowNavigation(-1, event)) {
                         event.preventDefault();
                         event.stopPropagation();
                     }
@@ -344,23 +343,16 @@ export class RdxMenuPopup {
                 }
 
                 // Close this popup and return focus to the trigger (used by submenus).
-                event.preventDefault();
-                event.stopPropagation();
-                this.rootContext.close('list-navigation', event);
-                trigger.focus({ preventScroll: true });
+                this.rootContext.closeForNavigation(event);
                 break;
             }
             case 'ArrowRight': {
-                const trigger = this.rootContext.trigger();
-                if (trigger?.hasAttribute('rdxMenuSubTrigger') && this.rootContext.dir() === 'rtl') {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    this.rootContext.close('list-navigation', event);
-                    trigger.focus({ preventScroll: true });
+                if (this.rootContext.isSubmenu() && this.rootContext.dir() === 'rtl') {
+                    this.rootContext.closeForNavigation(event);
                     break;
                 }
 
-                if (this.rootContext.handlePopupArrowNavigation(1)) {
+                if (this.rootContext.handlePopupArrowNavigation(1, event)) {
                     event.preventDefault();
                     event.stopPropagation();
                 }

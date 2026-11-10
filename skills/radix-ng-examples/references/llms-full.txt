@@ -14080,6 +14080,7 @@ export class RdxMenubarDefaultComponent {
 
 Up/Down move between the closed triggers. The cross-axis arrow opens a menu: Right in LTR, Left in RTL.
 Inside the popup, Up/Down navigate its items; Escape returns to the trigger.
+The return arrow (Left in LTR, Right in RTL) closes the popup and returns focus to its trigger.
 
 ```html
 <rdx-menubar-default orientation="vertical" />
@@ -14116,6 +14117,13 @@ that source menu open even though the destination has already opened, so two pop
 Focus can move within the coordinator without bypassing cancellation through a focus-out close.
 Escape closes the menu that owns the original key event; focus already on another trigger is preserved.
 From a leaf in a nested submenu, the forward arrow switches to the next top-level menu.
+
+For a canceled child close, Escape keeps focus in the child. A return-arrow close still moves focus
+to the trigger and clears child highlight while leaving the child open. Closing state and navigation
+focus are separate parts of this interaction. Navigation callbacks retain the original KeyboardEvent,
+already consumed by the primitive.
+Keyboard submenu navigation follows Root ownership, so native hosts composed through `hostDirectives` do not
+need to repeat the original popup, item or submenu-trigger selector attributes.
 
 ## API Reference
 

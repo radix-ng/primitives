@@ -95,8 +95,29 @@ export const pointerScenarios = pointerCases.map((name) => ({
             return;
         }
         if (name.endsWith('-reenter')) {
+            const start = await d.page.evaluate(() => window.menuParity.pointerMoves.length);
             await d.page.mouse.move(700, 520);
-            await reference.hover();
+            // The element was measured above. Locator.hover() adds actionability frame waits to
+            // this deliberately short return gesture, sometimes exceeding the actual close delay.
+            const back = { x: from.x + from.width / 2, y: from.y + from.height / 2 };
+            await d.page.mouse.move(back.x, back.y);
+            const gesture = await d.page.evaluate(
+                (start) => ({
+                    moves: window.menuParity.pointerMoves.slice(start),
+                    closeDelay: window.menuParity.config.pointer.closeDelay!
+                }),
+                start
+            );
+            const away = gesture.moves.findIndex((move) => move.clientX === 700 && move.clientY === 520);
+            const returned = gesture.moves
+                .slice(away + 1)
+                .find((move) => Math.abs(move.clientX - back.x) <= 1 && Math.abs(move.clientY - back.y) <= 1);
+            expect(away).toBeGreaterThanOrEqual(0);
+            expect(returned).toBeDefined();
+            const elapsed = returned!.timeStamp - gesture.moves[away].timeStamp;
+            d.measurements.push({ name: 'native hover return', bounds: { ...gesture, elapsed } });
+            expect(gesture.moves.every((move) => move.trusted)).toBe(true);
+            expect(elapsed).toBeLessThan(gesture.closeDelay);
             await d.page.waitForTimeout(160);
             await d.checkpoint('reentered before close', { open: true });
         }

@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RdxMenuModule } from '@radix-ng/primitives/menu';
+import { RdxMenuModule, RdxMenuRoot, type RdxMenuOpenChange } from '@radix-ng/primitives/menu';
 import { RdxMenubarRoot } from '@radix-ng/primitives/menubar';
 
 function keydown(target: Element, key: string) {
@@ -13,7 +13,7 @@ const flushMicrotasks = () => Promise.resolve();
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxMenubarRoot, RdxMenuModule],
     template: `
-        <div rdxMenubarRoot>
+        <div [orientation]="orientation()" rdxMenubarRoot>
             <ng-container #fileMenu="rdxMenuRoot" [disabled]="fileDisabled()" rdxMenuRoot>
                 <button rdxMenuTrigger>File</button>
                 @if (fileMenu.open()) {
@@ -52,6 +52,8 @@ const flushMicrotasks = () => Promise.resolve();
 })
 class MenubarHost {
     readonly fileDisabled = signal(false);
+    readonly orientation = signal<'horizontal' | 'vertical'>('horizontal');
+    readonly fileMenu = viewChild.required(RdxMenuRoot);
 }
 
 @Component({
@@ -195,6 +197,53 @@ describe('Menubar', () => {
         keydown(triggers[1], 'ArrowRight');
         fixture.detectChanges();
         expect(document.activeElement).toBe(triggers[2]);
+    });
+
+    it('closes a vertical popup through its owner with the original navigation event', async () => {
+        fixture.componentInstance.orientation.set('vertical');
+        fixture.detectChanges();
+        keydown(triggers[0], 'ArrowRight');
+        fixture.detectChanges();
+        await fixture.whenStable();
+        const root = fixture.componentInstance.fileMenu();
+        const changes: RdxMenuOpenChange[] = [];
+        const preventedAtClose: boolean[] = [];
+        root.onOpenChange.subscribe((change) => {
+            changes.push(change);
+            if (!change.open) preventedAtClose.push(change.event.defaultPrevented);
+        });
+        const popup = fixture.nativeElement.querySelector('[rdxMenuPopup]') as HTMLElement;
+        popup.querySelector<HTMLElement>('[rdxMenuItem]')!.focus();
+        const event = new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true, cancelable: true });
+        popup.dispatchEvent(event);
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        expect(root.open()).toBe(false);
+        expect(changes.at(-1)?.reason).toBe('list-navigation');
+        expect(changes.at(-1)?.event).toBe(event);
+        expect(preventedAtClose).toEqual([true]);
+        expect(document.activeElement).toBe(triggers[0]);
+        keydown(triggers[0], 'ArrowRight');
+        fixture.detectChanges();
+        expect(root.open()).toBe(true);
+    });
+
+    it('does not close a disabled vertical menu through its return arrow', async () => {
+        fixture.componentInstance.orientation.set('vertical');
+        fixture.detectChanges();
+        keydown(triggers[0], 'ArrowRight');
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.componentInstance.fileDisabled.set(true);
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        const popup = fixture.nativeElement.querySelector('[rdxMenuPopup]') as HTMLElement;
+        popup.focus();
+        keydown(popup, 'ArrowLeft');
+        fixture.detectChanges();
+        expect(fixture.componentInstance.fileMenu().open()).toBe(true);
     });
 
     it('click opens a menu', () => {

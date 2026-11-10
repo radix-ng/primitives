@@ -265,12 +265,16 @@ export class RdxMenubarRoot {
 
     private registerMenuRoot(root: RdxMenuRoot, trigger: HTMLElement): () => void {
         const id = this.idFor(root);
-        const unregisterPopupArrowNavigation = root.registerPopupArrowNavigationHandler((offset) => {
+        const unregisterPopupArrowNavigation = root.registerPopupArrowNavigationHandler((offset, event) => {
             if (this.disabled()) {
                 return false;
             }
 
-            if (this.orientation() === 'vertical') return false;
+            if (this.orientation() === 'vertical') {
+                if (root.effectiveDisabled() || offset !== (root.dir() === 'rtl' ? 1 : -1)) return false;
+                root.closeForNavigation(event);
+                return true;
+            }
             this.focusAdjacent(id, root.dir() === 'rtl' ? (offset === 1 ? -1 : 1) : offset, true);
             return true;
         });

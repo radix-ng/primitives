@@ -84,7 +84,17 @@ function ReactMenubar() {
                                             <MenuItems menu={menu} select={trace.select}>
                                                 {settings.nested && (
                                                     <Menu.SubmenuRoot
-                                                        onOpenChange={(open, details) =>
+                                                        onOpenChange={(open, details) => {
+                                                            if (
+                                                                cancelChange(
+                                                                    settings.name,
+                                                                    submenuId(menu),
+                                                                    open,
+                                                                    details.reason,
+                                                                    allowSwitch
+                                                                )
+                                                            )
+                                                                details.cancel();
                                                             trace.change(
                                                                 submenuId(menu),
                                                                 open,
@@ -92,8 +102,8 @@ function ReactMenubar() {
                                                                 details.isCanceled,
                                                                 details.event,
                                                                 details.trigger
-                                                            )
-                                                        }
+                                                            );
+                                                        }}
                                                         onOpenChangeComplete={(open) =>
                                                             trace.complete(submenuId(menu), open)
                                                         }

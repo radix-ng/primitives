@@ -2,7 +2,13 @@ import '@angular/compiler';
 import { Component, Directive, provideZonelessChangeDetection, signal } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { RdxDirectionProvider } from '@radix-ng/primitives/direction-provider';
-import { RdxMenuItem, RdxMenuModule, RdxMenuPopup, type RdxMenuOpenChange } from '@radix-ng/primitives/menu';
+import {
+    RdxMenuItem,
+    RdxMenuModule,
+    RdxMenuPopup,
+    RdxMenuSubTrigger,
+    type RdxMenuOpenChange
+} from '@radix-ng/primitives/menu';
 import { RdxMenubarRoot } from '@radix-ng/primitives/menubar';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { changeCollection, type MenuEntry } from '../../../shared/menu-collection';
@@ -23,12 +29,18 @@ class PopupHost {}
     hostDirectives: [{ directive: RdxMenuItem, inputs: ['disabled'], outputs: ['onSelect'] }]
 })
 class ItemHost {}
-function createNestedTemplate(popupAttribute = 'rdxMenuPopup', itemAttribute = 'rdxMenuItem') {
+@Directive({ selector: '[paritySubTrigger]', hostDirectives: [RdxMenuSubTrigger] })
+class SubTriggerHost {}
+function createNestedTemplate(
+    popupAttribute = 'rdxMenuPopup',
+    itemAttribute = 'rdxMenuItem',
+    subTriggerAttribute = 'rdxMenuSubTrigger'
+) {
     return `
     @if (settings.nested) {
         <ng-container (onOpenChange)="change(submenuId(menu), $event)"
             (onOpenChangeComplete)="trace.complete(submenuId(menu), $event)" rdxMenuRoot>
-            <button [class]="s.item" [attr.data-testid]="menu + '-more'" rdxMenuSubTrigger>More</button>
+            <button [class]="s.item" [attr.data-testid]="menu + '-more'" ${subTriggerAttribute}>More</button>
             <ng-template rdxMenuPortal>
                 <div class="z-50" [side]="settings.dir === 'rtl' ? 'left' : 'right'" align="start" sideOffset="4" rdxMenuPositioner>
                     <div [class]="s.popup" [id]="menu + '-sub-popup'" [attr.data-testid]="menu + '-sub-popup'"
@@ -44,7 +56,7 @@ function createNestedTemplate(popupAttribute = 'rdxMenuPopup', itemAttribute = '
 }
 // Both variants remain static AOT templates in the owning Menu view.
 const nestedTemplate = createNestedTemplate();
-const composedNestedTemplate = createNestedTemplate('parityPopup', 'parityItem');
+const composedNestedTemplate = createNestedTemplate('parityPopup', 'parityItem', 'paritySubTrigger');
 // Compose a static AOT template; the fragment keeps Menu parts in this owning view.
 const template = `
         <div [dir]="settings.dir" rdxDirectionProvider>
@@ -90,7 +102,7 @@ const template = `
 `;
 @Component({
     selector: 'parity-menubar',
-    imports: [RdxMenuModule, MenubarHost, PopupHost, ItemHost, RdxDirectionProvider],
+    imports: [RdxMenuModule, MenubarHost, PopupHost, ItemHost, SubTriggerHost, RdxDirectionProvider],
     host: { '(document:keydown)': 'command($event)' },
     template
 })

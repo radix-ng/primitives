@@ -33,7 +33,7 @@ export function config() {
         side: 'bottom' as const,
         orientation: name.startsWith('vertical-') ? ('vertical' as const) : ('horizontal' as const),
         nested: name.startsWith('nested-'),
-        composed: name === 'nested-composed'
+        composed: name.endsWith('-composed')
     };
 }
 export type TopLayer = 'file' | 'blocked' | 'edit' | 'new';

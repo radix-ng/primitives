@@ -175,7 +175,7 @@ export interface RdxMenuRootContext {
     registerPopup: (el: HTMLElement, physicalSide?: Signal<MenuSide | undefined>, getId?: () => string) => () => void;
     setBeforeContentFocusGuard: (element: HTMLElement | null) => void;
     registerTransitionElement: (element: HTMLElement) => () => void;
-    registerPopupArrowNavigationHandler: (handler: (offset: 1 | -1) => boolean) => () => void;
+    registerPopupArrowNavigationHandler: (handler: (offset: 1 | -1, event?: KeyboardEvent) => boolean) => () => void;
     registerTriggerInteractionHandler: (
         handler: RdxMenuTriggerInteractionHandler,
         scope?: HTMLElement,
@@ -186,7 +186,8 @@ export interface RdxMenuRootContext {
     markAsContextMenu: () => void;
     setAllowMouseUpTrigger: (value: boolean) => void;
     closeParent: () => void;
-    handlePopupArrowNavigation: (offset: 1 | -1) => boolean;
+    handlePopupArrowNavigation: (offset: 1 | -1, event?: KeyboardEvent) => boolean;
+    closeForNavigation: (event?: KeyboardEvent) => void;
     handleTriggerInteraction: (interaction: RdxMenuTriggerInteraction) => boolean;
 }
 
@@ -278,7 +279,8 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         markAsContextMenu: () => instance.markAsContextMenu(),
         setAllowMouseUpTrigger: (value) => instance.setAllowMouseUpTrigger(value),
         closeParent: () => instance.closeParent(),
-        handlePopupArrowNavigation: (offset) => instance.handlePopupArrowNavigation(offset),
+        handlePopupArrowNavigation: (offset, event) => instance.handlePopupArrowNavigation(offset, event),
+        closeForNavigation: (event) => instance.closeForNavigation(event),
         handleTriggerInteraction: (interaction) => instance.handleTriggerInteraction(interaction)
     };
 }
@@ -322,7 +324,7 @@ export class RdxMenuRoot {
     private registeredTrigger: HTMLElement | undefined;
     private registeredTriggerId?: () => string;
     private registeredPopupId?: () => string;
-    private popupArrowNavigationHandler: ((offset: 1 | -1) => boolean) | undefined;
+    private popupArrowNavigationHandler: ((offset: 1 | -1, event?: KeyboardEvent) => boolean) | undefined;
     private triggerInteractionHandler: RdxMenuTriggerInteractionHandler | undefined;
     private hasAppliedDefaultOpen = false;
 
@@ -722,7 +724,7 @@ export class RdxMenuRoot {
         this.lifecycle.unmount();
     }
 
-    registerPopupArrowNavigationHandler(handler: (offset: 1 | -1) => boolean): () => void {
+    registerPopupArrowNavigationHandler(handler: (offset: 1 | -1, event?: KeyboardEvent) => boolean): () => void {
         this.popupArrowNavigationHandler = handler;
 
         return () => {
@@ -732,10 +734,21 @@ export class RdxMenuRoot {
         };
     }
 
-    handlePopupArrowNavigation(offset: 1 | -1): boolean {
+    handlePopupArrowNavigation(offset: 1 | -1, event?: KeyboardEvent): boolean {
         return (
-            this.popupArrowNavigationHandler?.(offset) ?? this.parentRoot?.handlePopupArrowNavigation(offset) ?? false
+            this.popupArrowNavigationHandler?.(offset, event) ??
+            this.parentRoot?.handlePopupArrowNavigation(offset, event) ??
+            false
         );
+    }
+
+    /** @internal A navigation return moves focus/highlight even when its close request is canceled. */
+    closeForNavigation(event?: KeyboardEvent): void {
+        event?.preventDefault();
+        event?.stopPropagation();
+        this.close('list-navigation', event);
+        this.setActiveIndex(null);
+        this.getReturnFocusElement()?.focus({ preventScroll: true });
     }
 
     private coordinator?: RdxMenuCoordinator;

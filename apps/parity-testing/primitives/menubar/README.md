@@ -3,7 +3,7 @@
 Run `pnpm test-parity menubar` with Node 24; preview port is 4509. Angular fixtures are AOT compiled
 and React imports the unmodified Base UI 1.9.0 source pinned in `../../reference.json`.
 
-Thirty-six scenarios run in Chromium, Firefox and WebKit (108 comparisons): keyboard opening, native
+Forty-two scenarios run in Chromium, Firefox and WebKit (126 comparisons): keyboard opening, native
 mouse-down opening before release, closed roving focus, disabled-trigger skipping, keyboard/pointer
 sibling switching, RTL direction, whole-bar disabling, item selection, canceled open/close requests,
 outside dismissal and Tab. Changes retain their native events and reason/order; popup focus,
@@ -14,7 +14,7 @@ The fixture keeps uncontrolled Menu roots rather than mirroring state into a coo
 Angular composes Menubar through a consumer `hostDirectives` directive, so its original selector
 attribute is absent. Focus containment and the backdrop cutout use the registered native host.
 Reports retain native events, trusted coordinates, timestamps and source commit/digest. There are
-eighteen exact expected pairs for the pin limitations described in the source matrix.
+forty exact expected pairs for the reviewed differences described in the source matrix.
 
 Five collection cases cover insertion, closed focused removal, keyed reordering, unfocused disabling
 and labels, followed by forward switching. Native focus repair is shared with floating menus.
@@ -27,6 +27,11 @@ and retry. Four vertical cases cover bar roving, LTR/RTL opening, popup items an
 cases cover child Escape and pointer/forward-key switching, including composed popup hosts. A
 three-enabled-destination RTL case checks actual direction. Bar state is recorded alongside focus.
 
-This suite does not certify vertical close-direction arrows, custom popup orientation, canceled nested
-requests, retained portals, touch/device behavior or assistive technology. See the
+Two return-arrow cases record the pin's immediate reopening in LTR/RTL; Angular completes the close.
+Four child keyboard-cancellation cases compare opening, Escape/arrow closing and retry, including
+the independent focus/highlight handoff when an arrow close is canceled. A composed case wraps
+popup, item and submenu-trigger directives without their original selector attributes.
+
+This suite does not certify custom popup orientation, nested pointer/selection cancellation, retained
+portals, touch/device behavior or assistive technology. See the
 [source matrix](../../../../packages/primitives/menubar/PARITY.md).

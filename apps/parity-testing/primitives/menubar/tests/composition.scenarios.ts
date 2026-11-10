@@ -47,6 +47,13 @@ export async function runComposition(d: MenubarDriver, name: CompositionCase) {
         await file.press(openKey);
         await expect(d.page.getByTestId('file-popup')).toBeVisible();
         await d.checkpoint('opened across bar axis', { open: ['file'], focus: 'file-alpha' });
+        if (name.startsWith('vertical-close-arrow')) {
+            await d.page.keyboard.press(rtl ? 'ArrowRight' : 'ArrowLeft');
+            await d.checkpoint('cross-axis close requested');
+            await d.page.keyboard.press('Escape');
+            await d.checkpoint('settled after cross-axis close', { open: [], focus: 'file-trigger' });
+            return;
+        }
         if (name === 'vertical-popup') {
             await d.page.keyboard.press('ArrowDown');
             await d.checkpoint('navigated inside popup', { open: ['file'], focus: 'file-blocked' });
@@ -70,8 +77,25 @@ export async function runComposition(d: MenubarDriver, name: CompositionCase) {
     await expect(d.page.getByTestId('file-more')).toBeFocused();
     await d.checkpoint('nested trigger ready', { open: ['file'], focus: 'file-more' });
     await d.page.keyboard.press(openKey);
+    if (name === 'nested-cancel-open') {
+        await expect(d.page.getByTestId('file-sub-popup')).toHaveCount(0);
+        await d.checkpoint('child opening canceled', { open: ['file'], focus: 'file-more' });
+        await d.page.keyboard.press('F5');
+        await d.page.keyboard.press(openKey);
+    }
     await expect(d.page.getByTestId('file-sub-popup')).toBeVisible();
+    await expect(d.page.getByTestId('file-sub-alpha')).toBeFocused();
     await d.checkpoint('opened nested menu', { open: ['file', 'file-sub'], focus: 'file-sub-alpha' });
+    if (name.startsWith('nested-cancel-close')) {
+        await d.page.keyboard.press(name.includes('-arrow') ? (rtl ? 'ArrowRight' : 'ArrowLeft') : 'Escape');
+        await d.checkpoint('child closing canceled', { open: ['file', 'file-sub'] });
+        await d.page.keyboard.press('F5');
+        await d.page.keyboard.press('Escape');
+        await d.checkpoint('child retry accepted', { open: ['file'], focus: 'file-more' });
+        await d.page.keyboard.press('Escape');
+        await d.checkpoint('parent closed after child retry', { open: [] });
+        return;
+    }
     if (name === 'nested-switch' || name === 'nested-forward' || name === 'nested-composed') {
         if (name === 'nested-switch') await edit.hover();
         else await d.page.keyboard.press(openKey);
