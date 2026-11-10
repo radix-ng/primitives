@@ -1,3 +1,5 @@
+import { cancelPointerChange } from './pointer';
+
 export const compositionCases = [
     'cancel-switch-open-keyboard',
     'cancel-switch-open-pointer',
@@ -26,6 +28,9 @@ export function cancelChange(name: string, layer: string, open: boolean, reason:
     return (
         (open && name === 'cancel-open') ||
         (!open && name === 'cancel-close') ||
+        (!allowSwitch &&
+            ((name === 'retained-cancel-close' && layer === 'file' && !open) ||
+                cancelPointerChange(name, layer, open, reason))) ||
         (!allowSwitch &&
             layer === 'file' &&
             ((name === 'state-controlled-cancel-open' && open) ||

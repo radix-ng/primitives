@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
-import { LucideCheck, LucideDot } from '@lucide/angular';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { LucideChevronRight } from '@lucide/angular';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { RdxMenubarRoot, type RdxMenubarOrientation } from '@radix-ng/primitives/menubar';
 import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
 
 @Component({
     selector: 'rdx-menubar-default',
-    imports: [RdxMenuModule, RdxMenubarRoot, LucideCheck, LucideDot],
+    imports: [RdxMenuModule, RdxMenubarRoot, LucideChevronRight],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <div
@@ -14,173 +14,120 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
             [orientation]="orientation()"
             rdxMenubarRoot
         >
-            <!-- File -->
-            <ng-container #fileMenu="rdxMenuRoot" rdxMenuRoot>
+            <ng-container rdxMenuRoot>
                 <button [class]="mb.trigger" rdxMenuTrigger>File</button>
-
-                <div
-                    [class]="cn(m.positioner, 'data-[closed]:hidden')"
-                    [side]="orientation() === 'vertical' ? 'right' : 'bottom'"
-                    align="start"
-                    sideOffset="4"
-                    rdxMenuPositioner
-                >
-                    <div [class]="m.popup" rdxMenuPopup>
-                        <button [class]="m.item" rdxMenuItem>
-                            New Tab
-                            <span [class]="mb.shortcut">⌘ T</span>
-                        </button>
-                        <button [class]="m.item" rdxMenuItem>
-                            New Window
-                            <span [class]="mb.shortcut">⌘ N</span>
-                        </button>
-                        <button [class]="m.item" [disabled]="true" rdxMenuItem>New Incognito Window</button>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-
-                        <!-- Share submenu -->
-                        <ng-container #shareSub="rdxMenuRoot" rdxMenuRoot>
-                            <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
-                                Share
-                                <span class="text-muted-foreground text-xs">›</span>
-                            </button>
-                            @if (shareSub.open()) {
-                                <div [class]="m.positioner" side="right" align="start" sideOffset="4" rdxMenuPositioner>
-                                    <div [class]="m.popup" rdxMenuPopup>
-                                        <button [class]="m.item" rdxMenuItem>Email Link</button>
-                                        <button [class]="m.item" rdxMenuItem>Messages</button>
-                                        <button [class]="m.item" rdxMenuItem>Notes</button>
-                                    </div>
+                <ng-template [keepMounted]="keepMounted()" rdxMenuPortal>
+                    <div
+                        [class]="m.positioner"
+                        [side]="orientation() === 'vertical' ? 'inline-end' : 'bottom'"
+                        align="start"
+                        sideOffset="4"
+                        rdxMenuPositioner
+                    >
+                        <div [class]="m.popup" rdxMenuPopup>
+                            <div [class]="m.item" rdxMenuItem>New</div>
+                            <div [class]="m.item" rdxMenuItem>Open</div>
+                            <div [class]="m.item" rdxMenuItem>Save</div>
+                            <ng-container rdxMenuRoot>
+                                <div [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
+                                    Export
+                                    <svg class="size-4" lucideChevronRight></svg>
                                 </div>
-                            }
-                        </ng-container>
-
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" rdxMenuItem>
-                            Print…
-                            <span [class]="mb.shortcut">⌘ P</span>
-                        </button>
-                    </div>
-                </div>
-            </ng-container>
-
-            <!-- Edit -->
-            <ng-container #editMenu="rdxMenuRoot" rdxMenuRoot>
-                <button [class]="mb.trigger" rdxMenuTrigger>Edit</button>
-
-                <div
-                    [class]="cn(m.positioner, 'data-[closed]:hidden')"
-                    [side]="orientation() === 'vertical' ? 'right' : 'bottom'"
-                    align="start"
-                    sideOffset="4"
-                    rdxMenuPositioner
-                >
-                    <div [class]="m.popup" rdxMenuPopup>
-                        <button [class]="m.item" rdxMenuItem>
-                            Undo
-                            <span [class]="mb.shortcut">⌘ Z</span>
-                        </button>
-                        <button [class]="m.item" rdxMenuItem>
-                            Redo
-                            <span [class]="mb.shortcut">⇧ ⌘ Z</span>
-                        </button>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" rdxMenuItem>
-                            Cut
-                            <span [class]="mb.shortcut">⌘ X</span>
-                        </button>
-                        <button [class]="m.item" rdxMenuItem>
-                            Copy
-                            <span [class]="mb.shortcut">⌘ C</span>
-                        </button>
-                        <button [class]="m.item" rdxMenuItem>
-                            Paste
-                            <span [class]="mb.shortcut">⌘ V</span>
-                        </button>
-                    </div>
-                </div>
-            </ng-container>
-
-            <!-- View -->
-            <ng-container #viewMenu="rdxMenuRoot" rdxMenuRoot>
-                <button [class]="mb.trigger" rdxMenuTrigger>View</button>
-
-                <div
-                    [class]="cn(m.positioner, 'data-[closed]:hidden')"
-                    [side]="orientation() === 'vertical' ? 'right' : 'bottom'"
-                    align="start"
-                    sideOffset="4"
-                    rdxMenuPositioner
-                >
-                    <div [class]="m.popup" rdxMenuPopup>
-                        <label [(checked)]="showBookmarks" [class]="m.selectableItem" rdxMenuCheckboxItem>
-                            <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>
-                                <svg [size]="12" lucideCheck></svg>
-                            </span>
-                            Always Show Bookmarks Bar
-                        </label>
-                        <label [(checked)]="showFullUrls" [class]="m.selectableItem" rdxMenuCheckboxItem>
-                            <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>
-                                <svg [size]="12" lucideCheck></svg>
-                            </span>
-                            Always Show Full URLs
-                        </label>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" rdxMenuItem>
-                            Reload
-                            <span [class]="mb.shortcut">⌘ R</span>
-                        </button>
-                        <button [class]="m.item" [disabled]="true" rdxMenuItem>
-                            Force Reload
-                            <span [class]="mb.shortcut">⇧ ⌘ R</span>
-                        </button>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" rdxMenuItem>Toggle Fullscreen</button>
-                    </div>
-                </div>
-            </ng-container>
-
-            <!-- Profiles -->
-            <ng-container #profilesMenu="rdxMenuRoot" rdxMenuRoot>
-                <button [class]="mb.trigger" rdxMenuTrigger>Profiles</button>
-
-                <div
-                    [class]="cn(m.positioner, 'data-[closed]:hidden')"
-                    [side]="orientation() === 'vertical' ? 'right' : 'bottom'"
-                    align="start"
-                    sideOffset="4"
-                    rdxMenuPositioner
-                >
-                    <div [class]="m.popup" rdxMenuPopup>
-                        <div [(value)]="activeProfile" rdxMenuRadioGroup>
-                            <label [class]="m.selectableItem" value="andy" rdxMenuRadioItem>
-                                <span [class]="m.itemIndicator" rdxMenuRadioItemIndicator>
-                                    <svg [size]="10" strokeWidth="5" lucideDot></svg>
-                                </span>
-                                Andy
-                            </label>
-                            <label [class]="m.selectableItem" value="luis" rdxMenuRadioItem>
-                                <span [class]="m.itemIndicator" rdxMenuRadioItemIndicator>
-                                    <svg [size]="10" strokeWidth="5" lucideDot></svg>
-                                </span>
-                                Luis
-                            </label>
+                                <ng-template [keepMounted]="keepMounted()" rdxMenuPortal>
+                                    <div
+                                        [class]="m.positioner"
+                                        side="inline-end"
+                                        align="start"
+                                        sideOffset="-4"
+                                        alignOffset="-4"
+                                        rdxMenuPositioner
+                                    >
+                                        <div [class]="m.popup" rdxMenuPopup>
+                                            <div [class]="m.item" rdxMenuItem>PDF</div>
+                                            <div [class]="m.item" rdxMenuItem>PNG</div>
+                                            <div [class]="m.item" rdxMenuItem>SVG</div>
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </ng-container>
+                            <div [class]="m.separator" rdxMenuSeparator></div>
+                            <div [class]="m.item" rdxMenuItem>Print</div>
                         </div>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="cn(m.item, 'pl-8')" rdxMenuItem>Edit…</button>
-                        <button [class]="cn(m.item, 'pl-8')" rdxMenuItem>Add Profile…</button>
                     </div>
-                </div>
+                </ng-template>
+            </ng-container>
+
+            <ng-container rdxMenuRoot>
+                <button [class]="mb.trigger" rdxMenuTrigger>Edit</button>
+                <ng-template [keepMounted]="keepMounted()" rdxMenuPortal>
+                    <div
+                        [class]="m.positioner"
+                        [side]="orientation() === 'vertical' ? 'inline-end' : 'bottom'"
+                        align="start"
+                        sideOffset="4"
+                        rdxMenuPositioner
+                    >
+                        <div [class]="m.popup" rdxMenuPopup>
+                            <div [class]="m.item" rdxMenuItem>Cut</div>
+                            <div [class]="m.item" rdxMenuItem>Copy</div>
+                            <div [class]="m.item" rdxMenuItem>Paste</div>
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-container>
+
+            <ng-container rdxMenuRoot>
+                <button [class]="mb.trigger" rdxMenuTrigger>View</button>
+                <ng-template [keepMounted]="keepMounted()" rdxMenuPortal>
+                    <div
+                        [class]="m.positioner"
+                        [side]="orientation() === 'vertical' ? 'inline-end' : 'bottom'"
+                        align="start"
+                        sideOffset="4"
+                        rdxMenuPositioner
+                    >
+                        <div [class]="m.popup" rdxMenuPopup>
+                            <div [class]="m.item" rdxMenuItem>Zoom In</div>
+                            <div [class]="m.item" rdxMenuItem>Zoom Out</div>
+                            <ng-container rdxMenuRoot>
+                                <div [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
+                                    Layout
+                                    <svg class="size-4" lucideChevronRight></svg>
+                                </div>
+                                <ng-template [keepMounted]="keepMounted()" rdxMenuPortal>
+                                    <div
+                                        [class]="m.positioner"
+                                        side="inline-end"
+                                        align="start"
+                                        sideOffset="-4"
+                                        alignOffset="-4"
+                                        rdxMenuPositioner
+                                    >
+                                        <div [class]="m.popup" rdxMenuPopup>
+                                            <div [class]="m.item" rdxMenuItem>Single Page</div>
+                                            <div [class]="m.item" rdxMenuItem>Two Pages</div>
+                                            <div [class]="m.item" rdxMenuItem>Continuous</div>
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </ng-container>
+                            <div [class]="m.separator" rdxMenuSeparator></div>
+                            <div [class]="m.item" rdxMenuItem>Full Screen</div>
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-container>
+
+            <ng-container [disabled]="true" rdxMenuRoot>
+                <button [class]="mb.trigger" rdxMenuTrigger>Help</button>
             </ng-container>
         </div>
     `
 })
 export class RdxMenubarDefaultComponent {
     readonly orientation = input<RdxMenubarOrientation>('horizontal');
+    readonly keepMounted = input(false);
     protected readonly cn = cn;
     protected readonly mb = demoMenubar;
     protected readonly m = demoMenu;
-
-    showBookmarks = signal(true);
-    showFullUrls = signal(false);
-    activeProfile = signal<string | undefined>('andy');
 }

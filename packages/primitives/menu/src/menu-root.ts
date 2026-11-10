@@ -20,6 +20,7 @@ import {
     createFloatingRootContext,
     createPointerMoveGuard,
     Direction,
+    getActiveElement,
     injectId,
     provideFloatingRootContext,
     provideFloatingTree,
@@ -96,6 +97,7 @@ export interface RdxMenuOpenChange {
 export interface RdxMenuCoordinator {
     insideElements: () => Array<HTMLElement | undefined>;
     ownsEscape: (event: KeyboardEvent) => boolean;
+    returnFocusFrom?: (previous: HTMLElement) => HTMLElement | undefined;
 }
 
 export interface RdxMenuRootContext {
@@ -327,6 +329,7 @@ export class RdxMenuRoot {
     private popupArrowNavigationHandler: ((offset: 1 | -1, event?: KeyboardEvent) => boolean) | undefined;
     private triggerInteractionHandler: RdxMenuTriggerInteractionHandler | undefined;
     private hasAppliedDefaultOpen = false;
+    private focusBeforeRetainedOpen: HTMLElement | undefined;
 
     /** Whether the menu is currently open. */
     readonly open = model(false);
@@ -539,7 +542,7 @@ export class RdxMenuRoot {
                 this.onOpenChange.emit(change.payload);
                 if (change.eventDetails.isCanceled()) return;
                 this.lastOpenChangeReason.set(reason);
-                this.openInteractionType.set(getInteractionTypeFromEvent(event));
+                this.openInteractionType.set(reason === 'trigger-focus' ? null : getInteractionTypeFromEvent(event));
                 change.commit();
                 this.floatingContext.events.emit('openchange', {
                     open: true,
@@ -559,11 +562,16 @@ export class RdxMenuRoot {
                 return;
             }
 
+            // A retained popup already has its focus scope before this request. Capture actual
+            // pre-open focus here, before the coordinator moves it to another trigger.
+            this.focusBeforeRetainedOpen = this.popupElement()
+                ? ((getActiveElement(this.floatingContext.ownerDocument) as HTMLElement | null) ?? undefined)
+                : undefined;
             this.lastOpenChangeReason.set(reason);
             // Record whether this open came from touch (ADR 0016 §3). Hover / mouse / keyboard all resolve
             // to false (no `'touch'` pointer type), so only a genuine touch open gates the anchored lock.
             this.openedByTouch.set((event as PointerEvent | undefined)?.pointerType === 'touch');
-            const method = getInteractionTypeFromEvent(event);
+            const method = reason === 'trigger-focus' ? null : getInteractionTypeFromEvent(event);
             this.openInteractionType.set(method);
             this.pointerOrigin =
                 (method === 'mouse' || method === 'pen') && event && 'clientX' in event && 'clientY' in event
@@ -687,10 +695,21 @@ export class RdxMenuRoot {
         };
     }
 
-    /** A removed submenu trigger falls back through its surviving owners. */
+    /** This open session's return target, falling back through surviving Menu owners. */
     getReturnFocusElement(): HTMLElement | undefined {
+        const previous = this.focusBeforeRetainedOpen;
+        if (this.parentType() === 'menubar' && this.openInteractionType() == null && previous) {
+            if (
+                previous !== this.floatingContext.ownerDocument.body &&
+                previous.isConnected &&
+                !previous.closest('[hidden]')
+            )
+                return previous;
+            const owner = this.coordinator?.returnFocusFrom?.(previous);
+            if (owner) return owner;
+        }
         const trigger = this.trigger();
-        if (trigger?.isConnected) return trigger;
+        if (trigger?.isConnected && !trigger.closest('[hidden]')) return trigger;
         return this.parentRoot?.getReturnFocusElement() ?? this.contextMenuPreviousFocus();
     }
 

@@ -42,7 +42,7 @@ function createNestedTemplate(
         <ng-container (onOpenChange)="change(submenuId(menu), $event)"
             (onOpenChangeComplete)="trace.complete(submenuId(menu), $event)" rdxMenuRoot>
             <button [class]="s.item" [attr.data-testid]="menu + '-more'" ${subTriggerAttribute}>More</button>
-            <ng-template rdxMenuPortal>
+            <ng-template [keepMounted]="settings.keepMounted" rdxMenuPortal>
                 <div class="z-50" [side]="settings.dir === 'rtl' ? 'left' : 'right'" align="start" sideOffset="4" rdxMenuPositioner>
                     <div [class]="s.popup" [id]="menu + '-sub-popup'" [attr.data-testid]="menu + '-sub-popup'"
                         [attr.data-menu-popup]="menu + '-sub'" ${popupAttribute}>

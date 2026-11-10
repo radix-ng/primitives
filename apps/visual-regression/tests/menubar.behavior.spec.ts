@@ -4,8 +4,8 @@ import { expect, Page, test } from '@playwright/test';
  * ADR 0015/0017 Phase-4 migration of Menubar (a coordinator over `RdxMenuRoot` + `rdxMenuTrigger`, so
  * each menu uses the new floating dismissal engine) onto a real browser. Guards that opening, switching
  * between sibling menus, and dismissal still work — the cases the per-menu (vs legacy global-stack)
- * containment had to preserve. The Default story keeps every menu popup mounted, so assertions scope to
- * the *open* popup (`[data-open]`) rather than counting all mounted popups. The popup uses Base UI's
+ * containment had to preserve. Default uses Base UI's Portal/Positioner/Popup structure; KeepMounted
+ * exercises the same anatomy with retained views. The popup uses Base UI's
  * `data-open`/`data-closed` state (not the Radix-era `data-state`); the trigger reflects open state via
  * `aria-expanded`.
  */
@@ -16,6 +16,56 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
 
 const trigger = '[rdxMenuTrigger]';
 const openPopup = '[rdxMenuPopup][data-open]';
+
+test('default follows Base UI menu and portal anatomy with the shared demo styles', async ({ page }) => {
+    await gotoStory(page, 'primitives-menubar--default');
+    await expect(page.locator(trigger)).toHaveText(['File', 'Edit', 'View', 'Help']);
+    await expect(page.locator(trigger).last()).toBeDisabled();
+    await expect(page.locator('[rdxMenuPopup]')).toHaveCount(0);
+    await page.locator(trigger).first().press('ArrowDown');
+    const popup = page.locator(openPopup);
+    await expect(popup.locator('[rdxMenuItem]').first()).toHaveText('New');
+    await expect(popup.locator('[rdxMenuItem]').first()).toBeFocused();
+    await expect(page.locator('[rdxMenubarRoot] [rdxMenuPositioner]')).toHaveCount(0);
+    expect(await popup.evaluate((element) => element.parentElement?.hasAttribute('rdxMenuPositioner'))).toBe(true);
+    expect(
+        await popup
+            .locator('[rdxMenuItem]')
+            .first()
+            .evaluate((element) => element.tagName)
+    ).toBe('DIV');
+    await expect(popup.locator('[rdxMenuSubTrigger]')).toHaveText('Export');
+    await page.keyboard.press('End');
+    await page.keyboard.press('Enter');
+    await expect(page.locator('[rdxMenuPopup]')).toHaveCount(0);
+});
+
+test('retained root and child portals reuse their views and stay outside the Tab order after closing', async ({
+    page
+}) => {
+    await gotoStory(page, 'primitives-menubar--keep-mounted');
+    await expect(page.locator('[rdxMenuPopup]')).toHaveCount(5);
+    await expect(page.locator(openPopup)).toHaveCount(0);
+    await page.locator(trigger).first().press('ArrowDown');
+    await expect(page.getByRole('menuitem', { name: 'New', exact: true })).toBeFocused();
+    const original = (await page.locator(openPopup).elementHandle())!;
+    await page.getByRole('menuitem', { name: 'Export', exact: true }).press('ArrowRight');
+    await expect(page.getByRole('menuitem', { name: 'PDF', exact: true })).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('menuitem', { name: 'Export', exact: true })).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(page.locator(openPopup)).toHaveCount(0);
+    for (const popup of await page.locator('[rdxMenuPopup]').all()) await expect(popup).toBeHidden();
+    await page.keyboard.press('Tab');
+    expect(
+        await page
+            .locator('[rdxMenuPopup]')
+            .evaluateAll((elements) => elements.some((el) => el.contains(document.activeElement)))
+    ).toBe(false);
+    await page.locator(trigger).first().press('ArrowDown');
+    await expect(page.getByRole('menuitem', { name: 'New', exact: true })).toBeFocused();
+    expect(await original.evaluate((element) => element.isConnected)).toBe(true);
+});
 
 test('Tab enters the menubar on a trigger and arrow navigation keeps working', async ({ page }) => {
     await gotoStory(page, 'primitives-menubar--default');
@@ -78,7 +128,7 @@ test('switching an open menubar focuses the new popup and ArrowDown enters its f
 
     const firstItem = page.locator(`${openPopup} [rdxMenuItem]`).first();
     await expect(firstItem).toBeFocused();
-    await expect(firstItem).toContainText('Undo');
+    await expect(firstItem).toContainText('Cut');
 });
 
 test('native mouse-down opens before release and dragging selects a command', async ({ page }) => {
@@ -158,7 +208,7 @@ test('a nested forward arrow switches the owning top-level menu', async ({ page 
     await expect(page.locator(openPopup).first().locator('[rdxMenuItem]').first()).toBeFocused();
     await page.locator('[rdxMenuSubTrigger]').first().press('ArrowRight');
     await expect(page.locator(openPopup)).toHaveCount(2);
-    await expect(page.getByRole('menuitem', { name: 'Email Link', exact: true })).toBeFocused();
+    await expect(page.getByRole('menuitem', { name: 'PDF', exact: true })).toBeFocused();
     await page.keyboard.press('ArrowRight');
     await expect(triggers.nth(1)).toHaveAttribute('aria-expanded', 'true');
     await expect(triggers.first()).toHaveAttribute('aria-expanded', 'false');

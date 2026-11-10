@@ -5,6 +5,7 @@ export const stateCases = [
     'state-controlled-initial-open',
     'state-controlled-external-open',
     'state-controlled-switch',
+    'state-controlled-switch-retained',
     'state-controlled-cancel-open',
     'state-controlled-cancel-close'
 ] as const;

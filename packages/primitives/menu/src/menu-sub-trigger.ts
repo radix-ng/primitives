@@ -61,6 +61,7 @@ const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();
         '(keydown.arrowleft)': 'onArrowLeft($event)',
         '(keydown.arrowright)': 'onArrowRight($event)',
         '(pointermove)': 'onPointerMove($event)',
+        '(pointerenter)': 'onPointerEnter($event)',
         '(pointerleave)': 'onPointerLeave()',
         '(pointerout)': 'onPointerOut($event)',
         '(rdx-menu-subtrigger-clear-highlight)': 'clearHighlight()'
@@ -81,6 +82,7 @@ export class RdxMenuSubTrigger {
     private readonly isFocused = signal(false);
     private readonly focusManager = inject(RdxFloatingFocusManager, { optional: true });
     private openTimer: ReturnType<typeof setTimeout> | undefined;
+    private restTimer: ReturnType<typeof setTimeout> | undefined;
     private closeTimer: ReturnType<typeof setTimeout> | undefined;
     /** Cursor position from the last pointer move over the trigger (safe-polygon apex). */
     private lastPointer: { x: number; y: number } | null = null;
@@ -162,6 +164,7 @@ export class RdxMenuSubTrigger {
             // Once closed, forget how this open started so the next (possibly keyboard / programmatic)
             // open doesn't re-arm the hover tunnel from a stale flag.
             if (!open) {
+                this.clearOpenTimers();
                 this.openedByHover = false;
                 this.lastPointer = null;
                 return;
@@ -208,7 +211,7 @@ export class RdxMenuSubTrigger {
         });
 
         this.destroyRef.onDestroy(() => {
-            clearTimeout(this.openTimer);
+            this.clearOpenTimers();
             clearTimeout(this.closeTimer);
         });
     }
@@ -281,6 +284,7 @@ export class RdxMenuSubTrigger {
 
         event.preventDefault();
         event.stopPropagation();
+        this.clearOpenTimers();
         this.ignoreNextKeyboardClick = true;
         this.openedByHover = false;
         this.openedByKeyboard.set(true);
@@ -300,6 +304,7 @@ export class RdxMenuSubTrigger {
         }
 
         if (this.effectiveDisabled()) return;
+        this.clearOpenTimers();
         event.preventDefault();
         event.stopPropagation();
         this.openedByHover = false;
@@ -318,6 +323,7 @@ export class RdxMenuSubTrigger {
         }
 
         if (this.effectiveDisabled()) return;
+        this.clearOpenTimers();
         event.preventDefault();
         event.stopPropagation();
         this.openedByHover = false;
@@ -344,18 +350,40 @@ export class RdxMenuSubTrigger {
 
         if (this.effectiveDisabled() || !this.openOnHover()) return;
         if (!this.submenuContext.isOpen()) {
-            clearTimeout(this.openTimer);
             this.closeSiblingSubmenus();
-            this.openTimer = setTimeout(() => {
-                this.openedByHover = true;
-                this.openedByKeyboard.set(false);
-                this.submenuContext.show(false, 'trigger-hover', event);
+            if (this.restTimer !== undefined && event.movementX ** 2 + event.movementY ** 2 < 2) return;
+            clearTimeout(this.restTimer);
+            this.restTimer = setTimeout(() => {
+                this.restTimer = undefined;
+                this.requestHoverOpen(event);
             }, this.delay() ?? 100);
         }
     }
 
-    protected onPointerLeave(): void {
+    protected onPointerEnter(event: PointerEvent): void {
+        if (event.pointerType !== 'mouse' || this.effectiveDisabled() || !this.openOnHover()) return;
+        this.lastPointer = { x: event.clientX, y: event.clientY };
         clearTimeout(this.openTimer);
+        // Submenus have both an entry delay and pointer-rest intent. A canceled request leaves
+        // the other intent active; an accepted open makes the remaining request a no-op.
+        this.openTimer = setTimeout(() => this.requestHoverOpen(event), this.delay() ?? 100);
+    }
+
+    private requestHoverOpen(event: PointerEvent): void {
+        if (this.submenuContext.isOpen() || this.effectiveDisabled() || !this.openOnHover()) return;
+        this.openedByHover = true;
+        this.openedByKeyboard.set(false);
+        this.submenuContext.show(false, 'trigger-hover', event);
+    }
+
+    private clearOpenTimers(): void {
+        clearTimeout(this.openTimer);
+        clearTimeout(this.restTimer);
+        this.restTimer = undefined;
+    }
+
+    protected onPointerLeave(): void {
+        this.clearOpenTimers();
         if (
             !this.submenuContext.isOpen() &&
             this.elementRef.nativeElement.ownerDocument.activeElement === this.elementRef.nativeElement
@@ -377,7 +405,7 @@ export class RdxMenuSubTrigger {
         if (this.elementRef.nativeElement.contains(event.relatedTarget as Node | null)) {
             return;
         }
-        clearTimeout(this.openTimer);
+        this.clearOpenTimers();
     }
 
     protected clearHighlight(): void {

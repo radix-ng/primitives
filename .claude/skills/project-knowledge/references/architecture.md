@@ -89,6 +89,16 @@ retain the original key before the parent bar consumes it. Shared FocusScope ret
 post-unmount microtask, before another popup's frame-based autofocus. Remounting cancels the old
 return; explicit targets and deliberate outside focus retain their policies. This matches the pin
 without synthetic focus, coordinator timers or an interaction store (ADR 0041).
+Menubar retention/pointer contracts (ADR 0042) use the pinned hero anatomy with shared Radix NG
+styles: all root and child popups are structural Portal → Positioner → Popup views with default div
+items. Entry-delay and pointer-rest intents remain distinct on SubTrigger; a veto can leave both
+requests observable. Both timers cancel on leave/out, keyboard opening, accepted closing and destroy.
+Item hover coordinates sibling closing independently of the highlight guard. A retained popup
+captures actual pre-open focus before native trigger transfer; focus-only opening has programmatic
+intent. Hidden items resolve through existing DI-owned Menu roots to visible surviving triggers.
+There is no global focus history or mirrored open state. Eleven exact Menubar pairs include two
+WebKit coordinate-travel focus/highlight limits measured on both macOS/Linux, alongside the prior
+Tab-entry and nested-completion limits. Retained focus/completion otherwise match the pin.
 Dialog/Drawer shared demo styles use current boolean states; Drawer uses CSS transitions so gesture
 updates do not replay entry keyframes. Browser exit tests pause/seek/finish actual WAAPI effects.
 

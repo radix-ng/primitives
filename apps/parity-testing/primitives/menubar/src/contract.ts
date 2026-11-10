@@ -1,6 +1,8 @@
 import { collectionCases, type MenuEntry } from '../../../shared/menu-collection';
 import { createMenuProbe, type MenuProbe } from '../../../shared/menu-probe';
 import { compositionCases } from './composition';
+import { pointerCases } from './pointer';
+import { retainedCases } from './retained';
 import { stateCases } from './state';
 export const cases = [
     'open-keyboard',
@@ -23,7 +25,9 @@ export const cases = [
     'collection-disable-focused',
     'collection-disable-open',
     ...compositionCases,
-    ...stateCases
+    ...stateCases,
+    ...retainedCases,
+    ...pointerCases
 ] as const;
 export function config() {
     const name = new URLSearchParams(location.search).get('case') ?? 'open-keyboard';
@@ -32,7 +36,7 @@ export function config() {
         name,
         dir: name === 'rtl-switch' || name.endsWith('-rtl') ? ('rtl' as const) : ('ltr' as const),
         disabled: name === 'disabled',
-        keepMounted: false,
+        keepMounted: name.startsWith('retained-') || name.endsWith('-retained'),
         side: 'bottom' as const,
         orientation:
             name.startsWith('vertical-') || name.endsWith('-vertical')
@@ -40,7 +44,7 @@ export function config() {
                 : ('horizontal' as const),
         defaultOpen: name.startsWith('state-default-open'),
         controlled: name.startsWith('state-controlled-'),
-        nested: name.startsWith('nested-'),
+        nested: name.startsWith('nested-') || name.startsWith('retained-nested-'),
         composed: name.endsWith('-composed')
     };
 }

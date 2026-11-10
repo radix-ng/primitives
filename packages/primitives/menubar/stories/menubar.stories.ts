@@ -33,10 +33,19 @@ export const Default: Story = {
 };
 
 export const Vertical: Story = {
-    parameters: source(defaultSource + '\n// Usage: <rdx-menubar-default orientation="vertical" />'),
+    parameters: source(defaultSource),
     render: () => ({
         template: html`
             <rdx-menubar-default orientation="vertical" />
+        `
+    })
+};
+
+export const KeepMounted: Story = {
+    parameters: source(defaultSource),
+    render: () => ({
+        template: html`
+            <rdx-menubar-default [keepMounted]="true" />
         `
     })
 };

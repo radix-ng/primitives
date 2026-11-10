@@ -89,14 +89,15 @@ export class RdxMenuItem {
     }
 
     onPointerMove(event: PointerEvent): void {
-        // WebKit fires zero-delta moves while the list scrolls under a still cursor.
-        if (this.rootContext?.isStationaryPointerMove(event)) {
-            return;
-        }
         if (event.defaultPrevented || event.pointerType !== 'mouse' || this.rootContext?.disabled()) {
             return;
         }
         this.rootContext?.onItemHover(this.elementRef.nativeElement, event);
+        // Hover coordination still runs when WebKit's zero-delta guard suppresses highlighting.
+        // In particular, a sibling-close veto must receive the actual pointer request.
+        if (this.rootContext?.isStationaryPointerMove(event)) {
+            return;
+        }
         if (this.rootContext && !this.rootContext.highlightItemOnHover()) {
             return;
         }

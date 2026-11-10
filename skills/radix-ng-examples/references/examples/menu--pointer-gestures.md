@@ -14,6 +14,9 @@ Hold the primary mouse button, move onto a command, and release after the 200 ms
 select it. Disabled commands may receive hover focus but cannot activate. Checkbox/radio and
 `closeOnClick=false` items keep their usual stay-open behavior.
 
+Submenu hover uses entry delay and pointer-rest intent. A canceled opening can leave the other
+intent pending; an accepted opening consumes it.
+
 Submenus protect diagonal travel, including RTL. After entering the submenu, moving outside it
 does not dismiss it; hovering another parent item closes that branch.
 

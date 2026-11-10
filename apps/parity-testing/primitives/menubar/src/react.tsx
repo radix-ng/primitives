@@ -126,7 +126,7 @@ function ReactMenubar() {
                                                         >
                                                             More
                                                         </Menu.SubmenuTrigger>
-                                                        <Menu.Portal>
+                                                        <Menu.Portal keepMounted={settings.keepMounted}>
                                                             <Menu.Positioner
                                                                 className="z-50"
                                                                 side={settings.dir === 'rtl' ? 'left' : 'right'}

@@ -314,6 +314,18 @@ export class RdxMenubarRoot {
             (interaction) => this.handleTriggerInteraction(id, root, trigger, interaction),
             this.elementRef.nativeElement,
             {
+                returnFocusFrom: (previous) => {
+                    let owner = this.menuRoots().find(
+                        (menu) => menu !== root && menu.popupElement()?.contains(previous)
+                    );
+                    // Resolve a hidden retained item's surviving trigger through actual DI owners.
+                    while (owner) {
+                        const trigger = owner.trigger();
+                        if (trigger?.isConnected && !trigger.closest('[hidden]')) return trigger;
+                        owner = owner.parentRoot ?? undefined;
+                    }
+                    return undefined;
+                },
                 insideElements: () =>
                     this.menuRoots()
                         .filter((menu) => menu.open())

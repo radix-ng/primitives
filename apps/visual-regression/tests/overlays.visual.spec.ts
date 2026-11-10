@@ -18,6 +18,23 @@ async function shoot(page: Page, name: string): Promise<void> {
     await expect(page).toHaveScreenshot(name, { fullPage: true });
 }
 
+test('menubar — file open', async ({ page }) => {
+    await gotoStory(page, 'primitives-menubar--default');
+    await page.getByRole('menuitem', { name: 'File', exact: true }).click();
+    await expect(page.locator('[rdxMenuPopup][data-open]')).toHaveCount(1);
+    await expect(page.locator('[rdxMenuPopup][data-open]')).toBeVisible();
+    await shoot(page, 'menubar-file-open.png');
+});
+
+test('menubar — submenu open', async ({ page }) => {
+    await gotoStory(page, 'primitives-menubar--default');
+    await page.getByRole('menuitem', { name: 'File', exact: true }).click();
+    await page.getByRole('menuitem', { name: 'Export', exact: true }).press('ArrowRight');
+    await expect(page.getByRole('menuitem', { name: 'PDF', exact: true })).toBeFocused();
+    await expect(page.locator('[rdxMenuPopup][data-open]')).toHaveCount(2);
+    await shoot(page, 'menubar-submenu-open.png');
+});
+
 test('popover — open', async ({ page }) => {
     await gotoStory(page, 'primitives-popover--default');
     await page.locator('[rdxPopoverTrigger]').first().click();

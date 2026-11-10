@@ -2,8 +2,12 @@ import { expect } from '@playwright/test';
 import { MenuFamilyDriver } from '../../../shared/menu-family-driver';
 import { compositionCases } from '../src/composition';
 import { cases } from '../src/contract';
+import { pointerCases } from '../src/pointer';
+import { retainedCases } from '../src/retained';
 import { stateCases } from '../src/state';
 import { runComposition } from './composition.scenarios';
+import { runPointer } from './pointer.scenarios';
+import { runRetained } from './retained.scenarios';
 import { runState } from './state.scenarios';
 export class MenubarDriver extends MenuFamilyDriver {
     constructor(page: ConstructorParameters<typeof MenuFamilyDriver>[0], framework: 'angular' | 'react') {
@@ -13,6 +17,10 @@ export class MenubarDriver extends MenuFamilyDriver {
 export const scenarios = cases.map((name) => ({
     name,
     async run(d: MenubarDriver) {
+        if ((pointerCases as readonly string[]).includes(name))
+            return runPointer(d, name as (typeof pointerCases)[number]);
+        if ((retainedCases as readonly string[]).includes(name))
+            return runRetained(d, name as (typeof retainedCases)[number]);
         if ((stateCases as readonly string[]).includes(name)) return runState(d, name as (typeof stateCases)[number]);
         if ((compositionCases as readonly string[]).includes(name))
             return runComposition(d, name as (typeof compositionCases)[number]);

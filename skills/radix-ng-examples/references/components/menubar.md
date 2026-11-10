@@ -30,48 +30,50 @@ import { RdxMenubarModule } from '@radix-ng/primitives/menubar';
 
 ## Anatomy
 
-The menubar is a `rdxMenubarRoot` containing one `ng-container rdxMenuRoot` per menu. Inside each,
-a standard `rdxMenuTrigger` opens a Menu popup. Keep the top-level popup mounted and hide it with
-`data-closed` styles.
+The structure follows Base UI's Menubar example. Each Menu Root owns a trigger and a Portal;
+Positioner and Popup live inside that Portal. Submenus use the same structure inside their parent's
+Popup. Angular's `ng-container` provides Root ownership, and `ng-template rdxMenuPortal` manages
+mounting, exits and optional retention.
 
 ```html
 <div rdxMenubarRoot>
-  <!-- File -->
-  <ng-container #fileMenu="rdxMenuRoot" rdxMenuRoot>
+  <ng-container rdxMenuRoot>
     <button rdxMenuTrigger>File</button>
-
-    <div class="data-[closed]:hidden" align="start" sideOffset="4" rdxMenuPositioner>
-      <div rdxMenuPopup>
-        <button rdxMenuItem>New Tab</button>
-        <div rdxMenuSeparator></div>
-
-        <!-- submenu -->
-        <ng-container #shareSub="rdxMenuRoot" rdxMenuRoot>
-          <button rdxMenuSubTrigger>Share ›</button>
-          @if (shareSub.open()) {
-          <div side="right" align="start" rdxMenuPositioner>
-            <div rdxMenuPopup>
-              <button rdxMenuItem>Email Link</button>
-            </div>
-          </div>
-          }
-        </ng-container>
-
-        <button rdxMenuItem>Print…</button>
+    <ng-template rdxMenuPortal>
+      <div align="start" sideOffset="4" rdxMenuPositioner>
+        <div rdxMenuPopup>
+          <div rdxMenuItem>New</div>
+          <div rdxMenuItem>Open</div>
+          <div rdxMenuItem>Save</div>
+          <ng-container rdxMenuRoot>
+            <div rdxMenuSubTrigger>Export</div>
+            <ng-template rdxMenuPortal>
+              <div side="inline-end" align="start" sideOffset="-4" alignOffset="-4" rdxMenuPositioner>
+                <div rdxMenuPopup>
+                  <div rdxMenuItem>PDF</div>
+                  <div rdxMenuItem>PNG</div>
+                  <div rdxMenuItem>SVG</div>
+                </div>
+              </div>
+            </ng-template>
+          </ng-container>
+          <div rdxMenuSeparator></div>
+          <div rdxMenuItem>Print</div>
+        </div>
       </div>
-    </div>
+    </ng-template>
   </ng-container>
-
-  <!-- Edit -->
-  <ng-container #editMenu="rdxMenuRoot" rdxMenuRoot>
+  <ng-container rdxMenuRoot>
     <button rdxMenuTrigger>Edit</button>
-
-    <div class="data-[closed]:hidden" align="start" sideOffset="4" rdxMenuPositioner>
-      <div rdxMenuPopup>
-        <button rdxMenuItem>Undo</button>
-        <button rdxMenuItem>Redo</button>
+    <ng-template rdxMenuPortal>
+      <div align="start" sideOffset="4" rdxMenuPositioner>
+        <div rdxMenuPopup>
+          <div rdxMenuItem>Cut</div>
+          <div rdxMenuItem>Copy</div>
+          <div rdxMenuItem>Paste</div>
+        </div>
       </div>
-    </div>
+    </ng-template>
   </ng-container>
 </div>
 ```
@@ -80,6 +82,7 @@ a standard `rdxMenuTrigger` opens a Menu popup. Keep the top-level popup mounted
 
 - [Default](../examples/menubar--default.md)
 - [Vertical](../examples/menubar--vertical.md)
+- [Keep mounted](../examples/menubar--keep-mounted.md)
 
 ## API & styling contract
 

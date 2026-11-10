@@ -354,7 +354,7 @@ describe('Menubar', () => {
         expect(fixture.nativeElement.querySelectorAll('[rdxMenuPopup]').length).toBe(1);
     });
 
-    it('keeps a hover-switched always-mounted menu open after the async focus-outside check settles', async () => {
+    it('preserves a retained hover open and its pre-open return focus', async () => {
         TestBed.resetTestingModule();
         TestBed.configureTestingModule({ imports: [MenubarWithAlwaysMountedPopupsHost] });
         const mountedFixture = TestBed.createComponent(MenubarWithAlwaysMountedPopupsHost);
@@ -392,6 +392,13 @@ describe('Menubar', () => {
 
         expect(mountedTriggers[0].hasAttribute('data-popup-open')).toBe(false);
         expect(mountedTriggers[1].hasAttribute('data-popup-open')).toBe(true);
+
+        const popup = mountedFixture.nativeElement.querySelectorAll('[rdxMenuPopup]')[1];
+        keydown(popup, 'Escape');
+        mountedFixture.detectChanges();
+        await settle();
+        expect(mountedTriggers[1].hasAttribute('data-popup-open')).toBe(false);
+        expect(document.activeElement).toBe(mountedTriggers[0]);
     });
 
     it('hovering a sibling trigger switches always-mounted top-level popups', () => {

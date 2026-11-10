@@ -252,7 +252,7 @@ export class RdxMenuPopup {
                     !this.rootContext.isOpen() &&
                     (this.elementRef.nativeElement.contains(target) || this.rootContext.trigger()?.contains(target))
                 ) {
-                    this.rootContext.trigger()?.focus({ preventScroll: true });
+                    this.rootContext.getReturnFocusElement()?.focus({ preventScroll: true });
                 }
             }
         });
