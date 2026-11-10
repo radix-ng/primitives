@@ -10,7 +10,7 @@ import {
     signal
 } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
-import { BooleanInput, dispatchClickWithModifiers, isStationaryWebKitPointer } from '@radix-ng/primitives/core';
+import { BooleanInput, dispatchClickWithModifiers } from '@radix-ng/primitives/core';
 import { shouldActivateOnMouseUp } from './menu-mouse-up';
 import { injectRdxMenuRootContext } from './menu-root';
 
@@ -85,7 +85,7 @@ export class RdxMenuLinkItem {
 
     onPointerMove(event: PointerEvent): void {
         // WebKit fires zero-delta moves while the list scrolls under a still cursor.
-        if (isStationaryWebKitPointer(event)) {
+        if (this.rootContext?.isStationaryPointerMove(event)) {
             return;
         }
         if (event.defaultPrevented || event.pointerType !== 'mouse' || this.effectiveDisabled()) {
@@ -117,7 +117,7 @@ export class RdxMenuLinkItem {
             return;
         }
         this.onSelect.emit();
-        if (this.closeOnClick()) this.rootContext?.closeEntireMenu();
+        if (this.closeOnClick()) this.rootContext?.closeEntireMenu('item-press', event);
     }
 
     onMouseUp(event: MouseEvent): void {

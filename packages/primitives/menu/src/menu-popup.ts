@@ -1,4 +1,4 @@
-import { computed, DestroyRef, Directive, effect, ElementRef, inject, isDevMode, output } from '@angular/core';
+import { computed, DestroyRef, Directive, effect, ElementRef, inject, input, isDevMode, output } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
 import { RdxCompositeList } from '@radix-ng/primitives/composite';
 import {
@@ -96,6 +96,8 @@ import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
     ],
     host: {
         role: 'menu',
+        '[attr.id]': 'resolvedId()',
+        '[attr.aria-labelledby]': 'rootContext.triggerId()',
         tabindex: '-1',
         '[attr.aria-orientation]': 'rootContext.orientation()',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
@@ -111,6 +113,9 @@ import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
 })
 export class RdxMenuPopup {
     protected readonly rootContext = injectRdxMenuRootContext();
+    /** Native popup id, reflected by the owning trigger's aria-controls. */
+    readonly id = input<string>();
+    protected readonly resolvedId = computed(() => this.id() || this.rootContext.defaultContentId);
     private readonly floatingContext = inject(RDX_FLOATING_ROOT_CONTEXT);
     private readonly registration = inject(RDX_FLOATING_REGISTRATION, { optional: true });
     private readonly focusManager = inject(RdxFloatingFocusManager);
@@ -186,7 +191,8 @@ export class RdxMenuPopup {
         // geometry stays correct when opened with a logical `side="inline-start"` / `inline-end`.
         const unregisterPopup = this.rootContext.registerPopup(
             this.elementRef.nativeElement,
-            this.wrapper?.physicalPlacedSide
+            this.wrapper?.physicalPlacedSide,
+            () => this.resolvedId()
         );
         inject(DestroyRef).onDestroy(() => {
             unregister();
@@ -234,7 +240,7 @@ export class RdxMenuPopup {
                 this.rootContext.close(menuReason, event);
                 // Escape should restore focus synchronously to the trigger / submenu trigger so the
                 // menu chain remains keyboard-stable even before the scope's queued unmount return-focus.
-                if (reason === 'escape-key') {
+                if (reason === 'escape-key' && !this.rootContext.isOpen()) {
                     this.rootContext.trigger()?.focus({ preventScroll: true });
                 }
             }
@@ -325,7 +331,7 @@ export class RdxMenuPopup {
                 // Close this popup and return focus to the trigger (used by submenus).
                 event.preventDefault();
                 event.stopPropagation();
-                this.rootContext.close();
+                this.rootContext.close('list-navigation', event);
                 trigger.focus({ preventScroll: true });
                 break;
             }
@@ -334,7 +340,7 @@ export class RdxMenuPopup {
                 if (trigger?.hasAttribute('rdxMenuSubTrigger') && this.rootContext.dir() === 'rtl') {
                     event.preventDefault();
                     event.stopPropagation();
-                    this.rootContext.close();
+                    this.rootContext.close('list-navigation', event);
                     trigger.focus({ preventScroll: true });
                     break;
                 }
@@ -349,8 +355,8 @@ export class RdxMenuPopup {
             // regardless of focus position); it closes the menu, restores focus to the trigger, and
             // cascades up the chain when `closeParentOnEsc` is set.
             case 'Tab': {
-                // Close on tab to allow natural tab navigation
-                this.rootContext.close();
+                // Portal guards move focus through the trigger's logical tab order. Closing here
+                // removes the current element before the browser can perform its Tab default.
                 break;
             }
             default: {

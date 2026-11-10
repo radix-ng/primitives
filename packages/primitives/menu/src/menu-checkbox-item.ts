@@ -17,7 +17,6 @@ import {
     createCancelableChangeEventDetails,
     createContext,
     dispatchClickWithModifiers,
-    isStationaryWebKitPointer,
     RdxCancelableChangeEventDetails
 } from '@radix-ng/primitives/core';
 import { shouldActivateOnMouseUp } from './menu-mouse-up';
@@ -31,7 +30,7 @@ export interface RdxMenuCheckboxItemContext {
 /** Payload of {@link RdxMenuCheckboxItem.onCheckedChange} — cancelable via `eventDetails.cancel()`. */
 export interface RdxMenuCheckboxChangeEvent {
     checked: CheckedState;
-    eventDetails: RdxCancelableChangeEventDetails<'none'>;
+    eventDetails: RdxCancelableChangeEventDetails<'item-press'>;
 }
 
 export const [injectRdxMenuCheckboxItemContext, provideRdxMenuCheckboxItemContext] =
@@ -68,7 +67,7 @@ const checkboxItemContextFactory = (): RdxMenuCheckboxItemContext => {
         '(pointermove)': 'onPointerMove($event)',
         '(pointerleave)': 'onPointerLeave($event)',
         '(mouseup)': 'onMouseUp($event)',
-        '(click)': 'onItemClick()',
+        '(click)': 'onItemClick($event)',
         '(keydown.enter)': 'onActivate($event)',
         '(keydown.space)': 'onActivate($event)'
     }
@@ -126,7 +125,7 @@ export class RdxMenuCheckboxItem {
 
     onPointerMove(event: PointerEvent): void {
         // WebKit fires zero-delta moves while the list scrolls under a still cursor.
-        if (isStationaryWebKitPointer(event)) {
+        if (this.rootContext?.isStationaryPointerMove(event)) {
             return;
         }
         if (event.defaultPrevented || event.pointerType !== 'mouse' || this.effectiveDisabled()) {
@@ -152,10 +151,10 @@ export class RdxMenuCheckboxItem {
         }
     }
 
-    onItemClick(): void {
+    onItemClick(event: MouseEvent): void {
         if (this.effectiveDisabled()) return;
-        if (this.toggleChecked() && this.closeOnClick()) {
-            this.rootContext?.closeEntireMenu();
+        if (this.toggleChecked(event) && this.closeOnClick()) {
+            this.rootContext?.closeEntireMenu('item-press', event);
         }
     }
 
@@ -174,14 +173,14 @@ export class RdxMenuCheckboxItem {
         if (this.effectiveDisabled()) return;
         event.preventDefault();
         if (this.toggleChecked(event) && this.closeOnClick()) {
-            this.rootContext?.closeEntireMenu();
+            this.rootContext?.closeEntireMenu('item-press', event);
         }
     }
 
     /** Emits the cancelable change, applies it unless vetoed, and reports whether it was applied. */
-    private toggleChecked(event?: Event): boolean {
+    private toggleChecked(event: Event): boolean {
         const next = isIndeterminate(this.checked()) ? true : !this.checked();
-        const { eventDetails } = createCancelableChangeEventDetails('none', event ?? new Event('menu.checked-change'));
+        const { eventDetails } = createCancelableChangeEventDetails('item-press', event);
         this.onCheckedChange.emit({ checked: next, eventDetails });
 
         if (eventDetails.isCanceled()) {

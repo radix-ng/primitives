@@ -5,6 +5,7 @@ import { createFloatingRootContext, provideFloatingRootContext } from '@radix-ng
 import { FOCUS_GUARD_ATTR, RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
+    getInteractionTypeFromEvent,
     provideFloatingFocusManagerConfig,
     RdxFloatingFocusManager,
     RdxInitialFocus,
@@ -102,6 +103,15 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
 
     afterEach(() => appended.splice(0).forEach((el) => el.remove()));
     beforeEach(() => TestBed.resetTestingModule());
+
+    it('recognizes native keyboard PointerEvent clicks without reclassifying real touch clicks', () => {
+        const keyboardClick = new MouseEvent('click', { detail: 0 });
+        Object.defineProperty(keyboardClick, 'pointerType', { value: '' });
+        expect(getInteractionTypeFromEvent(keyboardClick)).toBe('keyboard');
+        const touchClick = new MouseEvent('click', { detail: 0 });
+        Object.defineProperty(touchClick, 'pointerType', { value: 'touch' });
+        expect(getInteractionTypeFromEvent(touchClick)).toBe('touch');
+    });
 
     it('reapplies default initial focus when reopening before a retained scope deactivates', async () => {
         const open = signal(true);

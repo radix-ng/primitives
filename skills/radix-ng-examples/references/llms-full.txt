@@ -12639,6 +12639,87 @@ export class RdxMenuDefaultComponent {
 }
 ```
 
+### Events
+
+`onOpenChange` carries a cancelable request and its original native event. Canceling Escape keeps
+focus on the current item. UI selection reports `item-press`; arrow-driven opening/back navigation
+reports `list-navigation`. Checkbox and radio UI value requests also report `item-press` and can
+be canceled; programmatic radio selection without an event retains `none`.
+
+Trigger, SubTrigger and Popup accept native `id` bindings with generated defaults. Their
+`aria-controls` / `aria-labelledby` links update together. Angular can update those bindings while
+the same popup remains open. Tab and Shift+Tab follow the portal's native tab order.
+
+**Migration:** update consumers that previously treated UI selection/navigation as reason `none`.
+Item callbacks now preserve the actual click/keyboard event; nested selection close callbacks run
+from ancestors to descendants. A programmatic focus-out still closes Angular Menu; the pinned
+React portal's suppression of that event is a documented compatibility difference.
+
+```typescript
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { RdxMenuModule, RdxMenuOpenChange } from '@radix-ng/primitives/menu';
+import { cn, demoButton, demoMenu } from '../../storybook/styles';
+
+@Component({
+    selector: 'rdx-menu-events',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [RdxMenuModule],
+    template: `
+        <section class="grid w-80 gap-4">
+            <label class="flex items-center gap-2 text-sm">
+                <input
+                    [checked]="cancelNext()"
+                    (change)="cancelNext.set($any($event.target).checked)"
+                    type="checkbox"
+                />
+                Cancel next close
+            </label>
+            <ng-container (onOpenChange)="change($event)" rdxMenuRoot>
+                <button [id]="triggerId()" [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>
+                    Menu events
+                </button>
+                <div *rdxMenuPortal [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
+                    <div [id]="popupId()" [class]="m.popup" rdxMenuPopup>
+                        <button [class]="m.item" (onSelect)="selected.set('Run action')" rdxMenuItem>Run action</button>
+                        <button [class]="m.item" [closeOnClick]="false" (onSelect)="rename()" rdxMenuItem>
+                            Rename parts
+                        </button>
+                        <button [class]="m.item" rdxMenuItem>Close menu</button>
+                    </div>
+                </div>
+            </ng-container>
+            <p class="text-muted-foreground text-sm">
+                Cancel one close, or rename the trigger and popup while the menu stays open. Their ARIA links update
+                together.
+            </p>
+            <output class="text-muted-foreground text-sm" aria-live="polite">Last change: {{ lastChange() }}</output>
+            <p class="text-muted-foreground text-sm">Selected: {{ selected() || 'none' }}</p>
+        </section>
+    `
+})
+export class RdxMenuEventsComponent {
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly m = demoMenu;
+    protected readonly triggerId = signal('menu-events-trigger');
+    protected readonly popupId = signal('menu-events-popup');
+    protected readonly cancelNext = signal(false);
+    protected readonly lastChange = signal('none');
+    protected readonly selected = signal('');
+    protected rename() {
+        this.triggerId.set('menu-events-trigger-updated');
+        this.popupId.set('menu-events-popup-updated');
+    }
+    protected change(change: RdxMenuOpenChange) {
+        if (!change.open && this.cancelNext()) {
+            change.eventDetails.cancel();
+            this.cancelNext.set(false);
+        }
+        this.lastChange.set(`${change.reason}${change.eventDetails.isCanceled() ? ' (canceled)' : ''}`);
+    }
+}
+```
+
 ### Radio items
 
 A radio group selects exactly one option. Selecting an item keeps the menu open (`closeOnClick`
@@ -13083,12 +13164,15 @@ receiving the close interaction type. This maps to the floating focus manager's 
 
 ### CSS animations
 
-The structural `*rdxMenuPortal` keeps the popup mounted until the closed-state exit keyframes on its
-root element (the positioner) finish, so the menu now has real exit animations. `rdxMenuPopup` also
-exposes `data-starting-style` on the enter frame and `data-ending-style` while the exit plays, and
-`(onOpenChangeComplete)` fires after the animation finishes. Put an opacity exit keyframe on the
-positioner (the part presence watches, keyed on `data-open` / `data-closed`) and keep the transform
-zoom on the popup. Use Angular `styles` on the component (or global CSS) to define the keyframes.
+Animate the popup itself so its transition status and the portal observe the same exit. Presence
+watches real animations in the portal subtree. Keep the popup displayed during the exit;
+a closed-state `display: none` would cancel the animation immediately. The parent Positioner hides
+once the transition finishes, including when the portal stays mounted.
+
+The example uses the shared Tailwind demo animation utilities. Consumers can bring equivalent
+CSS. Key entry and exit keyframes on `data-open` and `data-closed` so the exit starts on the first
+closed render, without waiting for a later transition-status render. Popper positions the outer element, leaving
+popup transforms free for animation.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
@@ -13099,71 +13183,11 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
     selector: 'rdx-menu-animated',
     imports: [RdxMenuModule],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    styles: [
-        `
-            @keyframes popup-in {
-                from {
-                    opacity: 0;
-                    transform: scale(0.95) translateY(-4px);
-                }
-                to {
-                    opacity: 1;
-                    transform: scale(1) translateY(0);
-                }
-            }
-            @keyframes popup-out {
-                from {
-                    opacity: 1;
-                    transform: scale(1) translateY(0);
-                }
-                to {
-                    opacity: 0;
-                    transform: scale(0.95) translateY(-4px);
-                }
-            }
-            .animated-popup {
-                animation: popup-in 150ms ease;
-            }
-            .animated-popup[data-ending-style] {
-                animation: popup-out 150ms ease;
-            }
-            /*
-             * Unlike popover/navigation-menu, the shared menu popup carries 'data-[closed]:hidden' (it
-             * is reused by the always-rendered menubar popups), so on close it is 'display: none' and
-             * cannot run its own exit animation. The exit therefore lives on the positioner — keyed on
-             * its 'data-open'/'data-closed' — which is what the presence machine waits on before
-             * unmounting. This is a legitimate carrier, not an ADR-0011 "decoy".
-             */
-            @keyframes positioner-fade-in {
-                from {
-                    opacity: 0;
-                }
-                to {
-                    opacity: 1;
-                }
-            }
-            @keyframes positioner-fade-out {
-                from {
-                    opacity: 1;
-                }
-                to {
-                    opacity: 0;
-                }
-            }
-            .animated-positioner[data-open] {
-                animation: positioner-fade-in 150ms ease;
-            }
-            .animated-positioner[data-closed] {
-                animation: positioner-fade-out 150ms ease;
-            }
-        `
-    ],
     template: `
-        <ng-container #root="rdxMenuRoot" rdxMenuRoot>
+        <ng-container rdxMenuRoot>
             <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Animated</button>
-
-            <div *rdxMenuPortal [class]="cn(m.positioner, 'animated-positioner')" sideOffset="4" rdxMenuPositioner>
-                <div [class]="cn(m.popup, 'animated-popup')" rdxMenuPopup>
+            <div *rdxMenuPortal [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
+                <div [class]="cn(m.popup, m.popupAnimated)" rdxMenuPopup>
                     <button [class]="m.item" rdxMenuItem>New Tab</button>
                     <button [class]="m.item" rdxMenuItem>New Window</button>
                     <div [class]="m.separator" rdxMenuSeparator></div>
@@ -13180,51 +13204,12 @@ export class RdxMenuAnimatedComponent {
 }
 ```
 
-#### Animation recipe
-
-```css
-@keyframes popup-in {
-    from { opacity: 0; transform: scale(0.95) translateY(-4px); }
-    to   { opacity: 1; transform: scale(1)    translateY(0);    }
-}
-@keyframes popup-out {
-    from { opacity: 1; transform: scale(1)    translateY(0);    }
-    to   { opacity: 0; transform: scale(0.95) translateY(-4px); }
-}
-
-/* The positioner is the part `*rdxMenuPortal` watches: its closed-state keyframe is what keeps the
-   popup mounted until the exit finishes. Opacity-only, so it never fights the popper's transform. */
-@keyframes fade-in {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}
-@keyframes fade-out {
-    from { opacity: 1; }
-    to   { opacity: 0; }
-}
-[rdxMenuPositioner][data-open]   { animation: fade-in 150ms ease; }
-[rdxMenuPositioner][data-closed] { animation: fade-out 150ms ease; }
-
-/* The popup carries the transform zoom (it is not popper-positioned). */
-[rdxMenuPopup] {
-    animation: popup-in 150ms ease;
-    transform-origin: var(--transform-origin);
-}
-[rdxMenuPopup][data-ending-style] {
-    animation: popup-out 150ms ease;
-}
-```
-
-The optional backdrop is a sibling root; it carries `data-open` / `data-closed` too:
-
-```css
-[rdxMenuBackdrop] {
-    position: fixed;
-    inset: 0;
-    background: rgb(0 0 0 / 0.3);
-}
-[rdxMenuBackdrop][data-open]   { animation: fade-in 150ms ease; }
-[rdxMenuBackdrop][data-closed] { animation: fade-out 150ms ease; }
+```html
+<ng-template rdxMenuPortal>
+    <div [class]="m.positioner" rdxMenuPositioner>
+        <div [class]="cn(m.popup, m.popupAnimated)" rdxMenuPopup>…items…</div>
+    </div>
+</ng-template>
 ```
 
 #### `onOpenChangeComplete`

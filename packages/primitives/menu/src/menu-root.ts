@@ -18,6 +18,7 @@ import {
     createCancelableChangeEventDetails,
     createContext,
     createFloatingRootContext,
+    createPointerMoveGuard,
     Direction,
     injectId,
     provideFloatingRootContext,
@@ -75,6 +76,7 @@ export type RdxMenuOpenChangeReason =
     | 'outside-press'
     | 'cancel-open'
     | 'focus-out'
+    | 'item-press'
     | 'none';
 
 export type RdxMenuOpenChangeEventDetails = RdxCancelableChangeEventDetails<RdxMenuOpenChangeReason>;
@@ -95,6 +97,7 @@ export interface RdxMenuRootContext {
     modal: Signal<boolean>;
     loopFocus: Signal<boolean>;
     highlightItemOnHover: Signal<boolean>;
+    isStationaryPointerMove: (event: PointerEvent) => boolean;
     orientation: Signal<RdxMenuOrientation>;
     dir: Signal<Direction>;
     closeParentOnEsc: Signal<boolean>;
@@ -130,6 +133,9 @@ export interface RdxMenuRootContext {
     closeInteractionType: Signal<RdxInteractionType>;
     hasTriggerInteractionHandler: Signal<boolean>;
     trigger: Signal<HTMLElement | undefined>;
+    triggerId: Signal<string | undefined>;
+    contentId: Signal<string>;
+    defaultContentId: string;
     /** The popup element, once mounted. Used by submenu safe-polygon geometry. */
     popupElement: Signal<HTMLElement | undefined>;
     /**
@@ -148,8 +154,8 @@ export interface RdxMenuRootContext {
     show: (autoFocus?: RdxMenuAutoFocusInput, reason?: RdxMenuOpenChangeReason, event?: Event) => void;
     /** Open the menu without moving focus into the popup (used for menubar hover-switching). */
     showWithoutAutoFocus: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
-    registerTrigger: (el: HTMLElement) => () => void;
-    registerPopup: (el: HTMLElement, physicalSide?: Signal<MenuSide | undefined>) => () => void;
+    registerTrigger: (el: HTMLElement, getId?: () => string) => () => void;
+    registerPopup: (el: HTMLElement, physicalSide?: Signal<MenuSide | undefined>, getId?: () => string) => () => void;
     setBeforeContentFocusGuard: (element: HTMLElement | null) => void;
     registerTransitionElement: (element: HTMLElement) => () => void;
     registerPopupArrowNavigationHandler: (handler: (offset: 1 | -1) => boolean) => () => void;
@@ -199,6 +205,7 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         modal: instance.effectiveModal,
         loopFocus: instance.loopFocus,
         highlightItemOnHover: instance.highlightItemOnHover,
+        isStationaryPointerMove: (event) => instance.isStationaryPointerMove(event),
         orientation: instance.orientation,
         dir: instance.dir,
         closeParentOnEsc: instance.closeParentOnEsc,
@@ -217,6 +224,9 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         closeInteractionType: instance.closeInteractionType.asReadonly(),
         hasTriggerInteractionHandler: instance.hasTriggerInteractionHandler.asReadonly(),
         trigger: instance.trigger.asReadonly(),
+        triggerId: instance.triggerId,
+        contentId: instance.contentId,
+        defaultContentId: instance.defaultContentId,
         popupElement: instance.popupElement.asReadonly(),
         popupPhysicalSide: instance.popupPhysicalSide,
         beforeContentFocusGuard: instance.beforeContentFocusGuard.asReadonly(),
@@ -227,8 +237,8 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         toggle: (reason, event) => instance.toggle(reason, event),
         show: (autoFocus, reason, event) => instance.show(autoFocus, reason, event),
         showWithoutAutoFocus: (reason, event) => instance.show(false, reason, event),
-        registerTrigger: (el) => instance.registerTrigger(el),
-        registerPopup: (el, physicalSide) => instance.registerPopup(el, physicalSide),
+        registerTrigger: (el, getId) => instance.registerTrigger(el, getId),
+        registerPopup: (el, physicalSide, getId) => instance.registerPopup(el, physicalSide, getId),
         setBeforeContentFocusGuard: (element) => instance.setBeforeContentFocusGuard(element),
         registerTransitionElement: (el) => instance.registerTransitionElement(el),
         registerPopupArrowNavigationHandler: (handler) => instance.registerPopupArrowNavigationHandler(handler),
@@ -280,6 +290,8 @@ export class RdxMenuRoot {
     private readonly transition = useTransitionStatus((open) => this.onOpenChangeComplete.emit(open));
 
     private registeredTrigger: HTMLElement | undefined;
+    private registeredTriggerId?: () => string;
+    private registeredPopupId?: () => string;
     private popupArrowNavigationHandler: ((offset: 1 | -1) => boolean) | undefined;
     private triggerInteractionHandler: RdxMenuTriggerInteractionHandler | undefined;
     private hasAppliedDefaultOpen = false;
@@ -322,6 +334,17 @@ export class RdxMenuRoot {
 
     readonly trigger = signal<HTMLElement | undefined>(undefined);
     readonly popupElement = signal<HTMLElement | undefined>(undefined);
+    private pointerMoveGuard = createPointerMoveGuard();
+    private pointerOrigin?: { clientX: number; clientY: number };
+    readonly defaultContentId = injectId('rdx-menu-content-');
+    readonly triggerId = computed(() => {
+        const trigger = this.trigger();
+        return this.registeredTriggerId?.() || trigger?.id || undefined;
+    });
+    readonly contentId = computed(() => {
+        this.popupElement();
+        return this.registeredPopupId?.() || this.defaultContentId;
+    });
     private readonly popupPhysicalSideSource = signal<Signal<MenuSide | undefined> | undefined>(undefined);
     /** Physical placed side read through the popup's own signal (undefined until the popup is placed). */
     readonly popupPhysicalSide = computed(() => this.popupPhysicalSideSource()?.());
@@ -413,6 +436,14 @@ export class RdxMenuRoot {
     });
 
     constructor() {
+        effect((onCleanup) => {
+            if (!this.open()) return;
+            const guard = createPointerMoveGuard(this.pointerOrigin);
+            this.pointerMoveGuard = guard;
+            const document = this.floatingContext.ownerDocument;
+            document.addEventListener('pointermove', guard, true);
+            onCleanup(() => document.removeEventListener('pointermove', guard, true));
+        });
         effect(() => {
             const defaultOpen = this.defaultOpen();
 
@@ -475,7 +506,12 @@ export class RdxMenuRoot {
             // Record whether this open came from touch (ADR 0016 §3). Hover / mouse / keyboard all resolve
             // to false (no `'touch'` pointer type), so only a genuine touch open gates the anchored lock.
             this.openedByTouch.set((event as PointerEvent | undefined)?.pointerType === 'touch');
-            this.openInteractionType.set(getInteractionTypeFromEvent(event));
+            const method = getInteractionTypeFromEvent(event);
+            this.openInteractionType.set(method);
+            this.pointerOrigin =
+                (method === 'mouse' || method === 'pen') && event && 'clientX' in event && 'clientY' in event
+                    ? { clientX: event.clientX as number, clientY: event.clientY as number }
+                    : undefined;
             this.preventUnmountOnClose.set(false);
             this.open.set(true);
             // Publish reason + native event on the per-popup floating channel (Base UI open-change) so the
@@ -510,12 +546,18 @@ export class RdxMenuRoot {
         if (this.open()) {
             this.close(reason, event);
         } else {
-            this.show('first', reason, event);
+            const method = getInteractionTypeFromEvent(event);
+            this.show(method === 'mouse' || method === 'touch' || method === 'pen' ? 'popup' : 'first', reason, event);
         }
     }
 
     markAsContextMenu(): void {
         this.localIsContextMenu.set(true);
+    }
+
+    /** Classifies the same native event observed in document capture and item handlers. */
+    isStationaryPointerMove(event: PointerEvent): boolean {
+        return this.pointerMoveGuard(event);
     }
 
     setActiveIndex(index: number | null): void {
@@ -561,28 +603,32 @@ export class RdxMenuRoot {
      * menu, not just the innermost submenu (a submenu's `close()` would leave its parents open).
      */
     closeEntireMenu(reason: RdxMenuOpenChangeReason = 'none', event?: Event): void {
-        this.close(reason, event);
         this.parentRoot?.closeEntireMenu(reason, event);
+        this.close(reason, event);
     }
 
-    registerTrigger(el: HTMLElement): () => void {
+    registerTrigger(el: HTMLElement, getId?: () => string): () => void {
         this.registeredTrigger = el;
+        this.registeredTriggerId = getId;
         this.trigger.set(el);
         this.floatingContext.triggers.add(el);
         return () => {
             this.floatingContext.triggers.delete(el);
             if (this.registeredTrigger === el) {
                 this.registeredTrigger = undefined;
+                this.registeredTriggerId = undefined;
                 this.trigger.set(undefined);
             }
         };
     }
 
-    registerPopup(el: HTMLElement, physicalSide?: Signal<MenuSide | undefined>): () => void {
+    registerPopup(el: HTMLElement, physicalSide?: Signal<MenuSide | undefined>, getId?: () => string): () => void {
+        this.registeredPopupId = getId;
         this.popupElement.set(el);
         this.popupPhysicalSideSource.set(physicalSide);
         return () => {
             if (this.popupElement() === el) {
+                this.registeredPopupId = undefined;
                 this.popupElement.set(undefined);
                 this.popupPhysicalSideSource.set(undefined);
             }
@@ -639,7 +685,7 @@ export class RdxMenuRoot {
         const change = createCancelableChangeEventDetails(
             reason,
             event ?? new Event('menu.open-change'),
-            this.trigger()
+            reason === 'focus-out' && event?.target !== this.beforeContentFocusGuard() ? undefined : this.trigger()
         );
 
         return {

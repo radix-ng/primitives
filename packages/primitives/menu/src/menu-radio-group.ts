@@ -16,7 +16,7 @@ export interface RdxMenuRadioGroupContext<T = unknown> {
 /** Payload of {@link RdxMenuRadioGroup.onValueChange} — cancelable via `eventDetails.cancel()`. */
 export interface RdxMenuRadioGroupValueChangeEvent<T = unknown> {
     value: T;
-    eventDetails: RdxCancelableChangeEventDetails<'none'>;
+    eventDetails: RdxCancelableChangeEventDetails<'none' | 'item-press'>;
 }
 
 export const [injectRdxMenuRadioGroupContext, provideRdxMenuRadioGroupContext] =
@@ -27,7 +27,7 @@ const radioGroupContextFactory = (): RdxMenuRadioGroupContext => {
     return {
         value: instance.value,
         disabled: instance.disabled,
-        selectValue: (v) => instance.selectValue(v)
+        selectValue: (v, event) => instance.selectValue(v, event)
     };
 };
 
@@ -87,7 +87,10 @@ export class RdxMenuRadioGroup<T = unknown> {
         if (this.disabled()) {
             return;
         }
-        const { eventDetails } = createCancelableChangeEventDetails('none', event ?? new Event('menu.value-change'));
+        const { eventDetails } = createCancelableChangeEventDetails(
+            event ? 'item-press' : 'none',
+            event ?? new Event('menu.value-change')
+        );
         this.onValueChange.emit({ value: newValue, eventDetails });
 
         if (eventDetails.isCanceled()) {

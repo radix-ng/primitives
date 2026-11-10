@@ -532,6 +532,10 @@ export const demoMenubar = {
  */
 export const demoMenu = {
     positioner: 'z-50 data-[closed]:pointer-events-none',
+    // Override popup's closed-state hiding until Positioner hides the settled exit. Key the exit
+    // directly on data-closed so Presence observes it on the first render of the close transaction.
+    popupAnimated:
+        'origin-[var(--transform-origin)] data-[closed]:block! data-[open]:animate-popover-popup-in data-[closed]:animate-popover-popup-out',
     popup: cn(
         'bg-popover text-popover-foreground',
         'min-w-[8rem] rounded-md border border-border p-1 shadow-md outline-none',

@@ -30,6 +30,17 @@ control identity, Field state and popup/value policy remain outside core. Extrac
 responsibilities with concrete consumers during parity work, rather than waiting for every primitive
 to be finished or building a universal control engine.
 
+**Menu contracts (ADR 0034):** Menu has an independent pinned suite with native button fixtures.
+Trigger/SubTrigger/Popup id inputs publish reactive identity getters to Root for native ARIA links.
+Keyboard arrows report `list-navigation`; UI item/value actions report `item-press` with the original
+event. Selection closes ancestors before descendants. Native keyboard PointerEvent clicks are
+classified before an empty pointerType fallback. Portal tabindex suspension runs after Angular
+host bindings, and trigger guards resolve existing content-guard ownership. Menu lets native Tab
+use that path; a leading boundary emits focus-out before returning to its owning trigger.
+Menu shares core's coordinate pointer guard with Select, scoped/reset per open menu and observed in
+document capture. Exceptions retain the pin's programmatic focus-out and WebKit/native-focus limits;
+React portal/store workarounds are not ported. Menu lifetime migration remains pending.
+
 **Framework adaptation during parity work:** preserve the observable Base UI contract while using
 Angular's `model`, outputs, DI, reactive queries/collections and view lifecycle. Derive state with
 `computed` when it follows existing signals. A React ref, store, controlled-prop mirror or forced

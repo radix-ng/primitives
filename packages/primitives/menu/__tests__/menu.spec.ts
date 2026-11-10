@@ -29,6 +29,49 @@ import {
 } from '@radix-ng/primitives/menu';
 import { afterEach, vi } from 'vitest';
 
+@Component({
+    imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPortal, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
+    template: `
+        <ng-container rdxMenuRoot>
+            <button [id]="triggerId()" rdxMenuTrigger>Actions</button>
+            <div *rdxMenuPortal rdxMenuPositioner>
+                <div [id]="popupId()" rdxMenuPopup><button rdxMenuItem>Action</button></div>
+            </div>
+        </ng-container>
+    `
+})
+class LiveIdentityMenuComponent {
+    readonly triggerId = signal('native-trigger');
+    readonly popupId = signal('native-popup');
+    readonly root = viewChild.required(RdxMenuRoot);
+}
+
+describe('Menu native identity', () => {
+    it('updates authored ARIA links without replacing an open popup', async () => {
+        TestBed.resetTestingModule();
+        const fixture = TestBed.createComponent(LiveIdentityMenuComponent);
+        fixture.autoDetectChanges();
+        try {
+            await fixture.whenStable();
+            const trigger = fixture.nativeElement.querySelector('[rdxMenuTrigger]') as HTMLButtonElement;
+            trigger.click();
+            await fixture.whenStable();
+            const popup = document.getElementById('native-popup')!;
+            expect(trigger.getAttribute('aria-controls')).toBe('native-popup');
+            expect(popup.getAttribute('aria-labelledby')).toBe('native-trigger');
+            fixture.componentInstance.triggerId.set('updated-trigger');
+            fixture.componentInstance.popupId.set('updated-popup');
+            await fixture.whenStable();
+            expect(document.getElementById('updated-popup')).toBe(popup);
+            expect(trigger.getAttribute('aria-controls')).toBe('updated-popup');
+            expect(popup.getAttribute('aria-labelledby')).toBe('updated-trigger');
+            expect(fixture.componentInstance.root().open()).toBe(true);
+        } finally {
+            fixture.destroy();
+        }
+    });
+});
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function keydown(target: Element, key: string) {
@@ -1093,11 +1136,14 @@ describe('Menu', () => {
             expect(document.activeElement).toBe(trigger);
         });
 
-        it('Tab closes the menu', () => {
-            keydown(popup, 'Tab');
+        it('leaves the Tab default to the native portal guards', () => {
+            const event = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true });
+            popup.dispatchEvent(event);
             fixture.detectChanges();
 
-            expect(fixture.componentInstance.open).toBe(false);
+            expect(event.defaultPrevented).toBe(false);
+            // jsdom has no native Tab default. Browser parity tests check the eventual focus/close.
+            expect(fixture.componentInstance.open).toBe(true);
         });
 
         it('typeahead focuses the first item whose text starts with the key', () => {
@@ -2288,7 +2334,8 @@ describe('Menu', () => {
             subTriggers[0].click();
             fixture.detectChanges();
             expect(subTriggers[0].getAttribute('aria-expanded')).toBe('true');
-            expect(subTriggers[0].hasAttribute('data-highlighted')).toBe(true);
+            // Opening alone does not highlight an unfocused parent trigger.
+            expect(subTriggers[0].hasAttribute('data-highlighted')).toBe(false);
 
             subTriggers[1].click();
             fixture.detectChanges();

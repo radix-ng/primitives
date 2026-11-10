@@ -10,6 +10,77 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
     await page.waitForSelector('#storybook-root', { state: 'attached' });
 }
 
+const trigger = '[rdxMenuTrigger]';
+const popup = '[rdxMenuPopup]';
+
+for (const opening of ['keyboard', 'pointer']) {
+    test(`${opening} opening preserves roving tabindex and Tab exits after the trigger`, async ({ page }) => {
+        const errors: string[] = [];
+        page.on('pageerror', (error) => errors.push(error.message));
+        page.on('console', (message) => {
+            if (message.type() === 'error') errors.push(message.text());
+        });
+        await gotoStory(page, 'primitives-menu--default');
+        await page.evaluate(() => {
+            const input = document.createElement('input');
+            input.id = 'after-menu';
+            input.setAttribute('aria-label', 'After menu');
+            document.body.append(input);
+        });
+        const opener = page.locator(trigger).first();
+        if (opening === 'keyboard') await opener.press('Enter');
+        else await opener.click();
+        const content = page.locator(popup);
+        await expect(content).toBeVisible();
+        if (opening === 'keyboard') await expect(page.locator(`${popup} [rdxMenuItem]`).first()).toBeFocused();
+        else await expect(content).toBeFocused();
+        await expect
+            .poll(() => page.locator(`${popup} [role^="menuitem"][tabindex="0"]`).count())
+            .toBe(opening === 'keyboard' ? 1 : 0);
+        await expect
+            .poll(async () => (await opener.getAttribute('aria-controls')) === (await content.getAttribute('id')))
+            .toBe(true);
+        await expect
+            .poll(async () => (await content.getAttribute('aria-labelledby')) === (await opener.getAttribute('id')))
+            .toBe(true);
+        await page.keyboard.press('Tab');
+        await expect(content).toHaveCount(0);
+        await expect(page.locator('#after-menu')).toBeFocused();
+        expect(errors).toEqual([]);
+    });
+}
+
+test('canceled Escape keeps item focus and live ids preserve the open popup', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    page.on('console', (message) => {
+        if (message.type() === 'error') errors.push(message.text());
+    });
+    await gotoStory(page, 'primitives-menu--events');
+    await page.getByRole('checkbox', { name: 'Cancel next close' }).check();
+    const opener = page.getByRole('button', { name: 'Menu events', exact: true });
+    await opener.press('Enter');
+    const first = page.getByRole('menuitem', { name: 'Run action', exact: true });
+    await expect(first).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(first).toBeFocused();
+    await expect(opener).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.locator('output')).toHaveText('Last change: escape-key (canceled)');
+    const oldPopup = await page.locator(popup).elementHandle();
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Enter');
+    await expect(opener).toHaveAttribute('id', 'menu-events-trigger-updated');
+    await expect(opener).toHaveAttribute('aria-controls', 'menu-events-popup-updated');
+    await expect(page.locator(popup)).toHaveAttribute('aria-labelledby', 'menu-events-trigger-updated');
+    expect(await oldPopup!.evaluate((el) => el.isConnected && el === document.querySelector('[rdxMenuPopup]'))).toBe(
+        true
+    );
+    await page.keyboard.press('Escape');
+    await expect(page.locator(popup)).toHaveCount(0);
+    await expect(opener).toBeFocused();
+    expect(errors).toEqual([]);
+});
+
 test('menu teleports the positioner directly into <body> with no wrapper element', async ({ page }) => {
     await gotoStory(page, 'primitives-menu--default');
 
@@ -109,13 +180,20 @@ test('a standalone menu closes when focus leaves to an unrelated element (findin
 
 test('animated menu keeps the popup mounted through the exit animation, then unmounts it', async ({ page }) => {
     await gotoStory(page, 'primitives-menu--animated');
+    await page.addStyleTag({ content: '[rdxMenuPopup][data-closed] { animation-duration: 1200ms !important; }' });
 
     await page.locator('[rdxMenuTrigger]').first().click();
     await expect(page.locator('[rdxMenuPositioner]')).toBeVisible();
+    await page.locator('[rdxMenuPopup]').evaluate(async (el) => {
+        await Promise.all(el.getAnimations().map((animation) => animation.finished));
+    });
 
-    // Close with Escape; the positioner's closed-state exit keyframe keeps it mounted briefly.
+    // Close with Escape; the popup's actual CSS exit keeps the portal mounted.
     await page.keyboard.press('Escape');
     await expect(page.locator('[rdxMenuPositioner]')).toHaveAttribute('data-closed', '');
+    await expect
+        .poll(() => page.locator('[rdxMenuPopup]').evaluate((el) => el.getAnimations().length))
+        .toBeGreaterThan(0);
 
     // Once the exit animation finishes, presence destroys the view — no orphan in <body>.
     await expect(page.locator('[rdxMenuPositioner]')).toHaveCount(0);

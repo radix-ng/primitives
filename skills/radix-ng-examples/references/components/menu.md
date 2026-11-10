@@ -134,6 +134,7 @@ content multi-root.
 ## Examples
 
 - [Default](../examples/menu--default.md)
+- [Events](../examples/menu--events.md)
 - [Radio items](../examples/menu--radio-items.md)
 - [Checkbox items](../examples/menu--checkbox-items.md)
 - [With labels](../examples/menu--with-labels.md)

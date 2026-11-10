@@ -2,7 +2,8 @@
 
 The same Playwright actions run against Angular primitives and unmodified, pinned Base UI React
 sources. These are regression checks with reviewed differences, not full parity certification.
-[Select](primitives/select/README.md) and [Popover](primitives/popover/README.md) have independent suites.
+[Select](primitives/select/README.md), [Popover](primitives/popover/README.md) and
+[Menu](primitives/menu/README.md) have independent suites.
 The [coverage matrix](COVERAGE.md) distinguishes pinned comparisons from Angular regression checks.
 
 ## Structure
@@ -29,7 +30,8 @@ parity-testing/
 ```
 
 Drivers, DOM snapshots, recording contracts and scenario lists stay with their primitive. Shared
-infrastructure handles reference integrity, exact difference matching, builds and reporting. Extract
+infrastructure handles reference integrity, exact difference matching, builds and reporting.
+`shared/run-scenario.ts` also shares the browser-page and report lifecycle for Menu/Popover. Extract
 behavior shared by concrete suites as it appears; there is no universal control driver.
 
 ## Run
@@ -41,6 +43,7 @@ pnpm exec playwright install chromium firefox webkit
 pnpm test-parity                 # every discovered suite
 pnpm test-parity select          # one primitive
 pnpm test-parity popover         # independent floating/focus suite
+pnpm test-parity menu            # native items, transactions and submenu suite
 pnpm test-parity:select          # convenience alias
 pnpm test-parity select --project=webkit # one engine
 pnpm parity:build select         # type-check/build one suite without running browsers

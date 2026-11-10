@@ -60,6 +60,19 @@ export class RdxMenuPositioner extends RdxPopperContentWrapper {
         () => this.rootContext.isOpen() || this.rootContext.transitionStatus() === 'ending'
     );
 
+    protected override hasPosition(): boolean {
+        // Closing can briefly pause/restart the resource before the transition phase renders.
+        // Retain its last placement during exit; reporting unplaced would put animation:none on
+        // Popup and cancel the real CSS animation Presence is waiting for. Reopening still waits
+        // for a fresh position, including for a retained portal.
+        return (
+            super.hasPosition() ||
+            (!this.rootContext.isOpen() &&
+                this.rootContext.transitionStatus() === 'ending' &&
+                this.placement() !== undefined)
+        );
+    }
+
     constructor() {
         super();
         // Gate the inherited positioning on visibility (see `visible`) — pauses `autoUpdate` while the

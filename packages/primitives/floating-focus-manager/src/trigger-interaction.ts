@@ -11,7 +11,7 @@ import {
     isOutsideEvent
 } from '@radix-ng/primitives/focus-scope';
 import { getInteractionTypeFromEvent, RdxInteractionType } from './floating-focus-manager';
-import { registerFocusGuardOwners } from './focus-guard-ownership';
+import { registerFocusGuardOwners, resolveFocusGuardOwner } from './focus-guard-ownership';
 
 export interface RdxTriggerInteractionOptions {
     trigger: () => HTMLElement;
@@ -128,8 +128,10 @@ export function useTriggerFocusGuards(options: RdxTriggerFocusGuardOptions): voi
         const handlePostGuardFocus = (event: FocusEvent): void => {
             const popup = options.popupElement?.() ?? null;
             const beforeContentGuard = options.beforeContentFocusGuard?.() ?? null;
+            const related = event.relatedTarget as Node | null;
+            const fromOwnedContent = popup && related && composedContains(popup, resolveFocusGuardOwner(related));
 
-            if (popup && beforeContentGuard && isOutsideEvent(event, popup)) {
+            if (popup && beforeContentGuard && isOutsideEvent(event, popup) && !fromOwnedContent) {
                 focus(beforeContentGuard);
                 return;
             }

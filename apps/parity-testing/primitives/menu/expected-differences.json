@@ -1,0 +1,187 @@
+[
+    {
+        "scenario": "focus-out",
+        "checkpoint": "outside focused",
+        "field": "open",
+        "angular": false,
+        "react": true,
+        "category": "programmatic-focus-out"
+    },
+    {
+        "scenario": "focus-out",
+        "checkpoint": "outside focused",
+        "field": "mounted",
+        "angular": false,
+        "react": true,
+        "category": "programmatic-focus-out"
+    },
+    {
+        "scenario": "focus-out",
+        "checkpoint": "outside focused",
+        "field": "visible",
+        "angular": false,
+        "react": true,
+        "category": "programmatic-focus-out"
+    },
+    {
+        "scenario": "focus-out",
+        "checkpoint": "outside focused",
+        "field": "role",
+        "angular": null,
+        "react": "menu",
+        "category": "programmatic-focus-out"
+    },
+    {
+        "scenario": "focus-out",
+        "checkpoint": "outside focused",
+        "field": "labelled",
+        "angular": false,
+        "react": true,
+        "category": "programmatic-focus-out"
+    },
+    {
+        "scenario": "focus-out",
+        "checkpoint": "outside focused",
+        "field": "controlsLinked",
+        "angular": false,
+        "react": true,
+        "category": "programmatic-focus-out"
+    },
+    {
+        "scenario": "focus-out",
+        "checkpoint": "outside focused",
+        "field": "highlighted",
+        "angular": [],
+        "react": ["alpha"],
+        "category": "programmatic-focus-out"
+    },
+    {
+        "scenario": "focus-out",
+        "checkpoint": "outside focused",
+        "field": "items",
+        "angular": [],
+        "react": [
+            {
+                "id": "alpha",
+                "role": "menuitem",
+                "disabled": false
+            },
+            {
+                "id": "blocked",
+                "role": "menuitem",
+                "disabled": true
+            },
+            {
+                "id": "bravo",
+                "role": "menuitem",
+                "disabled": false
+            },
+            {
+                "id": "stay",
+                "role": "menuitem",
+                "disabled": false
+            },
+            {
+                "id": "omega",
+                "role": "menuitem",
+                "disabled": false
+            }
+        ],
+        "category": "programmatic-focus-out"
+    },
+    {
+        "scenario": "focus-out",
+        "checkpoint": "outside focused",
+        "field": "changes",
+        "angular": [
+            {
+                "layer": "main",
+                "open": true,
+                "reason": "trigger-press",
+                "canceled": false,
+                "trigger": "primary"
+            },
+            {
+                "layer": "main",
+                "open": false,
+                "reason": "focus-out",
+                "canceled": false,
+                "trigger": null
+            }
+        ],
+        "react": [
+            {
+                "layer": "main",
+                "open": true,
+                "reason": "trigger-press",
+                "canceled": false,
+                "trigger": "primary"
+            }
+        ],
+        "category": "programmatic-focus-out"
+    },
+    {
+        "scenario": "focus-out",
+        "checkpoint": "outside focused",
+        "field": "completions",
+        "angular": {
+            "main": [true, false],
+            "sub": []
+        },
+        "react": {
+            "main": [true],
+            "sub": []
+        },
+        "category": "programmatic-focus-out"
+    },
+    {
+        "scenario": "cancel-open",
+        "checkpoint": "opening blocked",
+        "field": "focus",
+        "angular": "body",
+        "react": "primary",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "native-button-focus"
+    },
+    {
+        "scenario": "pointer-highlight",
+        "checkpoint": "pointer highlighted",
+        "field": "focus",
+        "angular": "bravo",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "pointer-highlight",
+        "checkpoint": "pointer highlighted",
+        "field": "highlighted",
+        "angular": ["bravo"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "pointer-highlight",
+        "checkpoint": "pointer highlighted",
+        "field": "focus",
+        "angular": "bravo",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "pointer-highlight",
+        "checkpoint": "pointer highlighted",
+        "field": "highlighted",
+        "angular": ["bravo"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    }
+]

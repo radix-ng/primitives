@@ -81,6 +81,18 @@ export function getInteractionTypeFromEvent(event?: Event): RdxInteractionType {
         return 'keyboard';
     }
 
+    // Native Enter/Space clicks are PointerEvents in current browsers, with an empty pointerType.
+    // Preserve their keyboard intent before the generic pointer fallback below.
+    if (
+        typeof MouseEvent !== 'undefined' &&
+        event instanceof MouseEvent &&
+        event.type === 'click' &&
+        event.detail === 0 &&
+        (!('pointerType' in event) || !event.pointerType)
+    ) {
+        return 'keyboard';
+    }
+
     if ('pointerType' in event && typeof event.pointerType === 'string') {
         return (event.pointerType || 'mouse') as RdxInteractionType;
     }
@@ -690,6 +702,10 @@ export class RdxFloatingFocusManager {
                     return;
                 }
 
+                // Returning through the leading boundary is a logical focus-out even when the
+                // destination is the owning trigger. Ordinary containment correctly keeps that
+                // trigger "inside", so it cannot infer this Tab departure on its own.
+                if (this.effectiveCloseOnFocusOut()) this.focusOut.emit(event);
                 focus(resolveFocusTarget(this.effectivePreviousFocusableElement()) ?? this.defaultPreviousFocusable());
             };
 

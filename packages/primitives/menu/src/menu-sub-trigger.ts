@@ -13,7 +13,7 @@ import {
     signal
 } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
-import { BooleanInput, NumberInput, rdxPlatform } from '@radix-ng/primitives/core';
+import { BooleanInput, injectId, NumberInput, rdxPlatform } from '@radix-ng/primitives/core';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { getFocusableMenuItems } from './menu-focus';
 import { injectRdxMenuRootContext, RdxMenuRoot } from './menu-root';
@@ -40,6 +40,8 @@ const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();
     exportAs: 'rdxMenuSubTrigger',
     hostDirectives: [RdxPopperAnchor, RdxCompositeListItem],
     host: {
+        '[attr.id]': 'resolvedId()',
+        '[attr.aria-controls]': 'submenuContext.isOpen() ? submenuContext.contentId() : undefined',
         '[attr.type]': 'nativeButtonState() ? "button" : undefined',
         role: 'menuitem',
         '[attr.tabindex]': 'parentMenuRoot?.open() && highlighted() ? 0 : -1',
@@ -64,6 +66,10 @@ const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();
     }
 })
 export class RdxMenuSubTrigger {
+    private readonly generatedId = injectId('rdx-menu-sub-trigger-');
+    /** Native submenu trigger id; defaults to a generated SSR-stable value. */
+    readonly id = input<string>();
+    protected readonly resolvedId = computed(() => this.id() || this.generatedId);
     protected readonly submenuContext = injectRdxMenuRootContext();
     private readonly submenuRoot = inject(RdxMenuRoot);
     protected readonly parentMenuRoot = this.submenuRoot.parentRoot;
@@ -111,12 +117,9 @@ export class RdxMenuSubTrigger {
     /** Explicit typeahead label. When set, overrides textContent for character search. */
     readonly label = input<string | undefined>(undefined);
 
-    /** Highlighted when active in the parent menu or while the submenu is open. */
+    /** Highlighted while active/focused in the parent menu; opening a child alone is not a highlight. */
     protected readonly highlighted = computed(
-        () =>
-            this.parentMenuRoot?.activeIndex() === this.listItem.index() ||
-            this.isFocused() ||
-            this.submenuContext.isOpen()
+        () => this.parentMenuRoot?.activeIndex() === this.listItem.index() || this.isFocused()
     );
     protected readonly effectiveDisabled = computed(() => this.disabled() || this.submenuContext.disabled());
     protected readonly nativeButtonState = computed(
@@ -128,7 +131,7 @@ export class RdxMenuSubTrigger {
 
         effect((onCleanup) => {
             const el = this.elementRef.nativeElement;
-            const unregister = this.submenuContext.registerTrigger(el);
+            const unregister = this.submenuContext.registerTrigger(el, () => this.resolvedId());
             submenuRootsByTrigger.set(el, this.submenuRoot);
 
             onCleanup(() => {
@@ -258,7 +261,7 @@ export class RdxMenuSubTrigger {
         }
 
         this.closeSiblingSubmenus();
-        this.submenuContext.show('first', 'none', event);
+        this.submenuContext.show('first', 'trigger-press', event);
 
         if (event.detail === 0 && !wasOpen && this.submenuContext.isOpen()) {
             this.focusFirstSubmenuItem();
@@ -277,7 +280,7 @@ export class RdxMenuSubTrigger {
 
         if (!this.submenuContext.isOpen()) {
             this.closeSiblingSubmenus();
-            this.submenuContext.show('first', 'none', event);
+            this.submenuContext.show('first', 'trigger-press', event);
         }
 
         this.focusFirstSubmenuItem();
@@ -296,7 +299,7 @@ export class RdxMenuSubTrigger {
         this.clearSiblingHighlights();
         if (!this.submenuContext.isOpen()) {
             this.closeSiblingSubmenus();
-            this.submenuContext.show('first', 'none', event);
+            this.submenuContext.show('first', 'list-navigation', event);
             this.focusFirstSubmenuItem();
         }
     }
@@ -314,7 +317,7 @@ export class RdxMenuSubTrigger {
         this.clearSiblingHighlights();
         if (!this.submenuContext.isOpen()) {
             this.closeSiblingSubmenus();
-            this.submenuContext.show('first', 'none', event);
+            this.submenuContext.show('first', 'list-navigation', event);
             this.focusFirstSubmenuItem();
         }
     }

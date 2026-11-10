@@ -3959,7 +3959,13 @@
             "RdxFloatingFocusManager",
             "RdxCompositeList"
           ],
-          "inputs": [],
+          "inputs": [
+            {
+              "name": "id",
+              "type": "string",
+              "description": "Native popup id, reflected by the owning trigger's aria-controls."
+            }
+          ],
           "outputs": [
             {
               "name": "escapeKeyDown",
@@ -4325,6 +4331,11 @@
               "description": "Whether this trigger (and therefore the submenu) is disabled."
             },
             {
+              "name": "id",
+              "type": "string",
+              "description": "Native submenu trigger id; defaults to a generated SSR-stable value."
+            },
+            {
               "name": "label",
               "type": "string | undefined",
               "default": "undefined",
@@ -4371,6 +4382,11 @@
               "type": "boolean",
               "default": "false",
               "description": "Whether this trigger is disabled."
+            },
+            {
+              "name": "id",
+              "type": "string",
+              "description": "Native trigger id; defaults to a generated SSR-stable value."
             },
             {
               "name": "nativeButton",

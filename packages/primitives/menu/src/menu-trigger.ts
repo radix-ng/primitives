@@ -12,7 +12,7 @@ import {
     PLATFORM_ID,
     signal
 } from '@angular/core';
-import { BooleanInput, isMouseWithinBounds, NumberInput } from '@radix-ng/primitives/core';
+import { BooleanInput, injectId, isMouseWithinBounds, NumberInput } from '@radix-ng/primitives/core';
 import { createRdxTriggerInteraction, useTriggerFocusGuards } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { getFocusableMenuItems } from './menu-focus';
@@ -30,6 +30,8 @@ const numberOrUndefined = (value: NumberInput | undefined) => (value == null ? u
     exportAs: 'rdxMenuTrigger',
     hostDirectives: [RdxPopperAnchor],
     host: {
+        '[attr.id]': 'resolvedId()',
+        '[attr.aria-controls]': 'rootContext.isOpen() ? rootContext.contentId() : undefined',
         '[attr.type]': 'nativeButtonState() ? "button" : undefined',
         '[attr.role]':
             'rootContext.hasTriggerInteractionHandler() ? "menuitem" : nativeButtonState() ? undefined : "button"',
@@ -62,6 +64,10 @@ const numberOrUndefined = (value: NumberInput | undefined) => (value == null ? u
 })
 export class RdxMenuTrigger {
     protected readonly rootContext = injectRdxMenuRootContext();
+    private readonly generatedId = injectId('rdx-menu-trigger-');
+    /** Native trigger id; defaults to a generated SSR-stable value. */
+    readonly id = input<string>();
+    protected readonly resolvedId = computed(() => this.id() || this.generatedId);
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly destroyRef = inject(DestroyRef);
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -137,7 +143,7 @@ export class RdxMenuTrigger {
     constructor() {
         effect((onCleanup) => {
             const el = this.elementRef.nativeElement;
-            const unregister = this.rootContext.registerTrigger(el);
+            const unregister = this.rootContext.registerTrigger(el, () => this.resolvedId());
             onCleanup(unregister);
         });
 
@@ -277,7 +283,7 @@ export class RdxMenuTrigger {
 
         event.preventDefault();
         if (!this.isDisabled() && !this.rootContext.isOpen()) {
-            this.rootContext.show('first');
+            this.rootContext.show('first', 'list-navigation', event);
         }
     }
 
@@ -288,7 +294,7 @@ export class RdxMenuTrigger {
 
         event.preventDefault();
         if (!this.isDisabled() && !this.rootContext.isOpen()) {
-            this.rootContext.show('last');
+            this.rootContext.show('last', 'list-navigation', event);
         }
     }
 

@@ -10,7 +10,7 @@ import {
     signal
 } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
-import { BooleanInput, dispatchClickWithModifiers, isStationaryWebKitPointer } from '@radix-ng/primitives/core';
+import { BooleanInput, dispatchClickWithModifiers } from '@radix-ng/primitives/core';
 import { shouldActivateOnMouseUp } from './menu-mouse-up';
 import { injectRdxMenuRootContext } from './menu-root';
 
@@ -33,7 +33,7 @@ import { injectRdxMenuRootContext } from './menu-root';
         '(pointermove)': 'onPointerMove($event)',
         '(pointerleave)': 'onPointerLeave($event)',
         '(mouseup)': 'onMouseUp($event)',
-        '(click)': 'onItemClick()',
+        '(click)': 'onItemClick($event)',
         '(keydown.enter)': 'onActivate($event)',
         '(keydown.space)': 'onActivate($event)'
     }
@@ -85,7 +85,7 @@ export class RdxMenuItem {
 
     onPointerMove(event: PointerEvent): void {
         // WebKit fires zero-delta moves while the list scrolls under a still cursor.
-        if (isStationaryWebKitPointer(event)) {
+        if (this.rootContext?.isStationaryPointerMove(event)) {
             return;
         }
         if (event.defaultPrevented || event.pointerType !== 'mouse' || this.effectiveDisabled()) {
@@ -113,10 +113,10 @@ export class RdxMenuItem {
         }
     }
 
-    onItemClick(): void {
+    onItemClick(event: MouseEvent): void {
         if (this.effectiveDisabled()) return;
         this.onSelect.emit();
-        if (this.closeOnClick()) this.rootContext?.closeEntireMenu();
+        if (this.closeOnClick()) this.rootContext?.closeEntireMenu('item-press', event);
     }
 
     onMouseUp(event: MouseEvent): void {
@@ -134,7 +134,7 @@ export class RdxMenuItem {
         if (this.effectiveDisabled()) return;
         event.preventDefault();
         this.onSelect.emit();
-        if (this.closeOnClick()) this.rootContext?.closeEntireMenu();
+        if (this.closeOnClick()) this.rootContext?.closeEntireMenu('item-press', event);
     }
 
     private setActiveIndex(): void {

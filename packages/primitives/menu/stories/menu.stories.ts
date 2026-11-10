@@ -11,6 +11,8 @@ import { RdxMenuBackdropExampleComponent } from './menu-backdrop';
 import backdropSource from './menu-backdrop?raw';
 import { RdxMenuDefaultComponent } from './menu-default';
 import defaultSource from './menu-default?raw';
+import { RdxMenuEventsComponent } from './menu-events';
+import eventsSource from './menu-events?raw';
 import { RdxMenuKeepMountedComponent } from './menu-keep-mounted';
 import keepMountedSource from './menu-keep-mounted?raw';
 import { RdxMenuNestedComponent } from './menu-nested';
@@ -144,6 +146,16 @@ export const KeepMounted: Story = {
     render: () => ({
         template: html`
             <rdx-menu-keep-mounted />
+        `
+    })
+};
+
+export const Events: Story = {
+    decorators: [moduleMetadata({ imports: [RdxMenuEventsComponent] })],
+    parameters: source(eventsSource),
+    render: () => ({
+        template: html`
+            <rdx-menu-events />
         `
     })
 };

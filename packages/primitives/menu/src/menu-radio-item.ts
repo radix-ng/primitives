@@ -11,12 +11,7 @@ import {
     Signal
 } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
-import {
-    BooleanInput,
-    createContext,
-    dispatchClickWithModifiers,
-    isStationaryWebKitPointer
-} from '@radix-ng/primitives/core';
+import { BooleanInput, createContext, dispatchClickWithModifiers } from '@radix-ng/primitives/core';
 import { shouldActivateOnMouseUp } from './menu-mouse-up';
 import { injectRdxMenuRadioGroupContext } from './menu-radio-group';
 import { injectRdxMenuRootContext } from './menu-root';
@@ -60,7 +55,7 @@ const radioItemContextFactory = (): RdxMenuRadioItemContext => {
         '(pointermove)': 'onPointerMove($event)',
         '(pointerleave)': 'onPointerLeave($event)',
         '(mouseup)': 'onMouseUp($event)',
-        '(click)': 'onItemClick()',
+        '(click)': 'onItemClick($event)',
         '(keydown.enter)': 'onActivate($event)',
         '(keydown.space)': 'onActivate($event)'
     }
@@ -120,7 +115,7 @@ export class RdxMenuRadioItem<T = unknown> {
 
     onPointerMove(event: PointerEvent): void {
         // WebKit fires zero-delta moves while the list scrolls under a still cursor.
-        if (isStationaryWebKitPointer(event)) {
+        if (this.rootContext?.isStationaryPointerMove(event)) {
             return;
         }
         if (event.defaultPrevented || event.pointerType !== 'mouse' || this.effectiveDisabled()) {
@@ -146,11 +141,11 @@ export class RdxMenuRadioItem<T = unknown> {
         }
     }
 
-    onItemClick(): void {
+    onItemClick(event: MouseEvent): void {
         if (this.effectiveDisabled()) {
             return;
         }
-        this.selectItem();
+        this.selectItem(event);
     }
 
     onMouseUp(event: MouseEvent): void {
@@ -169,14 +164,14 @@ export class RdxMenuRadioItem<T = unknown> {
             return;
         }
         event.preventDefault();
-        this.selectItem();
+        this.selectItem(event);
     }
 
-    private selectItem(): void {
+    private selectItem(event: Event): void {
         const v = this.value();
-        this.radioGroupContext.selectValue(v);
+        this.radioGroupContext.selectValue(v, event);
         this.onSelect.emit(v);
-        if (this.closeOnClick()) this.rootContext?.closeEntireMenu();
+        if (this.closeOnClick()) this.rootContext?.closeEntireMenu('item-press', event);
     }
 
     private setActiveIndex(): void {

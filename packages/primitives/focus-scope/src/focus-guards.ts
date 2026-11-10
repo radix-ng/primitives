@@ -1,4 +1,4 @@
-import { effect } from '@angular/core';
+import { afterRenderEffect } from '@angular/core';
 import { rdxPlatform } from '@radix-ng/primitives/core';
 import { composedContains, queryComposedAll, tabbable } from './utils';
 
@@ -111,7 +111,9 @@ export function useFocusGuardsTabbability(
     const enabled = options.enabled ?? (() => true);
     let focusInsideDisabled = false;
 
-    effect((onCleanup) => {
+    // Snapshot authored tabindex only after Angular applies host bindings. Before render, native
+    // buttons still look tabbable and restoring that stale snapshot breaks composite roving focus.
+    afterRenderEffect((onCleanup) => {
         const node = portalNode();
         if (!node || !enabled()) {
             return;
