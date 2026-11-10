@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import { lifecycleCases, lifecycleConfig } from '../src/lifecycle';
+import { lifecycleCases, lifecycleConfig } from '../../../shared/lifecycle';
 import type { PopoverDriver } from './driver';
 
 export const lifecycleScenarios = lifecycleCases.map((name) => ({

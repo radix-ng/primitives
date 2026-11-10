@@ -94,7 +94,9 @@ export class RdxMenuCheckboxItem {
     readonly onCheckedChange = output<RdxMenuCheckboxChangeEvent>();
 
     protected readonly highlighted = computed(
-        () => this.rootContext?.activeIndex() === this.listItem.index() || this.isFocused()
+        () =>
+            this.rootContext?.isOpen() !== false &&
+            (this.rootContext?.activeIndex() === this.listItem.index() || this.isFocused())
     );
     protected readonly effectiveDisabled = computed(() => this.disabled() || (this.rootContext?.disabled() ?? false));
 

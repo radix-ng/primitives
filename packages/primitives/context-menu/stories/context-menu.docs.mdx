@@ -97,6 +97,11 @@ the Menu primitive, so it forwards the `open` (two-way), `modal`, `loopFocus`, a
 `highlightItemOnHover` inputs and the `onOpenChange` / `onOpenChangeComplete` outputs from
 `rdxMenuRoot`.
 
+The exported root exposes `close()` and `unmount()` through the shared Menu lifecycle. Request an
+external exit with `eventDetails.preventUnmountOnClose()` in `(onOpenChange)`, then call
+`root.unmount()` when that animation finishes. `close()` defaults to the reason `imperative-action`.
+Completion follows actual portal exit; `keepMounted` retains the settled view without delaying it.
+
 ### RdxContextMenuTrigger
 
 The area that opens the menu on right click or touch long-press.

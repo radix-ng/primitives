@@ -41,7 +41,11 @@ export class MenuDriver {
     }
     async closed() {
         await expect(this.trigger).toHaveAttribute('aria-expanded', 'false');
-        await expect(this.popup).toHaveCount(0);
+        const retained = await this.page.evaluate(() => window.menuParity.config.lifecycle?.keepMounted ?? false);
+        if (retained) {
+            await expect(this.popup).toHaveCount(1);
+            await expect(this.popup).toBeHidden();
+        } else await expect(this.popup).toHaveCount(0);
         await expect(this.subPopup).toHaveCount(0);
         await expect.poll(() => this.page.evaluate(() => window.menuParity.completions.main.at(-1))).toBe(false);
     }
@@ -76,6 +80,7 @@ export class MenuDriver {
                 const popup = document.querySelector<HTMLElement>('[data-testid="popup"]');
                 const sub = document.querySelector<HTMLElement>('[data-testid="sub-popup"]');
                 const trigger = document.querySelector<HTMLElement>('[data-testid="primary"]')!;
+                const positioner = document.querySelector<HTMLElement>('[data-testid="positioner"]');
                 const items = [...document.querySelectorAll<HTMLElement>('[role^="menuitem"]')];
                 const visible = (el: HTMLElement | null) =>
                     !!el && el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
@@ -85,6 +90,13 @@ export class MenuDriver {
                         ?.split(/\s+/)
                         .every((id) => document.getElementById(id)?.textContent?.trim());
                 return {
+                    ...(window.menuParity.config.lifecycle
+                        ? {
+                              ending: popup?.hasAttribute('data-ending-style') ?? false,
+                              inert: positioner?.hasAttribute('inert') ?? false,
+                              pointerBlocked: !!positioner && getComputedStyle(positioner).pointerEvents === 'none'
+                          }
+                        : {}),
                     open: trigger.getAttribute('aria-expanded') === 'true',
                     disabled: trigger.hasAttribute('disabled') || trigger.getAttribute('aria-disabled') === 'true',
                     mounted: !!popup,

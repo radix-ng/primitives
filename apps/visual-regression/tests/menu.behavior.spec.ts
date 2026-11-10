@@ -13,6 +13,71 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
 const trigger = '[rdxMenuTrigger]';
 const popup = '[rdxMenuPopup]';
 
+for (const retained of [false, true]) {
+    test(`deferred menu close completes once and preserves state only with keepMounted=${retained}`, async ({
+        page
+    }) => {
+        await gotoStory(page, 'primitives-menu--lifecycle');
+        await page.getByRole('checkbox', { name: 'Defer unmount', exact: true }).check();
+        if (retained) await page.getByRole('checkbox', { name: 'Keep mounted', exact: true }).check();
+        const opener = page.getByRole('button', { name: 'Menu lifecycle', exact: true });
+        await opener.press('Enter');
+        const notifications = page.getByRole('menuitemcheckbox', { name: /Notifications/ });
+        await notifications.press('Space');
+        await expect(notifications).toHaveAttribute('aria-checked', 'true');
+        await expect(page.locator('output')).toHaveText('Completed: open');
+        await page.keyboard.press('Escape');
+        await expect(page.locator(popup)).toHaveAttribute('data-ending-style', '');
+        await expect(page.locator(popup)).toBeVisible();
+        await expect(page.locator('[rdxMenuPositioner]')).toHaveCSS('pointer-events', 'none');
+        await expect(page.locator('output')).toHaveText('Completed: open');
+        await page.getByRole('button', { name: 'Finish exit', exact: true }).click();
+        await expect(page.locator('output')).toHaveText('Completed: open → closed');
+        if (retained) await expect(page.locator(popup)).toBeHidden();
+        else await expect(page.locator(popup)).toHaveCount(0);
+        await page.getByRole('button', { name: 'Finish exit', exact: true }).click();
+        await expect(page.locator('output')).toHaveText('Completed: open → closed');
+        await opener.press('Enter');
+        await expect(notifications).toHaveAttribute('aria-checked', String(retained));
+        await expect(page.locator('output')).toHaveText('Completed: open → closed → open');
+    });
+}
+
+test('canceling a menu close with both lifetime options enabled keeps items interactive', async ({ page }) => {
+    await gotoStory(page, 'primitives-menu--lifecycle');
+    for (const name of ['Defer unmount', 'Keep mounted', 'Cancel next close'])
+        await page.getByRole('checkbox', { name, exact: true }).check();
+    await page.getByRole('button', { name: 'Menu lifecycle', exact: true }).press('Enter');
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('menu')).toBeVisible();
+    await expect(page.locator('[rdxMenuItem]').first()).toBeFocused();
+    const notifications = page.getByRole('menuitemcheckbox', { name: /Notifications/ });
+    await notifications.click();
+    await expect(notifications).toHaveAttribute('aria-checked', 'true');
+    await page.keyboard.press('Escape');
+    await page.getByRole('button', { name: 'Finish exit', exact: true }).click();
+    await expect(page.locator(popup)).toBeHidden();
+    await expect(page.locator('output')).toHaveText('Completed: open → closed');
+});
+
+test('finishing an ancestor exit also completes a running submenu exit', async ({ page }) => {
+    await gotoStory(page, 'primitives-menu--lifecycle');
+    await page.addStyleTag({
+        content: '[data-testid="lifecycle-submenu"][data-closed] { animation-duration: 2s !important; }'
+    });
+    await page.getByRole('checkbox', { name: 'Defer unmount', exact: true }).check();
+    await page.getByRole('button', { name: 'Menu lifecycle', exact: true }).press('Enter');
+    await expect(page.locator('output')).toHaveText('Completed: open');
+    await page.getByRole('menuitem', { name: 'More actions', exact: true }).press('ArrowRight');
+    await page.getByRole('menuitem', { name: 'Archive', exact: true }).press('Enter');
+    const submenu = page.getByTestId('lifecycle-submenu');
+    await expect(submenu).toHaveAttribute('data-ending-style', '');
+    await expect.poll(() => submenu.evaluate((el) => el.getAnimations().length)).toBeGreaterThan(0);
+    await page.getByRole('button', { name: 'Finish exit', exact: true }).click();
+    await expect(page.locator(popup)).toHaveCount(0, { timeout: 1000 });
+    await expect(page.locator('output')).toHaveText('Completed: open → closed');
+});
+
 for (const opening of ['keyboard', 'pointer']) {
     test(`${opening} opening preserves roving tabindex and Tab exits after the trigger`, async ({ page }) => {
         const errors: string[] = [];

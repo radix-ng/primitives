@@ -33,6 +33,8 @@ Drivers, DOM snapshots, recording contracts and scenario lists stay with their p
 infrastructure handles reference integrity, exact difference matching, builds and reporting.
 `shared/run-scenario.ts` also shares the browser-page and report lifecycle for Menu/Popover. Extract
 behavior shared by concrete suites as it appears; there is no universal control driver.
+`shared/lifecycle.ts` supplies their common lifecycle fixture settings and actual CSS exit class;
+each suite observes its own public actions and component state.
 
 ## Run
 

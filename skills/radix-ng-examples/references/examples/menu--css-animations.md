@@ -61,5 +61,6 @@ disappeared:
 <ng-container #root="rdxMenuRoot" (onOpenChangeComplete)="onDone($event)" rdxMenuRoot>
 ```
 
-The event carries `true` when the open animation finishes and `false` when the close animation
-finishes.
+The event carries `true` when the open animation finishes and `false` when the accepted close has
+finished: after the portal view exits, or after CSS completes for a retained portal. Each accepted
+close completes once. Reopening during an exit cancels the old close completion.

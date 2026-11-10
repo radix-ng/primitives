@@ -66,3 +66,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0032](0032-floating-focus-readiness-and-composition.md)                     | Accepted               | Activate floating focus after layout and preserve nested scope ownership             |
 | [0033](0033-popover-shared-close-lifecycle.md)                               | Accepted               | Reuse popup lifecycle for Popover                                                    |
 | [0034](0034-menu-differential-contracts.md)                                  | Accepted               | Compare Menu contracts through shared browser infrastructure                         |
+| [0035](0035-menu-shared-close-lifecycle.md)                                  | Accepted               | Reuse popup lifecycle for Menu and preserve nested view ownership                    |

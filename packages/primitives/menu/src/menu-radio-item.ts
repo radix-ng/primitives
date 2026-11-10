@@ -85,7 +85,9 @@ export class RdxMenuRadioItem<T = unknown> {
     readonly checked = computed(() => this.radioGroupContext.value() === this.value());
 
     protected readonly highlighted = computed(
-        () => this.rootContext?.activeIndex() === this.listItem.index() || this.isFocused()
+        () =>
+            this.rootContext?.isOpen() !== false &&
+            (this.rootContext?.activeIndex() === this.listItem.index() || this.isFocused())
     );
     protected readonly effectiveDisabled = computed(
         () => this.disabled() || this.radioGroupContext.disabled() || (this.rootContext?.disabled() ?? false)

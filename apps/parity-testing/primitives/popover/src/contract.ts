@@ -1,4 +1,4 @@
-import { lifecycleCases, lifecycleConfig } from './lifecycle';
+import { lifecycleCases, lifecycleConfig } from '../../../shared/lifecycle';
 
 export const basicCases = [
     'keyboard',

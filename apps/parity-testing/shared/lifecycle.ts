@@ -1,3 +1,4 @@
+// Shared fixture settings only. Each primitive owns its state, actions and observed contract.
 export const lifecycleCases = [
     'lifecycle-keep',
     'lifecycle-css-exit',

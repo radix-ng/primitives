@@ -312,8 +312,43 @@ disappeared:
 <ng-container #root="rdxMenuRoot" (onOpenChangeComplete)="onDone($event)" rdxMenuRoot>
 ```
 
-The event carries `true` when the open animation finishes and `false` when the close animation
-finishes.
+The event carries `true` when the open animation finishes and `false` when the accepted close has
+finished: after the portal view exits, or after CSS completes for a retained portal. Each accepted
+close completes once. Reopening during an exit cancels the old close completion.
+
+### Exit lifecycle
+
+Call `eventDetails.preventUnmountOnClose()` from `(onOpenChange)` to retain the popup for an external
+animation. Finish that accepted close with `root.unmount()`. The popup stays in its ending phase
+and blocks pointer interaction until completion. Native keyboard focus is preserved during the exit.
+`keepMounted` decides whether the settled, hidden view remains in the DOM; it does not delay completion.
+
+```html
+<ng-container #root="rdxMenuRoot" (onOpenChange)="change($event)" rdxMenuRoot>
+    <button rdxMenuTrigger>Actions</button>
+    <ng-template [keepMounted]="keepMounted" rdxMenuPortal>
+        <div rdxMenuPositioner><div rdxMenuPopup>…items…</div></div>
+    </ng-template>
+</ng-container>
+```
+
+```ts
+change(change: RdxMenuOpenChange) {
+    if (!change.open) {
+        change.eventDetails.preventUnmountOnClose();
+        // Start an external exit here, then call root.unmount() when it finishes.
+    }
+}
+```
+
+Repeated `unmount()` calls and obsolete hold callbacks have no effect after completion. Calling
+`unmount()` while open does not close the menu. A canceled request does not retain a later close.
+
+<Canvas of={Stories.Lifecycle} />
+
+**Migration:** `root.close()` now reports `imperative-action` by default. Start external animations
+from `(onOpenChange)`; a deferred `(onOpenChangeComplete)` waits for `unmount()` instead of firing
+while the popup is still retained.
 
 ## API Reference
 
@@ -321,6 +356,11 @@ finishes.
 
 `RdxMenuRoot` owns the shared open state. Use `[(open)]` for plain state syncing, or bind
 `(onOpenChange)` when you need the full change details object.
+
+| Method      | Behavior                                                                 |
+| ----------- | ------------------------------------------------------------------------ |
+| `close()`   | Requests a cancelable close with the default reason `imperative-action`. |
+| `unmount()` | Finishes an accepted pending close, including an external animation hold. |
 
 <ArgTypes of={RdxMenuRoot} />
 

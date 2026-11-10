@@ -15,6 +15,8 @@ import { RdxMenuEventsComponent } from './menu-events';
 import eventsSource from './menu-events?raw';
 import { RdxMenuKeepMountedComponent } from './menu-keep-mounted';
 import keepMountedSource from './menu-keep-mounted?raw';
+import { RdxMenuLifecycleComponent } from './menu-lifecycle';
+import lifecycleSource from './menu-lifecycle?raw';
 import { RdxMenuNestedComponent } from './menu-nested';
 import { RdxMenuNestedRtlComponent } from './menu-nested-rtl';
 import nestedRtlSource from './menu-nested-rtl?raw';
@@ -156,6 +158,16 @@ export const Events: Story = {
     render: () => ({
         template: html`
             <rdx-menu-events />
+        `
+    })
+};
+
+export const Lifecycle: Story = {
+    decorators: [moduleMetadata({ imports: [RdxMenuLifecycleComponent] })],
+    parameters: source(lifecycleSource),
+    render: () => ({
+        template: html`
+            <rdx-menu-lifecycle />
         `
     })
 };

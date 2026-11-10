@@ -47,5 +47,6 @@ handles interrupted exits where the scope never unmounted.
 emits completion only after `unmount()`; start an external animation in `onOpenChange`, then finish
 it through the Root method. See [ADR 0033](../../../docs/adr/0033-popover-shared-close-lifecycle.md).
 
-Next: hover/grace areas, detached handles/payloads and RTL/Arrow comparisons. Menu is the next
-independent differential suite; other families still retain their existing close implementations.
+Next: hover/grace areas, detached handles/payloads and RTL/Arrow comparisons. Menu has its own
+independent differential suite and shares the close lifecycle (ADR 0035); other families still
+retain their existing close implementations.

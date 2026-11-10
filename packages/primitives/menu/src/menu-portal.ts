@@ -21,7 +21,16 @@ import { injectRdxMenuRootContext } from './menu-root';
     selector: 'ng-template[rdxMenuPortal]',
     exportAs: 'rdxMenuPortal',
     hostDirectives: [{ directive: RdxPortalPresence, inputs: ['container', 'keepMounted'] }],
-    providers: [provideRdxPresenceContext(() => ({ present: injectRdxMenuRootContext().present }))]
+    providers: [
+        provideRdxPresenceContext(() => {
+            const root = injectRdxMenuRootContext();
+            return {
+                present: root.present,
+                registerPresence: root.registerPresence,
+                skipExitAnimation: root.skipExitAnimation
+            };
+        })
+    ]
 })
 export class RdxMenuPortal {}
 

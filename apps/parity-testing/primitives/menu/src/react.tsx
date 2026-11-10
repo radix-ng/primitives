@@ -1,17 +1,26 @@
 import { DirectionProvider } from '@base-ui/react/direction-provider';
 import { Menu } from '@base-ui/react/menu';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../../../../radix-storybook/.storybook/tailwind.css';
+import { exitClass } from '../../../shared/lifecycle';
 import { config, installProbe, classes as s, type Layer } from './contract';
 
 const settings = config();
 const trace = installProbe('react');
-function change(layer: Layer, open: boolean, details: Menu.Root.ChangeEventDetails) {
-    if ((open && settings.name === 'cancel-open') || (!open && settings.name === 'cancel-close')) details.cancel();
-    trace.change(layer, open, details.reason, details.isCanceled, details.event, details.trigger);
-}
 function ReactMenu() {
+    const actions = useRef<Menu.Root.Actions | null>(null);
+    const closes = useRef(0);
+    const lateHold = useRef<(() => void) | undefined>(undefined);
+    function change(layer: Layer, open: boolean, details: Menu.Root.ChangeEventDetails) {
+        if (layer === 'main' && !open && ++closes.current === 1) {
+            lateHold.current = details.preventUnmountOnClose;
+            if (settings.lifecycle?.deferred || settings.lifecycle?.canceled) details.preventUnmountOnClose();
+            if (settings.lifecycle?.canceled) details.cancel();
+        }
+        if ((open && settings.name === 'cancel-open') || (!open && settings.name === 'cancel-close')) details.cancel();
+        trace.change(layer, open, details.reason, details.isCanceled, details.event, details.trigger);
+    }
     const [triggerId, setTriggerId] = useState('custom-trigger');
     const [popupId, setPopupId] = useState('custom-popup');
     useEffect(() => {
@@ -20,6 +29,12 @@ function ReactMenu() {
         };
         document.addEventListener('click', outside);
         const command = (event: KeyboardEvent) => {
+            if (['F8', 'F9', 'F10'].includes(event.key)) {
+                event.preventDefault();
+                if (event.key === 'F8') actions.current?.close();
+                if (event.key === 'F9') actions.current?.unmount();
+                if (event.key === 'F10') lateHold.current?.();
+            }
             if (event.key !== 'F2') return;
             event.preventDefault();
             setTriggerId('renamed-trigger');
@@ -39,6 +54,7 @@ function ReactMenu() {
                 </div>
                 <input className={s.outside} aria-label="Before menu" data-testid="before" />
                 <Menu.Root
+                    actionsRef={actions}
                     modal={settings.modal}
                     loopFocus={settings.loop}
                     disabled={settings.disabled}
@@ -48,9 +64,19 @@ function ReactMenu() {
                     <Menu.Trigger id={settings.ids ? triggerId : undefined} className={s.trigger} data-testid="primary">
                         Actions
                     </Menu.Trigger>
-                    <Menu.Portal>
-                        <Menu.Positioner className="z-50" align="start" sideOffset={4} collisionPadding={5}>
-                            <Menu.Popup id={settings.ids ? popupId : undefined} className={s.popup} data-testid="popup">
+                    <Menu.Portal keepMounted={settings.lifecycle?.keepMounted ?? false}>
+                        <Menu.Positioner
+                            className="z-50"
+                            align="start"
+                            sideOffset={4}
+                            collisionPadding={5}
+                            data-testid="positioner"
+                        >
+                            <Menu.Popup
+                                id={settings.ids ? popupId : undefined}
+                                className={s.popup + (settings.lifecycle?.animated ? exitClass : '')}
+                                data-testid="popup"
+                            >
                                 <Menu.Item
                                     render={<button />}
                                     nativeButton
@@ -101,7 +127,12 @@ function ReactMenu() {
                                                 sideOffset={4}
                                                 collisionPadding={5}
                                             >
-                                                <Menu.Popup className={s.popup} data-testid="sub-popup">
+                                                <Menu.Popup
+                                                    className={
+                                                        s.popup + (settings.lifecycle?.animated ? exitClass : '')
+                                                    }
+                                                    data-testid="sub-popup"
+                                                >
                                                     <Menu.Item
                                                         render={<button />}
                                                         nativeButton

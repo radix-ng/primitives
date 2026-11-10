@@ -1,4 +1,6 @@
-export const cases = [
+import { lifecycleCases, lifecycleConfig } from '../../../shared/lifecycle';
+
+export const basicCases = [
     'keyboard-enter',
     'keyboard-space',
     'keyboard-up',
@@ -34,6 +36,7 @@ export const cases = [
     'custom-ids',
     'dynamic-ids'
 ] as const;
+export const cases = [...basicCases, ...lifecycleCases, 'lifecycle-submenu-css'] as const;
 export type CaseName = (typeof cases)[number];
 export type Layer = 'main' | 'sub';
 export interface Change {
@@ -79,14 +82,17 @@ export function config() {
     return {
         name: name as CaseName,
         dir: name === 'submenu-rtl' ? ('rtl' as const) : ('ltr' as const),
-        modal: !['outside-nonmodal', 'focus-out'].includes(name),
+        modal: name.startsWith('lifecycle-')
+            ? name === 'lifecycle-modal-keep'
+            : !['outside-nonmodal', 'focus-out'].includes(name),
         loop: name !== 'no-loop',
         disabled: name === 'disabled-trigger',
-        checkbox: name.startsWith('checkbox'),
+        checkbox: name.startsWith('checkbox') || name.startsWith('lifecycle-'),
         radio: name.startsWith('radio'),
-        submenu: name.startsWith('submenu'),
+        submenu: name.startsWith('submenu') || name === 'lifecycle-submenu-css',
         label: name === 'explicit-label' ? 'Zebra' : undefined,
-        ids: name.endsWith('-ids')
+        ids: name.endsWith('-ids'),
+        lifecycle: lifecycleConfig(name === 'lifecycle-submenu-css' ? 'lifecycle-css-exit' : name)
     };
 }
 export function installProbe(framework: string) {

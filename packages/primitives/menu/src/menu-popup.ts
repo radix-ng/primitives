@@ -97,7 +97,8 @@ import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
     host: {
         role: 'menu',
         '[attr.id]': 'resolvedId()',
-        '[attr.aria-labelledby]': 'rootContext.triggerId()',
+        '[attr.aria-labelledby]':
+            'rootContext.isOpen() || rootContext.transitionStatus() === "ending" ? rootContext.triggerId() : undefined',
         tabindex: '-1',
         '[attr.aria-orientation]': 'rootContext.orientation()',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
@@ -258,7 +259,7 @@ export class RdxMenuPopup {
 
     protected handleCloseParent(event: Event): void {
         event.stopPropagation();
-        this.rootContext.close();
+        this.rootContext.close('none');
 
         if (this.rootContext.isSubmenu() && this.rootContext.closeParentOnEsc()) {
             this.rootContext.closeParent();

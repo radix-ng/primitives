@@ -39,7 +39,10 @@ host bindings, and trigger guards resolve existing content-guard ownership. Menu
 use that path; a leading boundary emits focus-out before returning to its owning trigger.
 Menu shares core's coordinate pointer guard with Select, scoped/reset per open menu and observed in
 document capture. Exceptions retain the pin's programmatic focus-out and WebKit/native-focus limits;
-React portal/store workarounds are not ported. Menu lifetime migration remains pending.
+React portal/store workarounds are not ported. Menu composes the shared popup lifecycle (ADR 0035).
+Angular DI registers child Roots and parent presence derives a hold while accepted child exits end,
+preserving the embedded view that owns their completion outputs. The pin drops one nested CSS
+completion; an exact exception records this rather than copying its disposal race.
 
 **Framework adaptation during parity work:** preserve the observable Base UI contract while using
 Angular's `model`, outputs, DI, reactive queries/collections and view lifecycle. Derive state with
@@ -49,10 +52,10 @@ Keep browser requirements separate from framework workarounds (ADR 0025/0026).
 
 **Popup close lifecycle (ADR 0026):** `core/floating/use-popup-lifecycle.ts` coordinates an accepted
 close transaction, an external-animation hold, transition completion and registered Presence views.
-Select and Popover compose this helper: Root exposes `close()` / `unmount()`, and Portal forwards `keepMounted`.
+Select, Popover and Menu compose this helper: Root exposes `close()` / `unmount()`, and Portal forwards `keepMounted`.
 Presence optionally registers its live view and can bypass exit waiting after explicit completion.
 Reopening invalidates the prior close; canceled/open requests cannot retain the next close. Other
-popup families have not yet migrated to this helper (Popover adoption: ADR 0033). Keep these lifetime mechanics shared when
+popup families have not yet migrated to this helper (Popover: ADR 0033; Menu: ADR 0035). Keep these lifetime mechanics shared when
 extending parity instead of adding another per-primitive retained-mount flag.
 
 **Popover lifecycle (ADR 0033):** Root uses the shared popup lifecycle rather than its own hold flag.

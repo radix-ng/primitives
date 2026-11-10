@@ -58,6 +58,16 @@ export class RdxContextMenuRoot {
         this.menuRoot.markAsContextMenu();
     }
 
+    /** Close through the composed Menu's cancelable lifecycle. */
+    close(reason: RdxMenuOpenChangeReason = 'imperative-action', event?: Event): void {
+        this.menuRoot.close(reason, event);
+    }
+
+    /** Finish a close retained with eventDetails.preventUnmountOnClose(). */
+    unmount(): void {
+        this.menuRoot.unmount();
+    }
+
     /**
      * Open the menu with the popup anchored at the given viewport coordinates.
      *

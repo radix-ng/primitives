@@ -1,5 +1,13 @@
 [
     {
+        "scenario": "lifecycle-submenu-css",
+        "checkpoint": "whole chain completed",
+        "field": "completions",
+        "angular": { "main": [true, false], "sub": [true, false] },
+        "react": { "main": [true, false], "sub": [true] },
+        "category": "nested-exit-completion"
+    },
+    {
         "scenario": "focus-out",
         "checkpoint": "outside focused",
         "field": "open",

@@ -3,8 +3,8 @@ import { Component, provideZonelessChangeDetection, signal, viewChild } from '@a
 import { bootstrapApplication } from '@angular/platform-browser';
 import { popoverImports, RdxPopoverOpenChange, RdxPopoverRoot } from '@radix-ng/primitives/popover';
 import '../../../../radix-storybook/.storybook/tailwind.css';
+import { exitClass } from '../../../shared/lifecycle';
 import { classes, config, installProbe } from './contract';
-import { exitClass } from './lifecycle';
 
 const settings = config();
 @Component({

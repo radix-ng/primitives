@@ -145,6 +145,7 @@ content multi-root.
 - [Keep mounted](../examples/menu--keep-mounted.md)
 - [Custom return focus (`finalFocus`)](../examples/menu--custom-return-focus-finalfocus.md)
 - [CSS animations](../examples/menu--css-animations.md)
+- [Exit lifecycle](../examples/menu--exit-lifecycle.md)
 
 ## API & styling contract
 

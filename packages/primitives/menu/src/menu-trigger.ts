@@ -398,7 +398,7 @@ export class RdxMenuTrigger {
         const closeDelay = this.closeDelay() ?? 0;
         this.closeTimer = setTimeout(() => {
             this.closeTimer = undefined;
-            this.rootContext.close();
+            this.rootContext.close('none');
         }, closeDelay);
     }
 

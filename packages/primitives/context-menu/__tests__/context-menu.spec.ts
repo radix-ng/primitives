@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RdxContextMenuModule, RdxContextMenuRoot } from '@radix-ng/primitives/context-menu';
-import { RdxMenuModule, RdxMenuRoot } from '@radix-ng/primitives/menu';
+import { RdxMenuModule, RdxMenuOpenChange, RdxMenuRoot } from '@radix-ng/primitives/menu';
 import { afterEach, vi } from 'vitest';
 
 function rightClick(target: Element, clientX = 120, clientY = 80) {
@@ -22,6 +22,58 @@ function flushRaf() {
 
 afterEach(() => {
     vi.useRealTimers();
+});
+
+it('exposes close and unmount through the composed context-menu lifecycle', async () => {
+    @Component({
+        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [RdxContextMenuModule, RdxMenuModule],
+        template: `
+            <ng-container
+                (onOpenChange)="change($event)"
+                (onOpenChangeComplete)="completed.push($event)"
+                rdxContextMenuRoot
+            >
+                <div rdxContextMenuTrigger>Open menu</div>
+                <ng-template [keepMounted]="true" rdxMenuPortal>
+                    <div rdxMenuPositioner>
+                        <div rdxMenuPopup><button rdxMenuItem>Action</button></div>
+                    </div>
+                </ng-template>
+            </ng-container>
+        `
+    })
+    class DeferredContextMenu {
+        readonly root = viewChild.required(RdxContextMenuRoot);
+        readonly completed: boolean[] = [];
+        reason = '';
+        change(change: RdxMenuOpenChange) {
+            this.reason = change.reason;
+            if (!change.open) change.eventDetails.preventUnmountOnClose();
+        }
+    }
+    TestBed.configureTestingModule({ imports: [DeferredContextMenu] });
+    const fixture = TestBed.createComponent(DeferredContextMenu);
+    fixture.detectChanges();
+    const host = fixture.componentInstance;
+    host.root().openAt(120, 80);
+    fixture.detectChanges();
+    await flushRaf();
+    fixture.detectChanges();
+    expect(host.completed).toEqual([true]);
+    host.root().close();
+    fixture.detectChanges();
+    expect(host.reason).toBe('imperative-action');
+    expect(host.root().menuRoot.open()).toBe(false);
+    expect(document.body.querySelector('[rdxMenuPositioner]')?.hasAttribute('hidden')).toBe(false);
+    expect(host.completed).toEqual([true]);
+    host.root().unmount();
+    fixture.detectChanges();
+    expect(document.body.querySelector('[rdxMenuPositioner]')?.hasAttribute('hidden')).toBe(true);
+    expect(host.completed).toEqual([true, false]);
+    host.root().unmount();
+    fixture.detectChanges();
+    expect(host.completed).toEqual([true, false]);
 });
 
 @Component({

@@ -272,7 +272,7 @@ export class RdxMenubarRoot {
             el,
             root,
             open: () => root.show(false),
-            close: () => root.close(),
+            close: () => root.close('none'),
             disabled: () =>
                 this.disabled() ||
                 root.disabled() ||
@@ -301,7 +301,7 @@ export class RdxMenubarRoot {
         switch (interaction.type) {
             case 'click': {
                 if (root.open()) {
-                    root.close();
+                    root.close('none');
                     this.deactivateAll();
                 } else {
                     root.show();
@@ -315,7 +315,7 @@ export class RdxMenubarRoot {
                 interaction.event.stopPropagation();
 
                 if (root.open()) {
-                    root.close();
+                    root.close('none');
                     this.deactivateAll();
                 } else {
                     root.show('first', 'trigger-press', interaction.event);
@@ -369,7 +369,7 @@ export class RdxMenubarRoot {
             case 'escape': {
                 interaction.event.preventDefault();
                 interaction.event.stopPropagation();
-                root.close();
+                root.close('none');
                 this.deactivateAll();
                 trigger.focus({ preventScroll: true });
                 return true;

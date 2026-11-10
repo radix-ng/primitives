@@ -1,13 +1,15 @@
 import '@angular/compiler';
-import { Component, provideZonelessChangeDetection, signal } from '@angular/core';
+import { Component, provideZonelessChangeDetection, signal, viewChild } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import {
     RdxMenuModule,
+    RdxMenuRoot,
     type RdxMenuCheckboxChangeEvent,
     type RdxMenuOpenChange,
     type RdxMenuRadioGroupValueChangeEvent
 } from '@radix-ng/primitives/menu';
 import '../../../../radix-storybook/.storybook/tailwind.css';
+import { exitClass } from '../../../shared/lifecycle';
 import { classes, config, installProbe, type Layer } from './contract';
 
 const settings = config();
@@ -36,11 +38,18 @@ const settings = config();
                 >
                     Actions
                 </button>
-                <ng-template rdxMenuPortal>
-                    <div class="z-50" [collisionPadding]="5" align="start" sideOffset="4" rdxMenuPositioner>
+                <ng-template [keepMounted]="settings.lifecycle?.keepMounted ?? false" rdxMenuPortal>
+                    <div
+                        class="z-50"
+                        [collisionPadding]="5"
+                        align="start"
+                        sideOffset="4"
+                        data-testid="positioner"
+                        rdxMenuPositioner
+                    >
                         <div
                             [id]="settings.ids ? popupId() : undefined"
-                            [class]="s.popup"
+                            [class]="s.popup + (settings.lifecycle?.animated ? exitClass : '')"
                             data-testid="popup"
                             rdxMenuPopup
                         >
@@ -81,7 +90,11 @@ const settings = config();
                                             sideOffset="4"
                                             rdxMenuPositioner
                                         >
-                                            <div [class]="s.popup" data-testid="sub-popup" rdxMenuPopup>
+                                            <div
+                                                [class]="s.popup + (settings.lifecycle?.animated ? exitClass : '')"
+                                                data-testid="sub-popup"
+                                                rdxMenuPopup
+                                            >
                                                 <button
                                                     [class]="s.item"
                                                     (onSelect)="trace.select('sub-alpha')"
@@ -144,12 +157,22 @@ const settings = config();
     `
 })
 class AngularMenu {
+    readonly root = viewChild.required(RdxMenuRoot);
+    readonly exitClass = exitClass;
+    private closes = 0;
+    private lateHold?: () => void;
     readonly settings = settings;
     readonly s = classes;
     readonly trace = installProbe('angular');
     readonly triggerId = signal('custom-trigger');
     readonly popupId = signal('custom-popup');
     command(event: KeyboardEvent) {
+        if (['F8', 'F9', 'F10'].includes(event.key)) {
+            event.preventDefault();
+            if (event.key === 'F8') this.root().close();
+            if (event.key === 'F9') this.root().unmount();
+            if (event.key === 'F10') this.lateHold?.();
+        }
         if (event.key !== 'F2') return;
         event.preventDefault();
         this.triggerId.set('renamed-trigger');
@@ -159,6 +182,12 @@ class AngularMenu {
         if ((event.target as Element)?.closest('[data-testid="outside"]')) this.trace.probe.activations++;
     }
     change(layer: Layer, change: RdxMenuOpenChange) {
+        if (layer === 'main' && !change.open && ++this.closes === 1) {
+            const lifecycle = settings.lifecycle;
+            this.lateHold = change.eventDetails.preventUnmountOnClose;
+            if (lifecycle?.deferred || lifecycle?.canceled) change.eventDetails.preventUnmountOnClose();
+            if (lifecycle?.canceled) change.eventDetails.cancel();
+        }
         if ((change.open && settings.name === 'cancel-open') || (!change.open && settings.name === 'cancel-close'))
             change.eventDetails.cancel();
         this.trace.change(

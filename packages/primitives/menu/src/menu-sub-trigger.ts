@@ -119,7 +119,9 @@ export class RdxMenuSubTrigger {
 
     /** Highlighted while active/focused in the parent menu; opening a child alone is not a highlight. */
     protected readonly highlighted = computed(
-        () => this.parentMenuRoot?.activeIndex() === this.listItem.index() || this.isFocused()
+        () =>
+            this.parentMenuRoot?.open() !== false &&
+            (this.parentMenuRoot?.activeIndex() === this.listItem.index() || this.isFocused())
     );
     protected readonly effectiveDisabled = computed(() => this.disabled() || this.submenuContext.disabled());
     protected readonly nativeButtonState = computed(
@@ -210,9 +212,9 @@ export class RdxMenuSubTrigger {
         clearTimeout(this.closeTimer);
         const delay = this.closeDelay() ?? 0;
         if (delay <= 0) {
-            this.submenuContext.close();
+            this.submenuContext.close('none');
         } else {
-            this.closeTimer = setTimeout(() => this.submenuContext.close(), delay);
+            this.closeTimer = setTimeout(() => this.submenuContext.close('none'), delay);
         }
     }
 
@@ -255,7 +257,7 @@ export class RdxMenuSubTrigger {
         if (this.submenuContext.isOpen()) {
             // Toggle (close) only for a click-driven submenu (Base UI `toggle: !openOnHover`).
             if (!this.openOnHover()) {
-                this.submenuContext.close();
+                this.submenuContext.close('none');
             }
             return;
         }
@@ -379,7 +381,7 @@ export class RdxMenuSubTrigger {
                 return;
             }
 
-            submenuRootsByTrigger.get(trigger)?.close();
+            submenuRootsByTrigger.get(trigger)?.close('none');
             trigger.dispatchEvent(new CustomEvent('rdx-menu-subtrigger-clear-highlight'));
         });
     }

@@ -2,8 +2,8 @@ import { Popover } from '@base-ui/react/popover';
 import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../../../../radix-storybook/.storybook/tailwind.css';
+import { exitClass } from '../../../shared/lifecycle';
 import { config, installProbe, classes as s } from './contract';
-import { exitClass } from './lifecycle';
 
 const settings = config();
 const trace = installProbe('react');

@@ -1,6 +1,7 @@
 import {
     booleanAttribute,
     computed,
+    DestroyRef,
     Directive,
     effect,
     ElementRef,
@@ -10,8 +11,7 @@ import {
     model,
     output,
     signal,
-    Signal,
-    untracked
+    Signal
 } from '@angular/core';
 import {
     BooleanInput,
@@ -25,7 +25,8 @@ import {
     provideFloatingTree,
     RdxCancelableChangeEventDetails,
     RdxFloatingRootContext,
-    useTransitionStatus
+    RdxPopupLifecycle,
+    usePopupLifecycle
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
@@ -77,6 +78,7 @@ export type RdxMenuOpenChangeReason =
     | 'cancel-open'
     | 'focus-out'
     | 'item-press'
+    | 'imperative-action'
     | 'none';
 
 export type RdxMenuOpenChangeEventDetails = RdxCancelableChangeEventDetails<RdxMenuOpenChangeReason>;
@@ -146,6 +148,8 @@ export interface RdxMenuRootContext {
     popupPhysicalSide: Signal<MenuSide | undefined>;
     beforeContentFocusGuard: Signal<HTMLElement | null>;
     transitionStatus: Signal<RdxMenuTransitionStatus>;
+    registerPresence: RdxPopupLifecycle['registerPresence'];
+    skipExitAnimation: Signal<boolean>;
     close: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
     setActiveIndex: (index: number | null) => void;
     /** Close this menu and every ancestor — used by item selection (the whole menu dismisses). */
@@ -231,6 +235,8 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         popupPhysicalSide: instance.popupPhysicalSide,
         beforeContentFocusGuard: instance.beforeContentFocusGuard.asReadonly(),
         transitionStatus: instance.transitionStatus,
+        registerPresence: instance.registerPresence,
+        skipExitAnimation: instance.skipExitAnimation,
         close: (reason, event) => instance.close(reason, event),
         setActiveIndex: (index) => instance.setActiveIndex(index),
         closeEntireMenu: (reason, event) => instance.closeEntireMenu(reason, event),
@@ -272,6 +278,7 @@ const contextFactory = () => buildContext(inject(RdxMenuRoot));
 export class RdxMenuRoot {
     private readonly popper = inject(RdxPopper);
     readonly parentRoot = inject(RdxMenuRoot, { optional: true, skipSelf: true });
+    private readonly childRoots = signal<readonly RdxMenuRoot[]>([]);
     private readonly providedDirection = injectDirection();
     /** Ambient modality from an enclosing coordinator (e.g. Menubar). Overrides own `modal` for top-level menus. */
     private readonly ambientModal = inject(RDX_MENU_AMBIENT_MODAL, { optional: true });
@@ -285,9 +292,6 @@ export class RdxMenuRoot {
         ownerDocument: inject(ElementRef).nativeElement.ownerDocument,
         open: () => this.open()
     });
-
-    /** Shared open/close transition state machine (completes on the real animationend). */
-    private readonly transition = useTransitionStatus((open) => this.onOpenChangeComplete.emit(open));
 
     private registeredTrigger: HTMLElement | undefined;
     private registeredTriggerId?: () => string;
@@ -329,8 +333,16 @@ export class RdxMenuRoot {
     /** Emits when the open state changes. */
     readonly onOpenChange = output<RdxMenuOpenChange>();
 
-    /** Emits when the open/close CSS transition or animation finishes. */
+    /** Emits after opening or accepted close completion, including a pending external exit. */
     readonly onOpenChangeComplete = output<boolean>();
+
+    private readonly lifecycle = usePopupLifecycle(
+        this.open,
+        (open) => this.onOpenChangeComplete.emit(open),
+        'RdxMenuRoot'
+    );
+    readonly registerPresence = this.lifecycle.registerPresence;
+    readonly skipExitAnimation = this.lifecycle.skipExitAnimation;
 
     readonly trigger = signal<HTMLElement | undefined>(undefined);
     readonly popupElement = signal<HTMLElement | undefined>(undefined);
@@ -349,7 +361,7 @@ export class RdxMenuRoot {
     /** Physical placed side read through the popup's own signal (undefined until the popup is placed). */
     readonly popupPhysicalSide = computed(() => this.popupPhysicalSideSource()?.());
     readonly beforeContentFocusGuard = signal<HTMLElement | null>(null);
-    readonly transitionStatus = this.transition.status;
+    readonly transitionStatus = this.lifecycle.status;
     readonly activeIndex = signal<number | null>(null);
     /** Whether the popup grabs focus when it opens. Set false for menubar hover-switching. */
     readonly autoFocus = signal<RdxMenuAutoFocus>('first');
@@ -369,7 +381,6 @@ export class RdxMenuRoot {
         () => this.localIsContextMenu() || (this.parentRoot?.isContextMenu() ?? false)
     );
     readonly hasTriggerInteractionHandler = signal(false);
-    private readonly preventUnmountOnClose = signal(false);
 
     /**
      * What kind of parent this menu has (Base UI `MenuParent.type`). A submenu wins over everything (its
@@ -412,7 +423,11 @@ export class RdxMenuRoot {
     });
     readonly effectiveModal = computed(() => (this.ambientModal?.() ?? this.modal()) && !this.isSubmenu());
     readonly state = computed(() => (this.open() ? 'open' : 'closed'));
-    readonly present = computed(() => this.open() || this.preventUnmountOnClose());
+    // Angular owns submenu roots inside the parent's embedded view, even when their popups portal
+    // elsewhere. Let accepted child exits finish before removing that owning view and its outputs.
+    readonly present = computed(
+        () => this.lifecycle.present() || this.childRoots().some((child) => child.transitionStatus() === 'ending')
+    );
 
     /** Base UI `data-instant`: the open/close reason classified into the instant-suppression bucket. */
     readonly instantType = computed<RdxMenuInstantType | undefined>(() => {
@@ -436,6 +451,13 @@ export class RdxMenuRoot {
     });
 
     constructor() {
+        const parent = this.parentRoot;
+        if (parent) {
+            parent.childRoots.update((children) => [...children, this]);
+            inject(DestroyRef).onDestroy(() => {
+                parent.childRoots.update((children) => children.filter((child) => child !== this));
+            });
+        }
         effect((onCleanup) => {
             if (!this.open()) return;
             const guard = createPointerMoveGuard(this.pointerOrigin);
@@ -460,23 +482,8 @@ export class RdxMenuRoot {
         effect(() => this.floatingContext.setReferenceElement(this.trigger() ?? null));
 
         effect(() => {
-            if (this.open() && this.preventUnmountOnClose()) {
-                this.preventUnmountOnClose.set(false);
-            }
-        });
-
-        effect(() => {
             if (!this.open()) {
                 this.activeIndex.set(null);
-            }
-        });
-
-        let previousOpen = this.open();
-        effect(() => {
-            const open = this.open();
-            if (open !== previousOpen) {
-                previousOpen = open;
-                untracked(() => this.transition.start(open));
             }
         });
     }
@@ -512,15 +519,16 @@ export class RdxMenuRoot {
                 (method === 'mouse' || method === 'pen') && event && 'clientX' in event && 'clientY' in event
                     ? { clientX: event.clientX as number, clientY: event.clientY as number }
                     : undefined;
-            this.preventUnmountOnClose.set(false);
             this.open.set(true);
+            change.commit();
             // Publish reason + native event on the per-popup floating channel (Base UI open-change) so the
             // dismissal / future focus policy can read why the menu opened (e.g. hover vs press).
             this.floatingContext.events.emit('openchange', { open: true, reason, event: change.eventDetails.event });
         }
     }
 
-    close(reason: RdxMenuOpenChangeReason = 'none', event?: Event) {
+    /** Request a cancelable close; direct calls default to the imperative-action reason. */
+    close(reason: RdxMenuOpenChangeReason = 'imperative-action', event?: Event) {
         if (this.open()) {
             const change = this.createOpenChangeEvent(false, reason, event);
             this.onOpenChange.emit(change.payload);
@@ -532,8 +540,9 @@ export class RdxMenuRoot {
             this.setAllowMouseUpTrigger(false);
             this.lastOpenChangeReason.set(reason);
             this.closeInteractionType.set(getInteractionTypeFromEvent(event));
-            this.preventUnmountOnClose.set(change.shouldPreventUnmountOnClose());
             this.open.set(false);
+            change.commit();
+            for (const child of this.childRoots()) child.close(reason, event);
             this.floatingContext.events.emit('openchange', { open: false, reason, event: change.eventDetails.event });
         }
     }
@@ -640,7 +649,16 @@ export class RdxMenuRoot {
     }
 
     registerTransitionElement(element: HTMLElement): () => void {
-        return this.transition.registerElement(element);
+        return this.lifecycle.registerElement(element);
+    }
+
+    /** Finish the accepted pending close after an external animation. Safe to call again or while open. */
+    unmount(): void {
+        if (this.open()) return;
+        // Completing an ancestor exit also releases accepted child exits; otherwise an animated
+        // submenu could keep the Angular view owning this root's portal alive after this action.
+        for (const child of this.childRoots()) child.unmount();
+        this.lifecycle.unmount();
     }
 
     registerPopupArrowNavigationHandler(handler: (offset: 1 | -1) => boolean): () => void {
@@ -687,10 +705,12 @@ export class RdxMenuRoot {
             event ?? new Event('menu.open-change'),
             reason === 'focus-out' && event?.target !== this.beforeContentFocusGuard() ? undefined : this.trigger()
         );
+        const transaction = this.lifecycle.prepareOpenChange(open);
+        change.eventDetails.preventUnmountOnClose = transaction.preventUnmountOnClose;
 
         return {
             eventDetails: change.eventDetails,
-            shouldPreventUnmountOnClose: change.shouldPreventUnmountOnClose,
+            commit: transaction.commit,
             payload: {
                 open,
                 trigger: change.eventDetails.trigger,

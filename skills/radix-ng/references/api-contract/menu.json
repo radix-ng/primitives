@@ -502,7 +502,7 @@
         {
           "name": "onOpenChangeComplete",
           "type": "boolean",
-          "description": "Emits when the open/close CSS transition or animation finishes."
+          "description": "Emits after opening or accepted close completion, including a pending external exit."
         }
       ],
       "twoWay": [

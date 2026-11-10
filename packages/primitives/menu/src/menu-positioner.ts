@@ -1,4 +1,4 @@
-import { afterNextRender, computed, Directive, ElementRef, inject, Injector } from '@angular/core';
+import { afterNextRender, computed, Directive, effect, ElementRef, inject, Injector } from '@angular/core';
 import {
     DROPDOWN_COLLISION_AVOIDANCE,
     legacyPopperVars,
@@ -78,6 +78,7 @@ export class RdxMenuPositioner extends RdxPopperContentWrapper {
         // Gate the inherited positioning on visibility (see `visible`) — pauses `autoUpdate` while the
         // menu is closed but kept mounted.
         this.positioningActive = this.visible;
+        effect(() => this.nonInteractive.set(!this.rootContext.isOpen()));
 
         const injector = inject(Injector);
         const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
