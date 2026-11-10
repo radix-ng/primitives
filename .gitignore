@@ -3,8 +3,6 @@
 .vercel
 .pnpm-store
 
-openspec
-
 debug-storybook.log
 documentation.json
 dependency-graph.png

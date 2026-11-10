@@ -118,7 +118,7 @@ The adapter may:
   (a provided accessor wins, absent accessors fall back to inputs / DOM heuristic), partial ownership,
   and teardown via the returned previous provider;
 - map Signal Forms validation errors into the field once `RdxFieldState` gains its optional
-  `errors` accessor (gap recorded 2026-06-10; the `add-form-root` OpenSpec change adds the accessor and
+  `errors` accessor (gap recorded 2026-06-10; the planned form primitive adds the accessor and
   the `messages` exposure on `rdxFieldError`) — booleans alone cannot carry error _content_, and without
   this the "minimal migration" still hand-renders every message;
 - keep using `RdxFieldControl` for ARIA relationships;
@@ -266,6 +266,6 @@ Revisit this ADR when:
 - multiple stories or consumers duplicate the same Signal Forms to Field state mapping;
 - a consumer requests automatic Field integration with Signal Forms;
 - `RdxFieldRoot` needs a new input that only exists to support Signal Forms;
-- a form-level coordination primitive lands (the `add-form-root` OpenSpec change adds `RdxFormRoot` with
+- a form-level coordination primitive lands (the planned form primitive adds `RdxFormRoot` with
   an `RdxFormState` seam mirroring this ADR's field-level seam — the future adapter becomes a pair:
   `[rdxSignalField]` + `[rdxSignalForm]`).
