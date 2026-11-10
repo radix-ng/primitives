@@ -64,9 +64,9 @@ Its pressed attribute derives from open state. Native input capabilities are pro
 Menu collection boundaries (ADR 0038) retain an empty list's first-index request in the existing
 highlight signal and resolve a removed submenu trigger through surviving DI owners. The focus
 manager excludes disconnected default anchors. Menubar uses the shared Composite search from the
-current trigger's full DOM position, even after disabling it; a wrap onto itself preserves the popup.
-Exact pin exceptions retain an enabled Tab entry and direct sibling switching without intermediate
-close/reopen requests. These are intentional contracts rather than React store/lifecycle ports.
+current trigger's full DOM position, even after disabling it. Forward wrap onto itself preserves the
+popup/item focus; return arrows match the pin's close/reopen sequence. Exact pin exceptions retain
+an enabled Tab entry and actual nested completion.
 Menubar transactions (ADR 0039) activate only accepted openings; native focus owns switch requests.
 Coordinator inside elements inherit through Menu DI, preserving cancellation across portaled children.
 Logical highlight survives those transfers. The shared dismissal Escape predicate receives its original
@@ -74,15 +74,21 @@ KeyboardEvent; the coordinator records ownership per native event before earlier
 Root state. Synchronous return respects focus on another trigger. Vertical bar roving and cross-axis
 opening follow orientation/direction; child forward arrows delegate to their owning Root. The bar interaction
 mode observes accepted events from directly owned Roots; exact pin exceptions retain child completion.
-Navigation return (ADR 0040) is shared by submenu Popup and vertical Menubar through Menu Root.
+Navigation return (ADR 0040/0041) is shared by submenu Popup and Menubar through Menu Root.
 It consumes/forwards the original KeyboardEvent, requests closing and focuses a surviving DI owner
 trigger. Nested menus clear their highlight even when the arrow close is canceled; a canceled Escape
 keeps child focus. Menubar retains open-on-focus mode through accepted sibling/navigation closes
 and clears it on other accepted closes, matching Base UI. This mode has independent semantics and
 uses one signal rather than an aggregate of open Roots. Native vertical return focus reopens the
 same popup without autofocus, preserving highlight/view identity and avoiding close completion.
-A reactive query observes default/external open inputs; a WeakMap of handled per-Root values
-prevents unchanged open siblings from re-enabling interaction mode after another menu closes.
+An `afterRenderEffect` observes default/external open inputs and joins existing sibling activation
+once their views exist; a WeakMap of handled per-Root values prevents unchanged open siblings from
+re-enabling interaction mode after another menu closes. Default Menu focus targets Popup; native
+requests retain their first/last-item policy, including canceled requests. Horizontal return callbacks
+retain the original key before the parent bar consumes it. Shared FocusScope returns in a cancelable
+post-unmount microtask, before another popup's frame-based autofocus. Remounting cancels the old
+return; explicit targets and deliberate outside focus retain their policies. This matches the pin
+without synthetic focus, coordinator timers or an interaction store (ADR 0041).
 Dialog/Drawer shared demo styles use current boolean states; Drawer uses CSS transitions so gesture
 updates do not replay entry keyframes. Browser exit tests pause/seek/finish actual WAAPI effects.
 

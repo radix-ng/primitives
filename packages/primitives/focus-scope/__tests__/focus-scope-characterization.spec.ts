@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } fro
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { RdxFocusScope } from '../src/focus-scope';
+import { RdxFocusScopeConfigToken } from '../src/focus-scope.config';
 import { createFocusScopesStack, FocusScopeAPI } from '../src/stack';
 import { getTabbableCandidates, getTabbableEdges, isTabbable, tabbable } from '../src/utils';
 
@@ -13,7 +14,7 @@ import { getTabbableCandidates, getTabbableEdges, isTabbable, tabbable } from '.
  * Playwright's job; this pins the jsdom-deterministic surface.
  */
 
-// Drains microtasks (mount auto-focus) AND a window animation frame (the queued return-focus).
+// Drain focus microtasks and a frame so Angular's render callbacks have also settled.
 const flush = (): Promise<void> => new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
 
 // ─── Tab loop (handleKeyDown) ─────────────────────────────────────────────────
@@ -386,7 +387,32 @@ describe('RdxFocusScope characterization', () => {
     // ─── return focus on unmount ──────────────────────────────────────────────
 
     describe('return focus on unmount', () => {
-        it('restores focus to the previously-focused element after destroy', async () => {
+        it('does not briefly steal focus when a retained scope reactivates before microtasks drain', async () => {
+            const enabled = signal(true);
+            TestBed.overrideProvider(RdxFocusScopeConfigToken, { useValue: { trapped: signal(false), enabled } });
+            const outside = document.createElement('button');
+            document.body.appendChild(outside);
+            outside.focus();
+            const fixture = TestBed.createComponent(LoopHost);
+            fixture.autoDetectChanges();
+            await flush();
+            let returns = 0;
+            outside.addEventListener('focus', () => returns++);
+
+            enabled.set(false);
+            fixture.detectChanges();
+            enabled.set(true);
+            fixture.detectChanges();
+            await Promise.resolve();
+
+            expect(returns).toBe(0);
+            expect(fixture.nativeElement.contains(document.activeElement)).toBe(true);
+            fixture.destroy();
+            await Promise.resolve();
+            outside.remove();
+        });
+
+        it('restores focus after destroy before the next animation frame', async () => {
             const outside = document.createElement('button');
             document.body.appendChild(outside);
             outside.focus();
@@ -398,7 +424,7 @@ describe('RdxFocusScope characterization', () => {
             expect(document.activeElement).not.toBe(outside);
 
             fixture.destroy();
-            await flush(); // unmount return-focus runs in a setTimeout(0)
+            await Promise.resolve();
 
             expect(document.activeElement).toBe(outside);
             outside.remove();

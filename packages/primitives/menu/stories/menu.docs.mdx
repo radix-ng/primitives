@@ -179,6 +179,10 @@ does not dismiss it; hovering another parent item closes that branch.
 
 ### Events
 
+Opening through `defaultOpen` or an external `open` binding without a native opening request focuses
+Popup. Native keyboard requests select first/last items; a canceled keyboard request retains that
+focus policy if the application subsequently opens the menu externally.
+
 `onOpenChange` carries a cancelable request and its original native event. Canceling Escape keeps
 focus on the current item. UI selection reports `item-press`; arrow-driven opening/back navigation
 reports `list-navigation`. Checkbox and radio UI value requests also report `item-press` and can

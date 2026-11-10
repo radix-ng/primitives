@@ -60,6 +60,7 @@ class MenubarHost {
     readonly fileDefaultOpen = signal(false);
     readonly orientation = signal<'horizontal' | 'vertical'>('horizontal');
     readonly fileMenu = viewChild.required(RdxMenuRoot);
+    readonly editMenu = viewChild.required<RdxMenuRoot>('editMenu');
 }
 
 @Component({
@@ -513,12 +514,28 @@ describe('Menubar', () => {
         const item: HTMLElement = fixture.nativeElement.querySelector('[rdxMenuItem]');
         expect(document.activeElement).toBe(item);
 
-        keydown(item, 'ArrowLeft');
+        const changes: RdxMenuOpenChange[] = [];
+        const preventedAtClose: boolean[] = [];
+        fixture.componentInstance.editMenu().onOpenChange.subscribe((change) => {
+            changes.push(change);
+            if (!change.open) preventedAtClose.push(change.event.defaultPrevented);
+        });
+        const event = new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true, cancelable: true });
+        item.dispatchEvent(event);
         fixture.detectChanges();
 
         expect(document.activeElement).toBe(triggers[0]);
         expect(triggers[0].hasAttribute('data-popup-open')).toBe(true);
         expect(triggers[1].hasAttribute('data-popup-open')).toBe(false);
+        expect(changes.map(({ open, reason }) => ({ open, reason }))).toEqual([
+            { open: false, reason: 'list-navigation' },
+            { open: true, reason: 'trigger-focus' },
+            { open: false, reason: 'sibling-open' }
+        ]);
+        expect(changes[0].event).toBe(event);
+        expect(changes[1].event).toBeInstanceOf(FocusEvent);
+        expect(preventedAtClose[0]).toBe(false);
+        expect(event.defaultPrevented).toBe(true);
     });
 
     it('ArrowDown opens the focused menu without a prior open menu', () => {

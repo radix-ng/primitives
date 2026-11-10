@@ -9,13 +9,19 @@ import { menuClasses as s } from '../../../shared/menu-fixture';
 import { MenuItems } from '../../../shared/menu-items';
 import { cancelChange } from './composition';
 import { config, initialMenus, installProbe, submenuId, type TopLayer } from './contract';
+import { changeExternalOpen, initialOpenState } from './state';
 const settings = config(),
     trace = installProbe('react');
 function ReactMenubar() {
     const [menus, setMenus] = useState<MenuEntry<TopLayer>[]>(initialMenus(settings.name));
     const [allowSwitch, setAllowSwitch] = useState(false);
+    const [open, setOpen] = useState(initialOpenState(settings.name));
     useEffect(() => {
         const command = (event: KeyboardEvent) => {
+            if (settings.controlled && ['F6', 'F7', 'F8'].includes(event.key)) {
+                event.preventDefault();
+                setOpen((state) => changeExternalOpen(state, event.key));
+            }
             if (event.key === 'F5') {
                 event.preventDefault();
                 setAllowSwitch(true);
@@ -51,6 +57,8 @@ function ReactMenubar() {
                             <Menu.Root
                                 key={menu}
                                 disabled={entry.disabled}
+                                defaultOpen={settings.defaultOpen && menu === 'file'}
+                                open={settings.controlled ? open[menu] : undefined}
                                 onOpenChange={(open, details) => {
                                     if (cancelChange(settings.name, menu, open, details.reason, allowSwitch))
                                         details.cancel();
@@ -62,6 +70,8 @@ function ReactMenubar() {
                                         details.event,
                                         details.trigger
                                     );
+                                    if (settings.controlled && !details.isCanceled)
+                                        setOpen((state) => ({ ...state, [menu]: open }));
                                 }}
                                 onOpenChangeComplete={(open) => trace.complete(menu, open)}
                             >

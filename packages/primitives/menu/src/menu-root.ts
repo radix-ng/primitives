@@ -187,7 +187,7 @@ export interface RdxMenuRootContext {
     setAllowMouseUpTrigger: (value: boolean) => void;
     closeParent: () => void;
     handlePopupArrowNavigation: (offset: 1 | -1, event?: KeyboardEvent) => boolean;
-    closeForNavigation: (event?: KeyboardEvent) => void;
+    closeForNavigation: (event?: KeyboardEvent, consumeEvent?: boolean) => void;
     handleTriggerInteraction: (interaction: RdxMenuTriggerInteraction) => boolean;
 }
 
@@ -280,7 +280,7 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         setAllowMouseUpTrigger: (value) => instance.setAllowMouseUpTrigger(value),
         closeParent: () => instance.closeParent(),
         handlePopupArrowNavigation: (offset, event) => instance.handlePopupArrowNavigation(offset, event),
-        closeForNavigation: (event) => instance.closeForNavigation(event),
+        closeForNavigation: (event, consumeEvent) => instance.closeForNavigation(event, consumeEvent),
         handleTriggerInteraction: (interaction) => instance.handleTriggerInteraction(interaction)
     };
 }
@@ -394,7 +394,7 @@ export class RdxMenuRoot {
     readonly transitionStatus = this.lifecycle.status;
     readonly activeIndex = signal<number | null>(null);
     /** How focus moves into the popup when it opens; false preserves the current focus. */
-    readonly autoFocus = signal<RdxMenuAutoFocus>('first');
+    readonly autoFocus = signal<RdxMenuAutoFocus>('popup');
     readonly isSubmenu = signal(false);
     /** Set by `RdxContextMenuRoot` (it composes this root) — distinguishes a context menu from a dropdown. */
     private readonly menuId = injectId('rdx-menu-root-');
@@ -743,9 +743,11 @@ export class RdxMenuRoot {
     }
 
     /** @internal A navigation return moves focus/highlight even when its close request is canceled. */
-    closeForNavigation(event?: KeyboardEvent): void {
-        event?.preventDefault();
-        event?.stopPropagation();
+    closeForNavigation(event?: KeyboardEvent, consumeEvent = true): void {
+        if (consumeEvent) {
+            event?.preventDefault();
+            event?.stopPropagation();
+        }
         this.close('list-navigation', event);
         // A Menubar return can reopen synchronously from trigger focus. Preserve that menu's
         // highlight; nested menus hand their highlight back even when the close is canceled.

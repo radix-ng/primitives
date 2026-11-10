@@ -124,7 +124,7 @@ export class RdxFocusScope {
     };
 
     private alive = true;
-    private returnFocusFrame: number | undefined;
+    private returnFocusTask: object | undefined;
 
     constructor() {
         this.destroyRef.onDestroy(() => {
@@ -205,8 +205,10 @@ export class RdxFocusScope {
             effect(
                 (onCleanup) => {
                     if (!this.enabled()) return;
+                    // Cancel before the mount microtask: an earlier queued return must not briefly
+                    // move focus outside a retained scope that has already reactivated.
+                    this.returnFocusTask = undefined;
                     const container = this.elementRef.nativeElement;
-                    const view = this.ownerDocument.defaultView ?? globalThis;
                     let canceled = false;
                     let cleanup: (() => void) | undefined;
                     onCleanup(() => {
@@ -217,10 +219,6 @@ export class RdxFocusScope {
                     // deferred mount autofocus runs.
                     queueMicrotask(() => {
                         if (canceled || !this.alive || !this.enabled()) return;
-                        if (this.returnFocusFrame !== undefined) {
-                            view.cancelAnimationFrame(this.returnFocusFrame);
-                            this.returnFocusFrame = undefined;
-                        }
                         this.focusScopesStack.add(this.focusScope);
                         this.focusScope.resume();
 
@@ -256,10 +254,13 @@ export class RdxFocusScope {
                             container.dispatchEvent(unmountEvent);
                             container.removeEventListener(AUTOFOCUS_ON_UNMOUNT, unmountEventHandler);
 
-                            // Queue the return-focus on the owner window's animation frame (not `setTimeout`),
-                            // so it runs after the unmounting paint settles (ADR 0017 Phase 1a queued focus).
-                            this.returnFocusFrame = view.requestAnimationFrame(() => {
-                                this.returnFocusFrame = undefined;
+                            // Return after Angular removes the old view, before another popup's
+                            // frame-based autofocus. Reopening this scope invalidates the queued return.
+                            const task = {};
+                            this.returnFocusTask = task;
+                            queueMicrotask(() => {
+                                if (this.returnFocusTask !== task) return;
+                                this.returnFocusTask = undefined;
                                 // An enclosing focus manager can override the return target (ADR 0017
                                 // `returnFocus`): `false` suppresses it, an element returns there explicitly
                                 // (bypassing the moved-focus guard), `undefined` keeps the default behavior.

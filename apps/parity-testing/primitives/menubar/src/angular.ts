@@ -15,6 +15,7 @@ import { changeCollection, type MenuEntry } from '../../../shared/menu-collectio
 import { createMenuPopupTemplate, menuClasses } from '../../../shared/menu-fixture';
 import { cancelChange } from './composition';
 import { config, initialMenus, installProbe, submenuId, type Layer, type TopLayer } from './contract';
+import { changeExternalOpen, initialOpenState } from './state';
 const settings = config();
 // A consumer can compose Menubar without authoring the original selector attribute.
 @Directive({
@@ -57,6 +58,21 @@ function createNestedTemplate(
 // Both variants remain static AOT templates in the owning Menu view.
 const nestedTemplate = createNestedTemplate();
 const composedNestedTemplate = createNestedTemplate('parityPopup', 'parityItem', 'paritySubTrigger');
+function createRootTemplate(bindings: string) {
+    return `
+        <ng-container [disabled]="entry.disabled" ${bindings}
+            (onOpenChange)="change(menu, $event)"
+            (onOpenChangeComplete)="trace.complete(menu, $event)" rdxMenuRoot>
+            <button [id]="menu + '-trigger'" [attr.data-testid]="menu + '-trigger'"
+                [attr.data-menu-trigger]="menu" [class]="s.trigger" rdxMenuTrigger>{{ entry.label }}</button>
+            @if (settings.composed) {
+                ${createMenuPopupTemplate(composedNestedTemplate, 'parityPopup', 'parityItem')}
+            } @else {
+                ${createMenuPopupTemplate(nestedTemplate)}
+            }
+        </ng-container>
+    `;
+}
 // Compose a static AOT template; the fragment keeps Menu parts in this owning view.
 const template = `
         <div [dir]="settings.dir" rdxDirectionProvider>
@@ -66,27 +82,11 @@ const template = `
                     [orientation]="settings.orientation" [disabled]="settings.disabled" aria-label="Application" parityMenubar>
                     @for (entry of menus(); track entry.id) {
                         @let menu = entry.id;
-                        <ng-container
-                            [disabled]="entry.disabled"
-                            (onOpenChange)="change(menu, $event)"
-                            (onOpenChangeComplete)="trace.complete(menu, $event)"
-                            rdxMenuRoot
-                        >
-                            <button
-                                [id]="menu + '-trigger'"
-                                [attr.data-testid]="menu + '-trigger'"
-                                [attr.data-menu-trigger]="menu"
-                                [class]="s.trigger"
-                                rdxMenuTrigger
-                            >
-                                {{ entry.label }}
-                            </button>
-                            @if (settings.composed) {
-                                ${createMenuPopupTemplate(composedNestedTemplate, 'parityPopup', 'parityItem')}
-                            } @else {
-                                ${createMenuPopupTemplate(nestedTemplate)}
-                            }
-                        </ng-container>
+                        @if (settings.controlled) {
+                            ${createRootTemplate('[open]="open()[menu]" (openChange)="setOpen(menu, $event)"')}
+                        } @else {
+                            ${createRootTemplate('[defaultOpen]="settings.defaultOpen && menu === \'file\'"')}
+                        }
                     }
                 </div>
                 <button
@@ -111,7 +111,15 @@ class AngularMenubar {
     readonly submenuId = submenuId;
     readonly allowSwitch = signal(false);
     readonly menus = signal<MenuEntry<TopLayer>[]>(initialMenus(settings.name));
+    readonly open = signal(initialOpenState(settings.name));
+    setOpen(menu: TopLayer, open: boolean) {
+        this.open.update((state) => ({ ...state, [menu]: open }));
+    }
     command(event: KeyboardEvent) {
+        if (settings.controlled && ['F6', 'F7', 'F8'].includes(event.key)) {
+            event.preventDefault();
+            this.open.update((state) => changeExternalOpen(state, event.key));
+        }
         if (event.key === 'F5') {
             event.preventDefault();
             this.allowSwitch.set(true);

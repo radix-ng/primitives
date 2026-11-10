@@ -1,4 +1,5 @@
 import {
+    afterRenderEffect,
     booleanAttribute,
     computed,
     contentChildren,
@@ -193,7 +194,7 @@ export class RdxMenubarRoot {
             });
         });
 
-        effect(() => {
+        afterRenderEffect(() => {
             const states = this.menuRoots()
                 .filter((root) => !root.isSubmenu())
                 .map((root) => ({ root, open: root.open() }));
@@ -203,8 +204,12 @@ export class RdxMenubarRoot {
                 for (const { root, open } of states) {
                     const previous = this.observedOpenStates.get(root);
                     if (previous === open) continue;
-                    if (previous !== undefined || open) this.updateInteractionMode(open, root.lastOpenChangeReason());
                     this.observedOpenStates.set(root, open);
+                    if (previous !== undefined || open) this.updateInteractionMode(open, root.lastOpenChangeReason());
+                    if (open) {
+                        // Input changes join sibling coordination once the new popup view exists.
+                        this.activateItem(this.idFor(root));
+                    }
                 }
             });
         });
@@ -296,11 +301,12 @@ export class RdxMenubarRoot {
                 return false;
             }
 
-            if (this.orientation() === 'vertical') {
-                if (root.effectiveDisabled() || offset !== (root.dir() === 'rtl' ? 1 : -1)) return false;
-                root.closeForNavigation(event);
-                return true;
-            }
+            const vertical = this.orientation() === 'vertical';
+            const returnsToTrigger = !root.effectiveDisabled() && offset === (root.dir() === 'rtl' ? 1 : -1);
+            // Return before the parent bar navigates, as for an ordinary nested list. Horizontal
+            // navigation consumes the key after its close callbacks; vertical return consumes it now.
+            if (returnsToTrigger) root.closeForNavigation(event, vertical);
+            if (vertical) return returnsToTrigger;
             this.focusAdjacent(id, root.dir() === 'rtl' ? (offset === 1 ? -1 : 1) : offset, true);
             return true;
         });
@@ -549,7 +555,11 @@ export class RdxMenubarRoot {
         this.highlightItem(focusedItem);
 
         if (this.hasSubmenuOpen() && (this.activeId() !== focusedItem.id || !focusedItem.root?.open())) {
-            if (focusedItem.root && this.activeId() === focusedItem.id) {
+            if (
+                focusedItem.root &&
+                this.activeId() === focusedItem.id &&
+                focusedItem.root.lastOpenChangeReason() === 'list-navigation'
+            ) {
                 // A navigation return keeps focus on its trigger and the mounted popup's highlight.
                 this.openMenu(focusedItem.id, focusedItem.root, false, 'trigger-focus', event);
             } else focusedItem.open('trigger-focus', event);

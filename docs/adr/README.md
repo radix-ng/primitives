@@ -72,3 +72,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0038](0038-menu-collection-boundaries.md)                                   | Accepted               | Compare empty/nested collections and Menubar navigation boundaries                   |
 | [0039](0039-menubar-transactions-and-composition.md)                         | Accepted               | Preserve Menubar cancellation, orientation and nested ownership                      |
 | [0040](0040-menu-navigation-return.md)                                       | Accepted               | Share navigation return and compare vertical closing and nested cancellation         |
+| [0041](0041-menubar-navigation-and-external-state.md)                        | Accepted               | Align horizontal Menubar return and compare external open state                      |

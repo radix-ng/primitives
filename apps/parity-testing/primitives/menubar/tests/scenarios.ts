@@ -2,7 +2,9 @@ import { expect } from '@playwright/test';
 import { MenuFamilyDriver } from '../../../shared/menu-family-driver';
 import { compositionCases } from '../src/composition';
 import { cases } from '../src/contract';
+import { stateCases } from '../src/state';
 import { runComposition } from './composition.scenarios';
+import { runState } from './state.scenarios';
 export class MenubarDriver extends MenuFamilyDriver {
     constructor(page: ConstructorParameters<typeof MenuFamilyDriver>[0], framework: 'angular' | 'react') {
         super(page, framework, 'menubarParity');
@@ -11,6 +13,7 @@ export class MenubarDriver extends MenuFamilyDriver {
 export const scenarios = cases.map((name) => ({
     name,
     async run(d: MenubarDriver) {
+        if ((stateCases as readonly string[]).includes(name)) return runState(d, name as (typeof stateCases)[number]);
         if ((compositionCases as readonly string[]).includes(name))
             return runComposition(d, name as (typeof compositionCases)[number]);
         const file = d.page.getByTestId('file-trigger'),
@@ -31,13 +34,14 @@ export const scenarios = cases.map((name) => ({
             await d.checkpoint('closed enabled sibling', { open: [] });
             return;
         }
-        if (name === 'single-menu-switch') {
+        if (name.startsWith('single-menu-switch')) {
+            const rtl = name.endsWith('-rtl');
             await file.focus();
-            await d.page.keyboard.press('ArrowRight');
+            await d.page.keyboard.press(rtl ? 'ArrowLeft' : 'ArrowRight');
             await d.checkpoint('roved single trigger', { focus: 'file-trigger', open: [] });
             await file.press('ArrowDown');
             await d.checkpoint('opened single menu', { open: ['file'] });
-            for (const key of ['ArrowRight', 'ArrowLeft']) {
+            for (const key of rtl ? ['ArrowLeft', 'ArrowRight'] : ['ArrowRight', 'ArrowLeft']) {
                 await d.page.keyboard.press(key);
                 await d.checkpoint(`single menu ${key}`);
             }

@@ -12716,6 +12716,10 @@ export class RdxMenuPointerComponent {
 
 ### Events
 
+Opening through `defaultOpen` or an external `open` binding without a native opening request focuses
+Popup. Native keyboard requests select first/last items; a canceled keyboard request retains that
+focus policy if the application subsequently opens the menu externally.
+
 `onOpenChange` carries a cancelable request and its original native event. Canceling Escape keeps
 focus on the current item. UI selection reports `item-press`; arrow-driven opening/back navigation
 reports `list-navigation`. Checkbox and radio UI value requests also report `item-press` and can
@@ -14112,7 +14116,9 @@ the new popup. Disabled triggers are skipped.
 
 If the current menu becomes disabled while its popup owns focus, horizontal arrows can still switch
 to an enabled sibling. Disabling a focused closed trigger keeps an enabled trigger in the Tab order.
-When only one enabled menu remains, horizontal arrows preserve its popup and focus without reopening it.
+With one enabled menu, the forward arrow preserves popup/item focus. The return arrow (Left in LTR,
+Right in RTL) requests close/reopen and leaves focus on its trigger. With siblings, that same return
+is followed by opening the previous menu through native focus.
 
 Canceling the destination's opening keeps the current popup open. Canceling `sibling-open` keeps
 that source menu open even though the destination has already opened, so two popups can remain.
@@ -14122,10 +14128,17 @@ From a leaf in a nested submenu, the forward arrow switches to the next top-leve
 
 For a canceled child close, Escape keeps focus in the child. A return-arrow close still moves focus
 to the trigger and clears child highlight while leaving the child open. Closing state and navigation
-focus are separate parts of this interaction. Navigation callbacks retain the original KeyboardEvent,
-already consumed by the primitive.
+focus are separate parts of this interaction. Navigation callbacks retain the original KeyboardEvent. Nested/vertical returns consume it before
+the close request; horizontal bar navigation consumes it after the return request.
 Keyboard submenu navigation follows Root ownership, so native hosts composed through `hostDirectives` do not
 need to repeat the original popup, item or submenu-trigger selector attributes.
+
+### Open state
+
+Use `defaultOpen` on a child Menu Root for initial opening, or bind its `open` model to application
+state. Without a native opening request, focus starts on Popup; ArrowDown then enters its items.
+Native keyboard opening still selects the first/last item. External openings participate in sibling
+coordination and return-focus behavior, just like interaction-driven changes.
 
 ## API Reference
 

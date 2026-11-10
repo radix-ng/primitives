@@ -21,11 +21,15 @@ export const compositionCases = [
     'roving-rtl'
 ] as const;
 
-/** Application cancellation policy, shared without changing the primitive's uncontrolled state. */
+/** Application cancellation policy, shared by uncontrolled and explicitly controlled cases. */
 export function cancelChange(name: string, layer: string, open: boolean, reason: string, allowSwitch: boolean) {
     return (
         (open && name === 'cancel-open') ||
         (!open && name === 'cancel-close') ||
+        (!allowSwitch &&
+            layer === 'file' &&
+            ((name === 'state-controlled-cancel-open' && open) ||
+                (name === 'state-controlled-cancel-close' && !open))) ||
         (!allowSwitch &&
             ((name.startsWith('cancel-switch-open') && layer === 'edit' && open) ||
                 (name.startsWith('cancel-switch-close') && layer === 'file' && !open && reason === 'sibling-open') ||

@@ -109,6 +109,25 @@ test('Escape closes the open menu', async ({ page }) => {
     await expect(page.locator(openPopup)).toHaveCount(0);
 });
 
+test('the backward popup arrow returns through its trigger before switching to the previous menu', async ({ page }) => {
+    await gotoStory(page, 'primitives-menubar--default');
+    const triggers = page.locator(trigger);
+    await triggers.nth(1).press('ArrowDown');
+    await expect(page.locator(openPopup).locator('[rdxMenuItem]').first()).toBeFocused();
+    await triggers.nth(1).evaluate((element) => {
+        element.addEventListener('focus', () => element.setAttribute('data-returned-focus', ''), { once: true });
+    });
+    await page.keyboard.press('ArrowLeft');
+    await expect(triggers.nth(1)).toHaveAttribute('data-returned-focus', '');
+    await expect(triggers.first()).toHaveAttribute('aria-expanded', 'true');
+    await expect(triggers.nth(1)).toHaveAttribute('aria-expanded', 'false');
+    await expect(page.locator(openPopup)).toHaveCount(1);
+    await expect(page.locator(openPopup)).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(triggers.first()).toBeFocused();
+    await expect(page.locator(openPopup)).toHaveCount(0);
+});
+
 test('vertical return arrow keeps interaction mode and reopens from trigger focus', async ({ page }) => {
     await gotoStory(page, 'primitives-menubar--vertical');
     const triggers = page.locator(trigger);

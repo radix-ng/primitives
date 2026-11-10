@@ -203,7 +203,7 @@ function provideManagedFocusScopeConfig(): Provider {
  * - `loop` is forwarded to `RdxFocusScope`.
  * - `initialFocus` / `returnFocus` are **orchestrated** here (the §2 policy contract, incl. the
  *   interaction-type callback forms): `initialFocus` via the scope's `mountAutoFocus` hook, `returnFocus`
- *   via the scope's `returnFocus` config seam (resolved at the scope's queued post-unmount frame).
+ *   via the scope's `returnFocus` config seam (resolved at the scope's queued post-unmount microtask).
  */
 @Directive({
     selector: '[rdxFloatingFocusManager]',
@@ -353,7 +353,7 @@ export class RdxFloatingFocusManager {
         });
 
         // Own the return-focus *target* (the composed focus scope owns the *timing*): the scope calls this
-        // in its queued post-unmount frame, resolving the `returnFocus` policy against the close interaction.
+        // in its queued post-unmount microtask, resolving `returnFocus` against the close interaction.
         this.focusScopeConfig.returnFocus = () => this.resolveReturnFocusTarget();
         this.focusScopeConfig.trapActive = () => this.isFloatingOpen();
         this.focusScopeConfig.defaultReturnFocus = () => {
@@ -441,7 +441,7 @@ export class RdxFloatingFocusManager {
      * composed {@link RdxFocusScope}'s preventable `mountAutoFocus` (its designed extension point) and
      * applies the `initialFocus` policy, falling back to the scope's first-tabbable default when the
      * policy is `null`. (`returnFocus` is orchestrated separately via the config seam — see
-     * {@link resolveReturnFocusTarget} — because it must run during the scope's queued *post-unmount* frame.)
+     * {@link resolveReturnFocusTarget} — because it must run during the scope's queued *post-unmount* microtask.)
      */
     private wireFocusOrchestration(): void {
         const focusScope = inject(RdxFocusScope);

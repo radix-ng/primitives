@@ -13,17 +13,17 @@ This is incremental evidence, not complete API or accessibility certification.
 | Selection, cancellation, outside dismissal and Tab                    | Pinned suite                            | Covered for initial requests                   |
 | Reason, native event, callback order and focus ownership              | Pinned suite                            | Covered in the cases above                     |
 | Dynamic insertion/removal/reordering, labels and unfocused disabling  | Pinned suite                            | Covered                                        |
-| Current-trigger disabling, backward LTR/RTL and single-menu switching | Pinned suite                            | Covered with exact pin limitations below       |
+| Current-trigger disabling, backward LTR/RTL and single-menu switching | Pinned suite                            | Covered; disabled Tab-entry difference only    |
 | Vertical bar opening/roving, popup navigation and Escape              | Pinned suite                            | Covered for vertical popup lists               |
 | Vertical return arrow, LTR/RTL                                        | Pinned suite                            | Covered; native trigger-focus reopen           |
 | Nested keyboard/pointer switching and composed popup hosts            | Pinned suite                            | Covered with child-completion limitation       |
 | Canceled sibling open/close and retry                                 | Pinned suite                            | Covered, including interaction mode            |
 | Child opening/closing cancellation and retry                          | Pinned suite                            | Keyboard open, Escape and return arrow covered |
-| Default and externally bound open state                               | Angular unit checks                     | Regression; differential cases pending         |
+| Default and externally bound open state                               | Pinned suite and Angular unit checks    | Covered, including cancellation and retry      |
 | Touch, real devices and assistive technology                          | Not established                         | Pending                                        |
 
-The [runner](../../../apps/parity-testing/primitives/menubar/README.md) defines 42 scenarios and
-126 comparisons. Sixteen exact pairs document four reviewed differences below.
+The [runner](../../../apps/parity-testing/primitives/menubar/README.md) defines 51 scenarios and
+153 comparisons. Nine exact pairs document two reviewed differences below.
 
 Five dynamic cases insert/remove/reorder top-level menus and change an unfocused trigger's
 `disabled` state or a label. Roving tabindex follows the actual focused trigger as DOM order changes;
@@ -33,28 +33,21 @@ The suite then opens a surviving menu and checks forward switching when multiple
 Focused-trigger disabling, disabling while its popup owns focus, backward LTR/RTL and single-menu
 switching are also compared. Navigation keeps the current item's DOM position as the origin even
 when that item has become disabled, using the shared Composite destination search. A wrap to the
-same trigger leaves its existing popup and focus in place.
+same trigger preserves its popup/item focus in the forward direction. The return direction requests
+close/reopen and leaves focus on the trigger, matching the pin in LTR/RTL.
 
 ## Reviewed differences
 
 - `disabled-trigger-tab-stop`: after disabling the current trigger, the pin leaves tabindex=0 on
   its native disabled button and every enabled sibling at -1. Angular keeps an enabled Tab entry.
   Three exact trigger-array pairs cover the initial update and subsequent closed navigation.
-- `backward-close-reopen`: the pin's shared nested-list close-key handler closes the current menu
-  before returning focus to its trigger. Trigger focus reopens it before Menubar advances to the
-  previous sibling. Angular switches directly to that sibling. Four callback-array pairs cover
-  backward LTR/RTL switching and the subsequent Escape; stable focus and completion agree.
-- `single-menu-close-reopen`: with one enabled menu, the pin's close-direction arrow produces that
-  same close/reopen cycle and leaves focus on the trigger. Angular preserves the focused item and
-  popup. Three exact focus/callback pairs record the difference; forward navigation agrees.
-
 - `nested-exit-completion`: switching away from an open nested branch loses its close-completion
   callback in the pin. Six exact completion-array pairs retain Angular's actual completion, as in
   [Menu's matrix](../menu/PARITY.md). Open requests, callback order and native focus agree.
 
-These pairs retain Angular's reachable Tab entry and atomic sibling transition rather than copying
-incidental React interaction plumbing. Changed or stale exceptions fail. See
-[ADR 0038](../../../docs/adr/0038-menu-collection-boundaries.md).
+These pairs retain Angular's reachable Tab entry and actual nested completion. Changed or stale
+exceptions fail. Horizontal return now matches the pin without callback/focus exceptions. See
+[ADR 0041](../../../docs/adr/0041-menubar-navigation-and-external-state.md).
 
 Menus inherit whole-bar disabling through an ambient DI signal, as they already inherit modality.
 Native mouse-down opens with `trigger-press`; arrow opening uses `list-navigation`. Switching opens
@@ -94,6 +87,14 @@ canceled Escape keeps child focus. Menu and Menubar use the same Root navigation
 It consumes and forwards the original KeyboardEvent before callbacks and resolves a surviving
 trigger through DI. Only nested returns clear highlight; a top-level navigation reopen preserves it.
 Submenu classification uses Root ownership, including a composed trigger without its original attribute. No parallel keyboard-focus state is introduced.
+
+Eight state cases compare default opening in LTR/RTL/vertical, controlled initial opening, external
+open/close and sibling requests, cancellation and retry. Controlled fixtures bind actual application
+state; F6/F7/F8 change those inputs without calling primitive methods. Default opening focuses Popup;
+native keyboard requests still select first/last items, including a canceled request followed by an
+external open. External changes join coordination after Angular renders their views. FocusScope's
+cancelable unmount microtask preserves return ownership before a new popup's autofocus, matching
+the pin's actual source reopen/destination close chain. All eight cases need no new exceptions.
 
 Custom horizontal popup orientation, nested pointer/selection cancellation, retained coordinator
 portals and real device/AT work remain separate audits. See

@@ -4,6 +4,10 @@
 
 > Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
+Opening through `defaultOpen` or an external `open` binding without a native opening request focuses
+Popup. Native keyboard requests select first/last items; a canceled keyboard request retains that
+focus policy if the application subsequently opens the menu externally.
+
 `onOpenChange` carries a cancelable request and its original native event. Canceling Escape keeps
 focus on the current item. UI selection reports `item-press`; arrow-driven opening/back navigation
 reports `list-navigation`. Checkbox and radio UI value requests also report `item-press` and can

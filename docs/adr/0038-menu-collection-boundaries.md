@@ -2,6 +2,9 @@
 
 Status: Accepted
 
+The backward/single-menu navigation decision and its seven exceptions below are superseded by
+[ADR 0041](0041-menubar-navigation-and-external-state.md).
+
 Date: 2026-11-10
 
 ## Context

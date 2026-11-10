@@ -2,6 +2,9 @@
 
 Status: Accepted
 
+Horizontal return and differential input-state coverage are extended by
+[ADR 0041](0041-menubar-navigation-and-external-state.md).
+
 Date: 2026-11-10
 
 ## Context

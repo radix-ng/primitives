@@ -7,6 +7,9 @@
   parity — sibling concern, owns no focus/a11y), ADR 0005 (owned floating stack),
   `packages/primitives/focus-scope` (`RdxFocusScope`, the low-level primitive this wraps)
 
+The queued return-focus timing is refined to a cancelable post-unmount microtask by
+[ADR 0041](0041-menubar-navigation-and-external-state.md).
+
 > Splits the focus / a11y-isolation / marker concerns out of ADR 0016 so one owner holds the independent
 > focus-policy set. Architectural decisions are settled below; Phase 0 fills two parity-characterization
 > tables before implementation.

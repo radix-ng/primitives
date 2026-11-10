@@ -1,6 +1,7 @@
 import { collectionCases, type MenuEntry } from '../../../shared/menu-collection';
 import { createMenuProbe, type MenuProbe } from '../../../shared/menu-probe';
 import { compositionCases } from './composition';
+import { stateCases } from './state';
 export const cases = [
     'open-keyboard',
     'open-pointer',
@@ -9,6 +10,7 @@ export const cases = [
     'switch-backward',
     'switch-backward-rtl',
     'single-menu-switch',
+    'single-menu-switch-rtl',
     'switch-pointer',
     'rtl-switch',
     'disabled',
@@ -20,7 +22,8 @@ export const cases = [
     ...collectionCases,
     'collection-disable-focused',
     'collection-disable-open',
-    ...compositionCases
+    ...compositionCases,
+    ...stateCases
 ] as const;
 export function config() {
     const name = new URLSearchParams(location.search).get('case') ?? 'open-keyboard';
@@ -31,7 +34,12 @@ export function config() {
         disabled: name === 'disabled',
         keepMounted: false,
         side: 'bottom' as const,
-        orientation: name.startsWith('vertical-') ? ('vertical' as const) : ('horizontal' as const),
+        orientation:
+            name.startsWith('vertical-') || name.endsWith('-vertical')
+                ? ('vertical' as const)
+                : ('horizontal' as const),
+        defaultOpen: name.startsWith('state-default-open'),
+        controlled: name.startsWith('state-controlled-'),
         nested: name.startsWith('nested-'),
         composed: name.endsWith('-composed')
     };
@@ -47,7 +55,7 @@ export const menubarEntries: MenuEntry<TopLayer>[] = [
     { id: 'edit', label: 'edit', disabled: false }
 ];
 export function initialMenus(name: string): MenuEntry<TopLayer>[] {
-    if (name === 'single-menu-switch') return menubarEntries.slice(0, 1);
+    if (name.startsWith('single-menu-switch')) return menubarEntries.slice(0, 1);
     if (name === 'roving-rtl') return [...menubarEntries, { id: 'new', label: 'new', disabled: false }];
     return menubarEntries;
 }
