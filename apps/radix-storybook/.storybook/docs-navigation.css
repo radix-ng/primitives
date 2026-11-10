@@ -1,0 +1,167 @@
+/* Global Storybook docs chrome. These rules do not style the Angular story/demo content. */
+.sbdocs.sbdocs-wrapper {
+    display: grid;
+    grid-template-areas: 'content toc';
+    grid-template-columns: minmax(0, 800px) minmax(12rem, 14rem);
+    justify-content: center;
+    align-items: start;
+    gap: 2rem;
+    padding: clamp(1.25rem, 3vw, 3rem);
+}
+
+.sbdocs.sbdocs-content {
+    grid-area: content;
+    min-width: 0;
+    width: 100%;
+}
+
+.sbdocs-content > :is(h2, h3) {
+    scroll-margin-top: 4rem;
+}
+
+.sbdocs-content > table,
+.sbdocs-content .docblock-argstable {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.sbdocs-content :not(pre) > code:not(.docs-story *) {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.sbdocs-wrapper:not(:has(.sbdocs-toc--custom nav)) {
+    grid-template-areas: 'content';
+    grid-template-columns: minmax(0, 800px);
+}
+
+.sbdocs-toc--custom.sbdocs-toc--custom {
+    grid-area: toc;
+    width: 100%;
+    min-width: 0;
+    position: sticky;
+    top: 1.5rem;
+}
+
+.sbdocs-toc--custom.sbdocs-toc--custom:not(:has(nav)) {
+    display: none;
+}
+
+.sbdocs-toc--custom.sbdocs-toc--custom nav {
+    position: static;
+    width: 100%;
+    max-height: calc(100dvh - 3rem);
+    padding: 0.25rem;
+    overflow-y: auto;
+}
+
+/* Tocbot scrolls this element to keep the active heading visible in a long section. */
+.sbdocs-toc--custom .toc-wrapper {
+    max-height: calc(100dvh - 6rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+}
+
+.sbdocs-toc--custom .toc-list {
+    margin: 0;
+}
+
+.sbdocs-toc--custom .toc-list-item {
+    min-width: 0;
+}
+
+.sbdocs-toc--custom .toc-list-item > a {
+    display: block;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.5;
+    padding-block: 0.125rem;
+}
+
+.sbdocs-toc--custom .toc-list.is-collapsed {
+    display: none;
+}
+
+.docs-toc-heading {
+    display: block;
+    margin-block-end: 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.docs-toc-toggle {
+    display: none;
+}
+
+/* This is the docs iframe width, so the manager's left sidebar is already accounted for. */
+@media (width <= 1100px) {
+    .sbdocs.sbdocs-wrapper {
+        grid-template-areas: 'toc' 'content';
+        grid-template-columns: minmax(0, 800px);
+        gap: 1.5rem;
+    }
+
+    .sbdocs-toc--custom.sbdocs-toc--custom {
+        display: block;
+        top: 0;
+        z-index: 10;
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        /* Follow DocsContainer's theme, independently of the theme selected for Angular demos. */
+        background: inherit;
+        color: inherit;
+    }
+
+    .sbdocs-toc--custom.sbdocs-toc--custom:not(:has(nav)) {
+        display: none;
+    }
+
+    .sbdocs-toc--custom.sbdocs-toc--custom nav {
+        max-height: 60dvh;
+        padding: 0;
+    }
+
+    .docs-toc-heading {
+        display: none;
+    }
+
+    .docs-toc-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        width: 100%;
+        min-height: 2.75rem;
+        padding: 0.75rem 1rem;
+        border: 0;
+        border-radius: 0.5rem;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        font-weight: 600;
+        text-align: start;
+        cursor: pointer;
+    }
+
+    .docs-toc-toggle:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: -3px;
+    }
+
+    .docs-toc-toggle[aria-expanded='true'] svg {
+        rotate: 180deg;
+    }
+
+    .sbdocs-toc--custom .toc-wrapper {
+        max-height: calc(60dvh - 3rem);
+        padding: 0 1rem 0.75rem;
+    }
+
+    .sbdocs-toc--custom:has(.docs-toc-toggle[aria-expanded='false']) .toc-wrapper {
+        display: none;
+    }
+}

@@ -113,6 +113,9 @@ jobs:
       - name: Check floating primitive consumers across browser engines
         run: pnpm test-browser:floating
 
+      - name: Check responsive docs navigation across browser engines
+        run: pnpm test-browser:docs
+
       - name: Publish comparison summary
         if: always()
         run: |

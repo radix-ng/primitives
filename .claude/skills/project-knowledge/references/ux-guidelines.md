@@ -9,6 +9,15 @@ metadata:
 
 These apply to the Storybook demo/story layer — not to primitives themselves (which are always headless).
 
+## Documentation navigation
+
+Storybook docs chrome is shared in `.storybook/docs-navigation.ts` and `docs-navigation.css` under
+`apps/radix-storybook`. Keep long prose headings and URL anchors intact; add concise TOC labels to
+the shared mapping when needed. The TOC expands the active h2 section and becomes a keyboard
+disclosure below 1100px of available preview width. Global docs CSS belongs in that chrome layer,
+never in story/demo styles. `pnpm test-browser:docs` verifies real layouts, keyboard access and
+existing links in Chromium, Firefox and WebKit, including the manager sidebar on laptop widths.
+
 ## Demo styling system
 
 **Source of truth:** `packages/primitives/storybook/styles.ts`

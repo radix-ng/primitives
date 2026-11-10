@@ -25,8 +25,11 @@ import {
     provideLucideIcons
 } from '@lucide/angular';
 import { applicationConfig, Preview } from '@storybook/angular';
+import { createElement } from 'react';
 import CompodocPlugin from './plugins/compodoc';
 
+import { docsTocOptions, DocsTocTitle } from './docs-navigation';
+import './docs-navigation.css';
 import { installRdxDirectiveHighlight } from './highlight-rdx-directives';
 import './rdx-directive-highlight.css';
 import { light } from './themes';
@@ -111,12 +114,10 @@ const preview: Preview = {
                 // `.docs-story *` is Storybook's default — it keeps headings rendered *inside* a
                 // story preview (e.g. Accordion demos use real <h3> headers) out of the TOC.
                 // Keep it (plus the Primary block) so only MDX prose headings appear.
-                ignoreSelector: '#primary, .docs-story *',
-                title: 'On this page',
+                ignoreSelector: '#primary, .docs-story *, .skip-toc',
+                title: createElement(DocsTocTitle),
                 disable: false,
-                unsafeTocbotOptions: {
-                    orderedList: false
-                }
+                unsafeTocbotOptions: docsTocOptions
             },
 
             codePanel: true,
