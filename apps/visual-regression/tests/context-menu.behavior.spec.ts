@@ -1,4 +1,5 @@
 import { expect, Page, test } from '@playwright/test';
+import { pauseClockBeforeInteraction } from '../helpers/clock';
 
 /**
  * ADR 0015/0017 Phase-4 migration of Context Menu (composes `RdxMenuRoot`, so it inherits the new
@@ -12,6 +13,51 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
 
 const trigger = '[rdxContextMenuTrigger]';
 const popup = '[rdxMenuPopup]';
+
+test('a nested context area opens once without reopening its parent', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await gotoStory(page, 'primitives-context-menu--nested-areas');
+    const areas = page.locator(trigger);
+    await areas.first().evaluate((element) => {
+        element.addEventListener('contextmenu', () => element.setAttribute('data-parent-request', ''));
+    });
+    const inner = (await areas.nth(1).boundingBox())!;
+    await page.mouse.click(inner.x + 12, inner.y + 12, { button: 'right' });
+    await expect(page.locator(`${popup}[data-open]`)).toHaveCount(1);
+    await expect(areas.first()).not.toHaveAttribute('data-parent-request', '');
+    await page.getByRole('menuitem', { name: 'Share', exact: true }).press('ArrowRight');
+    await expect(page.getByRole('menuitem', { name: 'Copy link', exact: true })).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(page.locator(`${popup}[data-open]`)).toHaveCount(1);
+    await page.keyboard.press('Escape');
+    await expect(page.locator(popup)).toHaveCount(0);
+    expect(errors).toEqual([]);
+});
+
+test('one context menu reopens from a second area on the same native right-click', async ({ page }) => {
+    await page.clock.install();
+    await gotoStory(page, 'primitives-context-menu--multiple-areas');
+    const areas = page.locator(trigger);
+    await areas.first().click({ button: 'right' });
+    await expect(page.locator(`${popup}[data-open]`)).toHaveCount(1);
+    const second = (await areas.nth(1).boundingBox())!;
+    // Keep native events in one paint frame; protocol latency must not choose an exit lifecycle.
+    await pauseClockBeforeInteraction(page);
+    await page.mouse.click(second.x + 12, second.y + 12, { button: 'right' });
+    await page.clock.runFor(100);
+    await page.clock.resume();
+    await expect(page.locator(`${popup}[data-open]`)).toHaveCount(1);
+    await expect
+        .poll(async () => {
+            const box = (await page.locator(`${popup}[data-open]`).boundingBox())!;
+            return Math.abs(box.x - (second.x + 16));
+        })
+        .toBeLessThanOrEqual(2);
+    await page.getByRole('menuitem', { name: 'Duplicate', exact: true }).click();
+    await expect(page.locator(popup)).toHaveCount(0);
+    await expect(page.locator('output')).toHaveText('Selected: Duplicate');
+});
 
 async function openAtTrigger(page: Page): Promise<void> {
     await page.locator(trigger).first().click({ button: 'right' });

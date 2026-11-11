@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 
 // Exercise the shared Popper contract through actual consumer stories. These checks are Angular
 // regressions; only suites in apps/parity-testing compare against the pinned Base UI implementation.
@@ -12,6 +12,36 @@ const consumers = [
     { name: 'navigation-menu', part: 'NavigationMenu', action: 'keyboard' },
     { name: 'toast', part: 'Toast', action: 'toast' }
 ] as const;
+
+type Consumer = (typeof consumers)[number];
+const anchorFor = (page: Page, consumer: Consumer) =>
+    consumer.action === 'toast'
+        ? page.getByRole('button', { name: 'Anchored toast', exact: true })
+        : page
+              .locator(`[rdx${consumer.part}${['input', 'search'].includes(consumer.action) ? 'Input' : 'Trigger'}]`)
+              .first();
+async function openConsumer(consumer: Consumer, anchor: Locator) {
+    if (consumer.action === 'focus') await anchor.focus();
+    else if (consumer.action === 'keyboard') await anchor.press('Enter');
+    else if (consumer.action === 'search') await anchor.pressSequentially('f');
+    else await anchor.click();
+}
+
+for (const consumer of consumers.filter((entry) => entry.action !== 'toast')) {
+    test(`${consumer.name}: a secondary outside press ${consumer.name === 'navigation-menu' ? 'waits for an intentional click' : 'closes the popup'}`, async ({
+        page
+    }) => {
+        await page.goto(`/iframe.html?id=primitives-${consumer.name}--default&viewMode=story`);
+        await openConsumer(consumer, anchorFor(page, consumer));
+        const popup = page.locator(`[rdx${consumer.part}Popup]`).first();
+        await expect(popup).toBeVisible();
+        await expect(page.locator(`[rdx${consumer.part}Positioner]`).first()).toHaveCSS('visibility', 'visible');
+        await page.mouse.click(5, 5, { button: 'right' });
+        if (consumer.name === 'navigation-menu') {
+            await expect(popup).toBeVisible();
+        } else await expect(popup).toBeHidden();
+    });
+}
 
 for (const consumer of consumers) {
     test(`${consumer.name}: tracks the live anchor and reports clipping without hiding by default`, async ({
@@ -27,24 +57,14 @@ for (const consumer of consumers) {
             `/iframe.html?id=primitives-${consumer.name}--${consumer.action === 'toast' ? 'anchored' : 'default'}&viewMode=story`
         );
         await page.evaluate(() => document.fonts.ready);
-        const anchor =
-            consumer.action === 'toast'
-                ? page.getByRole('button', { name: 'Anchored toast', exact: true })
-                : page
-                      .locator(
-                          `[rdx${consumer.part}${['input', 'search'].includes(consumer.action) ? 'Input' : 'Trigger'}]`
-                      )
-                      .first();
+        const anchor = anchorFor(page, consumer);
         // The Preview Card example uses an ordinary inline link. CSS translate/min-width apply
         // to an inline-block box; this is test layout instrumentation, not a primitive requirement.
         if (consumer.name === 'preview-card')
             await anchor.evaluate((el: HTMLElement) => {
                 el.style.display = 'inline-block';
             });
-        if (consumer.action === 'focus') await anchor.focus();
-        else if (consumer.action === 'keyboard') await anchor.press('Enter');
-        else if (consumer.action === 'search') await anchor.pressSequentially('f');
-        else await anchor.click();
+        await openConsumer(consumer, anchor);
 
         const positioner = page.locator(`[rdx${consumer.part}Positioner]`).first();
         const popup = page.locator(`[rdx${consumer.part}${consumer.action === 'toast' ? 'Root' : 'Popup'}]`).first();

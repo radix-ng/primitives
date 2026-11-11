@@ -1,4 +1,5 @@
 import { createMenuProbe, type MenuProbe } from '../../../shared/menu-probe';
+import { compositionCases } from './composition';
 export const cases = [
     'right-open',
     'point-anchor',
@@ -19,7 +20,8 @@ export const cases = [
     'touch-diagonal-slop',
     'touch-cancel',
     'touch-multitouch',
-    'touch-disabled'
+    'touch-disabled',
+    ...compositionCases
 ] as const;
 export function config() {
     const name = new URLSearchParams(location.search).get('case') ?? 'right-open';
@@ -27,11 +29,16 @@ export function config() {
     return {
         name,
         disabled: name === 'disabled' || name === 'touch-disabled',
-        keepMounted: name === 'keep-mounted',
+        keepMounted: name === 'keep-mounted' || name === 'areas-keep-mounted',
+        nested: name.startsWith('composition-'),
+        multiple: name.startsWith('areas-'),
+        nestedAreas: name.startsWith('areas-nested'),
+        dir: name.endsWith('-rtl') ? ('rtl' as const) : ('ltr' as const),
         side: 'right' as const
     };
 }
-export type Probe = MenuProbe<ReturnType<typeof config>, 'context'>;
+export type Layer = 'context' | 'context-sub';
+export type Probe = MenuProbe<ReturnType<typeof config>, Layer>;
 declare global {
     const __PARITY_REFERENCE__: Probe['reference'];
     interface Window {
@@ -39,7 +46,7 @@ declare global {
     }
 }
 export function installProbe(framework: string) {
-    const trace = createMenuProbe(framework, __PARITY_REFERENCE__, config(), ['context'] as const);
+    const trace = createMenuProbe(framework, __PARITY_REFERENCE__, config(), ['context', 'context-sub'] as const);
     window.contextMenuParity = trace.probe;
     return trace;
 }

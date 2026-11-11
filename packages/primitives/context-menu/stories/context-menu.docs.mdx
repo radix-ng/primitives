@@ -85,6 +85,25 @@ Right-click the dashed area to open the menu at the pointer.
 
 <Canvas of={Stories.Default} />
 
+### Shared menu across areas
+
+Place several `rdxContextMenuTrigger` areas inside one Root to reuse the same popup at each native
+gesture's coordinates. Context areas remain separate from Menu trigger registration and ARIA identity.
+Their open/pressed attributes reflect the shared menu state, rather than an active-area payload.
+
+<Canvas sourceState="hidden" of={Stories.MultipleAreas} />
+
+### Nested context areas
+
+The nearest context area owns a right-click or touch long-press. It consumes the native gesture even
+when an application cancels opening, so the parent area cannot issue a second request.
+Submenus use the standard Menu parts: Escape closes the deepest submenu and selection closes the chain.
+
+Canceling an outside close keeps the current area session and anchor. A gesture can produce separate
+pointerdown/mousedown requests; keep your veto policy active until retry is allowed.
+
+<Canvas sourceState="hidden" of={Stories.NestedAreas} />
+
 ## Accessibility
 
 ### Keyboard Interactions

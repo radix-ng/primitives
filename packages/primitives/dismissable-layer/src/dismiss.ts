@@ -99,11 +99,6 @@ function isElement(target: EventTarget | null): target is Element {
     return view ? target instanceof view.Element : target instanceof Element;
 }
 
-/** Only a primary (left / default) press dismisses — a non-primary mouse button is ignored. */
-function isPrimaryButton(event: Event): boolean {
-    return !('button' in event) || (event as MouseEvent).button === 0;
-}
-
 function isRootElement(element: Element): boolean {
     const document = element.ownerDocument;
     return element === document.documentElement || element === document.body;
@@ -255,8 +250,8 @@ function childBubbles(context: RdxFloatingRootContext, reason: RdxDismissReason)
  * non-bubbling Escape layer also `stopPropagation()`s so the key does not reach app handlers.
  *
  * **Press / IME hardening.** Outside-press honors `outsidePressEvent` (`'sloppy'` → `pointerdown`,
- * `'intentional'` → `click` with press-start-inside drag-out suppression), ignores non-primary mouse
- * buttons and scrollbar presses, resets on `pointercancel`, and ignores Escape while an IME composition is
+ * `'intentional'` → `click` with press-start-inside drag-out suppression), ignores scrollbar presses,
+ * resets on `pointercancel`, and ignores Escape while an IME composition is
  * active. **Touch** sloppy-mode gesture hardening (long-press / drag-distance thresholds) is ported here
  * but only unit-exercisable via synthetic events — real on-device behavior is covered by
  * `apps/visual-regression` (Playwright).
@@ -374,7 +369,7 @@ export class RdxDismiss {
         };
 
         const tryOutsidePress = (event: Event): void => {
-            if (!this.active() || !isPrimaryButton(event) || this.isInside(event.target) || !outsidePress(event)) {
+            if (!this.active() || this.isInside(event.target) || !outsidePress(event)) {
                 return;
             }
             if (isInjectedAfterMark(event.target, this.context)) {
@@ -396,12 +391,15 @@ export class RdxDismiss {
 
         // Capture-phase, so it records where the press began (and its pointer type) before any dismiss
         // handler runs.
+        let mouseDownRetry = false;
         const handlePressStart = (event: Event): void => {
+            mouseDownRetry = false;
             pressStartedInside = this.isInside(event.target);
             currentPointerType = ((event as PointerEvent).pointerType as 'mouse' | 'touch' | 'pen') || '';
         };
         const handlePointerCancel = (): void => {
             pressStartedInside = false;
+            mouseDownRetry = false;
         };
 
         const handlePointerDown = (event: Event): void => {
@@ -411,6 +409,7 @@ export class RdxDismiss {
             if ((event as PointerEvent).pointerType === 'touch') {
                 return; // touch is decided by the touchstart/move/end + synthetic-mousedown machine below
             }
+            mouseDownRetry = this.active();
             tryOutsidePress(event);
         };
         const handleClick = (event: Event): void => {
@@ -489,9 +488,17 @@ export class RdxDismiss {
             }, 400);
         };
         const handleMouseDown = (event: Event): void => {
-            // Only the synthetic `mousedown` that follows a touch is handled here — a real mouse leaves
-            // `touchState` null and is dismissed by `handlePointerDown` instead (no double-close).
-            if (!touchState || resolveOutsidePressEvent() !== 'sloppy') {
+            if (resolveOutsidePressEvent() !== 'sloppy') {
+                return;
+            }
+            // Native mousedown is a separate opportunity after pointerdown, matching Base UI.
+            // An accepted close is already inactive; a veto leaves the layer open for this event.
+            if (!touchState) {
+                const retry = mouseDownRetry;
+                mouseDownRetry = false;
+                // Do not reinterpret the compatibility mouse event of a touch/long-press which
+                // opened this layer mid-gesture as a new outside mouse press.
+                if (retry) tryOutsidePress(event);
                 return;
             }
             if (!touchState.dismissOnMouseDown) {

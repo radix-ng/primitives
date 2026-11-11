@@ -22,6 +22,10 @@
 
 ## Context
 
+> **Correction (2026-11-11):** [ADR 0045](0045-context-menu-composition-and-native-dismissal.md) replaces
+> the original non-primary-button exclusion below. Sloppy dismissal accepts secondary/middle presses
+> and a native mousedown retry while still open. Touch compatibility events retain their guards.
+
 `RdxDismissableLayer` is the shared outside-dismiss mechanism for dialogs, menus, popovers, and other
 floating primitives. It currently follows the older Radix DismissableLayer model:
 
@@ -559,7 +563,7 @@ Drawer, nested Alert Dialog, and unmount of an open child** (counts must resync)
 
 Outside-press parity is mandatory (Phase 3), not optional polish. The hardened implementation must:
 
-- ignore non-primary mouse-button presses;
+- accept outside mouse buttons according to the owner's predicate (corrected in ADR 0045);
 - ignore presses on scrollbars;
 - suppress dismissal when a press starts inside and ends outside;
 - handle `pointercancel`;
@@ -816,27 +820,27 @@ concerns Base UI keeps separate from `useDismiss` — `aria-hidden` isolation + 
 and scroll lock (**ADR 0016**) — are **not** dismissal parity and are deferred (see "Out of scope"
 below). The remaining differences are platform adaptations.
 
-| Mechanism                                   | Base UI                                                                                                       | This engine                                                                          | Parity                           |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------- |
-| Ownership model                             | `FloatingTree` (`id` / `parentId`), DOM order unused                                                          | DI-resolved logical tree (§1), shared with ADR 0017                                  | Aligned                          |
-| Tree/store selection                        | `externalTree` selects a `FloatingTreeStore` (does **not** set parent)                                        | `node.tree` selects the tree/store (§1)                                              | Aligned                          |
-| Explicit parent assignment                  | none — `parentId` always from nearest `FloatingNodeContext`                                                   | `node.parent` override for detached injector-subtree composition (§1)                | **Angular extension**            |
-| Independent roots                           | each open root handles its own Escape/outside-press; no cross-tree coordination                               | same — engine does not coordinate independent roots (§1)                             | Aligned                          |
-| Nested propagation / blocking child         | `bubbles: { escapeKey, outsidePress }` + `hasBlockingChild()`                                                 | `escapeKeyBubbles` / `outsidePressBubbles` + block (§3)                              | Aligned                          |
-| `closeParentOnEsc`                          | `bubbles.escapeKey = closeParentOnEsc && parent.type === 'menu'`                                              | **existing** Menu input migrated onto `escapeKeyBubbles` (§3)                        | Aligned (migration)              |
-| IME composition                             | `compositionstart`/`end` + WebKit 5ms / 0ms reset                                                             | track composition, clear in following task (§5)                                      | Aligned                          |
-| Trigger treated as inside                   | capture marker + `triggerElements` registry                                                                   | scoped registrar, trigger registers as inside (§2)                                   | Aligned                          |
-| Scrollbar / non-primary / drag-out / cancel | per-pointer guards, `pressStartedInside`, scrollbar offset check                                              | Phase 3 guards (§4)                                                                  | Aligned (phased)                 |
-| `outsidePressEvent` (per-pointer + lazy)    | `PressType \| { mouse, touch } \| (() => …)`, resolved per press                                              | full contract + per-primitive table (§4)                                             | Aligned                          |
-| Per-primitive outside-press guard           | each root's own `outsidePress(event)` (Dialog backdrop/topmost/nested; Combobox excludes trigger/clear/chips) | per-primitive `outsidePressGuard(event)` + migration table (§4)                      | Aligned                          |
-| Reason union                                | `escape-key` / `outside-press` / `trigger-press`                                                              | layer emits Escape/outside; root owns trigger press unless delegated (§7)            | Equivalent ownership             |
-| Cancellation API                            | `cancel()` / `isCanceled` on change-details                                                                   | cancelable `dismissRequest` (§7)                                                     | Aligned behavior                 |
-| Native propagation control                  | `allowPropagation()` + native `preventDefault`/`stopPropagation` — **Escape only**                            | Escape: cancel + optional native propagation; outside-press: cancel close only (§7)  | Aligned (Escape-only)            |
-| Bubbling = tree ownership policy            | `escapeKeyBubbles` / `outsidePressBubbles` via `hasBlockingChild` (not native)                                | `escapeKeyBubbles` / `outsidePressBubbles` ownership policy (§3)                     | Aligned                          |
-| Focus-outside dismissal                     | not a `useDismiss` concern (per-primitive / focus manager)                                                    | leaves the engine: ADR 0017 for FFM primitives, per-primitive for the 3 without (§3) | Aligned                          |
-| Third-party injected elements               | `[data-base-ui-inert]` produced by `FloatingFocusManager`; `useDismiss` reads it                              | guard reads marker (§4); **producer is ADR 0017**                                    | → ADR 0017 (produce) / read here |
-| Modal isolation / aria-hidden               | `markOthers` `aria-hidden` on siblings                                                                        | `disableOutsidePointerEvents` body-toggle, transitional (§6)                         | → ADR 0017                       |
-| Scroll lock                                 | html/body, scroll-position, gutter, resize, pinch-zoom, owner element                                         | document-scoped correctness only; full behavioral port deferred (§6)                 | → ADR 0016                       |
+| Mechanism                                     | Base UI                                                                                                       | This engine                                                                          | Parity                           |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------- |
+| Ownership model                               | `FloatingTree` (`id` / `parentId`), DOM order unused                                                          | DI-resolved logical tree (§1), shared with ADR 0017                                  | Aligned                          |
+| Tree/store selection                          | `externalTree` selects a `FloatingTreeStore` (does **not** set parent)                                        | `node.tree` selects the tree/store (§1)                                              | Aligned                          |
+| Explicit parent assignment                    | none — `parentId` always from nearest `FloatingNodeContext`                                                   | `node.parent` override for detached injector-subtree composition (§1)                | **Angular extension**            |
+| Independent roots                             | each open root handles its own Escape/outside-press; no cross-tree coordination                               | same — engine does not coordinate independent roots (§1)                             | Aligned                          |
+| Nested propagation / blocking child           | `bubbles: { escapeKey, outsidePress }` + `hasBlockingChild()`                                                 | `escapeKeyBubbles` / `outsidePressBubbles` + block (§3)                              | Aligned                          |
+| `closeParentOnEsc`                            | `bubbles.escapeKey = closeParentOnEsc && parent.type === 'menu'`                                              | **existing** Menu input migrated onto `escapeKeyBubbles` (§3)                        | Aligned (migration)              |
+| IME composition                               | `compositionstart`/`end` + WebKit 5ms / 0ms reset                                                             | track composition, clear in following task (§5)                                      | Aligned                          |
+| Trigger treated as inside                     | capture marker + `triggerElements` registry                                                                   | scoped registrar, trigger registers as inside (§2)                                   | Aligned                          |
+| Scrollbar / button policy / drag-out / cancel | per-pointer guards, `pressStartedInside`, scrollbar offset check                                              | Phase 3 guards (§4)                                                                  | Aligned (phased)                 |
+| `outsidePressEvent` (per-pointer + lazy)      | `PressType \| { mouse, touch } \| (() => …)`, resolved per press                                              | full contract + per-primitive table (§4)                                             | Aligned                          |
+| Per-primitive outside-press guard             | each root's own `outsidePress(event)` (Dialog backdrop/topmost/nested; Combobox excludes trigger/clear/chips) | per-primitive `outsidePressGuard(event)` + migration table (§4)                      | Aligned                          |
+| Reason union                                  | `escape-key` / `outside-press` / `trigger-press`                                                              | layer emits Escape/outside; root owns trigger press unless delegated (§7)            | Equivalent ownership             |
+| Cancellation API                              | `cancel()` / `isCanceled` on change-details                                                                   | cancelable `dismissRequest` (§7)                                                     | Aligned behavior                 |
+| Native propagation control                    | `allowPropagation()` + native `preventDefault`/`stopPropagation` — **Escape only**                            | Escape: cancel + optional native propagation; outside-press: cancel close only (§7)  | Aligned (Escape-only)            |
+| Bubbling = tree ownership policy              | `escapeKeyBubbles` / `outsidePressBubbles` via `hasBlockingChild` (not native)                                | `escapeKeyBubbles` / `outsidePressBubbles` ownership policy (§3)                     | Aligned                          |
+| Focus-outside dismissal                       | not a `useDismiss` concern (per-primitive / focus manager)                                                    | leaves the engine: ADR 0017 for FFM primitives, per-primitive for the 3 without (§3) | Aligned                          |
+| Third-party injected elements                 | `[data-base-ui-inert]` produced by `FloatingFocusManager`; `useDismiss` reads it                              | guard reads marker (§4); **producer is ADR 0017**                                    | → ADR 0017 (produce) / read here |
+| Modal isolation / aria-hidden                 | `markOthers` `aria-hidden` on siblings                                                                        | `disableOutsidePointerEvents` body-toggle, transitional (§6)                         | → ADR 0017                       |
+| Scroll lock                                   | html/body, scroll-position, gutter, resize, pinch-zoom, owner element                                         | document-scoped correctness only; full behavioral port deferred (§6)                 | → ADR 0016                       |
 
 For the dismissal axes the remaining differences are platform adaptations: Angular DI and explicit
 registration handles replace React context/stores, and Angular output/request naming differs from Base
@@ -1202,7 +1206,7 @@ This ADR can move to Accepted when:
 6. Outside press implements the **full `RdxOutsidePressStrategy` contract** (`PressType | { mouse, touch } |
 lazy fn`, resolved per-pointer per-press), with the per-primitive `outsidePressEvent` table and a
    per-primitive `outsidePressGuard(event)` policy (the guard receives the native `RdxOutsidePressEvent`);
-   ignores non-primary buttons, scrollbars, drag-out, and
+   uses the owner's button predicate and ignores scrollbars, drag-out, and
    canceled gestures; and treats registered logical descendants as inside. Outside-press **enablement is
    runtime-suspendable via a scoped `suspend()` handle** (signal-based) so Drawer can disable it for a
    whole swipe and re-enable on the **next macrotask** (Safari workaround, §4). (The _unregistered_

@@ -357,7 +357,7 @@ describe('RdxDismiss', () => {
         const mouse = new Event('pointerdown', { bubbles: true });
         Object.defineProperty(mouse, 'pointerType', { value: 'mouse' });
         el('button').dispatchEvent(mouse);
-        // The synthetic-mousedown handler is a no-op without a touch in progress → single dismiss.
+        // The first native pointerdown is enough; no compatibility mousedown was dispatched here.
         expect(onDismiss).toHaveBeenCalledTimes(1);
         expect(onDismiss).toHaveBeenCalledWith('outside-press', expect.any(Event));
     });
@@ -607,7 +607,7 @@ describe('RdxDismiss', () => {
 
     // ─── Phase 3: press / IME hardening ──────────────────────────────────────
 
-    it('ignores a non-primary mouse button (only a primary press dismisses)', async () => {
+    it.each([1, 2])('dismisses on an outside mouse press with button %s', async (button) => {
         const onDismiss = vi.fn();
         build(
             context(() => true, el()),
@@ -616,8 +616,39 @@ describe('RdxDismiss', () => {
         );
         await flush();
 
-        el('button').dispatchEvent(new MouseEvent('pointerdown', { button: 2, bubbles: true }));
+        el('button').dispatchEvent(new MouseEvent('pointerdown', { button, bubbles: true }));
 
+        expect(onDismiss).toHaveBeenCalledWith('outside-press', expect.any(MouseEvent));
+    });
+
+    it.each([false, true])(
+        'reconsiders compatibility mousedown only while a close remains vetoed: %s',
+        async (veto) => {
+            const open = signal(true);
+            const onDismiss = vi.fn((_reason: RdxDismissReason, _event: Event) => {
+                if (!veto) open.set(false);
+            });
+            build(context(open, el()), () => null, onDismiss);
+            await flush();
+            const outside = el('button');
+            outside.dispatchEvent(new MouseEvent('pointerdown', { button: 2, bubbles: true }));
+            outside.dispatchEvent(new MouseEvent('mousedown', { button: 2, bubbles: true }));
+            expect(onDismiss).toHaveBeenCalledTimes(veto ? 2 : 1);
+            expect(onDismiss.mock.calls.map((call) => call[1]?.type)).toEqual(
+                veto ? ['pointerdown', 'mousedown'] : ['pointerdown']
+            );
+        }
+    );
+
+    it('ignores compatibility mousedown when mounted after the opening pointerdown', async () => {
+        const onDismiss = vi.fn();
+        build(
+            context(() => true, el()),
+            () => null,
+            onDismiss
+        );
+        await flush();
+        el('button').dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
         expect(onDismiss).not.toHaveBeenCalled();
     });
 

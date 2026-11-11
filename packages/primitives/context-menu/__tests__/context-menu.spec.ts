@@ -24,6 +24,37 @@ afterEach(() => {
     vi.useRealTimers();
 });
 
+it.each([false, true])('a nested context area owns one native request, canceled=%s', async (cancel) => {
+    @Component({
+        imports: [RdxContextMenuModule],
+        template: `
+            <ng-container (onOpenChange)="change($event)" rdxContextMenuRoot>
+                <div data-outer rdxContextMenuTrigger><div data-inner rdxContextMenuTrigger>Inner area</div></div>
+            </ng-container>
+        `
+    })
+    class NestedAreas {
+        readonly changes: RdxMenuOpenChange[] = [];
+        change(change: RdxMenuOpenChange) {
+            if (cancel) change.eventDetails.cancel();
+            this.changes.push(change);
+        }
+    }
+    const fixture = TestBed.createComponent(NestedAreas);
+    fixture.detectChanges();
+    const outer = fixture.nativeElement.querySelector('[data-outer]');
+    const inner = fixture.nativeElement.querySelector('[data-inner]');
+    const parent = vi.fn();
+    outer.addEventListener('contextmenu', parent);
+    const event = new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: 120, clientY: 80 });
+    inner.dispatchEvent(event);
+    expect(fixture.componentInstance.changes).toHaveLength(1);
+    expect(fixture.componentInstance.changes[0].event).toBe(event);
+    expect(fixture.componentInstance.changes[0].eventDetails.isCanceled()).toBe(cancel);
+    expect(parent).not.toHaveBeenCalled();
+    expect(event.defaultPrevented).toBe(true);
+});
+
 it('exposes close and unmount through the composed context-menu lifecycle', async () => {
     @Component({
         changeDetection: ChangeDetectionStrategy.Eager,

@@ -116,3 +116,11 @@ test('context-menu — open', async ({ page }) => {
     await expect(page.locator('[rdxMenuPopup]')).toBeVisible();
     await shoot(page, 'context-menu-default-open.png');
 });
+
+test('context-menu — nested areas and submenu', async ({ page }) => {
+    await gotoStory(page, 'primitives-context-menu--nested-areas');
+    await page.locator('[rdxContextMenuTrigger]').last().click({ button: 'right' });
+    await page.getByRole('menuitem', { name: 'Share', exact: true }).press('ArrowRight');
+    await expect(page.getByRole('menuitem', { name: 'Copy link', exact: true })).toBeFocused();
+    await shoot(page, 'context-menu-nested-areas.png');
+});

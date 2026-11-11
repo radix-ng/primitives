@@ -134,11 +134,11 @@ completion; the existing deferred fast-reopen scenario still tests cancellation 
 **Migration:** the anchored Positioner default changes from `start` to Base UI's `center`. Set
 `align="start"` explicitly to retain edge alignment. The later item-alignment migration is recorded below and in ADR 0030.
 
-One additional difference is recorded explicitly: after an outside request is canceled, the pinned
-React implementation reports both `pointerdown` and compatibility `mousedown` requests; Angular's
-native pointer pipeline reports one request per gesture. The exact canceled event sequences are
-reviewed exceptions (`canceled-compatibility-press`); state, values, background blocking and scroll
-lock still have shared assertions. Existing virtual-focus and closed-view-retention exceptions apply.
+Shared dismissal now reports the native pointerdown and compatibility mousedown requests when an
+outside close is vetoed, matching the pin. The two `canceled-compatibility-press` exceptions have been
+removed; see [ADR 0045](../../../docs/adr/0045-context-menu-composition-and-native-dismissal.md).
+State, values, background blocking and scroll lock keep their shared assertions. Existing virtual-focus
+and closed-view-retention exceptions still apply.
 Real-device/touch and screen-reader gates remain open.
 
 ## Browser bridge decision

@@ -50,14 +50,17 @@ test.describe('Select — new floating engine migration', () => {
         await expect(page.locator(popup)).toHaveCount(0);
     });
 
-    test('an outside press closes the select', async ({ page }) => {
-        await gotoStory(page, 'primitives-select--default');
-        await page.locator(trigger).first().click();
-        await expect(page.locator(popup)).toBeVisible();
+    for (const button of ['left', 'right'] as const)
+        test(`${button === 'left' ? 'an outside press' : 'a secondary outside press'} closes the select`, async ({
+            page
+        }) => {
+            await gotoStory(page, 'primitives-select--default');
+            await page.locator(trigger).first().click();
+            await expect(page.locator(popup)).toBeVisible();
 
-        await page.mouse.click(5, 5);
-        await expect(page.locator(popup)).toHaveCount(0);
-    });
+            await page.mouse.click(5, 5, { button });
+            await expect(page.locator(popup)).toHaveCount(0);
+        });
 
     test('a modal select renders an internal backdrop that blocks the background (finding #1)', async ({ page }) => {
         await gotoStory(page, 'primitives-select--default');

@@ -1,7 +1,12 @@
 import { Directive, DOCUMENT, inject, Signal } from '@angular/core';
 import type { VirtualElement } from '@floating-ui/dom';
 import { createContext, getActiveElement } from '@radix-ng/primitives/core';
-import { RdxMenuAutoFocusInput, RdxMenuOpenChangeReason, RdxMenuRoot } from '@radix-ng/primitives/menu';
+import {
+    findMenuOwnerId,
+    RdxMenuAutoFocusInput,
+    RdxMenuOpenChangeReason,
+    RdxMenuRoot
+} from '@radix-ng/primitives/menu';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 
 export interface RdxContextMenuRootContext {
@@ -84,10 +89,13 @@ export class RdxContextMenuRoot {
 
         // A context area need not receive focus (e.g. a right-click on macOS WebKit). Capture the
         // actual focused element before the popup mounts, without making the area a Menu trigger.
-        if (!this.menuRoot.open()) {
-            this.menuRoot.contextMenuPreviousFocus.set(
-                (getActiveElement(this.document) as HTMLElement | null) ?? undefined
-            );
+        if (!this.menuRoot.open() && this.menuRoot.transitionStatus() !== 'ending') {
+            const active = getActiveElement(this.document) as HTMLElement | null;
+            // A second area can reopen the same closing view before its focus scope unmounts.
+            // Keep the surviving outside return target instead of capturing our own closing popup.
+            if (!active || findMenuOwnerId(active) !== this.menuRoot.ownerId()) {
+                this.menuRoot.contextMenuPreviousFocus.set(active ?? undefined);
+            }
         }
 
         // A touch long-press gets a small 10×10 anchor box (Base UI) so the popup is offset from the

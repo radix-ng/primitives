@@ -53,6 +53,14 @@ focus manager's inside elements while switching. Context Menu captures actual pr
 that manager; its area is not an ordinary Menu trigger or ARIA identity. Preserve Angular queries
 and DI ownership when sharing fixtures, rather than introducing a wrapper or React interaction store.
 
+**Context Menu composition (ADR 0045):** Shared/nested areas consume the nearest native gesture even
+when opening is canceled. Areas are not Menu triggers; their open/pressed state is shared. Sloppy
+dismissal permits secondary presses and mousedown retries after a veto, with an active non-touch
+pointerdown gate protecting long-press compatibility events. Backdrop hit testing and outside
+isolation release through accepted Root events before the next native event, while effects own their
+lifetimes. The shared lifecycle distinguishes atomic navigation return from reopening across a
+microtask boundary. No forced Angular render or synthetic input is introduced.
+
 **Native input and collection focus (ADR 0037):** `focus-scope/observeFocusRecovery` observes actual
 inside focus and DOM mutations, including removals/moves without focusout in Firefox/WebKit. Floating
 Focus Manager and Menubar supply target policies. Boolean restoration does not steal a visible

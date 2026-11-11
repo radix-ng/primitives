@@ -76,3 +76,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0042](0042-menubar-retained-and-pointer-contracts.md)                       | Accepted               | Compare retained Menubar and nested pointer cancellation with reference demo anatomy |
 | [0043](0043-menu-orientation-and-keyboard-ownership.md)                      | Accepted               | Respect Menu orientation and portaled keyboard ownership                             |
 | [0044](0044-affected-browser-checks.md)                                      | Accepted               | Select affected browser contracts and run engines concurrently                       |
+| [0045](0045-context-menu-composition-and-native-dismissal.md)                | Accepted               | Preserve Context Menu composition through native event boundaries                    |

@@ -86,10 +86,6 @@ still apply to both implementations. The report preserves all raw observations e
 - `array-item-label`: in this commit, Base UI Value branches on `Array.isArray(value)` even in single
   mode and renders a comma for an array-valued item. Angular respects explicit `multiple` and renders
   its item label (ADR 0028). Wire values and callback reference identity still match.
-- `canceled-compatibility-press`: the pinned reference retries a canceled modal outside press for
-  compatibility `mousedown` after `pointerdown`. Angular reports one cancelable request per pointer
-  gesture. Only the exact canceled sequences are exceptions; accepted-close callbacks, values,
-  background activation, open state and wheel scrolling remain checked against both implementations.
 
 The pinned `Select.Portal` has no `keepMounted` prop. Equivalent-prop coverage is excluded. The sizing reopen case compares an explicit Angular retained
 view to the reference's normal open/close path, with exact safety differences recorded; additional
@@ -179,8 +175,8 @@ separate lifecycle checks.
 The increment fixes duplicate outside requests caused by an invented `(0, 0)` trigger pointer origin,
 and restores a cancelable `trigger-press` close when the open Trigger is pressed. The implicit anchored
 alignment now matches the pin's `center`; explicit `align="start"` retains the previous Angular default.
-Canceled pointer/mouse compatibility retries remain a documented difference rather than an extra
-Angular event path.
+Native pointerdown/mousedown cancellation retries now match through shared RdxDismiss (ADR 0045);
+the two canceled-compatibility-press event-sequence exceptions have been removed.
 
 ## Dynamic collections and touch input
 

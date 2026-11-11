@@ -371,22 +371,45 @@ export class RdxFloatingFocusManager {
 
         // Marker pass (ADR 0017 §3) — applied to outside elements while the manager is active **and the
         // popup is open**, independent of `modal`. Read by ADR 0015's outside-press guard.
+        let releaseMarker: (() => void) | undefined;
+        const clearMarker = () => {
+            releaseMarker?.();
+            releaseMarker = undefined;
+        };
         effect((onCleanup) => {
             if (!this.effectiveEnabled() || !this.isFloatingOpen()) {
                 return;
             }
-            onCleanup(markOthers(this.avoidElements(), { ariaHidden: false, mark: true }));
+            releaseMarker = markOthers(this.avoidElements(), { ariaHidden: false, mark: true });
+            onCleanup(clearMarker);
         });
 
         // Pointer/AT isolation pass — apply the real `inert` attribute to outside elements only when the
         // composing primitive asks for outside interaction to be blocked. This is intentionally separate from
         // focus trapping: Base UI `modal="trap-focus"` traps focus but leaves outside pointer interaction
         // enabled.
+        let releaseIsolation: (() => void) | undefined;
+        const clearIsolation = () => {
+            releaseIsolation?.();
+            releaseIsolation = undefined;
+        };
         effect((onCleanup) => {
             if (!this.effectiveEnabled() || !this.isFloatingOpen() || !this.effectiveInert()) {
                 return;
             }
-            onCleanup(markOthers(this.avoidElements(), { inert: true, mark: false }));
+            releaseIsolation = markOthers(this.avoidElements(), { inert: true, mark: false });
+            onCleanup(clearIsolation);
+        });
+        const releaseClosedResources = () => {
+            if (this.isFloatingOpen()) return;
+            clearMarker();
+            clearIsolation();
+        };
+        this.rootContext?.events.on('openchange', releaseClosedResources);
+        inject(DestroyRef).onDestroy(() => {
+            this.rootContext?.events.off('openchange', releaseClosedResources);
+            clearMarker();
+            clearIsolation();
         });
 
         // Safari scrolls the page to the bottom when a popup whose input holds focus unmounts.

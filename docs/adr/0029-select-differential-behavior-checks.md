@@ -79,10 +79,10 @@ gesture, and release fallback does not repeat an already accepted dismissal. Tri
 requests a cancelable close. Anchored alignment defaults to `center`, matching the pin; existing
 consumers can set `align="start"` to retain the earlier Angular default.
 
-The pin emits an additional compatibility-mousedown close request when a modal outside request is
-canceled. Preserve Angular's single native pointer path, recording exact canceled event sequences as
-`canceled-compatibility-press`; do not hide unrelated value/event/state differences. Ordinary completed
-close/reopen and deferred fast-reopen remain distinct scenario sequences.
+The original audit recorded the pin's compatibility-mousedown retry after a canceled outside press
+as `canceled-compatibility-press`. ADR 0045 now aligns this in shared dismissal using the actual native
+event sequence and removes both exceptions. Ordinary completed close/reopen and deferred fast-reopen
+remain distinct scenario sequences.
 
 These desktop comparisons do not close real-device, touch or AT gates.
 

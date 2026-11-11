@@ -384,6 +384,11 @@ while the popup is still retained.
 `RdxMenuRoot` owns the shared open state. Use `[(open)]` for plain state syncing, or bind
 `(onOpenChange)` when you need the full change details object.
 
+Cancellation vetoes that request. An outside pointer gesture can request closing again through its
+native `mousedown` after a canceled `pointerdown`; keep the veto active until your application allows
+retry. The details retain the original event for each request. Secondary outside presses follow the
+same dismissal policy.
+
 | Method      | Behavior                                                                 |
 | ----------- | ------------------------------------------------------------------------ |
 | `close()`   | Requests a cancelable close with the default reason `imperative-action`. |

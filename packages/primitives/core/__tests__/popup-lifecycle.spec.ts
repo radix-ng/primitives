@@ -90,6 +90,17 @@ describe('shared popup lifecycle', () => {
         expect(host.lifecycle.status()).toBeUndefined();
     });
 
+    it('starts another enter completion when a close survives the native-event microtask boundary', async () => {
+        change(true);
+        await settle();
+        await vi.waitFor(() => expect(host.completions).toEqual([true]));
+        change(false, true);
+        await Promise.resolve();
+        change(true);
+        await settle();
+        await vi.waitFor(() => expect(host.completions).toEqual([true, true]));
+    });
+
     it('holds the closing phase until manual completion, including a batched close/unmount', async () => {
         change(true);
         await settle();

@@ -1,14 +1,31 @@
 import { expect } from '@playwright/test';
 import { MenuFamilyDriver } from '../../../shared/menu-family-driver';
+import { compositionCases } from '../src/composition';
 import { cases } from '../src/contract';
+import { runComposition } from './composition.scenarios';
 export class ContextMenuDriver extends MenuFamilyDriver {
     constructor(page: ConstructorParameters<typeof MenuFamilyDriver>[0], framework: 'angular' | 'react') {
         super(page, framework, 'contextMenuParity');
+    }
+    override async goto(name: string) {
+        if (name.startsWith('areas-switch')) await this.page.clock.install();
+        await super.goto(name);
     }
     override async checkpoint(name: string, expected: Record<string, unknown> = {}) {
         await super.checkpoint(name, expected);
         this.checkpoints.at(-1)!.state.pressed =
             (await this.page.getByTestId('area').getAttribute('data-pressed')) !== null;
+        if ((await this.page.getByTestId('area-two').count()) > 0) {
+            this.checkpoints.at(-1)!.state.areas = await this.page
+                .locator('[data-menu-trigger]')
+                .evaluateAll((elements) =>
+                    elements.map((element) => ({
+                        id: element.getAttribute('data-testid'),
+                        open: element.hasAttribute('data-popup-open'),
+                        pressed: element.hasAttribute('data-pressed')
+                    }))
+                );
+        }
     }
     async touch(name: string) {
         const area = this.page.getByTestId('area'),
@@ -83,6 +100,10 @@ export class ContextMenuDriver extends MenuFamilyDriver {
 export const scenarios = cases.map((name) => ({
     name,
     async run(d: ContextMenuDriver) {
+        if ((compositionCases as readonly string[]).includes(name)) {
+            await runComposition(d, name as (typeof compositionCases)[number]);
+            return;
+        }
         const area = d.page.getByTestId('area'),
             popup = d.page.getByTestId('context-popup');
         if (name.startsWith('touch-')) {

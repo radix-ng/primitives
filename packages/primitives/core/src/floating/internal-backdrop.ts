@@ -1,4 +1,5 @@
 import { DestroyRef, effect, Injector } from '@angular/core';
+import { RDX_FLOATING_ROOT_CONTEXT } from './provide-floating-tree';
 
 /** Default marker attribute on the imperatively-created internal backdrop element. */
 export const RDX_INTERNAL_BACKDROP_ATTR = 'data-rdx-internal-backdrop';
@@ -50,6 +51,7 @@ export function setupInternalBackdrop(
 ): void {
     const ownerDocument = positioner.ownerDocument;
     const marker = options.marker ?? RDX_INTERNAL_BACKDROP_ATTR;
+    const context = injector.get(RDX_FLOATING_ROOT_CONTEXT, null);
     let backdrop: HTMLElement | null = null;
 
     const remove = (): void => {
@@ -57,9 +59,19 @@ export function setupInternalBackdrop(
         backdrop = null;
     };
 
+    const syncInteraction = (): void => {
+        if (!backdrop) return;
+        const open = options.isOpen();
+        backdrop.style.pointerEvents = !open || options.passThrough?.() ? 'none' : '';
+        if (open) backdrop.removeAttribute('inert');
+        else backdrop.setAttribute('inert', '');
+    };
+    // A native gesture can emit contextmenu before Angular renders the accepted close. Release
+    // this existing hit target synchronously; the effect still owns creation/removal of the view.
+    context?.events.on('openchange', syncInteraction);
+
     const ref = effect(
         () => {
-            const open = options.isOpen();
             const render = options.shouldRender();
 
             if (render && !backdrop) {
@@ -85,23 +97,14 @@ export function setupInternalBackdrop(
                 remove();
             }
 
-            if (backdrop) {
-                backdrop.style.pointerEvents = options.passThrough?.() ? 'none' : '';
-
-                // Clickable (the outside-press target) while open; inert during the closed-but-mounted
-                // exit window so a stray click on the fading backdrop can't fire.
-                if (open) {
-                    backdrop.removeAttribute('inert');
-                } else {
-                    backdrop.setAttribute('inert', '');
-                }
-            }
+            syncInteraction();
         },
         { injector }
     );
 
     injector.get(DestroyRef).onDestroy(() => {
         ref.destroy();
+        context?.events.off('openchange', syncInteraction);
         remove();
     });
 }

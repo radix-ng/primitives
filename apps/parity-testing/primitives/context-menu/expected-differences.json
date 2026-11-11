@@ -18,5 +18,41 @@
         "browser": "webkit",
         "platform": "linux",
         "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "composition-hover",
+        "checkpoint": "context child reached by mouse",
+        "field": "focus",
+        "angular": "context-sub-alpha",
+        "react": "context-popup",
+        "browser": "webkit",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "composition-hover",
+        "checkpoint": "context child reached by mouse",
+        "field": "highlighted",
+        "angular": ["context-sub-alpha"],
+        "react": [],
+        "browser": "webkit",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "composition-hover-rtl",
+        "checkpoint": "context child reached by mouse",
+        "field": "focus",
+        "angular": "context-sub-alpha",
+        "react": "context-popup",
+        "browser": "webkit",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "composition-hover-rtl",
+        "checkpoint": "context child reached by mouse",
+        "field": "highlighted",
+        "angular": ["context-sub-alpha"],
+        "react": [],
+        "browser": "webkit",
+        "category": "zero-delta-pointer-travel"
     }
 ]

@@ -1265,117 +1265,11 @@
     },
     {
         "scenario": "modal: canceled outside press",
-        "checkpoint": "canceled",
-        "field": "events",
-        "angular": [
-            {
-                "type": "open",
-                "open": true,
-                "reason": "trigger-press",
-                "canceled": false,
-                "held": false
-            },
-            {
-                "type": "complete",
-                "open": true
-            },
-            {
-                "type": "open",
-                "open": false,
-                "reason": "outside-press",
-                "canceled": true,
-                "held": false
-            }
-        ],
-        "react": [
-            {
-                "type": "open",
-                "open": true,
-                "reason": "trigger-press",
-                "canceled": false,
-                "held": false
-            },
-            {
-                "type": "complete",
-                "open": true
-            },
-            {
-                "type": "open",
-                "open": false,
-                "reason": "outside-press",
-                "canceled": true,
-                "held": false
-            },
-            {
-                "type": "open",
-                "open": false,
-                "reason": "outside-press",
-                "canceled": true,
-                "held": false
-            }
-        ],
-        "category": "canceled-compatibility-press"
-    },
-    {
-        "scenario": "modal: canceled outside press",
         "checkpoint": "still locked",
         "field": "focus",
         "angular": "popup",
         "react": "body",
         "category": "dom-focus"
-    },
-    {
-        "scenario": "modal: canceled outside press",
-        "checkpoint": "still locked",
-        "field": "events",
-        "angular": [
-            {
-                "type": "open",
-                "open": true,
-                "reason": "trigger-press",
-                "canceled": false,
-                "held": false
-            },
-            {
-                "type": "complete",
-                "open": true
-            },
-            {
-                "type": "open",
-                "open": false,
-                "reason": "outside-press",
-                "canceled": true,
-                "held": false
-            }
-        ],
-        "react": [
-            {
-                "type": "open",
-                "open": true,
-                "reason": "trigger-press",
-                "canceled": false,
-                "held": false
-            },
-            {
-                "type": "complete",
-                "open": true
-            },
-            {
-                "type": "open",
-                "open": false,
-                "reason": "outside-press",
-                "canceled": true,
-                "held": false
-            },
-            {
-                "type": "open",
-                "open": false,
-                "reason": "outside-press",
-                "canceled": true,
-                "held": false
-            }
-        ],
-        "category": "canceled-compatibility-press"
     },
     {
         "scenario": "modal: keyboard selection",

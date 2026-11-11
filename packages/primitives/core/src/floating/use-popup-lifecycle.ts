@@ -47,7 +47,7 @@ export function usePopupLifecycle(
     const disposablePresence = computed(() => presences().some((presence) => !presence.keepMounted()));
 
     let previousOpen = untracked(open);
-    let renderedOpen = previousOpen;
+    let enteredOpen = previousOpen;
     let pendingClose: object | undefined;
     let closingTransition: object | undefined;
 
@@ -65,7 +65,7 @@ export function usePopupLifecycle(
         pendingClose = undefined;
         closing.set(false);
         // Explicit completion is a lifecycle boundary even if unmount() ran before the render effect.
-        renderedOpen = false;
+        enteredOpen = false;
         onComplete(false);
     };
 
@@ -128,8 +128,8 @@ export function usePopupLifecycle(
                 syncOpen();
                 // Native focus can close/reopen in one event before Angular renders. Keep the
                 // existing enter transition (or its completed state) when no exit was rendered.
-                if (nextOpen === renderedOpen) return;
-                renderedOpen = nextOpen;
+                if (nextOpen === enteredOpen) return;
+                enteredOpen = nextOpen;
                 if (nextOpen) transition.start(true);
             });
         },
@@ -176,6 +176,13 @@ export function usePopupLifecycle(
                     if (!nextOpen && pendingClose) {
                         committedClose = pendingClose;
                         if (requested) deferred.set(true);
+                        // Distinct native events can close and reopen before Angular's next render.
+                        // Preserve an atomic close/focus/reopen in one call stack, but start a new
+                        // enter completion when the accepted close survives the microtask boundary.
+                        const close = pendingClose;
+                        queueMicrotask(() => {
+                            if (!destroyRef.destroyed && !open() && pendingClose === close) enteredOpen = false;
+                        });
                     }
                 }
             };

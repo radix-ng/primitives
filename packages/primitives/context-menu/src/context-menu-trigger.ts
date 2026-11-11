@@ -82,7 +82,12 @@ export class RdxContextMenuTrigger {
             }
             const target = event.target as Node | null;
             const popup = this.menuRoot.popupElement();
-            if (target && (this.elementRef.nativeElement.contains(target) || popup?.contains(target))) {
+            if (
+                target &&
+                (this.elementRef.nativeElement.contains(target) ||
+                    popup?.contains(target) ||
+                    (target.nodeType === 1 && (target as Element).hasAttribute('data-rdx-menu-internal-backdrop')))
+            ) {
                 event.preventDefault();
             }
         };
@@ -102,6 +107,9 @@ export class RdxContextMenuTrigger {
 
         // Suppress the native context menu and open ours at the pointer.
         event.preventDefault();
+        // The nearest area owns this gesture, including a canceled opening. A parent area
+        // must not receive the same contextmenu and issue a second opening request.
+        event.stopPropagation();
         this.cancelLongPress();
 
         // Where the gesture started, and permission for an item to act on the release that ends it —
@@ -123,6 +131,7 @@ export class RdxContextMenuTrigger {
         // A second finger cancels the first finger's pending long-press as well.
         this.cancelLongPress();
         if (event.isPrimary === false) return;
+        event.stopPropagation();
         const { clientX, clientY } = event;
         this.longPressOrigin = { x: clientX, y: clientY };
         this.longPressTimer = setTimeout(() => {
