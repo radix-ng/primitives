@@ -1,4 +1,5 @@
 import { expect, Page, test } from '@playwright/test';
+import { pauseClockBeforeInteraction } from '../helpers/clock';
 import { holdExitAnimations } from '../helpers/exit-animations';
 
 /**
@@ -102,6 +103,7 @@ test.describe('Dialog outside-scroll (custom scroll area)', () => {
     }
 
     test('scrolls the whole dialog and shows the overlay scrollbar on scroll', async ({ page }) => {
+        await page.clock.install();
         await openTallDialog(page);
 
         // Content is taller than the viewport, so the scroll area is actually scrollable.
@@ -112,12 +114,20 @@ test.describe('Dialog outside-scroll (custom scroll area)', () => {
 
         // The custom scrollbar is hidden at rest and fades in while scrolling.
         await expect(page.locator(scrollbar)).toHaveCSS('opacity', '0');
+        // Hold the 500ms JS scrolling state while observing the real CSS fade and dragging.
+        // CI round trips must not consume the user's interaction window between assertions.
+        await pauseClockBeforeInteraction(page);
         // ScrollArea deliberately distinguishes user scrolling from programmatic scrollTop changes.
         // Hovering the tall popup asks Playwright to scroll its center into view first, which can
         // put the thumb at an edge before the wheel gesture even begins. Use the visible viewport.
         await page.mouse.move(60, 300);
         await page.mouse.wheel(0, 350);
-        await expect(page.locator(scrollbar)).toHaveAttribute('data-scrolling', '');
+        await expect
+            .poll(async () => {
+                await page.clock.runFor(16);
+                return page.locator(scrollbar).getAttribute('data-scrolling');
+            })
+            .toBe('');
         await expect(page.locator(scrollbar)).not.toHaveCSS('opacity', '0');
         await expect(page.locator(scrollbar)).not.toHaveAttribute('inert', '');
 
@@ -130,6 +140,7 @@ test.describe('Dialog outside-scroll (custom scroll area)', () => {
         await page.mouse.down();
         await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2 + direction * 60, { steps: 4 });
         await page.mouse.up();
+        await page.clock.runFor(16);
         await expect
             .poll(async () => ((await page.locator(scrollArea).evaluate((el) => el.scrollTop)) - before) * direction)
             .toBeGreaterThan(0);

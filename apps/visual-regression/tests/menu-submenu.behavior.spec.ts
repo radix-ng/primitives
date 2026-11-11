@@ -1,4 +1,5 @@
 import { expect, Page, test } from '@playwright/test';
+import { pauseClockBeforeInteraction } from '../helpers/clock';
 
 /**
  * Behavioral checks for submenu hover — the "safe polygon" traversal. These drive a *real* mouse
@@ -37,20 +38,20 @@ async function traverseGraceArea(page: Page, from: { x: number; y: number }, to:
     // Test a continuous 60Hz gesture. CI protocol latency must not turn a ten-step traversal into
     // a deliberate pause beyond the native hover intent's 40ms rest budget. Mouse events/positions
     // stay native; only the clock advances by a defined frame between their delivery.
-    await page.clock.install();
-    await page.clock.pauseAt(new Date(Date.now() + 100));
-    try {
-        await page.mouse.move(from.x, from.y);
-        for (let step = 1; step <= 10; step++) {
-            await page.clock.runFor(16);
-            await page.mouse.move(from.x + ((to.x - from.x) * step) / 10, from.y + ((to.y - from.y) * step) / 10);
-        }
-    } finally {
-        await page.clock.resume();
+    // Install before navigation, so existing hover timers use this clock too. Keep it paused
+    // through the assertions: protocol round trips are not part of the user's gesture.
+    await pauseClockBeforeInteraction(page);
+    await page.mouse.move(from.x, from.y);
+    for (let step = 1; step <= 10; step++) {
+        await page.clock.runFor(16);
+        await page.mouse.move(from.x + ((to.x - from.x) * step) / 10, from.y + ((to.y - from.y) * step) / 10);
     }
+    // Landing must cancel the 40ms grace timer, rather than merely postponing it.
+    await page.clock.runFor(100);
 }
 
 test('diagonal traversal keeps the open submenu and does not steal to the sibling', async ({ page }) => {
+    await page.clock.install();
     await openEditMenu(page);
     await openFindSubmenu(page);
 
@@ -72,6 +73,7 @@ test('diagonal traversal keeps the open submenu and does not steal to the siblin
 });
 
 test('RTL: diagonal traversal toward a left-placed submenu keeps it open', async ({ page }) => {
+    await page.clock.install();
     // Regression guard for the once-captured `data-side` bug: submenus here open to the LEFT
     // (`side="left"`), so a right-side-only polygon would close them mid-traversal.
     const findRtl = '[rdxMenuSubTrigger]:has-text("بحث")';

@@ -1,4 +1,5 @@
 import { expect, Page, test } from '@playwright/test';
+import { pauseClockBeforeInteraction } from '../helpers/clock';
 
 async function setup(page: Page, keepMounted = false) {
     const errors: string[] = [];
@@ -44,19 +45,25 @@ test('Select Typeahead story searches multiword labels without committing on Spa
 });
 
 test('Select Typeahead story cycles initials and resets after a pause', async ({ page }) => {
-    const { errors, trigger, popup } = await setup(page);
     await page.clock.install();
+    const { errors, trigger, popup } = await setup(page);
     await trigger.press('Enter');
     await expect(popup).toBeFocused();
+    // Only explicit advances represent typing pauses; CI latency must not reset the 750ms query.
+    await pauseClockBeforeInteraction(page);
     await page.keyboard.press('b');
+    await page.clock.runFor(16);
     await expect(option(page, 'Berlin')).toHaveAttribute('data-highlighted', '');
     await page.keyboard.press('b');
+    await page.clock.runFor(16);
     await expect(option(page, 'Bern')).toHaveAttribute('data-highlighted', '');
     await page.clock.runFor(800);
     await page.keyboard.press('n');
+    await page.clock.runFor(16);
     await expect(option(page, 'New York')).toHaveAttribute('data-highlighted', '');
     await page.clock.runFor(800);
     await page.keyboard.press('Space');
+    await page.clock.runFor(32);
     await expect(popup).toBeHidden();
     await expect(trigger).toContainText('New York');
     expect(errors).toEqual([]);

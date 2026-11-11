@@ -144,6 +144,11 @@ reused and the iframe story URLs (`/iframe.html?id=<storyId>&viewMode=story`) re
 built site. Run artifacts (`test-results/`, `playwright-report/`) are gitignored; only specs and
 `*-snapshots/` baselines are committed.
 
+For timing-sensitive browser gestures, install Playwright's clock before navigation so application
+timers share one clock. Pause during the measured interval and advance explicit frames for Angular's
+zoneless rendering; protocol latency is not a user pause. Observe CSS transitions separately from
+JavaScript timer expiry, and wait for actual RAF-written geometry before comparing drag positions.
+
 ## Storybook stories
 
 - **Story file:** `stories/<name>.stories.ts` (CSF format)

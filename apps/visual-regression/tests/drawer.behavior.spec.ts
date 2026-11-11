@@ -35,17 +35,19 @@ test.describe('Drawer swipe area', () => {
         await expect(popup).toHaveAttribute('data-swiping', '');
         await expect(popup).toHaveCSS('animation-name', 'none');
 
-        const movementAfterShortDrag = await popup.evaluate((element) => {
-            const transform = getComputedStyle(element).transform;
-            return new DOMMatrixReadOnly(transform).m41;
-        });
+        const movement = () =>
+            popup.evaluate((element) => {
+                const transform = getComputedStyle(element).transform;
+                return new DOMMatrixReadOnly(transform).m41;
+            });
+        // Swipe transforms are written in RAF; data-swiping precedes that frame.
+        await expect.poll(movement).toBeLessThan(await popup.evaluate((element) => element.offsetWidth));
+        const movementAfterShortDrag = await movement();
 
         await page.mouse.move(box!.x - 180, box!.y + box!.height / 2);
 
-        const movementAfterLongDrag = await popup.evaluate((element) => {
-            const transform = getComputedStyle(element).transform;
-            return new DOMMatrixReadOnly(transform).m41;
-        });
+        await expect.poll(movement).toBeLessThan(movementAfterShortDrag);
+        const movementAfterLongDrag = await movement();
 
         expect(movementAfterShortDrag).toBeGreaterThan(0);
         expect(movementAfterLongDrag).toBeLessThan(movementAfterShortDrag);
@@ -54,21 +56,11 @@ test.describe('Drawer swipe area', () => {
         await page.mouse.up();
 
         await expect(popup).not.toHaveAttribute('data-swiping', '');
-        await expect
-            .poll(() =>
-                popup.evaluate((element) =>
-                    element
-                        .getAnimations()
-                        .some(
-                            (animation) =>
-                                animation.playState === 'running' &&
-                                (animation.effect as KeyframeEffect | null)
-                                    ?.getKeyframes()
-                                    .some((frame) => frame['transform'] !== undefined)
-                        )
-                )
-            )
-            .toBe(true);
+        // The settling transition can finish before a CI round trip observes its running state.
+        // Verify that motion is configured and the drawer actually reaches its open position.
+        await expect(popup).toHaveCSS('transition-property', /transform/);
+        await expect(popup).not.toHaveCSS('transition-duration', '0s');
+        await expect.poll(movement).toBeCloseTo(0, 0);
 
         await expect(swipeArea).toHaveAttribute('data-swipe-direction', 'left');
         await expect(swipeArea).toHaveCSS('pointer-events', 'none');
