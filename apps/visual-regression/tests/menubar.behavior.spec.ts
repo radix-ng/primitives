@@ -50,6 +50,16 @@ test('default follows Base UI menu and portal anatomy with the shared demo style
     const popup = page.locator(openPopup);
     await expect(popup.locator('[rdxMenuItem]').first()).toHaveText('New');
     await expect(popup.locator('[rdxMenuItem]').first()).toBeFocused();
+    // The open trigger stays marked after native focus enters the popup and the mouse is elsewhere.
+    await page.mouse.move(5, 5);
+    await expect(page.locator(trigger).first()).not.toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect
+        .poll(async () => {
+            const bar = (await page.locator('[rdxMenubarRoot]').boundingBox())!;
+            const menu = (await popup.boundingBox())!;
+            return menu.y - (bar.y + bar.height);
+        })
+        .toBeGreaterThanOrEqual(2);
     await expect(page.locator('[rdxMenubarRoot] [rdxMenuPositioner]')).toHaveCount(0);
     expect(await popup.evaluate((element) => element.parentElement?.hasAttribute('rdxMenuPositioner'))).toBe(true);
     expect(
@@ -75,6 +85,10 @@ test('retained root and child portals reuse their views and stay outside the Tab
     const original = (await page.locator(openPopup).elementHandle())!;
     await page.getByRole('menuitem', { name: 'Export', exact: true }).press('ArrowRight');
     await expect(page.getByRole('menuitem', { name: 'PDF', exact: true })).toBeFocused();
+    await expect(page.getByRole('menuitem', { name: 'Export', exact: true })).not.toHaveCSS(
+        'background-color',
+        'rgba(0, 0, 0, 0)'
+    );
     await page.keyboard.press('Escape');
     await expect(page.getByRole('menuitem', { name: 'Export', exact: true })).toBeFocused();
     await page.keyboard.press('Escape');

@@ -23,6 +23,7 @@ test('menubar — file open', async ({ page }) => {
     await page.getByRole('menuitem', { name: 'File', exact: true }).click();
     await expect(page.locator('[rdxMenuPopup][data-open]')).toHaveCount(1);
     await expect(page.locator('[rdxMenuPopup][data-open]')).toBeVisible();
+    await page.mouse.move(5, 5);
     await shoot(page, 'menubar-file-open.png');
 });
 

@@ -513,10 +513,10 @@ export const demoTooltip = {
  * Content popup and items reuse `demoMenu.*`.
  */
 export const demoMenubar = {
-    root: 'inline-flex items-center rounded-md border border-border bg-background p-1 shadow-sm',
+    root: 'inline-flex items-center gap-1 rounded-md border border-border bg-background p-1 shadow-sm',
     trigger: cn(
-        'flex h-8 cursor-default select-none items-center rounded-sm px-3 text-sm font-medium outline-none',
-        'hover:bg-muted focus-visible:bg-muted',
+        'flex h-8 shrink-0 cursor-default select-none items-center whitespace-nowrap rounded-sm px-3 text-sm font-medium outline-none',
+        'hover:bg-muted focus-visible:bg-muted data-[popup-open]:bg-muted',
         'data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
     ),
     shortcut: 'ml-auto pl-4 text-xs text-muted-foreground data-[highlighted]:text-foreground'

@@ -207,6 +207,10 @@ native events. Whole-bar `disabled` is inherited by the child menus.
 | `[data-pressed]`    | The trigger is pressed.       |
 | `[data-disabled]`   | The trigger is disabled.      |
 
+Style `[data-popup-open]` to keep the owning trigger marked while focus is inside its popup.
+The demos apply the same muted background to open submenu triggers, keep a visible gap between
+surfaces, and reuse the shared Menu colors, borders, shadows and item styles in every variant.
+
 The menubar root exposes `data-orientation`, `data-modal` (when modal), and `data-has-submenu-open`
 (present in open-on-focus interaction mode). Opening a directly owned menu enables this mode;
 accepted `sibling-open` and `list-navigation` closes preserve it. Other accepted closes end the mode,
