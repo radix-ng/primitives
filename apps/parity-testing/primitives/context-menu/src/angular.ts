@@ -6,6 +6,7 @@ import { RdxDirectionProvider } from '@radix-ng/primitives/direction-provider';
 import { RdxMenuModule, type RdxMenuOpenChange } from '@radix-ng/primitives/menu';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { createMenuPopupTemplate, menuClasses } from '../../../shared/menu-fixture';
+import { rootRemovalExitClass, rootRemovalFinalFocus } from '../../../shared/root-removal';
 import { cancelComposition } from './composition';
 import { config, installProbe, type Layer } from './contract';
 const settings = config();
@@ -13,7 +14,7 @@ const nested = `
     @if (settings.nested) {
         <ng-container (onOpenChange)="change('context-sub', $event)"
             (onOpenChangeComplete)="trace.complete('context-sub', $event)" rdxMenuRoot>
-            <button [class]="s.item" data-testid="context-more" rdxMenuSubTrigger>More</button>
+            <button [class]="s.item" [delay]="settings.removal?.hoverPending ? 2000 : 100" data-testid="context-more" rdxMenuSubTrigger>More</button>
             <ng-template rdxMenuPortal>
                 <div class="z-50" [side]="settings.dir === 'rtl' ? 'left' : 'right'"
                     align="start" sideOffset="4" rdxMenuPositioner>
@@ -30,7 +31,10 @@ const nested = `
 const template = `
         <div [dir]="settings.dir" rdxDirectionProvider>
         <div [class]="s.layout">
-            <input [class]="s.outside" data-testid="before" aria-label="Before context menu" />
+            @if (beforePresent()) {
+                <input [class]="s.outside" data-testid="before" aria-label="Before context menu" />
+            }
+            @if (rootPresent()) {
             @for (menu of menus; track menu) {
                 <ng-container
                     [disabled]="settings.disabled"
@@ -61,8 +65,9 @@ const template = `
                             data-testid="area-two" data-menu-trigger="context" rdxContextMenuTrigger>Second context area</button>
                     }
                     }
-                    ${createMenuPopupTemplate(nested)}
+                    ${createMenuPopupTemplate(nested, 'rdxMenuPopup', 'rdxMenuItem', '[finalFocus]="finalFocus"')}
                 </ng-container>
+            }
             }
             <button
                 [class]="s.outside + ' fixed start-24 top-[30rem]'"
@@ -74,6 +79,7 @@ const template = `
             </button>
         </div>
         </div>
+        @if (settings.removal) { <div class="min-h-[2000px]"></div> }
 `;
 @Component({
     selector: 'parity-context-menu',
@@ -83,17 +89,31 @@ const template = `
 })
 class AngularContextMenu {
     readonly menus = ['context'];
-    readonly s = menuClasses;
+    readonly s = {
+        ...menuClasses,
+        popup: menuClasses.popup + (settings.removal?.animated ? rootRemovalExitClass : '')
+    };
+    readonly rootPresent = signal(true);
+    readonly beforePresent = signal(true);
+    readonly finalFocus = settings.removal?.finalFocus ? rootRemovalFinalFocus : undefined;
     readonly settings = settings;
     readonly trace = installProbe('angular');
     readonly allow = signal(false);
     command(event: KeyboardEvent) {
+        if (settings.removal && ['F3', 'F4'].includes(event.key)) {
+            event.preventDefault();
+            this.rootPresent.set(event.key === 'F4');
+            if (event.key === 'F3' && settings.removal.missingFocus) this.beforePresent.set(false);
+            return;
+        }
         if (event.key === 'F5') {
             event.preventDefault();
             this.allow.set(true);
         }
     }
     change(layer: Layer, change: RdxMenuOpenChange) {
+        if (settings.removal?.deferred && layer === 'context' && !change.open)
+            change.eventDetails.preventUnmountOnClose();
         if (
             (change.open && settings.name === 'cancel-open') ||
             (!change.open && settings.name === 'cancel-close') ||

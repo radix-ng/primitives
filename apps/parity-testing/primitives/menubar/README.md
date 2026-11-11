@@ -3,7 +3,7 @@
 Run `pnpm test-parity menubar` with Node 24; preview port is 4509. Angular fixtures are AOT compiled
 and React imports the unmodified Base UI 1.9.0 source pinned in `../../reference.json`.
 
-Seventy-seven scenarios run in Chromium, Firefox and WebKit (231 comparisons): keyboard opening, native
+Eighty-seven scenarios run in Chromium, Firefox and WebKit (261 comparisons): keyboard opening, native
 mouse-down opening before release, closed roving focus, disabled-trigger skipping, keyboard/pointer
 sibling switching, RTL direction, whole-bar disabling, item selection, canceled open/close requests,
 outside dismissal and Tab. Changes retain their native events and reason/order; popup focus,
@@ -57,3 +57,21 @@ Native Tab is tested after Escape and a fresh open; that reference defect remain
 This suite does not certify every API/lifecycle combination,
 touch/device behavior or assistive technology. See the
 [source matrix](../../../../packages/primitives/menubar/PARITY.md).
+
+## Whole-root removal
+
+Ten shared scenarios compare application-owned removal/recreation of the whole menu Root, including
+an open submenu, retained portals, paused CSS exit, a deferred close and a pending hover. Two cases
+resolve explicit final focus to a surviving or simultaneously removed outside element. Native F3/F4
+commands change only the application's conditional rendering; they do not call `close()` or mirror
+primitive state. Menu and Menubar also cover non-modal ownership.
+
+Each phase compares native focus, requests/completions, accessibility hiding, background hit testing
+and scroll locking. After removal, assertions require zero remaining isolation attributes, markers,
+focus guards or internal backdrops, restored document styles, usable keyboard/pointer input and native
+page scrolling. A fresh Root must remain usable when the shared clock advances past old hover/exit
+deadlines. Raw resource markup is attached separately: native `inert` versus `aria-hidden`, or a
+framework's guard retention while exiting, is not an equivalent DOM contract.
+
+See [ADR 0046](../../../../docs/adr/0046-menu-root-removal.md). Independent nested Context Menu Roots,
+real devices and assistive technology remain separate audits.

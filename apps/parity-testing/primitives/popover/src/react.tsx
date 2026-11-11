@@ -2,7 +2,7 @@ import { Popover } from '@base-ui/react/popover';
 import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../../../../radix-storybook/.storybook/tailwind.css';
-import { exitClass } from '../../../shared/lifecycle';
+import { exitClass, heldExitClass } from '../../../shared/lifecycle';
 import { config, installProbe, classes as s } from './contract';
 
 const settings = config();
@@ -92,7 +92,14 @@ function ReactPopover() {
                             data-testid="positioner"
                         >
                             <Popover.Popup
-                                className={s.popup + (settings.lifecycle?.animated ? exitClass : '')}
+                                className={
+                                    s.popup +
+                                    (settings.lifecycle?.animated
+                                        ? settings.lifecycle.late
+                                            ? heldExitClass
+                                            : exitClass
+                                        : '')
+                                }
                                 initialFocus={settings.initialFocus}
                                 data-testid="popup"
                             >

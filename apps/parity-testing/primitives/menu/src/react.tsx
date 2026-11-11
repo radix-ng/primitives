@@ -5,11 +5,15 @@ import { createRoot } from 'react-dom/client';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { exitClass } from '../../../shared/lifecycle';
 import { changeCollection, menuEntries, submenuEntries } from '../../../shared/menu-collection';
+import { rootRemovalExitClass, rootRemovalFinalFocus } from '../../../shared/root-removal';
 import { config, installProbe, classes as s, type Layer } from './contract';
 
 const settings = config();
 const trace = installProbe('react');
 function ReactMenu() {
+    const [rootPresent, setRootPresent] = useState(true);
+    const [beforePresent, setBeforePresent] = useState(true);
+    const exit = settings.removal?.animated || settings.lifecycle?.late ? rootRemovalExitClass : exitClass;
     const [items, setItems] = useState(menuEntries);
     const [subItems, setSubItems] = useState(submenuEntries);
     const [submenuPresent, setSubmenuPresent] = useState(true);
@@ -33,6 +37,12 @@ function ReactMenu() {
         };
         document.addEventListener('click', outside);
         const command = (event: KeyboardEvent) => {
+            if (settings.removal && ['F3', 'F4'].includes(event.key)) {
+                event.preventDefault();
+                setRootPresent(event.key === 'F4');
+                if (event.key === 'F3' && settings.removal.missingFocus) setBeforePresent(false);
+                return;
+            }
             if (['F3', 'F4'].includes(event.key) && settings.name.startsWith('collection-')) {
                 event.preventDefault();
                 if (settings.name === 'collection-submenu-unmount') setSubmenuPresent(event.key === 'F4');
@@ -70,172 +80,179 @@ function ReactMenu() {
                 <div className={s.outside} data-testid="outside">
                     Background
                 </div>
-                <input className={s.outside} aria-label="Before menu" data-testid="before" />
-                <Menu.Root
-                    actionsRef={actions}
-                    modal={settings.modal}
-                    loopFocus={settings.loop}
-                    disabled={settings.disabled}
-                    onOpenChange={(open, details) => change('main', open, details)}
-                    onOpenChangeComplete={(open) => trace.complete('main', open)}
-                >
-                    <Menu.Trigger
-                        id={settings.ids ? triggerId : undefined}
-                        className={s.trigger}
-                        data-testid="primary"
-                        openOnHover={settings.pointer.rootHover}
-                        delay={settings.pointer.delay}
-                        closeDelay={settings.pointer.closeDelay}
+                {beforePresent && <input className={s.outside} aria-label="Before menu" data-testid="before" />}
+                {rootPresent && (
+                    <Menu.Root
+                        actionsRef={actions}
+                        modal={settings.modal}
+                        loopFocus={settings.loop}
+                        disabled={settings.disabled}
+                        onOpenChange={(open, details) => change('main', open, details)}
+                        onOpenChangeComplete={(open) => trace.complete('main', open)}
                     >
-                        Actions
-                    </Menu.Trigger>
-                    <Menu.Portal keepMounted={settings.lifecycle?.keepMounted ?? false}>
-                        <Menu.Positioner
-                            className="z-50"
-                            align="start"
-                            sideOffset={4}
-                            collisionPadding={5}
-                            data-testid="positioner"
+                        <Menu.Trigger
+                            id={settings.ids ? triggerId : undefined}
+                            className={s.trigger}
+                            data-testid="primary"
+                            openOnHover={settings.pointer.rootHover}
+                            delay={settings.pointer.delay}
+                            closeDelay={settings.pointer.closeDelay}
                         >
-                            <Menu.Popup
-                                id={settings.ids ? popupId : undefined}
-                                className={s.popup + (settings.lifecycle?.animated ? exitClass : '')}
-                                data-testid="popup"
+                            Actions
+                        </Menu.Trigger>
+                        <Menu.Portal keepMounted={settings.lifecycle?.keepMounted ?? false}>
+                            <Menu.Positioner
+                                className="z-50"
+                                align="start"
+                                sideOffset={4}
+                                collisionPadding={5}
+                                data-testid="positioner"
                             >
-                                {items.map((item) => (
-                                    <Menu.Item
-                                        key={item.id}
-                                        render={<button />}
-                                        nativeButton
-                                        className={s.item}
-                                        disabled={item.disabled}
-                                        label={item.id === 'alpha' ? settings.label : undefined}
-                                        data-testid={item.id}
-                                        onClick={() => trace.select(item.id)}
-                                    >
-                                        {item.label}
-                                    </Menu.Item>
-                                ))}
-                                {!settings.collectionOnly && (
-                                    <>
-                                        {settings.submenu && submenuPresent && (
-                                            <Menu.SubmenuRoot
-                                                onOpenChange={(open, details) => change('sub', open, details)}
-                                                onOpenChangeComplete={(open) => trace.complete('sub', open)}
-                                            >
-                                                <Menu.SubmenuTrigger
-                                                    render={<button />}
-                                                    nativeButton
-                                                    className={s.item}
-                                                    data-testid="more"
-                                                    disabled={settings.pointer.disabledSubmenu}
-                                                    delay={settings.pointer.delay}
-                                                    closeDelay={settings.pointer.closeDelay}
-                                                >
-                                                    More
-                                                </Menu.SubmenuTrigger>
-                                                <Menu.Portal>
-                                                    <Menu.Positioner
-                                                        className="z-50"
-                                                        side={settings.dir === 'rtl' ? 'left' : 'right'}
-                                                        align="start"
-                                                        sideOffset={4}
-                                                        collisionPadding={5}
-                                                    >
-                                                        <Menu.Popup
-                                                            className={
-                                                                s.popup +
-                                                                (settings.lifecycle?.animated ? exitClass : '')
-                                                            }
-                                                            data-testid="sub-popup"
-                                                        >
-                                                            {subItems.map((item) => (
-                                                                <Menu.Item
-                                                                    key={item.id}
-                                                                    render={<button />}
-                                                                    nativeButton
-                                                                    className={s.item}
-                                                                    disabled={item.disabled}
-                                                                    data-testid={item.id}
-                                                                    onClick={() => trace.select(item.id)}
-                                                                >
-                                                                    {item.label}
-                                                                </Menu.Item>
-                                                            ))}
-                                                        </Menu.Popup>
-                                                    </Menu.Positioner>
-                                                </Menu.Portal>
-                                            </Menu.SubmenuRoot>
-                                        )}
+                                <Menu.Popup
+                                    id={settings.ids ? popupId : undefined}
+                                    className={s.popup + (settings.lifecycle?.animated ? exit : '')}
+                                    finalFocus={settings.removal?.finalFocus ? rootRemovalFinalFocus : undefined}
+                                    data-testid="popup"
+                                >
+                                    {items.map((item) => (
                                         <Menu.Item
+                                            key={item.id}
                                             render={<button />}
                                             nativeButton
                                             className={s.item}
-                                            closeOnClick={false}
-                                            data-testid="stay"
-                                            onClick={() => trace.select('stay')}
+                                            disabled={item.disabled}
+                                            label={item.id === 'alpha' ? settings.label : undefined}
+                                            data-testid={item.id}
+                                            onClick={() => trace.select(item.id)}
                                         >
-                                            Stay open
+                                            {item.label}
                                         </Menu.Item>
-                                        {settings.checkbox && (
-                                            <Menu.CheckboxItem
+                                    ))}
+                                    {!settings.collectionOnly && (
+                                        <>
+                                            {settings.submenu && submenuPresent && (
+                                                <Menu.SubmenuRoot
+                                                    onOpenChange={(open, details) => change('sub', open, details)}
+                                                    onOpenChangeComplete={(open) => trace.complete('sub', open)}
+                                                >
+                                                    <Menu.SubmenuTrigger
+                                                        render={<button />}
+                                                        nativeButton
+                                                        className={s.item}
+                                                        data-testid="more"
+                                                        disabled={settings.pointer.disabledSubmenu}
+                                                        delay={
+                                                            settings.removal?.hoverPending
+                                                                ? 2000
+                                                                : settings.pointer.delay
+                                                        }
+                                                        closeDelay={settings.pointer.closeDelay}
+                                                    >
+                                                        More
+                                                    </Menu.SubmenuTrigger>
+                                                    <Menu.Portal>
+                                                        <Menu.Positioner
+                                                            className="z-50"
+                                                            side={settings.dir === 'rtl' ? 'left' : 'right'}
+                                                            align="start"
+                                                            sideOffset={4}
+                                                            collisionPadding={5}
+                                                        >
+                                                            <Menu.Popup
+                                                                className={
+                                                                    s.popup + (settings.lifecycle?.animated ? exit : '')
+                                                                }
+                                                                data-testid="sub-popup"
+                                                            >
+                                                                {subItems.map((item) => (
+                                                                    <Menu.Item
+                                                                        key={item.id}
+                                                                        render={<button />}
+                                                                        nativeButton
+                                                                        className={s.item}
+                                                                        disabled={item.disabled}
+                                                                        data-testid={item.id}
+                                                                        onClick={() => trace.select(item.id)}
+                                                                    >
+                                                                        {item.label}
+                                                                    </Menu.Item>
+                                                                ))}
+                                                            </Menu.Popup>
+                                                        </Menu.Positioner>
+                                                    </Menu.Portal>
+                                                </Menu.SubmenuRoot>
+                                            )}
+                                            <Menu.Item
                                                 render={<button />}
                                                 nativeButton
                                                 className={s.item}
-                                                data-testid="check"
-                                                onCheckedChange={(value, details) => {
-                                                    if (settings.name === 'checkbox-cancel') details.cancel();
-                                                    trace.value(value, details.reason, details.isCanceled);
-                                                }}
+                                                closeOnClick={false}
+                                                data-testid="stay"
+                                                onClick={() => trace.select('stay')}
                                             >
-                                                Notifications
-                                            </Menu.CheckboxItem>
-                                        )}
-                                        {settings.radio && (
-                                            <Menu.RadioGroup
-                                                defaultValue="one"
-                                                onValueChange={(value, details) => {
-                                                    if (settings.name === 'radio-cancel') details.cancel();
-                                                    trace.value(value, details.reason, details.isCanceled);
-                                                }}
-                                            >
-                                                <Menu.RadioItem
+                                                Stay open
+                                            </Menu.Item>
+                                            {settings.checkbox && (
+                                                <Menu.CheckboxItem
                                                     render={<button />}
                                                     nativeButton
                                                     className={s.item}
-                                                    value="one"
-                                                    data-testid="radio-one"
+                                                    data-testid="check"
+                                                    onCheckedChange={(value, details) => {
+                                                        if (settings.name === 'checkbox-cancel') details.cancel();
+                                                        trace.value(value, details.reason, details.isCanceled);
+                                                    }}
                                                 >
-                                                    Small
-                                                </Menu.RadioItem>
-                                                <Menu.RadioItem
-                                                    render={<button />}
-                                                    nativeButton
-                                                    className={s.item}
-                                                    value="two"
-                                                    data-testid="radio-two"
+                                                    Notifications
+                                                </Menu.CheckboxItem>
+                                            )}
+                                            {settings.radio && (
+                                                <Menu.RadioGroup
+                                                    defaultValue="one"
+                                                    onValueChange={(value, details) => {
+                                                        if (settings.name === 'radio-cancel') details.cancel();
+                                                        trace.value(value, details.reason, details.isCanceled);
+                                                    }}
                                                 >
-                                                    Large
-                                                </Menu.RadioItem>
-                                            </Menu.RadioGroup>
-                                        )}
-                                        <Menu.Item
-                                            render={<button />}
-                                            nativeButton
-                                            className={s.item}
-                                            data-testid="omega"
-                                            onClick={() => trace.select('omega')}
-                                        >
-                                            Omega
-                                        </Menu.Item>
-                                    </>
-                                )}
-                            </Menu.Popup>
-                        </Menu.Positioner>
-                    </Menu.Portal>
-                </Menu.Root>
+                                                    <Menu.RadioItem
+                                                        render={<button />}
+                                                        nativeButton
+                                                        className={s.item}
+                                                        value="one"
+                                                        data-testid="radio-one"
+                                                    >
+                                                        Small
+                                                    </Menu.RadioItem>
+                                                    <Menu.RadioItem
+                                                        render={<button />}
+                                                        nativeButton
+                                                        className={s.item}
+                                                        value="two"
+                                                        data-testid="radio-two"
+                                                    >
+                                                        Large
+                                                    </Menu.RadioItem>
+                                                </Menu.RadioGroup>
+                                            )}
+                                            <Menu.Item
+                                                render={<button />}
+                                                nativeButton
+                                                className={s.item}
+                                                data-testid="omega"
+                                                onClick={() => trace.select('omega')}
+                                            >
+                                                Omega
+                                            </Menu.Item>
+                                        </>
+                                    )}
+                                </Menu.Popup>
+                            </Menu.Positioner>
+                        </Menu.Portal>
+                    </Menu.Root>
+                )}
                 <input className={s.outside} aria-label="After menu" data-testid="after" />
             </div>
+            {settings.removal && <div className="min-h-[2000px]" />}
         </DirectionProvider>
     );
 }

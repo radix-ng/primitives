@@ -8185,6 +8185,11 @@ external exit with `eventDetails.preventUnmountOnClose()` in `(onOpenChange)`, t
 `root.unmount()` when that animation finishes. `close()` defaults to the reason `imperative-action`.
 Completion follows actual portal exit; `keepMounted` retains the settled view without delaying it.
 
+Removing the whole Root with `@if` destroys its popup and submenus, including retained views and
+unfinished exits, and releases background interaction and scroll locking. Removal emits no extra
+close request or unfinished-exit completion. Set the popup's `finalFocus` to a surviving outside
+control when the original focus target is removed with the Root.
+
 ### RdxContextMenuTrigger
 
 The area that opens the menu on right click or touch long-press.
@@ -13542,6 +13547,11 @@ When the menu closes, focus returns to the trigger by default. Bind `finalFocus`
 send it elsewhere instead — an element to focus, `false` to suppress return-focus, or a callback
 receiving the close interaction type. This maps to the floating focus manager's `returnFocus` policy.
 
+Removing the entire Root with `@if` destroys its portals and releases background interaction and
+scroll locking, including retained views and unfinished exits. Removal emits no additional close
+request or completion for an unfinished exit. If the trigger is also removed, use `finalFocus` to
+return to a surviving control outside that conditional block.
+
 ```html
 <div [finalFocus]="afterElement" rdxMenuPopup>…</div>
 ```
@@ -14928,6 +14938,11 @@ export class RdxMenubarDefaultComponent {
     protected readonly m = demoMenu;
 }
 ```
+
+Removing the whole Menubar with `@if` destroys all owned menus and portals, including retained views
+and unfinished exits, and releases background interaction and scroll locking. Removal emits no
+extra close request or unfinished-exit completion. Use `finalFocus` on a Menu popup to return to a
+surviving outside control when the bar's triggers are removed.
 
 ## Accessibility
 

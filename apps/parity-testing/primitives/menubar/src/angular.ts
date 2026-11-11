@@ -13,6 +13,7 @@ import { RdxMenubarRoot } from '@radix-ng/primitives/menubar';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { changeCollection, type MenuEntry } from '../../../shared/menu-collection';
 import { createMenuPopupTemplate } from '../../../shared/menu-fixture';
+import { rootRemovalExitClass, rootRemovalFinalFocus } from '../../../shared/root-removal';
 import { cancelChange } from './composition';
 import { config, initialMenus, installProbe, submenuId, type Layer, type TopLayer } from './contract';
 import { menubarClasses } from './orientation';
@@ -21,7 +22,7 @@ const settings = config();
 // A consumer can compose Menubar without authoring the original selector attribute.
 @Directive({
     selector: '[parityMenubar]',
-    hostDirectives: [{ directive: RdxMenubarRoot, inputs: ['disabled', 'orientation'] }]
+    hostDirectives: [{ directive: RdxMenubarRoot, inputs: ['disabled', 'orientation', 'modal'] }]
 })
 class MenubarHost {}
 @Directive({ selector: '[parityPopup]', hostDirectives: [RdxMenuPopup] })
@@ -31,7 +32,7 @@ class PopupHost {}
     hostDirectives: [{ directive: RdxMenuItem, inputs: ['disabled'], outputs: ['onSelect'] }]
 })
 class ItemHost {}
-@Directive({ selector: '[paritySubTrigger]', hostDirectives: [RdxMenuSubTrigger] })
+@Directive({ selector: '[paritySubTrigger]', hostDirectives: [{ directive: RdxMenuSubTrigger, inputs: ['delay'] }] })
 class SubTriggerHost {}
 function createNestedTemplate(
     popupAttribute = 'rdxMenuPopup',
@@ -42,7 +43,7 @@ function createNestedTemplate(
     @if (settings.nested) {
         <ng-container [orientation]="settings.childOrientation" (onOpenChange)="change(submenuId(menu), $event)"
             (onOpenChangeComplete)="trace.complete(submenuId(menu), $event)" rdxMenuRoot>
-            <button [class]="s.item" [attr.data-testid]="menu + '-more'" ${subTriggerAttribute}>More</button>
+            <button [class]="s.item" [delay]="settings.removal?.hoverPending ? 2000 : 100" [attr.data-testid]="menu + '-more'" ${subTriggerAttribute}>More</button>
             <ng-template [keepMounted]="settings.keepMounted" rdxMenuPortal>
                 <div class="z-50" [side]="settings.dir === 'rtl' ? 'left' : 'right'" align="start" sideOffset="4" rdxMenuPositioner>
                     <div [class]="s.childPopup" [id]="menu + '-sub-popup'" [attr.data-testid]="menu + '-sub-popup'"
@@ -75,7 +76,7 @@ function createRootTemplate(bindings: string) {
             @if (settings.composed) {
                 ${createMenuPopupTemplate(composedNestedTemplate, 'parityPopup', 'parityItem')}
             } @else {
-                ${createMenuPopupTemplate(nestedTemplate)}
+                ${createMenuPopupTemplate(nestedTemplate, 'rdxMenuPopup', 'rdxMenuItem', '[finalFocus]="finalFocus"')}
             }
         </ng-container>
     `;
@@ -84,9 +85,12 @@ function createRootTemplate(bindings: string) {
 const template = `
         <div [dir]="settings.dir" rdxDirectionProvider>
             <div [class]="s.layout + ' w-96!'">
-                <input [class]="s.outside" data-testid="before" aria-label="Before menubar" />
+                @if (beforePresent()) {
+                    <input [class]="s.outside" data-testid="before" aria-label="Before menubar" />
+                }
+                @if (rootPresent()) {
                 <div [class]="settings.orientation === 'vertical' ? 'flex flex-col gap-2' : 'flex gap-2'"
-                    [orientation]="settings.orientation" [disabled]="settings.disabled" aria-label="Application" parityMenubar>
+                    [orientation]="settings.orientation" [disabled]="settings.disabled" [modal]="settings.removal?.modal ?? true" aria-label="Application" parityMenubar>
                     @for (entry of menus(); track entry.id) {
                         @let menu = entry.id;
                         @if (settings.controlled) {
@@ -96,6 +100,7 @@ const template = `
                         }
                     }
                 </div>
+                }
                 <button
                     [class]="s.outside + ' fixed start-24 top-[30rem]'"
                     (click)="trace.probe.activations = trace.probe.activations + 1"
@@ -106,6 +111,7 @@ const template = `
                 </button>
             </div>
         </div>
+        @if (settings.removal) { <div class="min-h-[2000px]"></div> }
 `;
 @Component({
     selector: 'parity-menubar',
@@ -114,7 +120,14 @@ const template = `
     template
 })
 class AngularMenubar {
-    readonly s = menubarClasses(settings);
+    readonly s = (() => {
+        const base = menubarClasses(settings),
+            exit = settings.removal?.animated ? rootRemovalExitClass : '';
+        return { ...base, popup: base.popup + exit, childPopup: base.childPopup + exit };
+    })();
+    readonly rootPresent = signal(true);
+    readonly beforePresent = signal(true);
+    readonly finalFocus = settings.removal?.finalFocus ? rootRemovalFinalFocus : undefined;
     readonly submenuId = submenuId;
     readonly allowSwitch = signal(false);
     readonly menus = signal<MenuEntry<TopLayer>[]>(initialMenus(settings.name));
@@ -123,6 +136,12 @@ class AngularMenubar {
         this.open.update((state) => ({ ...state, [menu]: open }));
     }
     command(event: KeyboardEvent) {
+        if (settings.removal && ['F3', 'F4'].includes(event.key)) {
+            event.preventDefault();
+            this.rootPresent.set(event.key === 'F4');
+            if (event.key === 'F3' && settings.removal.missingFocus) this.beforePresent.set(false);
+            return;
+        }
         if (settings.controlled && ['F6', 'F7', 'F8'].includes(event.key)) {
             event.preventDefault();
             this.open.update((state) => changeExternalOpen(state, event.key));
@@ -146,6 +165,7 @@ class AngularMenubar {
     readonly settings = settings;
     readonly trace = installProbe('angular');
     change(menu: Layer, change: RdxMenuOpenChange) {
+        if (settings.removal?.deferred && menu === 'file' && !change.open) change.eventDetails.preventUnmountOnClose();
         if (cancelChange(settings.name, menu, change.open, change.reason, this.allowSwitch()))
             change.eventDetails.cancel();
         this.trace.change(

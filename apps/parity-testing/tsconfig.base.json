@@ -5,6 +5,7 @@
         "noEmit": false,
         "module": "preserve",
         "moduleResolution": "bundler",
+        "rewriteRelativeImportExtensions": true,
         "jsx": "react-jsx",
         "allowJs": true,
         "checkJs": false,

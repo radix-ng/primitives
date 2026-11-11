@@ -36,7 +36,9 @@ const rootScenarios = lifecycleCases.map((name) => ({
         if (config.late) {
             await d.page.keyboard.press('F10');
             await d.popup.evaluate(async (el) => {
-                await Promise.all(el.getAnimations().map((animation) => animation.finished));
+                const animations = el.getAnimations();
+                animations.forEach((animation) => animation.finish());
+                await Promise.all(animations.map((animation) => animation.finished));
             });
             await d.checkpoint('late hold', {
                 open: false,
@@ -99,6 +101,10 @@ const rootScenarios = lifecycleCases.map((name) => ({
             completions: { main: [true, false, true], sub: [] }
         });
         await d.page.keyboard.press('F8');
+        if (config.late) {
+            await expect(d.popup).toHaveAttribute('data-ending-style', '');
+            await d.popup.evaluate((el) => el.getAnimations().forEach((animation) => animation.finish()));
+        }
         await d.closed();
         await d.checkpoint('closed again', {
             open: false,

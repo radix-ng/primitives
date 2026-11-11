@@ -1,5 +1,6 @@
 import { expect } from '@playwright/test';
 import { MenuFamilyDriver } from '../../../shared/menu-family-driver';
+import { rootRemovalScenarios } from '../../../shared/root-removal.scenarios';
 import { compositionCases } from '../src/composition';
 import { cases } from '../src/contract';
 import { orientationCases } from '../src/orientation';
@@ -25,9 +26,20 @@ export class MenubarDriver extends MenuFamilyDriver {
             );
     }
 }
+const removalScenarios = rootRemovalScenarios<MenubarDriver>({
+    popup: 'file-popup',
+    child: 'file-sub-popup',
+    more: 'file-more',
+    alpha: 'file-alpha',
+    backgroundFocus: 'outside',
+    open: async (d) => {
+        await d.page.getByTestId('file-trigger').press('ArrowDown');
+    }
+});
 export const scenarios = cases.map((name) => ({
     name,
     async run(d: MenubarDriver) {
+        if (name.startsWith('root-remove-')) return removalScenarios.find((s) => s.name === name)!.run(d);
         if ((orientationCases as readonly string[]).includes(name))
             return runOrientation(d, name as (typeof orientationCases)[number]);
         if ((pointerCases as readonly string[]).includes(name))

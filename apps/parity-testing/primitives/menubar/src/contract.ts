@@ -1,5 +1,6 @@
 import { collectionCases, type MenuEntry } from '../../../shared/menu-collection';
 import { createMenuProbe, type MenuProbe } from '../../../shared/menu-probe';
+import { rootRemovalCases, rootRemovalConfig } from '../../../shared/root-removal';
 import { compositionCases } from './composition';
 import { orientationCases, orientationConfig } from './orientation';
 import { pointerCases } from './pointer';
@@ -29,16 +30,19 @@ export const cases = [
     ...stateCases,
     ...retainedCases,
     ...pointerCases,
-    ...orientationCases
+    ...orientationCases,
+    ...rootRemovalCases
 ] as const;
 export function config() {
     const name = new URLSearchParams(location.search).get('case') ?? 'open-keyboard';
     if (!cases.includes(name as (typeof cases)[number])) throw new Error(`Unknown Menubar case: ${name}`);
+    const removal = rootRemovalConfig(name);
     return {
         name,
+        removal,
         dir: name === 'rtl-switch' || name.endsWith('-rtl') ? ('rtl' as const) : ('ltr' as const),
         disabled: name === 'disabled',
-        keepMounted: name.startsWith('retained-') || name.endsWith('-retained'),
+        keepMounted: name.startsWith('retained-') || name.endsWith('-retained') || !!removal?.retained,
         ...orientationConfig(name),
         side:
             name.startsWith('orientation-') && name.includes('-vertical-bar')
@@ -53,6 +57,7 @@ export function config() {
         defaultOpen: name.startsWith('state-default-open'),
         controlled: name.startsWith('state-controlled-'),
         nested:
+            removal?.nested ||
             name.startsWith('nested-') ||
             name.startsWith('retained-nested-') ||
             (name.startsWith('orientation-') && !name.startsWith('orientation-horizontal')),

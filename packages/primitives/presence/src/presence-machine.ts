@@ -138,6 +138,8 @@ export class PresenceMachine {
 
     /** Tear the machine down — destroys the view. Call from the host's `DestroyRef`. */
     dispose(): void {
+        // A canceled animation can settle its finished promise after the owning view is destroyed.
+        this.exitVersion++;
         this.unmount();
     }
 
@@ -253,6 +255,13 @@ export class PresenceMachine {
     /** Settle a WAAPI/safety-net exit wait, ignoring it if a newer mount/unmount superseded it. */
     private finishExit(version: number): void {
         if (version !== this.exitVersion) {
+            return;
+        }
+        if (this.host.present()) {
+            // A late hold/reopen may beat the render effect. Adopt the current presence before
+            // an animation callback can destroy the view and lose its state or native focus.
+            this.prevPresent = true;
+            this.send('MOUNT');
             return;
         }
         this.waapiPending = false;

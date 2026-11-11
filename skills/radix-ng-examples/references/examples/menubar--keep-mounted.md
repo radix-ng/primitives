@@ -184,3 +184,8 @@ export class RdxMenubarDefaultComponent {
     protected readonly m = demoMenu;
 }
 ```
+
+Removing the whole Menubar with `@if` destroys all owned menus and portals, including retained views
+and unfinished exits, and releases background interaction and scroll locking. Removal emits no
+extra close request or unfinished-exit completion. Use `finalFocus` on a Menu popup to return to a
+surviving outside control when the bar's triggers are removed.

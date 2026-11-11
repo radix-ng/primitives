@@ -28,3 +28,7 @@ export function lifecycleConfig(name: string) {
 
 // A real CSS exit with a measurable duration; both implementations observe its natural finish.
 export const exitClass = ' data-[ending-style]:animate-[pulse_400ms_linear]';
+
+// Hold a real CSS exit until the scenario finishes it through native WAAPI or removes its Root.
+export const heldExitClass =
+    ' data-[ending-style]:animate-[pulse_30s_linear] data-[ending-style]:[animation-play-state:paused]';

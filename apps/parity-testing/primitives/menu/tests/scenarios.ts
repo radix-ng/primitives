@@ -1,4 +1,5 @@
 import { expect } from '@playwright/test';
+import { rootRemovalScenarios } from '../../../shared/root-removal.scenarios';
 import { basicCases } from '../src/contract';
 import { collectionScenarios } from './collection.scenarios';
 import type { MenuDriver } from './driver';
@@ -157,5 +158,13 @@ export const scenarios = [
     })),
     ...lifecycleScenarios,
     ...pointerScenarios,
-    ...collectionScenarios
+    ...collectionScenarios,
+    ...rootRemovalScenarios<MenuDriver>({
+        popup: 'popup',
+        child: 'sub-popup',
+        more: 'more',
+        alpha: 'alpha',
+        backgroundFocus: 'after',
+        open: (d) => d.open()
+    })
 ];

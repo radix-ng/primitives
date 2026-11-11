@@ -22,10 +22,11 @@ This is incremental evidence, not complete API or accessibility certification.
 | Default and externally bound open state                                    | Pinned suite and Angular unit checks    | Covered, including cancellation and retry          |
 | Retained root/child portals, reuse, Tab exclusion and controlled switching | Pinned suite                            | Covered                                            |
 | Horizontal popup lists, mixed child axes and RTL                           | Pinned suite                            | Covered, with reviewed stale-tabindex limitation   |
+| Whole-root removal, cleanup, final focus and recreation                    | Pinned suite, three engines             | Covered; existing Angular destruction lifetimes    |
 | Touch, real devices and assistive technology                               | Not established                         | Pending                                            |
 
-The [runner](../../../apps/parity-testing/primitives/menubar/README.md) defines 77 scenarios and
-231 comparisons. Thirteen exact pairs document four reviewed differences below.
+The [runner](../../../apps/parity-testing/primitives/menubar/README.md) defines 87 scenarios and
+261 comparisons. Thirteen exact pairs document four reviewed differences below.
 
 Five dynamic cases insert/remove/reorder top-level menus and change an unfocused trigger's
 `disabled` state or a label. Roving tabindex follows the actual focused trigger as DOM order changes;
@@ -137,3 +138,19 @@ Further API/lifecycle combinations, touch and real device/AT work remain separat
 Consumers observing `none` for these actions should migrate to the explicit reasons above. Popup
 focus after sibling switching now follows the pin. Shared Menu limitations are tracked separately
 in [Menu's matrix](../menu/PARITY.md). See [ADR 0036](../../../docs/adr/0036-menu-pointer-and-composition-contracts.md).
+
+## Whole-root removal
+
+The shared removal block compares conditional destruction of the entire Root, with open submenus,
+retained views, paused CSS exits, a deferred close and a pending hover. Explicit final-focus targets
+are tested both connected and removed with the Root. Cleanup restores background interaction, native
+scrolling and document styles; no isolation attributes, guards or internal backdrops remain. Native
+keyboard input works without a Root. Recreating the Root and advancing old timer deadlines does not
+revive an old child or complete an abandoned close.
+
+Angular uses its existing embedded-view and DestroyRef lifetimes. Destruction is not an invented
+close transaction: callbacks, completion arrays and focus are observed against the pin unchanged.
+Resource comparisons cover actual background hiding/hit testing and scroll blocking; raw framework
+attributes/guard counts are recorded as measurements. See [ADR 0046](../../../docs/adr/0046-menu-root-removal.md).
+
+Ten whole-root removal scenarios are included in this family.

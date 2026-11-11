@@ -1,7 +1,17 @@
-import { ChangeDetectionStrategy, Component, Directive, ElementRef, inject, PLATFORM_ID, signal } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    Directive,
+    ElementRef,
+    inject,
+    Injector,
+    PLATFORM_ID,
+    signal
+} from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
 import { type MockInstance, vi } from 'vitest';
+import { PresenceMachine } from '../../presence/src/presence-machine';
 import { RdxPortalPresence } from '../src/portal-presence';
 import { RdxPortalContainer } from '../src/resolve-container';
 
@@ -275,6 +285,52 @@ describe('RdxPortalPresence — exit animation', () => {
         fixture.detectChanges();
 
         expect(bodyContent()).toBe(opened);
+    });
+
+    it('keeps the same view when presence returns before the render effect observes it', () => {
+        const opened = bodyContent();
+        host.present.set(false);
+        fixture.detectChanges();
+
+        // A late close hold/reopen can win before Angular's next render. Native animationend
+        // must read that current signal instead of destroying and then remounting the view.
+        host.present.set(true);
+        endAnimation(opened!);
+        fixture.detectChanges();
+
+        expect(bodyContent()).toBe(opened);
+    });
+
+    it('ignores an animation promise settled after its owner was disposed', async () => {
+        const present = signal(true);
+        const node = document.createElement('div');
+        node.setAttribute('data-state', 'open');
+        let finish!: () => void;
+        const finished = new Promise<void>((resolve) => {
+            finish = resolve;
+        });
+        node.getAnimations = () => [
+            { playState: 'running', pending: true, startTime: null, finished } as unknown as Animation
+        ];
+        const destroy = vi.fn();
+        const machine = new PresenceMachine({
+            present,
+            isBrowser: true,
+            injector: TestBed.inject(Injector),
+            mountView: () => [node],
+            destroyView: destroy
+        });
+        present.set(false);
+        node.setAttribute('data-state', 'closed');
+        fixture.detectChanges();
+        expect(destroy).not.toHaveBeenCalled();
+
+        machine.dispose();
+        expect(destroy).toHaveBeenCalledTimes(1);
+        finish();
+        await Promise.resolve();
+        await Promise.resolve();
+        expect(destroy).toHaveBeenCalledTimes(1);
     });
 
     it('does not suspend when the animation name is unchanged between open and closed', () => {

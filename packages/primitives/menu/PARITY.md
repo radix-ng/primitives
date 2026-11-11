@@ -22,10 +22,11 @@ This is incremental behavioral evidence, not complete API or accessibility certi
 | Context Menu and Menubar composition                                            | Independent pinned suites             | Initial scope covered; see each family matrix                   |
 | Dynamic insertion/removal/reordering, disabled state and labels                 | Pinned suite                          | Covered with removed-item-focus limits                          |
 | Empty/refilled lists and removal/replacement of an open submenu owner           | Pinned suite                          | Four collection cases covered                                   |
+| Whole-root removal, cleanup, final focus and recreation                         | Pinned suite, three engines           | Covered; existing Angular destruction lifetimes                 |
 | Real touch, devices and assistive technology                                    | Not established by this suite         | Pending                                                         |
 
-The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 73 scenarios and
-219 comparisons. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
+The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 83 scenarios and
+249 comparisons. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
 state. Checkbox/radio change requests are observed before cancellation; original event types and
 trusted pointer coordinates are retained. No adapter forces focus, open state or completion.
 
@@ -115,6 +116,27 @@ An Angular browser regression also repeats RTL diagonal travel with fractional p
 in a Linux CI failure. The safe polygon uses a one CSS-pixel buffer so integer MouseEvent coordinates
 do not fall through the fractional entry edge before native hit testing reaches the child.
 
-Next: entire-root removal, empty-list keyboard promotion, touch emulation and deeper composition in the independent
+Next: empty-list keyboard promotion, touch emulation and deeper composition in the independent
 [Context Menu](../context-menu/PARITY.md) and [Menubar](../menubar/PARITY.md) suites.
 Device/assistive-technology work remains open. See [ADR 0038](../../../docs/adr/0038-menu-collection-boundaries.md).
+
+## Whole-root removal
+
+The shared removal block compares conditional destruction of the entire Root, with open submenus,
+retained views, paused CSS exits, a deferred close and a pending hover. Explicit final-focus targets
+are tested both connected and removed with the Root. Cleanup restores background interaction, native
+scrolling and document styles; no isolation attributes, guards or internal backdrops remain. Native
+keyboard input works without a Root. Recreating the Root and advancing old timer deadlines does not
+revive an old child or complete an abandoned close.
+
+Angular uses its existing embedded-view and DestroyRef lifetimes. Destruction is not an invented
+close transaction: callbacks, completion arrays and focus are observed against the pin unchanged.
+Resource comparisons cover actual background hiding/hit testing and scroll blocking; raw framework
+attributes/guard counts are recorded as measurements. See [ADR 0046](../../../docs/adr/0046-menu-root-removal.md).
+
+Ten whole-root removal scenarios are included in this family.
+
+The late-hold regression exposed a shared Presence animation callback racing its render effect.
+Completion now adopts the actual presence before unmounting, preserving checkbox state and native
+focus. Disposal invalidates queued animation promises. The test holds real CSS before F10 and
+finishes through WAAPI, preserving actual lifecycle callbacks.

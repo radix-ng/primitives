@@ -3,7 +3,7 @@ import { Component, provideZonelessChangeDetection, signal, viewChild } from '@a
 import { bootstrapApplication } from '@angular/platform-browser';
 import { popoverImports, RdxPopoverOpenChange, RdxPopoverRoot } from '@radix-ng/primitives/popover';
 import '../../../../radix-storybook/.storybook/tailwind.css';
-import { exitClass } from '../../../shared/lifecycle';
+import { exitClass, heldExitClass } from '../../../shared/lifecycle';
 import { classes, config, installProbe } from './contract';
 
 const settings = config();
@@ -91,7 +91,7 @@ class AngularPopover {
     readonly s = classes;
     readonly trace = installProbe('angular');
     readonly root = viewChild.required(RdxPopoverRoot);
-    readonly exitClass = exitClass;
+    readonly exitClass = settings.lifecycle?.late ? heldExitClass : exitClass;
     private closes = 0;
     private lateHold?: () => void;
     readonly wide = signal(false);

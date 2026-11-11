@@ -28,6 +28,7 @@ export class MenuDriver {
         return this.page.getByTestId(id);
     }
     async goto(name: CaseName) {
+        if (name.startsWith('root-remove-')) await this.page.clock.install();
         await this.page.goto(`/${this.framework}.html?case=${name}`);
         await expect(this.trigger).toBeVisible();
         this.metadata = await this.page.evaluate(() => window.menuParity.reference);
@@ -97,13 +98,15 @@ export class MenuDriver {
                               pointerBlocked: !!positioner && getComputedStyle(positioner).pointerEvents === 'none'
                           }
                         : {}),
-                    open: trigger.getAttribute('aria-expanded') === 'true',
-                    disabled: trigger.hasAttribute('disabled') || trigger.getAttribute('aria-disabled') === 'true',
+                    open: trigger?.getAttribute('aria-expanded') === 'true',
+                    disabled:
+                        !!trigger &&
+                        (trigger.hasAttribute('disabled') || trigger.getAttribute('aria-disabled') === 'true'),
                     mounted: !!popup,
                     visible: visible(popup),
                     role: popup?.getAttribute('role') ?? null,
                     labelled: labelled(popup),
-                    controlsLinked: !!popup && trigger.getAttribute('aria-controls') === popup.id,
+                    controlsLinked: !!popup && trigger?.getAttribute('aria-controls') === popup.id,
                     // Both implementations omit expanded on keyboard-opened submenus for macOS
                     // VoiceOver. Observe the actual layer rather than inventing a missing attribute.
                     subOpen: !!sub && !sub.hasAttribute('data-closed'),

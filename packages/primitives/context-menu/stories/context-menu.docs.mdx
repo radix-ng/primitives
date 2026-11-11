@@ -147,6 +147,11 @@ external exit with `eventDetails.preventUnmountOnClose()` in `(onOpenChange)`, t
 `root.unmount()` when that animation finishes. `close()` defaults to the reason `imperative-action`.
 Completion follows actual portal exit; `keepMounted` retains the settled view without delaying it.
 
+Removing the whole Root with `@if` destroys its popup and submenus, including retained views and
+unfinished exits, and releases background interaction and scroll locking. Removal emits no extra
+close request or unfinished-exit completion. Set the popup's `finalFocus` to a surviving outside
+control when the original focus target is removed with the Root.
+
 ### RdxContextMenuTrigger
 
 The area that opens the menu on right click or touch long-press.

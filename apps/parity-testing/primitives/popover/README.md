@@ -37,3 +37,7 @@ reopening during both CSS and deferred exits. F8 invokes the real Root close act
 unmount action, and F10 the original callback retained from the first close request. Framework
 fixtures leave open state uncontrolled and observe native draft/focus; they do not fake CSS finish.
 The default autofocus fallback is shared with Select and other floating consumers.
+
+The late-hold case shares Menu's paused CSS exit. F10 requests the hold before the scenario
+finishes the real animation through WAAPI, so protocol latency cannot exhaust a short exit first.
+Draft value and native focus remain compared with the pin throughout the hold.

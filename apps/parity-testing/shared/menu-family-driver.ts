@@ -20,6 +20,7 @@ export class MenuFamilyDriver {
         });
     }
     async goto(name: string) {
+        if (name.startsWith('root-remove-')) await this.page.clock.install();
         await this.page.goto(`/${this.framework}.html?case=${name}`);
         await expect(this.page.getByTestId('before')).toBeVisible();
         this.metadata = await this.page.evaluate(

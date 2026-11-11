@@ -17,10 +17,11 @@ This is incremental evidence, not complete API or accessibility certification.
 | Submenus, keyboard/hover, LTR/RTL and cancellation/retry | Pinned suite                             | Covered; reviewed WebKit coordinate-travel limit     |
 | Native outside switching and canceled-close retry        | Pinned suite                             | Covered within a bounded native gesture frame        |
 | Independent nested Roots and deeper overlay composition  | Not established                          | Pending                                              |
+| Whole-root removal, cleanup, final focus and recreation  | Pinned suite, three engines              | Covered; existing Angular destruction lifetimes      |
 | Real devices and assistive technology                    | Not established                          | Pending                                              |
 
-The [runner](../../../apps/parity-testing/primitives/context-menu/README.md) defines 36 scenarios. There are 108 planned comparisons; native input capabilities
-currently allow 90 on macOS and 91 on Linux with the pinned Playwright/browser versions. Six exact WebKit focus/highlight pairs record the same
+The [runner](../../../apps/parity-testing/primitives/context-menu/README.md) defines 45 scenarios. There are 135 planned comparisons; native input capabilities
+currently allow 117 on macOS and 118 on Linux with the pinned Playwright/browser versions. Six exact WebKit focus/highlight pairs record the same
 `zero-delta-pointer-travel` pin limitation documented in [Menu's matrix](../menu/PARITY.md): a trusted
 right-button drag or child hover changes viewport coordinates while WebKit emits zero movement deltas.
 Four pairs cover child hover in LTR/RTL on both platforms; two cover Linux right release. On Linux
@@ -61,3 +62,20 @@ is ignored. Atomic navigation return keeps its enter phase; reopening after a mi
 a new completion cycle and retains the outside return target during interrupted exit. Switching bounds
 one gesture's JS paint cadence using the shared Playwright clock, with real events and targets. Fully
 closed sessions are also compared. See [ADR 0045](../../../docs/adr/0045-context-menu-composition-and-native-dismissal.md).
+
+## Whole-root removal
+
+The shared removal block compares conditional destruction of the entire Root, with open submenus,
+retained views, paused CSS exits, a deferred close and a pending hover. Explicit final-focus targets
+are tested both connected and removed with the Root. Cleanup restores background interaction, native
+scrolling and document styles; no isolation attributes, guards or internal backdrops remain. Native
+keyboard input works without a Root. Recreating the Root and advancing old timer deadlines does not
+revive an old child or complete an abandoned close.
+
+Angular uses its existing embedded-view and DestroyRef lifetimes. Destruction is not an invented
+close transaction: callbacks, completion arrays and focus are observed against the pin unchanged.
+Resource comparisons cover actual background hiding/hit testing and scroll blocking; raw framework
+attributes/guard counts are recorded as measurements. See [ADR 0046](../../../docs/adr/0046-menu-root-removal.md).
+
+Nine scenarios apply to Context Menu. The two other families each add a non-modal case; Base UI
+Context Menu exposes no non-modal Root prop. Independent nested Roots remain pending.

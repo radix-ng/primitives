@@ -1,5 +1,6 @@
 import { expect } from '@playwright/test';
 import { MenuFamilyDriver } from '../../../shared/menu-family-driver';
+import { rootRemovalScenarios } from '../../../shared/root-removal.scenarios';
 import { compositionCases } from '../src/composition';
 import { cases } from '../src/contract';
 import { runComposition } from './composition.scenarios';
@@ -14,6 +15,7 @@ export class ContextMenuDriver extends MenuFamilyDriver {
     override async checkpoint(name: string, expected: Record<string, unknown> = {}) {
         await super.checkpoint(name, expected);
         this.checkpoints.at(-1)!.state.pressed =
+            (await this.page.getByTestId('area').count()) > 0 &&
             (await this.page.getByTestId('area').getAttribute('data-pressed')) !== null;
         if ((await this.page.getByTestId('area-two').count()) > 0) {
             this.checkpoints.at(-1)!.state.areas = await this.page
@@ -97,9 +99,20 @@ export class ContextMenuDriver extends MenuFamilyDriver {
         }
     }
 }
+const removalScenarios = rootRemovalScenarios<ContextMenuDriver>({
+    popup: 'context-popup',
+    child: 'context-sub-popup',
+    more: 'context-more',
+    alpha: 'context-alpha',
+    backgroundFocus: 'outside',
+    open: async (d) => {
+        await d.page.getByTestId('area').click({ button: 'right' });
+    }
+});
 export const scenarios = cases.map((name) => ({
     name,
     async run(d: ContextMenuDriver) {
+        if (name.startsWith('root-remove-')) return removalScenarios.find((s) => s.name === name)!.run(d);
         if ((compositionCases as readonly string[]).includes(name)) {
             await runComposition(d, name as (typeof compositionCases)[number]);
             return;
