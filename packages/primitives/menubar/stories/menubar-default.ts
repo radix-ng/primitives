@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { LucideChevronRight } from '@lucide/angular';
-import { RdxMenuModule } from '@radix-ng/primitives/menu';
+import { RdxMenuModule, type RdxMenuOrientation } from '@radix-ng/primitives/menu';
 import { RdxMenubarRoot, type RdxMenubarOrientation } from '@radix-ng/primitives/menubar';
 import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
 
@@ -14,7 +14,7 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
             [orientation]="orientation()"
             rdxMenubarRoot
         >
-            <ng-container rdxMenuRoot>
+            <ng-container [orientation]="menuOrientation()" rdxMenuRoot>
                 <button [class]="mb.trigger" rdxMenuTrigger>File</button>
                 <ng-template [keepMounted]="keepMounted()" rdxMenuPortal>
                     <div
@@ -24,22 +24,25 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
                         sideOffset="4"
                         rdxMenuPositioner
                     >
-                        <div [class]="m.popup" rdxMenuPopup>
-                            <div [class]="m.item" rdxMenuItem>New</div>
-                            <div [class]="m.item" rdxMenuItem>Open</div>
-                            <div [class]="m.item" rdxMenuItem>Save</div>
+                        <div [class]="popupClass()" rdxMenuPopup>
+                            <div [class]="itemClass()" rdxMenuItem>New</div>
+                            <div [class]="itemClass()" rdxMenuItem>Open</div>
+                            <div [class]="itemClass()" rdxMenuItem>Save</div>
                             <ng-container rdxMenuRoot>
-                                <div [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
+                                <div [class]="cn(itemClass(), 'justify-between')" rdxMenuSubTrigger>
                                     Export
-                                    <svg class="size-4" lucideChevronRight></svg>
+                                    <svg
+                                        [class]="cn('size-4', menuOrientation() === 'horizontal' && 'rotate-90')"
+                                        lucideChevronRight
+                                    ></svg>
                                 </div>
                                 <ng-template [keepMounted]="keepMounted()" rdxMenuPortal>
                                     <div
                                         [class]="m.positioner"
-                                        side="inline-end"
+                                        [side]="menuOrientation() === 'horizontal' ? 'bottom' : 'inline-end'"
+                                        [sideOffset]="menuOrientation() === 'horizontal' ? 4 : -4"
+                                        [alignOffset]="menuOrientation() === 'horizontal' ? 0 : -4"
                                         align="start"
-                                        sideOffset="-4"
-                                        alignOffset="-4"
                                         rdxMenuPositioner
                                     >
                                         <div [class]="m.popup" rdxMenuPopup>
@@ -50,14 +53,18 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
                                     </div>
                                 </ng-template>
                             </ng-container>
-                            <div [class]="m.separator" rdxMenuSeparator></div>
-                            <div [class]="m.item" rdxMenuItem>Print</div>
+                            <div
+                                [class]="separatorClass()"
+                                [orientation]="menuOrientation() === 'horizontal' ? 'vertical' : 'horizontal'"
+                                rdxMenuSeparator
+                            ></div>
+                            <div [class]="itemClass()" rdxMenuItem>Print</div>
                         </div>
                     </div>
                 </ng-template>
             </ng-container>
 
-            <ng-container rdxMenuRoot>
+            <ng-container [orientation]="menuOrientation()" rdxMenuRoot>
                 <button [class]="mb.trigger" rdxMenuTrigger>Edit</button>
                 <ng-template [keepMounted]="keepMounted()" rdxMenuPortal>
                     <div
@@ -67,16 +74,16 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
                         sideOffset="4"
                         rdxMenuPositioner
                     >
-                        <div [class]="m.popup" rdxMenuPopup>
-                            <div [class]="m.item" rdxMenuItem>Cut</div>
-                            <div [class]="m.item" rdxMenuItem>Copy</div>
-                            <div [class]="m.item" rdxMenuItem>Paste</div>
+                        <div [class]="popupClass()" rdxMenuPopup>
+                            <div [class]="itemClass()" rdxMenuItem>Cut</div>
+                            <div [class]="itemClass()" rdxMenuItem>Copy</div>
+                            <div [class]="itemClass()" rdxMenuItem>Paste</div>
                         </div>
                     </div>
                 </ng-template>
             </ng-container>
 
-            <ng-container rdxMenuRoot>
+            <ng-container [orientation]="menuOrientation()" rdxMenuRoot>
                 <button [class]="mb.trigger" rdxMenuTrigger>View</button>
                 <ng-template [keepMounted]="keepMounted()" rdxMenuPortal>
                     <div
@@ -86,21 +93,24 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
                         sideOffset="4"
                         rdxMenuPositioner
                     >
-                        <div [class]="m.popup" rdxMenuPopup>
-                            <div [class]="m.item" rdxMenuItem>Zoom In</div>
-                            <div [class]="m.item" rdxMenuItem>Zoom Out</div>
+                        <div [class]="popupClass()" rdxMenuPopup>
+                            <div [class]="itemClass()" rdxMenuItem>Zoom In</div>
+                            <div [class]="itemClass()" rdxMenuItem>Zoom Out</div>
                             <ng-container rdxMenuRoot>
-                                <div [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
+                                <div [class]="cn(itemClass(), 'justify-between')" rdxMenuSubTrigger>
                                     Layout
-                                    <svg class="size-4" lucideChevronRight></svg>
+                                    <svg
+                                        [class]="cn('size-4', menuOrientation() === 'horizontal' && 'rotate-90')"
+                                        lucideChevronRight
+                                    ></svg>
                                 </div>
                                 <ng-template [keepMounted]="keepMounted()" rdxMenuPortal>
                                     <div
                                         [class]="m.positioner"
-                                        side="inline-end"
+                                        [side]="menuOrientation() === 'horizontal' ? 'bottom' : 'inline-end'"
+                                        [sideOffset]="menuOrientation() === 'horizontal' ? 4 : -4"
+                                        [alignOffset]="menuOrientation() === 'horizontal' ? 0 : -4"
                                         align="start"
-                                        sideOffset="-4"
-                                        alignOffset="-4"
                                         rdxMenuPositioner
                                     >
                                         <div [class]="m.popup" rdxMenuPopup>
@@ -111,14 +121,18 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
                                     </div>
                                 </ng-template>
                             </ng-container>
-                            <div [class]="m.separator" rdxMenuSeparator></div>
-                            <div [class]="m.item" rdxMenuItem>Full Screen</div>
+                            <div
+                                [class]="separatorClass()"
+                                [orientation]="menuOrientation() === 'horizontal' ? 'vertical' : 'horizontal'"
+                                rdxMenuSeparator
+                            ></div>
+                            <div [class]="itemClass()" rdxMenuItem>Full Screen</div>
                         </div>
                     </div>
                 </ng-template>
             </ng-container>
 
-            <ng-container [disabled]="true" rdxMenuRoot>
+            <ng-container [disabled]="true" [orientation]="menuOrientation()" rdxMenuRoot>
                 <button [class]="mb.trigger" rdxMenuTrigger>Help</button>
             </ng-container>
         </div>
@@ -127,6 +141,16 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
 export class RdxMenubarDefaultComponent {
     readonly orientation = input<RdxMenubarOrientation>('horizontal');
     readonly keepMounted = input(false);
+    readonly menuOrientation = input<RdxMenuOrientation>('vertical');
+    protected readonly popupClass = computed(() =>
+        cn(demoMenu.popup, this.menuOrientation() === 'horizontal' && 'flex gap-1')
+    );
+    protected readonly itemClass = computed(() =>
+        cn(demoMenu.item, this.menuOrientation() === 'horizontal' && 'w-auto! whitespace-nowrap')
+    );
+    protected readonly separatorClass = computed(() =>
+        this.menuOrientation() === 'horizontal' ? 'bg-border mx-1 w-px self-stretch' : demoMenu.separator
+    );
     protected readonly cn = cn;
     protected readonly mb = demoMenubar;
     protected readonly m = demoMenu;

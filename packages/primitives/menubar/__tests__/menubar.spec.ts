@@ -26,6 +26,11 @@ const flushMicrotasks = () => Promise.resolve();
                         <div rdxMenuPopup>
                             <button rdxMenuItem>New Tab</button>
                             <button rdxMenuItem>New Window</button>
+                            @if (showChild()) {
+                                <ng-container rdxMenuSubmenuRoot>
+                                    <button rdxMenuSubTrigger>Export</button>
+                                </ng-container>
+                            }
                         </div>
                     </div>
                 }
@@ -59,6 +64,8 @@ class MenubarHost {
     readonly fileDisabled = signal(false);
     readonly fileDefaultOpen = signal(false);
     readonly orientation = signal<'horizontal' | 'vertical'>('horizontal');
+    readonly showChild = signal(false);
+    readonly bar = viewChild.required(RdxMenubarRoot);
     readonly fileMenu = viewChild.required(RdxMenuRoot);
     readonly editMenu = viewChild.required<RdxMenuRoot>('editMenu');
 }
@@ -180,6 +187,20 @@ describe('Menubar', () => {
         fixture = TestBed.createComponent(MenubarHost);
         fixture.detectChanges();
         triggers = Array.from(fixture.nativeElement.querySelectorAll('[rdxMenuTrigger]'));
+    });
+
+    it('retains the active top-level registration when a descendant submenu mounts and unmounts', async () => {
+        triggers[0].click();
+        await fixture.whenStable();
+        const active = fixture.componentInstance.bar().activeId();
+        expect(active).not.toBeNull();
+        for (const visible of [true, false]) {
+            fixture.componentInstance.showChild.set(visible);
+            fixture.detectChanges();
+            await fixture.whenStable();
+            expect(fixture.componentInstance.bar().activeId()).toBe(active);
+            expect(fixture.componentInstance.fileMenu().open()).toBe(true);
+        }
     });
 
     it('root has role="menubar" and horizontal orientation', () => {

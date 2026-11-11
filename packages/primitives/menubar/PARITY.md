@@ -1,6 +1,6 @@
 # Menubar — Base UI compatibility
 
-Audited 2026-11-10 against Base UI 1.9.0 commit
+Audited 2026-11-11 against Base UI 1.9.0 commit
 [`cf696d6f6e08c699c5bda24d5a033430909f2285`](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/menubar).
 This is incremental evidence, not complete API or accessibility certification.
 
@@ -21,10 +21,11 @@ This is incremental evidence, not complete API or accessibility certification.
 | Child opening/closing cancellation and retry                               | Pinned suite                            | Keyboard/pointer open, close and selection covered |
 | Default and externally bound open state                                    | Pinned suite and Angular unit checks    | Covered, including cancellation and retry          |
 | Retained root/child portals, reuse, Tab exclusion and controlled switching | Pinned suite                            | Covered                                            |
+| Horizontal popup lists, mixed child axes and RTL                           | Pinned suite                            | Covered, with reviewed stale-tabindex limitation   |
 | Touch, real devices and assistive technology                               | Not established                         | Pending                                            |
 
-The [runner](../../../apps/parity-testing/primitives/menubar/README.md) defines 61 scenarios and
-183 comparisons. Eleven exact pairs document three reviewed differences below.
+The [runner](../../../apps/parity-testing/primitives/menubar/README.md) defines 77 scenarios and
+231 comparisons. Thirteen exact pairs document four reviewed differences below.
 
 Five dynamic cases insert/remove/reorder top-level menus and change an unfocused trigger's
 `disabled` state or a label. Roving tabindex follows the actual focused trigger as DOM order changes;
@@ -50,6 +51,12 @@ close/reopen and leaves focus on the trigger, matching the pin in LTR/RTL.
   reporting zero movement deltas. The pin drops parent-item highlight and returns to the submenu
   trigger; Angular's shared coordinate guard keeps the actual target. Two exact WebKit focus/highlight
   pairs cover the allowed hover-close retry on macOS and Linux, as in [Menu's matrix](../menu/PARITY.md).
+
+- `stale-tab-stop-after-return`: after synchronous navigation close/reopen, the pin restores
+  tabindex=0 on the previous Bravo item while Alpha is already highlighted and tabindex=0. Angular
+  retains one Tab stop. Two exact item-array pairs record the DOM difference in LTR/RTL. The native
+  Tab comparison starts in a fresh session after Escape; equivalence through the pin's stale stop
+  is not claimed.
 
 These pairs retain Angular's reachable Tab entry and actual nested completion. Changed or stale
 exceptions fail. Horizontal return now matches the pin without callback/focus exceptions. See
@@ -113,12 +120,18 @@ remain attached without rewriting. Retained focus captures the real pre-open ele
 items resolve through surviving DI-owned Menu triggers. Focus-driven openings use programmatic
 interaction intent, matching the pin's default return policy.
 
-Default/Vertical/KeepMounted stories use the pinned Base UI hero anatomy and menu contents, with
+Sixteen orientation cases independently vary the bar, popup and child axes in LTR/RTL. Composite
+owns key mapping; each Popup owns its main-axis navigation and its cross-axis return. Original
+keys relay through DI-owned popup handlers across portals, including the bar's delegated handling
+of bubbled child keys. Fresh-session Tab exit, selection, callbacks and completion are compared.
+Semantic ARIA orientation resolves the menu's implicit vertical default. See
+[ADR 0043](../../../docs/adr/0043-menu-orientation-and-keyboard-ownership.md).
+
+Default/Vertical/KeepMounted/HorizontalPopup stories use the pinned Base UI hero anatomy and menu contents, with
 shared Radix NG styles. All root and child popups use Portal → Positioner → Popup; items use the
 reference's default div hosts. Structural/browser checks and closed/open screenshots cover them.
 
-Custom horizontal popup orientation, further API/lifecycle combinations and real device/AT work
-remain separate audits. See [ADR 0042](../../../docs/adr/0042-menubar-retained-and-pointer-contracts.md). See
+Further API/lifecycle combinations, touch and real device/AT work remain separate audits. See [ADR 0042](../../../docs/adr/0042-menubar-retained-and-pointer-contracts.md). See
 [ADR 0040](../../../docs/adr/0040-menu-navigation-return.md).
 
 Consumers observing `none` for these actions should migrate to the explicit reasons above. Popup

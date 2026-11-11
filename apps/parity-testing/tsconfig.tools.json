@@ -11,5 +11,5 @@
         "verbatimModuleSyntax": true,
         "types": ["node"]
     },
-    "include": ["run.ts", "shared/**/*.ts", "vite.config.mts", "playwright.config.ts"]
+    "include": ["run.ts", "shared/**/*.ts", "vite.config.mts", "playwright.config.ts", "../../tools/playwright/**/*.ts"]
 }

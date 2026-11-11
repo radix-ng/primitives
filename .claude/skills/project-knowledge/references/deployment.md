@@ -18,7 +18,10 @@ All workflows are in `.github/workflows/`.
 3. `unit` — `pnpm primitives:test` (Vitest)
 4. `builds` — `pnpm primitives:build` + `pnpm primitives:build:schematics`
 5. `skills` — regenerates the LLM skills bundle (`pnpm skills:build`) and fails if the committed output drifts from the Storybook docs, or if the generator's own eager-load budget or integrity guards throw — keeping the bundle in sync and self-consistent (see architecture.md)
-6. `summary` — gate job; fails if any of lint/unit/builds/skills fails
+6. `scope` — derives affected browser coverage from `nx-set-shas` and actual primitive imports; global/core or unknown changes and missing history select full coverage. Planner tests run before selection.
+7. `comparisons` / `browsers` — selected pinned suites run in separate jobs; selected floating behavior and docs checks run in parallel Chromium/Firefox/WebKit jobs on Ubuntu 24.04. Documentation/unit-only edits can skip browsers. Manual CI dispatch defaults to full coverage.
+8. `parity` — preserves the required aggregate gate for selected comparisons/browser jobs, including a successful empty selection.
+9. `summary` — gate job; fails if any of lint/unit/builds/skills/parity fails
 
 **`chromatic.yml`** — visual regression on push to `main` via Chromaui action. `exitZeroOnChanges: true` — changes are flagged but don't fail the build; review happens in Chromatic dashboard.
 
@@ -101,8 +104,12 @@ Storybook now serves the public documentation site on the main domain `https://r
 ## Primitive differential comparisons
 
 Development and CI use Node.js 24 (`.nvmrc`, minimum 24.15.0). CI setup reads this file.
-The `parity` CI job runs `pnpm test-parity` on Ubuntu 24.04, discovers `primitives/*/suite.json`
-under `apps/parity-testing`, compares pinned Base UI sources with Angular fixtures, and uploads
-per-primitive observations and known-difference summaries. `pnpm test-parity select` runs one suite.
+The CI scope planner discovers `primitives/*/suite.json` under `apps/parity-testing` and follows
+primitive/story imports to select dependent suites and floating regressions. Each selected pinned
+suite runs `pnpm test-parity <name>` in its own job; browser regressions run in three parallel engine
+jobs. Shared core/configuration or unknown changes and missing Git history select everything.
+Manual CI dispatch with `full` forces all discovered suites and existing floating/docs checks.
+The `parity` aggregate gate retains the required check name. Artifacts contain per-primitive
+observations and known-difference summaries. `pnpm test-parity select` runs one suite locally.
 The runner and shared tooling use native Node 24 TypeScript execution with a separate strict type check. See
 `apps/parity-testing/README.md` and ADR 0029; a passing drift check is not full behavioral parity.

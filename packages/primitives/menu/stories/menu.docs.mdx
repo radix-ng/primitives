@@ -35,7 +35,7 @@ headless — state is exposed through `data-*` attributes and the consumer provi
 - ✅ Optional visual arrow connecting the popup to its trigger (`rdxMenuArrow`).
 - ✅ Optional backdrop overlay behind the popup (`rdxMenuBackdrop`).
 - ✅ Closes on Escape (restoring focus to the trigger), outside pointer interaction, and Tab.
-- ✅ Full keyboard navigation: ArrowDown, ArrowUp, Home, End, and character typeahead.
+- ✅ Orientation-aware arrow navigation, Home, End, and character typeahead.
 - ✅ Focus loop at list boundaries, configurable with `loopFocus`.
 - ✅ Includes disabled items in keyboard navigation while preventing activation.
 - ✅ Dynamic lists can become empty and refill while open. With return focus enabled, removing an open submenu returns focus to a surviving owner trigger.
@@ -554,6 +554,13 @@ context — no inputs.
 ## Accessibility
 
 ### Keyboard Interactions
+
+The table describes vertical menus in LTR. Set Menu Root's `orientation="horizontal"` for
+Left/Right item navigation (reversed in RTL); standalone triggers then open on those keys instead
+of Up/Down. A submenu opens on the parent's cross-axis forward key: Down from a horizontal parent,
+Right in LTR or Left in RTL from a vertical parent. Its return key follows the child's own axis:
+Up for a horizontal child, Left in LTR or Right in RTL for a vertical child. An ancestor may also
+navigate on a returned key. Menubar's own orientation is independent of each popup's orientation.
 
 | Key | Description |
 | --- | --- |

@@ -105,6 +105,17 @@ The return arrow (Left in LTR, Right in RTL) closes the popup and returns focus 
 
 <Canvas of={Stories.Vertical} />
 
+### Horizontal popup
+
+The bar's `orientation` and each Menu Root's `orientation` are independent.
+Use `<rdx-menubar-default menuOrientation="horizontal" />` for horizontal popup items, with
+vertical submenus. Left/Right navigate the root popup in text direction. Down on Export opens its
+submenu; returning with Left (LTR) or Right (RTL) can also navigate the containing lists.
+Up returns a horizontal popup to its trigger. Each ancestor applies its own navigation axis.
+The example keeps the same Portal → Positioner → Popup structure and shared demo styles.
+
+<Canvas of={Stories.HorizontalPopup} />
+
 ### Keep mounted
 
 Use `<rdx-menubar-default [keepMounted]="true" />` to retain both root and child Portal views.

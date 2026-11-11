@@ -74,3 +74,5 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0040](0040-menu-navigation-return.md)                                       | Accepted               | Share navigation return and compare vertical closing and nested cancellation         |
 | [0041](0041-menubar-navigation-and-external-state.md)                        | Accepted               | Align horizontal Menubar return and compare external open state                      |
 | [0042](0042-menubar-retained-and-pointer-contracts.md)                       | Accepted               | Compare retained Menubar and nested pointer cancellation with reference demo anatomy |
+| [0043](0043-menu-orientation-and-keyboard-ownership.md)                      | Accepted               | Respect Menu orientation and portaled keyboard ownership                             |
+| [0044](0044-affected-browser-checks.md)                                      | Accepted               | Select affected browser contracts and run engines concurrently                       |

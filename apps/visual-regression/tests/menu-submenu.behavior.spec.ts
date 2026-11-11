@@ -72,36 +72,62 @@ test('diagonal traversal keeps the open submenu and does not steal to the siblin
     await expect(page.locator(spellingSubmenu)).toHaveCount(0);
 });
 
-test('RTL: diagonal traversal toward a left-placed submenu keeps it open', async ({ page }) => {
-    await page.clock.install();
-    // Regression guard for the once-captured `data-side` bug: submenus here open to the LEFT
-    // (`side="left"`), so a right-side-only polygon would close them mid-traversal.
-    const findRtl = '[rdxMenuSubTrigger]:has-text("بحث")';
-    const findRtlSubmenu = '[rdxMenuPopup][data-side="left"]:has-text("بحث في الويب")';
-    const spellingRtlSubmenu = '[rdxMenuPopup][data-side="left"]:has-text("عرض التدقيق")';
+for (const fractional of [false, true])
+    test(
+        fractional
+            ? 'RTL: fractional popup dimensions preserve diagonal traversal'
+            : 'RTL: diagonal traversal toward a left-placed submenu keeps it open',
+        async ({ page }) => {
+            await page.clock.install();
+            // Regression guard for the once-captured `data-side` bug: submenus here open to the LEFT
+            // (`side="left"`), so a right-side-only polygon would close them mid-traversal.
+            const findRtl = '[rdxMenuSubTrigger]:has-text("بحث")';
+            const findRtlSubmenu = '[rdxMenuPopup][data-side="left"]:has-text("بحث في الويب")';
+            const spellingRtlSubmenu = '[rdxMenuPopup][data-side="left"]:has-text("عرض التدقيق")';
 
-    await gotoStory(page, 'primitives-menu--nested-rtl');
-    await page.locator('[rdxMenuTrigger]').first().click();
-    await expect(page.locator('[rdxMenuPopup]').first()).toBeVisible();
+            await gotoStory(page, 'primitives-menu--nested-rtl');
+            await page.locator('[rdxMenuTrigger]').first().click();
+            await expect(page.locator('[rdxMenuPopup]').first()).toBeVisible();
 
-    await page.locator(findRtl).hover();
-    await expect(page.locator(findRtlSubmenu)).toBeVisible();
+            await page.locator(findRtl).hover();
+            await expect(page.locator(findRtlSubmenu)).toBeVisible();
 
-    const find = await page.locator(findRtl).boundingBox();
-    const submenu = await page.locator(findRtlSubmenu).boundingBox();
-    if (!find || !submenu) throw new Error('missing layout boxes');
+            if (fractional) {
+                // Real layout sizing from the failed Linux CI trace; no primitive state is changed.
+                await page
+                    .locator('[rdxMenuPopup]')
+                    .first()
+                    .evaluate((element: HTMLElement) => {
+                        element.style.width = '179.546875px';
+                    });
+                await page.locator(findRtlSubmenu).evaluate((element: HTMLElement) => {
+                    element.style.width = '158.71875px';
+                });
+                await expect
+                    .poll(async () => {
+                        const trigger = (await page.locator(findRtl).boundingBox())!;
+                        const child = (await page.locator(findRtlSubmenu).boundingBox())!;
+                        return Math.abs(child.x + child.width - (trigger.x - 4));
+                    })
+                    .toBeLessThan(1);
+            }
 
-    // Exit from the LEFT edge of "بحث" into the left-placed submenu's near (right) lower edge. Mirror
-    // the LTR diagonal in the opposite direction so we still cross the sibling row while staying on a
-    // realistic path toward the popup, regardless of the popup's measured height.
-    await traverseGraceArea(
-        page,
-        { x: find.x + 4, y: find.y + find.height / 2 },
-        { x: submenu.x + submenu.width - 8, y: submenu.y + submenu.height - 8 }
+            const find = await page.locator(findRtl).boundingBox();
+            const submenu = await page.locator(findRtlSubmenu).boundingBox();
+            if (!find || !submenu) throw new Error('missing layout boxes');
+
+            // Exit from the LEFT edge of "بحث" into the left-placed submenu's near (right) lower edge. Mirror
+            // the LTR diagonal in the opposite direction so we still cross the sibling row while staying on a
+            // realistic path toward the popup, regardless of the popup's measured height.
+            await traverseGraceArea(
+                page,
+                { x: find.x + 4, y: find.y + find.height / 2 },
+                { x: submenu.x + submenu.width - 8, y: submenu.y + submenu.height - 8 }
+            );
+            await expect(page.locator(findRtlSubmenu)).toBeVisible();
+            await expect(page.locator(spellingRtlSubmenu)).toHaveCount(0);
+        }
     );
-    await expect(page.locator(findRtlSubmenu)).toBeVisible();
-    await expect(page.locator(spellingRtlSubmenu)).toHaveCount(0);
-});
 
 test('RTL: ArrowLeft opens a submenu trigger and ArrowRight closes it', async ({ page }) => {
     const findRtl = '[rdxMenuSubTrigger]:has-text("بحث")';

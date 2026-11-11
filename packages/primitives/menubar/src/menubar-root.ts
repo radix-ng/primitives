@@ -13,7 +13,12 @@ import {
     Signal,
     untracked
 } from '@angular/core';
-import { findNonDisabledListIndex, RdxCompositeList, RdxCompositeRoot } from '@radix-ng/primitives/composite';
+import {
+    findNonDisabledListIndex,
+    getCompositeNavigationKeys,
+    RdxCompositeList,
+    RdxCompositeRoot
+} from '@radix-ng/primitives/composite';
 import { BooleanInput, createContext, getActiveElement, provideFloatingTree } from '@radix-ng/primitives/core';
 import { observeFocusRecovery } from '@radix-ng/primitives/focus-scope';
 import {
@@ -175,22 +180,30 @@ export class RdxMenubarRoot {
             this.syncTabIndices();
         });
 
-        effect((onCleanup) => {
-            const roots = this.menuRoots();
-            const registered: Array<() => void> = [];
-
-            roots.forEach((root) => {
-                const trigger = root.trigger();
-
-                if (!trigger || root.isSubmenu()) {
-                    return;
+        // Mounting a portaled submenu changes the descendant query. Retain unchanged root
+        // registrations so that child view churn cannot clear the active top-level menu.
+        const registered = new Map<RdxMenuRoot, { trigger: HTMLElement; cleanup: () => void }>();
+        inject(DestroyRef).onDestroy(() => {
+            registered.forEach(({ cleanup }) => cleanup());
+            registered.clear();
+        });
+        effect(() => {
+            const roots = new Map(
+                this.menuRoots()
+                    .filter((root) => !root.isSubmenu() && root.trigger())
+                    .map((root) => [root, root.trigger()!] as const)
+            );
+            untracked(() => {
+                for (const [root, registration] of registered) {
+                    if (roots.get(root) === registration.trigger) continue;
+                    registration.cleanup();
+                    registered.delete(root);
                 }
-
-                registered.push(this.registerMenuRoot(root, trigger));
-            });
-
-            onCleanup(() => {
-                registered.forEach((cleanup) => cleanup());
+                for (const [root, trigger] of roots) {
+                    if (!registered.has(root)) {
+                        registered.set(root, { trigger, cleanup: this.registerMenuRoot(root, trigger) });
+                    }
+                }
             });
         });
 
@@ -296,24 +309,26 @@ export class RdxMenubarRoot {
         // Observe accepted requests synchronously: returning native focus after a navigation close
         // must still see open-on-focus mode. Nested Roots have their own return-focus policy.
         root.floatingContext.events.on('openchange', handleOpenChange);
-        const unregisterPopupArrowNavigation = root.registerPopupArrowNavigationHandler((offset, event) => {
+        const unregisterPopupArrowNavigation = root.registerPopupArrowNavigationHandler((event) => {
             if (this.disabled()) {
                 return false;
             }
 
-            const vertical = this.orientation() === 'vertical';
-            const returnsToTrigger = !root.effectiveDisabled() && offset === (root.dir() === 'rtl' ? 1 : -1);
-            // Return before the parent bar navigates, as for an ordinary nested list. Horizontal
-            // navigation consumes the key after its close callbacks; vertical return consumes it now.
-            if (returnsToTrigger) root.closeForNavigation(event, vertical);
-            if (vertical) return returnsToTrigger;
-            this.focusAdjacent(id, root.dir() === 'rtl' ? (offset === 1 ? -1 : 1) : offset, true);
+            const keys = getCompositeNavigationKeys(this.orientation(), root.dir());
+            const offset = keys.forwardKeys.includes(event.key)
+                ? 1
+                : keys.backwardKeys.includes(event.key)
+                  ? -1
+                  : undefined;
+            if (offset === undefined) return false;
+            this.focusAdjacent(id, offset, true);
             return true;
         });
         const unregisterTriggerInteraction = root.registerTriggerInteractionHandler(
             (interaction) => this.handleTriggerInteraction(id, root, trigger, interaction),
             this.elementRef.nativeElement,
             {
+                orientation: () => this.orientation(),
                 returnFocusFrom: (previous) => {
                     let owner = this.menuRoots().find(
                         (menu) => menu !== root && menu.popupElement()?.contains(previous)
@@ -579,8 +594,10 @@ export class RdxMenubarRoot {
         } else if (
             this.hasSubmenuOpen() &&
             focusedItem.root?.open() &&
-            focusedItem.root.lastOpenChangeReason() === 'trigger-hover'
+            (focusedItem.root.lastOpenChangeReason() === 'trigger-hover' || focusedItem.el.matches(':focus-visible'))
         ) {
+            // Base UI's focus interaction also reports a request on an already-open menu. In
+            // particular, refocusing its trigger after a canceled selection promotes ownership.
             focusedItem.open('trigger-focus', event);
         }
     }

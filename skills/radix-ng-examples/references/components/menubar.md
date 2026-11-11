@@ -82,6 +82,7 @@ mounting, exits and optional retention.
 
 - [Default](../examples/menubar--default.md)
 - [Vertical](../examples/menubar--vertical.md)
+- [Horizontal popup](../examples/menubar--horizontal-popup.md)
 - [Keep mounted](../examples/menubar--keep-mounted.md)
 
 ## API & styling contract

@@ -12,9 +12,10 @@ import {
 import { RdxMenubarRoot } from '@radix-ng/primitives/menubar';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { changeCollection, type MenuEntry } from '../../../shared/menu-collection';
-import { createMenuPopupTemplate, menuClasses } from '../../../shared/menu-fixture';
+import { createMenuPopupTemplate } from '../../../shared/menu-fixture';
 import { cancelChange } from './composition';
 import { config, initialMenus, installProbe, submenuId, type Layer, type TopLayer } from './contract';
+import { menubarClasses } from './orientation';
 import { changeExternalOpen, initialOpenState } from './state';
 const settings = config();
 // A consumer can compose Menubar without authoring the original selector attribute.
@@ -39,15 +40,21 @@ function createNestedTemplate(
 ) {
     return `
     @if (settings.nested) {
-        <ng-container (onOpenChange)="change(submenuId(menu), $event)"
+        <ng-container [orientation]="settings.childOrientation" (onOpenChange)="change(submenuId(menu), $event)"
             (onOpenChangeComplete)="trace.complete(submenuId(menu), $event)" rdxMenuRoot>
             <button [class]="s.item" [attr.data-testid]="menu + '-more'" ${subTriggerAttribute}>More</button>
             <ng-template [keepMounted]="settings.keepMounted" rdxMenuPortal>
                 <div class="z-50" [side]="settings.dir === 'rtl' ? 'left' : 'right'" align="start" sideOffset="4" rdxMenuPositioner>
-                    <div [class]="s.popup" [id]="menu + '-sub-popup'" [attr.data-testid]="menu + '-sub-popup'"
+                    <div [class]="s.childPopup" [id]="menu + '-sub-popup'" [attr.data-testid]="menu + '-sub-popup'"
                         [attr.data-menu-popup]="menu + '-sub'" ${popupAttribute}>
                         <button [class]="s.item" [attr.data-testid]="menu + '-sub-alpha'"
                             (onSelect)="trace.select(menu + '-sub-alpha')" ${itemAttribute}>Nested command</button>
+                        @if (settings.orientationCase) {
+                            <button [class]="s.item" [attr.data-testid]="menu + '-sub-blocked'" [disabled]="true"
+                                ${itemAttribute}>Blocked nested command</button>
+                            <button [class]="s.item" [attr.data-testid]="menu + '-sub-bravo'"
+                                (onSelect)="trace.select(menu + '-sub-bravo')" ${itemAttribute}>Last nested command</button>
+                        }
                     </div>
                 </div>
             </ng-template>
@@ -60,7 +67,7 @@ const nestedTemplate = createNestedTemplate();
 const composedNestedTemplate = createNestedTemplate('parityPopup', 'parityItem', 'paritySubTrigger');
 function createRootTemplate(bindings: string) {
     return `
-        <ng-container [disabled]="entry.disabled" ${bindings}
+        <ng-container [disabled]="entry.disabled" [orientation]="settings.popupOrientation" ${bindings}
             (onOpenChange)="change(menu, $event)"
             (onOpenChangeComplete)="trace.complete(menu, $event)" rdxMenuRoot>
             <button [id]="menu + '-trigger'" [attr.data-testid]="menu + '-trigger'"
@@ -107,7 +114,7 @@ const template = `
     template
 })
 class AngularMenubar {
-    readonly s = menuClasses;
+    readonly s = menubarClasses(settings);
     readonly submenuId = submenuId;
     readonly allowSwitch = signal(false);
     readonly menus = signal<MenuEntry<TopLayer>[]>(initialMenus(settings.name));

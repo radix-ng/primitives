@@ -95,6 +95,7 @@ export interface RdxMenuOpenChange {
 }
 
 export interface RdxMenuCoordinator {
+    orientation: () => RdxMenuOrientation;
     insideElements: () => Array<HTMLElement | undefined>;
     ownsEscape: (event: KeyboardEvent) => boolean;
     returnFocusFrom?: (previous: HTMLElement) => HTMLElement | undefined;
@@ -111,6 +112,7 @@ export interface RdxMenuRootContext {
     isStationaryPointerMove: (event: PointerEvent) => boolean;
     onItemHover: (item: HTMLElement, event: PointerEvent) => void;
     orientation: Signal<RdxMenuOrientation>;
+    parentOrientation: Signal<RdxMenuOrientation | undefined>;
     dir: Signal<Direction>;
     closeParentOnEsc: Signal<boolean>;
     /** Whether the popup should focus its first item when it opens. */
@@ -177,7 +179,8 @@ export interface RdxMenuRootContext {
     registerPopup: (el: HTMLElement, physicalSide?: Signal<MenuSide | undefined>, getId?: () => string) => () => void;
     setBeforeContentFocusGuard: (element: HTMLElement | null) => void;
     registerTransitionElement: (element: HTMLElement) => () => void;
-    registerPopupArrowNavigationHandler: (handler: (offset: 1 | -1, event?: KeyboardEvent) => boolean) => () => void;
+    registerPopupArrowNavigationHandler: (handler: (event: KeyboardEvent) => boolean) => () => void;
+    registerPopupNavigationHandler: (handler: (event: KeyboardEvent) => boolean) => () => void;
     registerTriggerInteractionHandler: (
         handler: RdxMenuTriggerInteractionHandler,
         scope?: HTMLElement,
@@ -188,7 +191,7 @@ export interface RdxMenuRootContext {
     markAsContextMenu: () => void;
     setAllowMouseUpTrigger: (value: boolean) => void;
     closeParent: () => void;
-    handlePopupArrowNavigation: (offset: 1 | -1, event?: KeyboardEvent) => boolean;
+    handlePopupArrowNavigation: (event: KeyboardEvent) => boolean;
     closeForNavigation: (event?: KeyboardEvent, consumeEvent?: boolean) => void;
     handleTriggerInteraction: (interaction: RdxMenuTriggerInteraction) => boolean;
 }
@@ -233,6 +236,7 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         isStationaryPointerMove: (event) => instance.isStationaryPointerMove(event),
         onItemHover: (item, event) => instance.onItemHover(item, event),
         orientation: instance.orientation,
+        parentOrientation: instance.parentOrientation,
         dir: instance.dir,
         closeParentOnEsc: instance.closeParentOnEsc,
         autoFocus: instance.autoFocus.asReadonly(),
@@ -275,13 +279,14 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         setBeforeContentFocusGuard: (element) => instance.setBeforeContentFocusGuard(element),
         registerTransitionElement: (el) => instance.registerTransitionElement(el),
         registerPopupArrowNavigationHandler: (handler) => instance.registerPopupArrowNavigationHandler(handler),
+        registerPopupNavigationHandler: (handler) => instance.registerPopupNavigationHandler(handler),
         registerTriggerInteractionHandler: (handler, scope, coordinator) =>
             instance.registerTriggerInteractionHandler(handler, scope, coordinator),
         markAsSubmenu: () => instance.markAsSubmenu(),
         markAsContextMenu: () => instance.markAsContextMenu(),
         setAllowMouseUpTrigger: (value) => instance.setAllowMouseUpTrigger(value),
         closeParent: () => instance.closeParent(),
-        handlePopupArrowNavigation: (offset, event) => instance.handlePopupArrowNavigation(offset, event),
+        handlePopupArrowNavigation: (event) => instance.handlePopupArrowNavigation(event),
         closeForNavigation: (event, consumeEvent) => instance.closeForNavigation(event, consumeEvent),
         handleTriggerInteraction: (interaction) => instance.handleTriggerInteraction(interaction)
     };
@@ -326,7 +331,8 @@ export class RdxMenuRoot {
     private registeredTrigger: HTMLElement | undefined;
     private registeredTriggerId?: () => string;
     private registeredPopupId?: () => string;
-    private popupArrowNavigationHandler: ((offset: 1 | -1, event?: KeyboardEvent) => boolean) | undefined;
+    private popupArrowNavigationHandler: ((event: KeyboardEvent) => boolean) | undefined;
+    private popupNavigationHandler: ((event: KeyboardEvent) => boolean) | undefined;
     private triggerInteractionHandler: RdxMenuTriggerInteractionHandler | undefined;
     private hasAppliedDefaultOpen = false;
     private focusBeforeRetainedOpen: HTMLElement | undefined;
@@ -432,6 +438,11 @@ export class RdxMenuRoot {
         if (this.hasTriggerInteractionHandler()) {
             return 'menubar';
         }
+        return undefined;
+    });
+    readonly parentOrientation = computed(() => {
+        if (this.parentType() === 'menu') return this.parentRoot?.orientation();
+        if (this.parentType() === 'menubar') return this.coordinator?.orientation();
         return undefined;
     });
 
@@ -743,7 +754,7 @@ export class RdxMenuRoot {
         this.lifecycle.unmount();
     }
 
-    registerPopupArrowNavigationHandler(handler: (offset: 1 | -1, event?: KeyboardEvent) => boolean): () => void {
+    registerPopupArrowNavigationHandler(handler: (event: KeyboardEvent) => boolean): () => void {
         this.popupArrowNavigationHandler = handler;
 
         return () => {
@@ -753,12 +764,18 @@ export class RdxMenuRoot {
         };
     }
 
-    handlePopupArrowNavigation(offset: 1 | -1, event?: KeyboardEvent): boolean {
-        return (
-            this.popupArrowNavigationHandler?.(offset, event) ??
-            this.parentRoot?.handlePopupArrowNavigation(offset, event) ??
-            false
-        );
+    registerPopupNavigationHandler(handler: (event: KeyboardEvent) => boolean): () => void {
+        this.popupNavigationHandler = handler;
+        return () => {
+            if (this.popupNavigationHandler === handler) this.popupNavigationHandler = undefined;
+        };
+    }
+
+    handlePopupArrowNavigation(event: KeyboardEvent): boolean {
+        // Portals do not bubble DOM events through their owning Menu. Relay the original key to
+        // the nearest parent Popup before the coordinator, so every list applies its own axis.
+        if (this.parentRoot) return this.parentRoot.popupNavigationHandler?.(event) ?? false;
+        return this.popupArrowNavigationHandler?.(event) ?? false;
     }
 
     /** @internal A navigation return moves focus/highlight even when its close request is canceled. */

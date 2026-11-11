@@ -113,11 +113,32 @@ identified by browser and scenario; observations also record the engine version 
 Input capability skips retain their reason in JSON and the Markdown summary. Select's touch cases
 run only where Playwright exposes the required native input API; see its suite guide for limits.
 
-The `parity` CI job runs all discovered suites on Node 24 and Chromium/Firefox/WebKit on Ubuntu 24.04.
-It also builds Storybook and runs Select behavior checks in the same three engines, including native
-submission/validation, synthetic autofill, labels, focus, retained exits and positioning. It publishes
-per-primitive summaries and uploads differential results and Storybook reports/traces. New, changed and disappeared differences require
-review; a passing check means there is no unreviewed drift.
+CI uses Node 24 and Chromium/Firefox/WebKit on Ubuntu 24.04. `scope` selects affected pinned suites
+and Storybook floating behavior specs from the last successful CI base supplied by `nx-set-shas`.
+It reads actual primitive imports, including story composition, and follows reverse dependencies:
+a Menubar edit selects Menubar; a Menu edit also selects its consumers. Browser helper edits select
+their importing specs. Documentation, generated skills, unit-only edits and screenshot baselines do
+not launch browser comparisons. MDX changes also select docs navigation checks.
+
+Shared core, build/configuration or unclassified changes, and unavailable Git history select the
+full existing coverage. This selection does not replace unit, type, lint or visual checks.
+`comparisons` runs selected pinned suites as separate jobs; `browsers` runs selected behavior specs
+in three concurrent engine jobs. The existing `parity` job remains the required aggregate gate,
+including when no browser checks are needed. Per-suite summaries and per-engine artifacts retain
+observations, reviewed differences and failure traces. New, changed and disappeared differences
+require review; a passing check means there is no unreviewed drift.
+
+Use **Actions → CI → Run workflow → full** for all suites and floating/docs regressions. Local commands
+still support every suite or one suite as shown above. To inspect CI selection locally:
+
+```bash
+NX_BASE=origin/main NX_HEAD=HEAD node tools/playwright/affected.ts
+node tools/playwright/affected.ts --full
+node --test tools/playwright/*.test.ts
+```
+
+The planner compares committed changes. Use `--full` when the comparison base is not appropriate;
+the three engine jobs shorten wall time without dropping a browser from coverage.
 
 An exception may additionally specify `platform` (`darwin`, `linux` or `win32`) when native engine
 preferences differ across operating systems. This never broadens its exact expected values. A pair

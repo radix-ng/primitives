@@ -26,6 +26,7 @@ for (const consumer of consumers) {
         await page.goto(
             `/iframe.html?id=primitives-${consumer.name}--${consumer.action === 'toast' ? 'anchored' : 'default'}&viewMode=story`
         );
+        await page.evaluate(() => document.fonts.ready);
         const anchor =
             consumer.action === 'toast'
                 ? page.getByRole('button', { name: 'Anchored toast', exact: true })
@@ -48,6 +49,9 @@ for (const consumer of consumers) {
         const positioner = page.locator(`[rdx${consumer.part}Positioner]`).first();
         const popup = page.locator(`[rdx${consumer.part}${consumer.action === 'toast' ? 'Root' : 'Popup'}]`).first();
         await expect(popup).toBeVisible();
+        await popup.evaluate((element) =>
+            Promise.allSettled(element.getAnimations().map((animation) => animation.finished))
+        );
         await expect
             .poll(() =>
                 positioner.evaluate((el) =>

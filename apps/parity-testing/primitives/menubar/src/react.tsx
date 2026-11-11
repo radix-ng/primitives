@@ -5,13 +5,14 @@ import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { changeCollection, type MenuEntry } from '../../../shared/menu-collection';
-import { menuClasses as s } from '../../../shared/menu-fixture';
 import { MenuItems } from '../../../shared/menu-items';
 import { cancelChange } from './composition';
 import { config, initialMenus, installProbe, submenuId, type TopLayer } from './contract';
+import { menubarClasses } from './orientation';
 import { changeExternalOpen, initialOpenState } from './state';
 const settings = config(),
-    trace = installProbe('react');
+    trace = installProbe('react'),
+    s = menubarClasses(settings);
 function ReactMenubar() {
     const [menus, setMenus] = useState<MenuEntry<TopLayer>[]>(initialMenus(settings.name));
     const [allowSwitch, setAllowSwitch] = useState(false);
@@ -55,6 +56,7 @@ function ReactMenubar() {
                         const menu = entry.id;
                         return (
                             <Menu.Root
+                                orientation={settings.popupOrientation}
                                 key={menu}
                                 disabled={entry.disabled}
                                 defaultOpen={settings.defaultOpen && menu === 'file'}
@@ -94,6 +96,7 @@ function ReactMenubar() {
                                             <MenuItems menu={menu} select={trace.select}>
                                                 {settings.nested && (
                                                     <Menu.SubmenuRoot
+                                                        orientation={settings.childOrientation}
                                                         onOpenChange={(open, details) => {
                                                             if (
                                                                 cancelChange(
@@ -134,7 +137,7 @@ function ReactMenubar() {
                                                                 sideOffset={4}
                                                             >
                                                                 <Menu.Popup
-                                                                    className={s.popup}
+                                                                    className={s.childPopup}
                                                                     id={`${menu}-sub-popup`}
                                                                     data-testid={`${menu}-sub-popup`}
                                                                     data-menu-popup={`${menu}-sub`}
@@ -150,6 +153,30 @@ function ReactMenubar() {
                                                                     >
                                                                         Nested command
                                                                     </Menu.Item>
+                                                                    {settings.orientationCase && (
+                                                                        <>
+                                                                            <Menu.Item
+                                                                                render={<button />}
+                                                                                nativeButton
+                                                                                disabled
+                                                                                className={s.item}
+                                                                                data-testid={`${menu}-sub-blocked`}
+                                                                            >
+                                                                                Blocked nested command
+                                                                            </Menu.Item>
+                                                                            <Menu.Item
+                                                                                render={<button />}
+                                                                                nativeButton
+                                                                                className={s.item}
+                                                                                data-testid={`${menu}-sub-bravo`}
+                                                                                onClick={() =>
+                                                                                    trace.select(`${menu}-sub-bravo`)
+                                                                                }
+                                                                            >
+                                                                                Last nested command
+                                                                            </Menu.Item>
+                                                                        </>
+                                                                    )}
                                                                 </Menu.Popup>
                                                             </Menu.Positioner>
                                                         </Menu.Portal>

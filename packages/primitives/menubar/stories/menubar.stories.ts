@@ -49,3 +49,12 @@ export const KeepMounted: Story = {
         `
     })
 };
+
+export const HorizontalPopup: Story = {
+    parameters: source(defaultSource),
+    render: () => ({
+        template: html`
+            <rdx-menubar-default menuOrientation="horizontal" />
+        `
+    })
+};

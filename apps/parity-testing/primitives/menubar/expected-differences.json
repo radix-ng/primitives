@@ -328,5 +328,85 @@
         "react": ["file-more"],
         "browser": "webkit",
         "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "orientation-horizontal",
+        "checkpoint": "root reopened after return",
+        "field": "itemTabStops",
+        "angular": [
+            {
+                "id": "file-alpha",
+                "tabIndex": 0,
+                "highlighted": true
+            },
+            {
+                "id": "file-blocked",
+                "tabIndex": -1,
+                "highlighted": false
+            },
+            {
+                "id": "file-bravo",
+                "tabIndex": -1,
+                "highlighted": false
+            }
+        ],
+        "react": [
+            {
+                "id": "file-alpha",
+                "tabIndex": 0,
+                "highlighted": true
+            },
+            {
+                "id": "file-blocked",
+                "tabIndex": -1,
+                "highlighted": false
+            },
+            {
+                "id": "file-bravo",
+                "tabIndex": 0,
+                "highlighted": false
+            }
+        ],
+        "category": "stale-tab-stop-after-return"
+    },
+    {
+        "scenario": "orientation-horizontal-rtl",
+        "checkpoint": "root reopened after return",
+        "field": "itemTabStops",
+        "angular": [
+            {
+                "id": "file-alpha",
+                "tabIndex": 0,
+                "highlighted": true
+            },
+            {
+                "id": "file-blocked",
+                "tabIndex": -1,
+                "highlighted": false
+            },
+            {
+                "id": "file-bravo",
+                "tabIndex": -1,
+                "highlighted": false
+            }
+        ],
+        "react": [
+            {
+                "id": "file-alpha",
+                "tabIndex": 0,
+                "highlighted": true
+            },
+            {
+                "id": "file-blocked",
+                "tabIndex": -1,
+                "highlighted": false
+            },
+            {
+                "id": "file-bravo",
+                "tabIndex": 0,
+                "highlighted": false
+            }
+        ],
+        "category": "stale-tab-stop-after-return"
     }
 ]

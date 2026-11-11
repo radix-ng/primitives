@@ -3,7 +3,7 @@
 Run `pnpm test-parity menubar` with Node 24; preview port is 4509. Angular fixtures are AOT compiled
 and React imports the unmodified Base UI 1.9.0 source pinned in `../../reference.json`.
 
-Sixty-one scenarios run in Chromium, Firefox and WebKit (183 comparisons): keyboard opening, native
+Seventy-seven scenarios run in Chromium, Firefox and WebKit (231 comparisons): keyboard opening, native
 mouse-down opening before release, closed roving focus, disabled-trigger skipping, keyboard/pointer
 sibling switching, RTL direction, whole-bar disabling, item selection, canceled open/close requests,
 outside dismissal and Tab. Changes retain their native events and reason/order; popup focus,
@@ -15,7 +15,7 @@ inputs; they do not mirror primitive internals into a coordinator adapter.
 Angular composes Menubar through a consumer `hostDirectives` directive, so its original selector
 attribute is absent. Focus containment and the backdrop cutout use the registered native host.
 Reports retain native events, trusted coordinates, timestamps and source commit/digest. There are
-eleven exact expected pairs for the reviewed differences described in the source matrix.
+thirteen exact expected pairs for the reviewed differences described in the source matrix.
 
 Five collection cases cover insertion, closed focused removal, keyed reordering, unfocused disabling
 and labels, followed by forward switching. Native focus repair is shared with floating menus.
@@ -48,6 +48,12 @@ parent-item hover closing and child/parent selection closes, then retry. Entry a
 real timers. The retry records trusted pointer coordinates; two exact WebKit focus/highlight pairs
 retain the shared coordinate guard's existing limitation in the pin.
 
-This suite does not certify custom popup orientation, every API/lifecycle combination,
+Sixteen orientation cases cover horizontal root popups, both mixed parent/child directions and
+horizontal lists at both levels, under horizontal/vertical bars in LTR/RTL. Original key ownership,
+callback order, semantic ARIA orientation and focus are compared. Two exact DOM item-array pairs
+retain one Angular Tab stop where the pin restores a stale second one after synchronous return.
+Native Tab is tested after Escape and a fresh open; that reference defect remains explicit.
+
+This suite does not certify every API/lifecycle combination,
 touch/device behavior or assistive technology. See the
 [source matrix](../../../../packages/primitives/menubar/PARITY.md).

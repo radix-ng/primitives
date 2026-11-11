@@ -2,10 +2,12 @@ import { expect } from '@playwright/test';
 import { MenuFamilyDriver } from '../../../shared/menu-family-driver';
 import { compositionCases } from '../src/composition';
 import { cases } from '../src/contract';
+import { orientationCases } from '../src/orientation';
 import { pointerCases } from '../src/pointer';
 import { retainedCases } from '../src/retained';
 import { stateCases } from '../src/state';
 import { runComposition } from './composition.scenarios';
+import { runOrientation } from './orientation.scenarios';
 import { runPointer } from './pointer.scenarios';
 import { runRetained } from './retained.scenarios';
 import { runState } from './state.scenarios';
@@ -13,10 +15,21 @@ export class MenubarDriver extends MenuFamilyDriver {
     constructor(page: ConstructorParameters<typeof MenuFamilyDriver>[0], framework: 'angular' | 'react') {
         super(page, framework, 'menubarParity');
     }
+    override async checkpoint(name: string, expected: Record<string, unknown> = {}) {
+        await super.checkpoint(name, expected);
+        // ARIA menu orientation defaults to vertical when the attribute is absent.
+        this.checkpoints.at(-1)!.state.popupOrientations = await this.page
+            .locator('[data-menu-popup]')
+            .evaluateAll((elements) =>
+                elements.map((element) => element.getAttribute('aria-orientation') ?? 'vertical')
+            );
+    }
 }
 export const scenarios = cases.map((name) => ({
     name,
     async run(d: MenubarDriver) {
+        if ((orientationCases as readonly string[]).includes(name))
+            return runOrientation(d, name as (typeof orientationCases)[number]);
         if ((pointerCases as readonly string[]).includes(name))
             return runPointer(d, name as (typeof pointerCases)[number]);
         if ((retainedCases as readonly string[]).includes(name))

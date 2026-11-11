@@ -17,6 +17,30 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
 const trigger = '[rdxMenuTrigger]';
 const openPopup = '[rdxMenuPopup][data-open]';
 
+test('horizontal popup items navigate independently of the bar and open a vertical submenu', async ({ page }) => {
+    await gotoStory(page, 'primitives-menubar--horizontal-popup');
+    await page.getByRole('menuitem', { name: 'File', exact: true }).press('ArrowDown');
+    const rootPopup = page.locator(openPopup);
+    await expect(rootPopup).toHaveAttribute('aria-orientation', 'horizontal');
+    await expect(page.getByRole('menuitem', { name: 'New', exact: true })).toBeFocused();
+    await page.keyboard.press('ArrowRight');
+    await expect(page.getByRole('menuitem', { name: 'Open', exact: true })).toBeFocused();
+    await page.getByRole('menuitem', { name: 'Export', exact: true }).press('ArrowDown');
+    await expect(page.getByRole('menuitem', { name: 'PDF', exact: true })).toBeFocused();
+    await page.keyboard.press('ArrowDown');
+    await expect(page.getByRole('menuitem', { name: 'PNG', exact: true })).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('menuitem', { name: 'Export', exact: true })).toBeFocused();
+    await expect(page.locator('[rdxMenuPopup]')).toHaveCount(1);
+    await page.keyboard.press('Home');
+    await expect(page.getByRole('menuitem', { name: 'New', exact: true })).toBeFocused();
+    await page.keyboard.press('ArrowUp');
+    await expect(page.getByRole('menuitem', { name: 'File', exact: true })).toBeFocused();
+    await expect(page.locator(openPopup)).toHaveCount(1);
+    await page.keyboard.press('Escape');
+    await expect(page.locator(openPopup)).toHaveCount(0);
+});
+
 test('default follows Base UI menu and portal anatomy with the shared demo styles', async ({ page }) => {
     await gotoStory(page, 'primitives-menubar--default');
     await expect(page.locator(trigger)).toHaveText(['File', 'Edit', 'View', 'Help']);

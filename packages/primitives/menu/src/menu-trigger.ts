@@ -12,6 +12,7 @@ import {
     PLATFORM_ID,
     signal
 } from '@angular/core';
+import { getCompositeNavigationKeys } from '@radix-ng/primitives/composite';
 import { BooleanInput, injectId, isMouseWithinBounds, NumberInput } from '@radix-ng/primitives/core';
 import { createRdxTriggerInteraction, useTriggerFocusGuards } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
@@ -309,33 +310,33 @@ export class RdxMenuTrigger {
     }
 
     protected handleArrowDown(event: Event): void {
-        if (this.rootContext.handleTriggerInteraction({ type: 'arrowdown', event })) {
-            return;
-        }
-
-        event.preventDefault();
-        if (!this.isDisabled()) {
-            this.rootContext.show('first', 'list-navigation', event);
-        }
+        this.handleArrowNavigation(event, 'arrowdown');
     }
 
     protected handleArrowUp(event: Event): void {
-        if (this.rootContext.handleTriggerInteraction({ type: 'arrowup', event })) {
-            return;
-        }
-
-        event.preventDefault();
-        if (!this.isDisabled()) {
-            this.rootContext.show('last', 'list-navigation', event);
-        }
+        this.handleArrowNavigation(event, 'arrowup');
     }
 
     protected handleArrowLeft(event: Event): void {
-        this.rootContext.handleTriggerInteraction({ type: 'arrowleft', event });
+        this.handleArrowNavigation(event, 'arrowleft');
     }
 
     protected handleArrowRight(event: Event): void {
-        this.rootContext.handleTriggerInteraction({ type: 'arrowright', event });
+        this.handleArrowNavigation(event, 'arrowright');
+    }
+
+    private handleArrowNavigation(event: Event, type: 'arrowdown' | 'arrowup' | 'arrowleft' | 'arrowright'): void {
+        if (this.rootContext.handleTriggerInteraction({ type, event })) return;
+        const keys = getCompositeNavigationKeys(this.rootContext.orientation(), this.rootContext.dir());
+        const key = (event as KeyboardEvent).key;
+        const autoFocus = keys.forwardKeys.includes(key)
+            ? 'first'
+            : keys.backwardKeys.includes(key)
+              ? 'last'
+              : undefined;
+        if (autoFocus === undefined) return;
+        event.preventDefault();
+        if (!this.isDisabled()) this.rootContext.show(autoFocus, 'list-navigation', event);
     }
 
     protected handleHome(event: Event): void {

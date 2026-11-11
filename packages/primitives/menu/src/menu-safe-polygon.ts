@@ -13,6 +13,7 @@
  * - `placement.split('-')[0]` → the `side` option (read live from the popup's `data-side`).
  * - the Floating UI tree (`tree` / `nodeId`) → the `hasOpenChild` callback, backed by the
  *   module-level open-submenu registry.
+ * - A one CSS-pixel buffer covers integer MouseEvent coordinates at fractional layout edges.
  *
  * This deliberately does NOT reuse the core `useGraceArea` composable (tooltip / navigation-menu /
  * popover): that one is a simpler convex-hull grace area with no velocity gating, trough handling, or
@@ -24,7 +25,9 @@ export type MenuSide = 'top' | 'bottom' | 'left' | 'right';
 
 const CURSOR_SPEED_THRESHOLD = 0.1;
 const CURSOR_SPEED_THRESHOLD_SQUARED = CURSOR_SPEED_THRESHOLD * CURSOR_SPEED_THRESHOLD;
-const POLYGON_BUFFER = 0.5;
+// MouseEvent coordinates are integer CSS pixels in Chromium, while layout and hit testing can
+// retain fractions. Cover that quantization at the entry edge until the native target is Popup.
+const POLYGON_BUFFER = 1;
 /** Re-check delay when the cursor is inside the polygon but has not landed on the popup yet. */
 const REST_CHECK_MS = 40;
 

@@ -33,6 +33,7 @@ test.describe('Autocomplete — new floating engine migration', () => {
         await page.locator(input).click();
         await page.locator(input).pressSequentially('f');
         await expect(page.locator(popup)).toBeVisible();
+        await expect(page.locator('[rdxAutocompletePositioner]')).toHaveCSS('visibility', 'visible');
 
         await page.mouse.click(5, 5);
         await expect(page.locator(popup)).toHaveCount(0);

@@ -31,6 +31,7 @@ for (const keepMounted of [false, true]) {
         await opener.press('Enter');
         const field = page.getByRole('textbox', { name: 'Note', exact: true });
         await expect(field).toBeFocused();
+        await expect(page.locator('output')).toHaveText('Completed: open');
         await field.fill('saved draft');
         await page.keyboard.press('Escape');
         await expect(opener).toHaveAttribute('aria-expanded', 'true');

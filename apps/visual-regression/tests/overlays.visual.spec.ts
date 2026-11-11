@@ -26,6 +26,14 @@ test('menubar — file open', async ({ page }) => {
     await shoot(page, 'menubar-file-open.png');
 });
 
+test('menubar — horizontal popup', async ({ page }) => {
+    await gotoStory(page, 'primitives-menubar--horizontal-popup');
+    await page.getByRole('menuitem', { name: 'File', exact: true }).press('ArrowDown');
+    await page.getByRole('menuitem', { name: 'Export', exact: true }).press('ArrowDown');
+    await expect(page.getByRole('menuitem', { name: 'PDF', exact: true })).toBeFocused();
+    await shoot(page, 'menubar-horizontal-popup.png');
+});
+
 test('menubar — submenu open', async ({ page }) => {
     await gotoStory(page, 'primitives-menubar--default');
     await page.getByRole('menuitem', { name: 'File', exact: true }).click();

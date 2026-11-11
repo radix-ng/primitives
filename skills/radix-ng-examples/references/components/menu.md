@@ -17,7 +17,7 @@ A headless dropdown menu anchored to a trigger button.
 - ✅ Optional visual arrow connecting the popup to its trigger (`rdxMenuArrow`).
 - ✅ Optional backdrop overlay behind the popup (`rdxMenuBackdrop`).
 - ✅ Closes on Escape (restoring focus to the trigger), outside pointer interaction, and Tab.
-- ✅ Full keyboard navigation: ArrowDown, ArrowUp, Home, End, and character typeahead.
+- ✅ Orientation-aware arrow navigation, Home, End, and character typeahead.
 - ✅ Focus loop at list boundaries, configurable with `loopFocus`.
 - ✅ Includes disabled items in keyboard navigation while preventing activation.
 - ✅ Dynamic lists can become empty and refill while open. With return focus enabled, removing an open submenu returns focus to a surviving owner trigger.

@@ -12,7 +12,7 @@ import {
     PLATFORM_ID,
     signal
 } from '@angular/core';
-import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
+import { getCompositeNavigationKeys, RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, injectId, NumberInput, rdxPlatform } from '@radix-ng/primitives/core';
 import { RdxFloatingFocusManager } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
@@ -58,8 +58,10 @@ const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();
         '(click)': 'onClick($event)',
         '(keydown.enter)': 'onEnter($event)',
         '(keydown.space)': 'onEnter($event)',
-        '(keydown.arrowleft)': 'onArrowLeft($event)',
-        '(keydown.arrowright)': 'onArrowRight($event)',
+        '(keydown.arrowleft)': 'onArrowKey($event)',
+        '(keydown.arrowright)': 'onArrowKey($event)',
+        '(keydown.arrowup)': 'onArrowKey($event)',
+        '(keydown.arrowdown)': 'onArrowKey($event)',
         '(pointermove)': 'onPointerMove($event)',
         '(pointerenter)': 'onPointerEnter($event)',
         '(pointerleave)': 'onPointerLeave()',
@@ -298,11 +300,13 @@ export class RdxMenuSubTrigger {
         this.focusFirstSubmenuItem();
     }
 
-    protected onArrowRight(event: Event): void {
-        if (this.submenuContext.dir() === 'rtl') {
-            return;
-        }
-
+    protected onArrowKey(event: Event): void {
+        const parentOrientation = this.parentMenuRoot?.orientation() ?? 'vertical';
+        const keys = getCompositeNavigationKeys(
+            parentOrientation === 'horizontal' ? 'vertical' : 'horizontal',
+            this.submenuContext.dir()
+        );
+        if (!keys.forwardKeys.includes((event as KeyboardEvent).key)) return;
         if (this.effectiveDisabled()) return;
         this.clearOpenTimers();
         event.preventDefault();
@@ -313,27 +317,8 @@ export class RdxMenuSubTrigger {
         if (!this.submenuContext.isOpen()) {
             this.closeSiblingSubmenus();
             this.submenuContext.show('first', 'list-navigation', event);
-            this.focusFirstSubmenuItem();
         }
-    }
-
-    protected onArrowLeft(event: Event): void {
-        if (this.submenuContext.dir() !== 'rtl') {
-            return;
-        }
-
-        if (this.effectiveDisabled()) return;
-        this.clearOpenTimers();
-        event.preventDefault();
-        event.stopPropagation();
-        this.openedByHover = false;
-        this.openedByKeyboard.set(true);
-        this.clearSiblingHighlights();
-        if (!this.submenuContext.isOpen()) {
-            this.closeSiblingSubmenus();
-            this.submenuContext.show('first', 'list-navigation', event);
-            this.focusFirstSubmenuItem();
-        }
+        this.focusFirstSubmenuItem();
     }
 
     protected onPointerMove(event: PointerEvent): void {

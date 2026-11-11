@@ -93,7 +93,7 @@ afterEach(() => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
     template: `
-        <div #root="rdxMenuRoot" [(open)]="open" rdxMenuRoot>
+        <div #root="rdxMenuRoot" [(open)]="open" [orientation]="orientation()" [dir]="dir()" rdxMenuRoot>
             <button rdxMenuTrigger>Open</button>
 
             @if (root.open()) {
@@ -109,6 +109,8 @@ afterEach(() => {
     `
 })
 class BasicMenuComponent {
+    readonly orientation = signal<'horizontal' | 'vertical'>('vertical');
+    readonly dir = signal<'ltr' | 'rtl'>('ltr');
     open = false;
     selected: string[] = [];
 }
@@ -542,6 +544,53 @@ class KeepMountedMenuComponent {
 // ─── Spec ─────────────────────────────────────────────────────────────────────
 
 describe('Menu', () => {
+    describe('horizontal lists', () => {
+        it.each([
+            ['ltr', 'ArrowRight', 0],
+            ['ltr', 'ArrowLeft', 2],
+            ['rtl', 'ArrowLeft', 0],
+            ['rtl', 'ArrowRight', 2]
+        ] as const)('opens on %s %s and keeps navigation on its own axis', async (dir, key, index) => {
+            TestBed.resetTestingModule();
+            const fixture = TestBed.createComponent(BasicMenuComponent);
+            fixture.componentInstance.orientation.set('horizontal');
+            fixture.componentInstance.dir.set(dir);
+            fixture.detectChanges();
+            try {
+                const trigger: HTMLElement = fixture.nativeElement.querySelector('[rdxMenuTrigger]');
+                trigger.focus();
+                keydown(trigger, 'ArrowDown');
+                fixture.detectChanges();
+                expect(fixture.componentInstance.open).toBe(false);
+                keydown(trigger, key);
+                fixture.detectChanges();
+                await nextFrame();
+                fixture.detectChanges();
+                const popup: HTMLElement = fixture.nativeElement.querySelector('[rdxMenuPopup]');
+                const items: HTMLElement[] = Array.from(popup.querySelectorAll('[rdxMenuItem]'));
+                expect(popup.getAttribute('aria-orientation')).toBe('horizontal');
+                expect(document.activeElement).toBe(items[index]);
+                keydown(popup, 'ArrowDown');
+                fixture.detectChanges();
+                expect(document.activeElement).toBe(items[index]);
+                keydown(
+                    popup,
+                    index === 0
+                        ? dir === 'ltr'
+                            ? 'ArrowRight'
+                            : 'ArrowLeft'
+                        : dir === 'ltr'
+                          ? 'ArrowLeft'
+                          : 'ArrowRight'
+                );
+                fixture.detectChanges();
+                expect(document.activeElement).toBe(items[1]);
+            } finally {
+                fixture.destroy();
+            }
+        });
+    });
+
     describe('finalFocus (returnFocus override)', () => {
         let fixture: ComponentFixture<FinalFocusMenuComponent>;
         let trigger: HTMLButtonElement;

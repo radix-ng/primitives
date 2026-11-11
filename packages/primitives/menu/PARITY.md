@@ -111,6 +111,9 @@ and re-entry, then uses real down/move/up events for enabled, disabled, stay-ope
 commands. The 200ms release guard is observed without fake clocks. WebKit reports zero deltas while
 trusted viewport coordinates change; exact focus/highlight pairs retain our coordinate guard. The
 macOS click-promotion focus pairs also reflect native button focus behavior.
+An Angular browser regression also repeats RTL diagonal travel with fractional popup sizes measured
+in a Linux CI failure. The safe polygon uses a one CSS-pixel buffer so integer MouseEvent coordinates
+do not fall through the fractional entry edge before native hit testing reaches the child.
 
 Next: entire-root removal, empty-list keyboard promotion, touch emulation and deeper composition in the independent
 [Context Menu](../context-menu/PARITY.md) and [Menubar](../menubar/PARITY.md) suites.

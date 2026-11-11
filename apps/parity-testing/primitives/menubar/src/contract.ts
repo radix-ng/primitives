@@ -1,6 +1,7 @@
 import { collectionCases, type MenuEntry } from '../../../shared/menu-collection';
 import { createMenuProbe, type MenuProbe } from '../../../shared/menu-probe';
 import { compositionCases } from './composition';
+import { orientationCases, orientationConfig } from './orientation';
 import { pointerCases } from './pointer';
 import { retainedCases } from './retained';
 import { stateCases } from './state';
@@ -27,7 +28,8 @@ export const cases = [
     ...compositionCases,
     ...stateCases,
     ...retainedCases,
-    ...pointerCases
+    ...pointerCases,
+    ...orientationCases
 ] as const;
 export function config() {
     const name = new URLSearchParams(location.search).get('case') ?? 'open-keyboard';
@@ -37,14 +39,23 @@ export function config() {
         dir: name === 'rtl-switch' || name.endsWith('-rtl') ? ('rtl' as const) : ('ltr' as const),
         disabled: name === 'disabled',
         keepMounted: name.startsWith('retained-') || name.endsWith('-retained'),
-        side: 'bottom' as const,
+        ...orientationConfig(name),
+        side:
+            name.startsWith('orientation-') && name.includes('-vertical-bar')
+                ? name.endsWith('-rtl')
+                    ? ('left' as const)
+                    : ('right' as const)
+                : ('bottom' as const),
         orientation:
-            name.startsWith('vertical-') || name.endsWith('-vertical')
+            name.startsWith('vertical-') || name.endsWith('-vertical') || name.includes('-vertical-bar')
                 ? ('vertical' as const)
                 : ('horizontal' as const),
         defaultOpen: name.startsWith('state-default-open'),
         controlled: name.startsWith('state-controlled-'),
-        nested: name.startsWith('nested-') || name.startsWith('retained-nested-'),
+        nested:
+            name.startsWith('nested-') ||
+            name.startsWith('retained-nested-') ||
+            (name.startsWith('orientation-') && !name.startsWith('orientation-horizontal')),
         composed: name.endsWith('-composed')
     };
 }

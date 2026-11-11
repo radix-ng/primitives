@@ -1,6 +1,6 @@
 import { computed, DestroyRef, Directive, effect, ElementRef, inject, input, isDevMode, output } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
-import { RdxCompositeList } from '@radix-ng/primitives/composite';
+import { getCompositeNavigationKeys, RdxCompositeList } from '@radix-ng/primitives/composite';
 import {
     findTypeaheadMatch,
     RDX_FLOATING_REGISTRATION,
@@ -165,6 +165,9 @@ export class RdxMenuPopup {
     readonly closeAutoFocus = outputFromObservable(outputToObservable(this.focusScope.unmountAutoFocus));
 
     constructor() {
+        inject(DestroyRef).onDestroy(
+            this.rootContext.registerPopupNavigationHandler((event) => this.handleArrowNavigation(event))
+        );
         // Page scroll lock (Base UI `MenuPositioner`): only while **open** and **modal**, and a hover-open
         // dropdown / context menu does NOT lock (a menubar menu always does when modal). A submenu never
         // locks — its `modal` is already effectively false. For a **touch** open the anchored helper only
@@ -276,10 +279,75 @@ export class RdxMenuPopup {
         }
     }
 
+    private handleArrowNavigation(event: KeyboardEvent): boolean {
+        // A bubbled key from a portaled child reaches the bar's delegated handler before this
+        // ancestor list. A key originating in this popup is consumed by its own navigation first.
+        if (
+            this.rootContext.parentType() === 'menubar' &&
+            event.target instanceof Node &&
+            !this.elementRef.nativeElement.contains(event.target) &&
+            this.rootContext.handlePopupArrowNavigation(event)
+        ) {
+            event.preventDefault();
+            event.stopPropagation();
+            return true;
+        }
+        if (this.rootContext.disabled()) {
+            return this.rootContext.parentType() === 'menubar'
+                ? this.rootContext.handlePopupArrowNavigation(event)
+                : false;
+        }
+        const orientation = this.rootContext.orientation();
+        const dir = this.rootContext.dir();
+        const keys = getCompositeNavigationKeys(orientation, dir);
+        const crossKeys = getCompositeNavigationKeys(orientation === 'horizontal' ? 'vertical' : 'horizontal', dir);
+        const parentOrientation = this.rootContext.parentOrientation();
+
+        if (parentOrientation && crossKeys.backwardKeys.includes(event.key)) {
+            const parentKeys = getCompositeNavigationKeys(parentOrientation, dir);
+            const relay = parentKeys.forwardKeys.includes(event.key) || parentKeys.backwardKeys.includes(event.key);
+            this.rootContext.closeForNavigation(event, !relay);
+            if (relay) this.rootContext.handlePopupArrowNavigation(event);
+            return true;
+        }
+
+        const forward = keys.forwardKeys.includes(event.key);
+        if (forward || keys.backwardKeys.includes(event.key)) {
+            event.preventDefault();
+            event.stopPropagation();
+            const items = this.menuItems();
+            const current = this.currentItemIndex(items);
+            // Retain the requested first index while an application-owned list is empty.
+            if (forward && items.length === 0) this.rootContext.setActiveIndex(0);
+            const next = current + (forward ? 1 : -1);
+            const destination =
+                next >= items.length
+                    ? this.rootContext.loopFocus()
+                        ? 0
+                        : items.length - 1
+                    : next < 0
+                      ? this.rootContext.loopFocus()
+                          ? items.length - 1
+                          : 0
+                      : next;
+            this.focusMenuItem(items[destination]);
+            return true;
+        }
+
+        if (this.rootContext.handlePopupArrowNavigation(event)) {
+            event.preventDefault();
+            event.stopPropagation();
+            return true;
+        }
+        return false;
+    }
+
     protected handleKeydown(event: KeyboardEvent): void {
-        const menubarArrow =
-            this.rootContext.parentType() === 'menubar' && (event.key === 'ArrowLeft' || event.key === 'ArrowRight');
-        if (this.rootContext.disabled() && !menubarArrow) {
+        if (event.key.startsWith('Arrow')) {
+            this.handleArrowNavigation(event);
+            return;
+        }
+        if (this.rootContext.disabled()) {
             return;
         }
 
@@ -287,32 +355,6 @@ export class RdxMenuPopup {
         const currentIndex = this.currentItemIndex(items);
 
         switch (event.key) {
-            case 'ArrowDown': {
-                event.preventDefault();
-                event.stopPropagation();
-                // Retain the requested first index while an application-owned list is empty.
-                if (items.length === 0) this.rootContext.setActiveIndex(0);
-                const atEnd = currentIndex >= items.length - 1;
-                const next = atEnd
-                    ? this.rootContext.loopFocus()
-                        ? items[0]
-                        : items[items.length - 1]
-                    : items[currentIndex + 1];
-                this.focusMenuItem(next);
-                break;
-            }
-            case 'ArrowUp': {
-                event.preventDefault();
-                event.stopPropagation();
-                const atStart = currentIndex <= 0;
-                const prev = atStart
-                    ? this.rootContext.loopFocus()
-                        ? items[items.length - 1]
-                        : items[0]
-                    : items[currentIndex - 1];
-                this.focusMenuItem(prev);
-                break;
-            }
             case 'Home': {
                 event.preventDefault();
                 event.stopPropagation();
@@ -323,39 +365,6 @@ export class RdxMenuPopup {
                 event.preventDefault();
                 event.stopPropagation();
                 this.focusMenuItem(items[items.length - 1]);
-                break;
-            }
-            case 'ArrowLeft': {
-                if (!this.rootContext.isSubmenu()) {
-                    if (this.rootContext.handlePopupArrowNavigation(-1, event)) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                    break;
-                }
-
-                if (this.rootContext.dir() === 'rtl') {
-                    if (this.rootContext.handlePopupArrowNavigation(-1, event)) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                    break;
-                }
-
-                // Close this popup and return focus to the trigger (used by submenus).
-                this.rootContext.closeForNavigation(event);
-                break;
-            }
-            case 'ArrowRight': {
-                if (this.rootContext.isSubmenu() && this.rootContext.dir() === 'rtl') {
-                    this.rootContext.closeForNavigation(event);
-                    break;
-                }
-
-                if (this.rootContext.handlePopupArrowNavigation(1, event)) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
                 break;
             }
             // Escape is owned by the dismissal capability (a document-level listener that works
