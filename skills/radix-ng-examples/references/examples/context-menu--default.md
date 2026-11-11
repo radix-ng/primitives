@@ -9,31 +9,23 @@ Right-click the dashed area to open the menu at the pointer.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideCheck, LucideDot } from '@lucide/angular';
+import { LucideCheck } from '@lucide/angular';
 import { RdxContextMenuModule } from '@radix-ng/primitives/context-menu';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
 import { cn, demoMenu } from '../../storybook/styles';
 
 @Component({
     selector: 'rdx-context-menu-default',
-    imports: [RdxContextMenuModule, RdxMenuModule, LucideCheck, LucideDot],
+    imports: [RdxContextMenuModule, RdxMenuModule, LucideCheck],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <ng-container #root="rdxContextMenuRoot" rdxContextMenuRoot>
-            <div
-                [class]="
-                    cn(
-                        'border-border text-muted-foreground flex h-[150px] w-[300px] items-center justify-center rounded-md border-2 border-dashed text-sm select-none',
-                        'data-[popup-open]:bg-muted data-[popup-open]:border-solid'
-                    )
-                "
-                rdxContextMenuTrigger
-            >
+            <div [class]="cn(m.contextArea, 'h-[150px] w-[300px] max-w-full')" tabindex="0" rdxContextMenuTrigger>
                 Right click here
             </div>
 
             <div *rdxMenuPortal [class]="m.positioner" rdxMenuPositioner>
-                <div [class]="m.popup" rdxMenuPopup>
+                <div [class]="cn(m.popup, 'min-w-56!')" rdxMenuPopup>
                     <button [class]="m.item" rdxMenuItem>
                         Back
                         <span [class]="shortcut">⌘ [</span>
@@ -71,36 +63,36 @@ import { cn, demoMenu } from '../../storybook/styles';
 
                     <div [class]="m.separator" rdxMenuSeparator></div>
 
-                    <label [(checked)]="showBookmarks" [class]="m.selectableItem" rdxMenuCheckboxItem>
-                        <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>
+                    <button [(checked)]="showBookmarks" [class]="m.selectableItem" type="button" rdxMenuCheckboxItem>
+                        <span [class]="m.itemIndicator" aria-hidden="true" rdxMenuCheckboxItemIndicator>
                             <svg [size]="12" lucideCheck></svg>
                         </span>
                         Show Bookmarks
                         <span [class]="shortcut">⌘ B</span>
-                    </label>
-                    <label [(checked)]="showFullUrls" [class]="m.selectableItem" rdxMenuCheckboxItem>
-                        <span [class]="m.itemIndicator" rdxMenuCheckboxItemIndicator>
+                    </button>
+                    <button [(checked)]="showFullUrls" [class]="m.selectableItem" type="button" rdxMenuCheckboxItem>
+                        <span [class]="m.itemIndicator" aria-hidden="true" rdxMenuCheckboxItemIndicator>
                             <svg [size]="12" lucideCheck></svg>
                         </span>
                         Show Full URLs
-                    </label>
+                    </button>
 
                     <div [class]="m.separator" rdxMenuSeparator></div>
 
                     <div [(value)]="person" rdxMenuRadioGroup>
-                        <div [class]="m.groupLabel" rdxMenuGroupLabel>People</div>
-                        <label [class]="m.selectableItem" value="pedro" rdxMenuRadioItem>
-                            <span [class]="m.itemIndicator" rdxMenuRadioItemIndicator>
-                                <svg [size]="10" strokeWidth="5" lucideDot></svg>
+                        <div [class]="cn(m.groupLabel, 'ps-8')" rdxMenuGroupLabel>People</div>
+                        <button [class]="m.selectableItem" type="button" value="pedro" rdxMenuRadioItem>
+                            <span [class]="m.itemIndicator" aria-hidden="true" rdxMenuRadioItemIndicator>
+                                <span [class]="m.radioIndicator"></span>
                             </span>
                             Pedro Duarte
-                        </label>
-                        <label [class]="m.selectableItem" value="colm" rdxMenuRadioItem>
-                            <span [class]="m.itemIndicator" rdxMenuRadioItemIndicator>
-                                <svg [size]="10" strokeWidth="5" lucideDot></svg>
+                        </button>
+                        <button [class]="m.selectableItem" type="button" value="colm" rdxMenuRadioItem>
+                            <span [class]="m.itemIndicator" aria-hidden="true" rdxMenuRadioItemIndicator>
+                                <span [class]="m.radioIndicator"></span>
                             </span>
                             Colm Tuite
-                        </label>
+                        </button>
                     </div>
                 </div>
             </div>

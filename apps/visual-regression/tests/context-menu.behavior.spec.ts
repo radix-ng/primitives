@@ -14,6 +14,52 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
 const trigger = '[rdxContextMenuTrigger]';
 const popup = '[rdxMenuPopup]';
 
+for (const [index, side] of ['top', 'right', 'bottom', 'left'].entries()) {
+    test(`the Sides example opens on the ${side} of the pointer`, async ({ page }) => {
+        await gotoStory(page, 'primitives-context-menu--sides');
+        const area = (await page.locator(trigger).nth(index).boundingBox())!;
+        const point = { x: Math.round(area.x + area.width / 2), y: Math.round(area.y + area.height / 2) };
+        await page.mouse.click(point.x, point.y, { button: 'right' });
+        const menu = page.locator(popup);
+        await expect(menu).toBeVisible();
+        await expect(menu).toHaveAttribute('data-side', side);
+        await expect
+            .poll(async () => {
+                const box = (await menu.boundingBox())!;
+                if (side === 'top') return Math.abs(box.y + box.height - point.y + 8);
+                if (side === 'bottom') return Math.abs(box.y - point.y - 8);
+                if (side === 'left') return Math.abs(box.x + box.width - point.x + 8);
+                return Math.abs(box.x - point.x - 8);
+            })
+            .toBeLessThanOrEqual(2);
+        await page.getByRole('menuitem', { name: 'Reload', exact: true }).click();
+        await expect(menu).toHaveCount(0);
+    });
+}
+
+test('the Radio example keeps two labeled groups independent and retains their selection', async ({ page }) => {
+    await gotoStory(page, 'primitives-context-menu--radio');
+    await page.locator(trigger).click({ button: 'right' });
+    const people = page.getByRole('group', { name: 'People', exact: true });
+    const theme = page.getByRole('group', { name: 'Theme', exact: true });
+    await expect(people.getByRole('menuitemradio', { name: 'Pedro Duarte' })).toHaveAttribute('aria-checked', 'true');
+    await expect(theme.getByRole('menuitemradio', { name: 'Light', exact: true })).toHaveAttribute(
+        'aria-checked',
+        'true'
+    );
+    await people.getByRole('menuitemradio', { name: 'Colm Tuite' }).click();
+    await theme.getByRole('menuitemradio', { name: 'System' }).focus();
+    await page.keyboard.press('Enter');
+    await expect(page.locator(popup)).toBeVisible();
+    await expect(page.locator('output')).toHaveText('Selected: colm / system');
+    await expect(people.getByRole('menuitemradio', { checked: true })).toHaveText('Colm Tuite');
+    await expect(theme.getByRole('menuitemradio', { checked: true })).toHaveText('System');
+    await page.keyboard.press('Escape');
+    await page.locator(trigger).click({ button: 'right' });
+    await expect(people.getByRole('menuitemradio', { checked: true })).toHaveText('Colm Tuite');
+    await expect(theme.getByRole('menuitemradio', { checked: true })).toHaveText('System');
+});
+
 test('a nested context area opens once without reopening its parent', async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));

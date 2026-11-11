@@ -124,3 +124,21 @@ test('context-menu — nested areas and submenu', async ({ page }) => {
     await expect(page.getByRole('menuitem', { name: 'Copy link', exact: true })).toBeFocused();
     await shoot(page, 'context-menu-nested-areas.png');
 });
+
+test('context-menu — radio groups', async ({ page }) => {
+    await gotoStory(page, 'primitives-context-menu--radio');
+    await page.locator('[rdxContextMenuTrigger]').click({ button: 'right' });
+    await expect(page.getByRole('menuitemradio', { name: 'Pedro Duarte' })).toBeVisible();
+    await page.mouse.move(5, 5);
+    await shoot(page, 'context-menu-radio.png');
+});
+
+for (const [index, side] of ['top', 'right', 'bottom', 'left'].entries()) {
+    test(`context-menu — ${side} side`, async ({ page }) => {
+        await gotoStory(page, 'primitives-context-menu--sides');
+        await page.locator('[rdxContextMenuTrigger]').nth(index).click({ button: 'right' });
+        await expect(page.locator('[rdxMenuPopup]')).toHaveAttribute('data-side', side);
+        await page.mouse.move(5, 5);
+        await shoot(page, `context-menu-side-${side}.png`);
+    });
+}

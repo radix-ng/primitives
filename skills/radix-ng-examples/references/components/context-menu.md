@@ -66,6 +66,8 @@ standard Menu parts and positioned at the pointer, so `rdxMenuPositioner` needs 
 ## Examples
 
 - [Default](../examples/context-menu--default.md)
+- [Radio](../examples/context-menu--radio.md)
+- [Sides](../examples/context-menu--sides.md)
 - [Shared menu across areas](../examples/context-menu--shared-menu-across-areas.md)
 - [Nested context areas](../examples/context-menu--nested-context-areas.md)
 

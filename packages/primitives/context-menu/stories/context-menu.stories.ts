@@ -4,6 +4,10 @@ import { RdxContextMenuAreasComponent } from './context-menu-areas';
 import areasSource from './context-menu-areas?raw';
 import { RdxContextMenuDefaultComponent } from './context-menu-default';
 import defaultSource from './context-menu-default?raw';
+import { RdxContextMenuRadioComponent } from './context-menu-radio';
+import radioSource from './context-menu-radio?raw';
+import { RdxContextMenuSidesComponent } from './context-menu-sides';
+import sidesSource from './context-menu-sides?raw';
 
 const html = String.raw;
 
@@ -16,7 +20,14 @@ const source = (code: string) => ({
 export default {
     title: 'Primitives/Context Menu',
     decorators: [
-        moduleMetadata({ imports: [RdxContextMenuDefaultComponent, RdxContextMenuAreasComponent] }),
+        moduleMetadata({
+            imports: [
+                RdxContextMenuDefaultComponent,
+                RdxContextMenuRadioComponent,
+                RdxContextMenuSidesComponent,
+                RdxContextMenuAreasComponent
+            ]
+        }),
         tailwindDemoDecorator()
     ]
 } as Meta;
@@ -28,6 +39,24 @@ export const Default: Story = {
     render: () => ({
         template: html`
             <rdx-context-menu-default />
+        `
+    })
+};
+
+export const Radio: Story = {
+    parameters: source(radioSource),
+    render: () => ({
+        template: html`
+            <rdx-context-menu-radio />
+        `
+    })
+};
+
+export const Sides: Story = {
+    parameters: source(sidesSource),
+    render: () => ({
+        template: html`
+            <rdx-context-menu-sides />
         `
     })
 };

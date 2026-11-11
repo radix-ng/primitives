@@ -73,6 +73,5 @@ export class RdxContextMenuAreasComponent {
     protected readonly selected = signal('none');
     protected readonly cn = cn;
     protected readonly m = demoMenu;
-    protected readonly area =
-        'border-border text-muted-foreground flex min-h-28 min-w-40 items-center justify-center rounded-md border-2 border-dashed p-4 text-sm select-none focus-visible:outline-2 focus-visible:outline-ring';
+    protected readonly area = cn(demoMenu.contextArea, 'min-h-28 min-w-40');
 }

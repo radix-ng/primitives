@@ -85,6 +85,23 @@ Right-click the dashed area to open the menu at the pointer.
 
 <Canvas of={Stories.Default} />
 
+### Radio
+
+Use Menu radio groups for independent, exclusive choices. Each group has an associated label;
+its selected item has a centered indicator and the same text inset as the label. Selection stays
+open and updates the Angular signals shown below the area. The Theme group is example state;
+the Storybook toolbar controls the preview theme.
+
+<Canvas sourceState="hidden" of={Stories.Radio} />
+
+### Sides
+
+Set `side` on `rdxMenuPositioner` to prefer `top`, `right`, `bottom`, or `left` relative to the
+pointer anchor. Each area owns an independent menu. `sideOffset` leaves a gap, and collision
+avoidance can flip the popup when its preferred side has insufficient space.
+
+<Canvas sourceState="hidden" of={Stories.Sides} />
+
 ### Shared menu across areas
 
 Place several `rdxContextMenuTrigger` areas inside one Root to reuse the same popup at each native

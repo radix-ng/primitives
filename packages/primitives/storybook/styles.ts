@@ -529,6 +529,10 @@ export const demoMenubar = {
  * `data-[highlighted]` which the directives set on focus.
  */
 export const demoMenu = {
+    contextArea: cn(
+        'border-border text-muted-foreground flex items-center justify-center rounded-md border-2 border-dashed p-4 text-sm select-none',
+        'focus-visible:outline-2 focus-visible:outline-ring data-[popup-open]:border-solid data-[popup-open]:bg-muted'
+    ),
     positioner: 'z-50 data-[closed]:pointer-events-none',
     // Override popup's closed-state hiding until Positioner hides the settled exit. Key the exit
     // directly on data-closed so Presence observes it on the first render of the close transaction.
@@ -544,14 +548,16 @@ export const demoMenu = {
         'data-[highlighted]:bg-muted data-[highlighted]:outline data-[highlighted]:outline-1 data-[highlighted]:outline-border',
         'data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
     ),
-    /** Checkbox / radio items need left padding for the indicator. */
+    /** Checkbox / radio items reserve leading space for the indicator. */
     selectableItem: cn(
-        'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none',
+        'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 ps-8 pe-2 text-start text-sm outline-none',
         'data-[highlighted]:bg-muted data-[highlighted]:outline data-[highlighted]:outline-1 data-[highlighted]:outline-border',
         'data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
     ),
-    /** Absolute-positioned span wrapping the check/dot icon. */
-    itemIndicator: 'absolute left-2 flex size-3.5 items-center justify-center',
+    /** Center the selection indicator independently of the row's line height. */
+    itemIndicator:
+        'pointer-events-none absolute start-2 top-1/2 flex size-3.5 -translate-y-1/2 items-center justify-center',
+    radioIndicator: 'size-2 shrink-0 rounded-full bg-current',
     separator: '-mx-1 my-1 h-px bg-border',
     groupLabel: 'px-2 py-1.5 text-xs font-semibold text-muted-foreground',
     arrow: demoArrow('text-popover')
