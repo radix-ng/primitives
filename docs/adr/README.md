@@ -83,3 +83,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0049](0049-menu-trusted-touch.md)                                           | Accepted               | Compare Menu through trusted touch input                                             |
 | [0050](0050-menu-hybrid-input.md)                                            | Accepted               | Preserve Menu sessions across mixed input                                            |
 | [0051](0051-menu-native-host-activation.md)                                  | Accepted               | Activate Menu through native host clicks                                             |
+| [0052](0052-menu-initial-focus-boundaries.md)                                | Accepted               | Resolve Menu initial focus and retained Tab-stop boundaries                          |

@@ -28,11 +28,12 @@ This is incremental behavioral evidence, not complete API or accessibility certi
 | Native touch cancel/pan and touch-opened small/wide scroll policy                         | Pinned suite, Chromium CDP; tap/wheel policy also WebKit | Covered within emulator capabilities                            |
 | Mixed mouse/touch/keyboard, retained sessions, submenu toggles/veto and ARIA              | Pinned suite, Chromium/WebKit and public examples        | Covered; exact native event/focus pairs below                   |
 | Native/custom Item, LinkItem and SubTrigger keyboard activation, modifiers and navigation | Pinned suite, three engines and public example           | Covered for button/div/anchor hosts                             |
-| Initial keyboard focus with a disabled first item                                         | Separate comparison needed                               | Pending                                                         |
+| Initial keyboard focus with disabled first/all/single items, nested and retained lists    | Pinned suite, three engines and public example           | Covered; enabled initial entry, disabled arrow navigation       |
+| Forward Tab from a reopened retained submenu                                              | Native diagnostic against pin, ADR 0052                  | Pending logical portal handoff                                  |
 | Real touch, devices and assistive technology                                              | Not established by this suite                            | Pending                                                         |
 
-The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 162 scenarios and
-486 planned comparisons: 438 execute, with 48 touch capability skips. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
+The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 175 scenarios and
+525 planned comparisons: 477 execute, with 48 touch capability skips. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
 state. Checkbox/radio change requests are observed before cancellation; original event types and
 trusted pointer coordinates are retained. No adapter forces focus, open state or completion.
 
@@ -128,7 +129,7 @@ An Angular browser regression also repeats RTL diagonal travel with fractional p
 in a Linux CI failure. The safe polygon uses a one CSS-pixel buffer so integer MouseEvent coordinates
 do not fall through the fractional entry edge before native hit testing reaches the child.
 
-Next: initial disabled-item focus boundaries and further lifecycle/API combinations, plus deeper composition in the independent
+Next: retained-submenu Tab departure and further lifecycle/API combinations, plus deeper composition in the independent
 [Context Menu](../context-menu/PARITY.md) and [Menubar](../menubar/PARITY.md) suites.
 Device/assistive-technology work remains open. See [ADR 0038](../../../docs/adr/0038-menu-collection-boundaries.md).
 
@@ -204,7 +205,7 @@ observable, with exact source-event adaptations documented above.
 Hover promotion retains the session's original scroll policy. A fresh touch opening starts a new
 small/wide policy. Placement settles before the wheel probe on both the first and subsequent open.
 The new cases pass in Chromium/WebKit on macOS and Linux; unsupported Firefox touch contexts are
-capability skips. Further API/lifecycle and initial disabled-item focus audits remain open.
+capability skips. Further API/lifecycle and retained-submenu Tab departure audits remain open.
 
 ## Native host activation
 
@@ -219,5 +220,21 @@ for a fresh retained session. Native Elements demonstrates ordinary Angular clic
 old keyboard source-event differences now match the pin and have been removed; hover/focus pairs
 remain. See [ADR 0051](../../../docs/adr/0051-menu-native-host-activation.md).
 
-Disabled activation is compared after pointer opening and native arrow entry. Initial keyboard
-focus on a disabled first item is a distinct pending boundary, not certified by these host cases.
+Disabled activation is compared after pointer opening and native arrow entry. Initial keyboard focus is compared separately in the following boundary suite.
+
+## Initial focus boundaries
+
+Thirteen cases add 39 comparisons for native Enter/Space/Up/Down, pointer opens, disabled-first
+button/div/anchor hosts, single/all-disabled lists and nested/retained reopening. Initial keyboard
+entry chooses an enabled item; an all-disabled root focuses Popup without highlight. Once open,
+arrows and Home/End still include disabled items, whose activation remains prevented.
+
+The initial selector is shared by Popup scope activation and trigger recovery. SubTrigger keeps its
+Tab entry while its child is open. Focus bridge disposal restores suspended attributes before the
+owning Angular view applies closed-state tabindex bindings, so retained reopening has one authored
+Tab stop. Setup still waits for rendered queries/bindings. No exception pairs were added.
+
+Initial Focus demonstrates the contract. Native root Tab departure is checked; forward Tab out of
+a reopened retained submenu remains pending: Angular returns to More with both menus open, while
+the pin closes the chain and focuses the following input. See
+[ADR 0052](../../../docs/adr/0052-menu-initial-focus-boundaries.md) for the precise scope and next step.

@@ -48,7 +48,9 @@ export class MenuDriver {
             await expect(this.popup).toBeHidden();
         } else await expect(this.popup).toHaveCount(0);
         const retainedSub = await this.page.evaluate(
-            () => window.menuParity.config.empty?.retained && window.menuParity.config.empty.nested
+            () =>
+                (window.menuParity.config.empty?.retained && window.menuParity.config.empty.nested) ||
+                (window.menuParity.config.host?.initial?.nested && window.menuParity.config.host.retained)
         );
         if (retainedSub) await expect(this.subPopup).toBeHidden();
         else await expect(this.subPopup).toHaveCount(0);
@@ -95,6 +97,15 @@ export class MenuDriver {
                         ?.split(/\s+/)
                         .every((id) => document.getElementById(id)?.textContent?.trim());
                 return {
+                    ...(window.menuParity.config.host?.initial
+                        ? {
+                              tabStops: items.map((el) => ({
+                                  id: el.dataset.testid,
+                                  index: el.tabIndex,
+                                  nativeDisabled: el.hasAttribute('disabled')
+                              }))
+                          }
+                        : {}),
                     ...(window.menuParity.config.host
                         ? {
                               hostClicks: window.menuParity.config.host.disabled

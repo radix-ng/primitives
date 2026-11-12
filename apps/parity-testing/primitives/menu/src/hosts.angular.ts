@@ -63,25 +63,31 @@ import { installHostProbe } from './hosts-probe';
                                             Action
                                         </div>
                                     }
-                                    <div
-                                        class="z-50"
-                                        *rdxMenuPortal
-                                        side="right"
-                                        align="start"
-                                        sideOffset="4"
-                                        rdxMenuPositioner
-                                    >
-                                        <div [class]="s.popup" data-testid="sub-popup" rdxMenuPopup>
-                                            <button
-                                                [class]="s.item"
-                                                (onSelect)="trace.select('sub-alpha')"
-                                                data-testid="sub-alpha"
-                                                rdxMenuItem
-                                            >
-                                                Child
-                                            </button>
+                                    <ng-template [keepMounted]="h.retained" rdxMenuPortal>
+                                        <div class="z-50" side="right" align="start" sideOffset="4" rdxMenuPositioner>
+                                            <div [class]="s.popup" data-testid="sub-popup" rdxMenuPopup>
+                                                <button
+                                                    [class]="s.item"
+                                                    [disabled]="!!h.initial?.nested"
+                                                    (onSelect)="trace.select('sub-alpha')"
+                                                    data-testid="sub-alpha"
+                                                    rdxMenuItem
+                                                >
+                                                    Child
+                                                </button>
+                                                @if (h.initial?.nested) {
+                                                    <button
+                                                        [class]="s.item"
+                                                        (onSelect)="trace.select('sub-bravo')"
+                                                        data-testid="sub-bravo"
+                                                        rdxMenuItem
+                                                    >
+                                                        Child beta
+                                                    </button>
+                                                }
+                                            </div>
                                         </div>
-                                    </div>
+                                    </ng-template>
                                 </ng-container>
                             } @else if (h.link) {
                                 <a
@@ -146,9 +152,17 @@ import { installHostProbe } from './hosts-probe';
                                     Action
                                 </div>
                             }
-                            <button [class]="s.item" (onSelect)="trace.select('alpha')" data-testid="alpha" rdxMenuItem>
-                                Alpha
-                            </button>
+                            @if (!h.initial?.single) {
+                                <button
+                                    [class]="s.item"
+                                    [disabled]="!!h.initial?.allDisabled"
+                                    (onSelect)="trace.select('alpha')"
+                                    data-testid="alpha"
+                                    rdxMenuItem
+                                >
+                                    Alpha
+                                </button>
+                            }
                         </div>
                     </div>
                 </ng-template>

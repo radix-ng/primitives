@@ -160,6 +160,14 @@ A basic dropdown with regular items, a disabled item, and a separator.
 
 <Canvas of={Stories.Default} />
 
+### Initial focus
+
+Enter, Space and the opening arrow choose the first/last enabled item. When every item is disabled,
+focus stays on Popup. Once open, arrows and Home/End may focus disabled items without activating
+them. A retained popup clears its Tab stops when closed and chooses its initial item again on reopen.
+
+<Canvas of={Stories.InitialFocus} />
+
 ### Native elements
 
 Buttons, links and custom item hosts share the normal `(click)` path for pointer and keyboard

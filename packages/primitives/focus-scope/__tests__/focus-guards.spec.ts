@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { ChangeDetectionStrategy, Component, ElementRef, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, describe, expect, it } from 'vitest';
 import {
@@ -133,6 +133,51 @@ describe('focus guards', () => {
             // focus returns into the portal from outside → content tabbability restored
             portal.dispatchEvent(new FocusEvent('focusin', { bubbles: true, relatedTarget: outside }));
             expect(inner.hasAttribute('tabindex')).toBe(false);
+        });
+
+        it('restores a suspended snapshot before Angular applies retained roving bindings', async () => {
+            @Component({
+                template: `
+                    <div #portal>
+                        <button [attr.tabindex]="open() && index() === 0 ? 0 : -1">First</button>
+                        <button [attr.tabindex]="open() && index() === 1 ? 0 : -1">Second</button>
+                    </div>
+                `
+            })
+            class RovingHost {
+                readonly open = signal(true);
+                readonly index = signal(0);
+                readonly portal = viewChild.required('portal', { read: ElementRef });
+                constructor() {
+                    useFocusGuardsTabbability(() => this.portal()?.nativeElement ?? null, {
+                        enabled: () => this.open()
+                    });
+                }
+            }
+            const outside = document.createElement('button');
+            document.body.appendChild(outside);
+            appended.push(outside);
+            outside.focus();
+            const fixture = TestBed.createComponent(RovingHost);
+            fixture.autoDetectChanges();
+            try {
+                await fixture.whenStable();
+                const [first, second] = fixture.nativeElement.querySelectorAll(
+                    'button'
+                ) as NodeListOf<HTMLButtonElement>;
+                first.focus();
+                outside.focus(); // The bridge suspends the currently authored tabindex=0.
+                fixture.componentInstance.open.set(false);
+                await fixture.whenStable();
+                expect([first.tabIndex, second.tabIndex]).toEqual([-1, -1]);
+                fixture.componentInstance.index.set(1);
+                fixture.componentInstance.open.set(true);
+                await fixture.whenStable();
+                second.focus();
+                expect([first.tabIndex, second.tabIndex]).toEqual([-1, 0]);
+            } finally {
+                fixture.destroy();
+            }
         });
 
         it('disables content tabbability on mount while focus is outside', () => {

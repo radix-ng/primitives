@@ -15,6 +15,8 @@ import { RdxMenuDefaultComponent } from './menu-default';
 import defaultSource from './menu-default?raw';
 import { RdxMenuEventsComponent } from './menu-events';
 import eventsSource from './menu-events?raw';
+import { RdxMenuInitialFocusComponent } from './menu-initial-focus';
+import initialFocusSource from './menu-initial-focus?raw';
 import { RdxMenuKeepMountedComponent } from './menu-keep-mounted';
 import keepMountedSource from './menu-keep-mounted?raw';
 import { RdxMenuLifecycleComponent } from './menu-lifecycle';
@@ -44,6 +46,7 @@ export default {
         moduleMetadata({
             imports: [
                 RdxMenuDefaultComponent,
+                RdxMenuInitialFocusComponent,
                 RdxMenuNativeElementsComponent,
                 RdxMenuNestedComponent,
                 RdxMenuNestedRtlComponent,
@@ -78,6 +81,15 @@ export const NativeElements: Story = {
     render: () => ({
         template: html`
             <rdx-menu-native-elements />
+        `
+    })
+};
+
+export const InitialFocus: Story = {
+    parameters: source(initialFocusSource),
+    render: () => ({
+        template: html`
+            <rdx-menu-initial-focus />
         `
     })
 };

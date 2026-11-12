@@ -48,18 +48,30 @@ export function ReactHosts() {
                                     >
                                         Action
                                     </Menu.SubmenuTrigger>
-                                    <Menu.Portal>
+                                    <Menu.Portal keepMounted={h.retained}>
                                         <Menu.Positioner className="z-50" side="right" align="start" sideOffset={4}>
                                             <Menu.Popup className={s.popup} data-testid="sub-popup">
                                                 <Menu.Item
                                                     render={<button />}
                                                     nativeButton
                                                     className={s.item}
+                                                    disabled={!!h.initial?.nested}
                                                     data-testid="sub-alpha"
                                                     onClick={() => trace.select('sub-alpha')}
                                                 >
                                                     Child
                                                 </Menu.Item>
+                                                {h.initial?.nested && (
+                                                    <Menu.Item
+                                                        render={<button />}
+                                                        nativeButton
+                                                        className={s.item}
+                                                        data-testid="sub-bravo"
+                                                        onClick={() => trace.select('sub-bravo')}
+                                                    >
+                                                        Child beta
+                                                    </Menu.Item>
+                                                )}
                                             </Menu.Popup>
                                         </Menu.Positioner>
                                     </Menu.Portal>
@@ -90,15 +102,20 @@ export function ReactHosts() {
                                     Action
                                 </Menu.Item>
                             )}
-                            <Menu.Item
-                                render={<button />}
-                                nativeButton
-                                className={s.item}
-                                data-testid="alpha"
-                                onClick={() => trace.select('alpha')}
-                            >
-                                Alpha
-                            </Menu.Item>
+                            {!h.initial?.single && (
+                                <>
+                                    <Menu.Item
+                                        render={<button />}
+                                        disabled={!!h.initial?.allDisabled}
+                                        nativeButton
+                                        className={s.item}
+                                        data-testid="alpha"
+                                        onClick={() => trace.select('alpha')}
+                                    >
+                                        Alpha
+                                    </Menu.Item>
+                                </>
+                            )}
                         </Menu.Popup>
                     </Menu.Positioner>
                 </Menu.Portal>

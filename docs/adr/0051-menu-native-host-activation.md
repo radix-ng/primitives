@@ -64,7 +64,8 @@ keydown. Enter on a native host is browser-generated; composite Space/custom-hos
 modifiers and have isTrusted=false. Inspect the original event accordingly. Reasons and
 cancelable transactions retain their existing contract.
 
-Initial keyboard focus when the first item is disabled needs a separate focus-boundary comparison:
+This initial-focus boundary is now covered by [ADR 0052](0052-menu-initial-focus-boundaries.md).
+At the time of this host audit, initial keyboard focus when the first item is disabled needed a separate comparison:
 the pinned fixture did not reach that first disabled button through the initial keyboard entry.
 The host suite certifies disabled activation after pointer opening and keyboard entry, not that
 initial-focus boundary. Interactive form controls nested inside a menuitem are also outside this

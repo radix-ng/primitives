@@ -5,7 +5,7 @@ port is 4505. Angular fixtures are AOT compiled and React imports the unmodified
 Base UI 1.9.0 pin: `cf696d6f6e08c699c5bda24d5a033430909f2285`, archive SHA-256
 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 
-162 scenarios define 486 planned comparisons: 438 execute, with 48 touch capability skips. They cover native keyboard and
+175 scenarios define 525 planned comparisons: 477 execute, with 48 touch capability skips. They cover native keyboard and
 pointer opening, disabled/focusable items, roving focus, edges and looping, repeated and explicit-label
 typeahead, selection and stay-open items, cancelable transactions, modal/background activation,
 forward/backward Tab, checkbox/radio values, LTR/RTL submenu ownership and custom identity links.
@@ -54,7 +54,7 @@ scope. Unchanged/disappeared exceptions fail; there is no blanket normalization 
 
 Custom IDs change between opens in the differential scenario: the pin keys trigger registration
 by id. Angular additionally supports live ID changes without replacing the popup, checked through
-the Events story and unit/browser regressions. Pending work includes initial disabled-item focus boundaries, further API/lifecycle combinations and real device/AT verification.
+the Events story and unit/browser regressions. Pending work includes retained-submenu Tab departure, further API/lifecycle combinations and real device/AT verification.
 
 ## Whole-root removal
 
@@ -133,9 +133,22 @@ Twenty-three cases add 69 comparisons in all three engines. The host fixtures ar
 React modules using real button/div/anchor elements, application click listeners and native fragment
 navigation. Modified links use an application navigation guard after recording the original event;
 no adapter repairs modifiers, trust or focus. Disabled cases use pointer opening followed by real
-arrows, Enter and Space; initial disabled-first keyboard focus remains a separate pending audit.
+arrows, Enter and Space; initial disabled-first keyboard focus is covered by the separate boundary cases below.
 
 The observations compare a single click, original modifiers/trust, selection, focus and navigation.
 Space extends typeahead; closing clears its query for a fresh retained session. Existing checkbox/
 radio cases verify one activation through Space keyup. Run `pnpm test-parity menu --grep host-`
 for this increment. See [ADR 0051](../../../../docs/adr/0051-menu-native-host-activation.md).
+
+## Initial focus boundaries
+
+Run `pnpm test-parity menu --grep initial-disabled`. Thirteen scenarios / 39 comparisons reuse the
+native host fixtures for disabled-first and all/single-disabled roots, nested lists, directional
+opening and retained reopening. The recordings include each actual tabindex/native-disabled state.
+A shared initial selector prefers enabled edges; navigation still includes disabled items. SubTrigger
+keeps its Tab entry while open. Bridge cleanup preserves current Angular bindings through close/reopen.
+
+All three engines pass on macOS/Linux, without new exceptions or skips. The public Initial Focus
+example has focused browser checks. Forward Tab from a reopened retained submenu is separately
+pending; its initial-focus case finishes with Escape. See
+[ADR 0052](../../../../docs/adr/0052-menu-initial-focus-boundaries.md).

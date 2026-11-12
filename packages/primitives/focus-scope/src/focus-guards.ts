@@ -1,4 +1,4 @@
-import { afterRenderEffect } from '@angular/core';
+import { afterRenderEffect, effect, untracked } from '@angular/core';
 import { rdxPlatform } from '@radix-ng/primitives/core';
 import { composedContains, queryComposedAll, tabbable } from './utils';
 
@@ -109,7 +109,17 @@ export function useFocusGuardsTabbability(
     options: { enabled?: () => boolean; isInside?: (target: Node) => boolean } = {}
 ): void {
     const enabled = options.enabled ?? (() => true);
-    let focusInsideDisabled = false;
+    let dispose: (() => void) | undefined;
+
+    // Dispose while Angular can still apply current host bindings. After-render cleanup would
+    // overwrite a closing composite's new tabindex=-1 with the previous open snapshot.
+    // Read the node only after render: callers may supply a required viewChild query.
+    effect(
+        (onCleanup) => {
+            if (enabled()) onCleanup(() => dispose?.());
+        },
+        { debugName: 'RdxFocusGuards.tabbabilityCleanup' }
+    );
 
     // Snapshot authored tabindex only after Angular applies host bindings. Before render, native
     // buttons still look tabbable and restoring that stale snapshot breaks composite roving focus.
@@ -118,6 +128,7 @@ export function useFocusGuardsTabbability(
         if (!node || !enabled()) {
             return;
         }
+        let focusInsideDisabled = false;
         const ownerDocument = node.ownerDocument;
         const isInside = options.isInside ?? ((target: Node) => composedContains(node, target));
 
@@ -137,20 +148,23 @@ export function useFocusGuardsTabbability(
             }
         };
 
-        if (!ownerDocument.activeElement || !isInside(ownerDocument.activeElement)) {
+        if (untracked(() => !ownerDocument.activeElement || !isInside(ownerDocument.activeElement))) {
             disableFocusInside(node);
             focusInsideDisabled = true;
         }
 
         node.addEventListener('focusin', onFocus, true);
         node.addEventListener('focusout', onFocus, true);
-        onCleanup(() => {
+        const cleanup = () => {
             node.removeEventListener('focusin', onFocus, true);
             node.removeEventListener('focusout', onFocus, true);
             if (focusInsideDisabled) {
                 enableFocusInside(node);
                 focusInsideDisabled = false;
             }
-        });
+            if (dispose === cleanup) dispose = undefined;
+        };
+        dispose = cleanup;
+        onCleanup(cleanup);
     });
 }

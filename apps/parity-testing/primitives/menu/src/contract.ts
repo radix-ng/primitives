@@ -5,6 +5,7 @@ import { rootRemovalCases, rootRemovalConfig } from '../../../shared/root-remova
 import { emptyCases, emptyConfig } from './empty';
 import { hostCases, hostConfig, type HostClick } from './hosts';
 import { hybridCases } from './hybrid';
+import { initialFocusCases } from './initial-focus';
 import { pointerCases, pointerConfig } from './pointer';
 import { touchCases, touchConfig } from './touch';
 
@@ -53,6 +54,7 @@ export const cases = [
     ...touchCases,
     ...hybridCases,
     ...hostCases,
+    ...initialFocusCases,
     ...rootRemovalCases,
     'lifecycle-submenu-css'
 ] as const;

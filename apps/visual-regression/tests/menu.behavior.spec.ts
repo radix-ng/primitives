@@ -14,6 +14,50 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
 const trigger = '[rdxMenuTrigger]';
 const popup = '[rdxMenuPopup]';
 
+for (const mode of ['Enter', 'Space', 'ArrowDown', 'ArrowUp', 'all disabled', 'retained'] as const) {
+    test(`Menu initial focus: ${mode}`, async ({ page }) => {
+        const errors: string[] = [];
+        page.on('pageerror', (error) => errors.push(error.message));
+        page.on('console', (message) => {
+            if (message.type() === 'error') errors.push(message.text());
+        });
+        await gotoStory(page, 'primitives-menu--initial-focus');
+        if (mode === 'all disabled') await page.getByLabel('All items disabled', { exact: true }).check();
+        if (mode === 'retained') await page.getByLabel('Keep mounted', { exact: true }).check();
+        const primary = page.getByRole('button', { name: 'Actions', exact: true });
+        await primary.press(mode === 'all disabled' || mode === 'retained' ? 'Enter' : mode);
+        const first = page.locator('[rdxMenuItem]').filter({ hasText: 'First command' });
+        const second = page.locator('[rdxMenuItem]').filter({ hasText: 'Second command' });
+        if (mode === 'all disabled') {
+            await expect(page.locator(popup)).toBeFocused();
+            await expect(page.locator('[data-highlighted]')).toHaveCount(0);
+            await page.keyboard.press('ArrowDown');
+        } else {
+            await expect(second).toBeFocused();
+            await expect(first).toHaveAttribute('tabindex', '-1');
+            await page.keyboard.press('Home');
+        }
+        await expect(first).toBeFocused();
+        await page.keyboard.press('Enter');
+        await page.keyboard.press('Space');
+        await expect(page.locator('output')).toHaveText('Selected: none');
+        await page.keyboard.press('Escape');
+        await expect(primary).toBeFocused();
+        if (mode === 'retained') {
+            await expect(page.locator(popup)).toBeHidden();
+            await expect(first).toHaveAttribute('tabindex', '-1');
+            await expect(second).toHaveAttribute('tabindex', '-1');
+            await primary.press('Enter');
+            await expect(second).toBeFocused();
+            await expect(first).toHaveAttribute('tabindex', '-1');
+            await expect(second).toHaveAttribute('tabindex', '0');
+            await page.keyboard.press('Tab');
+            await expect(page.locator(popup)).toBeHidden();
+        } else await expect(page.locator(popup)).toHaveCount(0);
+        expect(errors).toEqual([]);
+    });
+}
+
 for (const mode of [
     'button Enter',
     'button Space',

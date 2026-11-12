@@ -6,6 +6,7 @@ import type { MenuDriver } from './driver';
 import { emptyScenarios } from './empty.scenarios';
 import { hostScenarios } from './hosts.scenarios';
 import { hybridScenarios } from './hybrid.scenarios';
+import { initialFocusScenarios } from './initial-focus.scenarios';
 import { lifecycleScenarios } from './lifecycle.scenarios';
 import { pointerScenarios } from './pointer.scenarios';
 import { touchScenarios } from './touch.scenarios';
@@ -181,6 +182,7 @@ export const scenarios = [
     ...touchScenarios,
     ...hybridScenarios,
     ...hostScenarios,
+    ...initialFocusScenarios,
     ...rootRemovalScenarios<MenuDriver>({
         popup: 'popup',
         child: 'sub-popup',

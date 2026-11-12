@@ -19,7 +19,7 @@ import {
     useTriggerFocusGuards
 } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
-import { getFocusableMenuItems } from './menu-focus';
+import { getFocusableMenuItems, getMenuInitialFocusItem } from './menu-focus';
 import { findMenuOwnerId } from './menu-owner';
 import { injectRdxMenuRootContext } from './menu-root';
 import { applyPointerTunnel, createSafePolygonHandler, hasOpenChildSubmenu } from './menu-safe-polygon';
@@ -483,7 +483,7 @@ export class RdxMenuTrigger {
                 return;
             }
 
-            const firstItem = getFocusableMenuItems(popup)[0];
+            const firstItem = getMenuInitialFocusItem(popup);
             (firstItem ?? popup).focus({ preventScroll: true });
         };
 

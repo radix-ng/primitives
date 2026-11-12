@@ -118,7 +118,17 @@ a duplicate click. Native item buttons default to type=button only when no expli
 Popup supplies its existing query through a Root registration getter and clears
 query/timer on close, including retained views. Space during search continues typeahead. The old
 native-keyboard-events exceptions are superseded by matching activation clicks; hover/focus pairs
-remain. Initial disabled-first keyboard focus is a separate pending comparison.
+remain. Initial disabled-first keyboard focus is covered by ADR 0052.
+
+**Menu initial focus (ADR 0052):** Popup activation and trigger recovery share one DOM selector for
+first/last enabled entry. All-disabled roots focus Popup without highlight; later arrows/Home/End
+continue to include disabled items. An open SubTrigger keeps its Tab entry independent of highlight.
+The common portal tabbability bridge sets up after rendering, but an owning-view effect disposes
+its current listener/snapshot resource before new host bindings. Idempotent after-render cleanup
+still handles replacement/destruction. Untrack initial logical-inside inspection to avoid unrelated
+subtree dependencies restarting that resource. Root retained reopening keeps one authored Tab stop.
+Forward Tab from a reopened retained submenu still needs a logical portal outside-guard handoff;
+passing initial-focus scenarios does not certify that separate path.
 
 **Native input and collection focus (ADR 0037):** `focus-scope/observeFocusRecovery` observes actual
 inside focus and DOM mutations, including removals/moves without focusout in Firefox/WebKit. Floating

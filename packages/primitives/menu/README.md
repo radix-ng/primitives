@@ -1,5 +1,10 @@
 # @radix-ng/primitives/menu
 
+Current differential scope: 175 scenarios, 477 executable comparisons and 48 touch capability skips.
+See [PARITY.md](PARITY.md) for the current contract and pending retained-submenu Tab departure.
+
+The notes below record individual implementation increments.
+
 Touch input reuses the shared native pointer tracker. Menu classifies compatibility mousedown from
 its owning trigger without replacing the event. Touch submenus open on mousedown and consume the
 following click once; repeat taps close them. Disabled items prevent pointer focus while remaining
@@ -32,3 +37,13 @@ comparisons; the matrix now defines 162 cases / 486 planned comparisons, with 43
 48 touch capability skips. The ten prior keyboard source-event pairs now match and were removed.
 Initial keyboard focus on a disabled first item remains a separate pending audit. See
 [ADR 0051](../../../docs/adr/0051-menu-native-host-activation.md).
+
+Initial keyboard entry now selects the first/last enabled item, or Popup when every item is disabled.
+Arrow/Home/End navigation still includes disabled items without activating them. The common initial
+selector is shared by Popup and trigger recovery; SubTrigger stays in the parent's Tab order while
+open. Shared bridge disposal preserves current Angular tabindex bindings when a popup is retained.
+
+Initial Focus demonstrates disabled-first/all-disabled and keepMounted behavior. Thirteen new cases /
+39 comparisons bring the matrix to 175 cases, 477 executable comparisons and 48 touch capability
+skips. Forward Tab out of a reopened retained submenu is the next separate gap. See
+[ADR 0052](../../../docs/adr/0052-menu-initial-focus-boundaries.md).

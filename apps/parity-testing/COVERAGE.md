@@ -7,7 +7,7 @@ Updated 2026-11-12. All pinned comparisons use `reference.json` (Base UI 1.9.0).
 | ------------------------------------------------ | ---------------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | Select                                           | 118 scenarios; 338 comparisons, 16 capability skips        | Forms, focus, presence, geometry, touch emulation                          | Real AT/devices; remaining lifecycle/API audit                            |
 | Popover                                          | 25 scenarios; 75 comparisons                               | Portal, Arrow, dismissal, presence, scroll lock, live anchor               | Hover/grace areas, handles/payloads, RTL/Arrow                            |
-| Menu                                             | 162 scenarios; 438 comparisons, 48 capability skips        | Native/custom hosts, modifiers, keyboard/pointer/touch, ARIA, exits        | Initial disabled-item focus; further API/lifecycle combinations           |
+| Menu                                             | 175 scenarios; 477 comparisons, 48 capability skips        | Native/custom hosts, modifiers, keyboard/pointer/touch, ARIA, exits        | Retained-submenu Tab departure; further API/lifecycle combinations        |
 | Context Menu                                     | 61 scenarios; 165–166 comparisons; native capability skips | Independent Roots, keyboard/submenu ownership, dismissal, retained portals | Further overlay composition, real touch/AT devices                        |
 | Menubar                                          | 87 scenarios; 261 comparisons                              | Popup/bar axes, mixed submenus, RTL, return focus, presence                | Further API/lifecycle combinations, touch and real AT/devices             |
 | Combobox, Autocomplete                           | None                                                       | Input/list navigation, dismissal, projection, live anchor                  | Value/query/highlight and form contracts, then composition                |
@@ -22,6 +22,6 @@ Firefox and WebKit. `pnpm test-parity` discovers every pinned suite. Both comman
 Shared infrastructure validates exception uniqueness, scenario ownership and exact browser scope.
 Per-family drivers retain their own DOM/interaction contract; extraction follows concrete reuse.
 
-Priorities after this increment: Menu initial disabled-item focus and further lifecycle/API combinations,
+Priorities after this increment: Menu retained-submenu Tab departure and further lifecycle/API combinations,
 Popover hover/RTL coverage, then Combobox/Autocomplete. Native controls can follow independently; React event/store mechanics are
 not API requirements. Real-device/AT and saved-profile autofill remain explicit external gaps.

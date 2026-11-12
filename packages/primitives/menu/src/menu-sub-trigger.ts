@@ -49,7 +49,7 @@ const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();
         '[attr.aria-controls]': 'submenuContext.isOpen() ? submenuContext.contentId() : undefined',
         '[attr.type]': 'nativeButtonState() ? "button" : undefined',
         role: 'menuitem',
-        '[attr.tabindex]': 'parentMenuRoot?.open() && highlighted() ? 0 : -1',
+        '[attr.tabindex]': 'parentMenuRoot?.open() && (submenuContext.isOpen() || highlighted()) ? 0 : -1',
         '[attr.aria-haspopup]': '"menu"',
         '[attr.aria-expanded]': 'omitExpanded() ? undefined : submenuContext.isOpen()',
         '[attr.aria-disabled]': 'effectiveDisabled() ? true : undefined',

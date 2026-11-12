@@ -16,7 +16,13 @@ import {
 } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
-import { getCompositeMenuItems, getDomMenuItems, getFocusableMenuItems, RdxMenuCompositeItem } from './menu-focus';
+import {
+    getCompositeMenuItems,
+    getDomMenuItems,
+    getFocusableMenuItems,
+    getMenuInitialFocusItem,
+    RdxMenuCompositeItem
+} from './menu-focus';
 import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
 
 /**
@@ -66,7 +72,7 @@ import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
                         // paused before keyboard focus enters this child. Empty/hovered children
                         // leave focus on their trigger; later data does not restart initial focus.
                         if (rootContext.openInteractionType() !== 'keyboard') return false;
-                        return () => getFocusableMenuItems(popup)[0] ?? false;
+                        return () => getMenuInitialFocusItem(popup) ?? false;
                     }
 
                     const autoFocus = rootContext.autoFocus();
@@ -82,9 +88,7 @@ import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
                     }
 
                     return () => {
-                        const items = getFocusableMenuItems(popup);
-
-                        return autoFocus === 'last' ? (items.at(-1) ?? popup) : (items[0] ?? popup);
+                        return getMenuInitialFocusItem(popup, autoFocus === 'last' ? 'last' : 'first') ?? popup;
                     };
                 },
                 returnFocus: () => {

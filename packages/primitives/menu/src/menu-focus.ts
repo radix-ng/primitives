@@ -49,6 +49,17 @@ export function getFocusableMenuItems(popup: HTMLElement): HTMLElement[] {
     );
 }
 
+/** Initial keyboard entry prefers an enabled item; later arrow navigation includes disabled items. */
+export function getMenuInitialFocusItem(popup: HTMLElement, edge: 'first' | 'last' = 'first'): HTMLElement | undefined {
+    const items = getFocusableMenuItems(popup).filter(
+        (item) =>
+            !item.hasAttribute('disabled') &&
+            !item.hasAttribute('data-disabled') &&
+            item.getAttribute('aria-disabled') !== 'true'
+    );
+    return edge === 'last' ? items.at(-1) : items[0];
+}
+
 export function getCompositeMenuItems(list: RdxCompositeList): RdxMenuCompositeItem[] {
     const map = list.itemMap();
 
