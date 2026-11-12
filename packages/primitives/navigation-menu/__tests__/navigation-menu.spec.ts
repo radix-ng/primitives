@@ -676,7 +676,7 @@ describe('RdxNavigationMenu nested behavior', () => {
         expect(roots[1].value()).toBeNull();
     });
 
-    it('keeps nested roots composite-managed and leaves arrow keys to the parent content', async () => {
+    it('leaves nested triggers in native tab order and arrow keys to the parent content', async () => {
         fixture = TestBed.createComponent(NestedHostComponent);
         fixture.detectChanges();
         await fixture.whenStable();
@@ -685,8 +685,17 @@ describe('RdxNavigationMenu nested behavior', () => {
         const nestedTrigger = fixture.nativeElement.querySelectorAll(
             'button[rdxNavigationMenuTrigger]'
         )[1] as HTMLButtonElement;
-        expect(nestedTrigger.getAttribute('tabindex')).toBe('0');
+        expect(nestedTrigger.getAttribute('tabindex')).toBeNull();
+        expect(nestedTrigger.tabIndex).toBe(0);
 
+        const roots = fixture.debugElement
+            .queryAll(By.directive(RdxNavigationMenuRoot))
+            .map((el) => el.injector.get(RdxNavigationMenuRoot));
+        expect(roots[0].listCompositeRoot()).not.toBeNull();
+        expect(roots[1].listCompositeRoot()).toBeNull();
+        expect(roots[1].listCompositeList()).toBeNull();
+
+        nestedTrigger.focus();
         const event = new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true });
         nestedTrigger.dispatchEvent(event);
         expect(event.defaultPrevented).toBe(false);

@@ -63,7 +63,7 @@
     {
       "directive": "RdxNavigationMenuLink",
       "selector": "[rdxNavigationMenuLink]",
-      "description": "A navigation link. Can close the menu on selection when `closeOnClick` is enabled.\n\nUsed both as a top-level navigation item and inside content. Every link is bound to the List's\ncomposite, matching Base UI's CompositeItem-backed NavigationMenu.Link; links rendered inside content\nfall outside the list element, register with nothing and stay plain tabbable anchors.",
+      "description": "A navigation link. Can close the menu on selection when `closeOnClick` is enabled.\n\nTop-level links join the List's composite. Content links stay native tabbable anchors and join their\nnearest Viewport's arrow navigation; nested lists do not impose a second roving tabindex.",
       "hostDirectives": [
         "RdxCompositeItem"
       ],

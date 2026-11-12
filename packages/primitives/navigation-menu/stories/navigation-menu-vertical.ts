@@ -9,12 +9,12 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
     imports: [...navigationMenuImports, LucideChevronRight],
     template: `
         <nav [class]="m.root" orientation="vertical" rdxNavigationMenuRoot>
-            <ul [class]="cn(m.list, 'w-48 flex-col items-stretch')" rdxNavigationMenuList>
+            <ul [class]="cn(m.list, 'w-56 flex-col items-stretch')" rdxNavigationMenuList>
                 @for (group of groups; track group.value) {
                     <li [value]="group.value" rdxNavigationMenuItem>
-                        <button [class]="cn(m.trigger, 'justify-between')" rdxNavigationMenuTrigger>
+                        <button [class]="cn(m.trigger, 'w-full justify-between')" rdxNavigationMenuTrigger>
                             {{ group.label }}
-                            <svg [class]="m.icon" rdxNavigationMenuIcon lucideChevronRight></svg>
+                            <svg [class]="m.sideIcon" rdxNavigationMenuIcon lucideChevronRight></svg>
                         </button>
 
                         <ng-container *rdxNavigationMenuContent>

@@ -79,7 +79,8 @@ export const demoCard = 'bg-card text-card-foreground border border-border round
  * border), and the directional `0 1px 0` border-colored drop-shadow continues that border down the
  * arrow's two diagonal edges to the tip — so popup and arrow read as one continuous shape.
  */
-export const demoArrow = (surface: string) => cn(surface, 'my-px drop-shadow-[0_1px_0_var(--color-border)]');
+export const demoArrow = (surface: string) =>
+    cn(surface, 'fill-current my-px drop-shadow-[0_1px_0_var(--color-border)]');
 
 /** Text input surface. */
 export const demoInput = cn(
@@ -469,7 +470,8 @@ export const demoNavigationMenu = {
         'hover:bg-muted focus-visible:bg-muted',
         demoFocusRing
     ),
-    icon: 'size-3.5 transition-transform duration-200 data-[state=open]:rotate-180',
+    icon: 'size-3.5 shrink-0 transition-transform duration-200 data-[popup-open]:rotate-180',
+    sideIcon: 'size-3.5 shrink-0',
     positioner: 'z-50 data-[closed]:pointer-events-none',
     // The popup's own `data-ending-style` zoom (below) is the exit the presence machine waits for
     // (ADR 0011 — subtree-aware), so the positioner needs no opacity "decoy" keyframe.

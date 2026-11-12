@@ -5,7 +5,9 @@
 > Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
 Render a `rdxNavigationMenuRoot` inside content for a nested menu. The nested root detects its parent,
-positions its own popup inline, and link selection closes both the nested and parent roots.
+positions its own popup next to its trigger, and links with `closeOnClick` close both roots. The nested
+triggers participate in the parent panel's arrow navigation. Press Enter or Space to enter a nested
+popup; Escape returns focus to its trigger.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
@@ -45,22 +47,14 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                                         <ul [class]="m.contentGrid" rdxNavigationMenuList>
                                             <li rdxNavigationMenuItem value="handbook">
                                                 <button
-                                                    [class]="
-                                                        cn(
-                                                            m.cardLink,
-                                                            'relative w-full border-0 bg-transparent text-left text-inherit'
-                                                        )
-                                                    "
+                                                    [class]="cn(m.cardLink, 'relative h-full w-full pe-8 text-start')"
                                                     rdxNavigationMenuTrigger
                                                 >
                                                     <span [class]="m.cardHeading">Handbook</span>
                                                     <p [class]="m.cardText">How to use Base UI effectively.</p>
                                                     <svg
                                                         [class]="
-                                                            cn(
-                                                                m.icon,
-                                                                'absolute top-1/2 right-2.5 -translate-y-1/2 data-[popup-open]:rotate-0'
-                                                            )
+                                                            cn(m.sideIcon, 'absolute end-2.5 top-1/2 -translate-y-1/2')
                                                         "
                                                         rdxNavigationMenuIcon
                                                         lucideChevronRight

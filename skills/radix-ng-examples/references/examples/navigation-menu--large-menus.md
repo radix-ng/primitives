@@ -32,11 +32,11 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                     </button>
 
                     <ng-container *rdxNavigationMenuContent>
-                        <div class="w-[340px]">
-                            <ul class="grid max-h-[320px] gap-1 overflow-y-auto p-2">
+                        <div [class]="cn(m.content, 'w-[340px] max-w-[calc(100vw-2rem)]')">
+                            <ul class="grid max-h-80 gap-1 overflow-y-auto overscroll-contain p-1">
                                 @for (item of components; track item.title) {
                                     <li>
-                                        <a [class]="cn(m.cardLink, 'p-2.5')" rdxNavigationMenuLink href="#">
+                                        <a [class]="m.cardLink" rdxNavigationMenuLink href="#">
                                             <div [class]="m.cardHeading">{{ item.title }}</div>
                                             <p [class]="m.cardText">{{ item.text }}</p>
                                         </a>

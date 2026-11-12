@@ -1,19 +1,9 @@
 import { computed, DestroyRef, Directive, ElementRef, inject, output } from '@angular/core';
-import {
-    ARROW_DOWN,
-    ARROW_LEFT,
-    ARROW_RIGHT,
-    ARROW_UP,
-    END,
-    HOME,
-    RDX_FLOATING_REGISTRATION,
-    RDX_FLOATING_ROOT_CONTEXT,
-    TAB
-} from '@radix-ng/primitives/core';
+import { RDX_FLOATING_REGISTRATION, RDX_FLOATING_ROOT_CONTEXT } from '@radix-ng/primitives/core';
 import { RdxDismiss, RdxOutsidePressDomEvent } from '@radix-ng/primitives/dismissable-layer';
 import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
+import { handleNavigationMenuKeydown } from './navigation-menu-keyboard';
 import { injectNavigationMenuRootContext, RdxNavigationMenuOpenChangeReason } from './navigation-menu-root-context';
-import { focusFirst, getTabbableCandidates } from './utils';
 
 /**
  * The shared container for the active item's content.
@@ -116,139 +106,10 @@ export class RdxNavigationMenuPopup {
         this.rootContext.closeOnHover(event);
     }
 
-    /**
-     * Keyboard navigation inside the open panel mirrors Base UI's CompositeRoot-backed content:
-     * arrow keys move between panel focusables in DOM order, Home/End jump to the first/last, Up from
-     * the first item returns focus to the trigger, and Tab exits the portalled panel through the
-     * logical top-level navigation order. Escape is handled by the dismissal capability.
-     */
-    protected onKeydown(event: KeyboardEvent) {
-        if (
-            event.key !== ARROW_DOWN &&
-            event.key !== ARROW_UP &&
-            event.key !== ARROW_LEFT &&
-            event.key !== ARROW_RIGHT &&
-            event.key !== TAB &&
-            event.key !== HOME &&
-            event.key !== END
-        ) {
-            return;
-        }
-
-        // If the key originates from a nested navigation menu rendered inside this popup, let that
-        // menu's own composite list / popup handle it — otherwise both react and focus jumps/skips.
-        const nestedRoot = (event.target as HTMLElement).closest('[rdxNavigationMenuRoot]');
-
-        if (nestedRoot && this.elementRef.nativeElement.contains(nestedRoot)) {
-            return;
-        }
-
-        const candidates = getTabbableCandidates(this.elementRef.nativeElement);
-
-        if (candidates.length === 0) {
-            return;
-        }
-
-        const currentIndex = candidates.indexOf(document.activeElement as HTMLElement);
-
-        if (event.key === TAB) {
-            this.handleTabKey(event, candidates, currentIndex);
-            return;
-        }
-
-        event.preventDefault();
-
-        if (event.key === HOME) {
-            focusFirst([candidates[0]]);
-            return;
-        }
-
-        if (event.key === END) {
-            focusFirst([candidates[candidates.length - 1]]);
-            return;
-        }
-
-        if (event.key === ARROW_DOWN) {
-            const next = currentIndex < candidates.length - 1 ? currentIndex + 1 : 0;
-            focusFirst([candidates[next]]);
-            return;
-        }
-
-        if (event.key === ARROW_RIGHT || event.key === ARROW_LEFT) {
-            const moveNext = this.rootContext.dir() === 'rtl' ? event.key === ARROW_LEFT : event.key === ARROW_RIGHT;
-            const next = moveNext
-                ? currentIndex < candidates.length - 1
-                    ? currentIndex + 1
-                    : 0
-                : currentIndex > 0
-                  ? currentIndex - 1
-                  : candidates.length - 1;
-            focusFirst([candidates[next]]);
-            return;
-        }
-
-        // ArrowUp: from the first item, return focus to the trigger; otherwise move to the previous.
-        if (currentIndex <= 0) {
-            this.rootContext.trigger()?.focus();
-        } else {
-            focusFirst([candidates[currentIndex - 1]]);
-        }
-    }
-
-    private handleTabKey(event: KeyboardEvent, candidates: HTMLElement[], currentIndex: number) {
-        if (event.altKey || event.ctrlKey || event.metaKey) {
-            return;
-        }
-
-        const isFirst = currentIndex <= 0;
-        const isLast = currentIndex === candidates.length - 1;
-
-        if (event.shiftKey) {
-            if (!isFirst) {
-                return;
-            }
-
-            event.preventDefault();
-            this.rootContext.trigger()?.focus();
-            return;
-        }
-
-        if (!isLast) {
-            return;
-        }
-
-        const nextItem = this.getNextTopLevelItem();
-
-        if (!nextItem) {
-            return;
-        }
-
-        event.preventDefault();
-        nextItem.focus();
-    }
-
-    private getNextTopLevelItem(): HTMLElement | undefined {
-        const activeTrigger = this.rootContext.trigger();
-
-        if (!activeTrigger) {
-            return undefined;
-        }
-
-        const items = this.getTopLevelItems();
-        const currentIndex = items.indexOf(activeTrigger);
-
-        return currentIndex === -1 ? undefined : items[currentIndex + 1];
-    }
-
-    private getTopLevelItems(): HTMLElement[] {
-        const list = this.rootContext.list();
-
-        if (!list) {
-            return this.rootContext.triggers();
-        }
-
-        return Array.from(list.querySelectorAll<HTMLElement>('[rdxNavigationMenuTrigger], [rdxNavigationMenuLink]'))
-            .filter((item) => !item.hasAttribute('disabled'))
-            .filter((item) => item.getAttribute('aria-hidden') !== 'true');
+    protected onKeydown(event: KeyboardEvent): void {
+        // Viewports own panel keys, including nested inline content. Only a key on the popup
+        // surface itself needs this fallback; native Tab inside content must not run twice.
+        if ((event.target as HTMLElement).closest('[rdxNavigationMenuViewport]')) return;
+        handleNavigationMenuKeydown(event, this.elementRef.nativeElement, this.rootContext);
     }
 }

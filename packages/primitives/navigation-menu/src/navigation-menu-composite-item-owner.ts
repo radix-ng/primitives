@@ -3,20 +3,14 @@ import { provideRdxCompositeItemOwner, RdxCompositeItemOwner } from '@radix-ng/p
 import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
 
 /**
- * Binds every `rdxNavigationMenuTrigger` / `rdxNavigationMenuLink` to the List's composite contexts,
- * so top-level items keep roving focus when a wrapper component projects them into a List declared in
- * its own template.
+ * Binds top-level parts to the List's composite even through a wrapper's content projection.
  *
- * The binding is unconditional, which is a deliberate divergence from Base UI. There, an item resolves
- * the nearest `CompositeRoot` through the React tree, and `NavigationMenu.Content` wraps its children in
- * a `CompositeRoot` of its own, so links nested in content bind to that inner root instead of the List.
- * Our `Content` has no composite root — arrow keys inside an open panel are handled by `Popup` — so
- * there is nothing nearer for an in-content link to bind to and no behavioral difference today. The one
- * scenario this rules out is a consumer wrapping in-content links in their own `rdxCompositeRoot` and
- * expecting `rdxNavigationMenuLink` to join it: the owner wins over that root.
+ * Nested lists publish null contexts: their triggers belong to the surrounding content's keyboard
+ * collection, matching Base UI's nested List boundary. Viewport handles content navigation in Angular,
+ * including inline viewports without a Popup; these parts retain their native tab order.
  *
- * If `Content` ever gains a composite root for Base UI parity, make this owner conditional — items that
- * sit inside a nearer composite root must fall back to injecting it.
+ * The owner remains authoritative over a consumer-supplied CompositeRoot. If Content gains a composite
+ * root itself, revisit that precedence rather than accidentally registering content in the top list.
  */
 const navigationMenuCompositeItemOwner = (): RdxCompositeItemOwner => {
     const rootContext = injectNavigationMenuRootContext();

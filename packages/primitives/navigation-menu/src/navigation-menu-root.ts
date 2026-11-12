@@ -364,14 +364,16 @@ export class RdxNavigationMenuRoot {
 
     registerList(list: HTMLElement, compositeRoot: RdxCompositeRootContext, compositeList: RdxCompositeListContext) {
         this.list.set(list);
-        this.listCompositeRoot.set(compositeRoot);
-        this.listCompositeList.set(compositeList);
+        // Nested lists belong to the enclosing content's keyboard collection, as in Base UI.
+        // The static host directive stays empty; it must not impose a second roving tabindex.
+        this.listCompositeRoot.set(this.nested ? null : compositeRoot);
+        this.listCompositeList.set(this.nested ? null : compositeList);
 
         return () => {
             if (
                 this.list() !== list ||
-                this.listCompositeRoot() !== compositeRoot ||
-                this.listCompositeList() !== compositeList
+                (!this.nested && this.listCompositeRoot() !== compositeRoot) ||
+                (!this.nested && this.listCompositeList() !== compositeList)
             ) {
                 return;
             }

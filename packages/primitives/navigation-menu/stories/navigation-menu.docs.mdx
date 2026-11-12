@@ -157,15 +157,19 @@ viewport measures the capped height, so the popup stays a fixed size and the lis
 ### Nested submenus
 
 Render a `rdxNavigationMenuRoot` inside content for a nested menu. The nested root detects its parent,
-positions its own popup inline, and link selection closes both the nested and parent roots.
+positions its own popup next to its trigger, and links with `closeOnClick` close both roots. The nested
+triggers participate in the parent panel's arrow navigation. Press Enter or Space to enter a nested
+popup; Escape returns focus to its trigger.
 
 <Canvas of={Stories.Nested} />
 
 ### Nested inline submenus
 
 A second level that stays in the same panel: inside the outer content, render another
-`rdxNavigationMenuRoot` with only a `List` and a `Viewport` (no Portal). A controlled, non-null value
-keeps the inline panel persistent.
+`rdxNavigationMenuRoot` with only a `List` and a `Viewport` (no Portal). Set `defaultValue` and cancel
+close requests with `onOpenChange` to keep the inline panel persistent. Ignoring a null `onValueChange`
+does not veto a change to an Angular model. Each viewport handles arrows within its own content;
+Tab leaves the outer popup through the next top-level navigation item.
 
 <Canvas of={Stories.NestedInline} />
 

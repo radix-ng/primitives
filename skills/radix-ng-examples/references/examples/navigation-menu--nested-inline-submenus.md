@@ -5,20 +5,22 @@
 > Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
 A second level that stays in the same panel: inside the outer content, render another
-`rdxNavigationMenuRoot` with only a `List` and a `Viewport` (no Portal). A controlled, non-null value
-keeps the inline panel persistent.
+`rdxNavigationMenuRoot` with only a `List` and a `Viewport` (no Portal). Set `defaultValue` and cancel
+close requests with `onOpenChange` to keep the inline panel persistent. Ignoring a null `onValueChange`
+does not veto a change to an Angular model. Each viewport handles arrows within its own content;
+Tab leaves the outer popup through the next top-level navigation item.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
-import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
+import { navigationMenuImports, RdxNavigationMenuOpenChange } from '@radix-ng/primitives/navigation-menu';
 import { cn, demoNavigationMenu } from '../../storybook/styles';
 
 /**
  * Nested inline submenus: a second level that stays in the same panel. Inside the outer Content we
  * render another `rdxNavigationMenuRoot` with only a `List` (the categories, left) and a `Viewport`
- * (the active category's links, right) — no Portal/Positioner/Popup. Its value is controlled and
- * kept non-null so the inline panel always shows a category (the idea behind Base UI's `defaultValue`).
+ * (the active category's links, right) — no Portal/Positioner/Popup. Canceling close requests keeps
+ * the inline panel persistent, using Angular's cancelable event rather than ignoring a model output.
  */
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -37,8 +39,8 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                         <!-- Inline second-level menu (flex row): categories left, viewport right. -->
                         <nav
                             class="flex w-[560px]"
-                            [value]="active()"
-                            (onValueChange)="onActive($event)"
+                            (onOpenChange)="keepInlineOpen($event)"
+                            defaultValue="learn"
                             orientation="vertical"
                             rdxNavigationMenuRoot
                         >
@@ -92,7 +94,6 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
 export class RdxNavigationMenuNestedInlineComponent {
     protected readonly cn = cn;
     protected readonly m = demoNavigationMenu;
-    protected readonly active = signal('learn');
 
     protected readonly inlineViewport = cn(
         'relative min-h-[180px] flex-1 overflow-hidden p-2',
@@ -129,11 +130,8 @@ export class RdxNavigationMenuNestedInlineComponent {
         }
     ];
 
-    protected onActive(value: string | null) {
-        // Keep the inline panel persistent: ignore the "closed" (null) state.
-        if (value) {
-            this.active.set(value);
-        }
+    protected keepInlineOpen(change: RdxNavigationMenuOpenChange) {
+        if (!change.open) change.eventDetails.cancel();
     }
 }
 ```

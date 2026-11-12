@@ -35,22 +35,14 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                                         <ul [class]="m.contentGrid" rdxNavigationMenuList>
                                             <li rdxNavigationMenuItem value="handbook">
                                                 <button
-                                                    [class]="
-                                                        cn(
-                                                            m.cardLink,
-                                                            'relative w-full border-0 bg-transparent text-left text-inherit'
-                                                        )
-                                                    "
+                                                    [class]="cn(m.cardLink, 'relative h-full w-full pe-8 text-start')"
                                                     rdxNavigationMenuTrigger
                                                 >
                                                     <span [class]="m.cardHeading">Handbook</span>
                                                     <p [class]="m.cardText">How to use Base UI effectively.</p>
                                                     <svg
                                                         [class]="
-                                                            cn(
-                                                                m.icon,
-                                                                'absolute top-1/2 right-2.5 -translate-y-1/2 data-[popup-open]:rotate-0'
-                                                            )
+                                                            cn(m.sideIcon, 'absolute end-2.5 top-1/2 -translate-y-1/2')
                                                         "
                                                         rdxNavigationMenuIcon
                                                         lucideChevronRight

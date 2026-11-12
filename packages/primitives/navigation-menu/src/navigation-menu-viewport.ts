@@ -14,6 +14,7 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import { getMaxTransitionDuration } from '@radix-ng/primitives/core';
+import { handleNavigationMenuKeydown } from './navigation-menu-keyboard';
 import { injectNavigationMenuRootContext, RdxNavigationMenuContentEntry } from './navigation-menu-root-context';
 import { getActivationDirection, removeIds } from './utils';
 
@@ -35,6 +36,7 @@ interface RenderedContent {
 @Directive({
     selector: '[rdxNavigationMenuViewport]',
     host: {
+        '(keydown)': 'onKeydown($event)',
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
         '[attr.data-orientation]': 'rootContext.orientation()',
@@ -92,6 +94,10 @@ export class RdxNavigationMenuViewport {
             this.rendered.clear();
             this.current = null;
         });
+    }
+
+    protected onKeydown(event: KeyboardEvent): void {
+        handleNavigationMenuKeydown(event, this.elementRef.nativeElement, this.rootContext);
     }
 
     private sync(

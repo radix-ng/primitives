@@ -16344,12 +16344,12 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
     imports: [...navigationMenuImports, LucideChevronRight],
     template: `
         <nav [class]="m.root" orientation="vertical" rdxNavigationMenuRoot>
-            <ul [class]="cn(m.list, 'w-48 flex-col items-stretch')" rdxNavigationMenuList>
+            <ul [class]="cn(m.list, 'w-56 flex-col items-stretch')" rdxNavigationMenuList>
                 @for (group of groups; track group.value) {
                     <li [value]="group.value" rdxNavigationMenuItem>
-                        <button [class]="cn(m.trigger, 'justify-between')" rdxNavigationMenuTrigger>
+                        <button [class]="cn(m.trigger, 'w-full justify-between')" rdxNavigationMenuTrigger>
                             {{ group.label }}
-                            <svg [class]="m.icon" rdxNavigationMenuIcon lucideChevronRight></svg>
+                            <svg [class]="m.sideIcon" rdxNavigationMenuIcon lucideChevronRight></svg>
                         </button>
 
                         <ng-container *rdxNavigationMenuContent>
@@ -16647,11 +16647,11 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                     </button>
 
                     <ng-container *rdxNavigationMenuContent>
-                        <div class="w-[340px]">
-                            <ul class="grid max-h-[320px] gap-1 overflow-y-auto p-2">
+                        <div [class]="cn(m.content, 'w-[340px] max-w-[calc(100vw-2rem)]')">
+                            <ul class="grid max-h-80 gap-1 overflow-y-auto overscroll-contain p-1">
                                 @for (item of components; track item.title) {
                                     <li>
-                                        <a [class]="cn(m.cardLink, 'p-2.5')" rdxNavigationMenuLink href="#">
+                                        <a [class]="m.cardLink" rdxNavigationMenuLink href="#">
                                             <div [class]="m.cardHeading">{{ item.title }}</div>
                                             <p [class]="m.cardText">{{ item.text }}</p>
                                         </a>
@@ -16698,7 +16698,9 @@ export class RdxNavigationMenuLargeComponent {
 ### Nested submenus
 
 Render a `rdxNavigationMenuRoot` inside content for a nested menu. The nested root detects its parent,
-positions its own popup inline, and link selection closes both the nested and parent roots.
+positions its own popup next to its trigger, and links with `closeOnClick` close both roots. The nested
+triggers participate in the parent panel's arrow navigation. Press Enter or Space to enter a nested
+popup; Escape returns focus to its trigger.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
@@ -16738,22 +16740,14 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                                         <ul [class]="m.contentGrid" rdxNavigationMenuList>
                                             <li rdxNavigationMenuItem value="handbook">
                                                 <button
-                                                    [class]="
-                                                        cn(
-                                                            m.cardLink,
-                                                            'relative w-full border-0 bg-transparent text-left text-inherit'
-                                                        )
-                                                    "
+                                                    [class]="cn(m.cardLink, 'relative h-full w-full pe-8 text-start')"
                                                     rdxNavigationMenuTrigger
                                                 >
                                                     <span [class]="m.cardHeading">Handbook</span>
                                                     <p [class]="m.cardText">How to use Base UI effectively.</p>
                                                     <svg
                                                         [class]="
-                                                            cn(
-                                                                m.icon,
-                                                                'absolute top-1/2 right-2.5 -translate-y-1/2 data-[popup-open]:rotate-0'
-                                                            )
+                                                            cn(m.sideIcon, 'absolute end-2.5 top-1/2 -translate-y-1/2')
                                                         "
                                                         rdxNavigationMenuIcon
                                                         lucideChevronRight
@@ -16874,20 +16868,22 @@ export class RdxNavigationMenuNestedComponent {
 ### Nested inline submenus
 
 A second level that stays in the same panel: inside the outer content, render another
-`rdxNavigationMenuRoot` with only a `List` and a `Viewport` (no Portal). A controlled, non-null value
-keeps the inline panel persistent.
+`rdxNavigationMenuRoot` with only a `List` and a `Viewport` (no Portal). Set `defaultValue` and cancel
+close requests with `onOpenChange` to keep the inline panel persistent. Ignoring a null `onValueChange`
+does not veto a change to an Angular model. Each viewport handles arrows within its own content;
+Tab leaves the outer popup through the next top-level navigation item.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
-import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
+import { navigationMenuImports, RdxNavigationMenuOpenChange } from '@radix-ng/primitives/navigation-menu';
 import { cn, demoNavigationMenu } from '../../storybook/styles';
 
 /**
  * Nested inline submenus: a second level that stays in the same panel. Inside the outer Content we
  * render another `rdxNavigationMenuRoot` with only a `List` (the categories, left) and a `Viewport`
- * (the active category's links, right) — no Portal/Positioner/Popup. Its value is controlled and
- * kept non-null so the inline panel always shows a category (the idea behind Base UI's `defaultValue`).
+ * (the active category's links, right) — no Portal/Positioner/Popup. Canceling close requests keeps
+ * the inline panel persistent, using Angular's cancelable event rather than ignoring a model output.
  */
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -16906,8 +16902,8 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                         <!-- Inline second-level menu (flex row): categories left, viewport right. -->
                         <nav
                             class="flex w-[560px]"
-                            [value]="active()"
-                            (onValueChange)="onActive($event)"
+                            (onOpenChange)="keepInlineOpen($event)"
+                            defaultValue="learn"
                             orientation="vertical"
                             rdxNavigationMenuRoot
                         >
@@ -16961,7 +16957,6 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
 export class RdxNavigationMenuNestedInlineComponent {
     protected readonly cn = cn;
     protected readonly m = demoNavigationMenu;
-    protected readonly active = signal('learn');
 
     protected readonly inlineViewport = cn(
         'relative min-h-[180px] flex-1 overflow-hidden p-2',
@@ -16998,11 +16993,8 @@ export class RdxNavigationMenuNestedInlineComponent {
         }
     ];
 
-    protected onActive(value: string | null) {
-        // Keep the inline panel persistent: ignore the "closed" (null) state.
-        if (value) {
-            this.active.set(value);
-        }
+    protected keepInlineOpen(change: RdxNavigationMenuOpenChange) {
+        if (!change.open) change.eventDetails.cancel();
     }
 }
 ```

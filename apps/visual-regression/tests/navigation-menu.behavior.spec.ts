@@ -265,3 +265,148 @@ test('nested inline navigation menu keeps the parent popup open when hovering th
     await expect(page.locator('[rdxNavigationMenuPopup]:has-text("Resources")')).toBeVisible();
     await expect(page.locator('[rdxNavigationMenuPopup]:has-text("Blog")')).toBeVisible();
 });
+
+test.describe('Navigation Menu content composition and demo layout', () => {
+    let errors: string[];
+
+    test.beforeEach(({ page }) => {
+        errors = [];
+        page.on('pageerror', (error) => errors.push(error.message));
+        page.on('console', (message) => {
+            if (message.type() === 'error') errors.push(message.text());
+        });
+    });
+
+    test.afterEach(() => expect(errors).toEqual([]));
+
+    test('arrows reach Handbook, enter its popup and return to the parent collection', async ({ page }) => {
+        await gotoStory(page, 'primitives-navigation-menu--nested');
+        const overview = page.getByRole('button', { name: 'Overview', exact: true });
+        const handbook = page.getByRole('button', { name: /Handbook/ });
+        const quickStart = page.getByRole('link', { name: /^Quick Start/ });
+        const releases = page.getByRole('link', { name: /^Releases/ });
+
+        await overview.press('ArrowDown');
+        await expect(quickStart).toBeFocused();
+        await page.keyboard.press('ArrowDown');
+        await expect(page.getByRole('link', { name: /^Accessibility/ })).toBeFocused();
+        await page.keyboard.press('ArrowDown');
+        await expect(releases).toBeFocused();
+        await page.keyboard.press('ArrowDown');
+        await expect(handbook).toBeFocused();
+        await page.keyboard.press('ArrowUp');
+        await expect(releases).toBeFocused();
+        await page.keyboard.press('End');
+        await expect(handbook).toBeFocused();
+        await page.keyboard.press('Enter');
+        await expect(page.getByRole('link', { name: /^Styling/ })).toBeFocused();
+        await page.keyboard.press('ArrowDown');
+        await expect(page.getByRole('link', { name: /^Animation/ })).toBeFocused();
+        await page.keyboard.press('Escape');
+        await expect(handbook).toBeFocused();
+        await expect(quickStart).toBeVisible();
+        await page.keyboard.press('ArrowUp');
+        await expect(releases).toBeFocused();
+    });
+
+    test('inline nested content owns its arrows and Tab leaves through the parent list', async ({ page }) => {
+        await gotoStory(page, 'primitives-navigation-menu--nested-inline');
+        const resources = page.getByRole('button', { name: 'Resources', exact: true });
+        await page.getByRole('button', { name: 'Browse', exact: true }).press('ArrowDown');
+        await expect(page.getByRole('button', { name: 'Learn', exact: true })).toBeFocused();
+        await page.keyboard.press('ArrowDown');
+        await expect(page.getByRole('button', { name: 'Develop', exact: true })).toBeFocused();
+        await page.keyboard.press('ArrowDown');
+        await expect(resources).toBeFocused();
+        await page.keyboard.press('Enter');
+        await expect(page.getByRole('link', { name: /^Blog/ })).toBeFocused();
+        await page.keyboard.press('ArrowDown');
+        await expect(page.getByRole('link', { name: /^Changelog/ })).toBeFocused();
+        await page.keyboard.press('Home');
+        await expect(page.getByRole('link', { name: /^Blog/ })).toBeFocused();
+        await page.keyboard.press('ArrowUp');
+        await expect(resources).toBeFocused();
+        await page.keyboard.press('Enter');
+        await expect(page.getByRole('link', { name: /^Blog/ })).toBeFocused();
+        await page.keyboard.press('End');
+        await expect(page.getByRole('link', { name: /^Community/ })).toBeFocused();
+        await page.keyboard.press('Tab');
+        await expect(page.getByRole('link', { name: 'Pricing', exact: true })).toBeFocused();
+    });
+
+    test('the arrow uses the popup surface color in both themes', async ({ page }) => {
+        await gotoStory(page, 'primitives-navigation-menu--default');
+        await page.locator('[rdxNavigationMenuTrigger]').first().press('ArrowDown');
+        const popup = page.locator('[rdxNavigationMenuPopup]');
+        await expect(popup).toBeVisible();
+        for (const theme of ['light', 'dark']) {
+            await page.locator('html').evaluate((element, value) => element.setAttribute('data-theme', value), theme);
+            await expect
+                .poll(() =>
+                    popup.evaluate((element) => {
+                        const polygon = element.querySelector('[rdxNavigationMenuArrow] polygon')!;
+                        return getComputedStyle(polygon).fill === getComputedStyle(element).backgroundColor;
+                    })
+                )
+                .toBe(true);
+        }
+    });
+
+    test('Large Menu keeps padding outside its scrollable list', async ({ page }) => {
+        await gotoStory(page, 'primitives-navigation-menu--large-menu');
+        await page.getByRole('button', { name: 'Components', exact: true }).press('ArrowDown');
+        const popup = page.locator('[rdxNavigationMenuPopup]');
+        const list = popup.locator('ul');
+        await expect(popup).toBeVisible();
+        expect(await list.evaluate((element) => element.scrollHeight > element.clientHeight)).toBe(true);
+        await page.keyboard.press('End');
+        const last = page.getByRole('link', { name: /^Tooltip/ });
+        await expect(last).toBeFocused();
+        await expect
+            .poll(() =>
+                popup.evaluate((element) => {
+                    const outer = element.getBoundingClientRect();
+                    const inner = element.querySelector('ul')!.getBoundingClientRect();
+                    return Math.min(inner.top - outer.top, outer.bottom - inner.bottom);
+                })
+            )
+            .toBeGreaterThanOrEqual(16);
+        expect(
+            await list.evaluate((element) => {
+                const listBox = element.getBoundingClientRect();
+                const lastBox = element.querySelector('li:last-child')!.getBoundingClientRect();
+                return lastBox.bottom <= listBox.bottom + 1 && lastBox.top >= listBox.top;
+            })
+        ).toBe(true);
+    });
+
+    test('Vertical rows fill the list, align chevrons and keep vertical keyboard navigation', async ({ page }) => {
+        await gotoStory(page, 'primitives-navigation-menu--vertical');
+        const rows = page.locator('[rdxNavigationMenuList] > li');
+        await expect(rows).toHaveCount(3);
+        await expect(rows.first()).toBeVisible();
+        expect(
+            await rows.evaluateAll((elements) =>
+                elements.every((element) => {
+                    const button = element.querySelector('button')!;
+                    return Math.abs(element.getBoundingClientRect().width - button.getBoundingClientRect().width) < 1;
+                })
+            )
+        ).toBe(true);
+        const rightEdges = await rows
+            .locator('svg')
+            .evaluateAll((elements) => elements.map((element) => element.getBoundingClientRect().right));
+        expect(Math.max(...rightEdges) - Math.min(...rightEdges)).toBeLessThan(1);
+        const account = page.getByRole('button', { name: 'Account', exact: true });
+        await account.press('ArrowRight');
+        await expect(page.getByRole('link', { name: 'Profile', exact: true })).toBeFocused();
+        await page.keyboard.press('ArrowDown');
+        await expect(page.getByRole('link', { name: 'Billing', exact: true })).toBeFocused();
+        await page.keyboard.press('Escape');
+        await expect(account).toBeFocused();
+        await page.keyboard.press('ArrowDown');
+        await expect(page.getByRole('button', { name: 'Workspace', exact: true })).toBeFocused();
+        await page.keyboard.press('ArrowRight');
+        await expect(page.getByRole('link', { name: 'Members', exact: true })).toBeFocused();
+    });
+});

@@ -7,9 +7,8 @@ import { injectNavigationMenuRootContext } from './navigation-menu-root-context'
 /**
  * A navigation link. Can close the menu on selection when `closeOnClick` is enabled.
  *
- * Used both as a top-level navigation item and inside content. Every link is bound to the List's
- * composite, matching Base UI's CompositeItem-backed NavigationMenu.Link; links rendered inside content
- * fall outside the list element, register with nothing and stay plain tabbable anchors.
+ * Top-level links join the List's composite. Content links stay native tabbable anchors and join their
+ * nearest Viewport's arrow navigation; nested lists do not impose a second roving tabindex.
  */
 @Directive({
     selector: '[rdxNavigationMenuLink]',
