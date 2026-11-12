@@ -131,6 +131,12 @@ of the projected parts' reach and they throw a missing-context error. Do not ass
 compound primitive provides the same bridge; expose provider-bearing parts as wrapper hosts unless that
 primitive documents otherwise.
 
+Menu supports projecting item parts into a Popup declared in the wrapper's template. Its Root
+publishes the popup collection and restoration state through the same ownership bridge; SubTrigger
+joins the parent popup's collection. Compose Menu Root onto the wrapper host so projected parts can
+inject it. Keep provider-bearing groups such as RadioGroup on their wrapper host when projecting
+group items. See the Menu Composition example for mixed internal/projected items and nested portals.
+
 ## Changing the rendered element
 
 Because primitives are attribute directives, you choose the rendered element directly in the

@@ -15,6 +15,7 @@ import { rootRemovalFinalFocus } from '../../../shared/root-removal';
 import { classes, config, installProbe, type Layer } from './contract';
 import { AngularFocusBoundary } from './focus-boundary.angular';
 import { AngularHosts } from './hosts.angular';
+import { AngularProjection } from './projection.angular';
 import { touchScrollEntries } from './touch';
 
 const settings = config();
@@ -306,6 +307,15 @@ class AngularMenu {
         this.trace.value(change.value as string, change.eventDetails.reason, change.eventDetails.isCanceled());
     }
 }
-void bootstrapApplication(settings.focusBoundary ? AngularFocusBoundary : settings.host ? AngularHosts : AngularMenu, {
-    providers: [provideZonelessChangeDetection()]
-});
+void bootstrapApplication(
+    settings.projection
+        ? AngularProjection
+        : settings.focusBoundary
+          ? AngularFocusBoundary
+          : settings.host
+            ? AngularHosts
+            : AngularMenu,
+    {
+        providers: [provideZonelessChangeDetection()]
+    }
+);

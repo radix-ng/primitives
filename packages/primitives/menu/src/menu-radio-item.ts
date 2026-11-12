@@ -13,6 +13,7 @@ import {
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, createContext, dispatchClickWithModifiers } from '@radix-ng/primitives/core';
 import { RdxFloatingFocusManager } from '@radix-ng/primitives/floating-focus-manager';
+import { provideMenuCompositeItemOwner } from './menu-composite-item-owner';
 import { handleMenuItemKeydown, handleMenuItemKeyup, setMenuItemButtonType } from './menu-item-keyboard';
 import { shouldActivateOnMouseUp } from './menu-mouse-up';
 import { injectRdxMenuRadioGroupContext } from './menu-radio-group';
@@ -40,7 +41,7 @@ const radioItemContextFactory = (): RdxMenuRadioItemContext => {
 @Directive({
     selector: '[rdxMenuRadioItem]',
     exportAs: 'rdxMenuRadioItem',
-    providers: [provideRdxMenuRadioItemContext(radioItemContextFactory)],
+    providers: [provideRdxMenuRadioItemContext(radioItemContextFactory), provideMenuCompositeItemOwner()],
     hostDirectives: [RdxCompositeListItem],
     host: {
         role: 'menuitemradio',
@@ -112,7 +113,7 @@ export class RdxMenuRadioItem<T = unknown> {
         if (!this.rootContext?.disabled()) {
             this.isFocused.set(true);
         }
-        if (!this.focusManager?.isRestoringFocus()) this.setActiveIndex();
+        if (!(this.rootContext?.isRestoringFocus() ?? this.focusManager?.isRestoringFocus())) this.setActiveIndex();
     }
 
     onBlur(): void {

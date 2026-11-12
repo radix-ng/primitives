@@ -1299,5 +1299,75 @@
         "category": "native-button-focus",
         "browser": "webkit",
         "platform": "darwin"
+    },
+    {
+        "scenario": "projection-retained-submenu",
+        "checkpoint": "session 2 projected entry",
+        "field": "tabStops",
+        "angular": [
+            {
+                "id": "alpha",
+                "index": 0,
+                "nativeDisabled": false
+            },
+            {
+                "id": "blocked",
+                "index": -1,
+                "nativeDisabled": false
+            },
+            {
+                "id": "bravo",
+                "index": -1,
+                "nativeDisabled": false
+            },
+            {
+                "id": "more",
+                "index": -1,
+                "nativeDisabled": false
+            },
+            {
+                "id": "omega",
+                "index": -1,
+                "nativeDisabled": false
+            },
+            {
+                "id": "sub-alpha",
+                "index": -1,
+                "nativeDisabled": false
+            }
+        ],
+        "react": [
+            {
+                "id": "alpha",
+                "index": 0,
+                "nativeDisabled": false
+            },
+            {
+                "id": "blocked",
+                "index": -1,
+                "nativeDisabled": false
+            },
+            {
+                "id": "bravo",
+                "index": -1,
+                "nativeDisabled": false
+            },
+            {
+                "id": "more",
+                "index": -1,
+                "nativeDisabled": false
+            },
+            {
+                "id": "omega",
+                "index": -1,
+                "nativeDisabled": false
+            },
+            {
+                "id": "sub-alpha",
+                "index": 0,
+                "nativeDisabled": false
+            }
+        ],
+        "category": "closed-retained-child-tabindex-restore"
     }
 ]

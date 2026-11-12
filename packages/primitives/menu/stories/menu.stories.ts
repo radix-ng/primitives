@@ -11,6 +11,8 @@ import { RdxMenuAsyncComponent } from './menu-async';
 import asyncSource from './menu-async?raw';
 import { RdxMenuBackdropExampleComponent } from './menu-backdrop';
 import backdropSource from './menu-backdrop?raw';
+import { RdxMenuCompositionComponent } from './menu-composition';
+import compositionSource from './menu-composition?raw';
 import { RdxMenuDefaultComponent } from './menu-default';
 import defaultSource from './menu-default?raw';
 import { RdxMenuEventsComponent } from './menu-events';
@@ -48,6 +50,7 @@ export default {
         moduleMetadata({
             imports: [
                 RdxMenuDefaultComponent,
+                RdxMenuCompositionComponent,
                 RdxMenuInitialFocusComponent,
                 RdxMenuFocusReturnComponent,
                 RdxMenuNativeElementsComponent,
@@ -235,4 +238,15 @@ export const Pointer: Story = {
     decorators: [moduleMetadata({ imports: [RdxMenuPointerComponent] })],
     parameters: source(pointerSource),
     render: () => ({ template: '<rdx-menu-pointer />' })
+};
+
+export const Composition: Story = {
+    // Open-layer keyboard and ownership checks live in menu.behavior.spec.ts.
+    tags: ['!visual'],
+    parameters: source(compositionSource),
+    render: () => ({
+        template: html`
+            <rdx-menu-composition />
+        `
+    })
 };

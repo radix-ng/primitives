@@ -1,4 +1,5 @@
 import { expect } from '@playwright/test';
+import { pauseClockBeforeInteraction } from '../../../../../tools/playwright/clock';
 import { pointerCases } from '../src/pointer';
 import type { MenuDriver } from './driver';
 
@@ -51,11 +52,23 @@ export const pointerScenarios = pointerCases.map((name) => ({
         const submenu = name.startsWith('hover-submenu');
         if (submenu) await d.open('mouse');
         const reference = submenu ? d.item('more') : d.trigger;
+        const patientClick = name === 'hover-root-click';
+        const cancelHover = name.endsWith('-cancel');
+        if (patientClick || cancelHover) {
+            await d.page.clock.install();
+            await pauseClockBeforeInteraction(d.page);
+        }
         if (submenu) await d.hoverItem('more');
         else await reference.hover();
+        if (patientClick) await d.page.clock.runFor(300);
         if (name.endsWith('-cancel') || name.endsWith('-disabled')) {
-            if (name.endsWith('-cancel')) await d.page.mouse.move(700, 520);
-            await d.page.waitForTimeout(260); // Let the canceled/disabled 180ms request expire naturally.
+            if (cancelHover) {
+                // The native leave must precede the 180ms open delay, even when protocol calls
+                // are slow. Advance the real component timers only after that trusted gesture.
+                await d.page.mouse.move(700, 520);
+                await d.page.clock.runFor(260);
+                await d.page.clock.resume();
+            } else await d.page.waitForTimeout(260);
             await d.checkpoint('hover did not open', {
                 open: submenu,
                 subOpen: false,
@@ -71,9 +84,14 @@ export const pointerScenarios = pointerCases.map((name) => ({
                 d.page.evaluate((layer) => window.menuParity.completions[layer].at(-1), submenu ? 'sub' : 'main')
             )
             .toBe(true);
-        await d.checkpoint('hover opened', { open: true, ...(submenu ? { subOpen: true } : {}) });
+        const opened = d.checkpoint('hover opened', { open: true, ...(submenu ? { subOpen: true } : {}) });
+        // Keep the trusted click within the pin's real 500ms promotion window. Slow actionability
+        // or checkpoint polling must not silently turn this into a different, patient-close gesture.
+        if (patientClick) await d.page.clock.runFor(64);
+        await opened;
         if (name.endsWith('-click')) {
             await reference.click();
+            if (patientClick) await d.page.clock.resume();
             await d.checkpoint('hover click', { open: true, ...(submenu ? { subOpen: true } : {}) });
         }
         const from = (await reference.boundingBox())!;

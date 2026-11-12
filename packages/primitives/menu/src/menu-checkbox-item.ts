@@ -20,6 +20,7 @@ import {
     RdxCancelableChangeEventDetails
 } from '@radix-ng/primitives/core';
 import { RdxFloatingFocusManager } from '@radix-ng/primitives/floating-focus-manager';
+import { provideMenuCompositeItemOwner } from './menu-composite-item-owner';
 import { handleMenuItemKeydown, handleMenuItemKeyup, setMenuItemButtonType } from './menu-item-keyboard';
 import { shouldActivateOnMouseUp } from './menu-mouse-up';
 import { injectRdxMenuRootContext } from './menu-root';
@@ -51,7 +52,7 @@ const checkboxItemContextFactory = (): RdxMenuCheckboxItemContext => {
 @Directive({
     selector: '[rdxMenuCheckboxItem]',
     exportAs: 'rdxMenuCheckboxItem',
-    providers: [provideRdxMenuCheckboxItemContext(checkboxItemContextFactory)],
+    providers: [provideRdxMenuCheckboxItemContext(checkboxItemContextFactory), provideMenuCompositeItemOwner()],
     hostDirectives: [RdxCompositeListItem],
     host: {
         role: 'menuitemcheckbox',
@@ -122,7 +123,7 @@ export class RdxMenuCheckboxItem {
         if (!this.rootContext?.disabled()) {
             this.isFocused.set(true);
         }
-        if (!this.focusManager?.isRestoringFocus()) this.setActiveIndex();
+        if (!(this.rootContext?.isRestoringFocus() ?? this.focusManager?.isRestoringFocus())) this.setActiveIndex();
     }
 
     onBlur(): void {

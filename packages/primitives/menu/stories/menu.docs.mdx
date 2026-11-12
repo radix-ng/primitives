@@ -220,6 +220,17 @@ does not dismiss it; hovering another parent item closes that branch.
 
 <Canvas of={Stories.Pointer} />
 
+### Composition
+
+Compose Root onto the wrapper host so projected parts keep it in their declaring injector tree.
+The wrapper can own Portal, Positioner and Popup in its template, with menu items supplied through
+`ng-content`. Internal and projected items share one ordered collection, including native item
+components composed with `hostDirectives`. Submenu triggers join their parent popup's collection;
+child commands join the child popup. Keep provider-bearing groups, such as RadioGroup, on a wrapper
+host when projecting their children.
+
+<Canvas of={Stories.Composition} />
+
 ### Events
 
 Opening through `defaultOpen` or an external `open` binding without a native opening request focuses

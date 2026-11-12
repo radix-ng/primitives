@@ -824,3 +824,52 @@ test('a press released far from the trigger cancels the just-opened menu', async
 
     await expect(page.locator('[rdxMenuPopup][data-open]')).toHaveCount(0);
 });
+
+for (const action of ['nested keyboard', 'selection and reopen']) {
+    test(`projected composition: ${action}`, async ({ page }) => {
+        const errors: string[] = [];
+        page.on('pageerror', (error) => errors.push(error.message));
+        page.on('console', (message) => {
+            if (message.type() === 'error') errors.push(message.text());
+        });
+        await gotoStory(page, 'primitives-menu--composition');
+        const primary = page.getByRole('button', { name: 'Menu actions', exact: true });
+        await primary.press('Enter');
+        const refresh = page.getByRole('menuitem', { name: 'Refresh', exact: true });
+        const rename = page.getByRole('menuitem', { name: 'Rename', exact: true });
+        const more = page.getByRole('menuitem', { name: 'More options', exact: true });
+        await expect(refresh).toBeFocused();
+        await page.keyboard.press('ArrowDown');
+        await expect(rename).toBeFocused();
+        await expect(rename).toHaveAttribute('data-highlighted', '');
+        await expect(rename).toHaveAttribute('tabindex', '0');
+        if (action === 'nested keyboard') {
+            await page.keyboard.press('ArrowDown');
+            const disabled = page.getByRole('menuitem', { name: 'Unavailable', exact: true });
+            await expect(disabled).toBeFocused();
+            await page.keyboard.press('Enter');
+            await expect(page.locator('output')).toHaveText('Last action: None');
+            await page.keyboard.press('ArrowDown');
+            await expect(more).toBeFocused();
+            await page.keyboard.press('ArrowRight');
+            await expect(page.getByRole('menuitem', { name: 'Export file', exact: true })).toBeFocused();
+            await expect(refresh).toBeVisible();
+            await page.keyboard.press('Escape');
+            await expect(more).toBeFocused();
+            await page.keyboard.press('Escape');
+        } else {
+            await page.keyboard.press('Enter');
+            await expect(page.locator('output')).toHaveText('Last action: Rename');
+            await expect(primary).toBeFocused();
+            await primary.press('Enter');
+            await expect(refresh).toBeFocused();
+            await page.keyboard.press('End');
+            await expect(page.getByRole('menuitem', { name: 'Remove', exact: true })).toBeFocused();
+            await page.keyboard.press('Enter');
+            await expect(page.locator('output')).toHaveText('Last action: Remove');
+        }
+        await expect(page.getByRole('menu')).toHaveCount(0);
+        await expect(primary).toBeFocused();
+        expect(errors).toEqual([]);
+    });
+}

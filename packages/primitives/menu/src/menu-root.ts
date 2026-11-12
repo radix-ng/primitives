@@ -13,6 +13,7 @@ import {
     signal,
     Signal
 } from '@angular/core';
+import type { RdxCompositeListContext } from '@radix-ng/primitives/composite';
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
@@ -25,6 +26,7 @@ import {
     provideFloatingRootContext,
     provideFloatingTree,
     RdxCancelableChangeEventDetails,
+    RdxFloatingNodeRegistration,
     RdxFloatingRootContext,
     RdxPopupLifecycle,
     usePopupLifecycle
@@ -189,9 +191,12 @@ export interface RdxMenuRootContext {
         el: HTMLElement,
         physicalSide?: Signal<MenuSide | undefined>,
         getId?: () => string,
-        isTyping?: () => boolean
+        isTyping?: () => boolean,
+        compositeList?: RdxCompositeListContext,
+        isRestoringFocus?: () => boolean
     ) => () => void;
     isTyping: () => boolean;
+    isRestoringFocus: () => boolean;
     setBeforeContentFocusGuard: (element: HTMLElement | null) => void;
     registerTransitionElement: (element: HTMLElement) => () => void;
     registerPopupArrowNavigationHandler: (handler: (event: KeyboardEvent) => boolean) => () => void;
@@ -292,8 +297,10 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         show: (autoFocus, reason, event) => instance.show(autoFocus, reason, event),
         showWithoutAutoFocus: (reason, event) => instance.show(false, reason, event),
         registerTrigger: (el, getId, getInteractionType) => instance.registerTrigger(el, getId, getInteractionType),
-        registerPopup: (el, physicalSide, getId, isTyping) => instance.registerPopup(el, physicalSide, getId, isTyping),
+        registerPopup: (el, physicalSide, getId, isTyping, list, isRestoringFocus) =>
+            instance.registerPopup(el, physicalSide, getId, isTyping, list, isRestoringFocus),
         isTyping: () => instance.isTyping(),
+        isRestoringFocus: () => instance.isRestoringFocus(),
         setBeforeContentFocusGuard: (element) => instance.setBeforeContentFocusGuard(element),
         registerTransitionElement: (el) => instance.registerTransitionElement(el),
         registerPopupArrowNavigationHandler: (handler) => instance.registerPopupArrowNavigationHandler(handler),
@@ -325,7 +332,7 @@ const contextFactory = () => buildContext(inject(RdxMenuRoot));
         provideFloatingTree(),
         provideFloatingRootContext(() => inject(RdxMenuRoot).floatingContext)
     ],
-    hostDirectives: [RdxPopper]
+    hostDirectives: [RdxPopper, RdxFloatingNodeRegistration]
 })
 export class RdxMenuRoot {
     private readonly popper = inject(RdxPopper);
@@ -353,6 +360,9 @@ export class RdxMenuRoot {
     private registeredTriggerInteractionType?: (event: Event) => RdxInteractionType;
     private registeredPopupId?: () => string;
     private registeredPopupIsTyping?: () => boolean;
+    private registeredPopupIsRestoringFocus?: () => boolean;
+    /** @internal Popup collection published to parts projected through consumer wrappers. */
+    readonly popupCompositeList = signal<RdxCompositeListContext | null>(null);
     private popupArrowNavigationHandler: ((event: KeyboardEvent) => boolean) | undefined;
     private popupNavigationHandler: ((event: KeyboardEvent) => boolean) | undefined;
     private triggerInteractionHandler: RdxMenuTriggerInteractionHandler | undefined;
@@ -772,9 +782,13 @@ export class RdxMenuRoot {
         el: HTMLElement,
         physicalSide?: Signal<MenuSide | undefined>,
         getId?: () => string,
-        isTyping?: () => boolean
+        isTyping?: () => boolean,
+        compositeList?: RdxCompositeListContext,
+        isRestoringFocus?: () => boolean
     ): () => void {
         this.registeredPopupIsTyping = isTyping;
+        this.registeredPopupIsRestoringFocus = isRestoringFocus;
+        this.popupCompositeList.set(compositeList ?? null);
         this.registeredPopupId = getId;
         this.popupElement.set(el);
         this.popupPhysicalSideSource.set(physicalSide);
@@ -782,6 +796,8 @@ export class RdxMenuRoot {
             if (this.popupElement() === el) {
                 this.registeredPopupId = undefined;
                 this.registeredPopupIsTyping = undefined;
+                this.registeredPopupIsRestoringFocus = undefined;
+                this.popupCompositeList.set(null);
                 this.popupElement.set(undefined);
                 this.popupPhysicalSideSource.set(undefined);
             }
@@ -790,6 +806,10 @@ export class RdxMenuRoot {
 
     isTyping(): boolean {
         return this.open() && (this.registeredPopupIsTyping?.() ?? false);
+    }
+
+    isRestoringFocus(): boolean {
+        return this.registeredPopupIsRestoringFocus?.() ?? false;
     }
 
     setBeforeContentFocusGuard(element: HTMLElement | null): void {

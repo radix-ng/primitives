@@ -9,6 +9,7 @@ import { rootRemovalFinalFocus } from '../../../shared/root-removal';
 import { config, installProbe, classes as s, type Layer } from './contract';
 import { ReactFocusBoundary } from './focus-boundary.react';
 import { ReactHosts } from './hosts.react';
+import { ReactProjection } from './projection.react';
 import { touchScrollEntries } from './touch';
 
 const settings = config();
@@ -302,5 +303,13 @@ function ReactMenu() {
     );
 }
 createRoot(document.getElementById('root')!).render(
-    settings.focusBoundary ? <ReactFocusBoundary /> : settings.host ? <ReactHosts /> : <ReactMenu />
+    settings.projection ? (
+        <ReactProjection />
+    ) : settings.focusBoundary ? (
+        <ReactFocusBoundary />
+    ) : settings.host ? (
+        <ReactHosts />
+    ) : (
+        <ReactMenu />
+    )
 );

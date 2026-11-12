@@ -12,6 +12,7 @@ import {
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, dispatchClickWithModifiers } from '@radix-ng/primitives/core';
 import { RdxFloatingFocusManager } from '@radix-ng/primitives/floating-focus-manager';
+import { provideMenuCompositeItemOwner } from './menu-composite-item-owner';
 import { handleMenuItemKeydown, handleMenuItemKeyup, setMenuItemButtonType } from './menu-item-keyboard';
 import { shouldActivateOnMouseUp } from './menu-mouse-up';
 import { injectRdxMenuRootContext } from './menu-root';
@@ -22,6 +23,7 @@ import { injectRdxMenuRootContext } from './menu-root';
 @Directive({
     selector: '[rdxMenuItem]',
     exportAs: 'rdxMenuItem',
+    providers: [provideMenuCompositeItemOwner()],
     hostDirectives: [RdxCompositeListItem],
     host: {
         role: 'menuitem',
@@ -82,7 +84,7 @@ export class RdxMenuItem {
         if (!this.rootContext?.disabled()) {
             this.isFocused.set(true);
         }
-        if (!this.focusManager?.isRestoringFocus()) this.setActiveIndex();
+        if (!(this.rootContext?.isRestoringFocus() ?? this.focusManager?.isRestoringFocus())) this.setActiveIndex();
     }
 
     onBlur(): void {

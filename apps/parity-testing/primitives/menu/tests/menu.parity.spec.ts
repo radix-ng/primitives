@@ -15,7 +15,15 @@ const run = createParityRunner({
             changes: window.menuParity?.nativeEvents,
             pointerMoves: window.menuParity?.pointerMoves,
             gestures: window.menuParity?.gestures,
-            inputEvents: window.menuParity?.inputEvents
+            inputEvents: window.menuParity?.inputEvents,
+            ...(window.menuParity?.config.projection
+                ? {
+                      portalDocumentOrder: [...document.querySelectorAll('[role^="menuitem"]')].map((element) => ({
+                          id: element.getAttribute('data-testid'),
+                          popup: element.closest('[role="menu"]')?.getAttribute('data-testid')
+                      }))
+                  }
+                : {})
         }))
 });
 for (const scenario of scenarios)

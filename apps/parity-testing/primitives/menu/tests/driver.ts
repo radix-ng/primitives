@@ -51,6 +51,7 @@ export class MenuDriver {
             () =>
                 (window.menuParity.config.empty?.retained && window.menuParity.config.empty.nested) ||
                 (window.menuParity.config.focusBoundary?.retained && window.menuParity.config.focusBoundary.nested) ||
+                (window.menuParity.config.projection?.retained && window.menuParity.config.projection.nested) ||
                 (window.menuParity.config.host?.initial?.nested && window.menuParity.config.host.retained)
         );
         if (retainedSub) await expect(this.subPopup).toBeHidden();
@@ -89,7 +90,17 @@ export class MenuDriver {
                 const sub = document.querySelector<HTMLElement>('[data-testid="sub-popup"]');
                 const trigger = document.querySelector<HTMLElement>('[data-testid="primary"]')!;
                 const positioner = document.querySelector<HTMLElement>('[data-testid="positioner"]');
-                const items = [...document.querySelectorAll<HTMLElement>('[role^="menuitem"]')];
+                // Projected keepMounted children can portal before their parent in Angular. Compare
+                // each popup's actual item order; raw sibling portal order is attached independently.
+                const items = window.menuParity.config.projection
+                    ? [popup, sub].flatMap((surface) =>
+                          surface
+                              ? [...surface.querySelectorAll<HTMLElement>('[role^="menuitem"]')].filter(
+                                    (item) => item.closest('[role="menu"]') === surface
+                                )
+                              : []
+                      )
+                    : [...document.querySelectorAll<HTMLElement>('[role^="menuitem"]')];
                 const visible = (el: HTMLElement | null) =>
                     !!el && el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
                 const labelled = (el: HTMLElement | null) =>
@@ -101,7 +112,9 @@ export class MenuDriver {
                     ...(window.menuParity.config.focusBoundary
                         ? { finalFocusCalls: window.menuParity.finalFocusCalls }
                         : {}),
-                    ...(window.menuParity.config.host?.initial || window.menuParity.config.focusBoundary
+                    ...(window.menuParity.config.host?.initial ||
+                    window.menuParity.config.focusBoundary ||
+                    window.menuParity.config.projection
                         ? {
                               tabStops: items.map((el) => ({
                                   id: el.dataset.testid,

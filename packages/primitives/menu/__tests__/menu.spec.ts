@@ -2214,17 +2214,20 @@ describe('Menu', () => {
             const pointerMove = new Event('pointermove', { bubbles: true });
             Object.defineProperty(pointerMove, 'pointerType', { value: 'mouse' });
             subTrigger.dispatchEvent(pointerMove);
+            expect(document.activeElement).toBe(subTrigger);
 
             // Simulate Chrome dropping the non-bubbling `pointerleave` during a fast sweep: only the
             // bubbling `pointerout` fires as the pointer leaves the trigger for a sibling.
             const pointerOut = new Event('pointerout', { bubbles: true });
             Object.defineProperty(pointerOut, 'relatedTarget', { value: document.body });
             subTrigger.dispatchEvent(pointerOut);
+            expect(document.activeElement).toBe(fixture.nativeElement.querySelector('[rdxMenuPopup]'));
 
             await new Promise((resolve) => setTimeout(resolve, 120));
             fixture.detectChanges();
 
             expect(subTrigger.getAttribute('aria-expanded')).toBe('false');
+            expect(subTrigger.hasAttribute('data-highlighted')).toBe(false);
         });
 
         it('keeps the pending hover-open when pointerout stays within the trigger subtree', async () => {
@@ -3158,32 +3161,40 @@ describe('Menu diagnostics', () => {
     });
 
     /** Opens the menu and moves focus, which is what makes the popup resolve its item list. */
-    function navigate(fixture: ComponentFixture<unknown>): void {
+    async function navigate(fixture: ComponentFixture<unknown>): Promise<void> {
         fixture.detectChanges();
         (fixture.nativeElement.querySelector('[rdxMenuTrigger]') as HTMLElement).click();
+        fixture.detectChanges();
+        await fixture.whenStable();
         fixture.detectChanges();
         keydown(fixture.nativeElement.querySelector('[rdxMenuPopup]') as HTMLElement, 'ArrowDown');
     }
 
-    it('warns when a popup mixes inline and projected items', () => {
+    it('registers mixed inline and projected items without a warning', async () => {
         TestBed.configureTestingModule({ imports: [ProjectedMenuItemsHost] });
-        navigate(TestBed.createComponent(ProjectedMenuItemsHost));
-
-        expect(warn).toHaveBeenCalledWith(expect.stringContaining('[rdx:menu/items-outside-composite]'));
+        const fixture = TestBed.createComponent(ProjectedMenuItemsHost);
+        await navigate(fixture);
+        const popup = fixture.nativeElement.querySelector('[rdxMenuPopup]') as HTMLElement;
+        const items = [...popup.querySelectorAll<HTMLElement>('[rdxMenuItem]')];
+        keydown(popup, 'Home');
+        expect(document.activeElement).toBe(items[0]);
+        keydown(items[0], 'ArrowDown');
+        expect(document.activeElement).toBe(items[1]);
+        expect(warn).not.toHaveBeenCalled();
     });
 
-    it('stays silent when every item is projected and the DOM fallback applies', () => {
+    it('registers entirely projected items without a warning', async () => {
         TestBed.configureTestingModule({ imports: [ProjectedMenuItemsHost] });
         const fixture = TestBed.createComponent(ProjectedMenuItemsHost);
         fixture.componentInstance.inline.set(false);
-        navigate(fixture);
+        await navigate(fixture);
 
         expect(warn).not.toHaveBeenCalled();
     });
 
-    it('stays silent when the popup declares its own items', () => {
+    it('stays silent when the popup declares its own items', async () => {
         TestBed.configureTestingModule({ imports: [BasicMenuComponent] });
-        navigate(TestBed.createComponent(BasicMenuComponent));
+        await navigate(TestBed.createComponent(BasicMenuComponent));
 
         expect(warn).not.toHaveBeenCalled();
     });

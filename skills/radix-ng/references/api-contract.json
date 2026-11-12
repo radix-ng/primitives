@@ -3955,7 +3955,6 @@
           "description": "A container for the menu contents.",
           "hostDirectives": [
             "RdxPopperContent",
-            "RdxFloatingNodeRegistration",
             "RdxFloatingFocusManager",
             "RdxCompositeList"
           ],
@@ -4214,7 +4213,8 @@
           "exportAs": "rdxMenuRoot",
           "description": "Groups all parts of a menu.",
           "hostDirectives": [
-            "RdxPopper"
+            "RdxPopper",
+            "RdxFloatingNodeRegistration"
           ],
           "inputs": [
             {
@@ -4306,7 +4306,7 @@
           "directive": "RdxMenuSubTrigger",
           "selector": "[rdxMenuSubTrigger]",
           "exportAs": "rdxMenuSubTrigger",
-          "description": "An item inside a parent menu that opens a nested submenu.\n\nPlace this inside `ng-container rdxMenuRoot` that wraps both the trigger\nand the submenu positioner. The inner root provides the submenu context;\nthe outer popup discovers this element via `[rdxMenuSubTrigger]` in its\nITEM_SELECTOR and includes it in keyboard navigation.",
+          "description": "An item inside a parent menu that opens a nested submenu.\n\nPlace this inside `ng-container rdxMenuRoot` that wraps both the trigger\nand the submenu positioner. The inner root provides the submenu context;\nits host registers with the outer popup's collection for keyboard navigation,\nincluding when composed onto a wrapper through hostDirectives.",
           "hostDirectives": [
             "RdxPopperAnchor",
             "RdxCompositeListItem"

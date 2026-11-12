@@ -1,12 +1,15 @@
 import { computed, DestroyRef, Directive, effect, ElementRef, inject, input, isDevMode, output } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
-import { getCompositeNavigationKeys, RdxCompositeList } from '@radix-ng/primitives/composite';
+import {
+    getCompositeNavigationKeys,
+    injectRdxCompositeListContext,
+    RdxCompositeList
+} from '@radix-ng/primitives/composite';
 import {
     findTypeaheadMatch,
     RDX_FLOATING_REGISTRATION,
     RDX_FLOATING_ROOT_CONTEXT,
     rdxDevWarning,
-    RdxFloatingNodeRegistration,
     useAnchoredScrollLock
 } from '@radix-ng/primitives/core';
 import { RdxDismiss, RdxOutsidePressDomEvent } from '@radix-ng/primitives/dismissable-layer';
@@ -34,7 +37,6 @@ import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
     exportAs: 'rdxMenuPopup',
     hostDirectives: [
         RdxPopperContent,
-        RdxFloatingNodeRegistration,
         // `finalFocus` maps to the focus manager's `returnFocus`, overriding the trigger-return policy
         // below when set (Base UI `Menu.Popup finalFocus`); same wiring as Popover/Select.
         { directive: RdxFloatingFocusManager, inputs: ['returnFocus: finalFocus'] },
@@ -232,7 +234,9 @@ export class RdxMenuPopup {
             this.elementRef.nativeElement,
             this.wrapper?.physicalPlacedSide,
             () => this.resolvedId(),
-            () => this.search !== ''
+            () => this.search !== '',
+            injectRdxCompositeListContext(),
+            () => this.focusManager.isRestoringFocus()
         );
         inject(DestroyRef).onDestroy(() => {
             unregister();
@@ -433,13 +437,8 @@ export class RdxMenuPopup {
         }
     }
 
-    // The DOM fallback covers a popup whose items were all projected past it: their composite
-    // registration resolves through the declaring injector tree, not the rendered one, so they never
-    // reach this popup's list (see ADR 0001, "Item ownership across content projection"). It is
-    // all-or-nothing — a popup mixing inline and projected items keeps the inline ones and drops the
-    // rest, which `warnOnItemsOutsideComposite` reports in dev. Menu has no `RdxCompositeItemOwner`
-    // bridge because `rdxMenuSubTrigger` belongs to the parent popup's list, so ownership would have to
-    // be resolved per popup rather than per root.
+    // Primitive parts register through their owning Root, including projected items and SubTriggers
+    // in the parent popup. The fallback remains for role-only markup without primitive registration.
     private menuItems(): RdxMenuCompositeItem[] {
         const compositeItems = getCompositeMenuItems(this.compositeList);
 
@@ -470,10 +469,8 @@ export class RdxMenuPopup {
             rdxDevWarning(
                 'menu/items-outside-composite',
                 '`rdxMenuPopup` contains menu items that are not registered with it, so keyboard ' +
-                    'navigation and typeahead skip them. This happens when a wrapper component projects ' +
-                    'items into a popup declared in its own template: registration resolves through the ' +
-                    'declaring template, not the rendered DOM. Declare the items alongside the popup, or ' +
-                    "compose `rdxMenuPopup` onto the wrapper's host element.",
+                    'navigation and typeahead skip them. Keep the owning Menu Root in the projected ' +
+                    "parts' declaring tree and use Menu item directives so they join its popup collection.",
                 'components/menu'
             );
         }

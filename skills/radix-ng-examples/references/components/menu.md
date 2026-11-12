@@ -141,6 +141,7 @@ content multi-root.
 - [Return focus](../examples/menu--return-focus.md)
 - [Native elements](../examples/menu--native-elements.md)
 - [Pointer gestures](../examples/menu--pointer-gestures.md)
+- [Composition](../examples/menu--composition.md)
 - [Events](../examples/menu--events.md)
 - [Radio items](../examples/menu--radio-items.md)
 - [Checkbox items](../examples/menu--checkbox-items.md)

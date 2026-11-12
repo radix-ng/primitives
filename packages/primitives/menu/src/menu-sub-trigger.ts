@@ -20,6 +20,7 @@ import {
     RdxFloatingFocusManager
 } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
+import { provideMenuCompositeItemOwner } from './menu-composite-item-owner';
 import { handleMenuItemKeydown, handleMenuItemKeyup } from './menu-item-keyboard';
 import { injectRdxMenuRootContext, RdxMenuRoot } from './menu-root';
 import {
@@ -37,12 +38,13 @@ const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();
  *
  * Place this inside `ng-container rdxMenuRoot` that wraps both the trigger
  * and the submenu positioner. The inner root provides the submenu context;
- * the outer popup discovers this element via `[rdxMenuSubTrigger]` in its
- * ITEM_SELECTOR and includes it in keyboard navigation.
+ * its host registers with the outer popup's collection for keyboard navigation,
+ * including when composed onto a wrapper through hostDirectives.
  */
 @Directive({
     selector: '[rdxMenuSubTrigger]',
     exportAs: 'rdxMenuSubTrigger',
+    providers: [provideMenuCompositeItemOwner(true)],
     hostDirectives: [RdxPopperAnchor, RdxCompositeListItem],
     host: {
         '[attr.id]': 'resolvedId()',
@@ -248,7 +250,7 @@ export class RdxMenuSubTrigger {
         }
 
         this.isFocused.set(true);
-        if (this.focusManager?.isRestoringFocus()) return;
+        if (this.parentMenuRoot?.isRestoringFocus() ?? this.focusManager?.isRestoringFocus()) return;
         // Returning to an open child's trigger hands logical highlight back to the parent,
         // independently of whether the child's close request was canceled.
         if (this.submenuContext.isOpen()) this.submenuContext.setActiveIndex(null);
@@ -433,7 +435,7 @@ export class RdxMenuSubTrigger {
         if (this.elementRef.nativeElement.contains(event.relatedTarget as Node | null)) {
             return;
         }
-        this.clearOpenTimers();
+        this.onPointerLeave();
     }
 
     protected clearHighlight(): void {
@@ -441,35 +443,28 @@ export class RdxMenuSubTrigger {
         this.clearParentActiveIndex();
     }
 
+    private siblingTriggers(): HTMLElement[] {
+        const own = this.elementRef.nativeElement;
+        return (
+            this.parentMenuRoot
+                ?.popupCompositeList()
+                ?.items()
+                .map((item) => item.element)
+                .filter((element) => element !== own && submenuRootsByTrigger.has(element)) ?? []
+        );
+    }
+
     private closeSiblingSubmenus(): void {
-        const currentTrigger = this.elementRef.nativeElement;
-        const parentPopup = currentTrigger.closest<HTMLElement>('[rdxMenuPopup]');
-
-        if (!parentPopup) return;
-
-        parentPopup.querySelectorAll<HTMLElement>('[rdxMenuSubTrigger]').forEach((trigger) => {
-            if (trigger === currentTrigger || trigger.closest('[rdxMenuPopup]') !== parentPopup) {
-                return;
-            }
-
+        for (const trigger of this.siblingTriggers()) {
             submenuRootsByTrigger.get(trigger)?.close('none');
             trigger.dispatchEvent(new CustomEvent('rdx-menu-subtrigger-clear-highlight'));
-        });
+        }
     }
 
     private clearSiblingHighlights(): void {
-        const currentTrigger = this.elementRef.nativeElement;
-        const parentPopup = currentTrigger.closest<HTMLElement>('[rdxMenuPopup]');
-
-        if (!parentPopup) return;
-
-        parentPopup.querySelectorAll<HTMLElement>('[rdxMenuSubTrigger]').forEach((trigger) => {
-            if (trigger === currentTrigger || trigger.closest('[rdxMenuPopup]') !== parentPopup) {
-                return;
-            }
-
+        for (const trigger of this.siblingTriggers()) {
             trigger.dispatchEvent(new CustomEvent('rdx-menu-subtrigger-clear-highlight'));
-        });
+        }
     }
 
     private setParentActiveIndex(): void {

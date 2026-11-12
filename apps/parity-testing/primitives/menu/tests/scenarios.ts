@@ -10,9 +10,11 @@ import { hybridScenarios } from './hybrid.scenarios';
 import { initialFocusScenarios } from './initial-focus.scenarios';
 import { lifecycleScenarios } from './lifecycle.scenarios';
 import { pointerScenarios } from './pointer.scenarios';
+import { projectionScenarios } from './projection.scenarios';
 import { touchScenarios } from './touch.scenarios';
 
 export const scenarios = [
+    ...projectionScenarios,
     ...focusBoundaryScenarios,
     ...basicCases.map((name) => ({
         name,

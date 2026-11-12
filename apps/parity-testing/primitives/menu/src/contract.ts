@@ -8,6 +8,7 @@ import { hostCases, hostConfig, type HostClick } from './hosts';
 import { hybridCases } from './hybrid';
 import { initialFocusCases } from './initial-focus';
 import { pointerCases, pointerConfig } from './pointer';
+import { projectionCases, projectionConfig } from './projection';
 import { touchCases, touchConfig } from './touch';
 
 export const basicCases = [
@@ -57,6 +58,7 @@ export const cases = [
     ...hostCases,
     ...initialFocusCases,
     ...focusBoundaryCases,
+    ...projectionCases,
     ...rootRemovalCases,
     'lifecycle-submenu-css'
 ] as const;
@@ -81,6 +83,7 @@ export function config() {
     const touch = touchConfig(name);
     const host = hostConfig(name);
     const focusBoundary = focusBoundaryConfig(name);
+    const projection = projectionConfig(name);
     return {
         name: name as CaseName,
         dir: name.endsWith('-rtl') ? ('rtl' as const) : ('ltr' as const),
@@ -89,11 +92,14 @@ export function config() {
         touch,
         host,
         focusBoundary,
-        modal: removal
-            ? removal.modal
-            : name.startsWith('lifecycle-')
-              ? name === 'lifecycle-modal-keep'
-              : !['outside-nonmodal', 'focus-out', 'touch-outside-nonmodal'].includes(name),
+        projection,
+        modal: projection
+            ? !projection.cancelFocus
+            : removal
+              ? removal.modal
+              : name.startsWith('lifecycle-')
+                ? name === 'lifecycle-modal-keep'
+                : !['outside-nonmodal', 'focus-out', 'touch-outside-nonmodal'].includes(name),
         loop: name !== 'no-loop',
         disabled: ['disabled-trigger', 'hover-root-disabled', 'touch-disabled-trigger'].includes(name),
         checkbox:
@@ -104,6 +110,7 @@ export function config() {
         radio:
             name.startsWith('radio') || name === 'drag-radio' || ['touch-radio', 'touch-disabled-radio'].includes(name),
         submenu:
+            projection?.nested ||
             touch?.submenu ||
             empty?.nested ||
             removal?.nested ||
@@ -125,7 +132,7 @@ export function config() {
                     late: false
                 }
               : lifecycleConfig(
-                    empty?.retained || touch?.retained || host?.retained
+                    empty?.retained || touch?.retained || host?.retained || projection?.retained
                         ? 'lifecycle-keep'
                         : name === 'lifecycle-submenu-css'
                           ? 'lifecycle-css-exit'

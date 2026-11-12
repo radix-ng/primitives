@@ -5,7 +5,7 @@ port is 4505. Angular fixtures are AOT compiled and React imports the unmodified
 Base UI 1.9.0 pin: `cf696d6f6e08c699c5bda24d5a033430909f2285`, archive SHA-256
 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 
-199 scenarios define 597 planned comparisons: 549 execute, with 48 touch capability skips. They cover native keyboard and
+212 scenarios define 636 planned comparisons: 588 execute, with 48 touch capability skips. They cover native keyboard and
 pointer opening, disabled/focusable items, roving focus, edges and looping, repeated and explicit-label
 typeahead, selection and stay-open items, cancelable transactions, modal/background activation,
 forward/backward Tab, checkbox/radio values, LTR/RTL submenu ownership and custom identity links.
@@ -59,7 +59,7 @@ scope. Unchanged/disappeared exceptions fail; there is no blanket normalization 
 
 Custom IDs change between opens in the differential scenario: the pin keys trigger registration
 by id. Angular additionally supports live ID changes without replacing the popup, checked through
-the Events story and unit/browser regressions. Pending work includes projected wrappers, further finalFocus/API/lifecycle combinations and real device/AT verification.
+the Events story and unit/browser regressions. Pending work includes callback null/undefined and removed-target finalFocus, further API/lifecycle combinations and real device/AT verification.
 
 ## Whole-root removal
 
@@ -182,3 +182,16 @@ or synthesizes original callback events. Raw native event timelines remain attac
 All three engines pass on macOS/Linux without new exceptions or skips. See
 [ADR 0054](../../../../docs/adr/0054-menu-focus-out-and-final-focus.md) for the Angular snapshot policy,
 Shift+Tab source-event change and remaining projection/target audits.
+
+## Projected wrapper composition
+
+Run `pnpm test-parity menu --grep projection-`. Thirteen cases / 39 comparisons use actual Angular
+hostDirectives wrappers and ng-content, alongside React components composing the unmodified pin.
+Popup/Portal live in the wrapper template; Root remains on its host. They compare mixed/internal and
+projected items, native link and value controls, dynamic collections, nested LTR/RTL, retained
+reopening, cancellation and explicit final focus. The public Composition story covers the same paths.
+
+Items are recorded in each popup's DOM order, with raw document portal order attached separately.
+One exact closed-retained-child-tabindex-restore pair records the pin restoring 0 on the hidden child
+at the second root opening; Angular retains -1 under the closed-snapshot policy. All visible focus
+and interaction checkpoints match. See [ADR 0057](../../../../docs/adr/0057-menu-projected-composition.md).
