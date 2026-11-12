@@ -16109,6 +16109,7 @@ export class RdxNavigationMenuDefaultComponent {
 - ✅ `value` / `defaultValue` model with `onValueChange`, `onOpenChange`, and `onOpenChangeComplete` outputs.
 - ✅ Keyboard navigation between triggers and top-level links (arrow keys) via the shared Composite primitive.
 - ✅ Enter / Space / orientation arrow keys open a trigger while retaining focus; Tab enters its content, then arrows / Home / End navigate the panel.
+- ✅ Closed triggers and links retain native Tab order; arrows provide additional navigation without removing sibling Tab stops.
 - ✅ Horizontal and vertical orientations and LTR / RTL layouts.
 - ✅ Nested navigation menus; selecting a nested link also closes the parent menu.
 - ✅ Closes on Escape and outside pointer interaction, restoring focus to the trigger.

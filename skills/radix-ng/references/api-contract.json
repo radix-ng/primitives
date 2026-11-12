@@ -4641,7 +4641,8 @@
           "selector": "[rdxNavigationMenuList]",
           "description": "Contains the navigation menu items and coordinates composite keyboard focus between triggers.",
           "hostDirectives": [
-            "RdxCompositeRoot"
+            "RdxCompositeRoot",
+            "RdxFloatingInsideElement"
           ],
           "inputs": [],
           "outputs": []

@@ -163,6 +163,46 @@ class ProjectedNavigationMenuWrapperComponent {}
 })
 class ProjectedNavigationMenuHostComponent {}
 
+@Component({
+    imports: [...navigationMenuImports],
+    template: `
+        <nav rdxNavigationMenuRoot>
+            <ul rdxNavigationMenuList>
+                <li rdxNavigationMenuItem value="one">
+                    <button tabindex="-1" rdxNavigationMenuTrigger>One</button>
+                </li>
+                <li rdxNavigationMenuItem>
+                    <a tabindex="0" rdxNavigationMenuLink href="#docs">Docs</a>
+                </li>
+            </ul>
+        </nav>
+    `
+})
+class AuthoredTabIndexHostComponent {}
+
+describe('Navigation Menu authored tab order', () => {
+    it('keeps explicit tabindex values while composite arrows continue to work', async () => {
+        const fixture = TestBed.createComponent(AuthoredTabIndexHostComponent);
+        try {
+            fixture.detectChanges();
+            await fixture.whenStable();
+            const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
+            const link = fixture.nativeElement.querySelector('a') as HTMLAnchorElement;
+            expect(button.tabIndex).toBe(-1);
+            expect(link.getAttribute('tabindex')).toBe('0');
+            button.focus();
+            button.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+            await fixture.whenStable();
+            fixture.detectChanges();
+            expect(document.activeElement).toBe(link);
+            expect(button.tabIndex).toBe(-1);
+            expect(link.getAttribute('tabindex')).toBe('0');
+        } finally {
+            fixture.destroy();
+        }
+    });
+});
+
 describe('Navigation Menu projected through a hostDirectives wrapper', () => {
     it('keeps projected triggers and links in the list composite', async () => {
         TestBed.configureTestingModule({ imports: [ProjectedNavigationMenuHostComponent] });
@@ -175,7 +215,7 @@ describe('Navigation Menu projected through a hostDirectives wrapper', () => {
             fixture.nativeElement.querySelectorAll('[rdxNavigationMenuTrigger], a[rdxNavigationMenuLink]')
         ) as HTMLElement[];
 
-        expect(items.map((item) => item.getAttribute('tabindex'))).toEqual(['0', '-1', '-1']);
+        expect(items.map((item) => item.getAttribute('tabindex'))).toEqual(['0', null, '0']);
 
         items[0].focus();
         items[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
@@ -189,6 +229,7 @@ describe('Navigation Menu projected through a hostDirectives wrapper', () => {
         fixture.detectChanges();
 
         expect(document.activeElement).toBe(items[2]);
+        expect(items.map((item) => item.tabIndex)).toEqual([0, 0, 0]);
     });
 });
 
@@ -271,7 +312,7 @@ describe('RdxNavigationMenu', () => {
         one.click();
         fixture.detectChanges();
 
-        for (const modifier of ['ctrlKey', 'altKey', 'metaKey']) {
+        for (const modifier of ['ctrlKey', 'metaKey']) {
             const event = new KeyboardEvent('keydown', {
                 key: 'Tab',
                 bubbles: true,
@@ -705,7 +746,7 @@ describe('RdxNavigationMenu nested behavior', () => {
         const nestedTrigger = fixture.nativeElement.querySelectorAll(
             'button[rdxNavigationMenuTrigger]'
         )[1] as HTMLButtonElement;
-        expect(nestedTrigger.getAttribute('tabindex')).toBeNull();
+        expect(nestedTrigger.getAttribute('tabindex')).toBe('0');
         expect(nestedTrigger.tabIndex).toBe(0);
 
         const roots = fixture.debugElement

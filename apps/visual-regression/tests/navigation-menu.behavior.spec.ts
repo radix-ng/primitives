@@ -281,6 +281,83 @@ test.describe('Navigation Menu content composition and demo layout', () => {
 
     test.afterEach(() => expect(errors).toEqual([]));
 
+    for (const [story, labels, arrow] of [
+        ['default', ['Overview', 'Handbook', 'GitHub'], 'ArrowRight'],
+        ['vertical', ['Account', 'Workspace', 'Support'], 'ArrowDown'],
+        ['links', ['Home', 'Docs', 'Pricing', 'Blog'], 'ArrowRight']
+    ] as const) {
+        test(`${story}: closed Tab order visits every item, exits and returns in reverse`, async ({
+            page,
+            browserName
+        }) => {
+            const tab = browserName === 'webkit' ? 'Alt+Tab' : 'Tab';
+            const reverseTab = browserName === 'webkit' ? 'Alt+Shift+Tab' : 'Shift+Tab';
+            await gotoStory(page, `primitives-navigation-menu--${story}`);
+            const root = page.locator('[rdxNavigationMenuRoot]').first();
+            await expect(root).toBeVisible();
+            await root.evaluate((element) => {
+                for (const position of ['beforebegin', 'afterend'] as const) {
+                    const button = element.ownerDocument.createElement('button');
+                    button.tabIndex = 0;
+                    button.textContent = position === 'beforebegin' ? 'Before menu' : 'After menu';
+                    element.insertAdjacentElement(position, button);
+                }
+            });
+            await page.keyboard.press(tab);
+            await expect(page.getByRole('button', { name: 'Before menu', exact: true })).toBeFocused();
+            const parts = root.locator('[rdxNavigationMenuTrigger], [rdxNavigationMenuLink]');
+            for (const label of labels) {
+                await page.keyboard.press(tab);
+                await expect(parts.filter({ hasText: label })).toBeFocused();
+            }
+            await page.keyboard.press(tab);
+            await expect(page.getByRole('button', { name: 'After menu', exact: true })).toBeFocused();
+            for (const label of [...labels].reverse()) {
+                await page.keyboard.press(reverseTab);
+                await expect(parts.filter({ hasText: label })).toBeFocused();
+            }
+            await page.keyboard.press(reverseTab);
+            await expect(page.getByRole('button', { name: 'Before menu', exact: true })).toBeFocused();
+            await page.keyboard.press(tab);
+            await page.keyboard.press(arrow);
+            await expect(parts.nth(1)).toBeFocused();
+            await page.keyboard.press(tab);
+            await expect(parts.nth(2)).toBeFocused();
+            expect(
+                await parts.evaluateAll((elements) => elements.map((element) => (element as HTMLElement).tabIndex))
+            ).toEqual(labels.map(() => 0));
+            await expect(page.locator('[rdxNavigationMenuPopup]')).toHaveCount(0);
+        });
+    }
+
+    test('Tab traverses open content, then every remaining top-level item', async ({ page, browserName }) => {
+        const tab = browserName === 'webkit' ? 'Alt+Tab' : 'Tab';
+        const reverseTab = browserName === 'webkit' ? 'Alt+Shift+Tab' : 'Shift+Tab';
+        await gotoStory(page, 'primitives-navigation-menu--default');
+        const overview = page.getByRole('button', { name: 'Overview', exact: true });
+        await overview.press('Enter');
+        const links = page.locator('[rdxNavigationMenuPopup] a');
+        await expect(links).toHaveCount(4);
+        await expect(links.first()).toBeVisible();
+        await expect(overview).toBeFocused();
+        for (let index = 0; index < 4; index++) {
+            await page.keyboard.press(tab);
+            await expect(links.nth(index)).toBeFocused();
+        }
+        await page.keyboard.press(tab);
+        await expect(page.getByRole('button', { name: 'Handbook', exact: true })).toBeFocused();
+        await page.keyboard.press(tab);
+        await expect(page.getByRole('link', { name: 'GitHub', exact: true })).toBeFocused();
+        await page.keyboard.press(reverseTab);
+        await expect(page.getByRole('button', { name: 'Handbook', exact: true })).toBeFocused();
+        for (let index = 3; index >= 0; index--) {
+            await page.keyboard.press(reverseTab);
+            await expect(links.nth(index)).toBeFocused();
+        }
+        await page.keyboard.press(reverseTab);
+        await expect(overview).toBeFocused();
+    });
+
     for (const activation of ['click', 'Enter', 'Space', 'ArrowDown']) {
         test(`opening with ${activation} keeps trigger focus; Tab enters and Shift+Tab returns`, async ({ page }) => {
             await gotoStory(page, 'primitives-navigation-menu--default');

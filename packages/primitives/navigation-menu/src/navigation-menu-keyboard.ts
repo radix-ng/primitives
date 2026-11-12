@@ -5,13 +5,41 @@ import { focusFirst, getTabbableCandidates } from './utils';
 const VIEWPORT = '[rdxNavigationMenuViewport]';
 const PART = '[rdxNavigationMenuTrigger], [rdxNavigationMenuLink]';
 
+/** Shift+Tab from the next sibling returns through the open panel before reaching its trigger. */
+export function handleNavigationMenuListTab(event: KeyboardEvent, root: RdxNavigationMenuRootContext): boolean {
+    if (
+        event.key !== 'Tab' ||
+        !event.shiftKey ||
+        event.defaultPrevented ||
+        event.ctrlKey ||
+        event.metaKey ||
+        !root.isOpen()
+    )
+        return false;
+    const list = root.list();
+    const content = root.activeContent();
+    if (!list || !content) return false;
+    const parts = getTabbableCandidates(list).filter(
+        (item) => item.matches(PART) && item.closest('[rdxNavigationMenuList]') === list
+    );
+    const index = parts.indexOf(list.ownerDocument.activeElement as HTMLElement);
+    if (index <= 0 || parts[index - 1] !== root.trigger()) return false;
+    const panel = list.ownerDocument.getElementById(content.contentId);
+    const last = panel ? getTabbableCandidates(panel).at(-1) : undefined;
+    if (!last) return false;
+    event.preventDefault();
+    event.stopPropagation();
+    focusFirst([last]);
+    return true;
+}
+
 /** Each viewport owns its content's arrows; the portaled ancestor owns logical Tab departure. */
 export function handleNavigationMenuKeydown(
     event: KeyboardEvent,
     container: HTMLElement,
     root: RdxNavigationMenuRootContext
 ): void {
-    if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
+    if (event.defaultPrevented || (event.altKey && event.key !== 'Tab') || event.ctrlKey || event.metaKey) return;
     const target = event.target as HTMLElement;
     if (event.key === 'Tab') {
         const items = getTabbableCandidates(container);

@@ -108,7 +108,13 @@ export class RdxNavigationMenuTrigger {
     }
 
     protected onKeydown(event: KeyboardEvent) {
-        if (this.disabled() || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) {
+        if (
+            this.disabled() ||
+            event.defaultPrevented ||
+            (event.altKey && event.key !== TAB) ||
+            event.ctrlKey ||
+            event.metaKey
+        ) {
             return;
         }
 

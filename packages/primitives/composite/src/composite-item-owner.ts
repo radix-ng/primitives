@@ -12,6 +12,8 @@ import { RdxCompositeListContext, RdxCompositeRootContext } from './types';
 export interface RdxCompositeItemOwner {
     readonly rootContext: Signal<RdxCompositeRootContext | null>;
     readonly listContext: Signal<RdxCompositeListContext | null>;
+    /** Override the roving tab stop while keeping collection registration and arrow navigation. */
+    readonly tabIndex?: () => string | number | null | undefined;
 }
 
 const RDX_COMPOSITE_ITEM_OWNER = new InjectionToken<RdxCompositeItemOwner>('RdxCompositeItemOwner');

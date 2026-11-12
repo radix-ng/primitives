@@ -87,3 +87,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0053](0053-menu-portal-tab-handoff.md)                                      | Accepted               | Hand off nested Menu Tab focus through Angular portal declaration order              |
 | [0054](0054-menu-focus-out-and-final-focus.md)                               | Accepted               | Resolve Menu focus-out cancellation and explicit finalFocus                          |
 | [0055](0055-navigation-menu-nested-keyboard-ownership.md)                    | Accepted               | Give nested Navigation Menu content its keyboard ownership                           |
+| [0056](0056-navigation-menu-native-tab-order.md)                             | Accepted               | Preserve Navigation Menu native Tab order                                            |

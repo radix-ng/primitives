@@ -5,6 +5,8 @@ import {
     RdxCompositeRoot
 } from '@radix-ng/primitives/composite';
 import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ARROW_UP } from '@radix-ng/primitives/core';
+import { RdxFloatingInsideElement } from '@radix-ng/primitives/dismissable-layer';
+import { handleNavigationMenuListTab } from './navigation-menu-keyboard';
 import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
 
 /**
@@ -12,7 +14,7 @@ import { injectNavigationMenuRootContext } from './navigation-menu-root-context'
  */
 @Directive({
     selector: '[rdxNavigationMenuList]',
-    hostDirectives: [RdxCompositeRoot],
+    hostDirectives: [RdxCompositeRoot, RdxFloatingInsideElement],
     host: {
         '[attr.data-orientation]': 'rootContext.orientation()',
         '(keydown)': 'onKeydown($event)',
@@ -41,6 +43,10 @@ export class RdxNavigationMenuList {
     }
 
     protected onKeydown(event: KeyboardEvent) {
+        if (handleNavigationMenuListTab(event, this.rootContext)) {
+            return;
+        }
+
         if (this.rootContext.nested) {
             return;
         }
