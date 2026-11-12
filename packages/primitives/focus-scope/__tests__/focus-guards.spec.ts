@@ -100,6 +100,29 @@ describe('focus guards', () => {
     // ─── useFocusGuardsTabbability (capture-phase toggle) ─────────────────────
 
     describe('useFocusGuardsTabbability', () => {
+        it('suspends and restores through a logical guard outside the popup DOM', async () => {
+            const portal = host('<button tabindex="0">Item</button>');
+            const guard = host('<button>Logical guard</button>').querySelector('button')!;
+            const outside = host('<button>Outside</button>').querySelector('button')!;
+            TestBed.runInInjectionContext(() =>
+                useFocusGuardsTabbability(() => portal, {
+                    isInside: (target) => portal.contains(target) || target === guard
+                })
+            );
+            TestBed.tick();
+            const item = portal.querySelector('button')!;
+            outside.focus();
+            item.focus();
+            guard.focus();
+            expect(item.tabIndex).toBe(0);
+            outside.focus();
+            expect(item.tabIndex).toBe(-1);
+            guard.focus();
+            expect(item.tabIndex).toBe(0);
+            outside.focus();
+            expect(item.tabIndex).toBe(-1);
+        });
+
         @Component({
             changeDetection: ChangeDetectionStrategy.Eager,
             template: `

@@ -171,6 +171,19 @@ the same path after closing and reopening both levels.
 
 <Canvas of={Stories.InitialFocus} />
 
+### Return focus
+
+`finalFocus` accepts an element, `false`, or a callback receiving the closing interaction type.
+Escape honors that policy; `false` leaves focus unrestored. Forward Tab preserves its native
+destination even with an explicit target. Shift+Tab requests a cancelable return to the owner;
+a veto keeps the current item focused. Canceling forward focus-out keeps the menu open, and its
+portal guards determine whether focus enters a parent control or returns to the menu.
+
+The example exposes separate parent/child policies and focus-out cancellation. Call
+`change.eventDetails.cancel()` in `onOpenChange` to veto the request.
+
+<Canvas of={Stories.FocusReturn} />
+
 ### Native elements
 
 Buttons, links and custom item hosts share the normal `(click)` path for pointer and keyboard

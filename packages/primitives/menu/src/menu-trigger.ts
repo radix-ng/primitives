@@ -208,7 +208,8 @@ export class RdxMenuTrigger {
             close: (event) => this.rootContext.close('focus-out', event),
             beforeContentFocusGuard: () => this.rootContext.beforeContentFocusGuard(),
             enabled: () => this.triggerInteraction.isActive(),
-            popupElement: () => this.rootContext.popupElement()
+            popupElement: () => this.rootContext.popupElement(),
+            afterTriggerFocusGuardRef: (element) => this.rootContext.setAfterTriggerFocusGuard(element)
         });
 
         this.destroyRef.onDestroy(() => {

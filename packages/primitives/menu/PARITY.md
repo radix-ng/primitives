@@ -30,10 +30,11 @@ This is incremental behavioral evidence, not complete API or accessibility certi
 | Native/custom Item, LinkItem and SubTrigger keyboard activation, modifiers and navigation | Pinned suite, three engines and public example           | Covered for button/div/anchor hosts                             |
 | Initial keyboard focus with disabled first/all/single items, nested and retained lists    | Pinned suite, three engines and public example           | Covered; enabled initial entry, disabled arrow navigation       |
 | Forward/backward Tab through fresh/retained submenus and native parent controls           | Pinned suite, three engines and public example           | Covered; logical portal declaration handoff (ADR 0053)          |
+| Focus-out vetoes and false/element/callback finalFocus across nested portals              | Pinned suite and Return Focus browser example            | Covered for fresh/retained sessions; ADR 0054                   |
 | Real touch, devices and assistive technology                                              | Not established by this suite                            | Pending                                                         |
 
-The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 181 scenarios and
-543 planned comparisons: 495 execute, with 48 touch capability skips. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
+The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 199 scenarios and
+597 planned comparisons: 549 execute, with 48 touch capability skips. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
 state. Checkbox/radio change requests are observed before cancellation; original event types and
 trusted pointer coordinates are retained. No adapter forces focus, open state or completion.
 
@@ -129,7 +130,7 @@ An Angular browser regression also repeats RTL diagonal travel with fractional p
 in a Linux CI failure. The safe polygon uses a one CSS-pixel buffer so integer MouseEvent coordinates
 do not fall through the fractional entry edge before native hit testing reaches the child.
 
-Next: cancelable focus-out and nested finalFocus combinations, plus deeper composition in the independent
+Next: projected Angular wrappers and remaining finalFocus/API combinations, plus deeper composition in the independent
 [Context Menu](../context-menu/PARITY.md) and [Menubar](../menubar/PARITY.md) suites.
 Device/assistive-technology work remains open. See [ADR 0038](../../../docs/adr/0038-menu-collection-boundaries.md).
 
@@ -205,7 +206,7 @@ observable, with exact source-event adaptations documented above.
 Hover promotion retains the session's original scroll policy. A fresh touch opening starts a new
 small/wide policy. Placement settles before the wheel probe on both the first and subsequent open.
 The new cases pass in Chromium/WebKit on macOS and Linux; unsupported Firefox touch contexts are
-capability skips. Further API/lifecycle and nested cancelable focus-out/finalFocus audits remain open.
+capability skips. Further API/lifecycle and projected-wrapper audits remain open.
 
 ## Native host activation
 
@@ -249,5 +250,18 @@ request order/reasons and trigger identity. The public Initial Focus example inc
 Six new cases add 18 comparisons, plus forward departure in the existing retained-submenu case.
 One exact nested-exit-completion pair records the pin dropping a fresh child's close completion;
 Angular preserves its existing embedded-view lifecycle. Other fields and the retained/backward
-paths match. Cancelable focus-out, nested finalFocus and projected wrappers remain separate audits.
+paths match. Cancellation/finalFocus were subsequently covered by ADR 0054 below; projected wrappers remain open.
 See [ADR 0053](../../../docs/adr/0053-menu-portal-tab-handoff.md).
+
+## Focus-out vetoes and explicit return policies
+
+Eighteen cases / 54 comparisons cover parent/child/both focus-out cancellation, false/element/callback
+finalFocus and repeated fresh/retained sessions. Forward Tab preserves its portal destination even
+with an explicit target. Shift+Tab is an explicit cancelable return: a veto preserves current item
+focus. Escape honors false, and a callback receives keyboard once per accepted close. Returning to
+an open SubTrigger hands child highlight back to its parent. Suspended closed items keep tabindex=-1.
+
+The Return Focus public example exposes both levels' policies and vetoes. All new cases pass on
+macOS/Linux in three engines without new exceptions/skips. Projected wrappers, callback-null/undefined
+and removed-target combinations remain separate audits. See
+[ADR 0054](../../../docs/adr/0054-menu-focus-out-and-final-focus.md).

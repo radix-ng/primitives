@@ -3,6 +3,7 @@ import { menuCollectionCases } from '../../../shared/menu-collection';
 import { createMenuProbe, type MenuProbe } from '../../../shared/menu-probe';
 import { rootRemovalCases, rootRemovalConfig } from '../../../shared/root-removal';
 import { emptyCases, emptyConfig } from './empty';
+import { focusBoundaryCases, focusBoundaryConfig } from './focus-boundary';
 import { hostCases, hostConfig, type HostClick } from './hosts';
 import { hybridCases } from './hybrid';
 import { initialFocusCases } from './initial-focus';
@@ -55,6 +56,7 @@ export const cases = [
     ...hybridCases,
     ...hostCases,
     ...initialFocusCases,
+    ...focusBoundaryCases,
     ...rootRemovalCases,
     'lifecycle-submenu-css'
 ] as const;
@@ -63,6 +65,7 @@ export type Layer = 'main' | 'sub';
 export type Probe = MenuProbe<ReturnType<typeof config>, Layer> & {
     hostClicks?: HostClick[];
     hostSubmissions?: number;
+    finalFocusCalls?: { layer: Layer; type: string | null }[];
 };
 declare global {
     const __PARITY_REFERENCE__: Probe['reference'];
@@ -77,6 +80,7 @@ export function config() {
     const empty = emptyConfig(name);
     const touch = touchConfig(name);
     const host = hostConfig(name);
+    const focusBoundary = focusBoundaryConfig(name);
     return {
         name: name as CaseName,
         dir: name.endsWith('-rtl') ? ('rtl' as const) : ('ltr' as const),
@@ -84,6 +88,7 @@ export function config() {
         empty,
         touch,
         host,
+        focusBoundary,
         modal: removal
             ? removal.modal
             : name.startsWith('lifecycle-')
@@ -109,21 +114,23 @@ export function config() {
         collectionOnly: name === 'collection-empty-refill' || (!!empty && !empty.nested),
         label: name === 'explicit-label' ? 'Zebra' : undefined,
         ids: name.endsWith('-ids'),
-        lifecycle: removal
-            ? {
-                  keepMounted: removal.retained,
-                  animated: removal.animated,
-                  deferred: removal.deferred,
-                  canceled: false,
-                  late: false
-              }
-            : lifecycleConfig(
-                  empty?.retained || touch?.retained || host?.retained
-                      ? 'lifecycle-keep'
-                      : name === 'lifecycle-submenu-css'
-                        ? 'lifecycle-css-exit'
-                        : name
-              ),
+        lifecycle: focusBoundary
+            ? { keepMounted: focusBoundary.retained, animated: false, deferred: false, canceled: false, late: false }
+            : removal
+              ? {
+                    keepMounted: removal.retained,
+                    animated: removal.animated,
+                    deferred: removal.deferred,
+                    canceled: false,
+                    late: false
+                }
+              : lifecycleConfig(
+                    empty?.retained || touch?.retained || host?.retained
+                        ? 'lifecycle-keep'
+                        : name === 'lifecycle-submenu-css'
+                          ? 'lifecycle-css-exit'
+                          : name
+                ),
         pointer: pointerConfig(name)
     };
 }

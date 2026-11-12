@@ -50,6 +50,7 @@ export class MenuDriver {
         const retainedSub = await this.page.evaluate(
             () =>
                 (window.menuParity.config.empty?.retained && window.menuParity.config.empty.nested) ||
+                (window.menuParity.config.focusBoundary?.retained && window.menuParity.config.focusBoundary.nested) ||
                 (window.menuParity.config.host?.initial?.nested && window.menuParity.config.host.retained)
         );
         if (retainedSub) await expect(this.subPopup).toBeHidden();
@@ -97,7 +98,10 @@ export class MenuDriver {
                         ?.split(/\s+/)
                         .every((id) => document.getElementById(id)?.textContent?.trim());
                 return {
-                    ...(window.menuParity.config.host?.initial
+                    ...(window.menuParity.config.focusBoundary
+                        ? { finalFocusCalls: window.menuParity.finalFocusCalls }
+                        : {}),
+                    ...(window.menuParity.config.host?.initial || window.menuParity.config.focusBoundary
                         ? {
                               tabStops: items.map((el) => ({
                                   id: el.dataset.testid,

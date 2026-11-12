@@ -249,6 +249,9 @@ export class RdxMenuSubTrigger {
 
         this.isFocused.set(true);
         if (this.focusManager?.isRestoringFocus()) return;
+        // Returning to an open child's trigger hands logical highlight back to the parent,
+        // independently of whether the child's close request was canceled.
+        if (this.submenuContext.isOpen()) this.submenuContext.setActiveIndex(null);
         this.clearSiblingHighlights();
         this.setParentActiveIndex();
     }

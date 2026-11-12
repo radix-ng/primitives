@@ -63,6 +63,10 @@ the pin's dropped callback or normalize completions in a fixture.
 
 ## Remaining scope
 
+Update: [ADR 0054](0054-menu-focus-out-and-final-focus.md) covers focus-out cancellation and finalFocus.
+It also refines the keyboard split: forward Tab stays native; Shift+Tab is an explicit cancelable
+owner-return request, as in Base UI list navigation.
+
 Cancelable focus-out, explicit finalFocus combinations across nested portals and further projected
 wrappers remain separate audits. Real devices and assistive technology are not certified by these
 DOM comparisons. This increment does not complete all Menu APIs or the full portal-focus matrix.

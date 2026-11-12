@@ -1,7 +1,7 @@
 # @radix-ng/primitives/menu
 
-Current differential scope: 181 scenarios, 495 executable comparisons and 48 touch capability skips.
-See [PARITY.md](PARITY.md) for the current contract and pending nested focus-out/finalFocus audits.
+Current differential scope: 199 scenarios, 549 executable comparisons and 48 touch capability skips.
+See [PARITY.md](PARITY.md) for the current contract and pending projection and remaining finalFocus/API audits.
 
 The notes below record individual implementation increments.
 
@@ -35,7 +35,7 @@ Space continues typeahead, and closing resets that query for retained reopening.
 The Native Elements example uses normal Angular click handlers. Twenty-three host cases add 69
 comparisons; the matrix now defines 162 cases / 486 planned comparisons, with 438 executable and
 48 touch capability skips. The ten prior keyboard source-event pairs now match and were removed.
-Initial keyboard focus on a disabled first item remains a separate pending audit. See
+That increment left disabled-first initial focus open; ADR 0052 below subsequently covered it. See
 [ADR 0051](../../../docs/adr/0051-menu-native-host-activation.md).
 
 Initial keyboard entry now selects the first/last enabled item, or Popup when every item is disabled.
@@ -55,3 +55,11 @@ path with Nested menu and Keep mounted toggles. Six new cases bring the current 
 495 executable comparisons and 48 capability skips. One exact pin-only dropped child completion
 extends the existing lifecycle exception. See [ADR 0053](../../../docs/adr/0053-menu-portal-tab-handoff.md)
 and [the matrix](PARITY.md).
+
+Focus-out cancellation and explicit finalFocus now follow the pinned reference across parent and
+child menus. Escape honors false, forward Tab preserves its destination, and Shift+Tab is an
+explicit cancelable return. Regular items retain logical highlight on blur; SubTrigger re-entry
+transfers it back to the parent. Shared guard/snapshot policies preserve closed retained Tab stops.
+Eighteen new cases bring the current suite to 199 cases / 549 executable comparisons with the same
+48 capability skips. No new exceptions were added. See
+[ADR 0054](../../../docs/adr/0054-menu-focus-out-and-final-focus.md) and the Return Focus example.

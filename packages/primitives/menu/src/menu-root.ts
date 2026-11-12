@@ -167,6 +167,8 @@ export interface RdxMenuRootContext {
      */
     popupPhysicalSide: Signal<MenuSide | undefined>;
     beforeContentFocusGuard: Signal<HTMLElement | null>;
+    afterTriggerFocusGuard: Signal<HTMLElement | null>;
+    setAfterTriggerFocusGuard: (element: HTMLElement | null) => void;
     transitionStatus: Signal<RdxMenuTransitionStatus>;
     registerPresence: RdxPopupLifecycle['registerPresence'];
     skipExitAnimation: Signal<boolean>;
@@ -278,6 +280,8 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         popupElement: instance.popupElement.asReadonly(),
         popupPhysicalSide: instance.popupPhysicalSide,
         beforeContentFocusGuard: instance.beforeContentFocusGuard.asReadonly(),
+        afterTriggerFocusGuard: instance.afterTriggerFocusGuard.asReadonly(),
+        setAfterTriggerFocusGuard: (element) => instance.afterTriggerFocusGuard.set(element),
         transitionStatus: instance.transitionStatus,
         registerPresence: instance.registerPresence,
         skipExitAnimation: instance.skipExitAnimation,
@@ -418,6 +422,7 @@ export class RdxMenuRoot {
     /** Physical placed side read through the popup's own signal (undefined until the popup is placed). */
     readonly popupPhysicalSide = computed(() => this.popupPhysicalSideSource()?.());
     readonly beforeContentFocusGuard = signal<HTMLElement | null>(null);
+    readonly afterTriggerFocusGuard = signal<HTMLElement | null>(null);
     readonly transitionStatus = this.lifecycle.status;
     readonly activeIndex = signal<number | null>(null);
     /** How focus moves into the popup when it opens; false preserves the current focus. */
@@ -893,6 +898,12 @@ export class RdxMenuRoot {
                 // A submenu's portal guard explicitly requests closing after its native Tab
                 // handoff. Like its leading content guard, that request retains the trigger.
                 !(this.parentType() === 'menu' && event?.type === 'focus') &&
+                !(
+                    typeof KeyboardEvent !== 'undefined' &&
+                    event instanceof KeyboardEvent &&
+                    event.key === 'Tab' &&
+                    event.shiftKey
+                ) &&
                 event?.target !== this.beforeContentFocusGuard()
                 ? undefined
                 : this.trigger()

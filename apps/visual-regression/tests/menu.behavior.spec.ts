@@ -14,6 +14,74 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
 const trigger = '[rdxMenuTrigger]';
 const popup = '[rdxMenuPopup]';
 
+for (const mode of [
+    'root none',
+    'root custom',
+    'root custom Tab',
+    'child none',
+    'child custom',
+    'child custom Shift+Tab',
+    'veto child Shift+Tab',
+    'veto parent Tab',
+    'veto both Tab'
+] as const) {
+    test(`Menu return focus: ${mode}`, async ({ page }) => {
+        const errors: string[] = [];
+        page.on('pageerror', (error) => errors.push(error.message));
+        page.on('console', (message) => {
+            if (message.type() === 'error') errors.push(message.text());
+        });
+        await gotoStory(page, 'primitives-menu--focus-return');
+        const nested = mode.startsWith('child') || mode.startsWith('veto');
+        if (mode.includes('none') || mode.includes('custom'))
+            await page
+                .getByLabel(nested ? 'Child return focus' : 'Parent return focus', { exact: true })
+                .selectOption(mode.includes('none') ? 'none' : 'custom');
+        if (mode.startsWith('veto')) {
+            if (mode.includes('parent') || mode.includes('both'))
+                await page.getByLabel('Cancel parent focus-out', { exact: true }).check();
+            if (mode.includes('child') || mode.includes('both'))
+                await page.getByLabel('Cancel child focus-out', { exact: true }).check();
+        }
+        const primary = page.getByRole('button', { name: 'Focus policies', exact: true });
+        const more = page.getByRole('menuitem', { name: 'More commands', exact: true });
+        const child = page.getByRole('menuitem', { name: 'Run command', exact: true });
+        for (let session = 0; session < 2; session++) {
+            await primary.press('Enter');
+            await expect(more).toBeFocused();
+            await expect(more).toHaveAttribute('tabindex', '0');
+            await expect(page.locator(popup).filter({ has: more })).not.toHaveAttribute('data-starting-style', '');
+            if (nested) {
+                await page.keyboard.press('ArrowRight');
+                await expect(child).toBeFocused();
+                await expect(child).toHaveAttribute('tabindex', '0');
+                await expect(page.locator(popup).filter({ has: child })).not.toHaveAttribute('data-starting-style', '');
+            }
+            await page.keyboard.press(
+                mode.endsWith('Shift+Tab') ? 'Shift+Tab' : mode.endsWith('Tab') ? 'Tab' : 'Escape'
+            );
+            if (mode === 'veto child Shift+Tab') await expect(child).toBeFocused();
+            else if (mode === 'veto parent Tab' || mode === 'veto both Tab') {
+                await expect(more).toBeFocused();
+                if (mode === 'veto both Tab') await expect(child).toBeVisible();
+                else await expect(child).toBeHidden();
+            } else if (mode.endsWith('none')) {
+                await expect.poll(() => page.evaluate(() => document.activeElement === document.body)).toBe(true);
+            } else if (mode === 'root custom Tab')
+                await expect(page.getByRole('button', { name: 'After menu', exact: true })).toBeFocused();
+            else if (nested)
+                await expect(page.getByRole('textbox', { name: 'Child return target', exact: true })).toBeFocused();
+            else await expect(page.getByRole('button', { name: 'Return target', exact: true })).toBeFocused();
+            await expect(primary).toHaveAttribute('aria-expanded', nested ? 'true' : 'false');
+            if (nested) await primary.click();
+            await expect(primary).toHaveAttribute('aria-expanded', 'false');
+            await expect(page.locator(`${popup}:visible`)).toHaveCount(0);
+            await expect(page.locator('[data-rdx-focus-guard]')).toHaveCount(0);
+        }
+        expect(errors).toEqual([]);
+    });
+}
+
 for (const retained of [false, true]) {
     for (const backward of [false, true]) {
         test(`Menu submenu Tab departure: retained=${retained}, backward=${backward}`, async ({ page }) => {

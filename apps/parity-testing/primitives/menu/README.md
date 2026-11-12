@@ -5,7 +5,7 @@ port is 4505. Angular fixtures are AOT compiled and React imports the unmodified
 Base UI 1.9.0 pin: `cf696d6f6e08c699c5bda24d5a033430909f2285`, archive SHA-256
 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 
-181 scenarios define 543 planned comparisons: 495 execute, with 48 touch capability skips. They cover native keyboard and
+199 scenarios define 597 planned comparisons: 549 execute, with 48 touch capability skips. They cover native keyboard and
 pointer opening, disabled/focusable items, roving focus, edges and looping, repeated and explicit-label
 typeahead, selection and stay-open items, cancelable transactions, modal/background activation,
 forward/backward Tab, checkbox/radio values, LTR/RTL submenu ownership and custom identity links.
@@ -54,7 +54,7 @@ scope. Unchanged/disappeared exceptions fail; there is no blanket normalization 
 
 Custom IDs change between opens in the differential scenario: the pin keys trigger registration
 by id. Angular additionally supports live ID changes without replacing the popup, checked through
-the Events story and unit/browser regressions. Pending work includes cancelable focus-out, nested finalFocus, further API/lifecycle combinations and real device/AT verification.
+the Events story and unit/browser regressions. Pending work includes projected wrappers, further finalFocus/API/lifecycle combinations and real device/AT verification.
 
 ## Whole-root removal
 
@@ -164,3 +164,16 @@ structural portal's declaration anchor; native focus events own close requests a
 One exact fresh-child completion pair extends nested-exit-completion; focus, close order/reasons,
 trigger identity and retained/backward completions match. See
 [ADR 0053](../../../../docs/adr/0053-menu-portal-tab-handoff.md).
+
+## Focus-out cancellation and finalFocus
+
+Run `pnpm test-parity menu --grep 'focus-(cancel|final)-'`. Eighteen cases / 54 comparisons use separate
+Angular/React fixtures with actual HTMLElement/RefObject targets and callback policies. They compare
+forward/Shift+Tab, Escape, parent/child/both vetoes, native parent controls and successive retained
+sessions; two fresh cases guard unmount. Expected native focus and open state are asserted alongside
+exact callback invocation counts and closing interaction type. No fixture supplies reference focus
+or synthesizes original callback events. Raw native event timelines remain attached separately.
+
+All three engines pass on macOS/Linux without new exceptions or skips. See
+[ADR 0054](../../../../docs/adr/0054-menu-focus-out-and-final-focus.md) for the Angular snapshot policy,
+Shift+Tab source-event change and remaining projection/target audits.

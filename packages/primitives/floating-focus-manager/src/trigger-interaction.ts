@@ -44,6 +44,7 @@ export interface RdxTriggerFocusGuardOptions {
     contentId?: () => string | null | undefined;
     enabled?: () => boolean;
     popupElement?: () => HTMLElement | null | undefined;
+    afterTriggerFocusGuardRef?: (guard: HTMLElement | null) => void;
 }
 
 export interface RdxTriggerFocusGuardAnchorOptions {
@@ -126,6 +127,7 @@ export function useTriggerFocusGuards(options: RdxTriggerFocusGuardOptions): voi
         );
         preGuard.setAttribute('data-type', 'outside');
         postGuard.setAttribute('data-type', 'outside');
+        options.afterTriggerFocusGuardRef?.(postGuard);
         const contentId = options.contentId?.();
         const anchor = contentId ? createAriaOwnsAnchor(trigger.ownerDocument, contentId) : null;
 
@@ -146,10 +148,12 @@ export function useTriggerFocusGuards(options: RdxTriggerFocusGuardOptions): voi
                 return;
             }
 
+            options.close(event);
             let nextTabbable = getTabbableAfterElement(postGuard);
             while (
                 nextTabbable &&
-                (nextTabbable.hasAttribute(FOCUS_GUARD_ATTR) || (popup && composedContains(popup, nextTabbable)))
+                ((!enabled() && nextTabbable.hasAttribute(FOCUS_GUARD_ATTR)) ||
+                    (popup && composedContains(popup, nextTabbable)))
             ) {
                 const previous = nextTabbable;
                 nextTabbable = getTabbableAfterElement(nextTabbable);
@@ -158,7 +162,6 @@ export function useTriggerFocusGuards(options: RdxTriggerFocusGuardOptions): voi
                 }
             }
 
-            options.close(event);
             focus(nextTabbable);
         };
 
@@ -174,6 +177,7 @@ export function useTriggerFocusGuards(options: RdxTriggerFocusGuardOptions): voi
         }
 
         onCleanup(() => {
+            options.afterTriggerFocusGuardRef?.(null);
             unregisterGuards();
             preGuard.removeEventListener('focus', handlePreGuardFocus);
             postGuard.removeEventListener('focus', handlePostGuardFocus);

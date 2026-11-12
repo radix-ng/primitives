@@ -140,6 +140,8 @@ export function resolveReturnFocus(
  * back to the manager's input, then to the documented default. Mirrors {@link RdxFocusScopeConfig}.
  */
 export interface RdxFloatingFocusManagerConfig {
+    /** Authored tabindex policy when restoring a suspended portal snapshot. */
+    restoreTabIndex?: (element: HTMLElement, saved: string | null) => string | null;
     modal?: () => boolean;
     inert?: () => boolean;
     enabled?: () => boolean;
@@ -438,7 +440,9 @@ export class RdxFloatingFocusManager {
             enabled: () =>
                 Boolean(this.rootContext) && this.effectiveEnabled() && this.isFloatingOpen() && !this.effectiveModal(),
             // Angular portals can be siblings in the DOM while still being child floating layers.
-            isInside: (target) => this.isWithinFloatingSubtree(target)
+            isInside: (target) => this.isWithinFloatingSubtree(target),
+            restoreTabIndex: (element, saved) =>
+                this.config?.restoreTabIndex ? this.config.restoreTabIndex(element, saved) : saved
         });
         this.wireCloseOnFocusOut();
         this.wireRestoreFocus();
@@ -504,6 +508,8 @@ export class RdxFloatingFocusManager {
     /** Resolve the policy at deactivation/unmount; the scope owns queued return-focus timing. */
     private resolveReturnFocusTarget(): HTMLElement | false | undefined {
         const resolved = resolveReturnFocus(this.effectiveReturnFocus(), this.effectiveCloseInteractionType());
+        // Resolve callback policies once even when the portal already handed off native Tab focus.
+        if (this.preventReturnFocus) return false;
         if (resolved === false) {
             return false;
         }
@@ -690,6 +696,7 @@ export class RdxFloatingFocusManager {
     }
 
     private outsideFocusGuards: HTMLElement[] = [];
+    private preventReturnFocus = false;
 
     /**
      * Connect content guards to the structural portal's logical declaration, preserving nested Tab
@@ -702,6 +709,7 @@ export class RdxFloatingFocusManager {
                 this.setBeforeContentFocusGuardRef(null);
                 return;
             }
+            this.preventReturnFocus = false;
 
             const ownerDocument = this.host.ownerDocument;
             const parent = this.host.parentNode;
@@ -728,7 +736,10 @@ export class RdxFloatingFocusManager {
                 portalAnchor.parentNode?.insertBefore(outsideAfter, portalAnchor.nextSibling);
 
                 outsideBefore.addEventListener('focus', (event) => {
-                    if (!event.relatedTarget || !this.isWithinFloatingSubtree(event.relatedTarget as Node)) {
+                    const related = event.relatedTarget as HTMLElement | null;
+                    const fromOutsideGuard =
+                        related?.hasAttribute(FOCUS_GUARD_ATTR) && related.getAttribute('data-type') === 'outside';
+                    if (!related || fromOutsideGuard || !this.isWithinFloatingSubtree(related)) {
                         focus(beforeGuard);
                     } else {
                         focus(getPreviousTabbable(this.rootContext?.referenceElement ?? this.host));
@@ -788,11 +799,14 @@ export class RdxFloatingFocusManager {
                     return;
                 }
 
+                const previous = this.preventReturnFocus;
+                this.preventReturnFocus = true;
                 focus(
                     resolveFocusTarget(this.effectiveNextFocusableElement()) ??
                         outsideAfter ??
                         this.defaultNextFocusable()
                 );
+                if (this.isFloatingOpen()) this.preventReturnFocus = previous;
             };
 
             beforeGuard.addEventListener('focus', onBeforeFocus);

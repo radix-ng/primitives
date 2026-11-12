@@ -21,6 +21,7 @@ import {
     getDomMenuItems,
     getFocusableMenuItems,
     getMenuInitialFocusItem,
+    RDX_MENU_ITEM_SELECTOR,
     RdxMenuCompositeItem
 } from './menu-focus';
 import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
@@ -55,7 +56,17 @@ import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
                 // disabled while open, or if `preventUnmountOnClose()` keeps it mounted after close.
                 enabled: () => rootContext.present() || rootContext.transitionStatus() === 'ending',
                 restoreFocus: () => true,
+                // Angular may already have rendered a cleared highlight while the portal was
+                // suspended. A closing retained list must keep its current closed Tab policy.
+                restoreTabIndex: (element, saved) =>
+                    !rootContext.isOpen() &&
+                    element.closest('[role="menu"]') === popup &&
+                    element.matches(RDX_MENU_ITEM_SELECTOR)
+                        ? '-1'
+                        : saved,
                 previousFocusableElement: () => rootContext.getReturnFocusElement() ?? null,
+                nextFocusableElement: () =>
+                    rootContext.parentType() === undefined ? rootContext.afterTriggerFocusGuard() : undefined,
                 getInsideElements: () => rootContext.getCoordinatorElements(),
                 beforeContentFocusGuardRef: () => (element) => rootContext.setBeforeContentFocusGuard(element),
                 // Submenu hover preserves trigger focus; keyboard entry joins scope activation.
@@ -258,6 +269,7 @@ export class RdxMenuPopup {
                 if (
                     reason === 'escape-key' &&
                     !this.rootContext.isOpen() &&
+                    (this.focusManager.returnFocus() == null || this.focusManager.returnFocus() === true) &&
                     (this.elementRef.nativeElement.contains(target) || this.rootContext.trigger()?.contains(target))
                 ) {
                     this.rootContext.getReturnFocusElement()?.focus({ preventScroll: true });
@@ -383,8 +395,15 @@ export class RdxMenuPopup {
             // regardless of focus position); it closes the menu, restores focus to the trigger, and
             // cascades up the chain when `closeParentOnEsc` is set.
             case 'Tab': {
-                // Portal guards move focus through the trigger's logical tab order. Closing here
-                // removes the current element before the browser can perform its Tab default.
+                // Forward Tab follows the portal order. Shift+Tab is a cancelable return request,
+                // matching list navigation: a veto keeps the current item focused.
+                if (event.shiftKey && this.elementRef.nativeElement.contains(event.target as Node)) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    this.rootContext.close('focus-out', event);
+                    if (!this.rootContext.isOpen())
+                        this.rootContext.getReturnFocusElement()?.focus({ preventScroll: true });
+                }
                 break;
             }
             default: {

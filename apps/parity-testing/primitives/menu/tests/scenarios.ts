@@ -4,6 +4,7 @@ import { basicCases } from '../src/contract';
 import { collectionScenarios } from './collection.scenarios';
 import type { MenuDriver } from './driver';
 import { emptyScenarios } from './empty.scenarios';
+import { focusBoundaryScenarios } from './focus-boundary.scenarios';
 import { hostScenarios } from './hosts.scenarios';
 import { hybridScenarios } from './hybrid.scenarios';
 import { initialFocusScenarios } from './initial-focus.scenarios';
@@ -12,6 +13,7 @@ import { pointerScenarios } from './pointer.scenarios';
 import { touchScenarios } from './touch.scenarios';
 
 export const scenarios = [
+    ...focusBoundaryScenarios,
     ...basicCases.map((name) => ({
         name,
         async run(d: MenuDriver) {

@@ -1,15 +1,5 @@
 import { RdxCompositeList, RdxCompositeMetadata, isElementVisible } from '@radix-ng/primitives/composite';
 
-/** A still-open menu keeps its logical highlight while focus visits its coordinator. */
-export function shouldClearMenuHighlight(
-    event: FocusEvent | undefined,
-    inside: Array<HTMLElement | undefined>
-): boolean {
-    const target = event?.relatedTarget;
-    if (target === null) return false;
-    return !target || !('nodeType' in target) || !inside.some((element) => element?.contains(target as Node));
-}
-
 export type RdxMenuCompositeItemType =
     | 'regular-item'
     | 'checkbox-item'

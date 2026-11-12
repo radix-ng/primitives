@@ -12,7 +12,6 @@ import {
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, dispatchClickWithModifiers } from '@radix-ng/primitives/core';
 import { RdxFloatingFocusManager } from '@radix-ng/primitives/floating-focus-manager';
-import { shouldClearMenuHighlight } from './menu-focus';
 import { handleMenuItemKeydown, handleMenuItemKeyup } from './menu-item-keyboard';
 import { shouldActivateOnMouseUp } from './menu-mouse-up';
 import { injectRdxMenuRootContext } from './menu-root';
@@ -32,7 +31,7 @@ import { injectRdxMenuRootContext } from './menu-root';
         '[attr.data-highlighted]': 'highlighted() ? "" : undefined',
         '[attr.data-label]': 'label() ?? undefined',
         '(focus)': 'onFocus()',
-        '(blur)': 'onBlur($event)',
+        '(blur)': 'onBlur()',
         '(pointermove)': 'onPointerMove($event)',
         '(pointerdown)': 'onPointerDown($event)',
         '(pointerleave)': 'onPointerLeave($event)',
@@ -85,9 +84,8 @@ export class RdxMenuLinkItem {
         if (!this.focusManager?.isRestoringFocus()) this.setActiveIndex();
     }
 
-    onBlur(event?: FocusEvent): void {
+    onBlur(): void {
         this.isFocused.set(false);
-        if (shouldClearMenuHighlight(event, this.rootContext?.getCoordinatorElements() ?? [])) this.clearActiveIndex();
     }
 
     onPointerMove(event: PointerEvent): void {

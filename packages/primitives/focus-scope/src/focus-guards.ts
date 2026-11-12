@@ -72,10 +72,15 @@ export function disableFocusInside(container: HTMLElement): void {
 /**
  * Restores the tabbability that {@link disableFocusInside} suspended. Base UI `enableFocusInside`.
  * Collects markers across the composed tree so guards inside shadow roots / slots are restored too.
+ * An owner may reconcile saved values with authored bindings that changed while focus was suspended.
  */
-export function enableFocusInside(container: HTMLElement): void {
+export function enableFocusInside(
+    container: HTMLElement,
+    restoreTabIndex?: (element: HTMLElement, saved: string | null) => string | null
+): void {
     queryComposedAll(container, `[${SAVED_TABINDEX_ATTR}]`).forEach((element) => {
-        const original = element.getAttribute(SAVED_TABINDEX_ATTR);
+        const saved = element.getAttribute(SAVED_TABINDEX_ATTR);
+        const original = restoreTabIndex ? restoreTabIndex(element, saved) : saved;
         element.removeAttribute(SAVED_TABINDEX_ATTR);
         if (original) {
             element.setAttribute('tabindex', original);
@@ -106,7 +111,11 @@ export function isOutsideEvent(event: FocusEvent, container: Element): boolean {
  */
 export function useFocusGuardsTabbability(
     portalNode: () => HTMLElement | null,
-    options: { enabled?: () => boolean; isInside?: (target: Node) => boolean } = {}
+    options: {
+        enabled?: () => boolean;
+        isInside?: (target: Node) => boolean;
+        restoreTabIndex?: (element: HTMLElement, saved: string | null) => string | null;
+    } = {}
 ): void {
     const enabled = options.enabled ?? (() => true);
     let dispose: (() => void) | undefined;
@@ -134,12 +143,13 @@ export function useFocusGuardsTabbability(
 
         const onFocus = (event: FocusEvent): void => {
             // Only react to focus actually crossing the portal boundary.
-            if (!event.relatedTarget || isInside(event.relatedTarget as Node)) {
+            const target = (event.composedPath()[0] ?? event.target) as Node | null;
+            if (!target || !isInside(target) || !event.relatedTarget || isInside(event.relatedTarget as Node)) {
                 return;
             }
             if (event.type === 'focusin') {
                 if (focusInsideDisabled) {
-                    enableFocusInside(node);
+                    enableFocusInside(node, options.restoreTabIndex);
                     focusInsideDisabled = false;
                 }
             } else {
@@ -155,11 +165,23 @@ export function useFocusGuardsTabbability(
 
         node.addEventListener('focusin', onFocus, true);
         node.addEventListener('focusout', onFocus, true);
+        // Logical portal guards/descendants can be outside this DOM surface. Keep the local
+        // capture path for shadow-root retargeting; observe only external sources on Document.
+        const onLogicalFocus = (event: FocusEvent) => {
+            const target = (event.composedPath()[0] ?? event.target) as Node | null;
+            if (target && !composedContains(node, target)) onFocus(event);
+        };
+        if (options.isInside) {
+            ownerDocument.addEventListener('focusin', onLogicalFocus, true);
+            ownerDocument.addEventListener('focusout', onLogicalFocus, true);
+        }
         const cleanup = () => {
             node.removeEventListener('focusin', onFocus, true);
             node.removeEventListener('focusout', onFocus, true);
+            ownerDocument.removeEventListener('focusin', onLogicalFocus, true);
+            ownerDocument.removeEventListener('focusout', onLogicalFocus, true);
             if (focusInsideDisabled) {
-                enableFocusInside(node);
+                enableFocusInside(node, options.restoreTabIndex);
                 focusInsideDisabled = false;
             }
             if (dispose === cleanup) dispose = undefined;
