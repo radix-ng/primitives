@@ -129,8 +129,16 @@ export const lifecycleScenarios = [
                 completions: { main: [true], sub: [true] }
             });
             await d.page.keyboard.press('Enter');
-            await expect(d.popup).toHaveAttribute('data-ending-style', '');
-            await expect(d.subPopup).toHaveAttribute('data-ending-style', '');
+            // Observe real, paused CSS exits: CI protocol/recording latency must not complete a
+            // 400ms animation between detecting the ending style and recording the pending phase.
+            for (const popup of [d.popup, d.subPopup]) {
+                await expect(popup).toHaveAttribute('data-ending-style', '');
+                await expect
+                    .poll(() =>
+                        popup.evaluate((el) => el.getAnimations().some((animation) => animation.playState === 'paused'))
+                    )
+                    .toBe(true);
+            }
             await d.checkpoint('nested exit pending', {
                 open: false,
                 mounted: true,
@@ -139,6 +147,15 @@ export const lifecycleScenarios = [
                 subVisible: true,
                 ending: true,
                 completions: { main: [true], sub: [true] }
+            });
+            // Snapshot both before finishing either: removing the ancestor can also remove the
+            // child's portal in the reference. WAAPI completion still belongs to each primitive.
+            await d.page.evaluate(async () => {
+                const animations = ['popup', 'sub-popup'].flatMap((id) =>
+                    document.querySelector<HTMLElement>(`[data-testid="${id}"]`)!.getAnimations()
+                );
+                animations.forEach((animation) => animation.finish());
+                await Promise.all(animations.map((animation) => animation.finished));
             });
             await d.closed();
             await d.checkpoint('whole chain completed', {

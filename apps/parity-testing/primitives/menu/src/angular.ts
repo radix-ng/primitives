@@ -9,9 +9,9 @@ import {
     type RdxMenuRadioGroupValueChangeEvent
 } from '@radix-ng/primitives/menu';
 import '../../../../radix-storybook/.storybook/tailwind.css';
-import { exitClass } from '../../../shared/lifecycle';
+import { exitClass, heldExitClass } from '../../../shared/lifecycle';
 import { changeCollection, menuEntries, submenuEntries } from '../../../shared/menu-collection';
-import { rootRemovalExitClass, rootRemovalFinalFocus } from '../../../shared/root-removal';
+import { rootRemovalFinalFocus } from '../../../shared/root-removal';
 import { classes, config, installProbe, type Layer } from './contract';
 import { AngularFocusBoundary } from './focus-boundary.angular';
 import { AngularHosts } from './hosts.angular';
@@ -202,7 +202,10 @@ const settings = config();
 })
 class AngularMenu {
     readonly root = viewChild.required(RdxMenuRoot);
-    readonly exitClass = settings.removal?.animated || settings.lifecycle?.late ? rootRemovalExitClass : exitClass;
+    readonly exitClass =
+        settings.removal?.animated || settings.lifecycle?.late || settings.name === 'lifecycle-submenu-css'
+            ? heldExitClass
+            : exitClass;
     readonly rootPresent = signal(true);
     readonly beforePresent = signal(true);
     readonly finalFocus = settings.removal?.finalFocus ? rootRemovalFinalFocus : undefined;

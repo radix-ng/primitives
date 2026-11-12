@@ -21,6 +21,11 @@ The late-hold case pauses its actual CSS exit before the native F10 application 
 finishes it through WAAPI. This keeps runner latency from completing the old 400 ms exit before
 the hold can be requested; callbacks still come from the primitive's real animation lifecycle.
 
+The nested CSS case also uses the shared paused exit on both popups. It verifies that neither
+completion has fired while both exits are pending, then finishes the captured animations through
+native WAAPI before checking disposal and actual callbacks. Recording the pending phase therefore
+does not depend on observing a 400 ms window under CI load. Root CSS-exit cases retain natural timing.
+
 Nineteen pointer scenarios compare root hover delays/cancellation/re-entry, click promotion before
 and after the delay, LTR/RTL diagonal submenu travel, disabled submenus and parent-item ownership.
 Native press-drag-release covers the 200ms guard, outside/disabled releases, stay-open commands and

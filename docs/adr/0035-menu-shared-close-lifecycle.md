@@ -38,8 +38,10 @@ the ancestor is open leaves children untouched.
 With simultaneous CSS exits in a nested menu, the pin removes the parent and omits the child's
 `onOpenChangeComplete(false)`. `popupRoot.tsx` wires completion through `useUnmountAfterClose`;
 `useOpenChangeComplete.tsx` aborts the animation callback on cleanup. Removing the parent disposes
-the nested Root before that callback completes. The browser scenario observes both natural exits
-and actual callbacks; it does not force completion or normalize state.
+the nested Root before that callback completes. The browser scenario observes both exits and actual
+callbacks; it does not invoke primitive completion actions or normalize state. The nested case uses
+paused real CSS animations and native WAAPI finish so the pending checkpoint cannot race a short
+animation under CI load. Root CSS-exit cases retain natural completion timing.
 
 Angular waits for child exit before deleting its owning view and emits both completions. Keep this
 behavior rather than reproducing the missing callback. Record the single exact `completions` pair

@@ -3,9 +3,9 @@ import { Menu } from '@base-ui/react/menu';
 import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../../../../radix-storybook/.storybook/tailwind.css';
-import { exitClass } from '../../../shared/lifecycle';
+import { exitClass, heldExitClass } from '../../../shared/lifecycle';
 import { changeCollection, menuEntries, submenuEntries } from '../../../shared/menu-collection';
-import { rootRemovalExitClass, rootRemovalFinalFocus } from '../../../shared/root-removal';
+import { rootRemovalFinalFocus } from '../../../shared/root-removal';
 import { config, installProbe, classes as s, type Layer } from './contract';
 import { ReactFocusBoundary } from './focus-boundary.react';
 import { ReactHosts } from './hosts.react';
@@ -16,7 +16,10 @@ const trace = installProbe('react');
 function ReactMenu() {
     const [rootPresent, setRootPresent] = useState(true);
     const [beforePresent, setBeforePresent] = useState(true);
-    const exit = settings.removal?.animated || settings.lifecycle?.late ? rootRemovalExitClass : exitClass;
+    const exit =
+        settings.removal?.animated || settings.lifecycle?.late || settings.name === 'lifecycle-submenu-css'
+            ? heldExitClass
+            : exitClass;
     const [items, setItems] = useState(
         settings.touch?.popupScroll ? touchScrollEntries : settings.empty && !settings.empty.nested ? [] : menuEntries
     );
