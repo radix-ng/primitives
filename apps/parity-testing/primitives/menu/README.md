@@ -5,7 +5,7 @@ port is 4505. Angular fixtures are AOT compiled and React imports the unmodified
 Base UI 1.9.0 pin: `cf696d6f6e08c699c5bda24d5a033430909f2285`, archive SHA-256
 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 
-212 scenarios define 636 planned comparisons: 588 execute, with 48 touch capability skips. They cover native keyboard and
+236 scenarios define 708 planned comparisons: 660 execute, with 48 touch capability skips. They cover native keyboard and
 pointer opening, disabled/focusable items, roving focus, edges and looping, repeated and explicit-label
 typeahead, selection and stay-open items, cancelable transactions, modal/background activation,
 forward/backward Tab, checkbox/radio values, LTR/RTL submenu ownership and custom identity links.
@@ -59,7 +59,7 @@ scope. Unchanged/disappeared exceptions fail; there is no blanket normalization 
 
 Custom IDs change between opens in the differential scenario: the pin keys trigger registration
 by id. Angular additionally supports live ID changes without replacing the popup, checked through
-the Events story and unit/browser regressions. Pending work includes callback null/undefined and removed-target finalFocus, further API/lifecycle combinations and real device/AT verification.
+the Events story and unit/browser regressions. Pending work includes further API/lifecycle combinations and real device/AT verification.
 
 ## Whole-root removal
 
@@ -195,3 +195,16 @@ Items are recorded in each popup's DOM order, with raw document portal order att
 One exact closed-retained-child-tabindex-restore pair records the pin restoring 0 on the hidden child
 at the second root opening; Angular retains -1 under the closed-snapshot policy. All visible focus
 and interaction checkpoints match. See [ADR 0057](../../../../docs/adr/0057-menu-projected-composition.md).
+
+## Nullable return policies and removed targets
+
+Run `pnpm test-parity menu --grep focus-target-`. Twenty-four cases / 72 comparisons cover null and
+undefined callback results, detached element/callback targets, live empty refs and target removal in
+the close callback. Both root and child policies repeat fresh/retained sessions and use native
+Escape, Tab/Shift+Tab and non-modal outside presses. F3/F4 only remove/recreate application targets.
+
+Null selects the default explicitly, undefined suppresses the unmount return, and detached elements
+retain native focus behavior. The parent-trigger return still resolves through closed Menu owners.
+Exact callback payload pairs record the pin's empty child close type after an outside press versus
+Angular's original mouse interaction. Counts, destinations and remaining observations are unchanged.
+See [ADR 0058](../../../../docs/adr/0058-menu-nullable-final-focus.md).

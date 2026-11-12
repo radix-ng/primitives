@@ -1369,5 +1369,217 @@
             }
         ],
         "category": "closed-retained-child-tabindex-restore"
+    },
+    {
+        "scenario": "focus-target-child-null-outside",
+        "checkpoint": "session 1 target policy applied",
+        "field": "finalFocusCalls",
+        "angular": [
+            {
+                "layer": "sub",
+                "type": "mouse"
+            }
+        ],
+        "react": [
+            {
+                "layer": "sub",
+                "type": ""
+            }
+        ],
+        "category": "parent-close-interaction-type"
+    },
+    {
+        "scenario": "focus-target-child-null-outside",
+        "checkpoint": "session 1 target policy settled",
+        "field": "finalFocusCalls",
+        "angular": [
+            {
+                "layer": "sub",
+                "type": "mouse"
+            }
+        ],
+        "react": [
+            {
+                "layer": "sub",
+                "type": ""
+            }
+        ],
+        "category": "parent-close-interaction-type"
+    },
+    {
+        "scenario": "focus-target-child-null-outside",
+        "checkpoint": "session 2 target policy ready",
+        "field": "finalFocusCalls",
+        "angular": [
+            {
+                "layer": "sub",
+                "type": "mouse"
+            }
+        ],
+        "react": [
+            {
+                "layer": "sub",
+                "type": ""
+            }
+        ],
+        "category": "parent-close-interaction-type"
+    },
+    {
+        "scenario": "focus-target-child-null-outside",
+        "checkpoint": "session 2 target policy applied",
+        "field": "finalFocusCalls",
+        "angular": [
+            {
+                "layer": "sub",
+                "type": "mouse"
+            },
+            {
+                "layer": "sub",
+                "type": "mouse"
+            }
+        ],
+        "react": [
+            {
+                "layer": "sub",
+                "type": ""
+            },
+            {
+                "layer": "sub",
+                "type": ""
+            }
+        ],
+        "category": "parent-close-interaction-type"
+    },
+    {
+        "scenario": "focus-target-child-null-outside",
+        "checkpoint": "session 2 target policy settled",
+        "field": "finalFocusCalls",
+        "angular": [
+            {
+                "layer": "sub",
+                "type": "mouse"
+            },
+            {
+                "layer": "sub",
+                "type": "mouse"
+            }
+        ],
+        "react": [
+            {
+                "layer": "sub",
+                "type": ""
+            },
+            {
+                "layer": "sub",
+                "type": ""
+            }
+        ],
+        "category": "parent-close-interaction-type"
+    },
+    {
+        "scenario": "focus-target-child-undefined-outside",
+        "checkpoint": "session 1 target policy applied",
+        "field": "finalFocusCalls",
+        "angular": [
+            {
+                "layer": "sub",
+                "type": "mouse"
+            }
+        ],
+        "react": [
+            {
+                "layer": "sub",
+                "type": ""
+            }
+        ],
+        "category": "parent-close-interaction-type"
+    },
+    {
+        "scenario": "focus-target-child-undefined-outside",
+        "checkpoint": "session 1 target policy settled",
+        "field": "finalFocusCalls",
+        "angular": [
+            {
+                "layer": "sub",
+                "type": "mouse"
+            }
+        ],
+        "react": [
+            {
+                "layer": "sub",
+                "type": ""
+            }
+        ],
+        "category": "parent-close-interaction-type"
+    },
+    {
+        "scenario": "focus-target-child-undefined-outside",
+        "checkpoint": "session 2 target policy ready",
+        "field": "finalFocusCalls",
+        "angular": [
+            {
+                "layer": "sub",
+                "type": "mouse"
+            }
+        ],
+        "react": [
+            {
+                "layer": "sub",
+                "type": ""
+            }
+        ],
+        "category": "parent-close-interaction-type"
+    },
+    {
+        "scenario": "focus-target-child-undefined-outside",
+        "checkpoint": "session 2 target policy applied",
+        "field": "finalFocusCalls",
+        "angular": [
+            {
+                "layer": "sub",
+                "type": "mouse"
+            },
+            {
+                "layer": "sub",
+                "type": "mouse"
+            }
+        ],
+        "react": [
+            {
+                "layer": "sub",
+                "type": ""
+            },
+            {
+                "layer": "sub",
+                "type": ""
+            }
+        ],
+        "category": "parent-close-interaction-type"
+    },
+    {
+        "scenario": "focus-target-child-undefined-outside",
+        "checkpoint": "session 2 target policy settled",
+        "field": "finalFocusCalls",
+        "angular": [
+            {
+                "layer": "sub",
+                "type": "mouse"
+            },
+            {
+                "layer": "sub",
+                "type": "mouse"
+            }
+        ],
+        "react": [
+            {
+                "layer": "sub",
+                "type": ""
+            },
+            {
+                "layer": "sub",
+                "type": ""
+            }
+        ],
+        "category": "parent-close-interaction-type"
     }
 ]

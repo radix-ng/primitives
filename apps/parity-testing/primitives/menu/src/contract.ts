@@ -93,13 +93,16 @@ export function config() {
         host,
         focusBoundary,
         projection,
-        modal: projection
-            ? !projection.cancelFocus
-            : removal
-              ? removal.modal
-              : name.startsWith('lifecycle-')
-                ? name === 'lifecycle-modal-keep'
-                : !['outside-nonmodal', 'focus-out', 'touch-outside-nonmodal'].includes(name),
+        modal:
+            focusBoundary?.target?.key === 'outside'
+                ? false
+                : projection
+                  ? !projection.cancelFocus
+                  : removal
+                    ? removal.modal
+                    : name.startsWith('lifecycle-')
+                      ? name === 'lifecycle-modal-keep'
+                      : !['outside-nonmodal', 'focus-out', 'touch-outside-nonmodal'].includes(name),
         loop: name !== 'no-loop',
         disabled: ['disabled-trigger', 'hover-root-disabled', 'touch-disabled-trigger'].includes(name),
         checkbox:

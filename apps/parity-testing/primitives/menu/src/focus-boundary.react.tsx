@@ -1,5 +1,5 @@
 import { Menu } from '@base-ui/react/menu';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { config, installProbe, classes as s, type Layer } from './contract';
 
 export function ReactFocusBoundary() {
@@ -11,25 +11,59 @@ export function ReactFocusBoundary() {
     });
     const rootFinal = useRef<HTMLInputElement>(null);
     const childFinal = useRef<HTMLInputElement>(null);
+    const [targetMounted, setTargetMounted] = useState(true);
+    const [detachedTarget, setDetachedTarget] = useState<HTMLElement | null>(null);
+    const liveTarget = (layer: Layer) => (layer === 'main' ? rootFinal.current : childFinal.current);
+    const target = (layer: Layer) => (settings.target?.layer === layer ? detachedTarget : null) ?? liveTarget(layer);
+    function removeTarget() {
+        setDetachedTarget(liveTarget(settings.target!.layer));
+        setTargetMounted(false);
+    }
+    useEffect(() => {
+        if (!settings.target?.removal) return;
+        function command(event: KeyboardEvent) {
+            if (event.key === 'F3') {
+                event.preventDefault();
+                removeTarget();
+            } else if (event.key === 'F4') {
+                event.preventDefault();
+                setDetachedTarget(null);
+                setTargetMounted(true);
+            }
+        }
+        document.addEventListener('keydown', command);
+        return () => document.removeEventListener('keydown', command);
+    }, []);
     const policy = (layer: Layer, mode: string | undefined) => {
         if (!mode) return undefined;
         if (mode === 'false') return false;
         if (mode === 'target') return layer === 'main' ? rootFinal : childFinal;
+        if (mode === 'detached') return target(layer) ?? undefined;
         return (type: string | null) => {
-            if (mode === 'callback') window.menuParity.finalFocusCalls!.push({ layer, type });
-            return layer === 'main' ? rootFinal.current : childFinal.current;
+            window.menuParity.finalFocusCalls!.push({ layer, type });
+            if (mode === 'callback-null') return null;
+            if (mode === 'callback-undefined') return undefined;
+            return mode === 'callback-detached' ? target(layer) : liveTarget(layer);
         };
     };
     function change(layer: Layer, open: boolean, details: Menu.Root.ChangeEventDetails) {
+        if (!open && settings.target?.removal === 'close' && settings.target.layer === layer) removeTarget();
         if (!open && details.reason === 'focus-out' && (layer === 'main' ? settings.cancelRoot : settings.cancelChild))
             details.cancel();
         trace.change(layer, open, details.reason, details.isCanceled, details.event, details.trigger);
     }
     return (
         <div className={s.layout}>
-            <input ref={rootFinal} data-testid="root-final" aria-label="Root return target" />
-            <button data-testid="outside">Background</button>
+            {(targetMounted || settings.target?.layer !== 'main') && (
+                <input ref={rootFinal} data-testid="root-final" aria-label="Root return target" />
+            )}
+            {settings.target?.key === 'outside' ? (
+                <input data-testid="outside" aria-label="Background field" />
+            ) : (
+                <button data-testid="outside">Background</button>
+            )}
             <Menu.Root
+                modal={settings.target?.key !== 'outside'}
                 onOpenChange={(open, e) => change('main', open, e)}
                 onOpenChangeComplete={(open) => trace.complete('main', open)}
             >
@@ -43,7 +77,7 @@ export function ReactFocusBoundary() {
                             finalFocus={policy('main', settings.rootPolicy)}
                             data-testid="popup"
                         >
-                            {settings.childPolicy && (
+                            {settings.childPolicy && (targetMounted || settings.target?.layer !== 'sub') && (
                                 <input ref={childFinal} data-testid="child-final" aria-label="Child return target" />
                             )}
                             {settings.nested ? (

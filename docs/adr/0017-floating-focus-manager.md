@@ -9,6 +9,9 @@
 
 The queued return-focus timing is refined to a cancelable post-unmount microtask by
 [ADR 0041](0041-menubar-navigation-and-external-state.md).
+Explicit callback results that select the default return target are refined by
+[ADR 0058](0058-menu-nullable-final-focus.md); null/true results retain the callback's explicit precedence,
+while undefined/false suppress return focus.
 
 > Splits the focus / a11y-isolation / marker concerns out of ADR 0016 so one owner holds the independent
 > focus-policy set. Architectural decisions are settled below; Phase 0 fills two parity-characterization

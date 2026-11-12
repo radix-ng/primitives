@@ -68,8 +68,9 @@ Shift+Tab now reports its original keydown as the focus-out source. Escape honor
 focusing the trigger, and forward Tab honors its destination rather than a custom return target.
 Applications depending on the previous behavior should update their event/focus assumptions.
 
-Projected Angular wrappers, callback-null/undefined and removed-target combinations, remaining API
-and lifecycle combinations, real devices and assistive technology remain separate audits. Context
+Projected Angular wrappers were subsequently covered by ADR 0057, and nullable callbacks/removed
+targets by ADR 0058. Remaining API and lifecycle combinations, real devices and assistive technology
+remain separate audits. Context
 Menu's modal forward-Tab/closeOnTab policy also needs its own comparison increment.
 
 ## Reference

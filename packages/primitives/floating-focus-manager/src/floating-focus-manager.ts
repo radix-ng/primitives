@@ -333,7 +333,7 @@ export class RdxFloatingFocusManager {
     private readonly focusScopeConfig = inject(RdxFocusScopeConfigToken) as RdxFocusScopeConfig & {
         trapped: WritableSignal<boolean>;
         enabled: WritableSignal<boolean>;
-        returnFocus?: () => HTMLElement | false | undefined;
+        returnFocus?: () => HTMLElement | boolean | undefined;
     };
 
     private readonly host = inject(ElementRef).nativeElement as HTMLElement;
@@ -499,15 +499,16 @@ export class RdxFloatingFocusManager {
     /**
      * Resolves the return policy for integrations that coordinate their own focus lifecycle.
      * Normal retained-view activation/deactivation is handled by the composed focus scope.
-     * Returns an explicit element, `false` (suppress), or `undefined` (default).
+     * Returns an explicit element, `true` (explicit default), `false` (suppress), or `undefined` (guarded default).
      */
-    resolveReturnTarget(): HTMLElement | false | undefined {
+    resolveReturnTarget(): HTMLElement | boolean | undefined {
         return this.resolveReturnFocusTarget();
     }
 
     /** Resolve the policy at deactivation/unmount; the scope owns queued return-focus timing. */
-    private resolveReturnFocusTarget(): HTMLElement | false | undefined {
-        const resolved = resolveReturnFocus(this.effectiveReturnFocus(), this.effectiveCloseInteractionType());
+    private resolveReturnFocusTarget(): HTMLElement | boolean | undefined {
+        const policy = this.effectiveReturnFocus();
+        const resolved = resolveReturnFocus(policy, this.effectiveCloseInteractionType());
         // Resolve callback policies once even when the portal already handed off native Tab focus.
         if (this.preventReturnFocus) return false;
         if (resolved === false) {
@@ -517,7 +518,9 @@ export class RdxFloatingFocusManager {
             return false;
         }
         if (resolved === true || resolved == null) {
-            return undefined;
+            // A consumer callback remains explicit when it selects the default target. Keep its
+            // precedence over moved focus without resolving the callback a second time in the scope.
+            return typeof policy === 'function' ? true : undefined;
         }
         return resolved;
     }

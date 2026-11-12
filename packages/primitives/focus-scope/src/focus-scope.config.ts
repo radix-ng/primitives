@@ -9,7 +9,7 @@ export type RdxFocusScopeConfig = {
     loop?: Signal<boolean>;
     /** Stop keyboard/programmatic trapping at logical close while retaining unmount/return-focus ownership. */
     trapActive?: () => boolean;
-    /** Default fallback target, used only when focus has not deliberately moved elsewhere. */
+    /** Default fallback target, guarded unless the return policy explicitly requests it. */
     defaultReturnFocus?: () => HTMLElement | null | undefined;
 
     /**
@@ -17,11 +17,12 @@ export type RdxFocusScopeConfig = {
      * {@link RdxFloatingFocusManager} at **deactivation/unmount time**. The focus scope owns the *timing* (its queued
      * post-unmount focus); this lets the manager own the *target*:
      * - `false` → do **not** return focus;
+     * - `true` → explicitly return to the default target, including after focus moved;
      * - an `HTMLElement` → return focus there **explicitly** (bypasses the moved-focus guard, matching
      *   Base UI's `hasExplicitReturnFocus`);
      * - `undefined` → guarded default return (the composing manager's fallback, or previous focus).
      */
-    returnFocus?: () => HTMLElement | false | undefined;
+    returnFocus?: () => HTMLElement | boolean | undefined;
 };
 
 export const RdxFocusScopeConfigToken = new InjectionToken<RdxFocusScopeConfig>('RdxFocusScopeConfig', {

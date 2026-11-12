@@ -1,15 +1,23 @@
-import { Component, ElementRef, viewChild } from '@angular/core';
+import { Component, ElementRef, signal, viewChild } from '@angular/core';
 import { RdxMenuModule, type RdxMenuOpenChange } from '@radix-ng/primitives/menu';
 import { classes, config, installProbe, type Layer } from './contract';
 
 @Component({
     selector: 'parity-menu',
     imports: [RdxMenuModule],
+    host: { '(document:keydown)': 'command($event)' },
     template: `
         <div [class]="s.layout">
-            <input #rootFinal data-testid="root-final" aria-label="Root return target" />
-            <button data-testid="outside">Background</button>
+            @if (targetMounted() || settings.target?.layer !== 'main') {
+                <input #rootFinal data-testid="root-final" aria-label="Root return target" />
+            }
+            @if (settings.target?.key === 'outside') {
+                <input data-testid="outside" aria-label="Background field" />
+            } @else {
+                <button data-testid="outside">Background</button>
+            }
             <ng-container
+                [modal]="settings.target?.key !== 'outside'"
                 (onOpenChange)="change('main', $event)"
                 (onOpenChangeComplete)="trace.complete('main', $event)"
                 rdxMenuRoot
@@ -19,11 +27,15 @@ import { classes, config, installProbe, type Layer } from './contract';
                     <div class="z-50" sideOffset="4" data-testid="positioner" rdxMenuPositioner>
                         <div
                             [class]="s.popup"
-                            [finalFocus]="settings.rootPolicy === 'target' ? rootFinal : rootPolicy"
+                            [finalFocus]="
+                                settings.rootPolicy === 'target' || settings.rootPolicy === 'detached'
+                                    ? target('main')
+                                    : rootPolicy
+                            "
                             data-testid="popup"
                             rdxMenuPopup
                         >
-                            @if (settings.childPolicy) {
+                            @if (settings.childPolicy && (targetMounted() || settings.target?.layer !== 'sub')) {
                                 <input #childFinal data-testid="child-final" aria-label="Child return target" />
                             }
                             @if (settings.nested) {
@@ -38,8 +50,9 @@ import { classes, config, installProbe, type Layer } from './contract';
                                             <div
                                                 [class]="s.popup"
                                                 [finalFocus]="
-                                                    settings.childPolicy === 'target'
-                                                        ? childFinal()?.nativeElement
+                                                    settings.childPolicy === 'target' ||
+                                                    settings.childPolicy === 'detached'
+                                                        ? target('sub')
                                                         : childPolicy
                                                 "
                                                 data-testid="sub-popup"
@@ -75,8 +88,10 @@ export class AngularFocusBoundary {
     readonly s = classes;
     readonly settings = config().focusBoundary!;
     readonly trace = installProbe('angular');
-    readonly rootFinal = viewChild.required('rootFinal', { read: ElementRef<HTMLElement> });
+    readonly rootFinal = viewChild('rootFinal', { read: ElementRef<HTMLElement> });
     readonly childFinal = viewChild('childFinal', { read: ElementRef<HTMLElement> });
+    readonly targetMounted = signal(true);
+    private readonly detachedTarget = signal<HTMLElement | null>(null);
     readonly rootPolicy = this.policy('main', this.settings.rootPolicy);
     readonly childPolicy = this.policy('sub', this.settings.childPolicy);
     constructor() {
@@ -85,13 +100,38 @@ export class AngularFocusBoundary {
     private policy(layer: Layer, mode: string | undefined) {
         if (!mode) return undefined;
         if (mode === 'false') return false;
-        if (mode === 'target') return undefined;
+        if (mode === 'target' || mode === 'detached') return undefined;
         return (type: string | null) => {
-            if (mode === 'callback') window.menuParity.finalFocusCalls!.push({ layer, type });
-            return layer === 'main' ? this.rootFinal().nativeElement : (this.childFinal()?.nativeElement ?? null);
+            window.menuParity.finalFocusCalls!.push({ layer, type });
+            if (mode === 'callback-null') return null;
+            if (mode === 'callback-undefined') return undefined;
+            return mode === 'callback-detached' ? this.target(layer) : this.liveTarget(layer);
         };
     }
+    private liveTarget(layer: Layer): HTMLElement | null {
+        return (layer === 'main' ? this.rootFinal() : this.childFinal())?.nativeElement ?? null;
+    }
+    target(layer: Layer): HTMLElement | null {
+        return (this.settings.target?.layer === layer ? this.detachedTarget() : null) ?? this.liveTarget(layer);
+    }
+    private removeTarget(): void {
+        this.detachedTarget.set(this.liveTarget(this.settings.target!.layer));
+        this.targetMounted.set(false);
+    }
+    command(event: KeyboardEvent): void {
+        if (!this.settings.target?.removal) return;
+        if (event.key === 'F3') {
+            event.preventDefault();
+            this.removeTarget();
+        } else if (event.key === 'F4') {
+            event.preventDefault();
+            this.detachedTarget.set(null);
+            this.targetMounted.set(true);
+        }
+    }
     change(layer: Layer, change: RdxMenuOpenChange) {
+        if (!change.open && this.settings.target?.removal === 'close' && this.settings.target.layer === layer)
+            this.removeTarget();
         if (
             !change.open &&
             change.reason === 'focus-out' &&

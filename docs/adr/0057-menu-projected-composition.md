@@ -63,7 +63,7 @@ or rewritten reference state. It is observed in all three engines on macOS and L
 Menu-family unit checks and focused Context Menu/Menubar comparisons guard the shared ownership
 change. Public Storybook regressions reject runtime errors and exercise the mixed and nested paths.
 This increment does not certify the entire API, real devices or assistive technology. Callback
-null/undefined and removed-target finalFocus combinations remain a separate audit.
+null/undefined and removed-target finalFocus combinations were subsequently covered by ADR 0058.
 
 ## Reference
 

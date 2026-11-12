@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
+import { RdxInteractionType, RdxReturnFocus } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxMenuModule, type RdxMenuOpenChange } from '@radix-ng/primitives/menu';
 import { cn, demoButton, demoInput, demoMenu } from '../../storybook/styles';
 
@@ -20,6 +21,8 @@ import { cn, demoButton, demoInput, demoMenu } from '../../storybook/styles';
                     <option value="auto">Automatic</option>
                     <option value="none">None</option>
                     <option value="custom">Return target</option>
+                    <option value="callback-default">Callback: default target</option>
+                    <option value="callback-skip">Callback: skip return</option>
                 </select>
                 <label for="menu-child-return">Child return focus</label>
                 <select
@@ -32,6 +35,8 @@ import { cn, demoButton, demoInput, demoMenu } from '../../storybook/styles';
                     <option value="auto">Automatic</option>
                     <option value="none">None</option>
                     <option value="custom">Parent field</option>
+                    <option value="callback-default">Callback: default target</option>
+                    <option value="callback-skip">Callback: skip return</option>
                 </select>
                 <div class="flex items-center gap-2">
                     <input
@@ -72,13 +77,7 @@ import { cn, demoButton, demoInput, demoMenu } from '../../storybook/styles';
                 <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Focus policies</button>
                 <ng-template [keepMounted]="keepMounted()" rdxMenuPortal>
                     <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-                        <div
-                            [class]="m.popup"
-                            [finalFocus]="
-                                rootMode() === 'custom' ? returnTarget : rootMode() === 'none' ? false : undefined
-                            "
-                            rdxMenuPopup
-                        >
+                        <div [class]="m.popup" [finalFocus]="policy(rootMode(), returnTarget)" rdxMenuPopup>
                             @if (childMode() === 'custom') {
                                 <input
                                     #parentField
@@ -93,13 +92,7 @@ import { cn, demoButton, demoInput, demoMenu } from '../../storybook/styles';
                                     <div [class]="m.positioner" side="right" sideOffset="4" rdxMenuPositioner>
                                         <div
                                             [class]="m.popup"
-                                            [finalFocus]="
-                                                childMode() === 'custom'
-                                                    ? parentField()?.nativeElement
-                                                    : childMode() === 'none'
-                                                      ? false
-                                                      : undefined
-                                            "
+                                            [finalFocus]="policy(childMode(), parentField()?.nativeElement)"
                                             rdxMenuPopup
                                         >
                                             <button [class]="m.item" rdxMenuItem>Run command</button>
@@ -114,6 +107,7 @@ import { cn, demoButton, demoInput, demoMenu } from '../../storybook/styles';
             </ng-container>
             <button [class]="cn(b.base, b.outline, b.size.md)">After menu</button>
             <output class="text-muted-foreground text-sm" aria-live="polite">{{ lastChange() }}</output>
+            <p class="text-muted-foreground text-sm" aria-live="polite">{{ lastReturn() }}</p>
         </div>
     `
 })
@@ -128,7 +122,23 @@ export class RdxMenuFocusReturnComponent {
     protected readonly cancelChild = signal(false);
     protected readonly keepMounted = signal(true);
     protected readonly lastChange = signal('No close requested');
+    protected readonly lastReturn = signal('No return callback invoked');
     protected readonly parentField = viewChild('parentField', { read: ElementRef<HTMLElement> });
+    private readonly returnDefault = (type: RdxInteractionType) => {
+        this.lastReturn.set(`Return callback: ${type ?? 'programmatic'} → default target`);
+        return null;
+    };
+    private readonly skipReturn = (type: RdxInteractionType) => {
+        this.lastReturn.set(`Return callback: ${type ?? 'programmatic'} → skip return`);
+        return undefined;
+    };
+    protected policy(mode: string, target?: HTMLElement): RdxReturnFocus {
+        if (mode === 'custom') return target;
+        if (mode === 'none') return false;
+        if (mode === 'callback-default') return this.returnDefault;
+        if (mode === 'callback-skip') return this.skipReturn;
+        return undefined;
+    }
     protected change(layer: 'Parent' | 'Child', change: RdxMenuOpenChange) {
         if (change.open) return;
         if (change.reason === 'focus-out' && (layer === 'Parent' ? this.cancelParent() : this.cancelChild()))

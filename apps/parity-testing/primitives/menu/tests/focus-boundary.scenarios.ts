@@ -1,11 +1,13 @@
 import { expect } from '@playwright/test';
 import { focusBoundaryCases, focusBoundaryConfig } from '../src/focus-boundary';
 import type { MenuDriver } from './driver';
+import { runFocusTarget } from './focus-targets.scenarios';
 
 export const focusBoundaryScenarios = focusBoundaryCases.map((name) => ({
     name,
     async run(d: MenuDriver) {
         const settings = focusBoundaryConfig(name)!;
+        if (settings.target) return runFocusTarget(d, settings);
         for (let session = 1; session <= (settings.retained ? 2 : 1); session++) {
             await d.open();
             if (settings.nested) await d.openSub();

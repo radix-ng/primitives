@@ -269,13 +269,13 @@ export class RdxFocusScope {
                                 if (this.returnFocusTask !== task) return;
                                 this.returnFocusTask = undefined;
                                 // An enclosing focus manager can override the return target (ADR 0017
-                                // `returnFocus`): `false` suppresses it, an element returns there explicitly
-                                // (bypassing the moved-focus guard), `undefined` keeps the default behavior.
+                                // `returnFocus`): `false` suppresses it, an element or `true` explicitly
+                                // requests a target, and `undefined` keeps the guarded default behavior.
                                 const override = this.config.returnFocus?.();
                                 if (override !== false && !unmountEvent.defaultPrevented) {
-                                    if (override) {
+                                    if (override && override !== true) {
                                         focus(override, { select: true });
-                                    } else if (!this.shouldPreserveMovedFocus()) {
+                                    } else if (override === true || !this.shouldPreserveMovedFocus()) {
                                         const candidate =
                                             this.config.defaultReturnFocus?.() ?? previouslyFocusedElement;
                                         focus(

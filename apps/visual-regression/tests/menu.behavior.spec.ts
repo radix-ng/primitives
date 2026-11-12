@@ -14,6 +14,41 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
 const trigger = '[rdxMenuTrigger]';
 const popup = '[rdxMenuPopup]';
 
+for (const layer of ['Parent', 'Child']) {
+    for (const mode of ['callback-default', 'callback-skip']) {
+        test(`Menu return callback: ${layer} ${mode}`, async ({ page }) => {
+            const errors: string[] = [];
+            page.on('pageerror', (error) => errors.push(error.message));
+            await gotoStory(page, 'primitives-menu--focus-return');
+            await page.getByLabel(`${layer} return focus`, { exact: true }).selectOption(mode);
+            const primary = page.getByRole('button', { name: 'Focus policies', exact: true });
+            const more = page.getByRole('menuitem', { name: 'More commands', exact: true });
+            for (let session = 0; session < 2; session++) {
+                await primary.press('Enter');
+                await expect(more).toBeFocused();
+                if (layer === 'Child') {
+                    await page.keyboard.press('ArrowRight');
+                    await expect(page.getByRole('menuitem', { name: 'Run command', exact: true })).toBeFocused();
+                }
+                await page.keyboard.press('Escape');
+                await expect(
+                    page.getByText(
+                        `Return callback: keyboard → ${mode === 'callback-default' ? 'default target' : 'skip return'}`,
+                        { exact: true }
+                    )
+                ).toBeVisible();
+                if (mode === 'callback-default') await expect(layer === 'Parent' ? primary : more).toBeFocused();
+                else await expect.poll(() => page.evaluate(() => document.activeElement === document.body)).toBe(true);
+                if (layer === 'Child') await primary.click();
+                await expect(primary).toHaveAttribute('aria-expanded', 'false');
+                await expect(page.locator(`${popup}:visible`)).toHaveCount(0);
+                await expect(page.locator('[data-rdx-focus-guard]')).toHaveCount(0);
+            }
+            expect(errors).toEqual([]);
+        });
+    }
+}
+
 for (const mode of [
     'root none',
     'root custom',

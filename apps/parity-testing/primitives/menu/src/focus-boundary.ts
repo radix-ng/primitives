@@ -1,3 +1,5 @@
+import { focusTargetCases, focusTargetConfig } from './focus-targets';
+
 export const focusBoundaryCases = [
     'focus-cancel-child-parent-tab',
     'focus-cancel-child-shift-tab',
@@ -16,7 +18,8 @@ export const focusBoundaryCases = [
     'focus-final-child-target-shift-tab',
     'focus-final-both-target-tab',
     'focus-final-child-target-fresh-escape',
-    'focus-final-root-target-fresh-escape'
+    'focus-final-root-target-fresh-escape',
+    ...focusTargetCases
 ] as const;
 
 export function focusBoundaryConfig(name: string) {
@@ -25,15 +28,17 @@ export function focusBoundaryConfig(name: string) {
     const both = name.includes('-both-');
     const child = name.includes('-child-');
     const root = name.includes('-root-');
+    const target = focusTargetConfig(name);
     const policy = name.includes('-false-') ? 'false' : name.includes('-callback-') ? 'callback' : 'target';
     return {
-        retained: !name.includes('-fresh-'),
+        target,
+        retained: target ? !target.fresh : !name.includes('-fresh-'),
         nested: !root,
         parentControl: child && (name.includes('-parent-tab') || !cancel),
         cancelRoot: cancel && (both || (name.includes('-parent-tab') && !child)),
         cancelChild: cancel && (both || child),
-        rootPolicy: !cancel && (root || both) ? policy : undefined,
-        childPolicy: !cancel && (child || both) ? policy : undefined,
+        rootPolicy: !cancel && (root || both) ? (target?.policy ?? policy) : undefined,
+        childPolicy: !cancel && (child || both) ? (target?.policy ?? policy) : undefined,
         key: name.endsWith('-escape') ? 'Escape' : name.endsWith('-shift-tab') ? 'Shift+Tab' : 'Tab'
     };
 }

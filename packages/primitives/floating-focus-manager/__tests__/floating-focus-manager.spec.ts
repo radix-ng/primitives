@@ -960,5 +960,39 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
 
             expect(document.activeElement).toBe(keyboardTarget);
         });
+
+        for (const value of [null, true] as const) {
+            it(`an explicit callback returning ${value} selects the default even after focus moved`, async () => {
+                const opener = document.createElement('button');
+                const outside = document.createElement('input');
+                document.body.append(opener, outside);
+                appended.push(opener, outside);
+                const callback = vi.fn(() => value);
+                const fixture = await mount(callback, opener);
+                outside.focus();
+
+                fixture.destroy();
+                await flush();
+
+                expect(document.activeElement).toBe(opener);
+                expect(callback).toHaveBeenCalledTimes(1);
+            });
+        }
+
+        for (const policy of [true, () => undefined] as const) {
+            it(`preserves moved focus for ${typeof policy === 'function' ? 'an undefined callback result' : 'the default policy'}`, async () => {
+                const opener = document.createElement('button');
+                const outside = document.createElement('input');
+                document.body.append(opener, outside);
+                appended.push(opener, outside);
+                const fixture = await mount(policy, opener);
+                outside.focus();
+
+                fixture.destroy();
+                await flush();
+
+                expect(document.activeElement).toBe(outside);
+            });
+        }
     });
 });
