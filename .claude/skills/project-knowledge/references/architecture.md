@@ -107,8 +107,18 @@ sessions. A first touch press promotes an arrow-opened child; repeated touch or 
 toggles a press-opened child. Preserve opening keyboard/ARIA classification on arrow entry into an
 already open child and on a vetoed touch promotion. Use Root's accepted request metadata rather than
 a second interaction store. Scroll policy follows the initial session input, independently of the
-latest promotion request. Hybrid comparisons retain original keydown/Pointer Events and the pin's
-actual click trust through exact native-event pairs; do not synthesize events to copy React utilities.
+latest promotion request. Hybrid comparisons retain original activation clicks/Pointer Events and trust; keyboard routing
+is refined by ADR 0051 below.
+
+**Menu native host activation (ADR 0051):** Item/LinkItem/CheckboxItem/RadioItem/SubTrigger share a
+Menu-local keydown/keyup helper. Generic key handlers retain modifiers; Enter on actual button/link
+uses the browser, while composite Space/custom-host Enter reuse core dispatchClickWithModifiers.
+Click handlers own transactions and native application handlers run once. Button Space keyup avoids
+a duplicate click. Native item buttons default to type=button only when no explicit type exists.
+Popup supplies its existing query through a Root registration getter and clears
+query/timer on close, including retained views. Space during search continues typeahead. The old
+native-keyboard-events exceptions are superseded by matching activation clicks; hover/focus pairs
+remain. Initial disabled-first keyboard focus is a separate pending comparison.
 
 **Native input and collection focus (ADR 0037):** `focus-scope/observeFocusRecovery` observes actual
 inside focus and DOM mutations, including removals/moves without focusout in Firefox/WebKit. Floating

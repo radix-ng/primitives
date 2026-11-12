@@ -20,6 +20,7 @@ import {
     RdxFloatingFocusManager
 } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
+import { handleMenuItemKeydown, handleMenuItemKeyup } from './menu-item-keyboard';
 import { injectRdxMenuRootContext, RdxMenuRoot } from './menu-root';
 import {
     applyPointerTunnel,
@@ -61,8 +62,8 @@ const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();
         '(click)': 'onClick($event)',
         '(mousedown)': 'onMouseDown($event)',
         '(pointerdown)': 'onPointerDown($event)',
-        '(keydown.enter)': 'onEnter($event)',
-        '(keydown.space)': 'onEnter($event)',
+        '(keydown)': 'onEnter($event)',
+        '(keyup)': 'onKeyup($event)',
         '(keydown.arrowleft)': 'onArrowKey($event)',
         '(keydown.arrowright)': 'onArrowKey($event)',
         '(keydown.arrowup)': 'onArrowKey($event)',
@@ -97,7 +98,7 @@ export class RdxMenuSubTrigger {
     private openedByHover = false;
     /** Whether the current open came from the keyboard — read by {@link omitExpanded}. */
     private readonly openedByKeyboard = signal(false);
-    private ignoreNextClick: 'keyboard' | 'touch' | null = null;
+    private ignoreNextTouchClick = false;
     private readonly inputType = createRdxInteractionTypeTracker();
 
     /**
@@ -260,11 +261,8 @@ export class RdxMenuSubTrigger {
     protected onClick(event: MouseEvent): void {
         if (this.effectiveDisabled()) return;
         const method = this.inputType.clickInteractionType(event);
-        if (
-            (this.ignoreNextClick === 'keyboard' && event.detail === 0) ||
-            (this.ignoreNextClick === 'touch' && method === 'touch')
-        ) {
-            this.ignoreNextClick = null;
+        if (this.ignoreNextTouchClick && method === 'touch') {
+            this.ignoreNextTouchClick = false;
             return;
         }
         if (method === 'touch') {
@@ -280,11 +278,12 @@ export class RdxMenuSubTrigger {
             return;
         }
 
+        this.clearOpenTimers();
         this.activatePress(event, method === 'keyboard');
     }
 
     protected onPointerDown(event: PointerEvent): void {
-        this.ignoreNextClick = null;
+        this.ignoreNextTouchClick = false;
         this.inputType.recordPointerDown(event);
         if (this.effectiveDisabled()) event.preventDefault();
     }
@@ -292,7 +291,7 @@ export class RdxMenuSubTrigger {
     protected onMouseDown(event: MouseEvent): void {
         if (this.effectiveDisabled() || event.button !== 0 || this.inputType.clickInteractionType(event) !== 'touch')
             return;
-        this.ignoreNextClick = 'touch';
+        this.ignoreNextTouchClick = true;
         this.activateTouch(event);
     }
 
@@ -317,14 +316,17 @@ export class RdxMenuSubTrigger {
         if (this.submenuContext.openInteractionType() === 'touch') this.openedByKeyboard.set(false);
     }
 
-    protected onEnter(event: Event): void {
-        if (this.effectiveDisabled()) return;
+    protected onEnter(event: KeyboardEvent): void {
+        handleMenuItemKeydown(
+            event,
+            this.elementRef.nativeElement,
+            this.effectiveDisabled(),
+            this.parentMenuRoot?.isTyping() ?? false
+        );
+    }
 
-        event.preventDefault();
-        event.stopPropagation();
-        this.clearOpenTimers();
-        this.ignoreNextClick = 'keyboard';
-        this.activatePress(event, true);
+    protected onKeyup(event: KeyboardEvent): void {
+        handleMenuItemKeyup(event, this.elementRef.nativeElement);
     }
 
     private activatePress(event: Event, keyboard: boolean): void {

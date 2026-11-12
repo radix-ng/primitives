@@ -137,6 +137,7 @@ content multi-root.
 ## Examples
 
 - [Default](../examples/menu--default.md)
+- [Native elements](../examples/menu--native-elements.md)
 - [Pointer gestures](../examples/menu--pointer-gestures.md)
 - [Events](../examples/menu--events.md)
 - [Radio items](../examples/menu--radio-items.md)

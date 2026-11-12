@@ -5,7 +5,7 @@ port is 4505. Angular fixtures are AOT compiled and React imports the unmodified
 Base UI 1.9.0 pin: `cf696d6f6e08c699c5bda24d5a033430909f2285`, archive SHA-256
 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 
-139 scenarios define 417 planned comparisons: 369 execute, with 48 touch capability skips. They cover native keyboard and
+162 scenarios define 486 planned comparisons: 438 execute, with 48 touch capability skips. They cover native keyboard and
 pointer opening, disabled/focusable items, roving focus, edges and looping, repeated and explicit-label
 typeahead, selection and stay-open items, cancelable transactions, modal/background activation,
 forward/backward Tab, checkbox/radio values, LTR/RTL submenu ownership and custom identity links.
@@ -54,7 +54,7 @@ scope. Unchanged/disappeared exceptions fail; there is no blanket normalization 
 
 Custom IDs change between opens in the differential scenario: the pin keys trigger registration
 by id. Angular additionally supports live ID changes without replacing the popup, checked through
-the Events story and unit/browser regressions. Pending work includes native/custom-host activation, further API/lifecycle combinations and real device/AT verification.
+the Events story and unit/browser regressions. Pending work includes initial disabled-item focus boundaries, further API/lifecycle combinations and real device/AT verification.
 
 ## Whole-root removal
 
@@ -117,12 +117,25 @@ Enter/Space toggling and canceled child promotion. The same native touch helpers
 and hybrid suites. Firefox touch contexts are explicitly skipped before page creation.
 
 Hybrid checkpoints compare the latest native callback, including type/trust, and SubTrigger's actual
-aria-expanded. Full original event timelines remain in attachments. Exact native-keyboard-events
-and native-hover-events pairs retain Angular's source events versus the pin's click/mouse handlers.
-The pin creates an untrusted composite Space click; browser inputs remain trusted. Existing macOS
+aria-expanded. Full original event timelines remain in attachments. Exact native-hover-events pairs retain the original pointer/mouse source events. Keyboard activation
+now uses the actual click path in both frameworks; its ten previous event pairs were removed after
+review (ADR 0051). Composite Space/custom-host clicks are untrusted while browser inputs remain trusted. Existing macOS
 WebKit native-button-focus pairs extend to hover/touch promotion. No adapter repairs these events.
 
 Use `pnpm test-parity menu --grep hybrid- --project=chromium` while iterating, then omit the project
 filter for the supported engines. Select existing touch/submenu and consumer scenarios when shared
 Menu logic changes. Do not run every suite on each edit. See
 [ADR 0050](../../../../docs/adr/0050-menu-hybrid-input.md).
+
+## Native hosts
+
+Twenty-three cases add 69 comparisons in all three engines. The host fixtures are separate Angular/
+React modules using real button/div/anchor elements, application click listeners and native fragment
+navigation. Modified links use an application navigation guard after recording the original event;
+no adapter repairs modifiers, trust or focus. Disabled cases use pointer opening followed by real
+arrows, Enter and Space; initial disabled-first keyboard focus remains a separate pending audit.
+
+The observations compare a single click, original modifiers/trust, selection, focus and navigation.
+Space extends typeahead; closing clears its query for a fresh retained session. Existing checkbox/
+radio cases verify one activation through Space keyup. Run `pnpm test-parity menu --grep host-`
+for this increment. See [ADR 0051](../../../../docs/adr/0051-menu-native-host-activation.md).

@@ -13,6 +13,7 @@ import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, dispatchClickWithModifiers } from '@radix-ng/primitives/core';
 import { RdxFloatingFocusManager } from '@radix-ng/primitives/floating-focus-manager';
 import { shouldClearMenuHighlight } from './menu-focus';
+import { handleMenuItemKeydown, handleMenuItemKeyup, setMenuItemButtonType } from './menu-item-keyboard';
 import { shouldActivateOnMouseUp } from './menu-mouse-up';
 import { injectRdxMenuRootContext } from './menu-root';
 
@@ -37,8 +38,8 @@ import { injectRdxMenuRootContext } from './menu-root';
         '(pointerleave)': 'onPointerLeave($event)',
         '(mouseup)': 'onMouseUp($event)',
         '(click)': 'onItemClick($event)',
-        '(keydown.enter)': 'onActivate($event)',
-        '(keydown.space)': 'onActivate($event)'
+        '(keydown)': 'onActivate($event)',
+        '(keyup)': 'onKeyup($event)'
     }
 })
 export class RdxMenuItem {
@@ -68,6 +69,7 @@ export class RdxMenuItem {
     protected readonly effectiveDisabled = computed(() => this.disabled() || (this.rootContext?.disabled() ?? false));
 
     constructor() {
+        setMenuItemButtonType(this.elementRef.nativeElement);
         effect(() => {
             this.listItem.setMetadata({
                 type: 'regular-item',
@@ -127,7 +129,10 @@ export class RdxMenuItem {
     }
 
     onItemClick(event: MouseEvent): void {
-        if (this.effectiveDisabled()) return;
+        if (this.effectiveDisabled()) {
+            event.preventDefault();
+            return;
+        }
         this.onSelect.emit();
         if (this.closeOnClick()) this.rootContext?.closeEntireMenu('item-press', event);
     }
@@ -143,11 +148,17 @@ export class RdxMenuItem {
         dispatchClickWithModifiers(this.elementRef.nativeElement, event, { detail: 1 });
     }
 
-    protected onActivate(event: Event): void {
-        if (this.effectiveDisabled()) return;
-        event.preventDefault();
-        this.onSelect.emit();
-        if (this.closeOnClick()) this.rootContext?.closeEntireMenu('item-press', event);
+    protected onActivate(event: KeyboardEvent): void {
+        handleMenuItemKeydown(
+            event,
+            this.elementRef.nativeElement,
+            this.effectiveDisabled(),
+            this.rootContext?.isTyping() ?? false
+        );
+    }
+
+    protected onKeyup(event: KeyboardEvent): void {
+        handleMenuItemKeyup(event, this.elementRef.nativeElement);
     }
 
     private setActiveIndex(): void {

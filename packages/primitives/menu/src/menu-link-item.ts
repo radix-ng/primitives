@@ -13,6 +13,7 @@ import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, dispatchClickWithModifiers } from '@radix-ng/primitives/core';
 import { RdxFloatingFocusManager } from '@radix-ng/primitives/floating-focus-manager';
 import { shouldClearMenuHighlight } from './menu-focus';
+import { handleMenuItemKeydown, handleMenuItemKeyup } from './menu-item-keyboard';
 import { shouldActivateOnMouseUp } from './menu-mouse-up';
 import { injectRdxMenuRootContext } from './menu-root';
 
@@ -33,11 +34,12 @@ import { injectRdxMenuRootContext } from './menu-root';
         '(focus)': 'onFocus()',
         '(blur)': 'onBlur($event)',
         '(pointermove)': 'onPointerMove($event)',
+        '(pointerdown)': 'onPointerDown($event)',
         '(pointerleave)': 'onPointerLeave($event)',
         '(mouseup)': 'onMouseUp($event)',
         '(click)': 'onItemClick($event)',
-        '(keydown.enter)': 'onActivate($event)',
-        '(keydown.space)': 'onActivate($event)'
+        '(keydown)': 'onActivate($event)',
+        '(keyup)': 'onKeyup($event)'
     }
 })
 export class RdxMenuLinkItem {
@@ -106,6 +108,10 @@ export class RdxMenuLinkItem {
         }
     }
 
+    onPointerDown(event: PointerEvent): void {
+        if (this.effectiveDisabled()) event.preventDefault();
+    }
+
     onPointerLeave(event: PointerEvent): void {
         if (event.pointerType !== 'mouse') {
             return;
@@ -137,14 +143,17 @@ export class RdxMenuLinkItem {
         dispatchClickWithModifiers(this.elementRef.nativeElement, event, { detail: 1 });
     }
 
-    protected onActivate(event: Event): void {
-        event.preventDefault();
+    protected onActivate(event: KeyboardEvent): void {
+        handleMenuItemKeydown(
+            event,
+            this.elementRef.nativeElement,
+            this.effectiveDisabled(),
+            this.rootContext?.isTyping() ?? false
+        );
+    }
 
-        if (this.effectiveDisabled()) {
-            return;
-        }
-
-        this.elementRef.nativeElement.click();
+    protected onKeyup(event: KeyboardEvent): void {
+        handleMenuItemKeyup(event, this.elementRef.nativeElement);
     }
 
     private setActiveIndex(): void {

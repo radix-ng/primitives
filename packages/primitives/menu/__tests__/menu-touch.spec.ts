@@ -1,6 +1,7 @@
 import { Component, viewChild } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { RdxMenuModule, RdxMenuRoot } from '@radix-ng/primitives/menu';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
 @Component({
@@ -115,7 +116,7 @@ describe('Menu touch ownership', () => {
         }
     });
 
-    it.each(['Enter', ' '])('closes a touch-opened child on %s without replacing the key event', async (key) => {
+    it.each(['Enter', ' '])('closes a touch-opened child on %s through its activation click', async (key) => {
         TestBed.resetTestingModule();
         const fixture = TestBed.createComponent(TouchMenu);
         fixture.autoDetectChanges();
@@ -134,11 +135,14 @@ describe('Menu touch ownership', () => {
             root.onOpenChange.subscribe((change) => {
                 original = change.event;
             });
-            const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true });
-            trigger.dispatchEvent(event);
+            const clicks: Event[] = [];
+            trigger.addEventListener('click', (event) => clicks.push(event), true);
+            trigger.focus();
+            await userEvent.setup({ delay: null }).keyboard(key === 'Enter' ? '{Enter}' : ' ');
             expect(root.open()).toBe(false);
             expect(root.lastOpenChangeReason()).toBe('trigger-press');
-            expect(original).toBe(event);
+            expect(original?.type).toBe('click');
+            expect(original).toBe(clicks.at(-1));
         } finally {
             fixture.destroy();
         }

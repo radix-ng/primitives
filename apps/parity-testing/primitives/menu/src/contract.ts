@@ -3,6 +3,7 @@ import { menuCollectionCases } from '../../../shared/menu-collection';
 import { createMenuProbe, type MenuProbe } from '../../../shared/menu-probe';
 import { rootRemovalCases, rootRemovalConfig } from '../../../shared/root-removal';
 import { emptyCases, emptyConfig } from './empty';
+import { hostCases, hostConfig, type HostClick } from './hosts';
 import { hybridCases } from './hybrid';
 import { pointerCases, pointerConfig } from './pointer';
 import { touchCases, touchConfig } from './touch';
@@ -51,12 +52,16 @@ export const cases = [
     ...emptyCases,
     ...touchCases,
     ...hybridCases,
+    ...hostCases,
     ...rootRemovalCases,
     'lifecycle-submenu-css'
 ] as const;
 export type CaseName = (typeof cases)[number];
 export type Layer = 'main' | 'sub';
-export type Probe = MenuProbe<ReturnType<typeof config>, Layer>;
+export type Probe = MenuProbe<ReturnType<typeof config>, Layer> & {
+    hostClicks?: HostClick[];
+    hostSubmissions?: number;
+};
 declare global {
     const __PARITY_REFERENCE__: Probe['reference'];
     interface Window {
@@ -69,12 +74,14 @@ export function config() {
     const removal = rootRemovalConfig(name);
     const empty = emptyConfig(name);
     const touch = touchConfig(name);
+    const host = hostConfig(name);
     return {
         name: name as CaseName,
         dir: name.endsWith('-rtl') ? ('rtl' as const) : ('ltr' as const),
         removal,
         empty,
         touch,
+        host,
         modal: removal
             ? removal.modal
             : name.startsWith('lifecycle-')
@@ -109,7 +116,7 @@ export function config() {
                   late: false
               }
             : lifecycleConfig(
-                  empty?.retained || touch?.retained
+                  empty?.retained || touch?.retained || host?.retained
                       ? 'lifecycle-keep'
                       : name === 'lifecycle-submenu-css'
                         ? 'lifecycle-css-exit'

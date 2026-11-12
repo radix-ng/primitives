@@ -21,6 +21,7 @@ import {
 } from '@radix-ng/primitives/core';
 import { RdxFloatingFocusManager } from '@radix-ng/primitives/floating-focus-manager';
 import { shouldClearMenuHighlight } from './menu-focus';
+import { handleMenuItemKeydown, handleMenuItemKeyup, setMenuItemButtonType } from './menu-item-keyboard';
 import { shouldActivateOnMouseUp } from './menu-mouse-up';
 import { injectRdxMenuRootContext } from './menu-root';
 import { CheckedState, isIndeterminate } from './menu-utils';
@@ -71,8 +72,8 @@ const checkboxItemContextFactory = (): RdxMenuCheckboxItemContext => {
         '(pointerleave)': 'onPointerLeave($event)',
         '(mouseup)': 'onMouseUp($event)',
         '(click)': 'onItemClick($event)',
-        '(keydown.enter)': 'onActivate($event)',
-        '(keydown.space)': 'onActivate($event)'
+        '(keydown)': 'onActivate($event)',
+        '(keyup)': 'onKeyup($event)'
     }
 })
 export class RdxMenuCheckboxItem {
@@ -108,6 +109,7 @@ export class RdxMenuCheckboxItem {
     protected readonly isIndeterminate = isIndeterminate;
 
     constructor() {
+        setMenuItemButtonType(this.elementRef.nativeElement);
         effect(() => {
             this.listItem.setMetadata({
                 type: 'checkbox-item',
@@ -163,7 +165,10 @@ export class RdxMenuCheckboxItem {
     }
 
     onItemClick(event: MouseEvent): void {
-        if (this.effectiveDisabled()) return;
+        if (this.effectiveDisabled()) {
+            event.preventDefault();
+            return;
+        }
         if (this.toggleChecked(event) && this.closeOnClick()) {
             this.rootContext?.closeEntireMenu('item-press', event);
         }
@@ -180,15 +185,19 @@ export class RdxMenuCheckboxItem {
         dispatchClickWithModifiers(this.elementRef.nativeElement, event, { detail: 1 });
     }
 
-    protected onActivate(event: Event): void {
-        if (this.effectiveDisabled()) return;
-        event.preventDefault();
-        if (this.toggleChecked(event) && this.closeOnClick()) {
-            this.rootContext?.closeEntireMenu('item-press', event);
-        }
+    protected onActivate(event: KeyboardEvent): void {
+        handleMenuItemKeydown(
+            event,
+            this.elementRef.nativeElement,
+            this.effectiveDisabled(),
+            this.rootContext?.isTyping() ?? false
+        );
     }
 
-    /** Emits the cancelable change, applies it unless vetoed, and reports whether it was applied. */
+    protected onKeyup(event: KeyboardEvent): void {
+        handleMenuItemKeyup(event, this.elementRef.nativeElement);
+    }
+
     private toggleChecked(event: Event): boolean {
         const next = isIndeterminate(this.checked()) ? true : !this.checked();
         const { eventDetails } = createCancelableChangeEventDetails('item-press', event);

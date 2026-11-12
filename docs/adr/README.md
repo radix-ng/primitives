@@ -82,3 +82,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0048](0048-menu-empty-keyboard-requests.md)                                 | Accepted               | Resolve Menu keyboard requests across empty collections                              |
 | [0049](0049-menu-trusted-touch.md)                                           | Accepted               | Compare Menu through trusted touch input                                             |
 | [0050](0050-menu-hybrid-input.md)                                            | Accepted               | Preserve Menu sessions across mixed input                                            |
+| [0051](0051-menu-native-host-activation.md)                                  | Accepted               | Activate Menu through native host clicks                                             |

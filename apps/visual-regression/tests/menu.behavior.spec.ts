@@ -15,6 +15,68 @@ const trigger = '[rdxMenuTrigger]';
 const popup = '[rdxMenuPopup]';
 
 for (const mode of [
+    'button Enter',
+    'button Space',
+    'custom Enter',
+    'link Enter',
+    'modified Space',
+    'typeahead Space'
+] as const) {
+    test(`native Menu elements: ${mode}`, async ({ page }) => {
+        const errors: string[] = [];
+        page.on('pageerror', (error) => errors.push(error.message));
+        page.on('console', (message) => {
+            if (message.type() === 'error') errors.push(message.text());
+        });
+        if (mode === 'typeahead Space') await page.clock.install();
+        await gotoStory(page, 'primitives-menu--native-elements');
+        await page.getByRole('button', { name: 'Actions', exact: true }).press('Enter');
+        const itemName = mode.startsWith('button')
+            ? 'Button command'
+            : mode === 'custom Enter'
+              ? 'Custom command'
+              : 'Open section';
+        const item = page.getByRole('menuitem', { name: itemName, exact: true });
+        for (let index = 0; index < 3 && !(await item.evaluate((el) => el === document.activeElement)); index++)
+            await page.keyboard.press('ArrowDown');
+        await expect(item).toBeFocused();
+        const clicks = await page.evaluateHandle(() => {
+            const records: { ctrl: boolean; trusted: boolean }[] = [];
+            document.addEventListener(
+                'click',
+                (event) => {
+                    if (!(event.target instanceof Element) || !event.target.closest('[role="menuitem"]')) return;
+                    records.push({ ctrl: event.ctrlKey, trusted: event.isTrusted });
+                    if (event.ctrlKey) event.preventDefault(); // Application navigation guard for this test.
+                },
+                true
+            );
+            return records;
+        });
+        if (mode === 'typeahead Space') {
+            await page.keyboard.press('o');
+            await page.keyboard.press('Space');
+            await expect(page.locator('output')).toHaveText('Selected: none');
+            expect(await clicks.evaluate((records) => records.length)).toBe(0);
+            await page.clock.runFor(1100);
+        }
+        await page.keyboard.press(
+            mode === 'modified Space' ? 'Control+Space' : mode.endsWith('Space') ? 'Space' : 'Enter'
+        );
+        await expect(page.locator('output')).toHaveText(`Selected: ${itemName}`);
+        expect(await clicks.evaluate((records) => records.length)).toBe(1);
+        if (mode === 'modified Space')
+            expect(await clicks.evaluate((records) => records[0])).toEqual({ ctrl: true, trusted: false });
+        if (mode === 'link Enter' || mode === 'typeahead Space')
+            await expect.poll(() => page.evaluate(() => location.hash)).toBe('#menu-native-target');
+        if (mode.startsWith('button') || mode.startsWith('custom')) await expect(page.locator(popup)).toHaveCount(0);
+        else await expect(page.locator(popup)).toBeVisible();
+        await clicks.dispose();
+        expect(errors).toEqual([]);
+    });
+}
+
+for (const mode of [
     'toggle',
     'disabled',
     'submenu',

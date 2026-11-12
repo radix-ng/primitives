@@ -312,7 +312,7 @@ describe('ContextMenu', () => {
         /** Opens the submenu so its portaled positioner mounts. */
         function openSubmenu(nested: ComponentFixture<NestedContextMenuHost>): void {
             const subTrigger: HTMLElement = nested.nativeElement.querySelector('[rdxMenuSubTrigger]');
-            keydown(subTrigger, 'Enter');
+            subTrigger.click();
             nested.detectChanges();
         }
 
@@ -400,7 +400,7 @@ describe('ContextMenu', () => {
             // The submenu positioner is a DOM sibling of the root's, not a descendant; it is recognized
             // through the shared owner id rather than containment.
             const subTrigger: HTMLElement = nested.nativeElement.querySelector('[rdxMenuSubTrigger]');
-            keydown(subTrigger, 'Enter');
+            subTrigger.click();
             nested.detectChanges();
 
             const submenuPositioner = document.querySelector<HTMLElement>('.submenu-positioner');

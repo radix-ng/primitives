@@ -14,6 +14,7 @@ import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, createContext, dispatchClickWithModifiers } from '@radix-ng/primitives/core';
 import { RdxFloatingFocusManager } from '@radix-ng/primitives/floating-focus-manager';
 import { shouldClearMenuHighlight } from './menu-focus';
+import { handleMenuItemKeydown, handleMenuItemKeyup, setMenuItemButtonType } from './menu-item-keyboard';
 import { shouldActivateOnMouseUp } from './menu-mouse-up';
 import { injectRdxMenuRadioGroupContext } from './menu-radio-group';
 import { injectRdxMenuRootContext } from './menu-root';
@@ -59,8 +60,8 @@ const radioItemContextFactory = (): RdxMenuRadioItemContext => {
         '(pointerleave)': 'onPointerLeave($event)',
         '(mouseup)': 'onMouseUp($event)',
         '(click)': 'onItemClick($event)',
-        '(keydown.enter)': 'onActivate($event)',
-        '(keydown.space)': 'onActivate($event)'
+        '(keydown)': 'onActivate($event)',
+        '(keyup)': 'onKeyup($event)'
     }
 })
 export class RdxMenuRadioItem<T = unknown> {
@@ -98,6 +99,7 @@ export class RdxMenuRadioItem<T = unknown> {
     );
 
     constructor() {
+        setMenuItemButtonType(this.elementRef.nativeElement);
         effect(() => {
             this.listItem.setMetadata({
                 type: 'radio-item',
@@ -154,6 +156,7 @@ export class RdxMenuRadioItem<T = unknown> {
 
     onItemClick(event: MouseEvent): void {
         if (this.effectiveDisabled()) {
+            event.preventDefault();
             return;
         }
         this.selectItem(event);
@@ -170,12 +173,17 @@ export class RdxMenuRadioItem<T = unknown> {
         dispatchClickWithModifiers(this.elementRef.nativeElement, event, { detail: 1 });
     }
 
-    protected onActivate(event: Event): void {
-        if (this.effectiveDisabled()) {
-            return;
-        }
-        event.preventDefault();
-        this.selectItem(event);
+    protected onActivate(event: KeyboardEvent): void {
+        handleMenuItemKeydown(
+            event,
+            this.elementRef.nativeElement,
+            this.effectiveDisabled(),
+            this.rootContext?.isTyping() ?? false
+        );
+    }
+
+    protected onKeyup(event: KeyboardEvent): void {
+        handleMenuItemKeyup(event, this.elementRef.nativeElement);
     }
 
     private selectItem(event: Event): void {

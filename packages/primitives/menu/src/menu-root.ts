@@ -183,7 +183,13 @@ export interface RdxMenuRootContext {
         getId?: () => string,
         getInteractionType?: (event: Event) => RdxInteractionType
     ) => () => void;
-    registerPopup: (el: HTMLElement, physicalSide?: Signal<MenuSide | undefined>, getId?: () => string) => () => void;
+    registerPopup: (
+        el: HTMLElement,
+        physicalSide?: Signal<MenuSide | undefined>,
+        getId?: () => string,
+        isTyping?: () => boolean
+    ) => () => void;
+    isTyping: () => boolean;
     setBeforeContentFocusGuard: (element: HTMLElement | null) => void;
     registerTransitionElement: (element: HTMLElement) => () => void;
     registerPopupArrowNavigationHandler: (handler: (event: KeyboardEvent) => boolean) => () => void;
@@ -282,7 +288,8 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         show: (autoFocus, reason, event) => instance.show(autoFocus, reason, event),
         showWithoutAutoFocus: (reason, event) => instance.show(false, reason, event),
         registerTrigger: (el, getId, getInteractionType) => instance.registerTrigger(el, getId, getInteractionType),
-        registerPopup: (el, physicalSide, getId) => instance.registerPopup(el, physicalSide, getId),
+        registerPopup: (el, physicalSide, getId, isTyping) => instance.registerPopup(el, physicalSide, getId, isTyping),
+        isTyping: () => instance.isTyping(),
         setBeforeContentFocusGuard: (element) => instance.setBeforeContentFocusGuard(element),
         registerTransitionElement: (el) => instance.registerTransitionElement(el),
         registerPopupArrowNavigationHandler: (handler) => instance.registerPopupArrowNavigationHandler(handler),
@@ -341,6 +348,7 @@ export class RdxMenuRoot {
     private registeredTriggerId?: () => string;
     private registeredTriggerInteractionType?: (event: Event) => RdxInteractionType;
     private registeredPopupId?: () => string;
+    private registeredPopupIsTyping?: () => boolean;
     private popupArrowNavigationHandler: ((event: KeyboardEvent) => boolean) | undefined;
     private popupNavigationHandler: ((event: KeyboardEvent) => boolean) | undefined;
     private triggerInteractionHandler: RdxMenuTriggerInteractionHandler | undefined;
@@ -755,17 +763,28 @@ export class RdxMenuRoot {
         return this.parentRoot?.getReturnFocusElement() ?? this.contextMenuPreviousFocus();
     }
 
-    registerPopup(el: HTMLElement, physicalSide?: Signal<MenuSide | undefined>, getId?: () => string): () => void {
+    registerPopup(
+        el: HTMLElement,
+        physicalSide?: Signal<MenuSide | undefined>,
+        getId?: () => string,
+        isTyping?: () => boolean
+    ): () => void {
+        this.registeredPopupIsTyping = isTyping;
         this.registeredPopupId = getId;
         this.popupElement.set(el);
         this.popupPhysicalSideSource.set(physicalSide);
         return () => {
             if (this.popupElement() === el) {
                 this.registeredPopupId = undefined;
+                this.registeredPopupIsTyping = undefined;
                 this.popupElement.set(undefined);
                 this.popupPhysicalSideSource.set(undefined);
             }
         };
+    }
+
+    isTyping(): boolean {
+        return this.open() && (this.registeredPopupIsTyping?.() ?? false);
     }
 
     setBeforeContentFocusGuard(element: HTMLElement | null): void {

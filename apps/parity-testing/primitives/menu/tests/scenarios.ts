@@ -4,6 +4,7 @@ import { basicCases } from '../src/contract';
 import { collectionScenarios } from './collection.scenarios';
 import type { MenuDriver } from './driver';
 import { emptyScenarios } from './empty.scenarios';
+import { hostScenarios } from './hosts.scenarios';
 import { hybridScenarios } from './hybrid.scenarios';
 import { lifecycleScenarios } from './lifecycle.scenarios';
 import { pointerScenarios } from './pointer.scenarios';
@@ -112,6 +113,20 @@ export const scenarios = [
                         ? { checked: canceled ? 'false' : 'true' }
                         : { radio: [canceled ? 'radio-one' : 'radio-two'] })
                 });
+                const clicks = await d.page.evaluate(
+                    () => window.menuParity.gestures.filter((event) => event.type === 'click').length
+                );
+                if (!checkbox) await d.navigateTo('radio-one');
+                await d.page.keyboard.press('Space');
+                expect(
+                    await d.page.evaluate(
+                        () => window.menuParity.gestures.filter((event) => event.type === 'click').length
+                    )
+                ).toBe(clicks + 1);
+                await d.checkpoint('Space activates once on keydown', {
+                    open: true,
+                    ...(checkbox ? { checked: 'false' } : { radio: ['radio-one'] })
+                });
             }
             if (name === 'cancel-close') {
                 await d.page.keyboard.press('Escape');
@@ -165,6 +180,7 @@ export const scenarios = [
     ...emptyScenarios,
     ...touchScenarios,
     ...hybridScenarios,
+    ...hostScenarios,
     ...rootRemovalScenarios<MenuDriver>({
         popup: 'popup',
         child: 'sub-popup',

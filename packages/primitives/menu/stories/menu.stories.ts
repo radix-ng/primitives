@@ -19,6 +19,8 @@ import { RdxMenuKeepMountedComponent } from './menu-keep-mounted';
 import keepMountedSource from './menu-keep-mounted?raw';
 import { RdxMenuLifecycleComponent } from './menu-lifecycle';
 import lifecycleSource from './menu-lifecycle?raw';
+import { RdxMenuNativeElementsComponent } from './menu-native-elements';
+import nativeElementsSource from './menu-native-elements?raw';
 import { RdxMenuNestedComponent } from './menu-nested';
 import { RdxMenuNestedRtlComponent } from './menu-nested-rtl';
 import nestedRtlSource from './menu-nested-rtl?raw';
@@ -42,6 +44,7 @@ export default {
         moduleMetadata({
             imports: [
                 RdxMenuDefaultComponent,
+                RdxMenuNativeElementsComponent,
                 RdxMenuNestedComponent,
                 RdxMenuNestedRtlComponent,
                 RdxMenuArrowExampleComponent,
@@ -66,6 +69,15 @@ export const Default: Story = {
     render: () => ({
         template: html`
             <rdx-menu-default />
+        `
+    })
+};
+
+export const NativeElements: Story = {
+    parameters: source(nativeElementsSource),
+    render: () => ({
+        template: html`
+            <rdx-menu-native-elements />
         `
     })
 };

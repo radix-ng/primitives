@@ -20,3 +20,15 @@ Seventeen new hybrid scenarios add 34 executable comparisons. The matrix now def
 417 planned comparisons: 369 executable and 48 touch capability skips. Exact source-event pairs
 preserve Angular's original keydown/Pointer Events instead of manufacturing React-style callbacks.
 See [ADR 0050](../../../docs/adr/0050-menu-hybrid-input.md) and [the matrix](PARITY.md).
+
+Native host activation now shares the actual click path across Item, LinkItem, CheckboxItem,
+RadioItem and SubTrigger. Enter on button/link stays with the browser; Space and custom-host Enter
+use the existing modifier-preserving click helper. Keyup prevents duplicate activation. Public
+keyboard change details therefore carry the activation click, replacing the previous keydown.
+Space continues typeahead, and closing resets that query for retained reopening.
+
+The Native Elements example uses normal Angular click handlers. Twenty-three host cases add 69
+comparisons; the matrix now defines 162 cases / 486 planned comparisons, with 438 executable and
+48 touch capability skips. The ten prior keyboard source-event pairs now match and were removed.
+Initial keyboard focus on a disabled first item remains a separate pending audit. See
+[ADR 0051](../../../docs/adr/0051-menu-native-host-activation.md).

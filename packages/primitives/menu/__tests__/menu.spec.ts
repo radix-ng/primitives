@@ -27,6 +27,7 @@ import {
     RdxMenuTrigger,
     RdxMenuViewport
 } from '@radix-ng/primitives/menu';
+import userEvent from '@testing-library/user-event';
 import { afterEach, vi } from 'vitest';
 
 @Component({
@@ -1077,7 +1078,7 @@ describe('Menu', () => {
                 const menu = armedMenu();
 
                 const subTrigger: HTMLElement = menu.nativeElement.querySelector('[rdxMenuSubTrigger]');
-                subTrigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+                subTrigger.click();
                 menu.detectChanges();
 
                 const submenuPositioner = document.querySelector<HTMLElement>('.submenu-positioner');
@@ -1352,9 +1353,9 @@ describe('Menu', () => {
             expect(fixture.componentInstance.open).toBe(false);
         });
 
-        it('Enter selects focused item and closes menu', () => {
+        it('Enter selects focused item and closes menu', async () => {
             items[1].focus();
-            keydown(items[1], 'Enter');
+            await userEvent.setup({ delay: null }).keyboard('{Enter}');
             fixture.detectChanges();
 
             expect(fixture.componentInstance.selected).toContain('b');
@@ -1384,9 +1385,9 @@ describe('Menu', () => {
             links = Array.from(fixture.nativeElement.querySelectorAll('[rdxMenuLinkItem]'));
         });
 
-        it('Enter activates the focused link item', () => {
+        it('Enter activates the focused link item', async () => {
             links[0].focus();
-            keydown(links[0], 'Enter');
+            await userEvent.setup({ delay: null }).keyboard('{Enter}');
             fixture.detectChanges();
 
             expect(fixture.componentInstance.selected).toEqual(['alpha']);
@@ -2172,9 +2173,11 @@ describe('Menu', () => {
             expect(document.activeElement).toBe(firstSubmenuItem);
         });
 
-        it('moves focus to the first submenu item after opening with Enter', async () => {
+        it('moves focus to the first submenu item after a keyboard click', async () => {
             subTrigger.focus();
-            keydown(subTrigger, 'Enter');
+            // user-event assigns pointerType="undefined" to its keyboard PointerEvent in this jsdom harness.
+            // Use the actual native keyboard-click shape here; browser parity covers Enter input.
+            subTrigger.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, detail: 0 }));
             fixture.detectChanges();
             await nextFrame();
             fixture.detectChanges();

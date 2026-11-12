@@ -13,6 +13,7 @@ import { exitClass } from '../../../shared/lifecycle';
 import { changeCollection, menuEntries, submenuEntries } from '../../../shared/menu-collection';
 import { rootRemovalExitClass, rootRemovalFinalFocus } from '../../../shared/root-removal';
 import { classes, config, installProbe, type Layer } from './contract';
+import { AngularHosts } from './hosts.angular';
 import { touchScrollEntries } from './touch';
 
 const settings = config();
@@ -301,4 +302,6 @@ class AngularMenu {
         this.trace.value(change.value as string, change.eventDetails.reason, change.eventDetails.isCanceled());
     }
 }
-void bootstrapApplication(AngularMenu, { providers: [provideZonelessChangeDetection()] });
+void bootstrapApplication(settings.host ? AngularHosts : AngularMenu, {
+    providers: [provideZonelessChangeDetection()]
+});

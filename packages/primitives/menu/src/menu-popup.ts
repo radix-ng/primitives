@@ -1,4 +1,4 @@
-import { computed, DestroyRef, Directive, ElementRef, inject, input, isDevMode, output } from '@angular/core';
+import { computed, DestroyRef, Directive, effect, ElementRef, inject, input, isDevMode, output } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
 import { getCompositeNavigationKeys, RdxCompositeList } from '@radix-ng/primitives/composite';
 import {
@@ -175,6 +175,12 @@ export class RdxMenuPopup {
     readonly closeAutoFocus = outputFromObservable(outputToObservable(this.focusScope.unmountAutoFocus));
 
     constructor() {
+        effect(() => {
+            if (this.rootContext.isOpen()) return;
+            this.search = '';
+            clearTimeout(this.searchTimer);
+            this.searchTimer = undefined;
+        });
         inject(DestroyRef).onDestroy(
             this.rootContext.registerPopupNavigationHandler((event) => this.handleArrowNavigation(event))
         );
@@ -210,7 +216,8 @@ export class RdxMenuPopup {
         const unregisterPopup = this.rootContext.registerPopup(
             this.elementRef.nativeElement,
             this.wrapper?.physicalPlacedSide,
-            () => this.resolvedId()
+            () => this.resolvedId(),
+            () => this.search !== ''
         );
         inject(DestroyRef).onDestroy(() => {
             unregister();

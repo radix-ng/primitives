@@ -13037,6 +13037,59 @@ export class RdxMenuDefaultComponent {
 }
 ```
 
+### Native elements
+
+Buttons, links and custom item hosts share the normal `(click)` path for pointer and keyboard
+activation. Native button/link Enter stays with the browser. Button items default to `type="button"`
+when no type was specified; an explicit `type="submit"` or `type="reset"` keeps its native meaning. Composite Space and custom hosts use
+one modifier-preserving click; button keyup does not activate a second time. Links retain navigation
+and Ctrl/Meta/Shift/Alt. Space continues an active typeahead query instead of selecting an item.
+
+```typescript
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { RdxMenuModule } from '@radix-ng/primitives/menu';
+import { cn, demoButton, demoMenu } from '../../storybook/styles';
+
+@Component({
+    selector: 'rdx-menu-native-elements',
+    imports: [RdxMenuModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
+        <div class="flex flex-col items-center gap-4">
+            <ng-container rdxMenuRoot>
+                <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Actions</button>
+                <div *rdxMenuPortal [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
+                    <div [class]="m.popup" rdxMenuPopup>
+                        <button [class]="m.item" (click)="selected.set('Button command')" rdxMenuItem>
+                            Button command
+                        </button>
+                        <!-- RdxMenuItem supplies role, roving tabindex and keyboard activation. -->
+                        <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
+                        <div [class]="m.item" (click)="selected.set('Custom command')" rdxMenuItem>Custom command</div>
+                        <a
+                            [class]="m.item"
+                            (click)="selected.set('Open section')"
+                            href="#menu-native-target"
+                            rdxMenuLinkItem
+                        >
+                            Open section
+                        </a>
+                    </div>
+                </div>
+            </ng-container>
+            <output class="text-muted-foreground text-sm" aria-live="polite">Selected: {{ selected() }}</output>
+            <p class="text-muted-foreground text-sm" id="menu-native-target">Link destination</p>
+        </div>
+    `
+})
+export class RdxMenuNativeElementsComponent {
+    protected readonly cn = cn;
+    protected readonly b = demoButton;
+    protected readonly m = demoMenu;
+    protected readonly selected = signal('none');
+}
+```
+
 ### Pointer gestures
 
 Set `openOnHover` on the trigger to open after `delay`; `closeDelay` and the grace area protect
@@ -13123,7 +13176,7 @@ Trigger, SubTrigger and Popup accept native `id` bindings with generated default
 the same popup remains open. Tab and Shift+Tab follow the portal's native tab order.
 
 **Migration:** update consumers that previously treated UI selection/navigation as reason `none`.
-Item callbacks now preserve the actual click/keyboard event; nested selection close callbacks run
+Item callbacks preserve the actual activation click; nested selection close callbacks run
 from ancestors to descendants. A programmatic focus-out still closes Angular Menu; the pinned
 React portal's suppression of that event is a documented compatibility difference.
 

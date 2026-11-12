@@ -7,6 +7,7 @@ import { exitClass } from '../../../shared/lifecycle';
 import { changeCollection, menuEntries, submenuEntries } from '../../../shared/menu-collection';
 import { rootRemovalExitClass, rootRemovalFinalFocus } from '../../../shared/root-removal';
 import { config, installProbe, classes as s, type Layer } from './contract';
+import { ReactHosts } from './hosts.react';
 import { touchScrollEntries } from './touch';
 
 const settings = config();
@@ -296,4 +297,4 @@ function ReactMenu() {
         </DirectionProvider>
     );
 }
-createRoot(document.getElementById('root')!).render(<ReactMenu />);
+createRoot(document.getElementById('root')!).render(config().host ? <ReactHosts /> : <ReactMenu />);

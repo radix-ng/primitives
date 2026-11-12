@@ -18,7 +18,7 @@ Trigger, SubTrigger and Popup accept native `id` bindings with generated default
 the same popup remains open. Tab and Shift+Tab follow the portal's native tab order.
 
 **Migration:** update consumers that previously treated UI selection/navigation as reason `none`.
-Item callbacks now preserve the actual click/keyboard event; nested selection close callbacks run
+Item callbacks preserve the actual activation click; nested selection close callbacks run
 from ancestors to descendants. A programmatic focus-out still closes Angular Menu; the pinned
 React portal's suppression of that event is a documented compatibility difference.
 

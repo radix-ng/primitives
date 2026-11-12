@@ -160,6 +160,16 @@ A basic dropdown with regular items, a disabled item, and a separator.
 
 <Canvas of={Stories.Default} />
 
+### Native elements
+
+Buttons, links and custom item hosts share the normal `(click)` path for pointer and keyboard
+activation. Native button/link Enter stays with the browser. Button items default to `type="button"`
+when no type was specified; an explicit `type="submit"` or `type="reset"` keeps its native meaning. Composite Space and custom hosts use
+one modifier-preserving click; button keyup does not activate a second time. Links retain navigation
+and Ctrl/Meta/Shift/Alt. Space continues an active typeahead query instead of selecting an item.
+
+<Canvas of={Stories.NativeElements} />
+
 ### Pointer gestures
 
 Set `openOnHover` on the trigger to open after `delay`; `closeDelay` and the grace area protect
@@ -202,7 +212,7 @@ Trigger, SubTrigger and Popup accept native `id` bindings with generated default
 the same popup remains open. Tab and Shift+Tab follow the portal's native tab order.
 
 **Migration:** update consumers that previously treated UI selection/navigation as reason `none`.
-Item callbacks now preserve the actual click/keyboard event; nested selection close callbacks run
+Item callbacks preserve the actual activation click; nested selection close callbacks run
 from ancestors to descendants. A programmatic focus-out still closes Angular Menu; the pinned
 React portal's suppression of that event is a documented compatibility difference.
 

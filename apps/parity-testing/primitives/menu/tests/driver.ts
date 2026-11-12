@@ -95,6 +95,15 @@ export class MenuDriver {
                         ?.split(/\s+/)
                         .every((id) => document.getElementById(id)?.textContent?.trim());
                 return {
+                    ...(window.menuParity.config.host
+                        ? {
+                              hostClicks: window.menuParity.config.host.disabled
+                                  ? undefined
+                                  : window.menuParity.hostClicks,
+                              navigated: location.hash === '#host-target',
+                              hostSubmissions: window.menuParity.hostSubmissions
+                          }
+                        : {}),
                     ...(window.menuParity.config.touch
                         ? {
                               pressed: trigger.hasAttribute('data-pressed'),
