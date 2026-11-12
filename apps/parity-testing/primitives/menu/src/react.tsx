@@ -14,8 +14,8 @@ function ReactMenu() {
     const [rootPresent, setRootPresent] = useState(true);
     const [beforePresent, setBeforePresent] = useState(true);
     const exit = settings.removal?.animated || settings.lifecycle?.late ? rootRemovalExitClass : exitClass;
-    const [items, setItems] = useState(menuEntries);
-    const [subItems, setSubItems] = useState(submenuEntries);
+    const [items, setItems] = useState(settings.empty && !settings.empty.nested ? [] : menuEntries);
+    const [subItems, setSubItems] = useState(settings.empty?.nested ? [] : submenuEntries);
     const [submenuPresent, setSubmenuPresent] = useState(true);
     const actions = useRef<Menu.Root.Actions | null>(null);
     const closes = useRef(0);
@@ -37,6 +37,12 @@ function ReactMenu() {
         };
         document.addEventListener('click', outside);
         const command = (event: KeyboardEvent) => {
+            if (settings.empty && ['F3', 'F4'].includes(event.key)) {
+                event.preventDefault();
+                if (settings.empty.nested) setSubItems(event.key === 'F3' ? submenuEntries : []);
+                else setItems(event.key === 'F3' ? menuEntries : []);
+                return;
+            }
             if (settings.removal && ['F3', 'F4'].includes(event.key)) {
                 event.preventDefault();
                 setRootPresent(event.key === 'F4');
@@ -150,7 +156,7 @@ function ReactMenu() {
                                                     >
                                                         More
                                                     </Menu.SubmenuTrigger>
-                                                    <Menu.Portal>
+                                                    <Menu.Portal keepMounted={settings.empty?.retained ?? false}>
                                                         <Menu.Positioner
                                                             className="z-50"
                                                             side={settings.dir === 'rtl' ? 'left' : 'right'}

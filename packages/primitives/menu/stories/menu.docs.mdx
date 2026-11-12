@@ -244,6 +244,24 @@ to add a grace period).
 
 <Canvas of={Stories.NestedRtl} />
 
+### Async items
+
+Application data can arrive after a menu opens. Keep loading feedback outside the menu item collection;
+the popup stays keyboard-ready while it is empty. ArrowDown enters the first available item when focus
+is on the popup, even if an earlier empty-list request already highlighted index zero.
+
+These examples use Angular `resource()` with the owning Root's actual `open` signal. Closing cancels
+the request; late data does not reopen a menu or steal focus. Both portals use `keepMounted`.
+
+<Canvas of={Stories.AsyncItems} />
+
+An empty submenu keeps focus on its trigger. When its items arrive, press the forward arrow again
+(`ArrowRight` in LTR, `ArrowLeft` in RTL) to enter. Enter also promotes a hover-opened submenu through
+the normal cancelable `trigger-press` request. Selecting an item closes the chain and returns focus to
+the surviving top-level trigger, including retained menus.
+
+<Canvas of={Stories.AsyncSubmenu} />
+
 ### Arrow
 
 Add `rdxMenuArrow` inside the popup to render a visual pointer connecting the popup to its trigger.

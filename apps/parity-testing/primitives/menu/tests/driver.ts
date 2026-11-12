@@ -28,7 +28,7 @@ export class MenuDriver {
         return this.page.getByTestId(id);
     }
     async goto(name: CaseName) {
-        if (name.startsWith('root-remove-')) await this.page.clock.install();
+        if (name.startsWith('root-remove-') || name.startsWith('empty-')) await this.page.clock.install();
         await this.page.goto(`/${this.framework}.html?case=${name}`);
         await expect(this.trigger).toBeVisible();
         this.metadata = await this.page.evaluate(() => window.menuParity.reference);
@@ -47,7 +47,11 @@ export class MenuDriver {
             await expect(this.popup).toHaveCount(1);
             await expect(this.popup).toBeHidden();
         } else await expect(this.popup).toHaveCount(0);
-        await expect(this.subPopup).toHaveCount(0);
+        const retainedSub = await this.page.evaluate(
+            () => window.menuParity.config.empty?.retained && window.menuParity.config.empty.nested
+        );
+        if (retainedSub) await expect(this.subPopup).toBeHidden();
+        else await expect(this.subPopup).toHaveCount(0);
         await expect.poll(() => this.page.evaluate(() => window.menuParity.completions.main.at(-1))).toBe(false);
     }
     async navigateTo(id: string) {

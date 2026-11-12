@@ -72,6 +72,20 @@ test('menu — open', async ({ page }) => {
     await shoot(page, 'menu-default-open.png');
 });
 
+for (const theme of ['light', 'dark']) {
+    test(`menu — async submenu (${theme})`, async ({ page }) => {
+        await gotoStory(page, `primitives-menu--async-submenu&globals=theme:${theme}`);
+        await page.locator('[rdxMenuTrigger]').press('Enter');
+        await expect(page.getByRole('menuitem', { name: 'New document', exact: true })).toBeFocused();
+        await page.keyboard.press('ArrowDown');
+        await page.keyboard.press('ArrowRight');
+        await expect(page.getByRole('menuitem', { name: 'Project notes', exact: true })).toBeVisible();
+        await page.keyboard.press('ArrowRight');
+        await expect(page.getByRole('menuitem', { name: 'Project notes', exact: true })).toBeFocused();
+        await shoot(page, `menu-async-submenu-${theme}.png`);
+    });
+}
+
 test('select — open', async ({ page }) => {
     await gotoStory(page, 'primitives-select--default');
     await page.locator('[rdxSelectTrigger]').first().click();

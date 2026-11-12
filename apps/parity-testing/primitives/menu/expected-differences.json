@@ -887,5 +887,113 @@
         "browser": "webkit",
         "platform": "linux",
         "category": "removed-item-focus"
+    },
+    {
+        "scenario": "empty-sub-hover-forward",
+        "checkpoint": "entered populated submenu",
+        "field": "focus",
+        "angular": "sub-alpha",
+        "react": "more",
+        "category": "empty-submenu-keyboard-focus",
+        "browser": "chromium"
+    },
+    {
+        "scenario": "empty-sub-hover-forward",
+        "checkpoint": "entered populated submenu",
+        "field": "highlighted",
+        "angular": ["sub-alpha"],
+        "react": ["more", "sub-alpha"],
+        "category": "empty-submenu-keyboard-focus",
+        "browser": "chromium"
+    },
+    {
+        "scenario": "empty-sub-hover-forward-rtl",
+        "checkpoint": "entered populated submenu",
+        "field": "focus",
+        "angular": "sub-alpha",
+        "react": "more",
+        "category": "empty-submenu-keyboard-focus",
+        "browser": "chromium"
+    },
+    {
+        "scenario": "empty-sub-hover-forward-rtl",
+        "checkpoint": "entered populated submenu",
+        "field": "highlighted",
+        "angular": ["sub-alpha"],
+        "react": ["more", "sub-alpha"],
+        "category": "empty-submenu-keyboard-focus",
+        "browser": "chromium"
+    },
+    {
+        "scenario": "empty-sub-hover-forward",
+        "checkpoint": "entered populated submenu",
+        "field": "focus",
+        "angular": "sub-alpha",
+        "react": "more",
+        "category": "empty-submenu-keyboard-focus",
+        "browser": "firefox"
+    },
+    {
+        "scenario": "empty-sub-hover-forward",
+        "checkpoint": "entered populated submenu",
+        "field": "highlighted",
+        "angular": ["sub-alpha"],
+        "react": ["more", "sub-alpha"],
+        "category": "empty-submenu-keyboard-focus",
+        "browser": "firefox"
+    },
+    {
+        "scenario": "empty-sub-hover-forward-rtl",
+        "checkpoint": "entered populated submenu",
+        "field": "focus",
+        "angular": "sub-alpha",
+        "react": "more",
+        "category": "empty-submenu-keyboard-focus",
+        "browser": "firefox"
+    },
+    {
+        "scenario": "empty-sub-hover-forward-rtl",
+        "checkpoint": "entered populated submenu",
+        "field": "highlighted",
+        "angular": ["sub-alpha"],
+        "react": ["more", "sub-alpha"],
+        "category": "empty-submenu-keyboard-focus",
+        "browser": "firefox"
+    },
+    {
+        "scenario": "empty-sub-hover-forward",
+        "checkpoint": "entered populated submenu",
+        "field": "focus",
+        "angular": "sub-alpha",
+        "react": "more",
+        "category": "empty-submenu-keyboard-focus",
+        "browser": "webkit"
+    },
+    {
+        "scenario": "empty-sub-hover-forward",
+        "checkpoint": "entered populated submenu",
+        "field": "highlighted",
+        "angular": ["sub-alpha"],
+        "react": ["more", "sub-alpha"],
+        "category": "empty-submenu-keyboard-focus",
+        "browser": "webkit"
+    },
+    {
+        "scenario": "empty-sub-hover-forward-rtl",
+        "checkpoint": "entered populated submenu",
+        "field": "focus",
+        "angular": "sub-alpha",
+        "react": "more",
+        "category": "empty-submenu-keyboard-focus",
+        "browser": "webkit"
+    },
+    {
+        "scenario": "empty-sub-hover-forward-rtl",
+        "checkpoint": "entered populated submenu",
+        "field": "highlighted",
+        "angular": ["sub-alpha"],
+        "react": ["more", "sub-alpha"],
+        "category": "empty-submenu-keyboard-focus",
+        "browser": "webkit"
     }
 ]

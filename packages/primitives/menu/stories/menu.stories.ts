@@ -7,6 +7,8 @@ import { RdxMenuAnimatedComponent } from './menu-animated';
 import animatedSource from './menu-animated?raw';
 import { RdxMenuArrowExampleComponent } from './menu-arrow';
 import arrowSource from './menu-arrow?raw';
+import { RdxMenuAsyncComponent } from './menu-async';
+import asyncSource from './menu-async?raw';
 import { RdxMenuBackdropExampleComponent } from './menu-backdrop';
 import backdropSource from './menu-backdrop?raw';
 import { RdxMenuDefaultComponent } from './menu-default';
@@ -47,6 +49,7 @@ export default {
                 RdxMenuAnimatedComponent,
                 RdxMenuKeepMountedComponent,
                 RdxMenuViewportExampleComponent,
+                RdxMenuAsyncComponent,
                 MenuRadioItemsStory,
                 MenuCheckboxItemsStory,
                 MenuWithLabelsItemsStory
@@ -96,6 +99,24 @@ export const Nested: Story = {
     render: () => ({
         template: html`
             <rdx-menu-nested />
+        `
+    })
+};
+
+export const AsyncItems: Story = {
+    parameters: source(asyncSource),
+    render: () => ({
+        template: html`
+            <rdx-menu-async />
+        `
+    })
+};
+
+export const AsyncSubmenu: Story = {
+    parameters: source(asyncSource),
+    render: () => ({
+        template: html`
+            <rdx-menu-async [nested]="true" />
         `
     })
 };

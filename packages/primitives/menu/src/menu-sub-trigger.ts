@@ -16,7 +16,6 @@ import { getCompositeNavigationKeys, RdxCompositeListItem } from '@radix-ng/prim
 import { BooleanInput, injectId, NumberInput, rdxPlatform } from '@radix-ng/primitives/core';
 import { RdxFloatingFocusManager } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
-import { getFocusableMenuItems } from './menu-focus';
 import { injectRdxMenuRootContext, RdxMenuRoot } from './menu-root';
 import {
     applyPointerTunnel,
@@ -252,7 +251,6 @@ export class RdxMenuSubTrigger {
             return;
         }
 
-        const wasOpen = this.submenuContext.isOpen();
         // When the submenu opens on hover (default), hover owns its open/close, so a real **mouse** click
         // is ignored — otherwise it would toggle a just-hover-opened submenu shut (a visible flicker).
         // Base UI: `ignoreMouse: openOnHover`. A keyboard-activated click (`detail === 0`) still opens.
@@ -275,10 +273,6 @@ export class RdxMenuSubTrigger {
 
         this.closeSiblingSubmenus();
         this.submenuContext.show('first', 'trigger-press', event);
-
-        if (event.detail === 0 && !wasOpen && this.submenuContext.isOpen()) {
-            this.focusFirstSubmenuItem();
-        }
     }
 
     protected onEnter(event: Event): void {
@@ -292,12 +286,8 @@ export class RdxMenuSubTrigger {
         this.openedByKeyboard.set(true);
         this.clearSiblingHighlights();
 
-        if (!this.submenuContext.isOpen()) {
-            this.closeSiblingSubmenus();
-            this.submenuContext.show('first', 'trigger-press', event);
-        }
-
-        this.focusFirstSubmenuItem();
+        if (!this.submenuContext.isOpen()) this.closeSiblingSubmenus();
+        this.submenuContext.show('first', 'trigger-press', event);
     }
 
     protected onArrowKey(event: Event): void {
@@ -314,11 +304,8 @@ export class RdxMenuSubTrigger {
         this.openedByHover = false;
         this.openedByKeyboard.set(true);
         this.clearSiblingHighlights();
-        if (!this.submenuContext.isOpen()) {
-            this.closeSiblingSubmenus();
-            this.submenuContext.show('first', 'list-navigation', event);
-        }
-        this.focusFirstSubmenuItem();
+        if (!this.submenuContext.isOpen()) this.closeSiblingSubmenus();
+        this.submenuContext.show('first', 'list-navigation', event);
     }
 
     protected onPointerMove(event: PointerEvent): void {
@@ -427,44 +414,6 @@ export class RdxMenuSubTrigger {
 
             trigger.dispatchEvent(new CustomEvent('rdx-menu-subtrigger-clear-highlight'));
         });
-    }
-
-    private focusFirstSubmenuItem(attempt = 0): void {
-        const maxAttempts = 10;
-        const ownerDocument = this.elementRef.nativeElement.ownerDocument;
-
-        const run = () => {
-            if (!this.submenuContext.isOpen()) {
-                return;
-            }
-
-            const popup = this.submenuContext.popupElement();
-            if (!popup) {
-                if (attempt < maxAttempts) {
-                    this.focusFirstSubmenuItem(attempt + 1);
-                }
-                return;
-            }
-
-            const items = getFocusableMenuItems(popup);
-            if (items.length === 0) {
-                if (attempt < maxAttempts) {
-                    this.focusFirstSubmenuItem(attempt + 1);
-                }
-                return;
-            }
-
-            const firstItem = items[0];
-            if (ownerDocument.activeElement !== firstItem) {
-                firstItem?.focus({ preventScroll: true });
-            }
-        };
-
-        if (this.isBrowser) {
-            requestAnimationFrame(run);
-        } else {
-            setTimeout(run);
-        }
     }
 
     private setParentActiveIndex(): void {

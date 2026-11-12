@@ -91,7 +91,10 @@ const settings = config();
                                             >
                                                 More
                                             </button>
-                                            <ng-template rdxMenuPortal>
+                                            <ng-template
+                                                [keepMounted]="settings.empty?.retained ?? false"
+                                                rdxMenuPortal
+                                            >
                                                 <div
                                                     class="z-50"
                                                     [side]="settings.dir === 'rtl' ? 'left' : 'right'"
@@ -194,12 +197,18 @@ class AngularMenu {
     readonly settings = settings;
     readonly s = classes;
     readonly trace = installProbe('angular');
-    readonly items = signal(menuEntries);
-    readonly subItems = signal(submenuEntries);
+    readonly items = signal(settings.empty && !settings.empty.nested ? [] : menuEntries);
+    readonly subItems = signal(settings.empty?.nested ? [] : submenuEntries);
     readonly submenuPresent = signal(true);
     readonly triggerId = signal('custom-trigger');
     readonly popupId = signal('custom-popup');
     command(event: KeyboardEvent) {
+        if (settings.empty && ['F3', 'F4'].includes(event.key)) {
+            event.preventDefault();
+            if (settings.empty.nested) this.subItems.set(event.key === 'F3' ? submenuEntries : []);
+            else this.items.set(event.key === 'F3' ? menuEntries : []);
+            return;
+        }
         if (settings.removal && ['F3', 'F4'].includes(event.key)) {
             event.preventDefault();
             this.rootPresent.set(event.key === 'F4');

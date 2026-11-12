@@ -5,7 +5,7 @@ port is 4505. Angular fixtures are AOT compiled and React imports the unmodified
 Base UI 1.9.0 pin: `cf696d6f6e08c699c5bda24d5a033430909f2285`, archive SHA-256
 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 
-83 scenarios run in Chromium, Firefox and WebKit (249 comparisons). They cover native keyboard and
+97 scenarios run in Chromium, Firefox and WebKit (291 comparisons). They cover native keyboard and
 pointer opening, disabled/focusable items, roving focus, edges and looping, repeated and explicit-label
 typeahead, selection and stay-open items, cancelable transactions, modal/background activation,
 forward/backward Tab, checkbox/radio values, LTR/RTL submenu ownership and custom identity links.
@@ -54,9 +54,7 @@ scope. Unchanged/disappeared exceptions fail; there is no blanket normalization 
 
 Custom IDs change between opens in the differential scenario: the pin keys trigger registration
 by id. Angular additionally supports live ID changes without replacing the popup, checked through
-the Events story and unit/browser regressions. Pending work includes
-removal of entire root menus, empty-list keyboard promotion, broader Context Menu/Menubar composition,
-and real device/AT verification.
+the Events story and unit/browser regressions. Pending work includes touch emulation, further API/lifecycle combinations and real device/AT verification.
 
 ## Whole-root removal
 
@@ -73,5 +71,22 @@ page scrolling. A fresh Root must remain usable when the shared clock advances p
 deadlines. Raw resource markup is attached separately: native `inert` versus `aria-hidden`, or a
 framework's guard retention while exiting, is not an equivalent DOM contract.
 
-See [ADR 0046](../../../../docs/adr/0046-menu-root-removal.md). Independent nested Context Menu Roots,
-real devices and assistive technology remain separate audits.
+See [ADR 0046](../../../../docs/adr/0046-menu-root-removal.md). Independent nested Context Menu Roots
+are covered separately by the Context Menu suite and ADR 0047. Real devices and assistive technology remain open.
+
+## Empty keyboard requests
+
+Fourteen scenarios / 42 comparisons cover initial empty opens with Enter/Space/Up/Down, pointer and
+pending forward/backward navigation, delayed data, hovered child promotion, LTR/RTL, retained reopening
+and close-before-refill. Native F3/F4 commands only update application data. Advancing the installed
+Playwright clock by 400ms places arrival beyond initial render retries; no primitive state, input or
+CSS lifecycle is synthesized.
+
+One pin limitation is deliberately observed: a repeated forward arrow on a formerly empty hovered
+submenu does not move focus after logical index zero is already highlighted. Angular resolves the
+explicit request against actual items. Exact focus/highlight pairs at one checkpoint are scoped to
+LTR/RTL and each browser under empty-submenu-keyboard-focus. Both fixtures then finish through native
+pointer selection; no adapter supplies reference focus.
+
+The public examples use Angular resource and Root.open instead of a mirrored open/loading model.
+See [ADR 0048](../../../../docs/adr/0048-menu-empty-keyboard-requests.md).

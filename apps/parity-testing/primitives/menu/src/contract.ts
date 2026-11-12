@@ -2,6 +2,7 @@ import { lifecycleCases, lifecycleConfig } from '../../../shared/lifecycle';
 import { menuCollectionCases } from '../../../shared/menu-collection';
 import { createMenuProbe, type MenuProbe } from '../../../shared/menu-probe';
 import { rootRemovalCases, rootRemovalConfig } from '../../../shared/root-removal';
+import { emptyCases, emptyConfig } from './empty';
 import { pointerCases, pointerConfig } from './pointer';
 
 export const basicCases = [
@@ -45,6 +46,7 @@ export const cases = [
     ...lifecycleCases,
     ...pointerCases,
     ...menuCollectionCases,
+    ...emptyCases,
     ...rootRemovalCases,
     'lifecycle-submenu-css'
 ] as const;
@@ -61,10 +63,12 @@ export function config() {
     const name = new URLSearchParams(location.search).get('case') ?? 'keyboard-enter';
     if (!cases.includes(name as CaseName)) throw new Error(`Unknown Menu case: ${name}`);
     const removal = rootRemovalConfig(name);
+    const empty = emptyConfig(name);
     return {
         name: name as CaseName,
         dir: name.endsWith('-rtl') ? ('rtl' as const) : ('ltr' as const),
         removal,
+        empty,
         modal: removal
             ? removal.modal
             : name.startsWith('lifecycle-')
@@ -75,12 +79,13 @@ export function config() {
         checkbox: name.startsWith('checkbox') || name.startsWith('lifecycle-') || name === 'drag-checkbox',
         radio: name.startsWith('radio') || name === 'drag-radio',
         submenu:
+            empty?.nested ||
             removal?.nested ||
             name.startsWith('submenu') ||
             name.startsWith('hover-submenu') ||
             name.startsWith('collection-submenu') ||
             name === 'lifecycle-submenu-css',
-        collectionOnly: name === 'collection-empty-refill',
+        collectionOnly: name === 'collection-empty-refill' || (!!empty && !empty.nested),
         label: name === 'explicit-label' ? 'Zebra' : undefined,
         ids: name.endsWith('-ids'),
         lifecycle: removal
@@ -91,7 +96,9 @@ export function config() {
                   canceled: false,
                   late: false
               }
-            : lifecycleConfig(name === 'lifecycle-submenu-css' ? 'lifecycle-css-exit' : name),
+            : lifecycleConfig(
+                  empty?.retained ? 'lifecycle-keep' : name === 'lifecycle-submenu-css' ? 'lifecycle-css-exit' : name
+              ),
         pointer: pointerConfig(name)
     };
 }

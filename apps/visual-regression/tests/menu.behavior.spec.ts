@@ -1,4 +1,5 @@
 import { expect, Page, test } from '@playwright/test';
+import { pauseClockBeforeInteraction } from '../helpers/clock';
 
 /**
  * Behavioral checks for the structural `*rdxMenuPortal` (ADR 0010) — the net-new menu portal that
@@ -12,6 +13,70 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
 
 const trigger = '[rdxMenuTrigger]';
 const popup = '[rdxMenuPopup]';
+
+for (const mode of ['root', 'submenu', 'canceled submenu'] as const) {
+    test(`async ${mode} keeps keyboard ownership through loading and retained close`, async ({ page }) => {
+        const errors: string[] = [];
+        page.on('pageerror', (error) => errors.push(error.message));
+        page.on('console', (message) => {
+            if (message.type() === 'error') errors.push(message.text());
+        });
+        await page.clock.install();
+        await gotoStory(page, mode === 'root' ? 'primitives-menu--async-items' : 'primitives-menu--async-submenu');
+        const primary = page.locator(trigger);
+        const loading = page.getByRole('status').filter({ hasText: 'Loading documents…' });
+        if (mode === 'root') {
+            await pauseClockBeforeInteraction(page);
+            await primary.press('ArrowDown');
+            await page.clock.runFor(100);
+            await expect(loading).toHaveText('Loading documents…');
+            await page.keyboard.press('ArrowDown');
+            await page.clock.runFor(700);
+            await page.clock.resume();
+            await expect(page.getByRole('menuitem', { name: 'Project notes', exact: true })).toBeVisible();
+            await expect(page.getByRole('menu', { name: 'Recent documents', exact: true })).toBeFocused();
+            await page.keyboard.press('ArrowDown');
+        } else {
+            await primary.press('Enter');
+            await expect(page.getByRole('menuitem', { name: 'New document', exact: true })).toBeFocused();
+            await page.keyboard.press('ArrowDown');
+            const more = page.getByRole('menuitem', { name: 'Recent documents', exact: true });
+            await expect(more).toBeFocused();
+            const box = (await more.boundingBox())!;
+            await pauseClockBeforeInteraction(page);
+            if (mode === 'submenu') {
+                await page.mouse.move(box.x + 4, box.y + box.height / 2);
+                await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 3 });
+                await page.clock.runFor(200);
+                await expect(loading).toBeVisible();
+                await page.keyboard.press('ArrowRight');
+            } else {
+                await page.keyboard.press('ArrowRight');
+                await page.clock.runFor(100);
+                await expect(loading).toBeVisible();
+                await page.keyboard.press('Escape');
+                await page.clock.runFor(1000);
+                await expect(page.locator(`${popup}[data-open]`)).toHaveCount(1);
+                await expect(page.locator('[rdxMenuItem]')).toHaveCount(1);
+                await expect(more).toBeFocused();
+                await page.keyboard.press('ArrowRight');
+                await page.clock.runFor(100);
+                await expect(loading).toBeVisible();
+            }
+            await page.clock.runFor(700);
+            await page.clock.resume();
+            await expect(page.getByRole('menuitem', { name: 'Project notes', exact: true })).toBeVisible();
+            await expect(more).toBeFocused();
+            await page.keyboard.press('ArrowRight');
+        }
+        await expect(page.getByRole('menuitem', { name: 'Project notes', exact: true })).toBeFocused();
+        await page.keyboard.press('Enter');
+        await expect(page.locator('output')).toHaveText('Selected: Project notes');
+        await expect(page.locator(`${popup}[data-open]`)).toHaveCount(0);
+        await expect(primary).toBeFocused();
+        expect(errors).toEqual([]);
+    });
+}
 
 for (const press of [false, true]) {
     test(`hover menu uses its ${press ? 'press' : 'hover'} lifetime after leaving`, async ({ page }) => {

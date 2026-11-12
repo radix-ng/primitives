@@ -143,6 +143,7 @@ content multi-root.
 - [Checkbox items](../examples/menu--checkbox-items.md)
 - [With labels](../examples/menu--with-labels.md)
 - [Nested submenus](../examples/menu--nested-submenus.md)
+- [Async items](../examples/menu--async-items.md)
 - [Arrow](../examples/menu--arrow.md)
 - [Backdrop](../examples/menu--backdrop.md)
 - [Viewport (animated resize)](../examples/menu--viewport-animated-resize.md)

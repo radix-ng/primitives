@@ -3,6 +3,7 @@ import { rootRemovalScenarios } from '../../../shared/root-removal.scenarios';
 import { basicCases } from '../src/contract';
 import { collectionScenarios } from './collection.scenarios';
 import type { MenuDriver } from './driver';
+import { emptyScenarios } from './empty.scenarios';
 import { lifecycleScenarios } from './lifecycle.scenarios';
 import { pointerScenarios } from './pointer.scenarios';
 
@@ -159,6 +160,7 @@ export const scenarios = [
     ...lifecycleScenarios,
     ...pointerScenarios,
     ...collectionScenarios,
+    ...emptyScenarios,
     ...rootRemovalScenarios<MenuDriver>({
         popup: 'popup',
         child: 'sub-popup',

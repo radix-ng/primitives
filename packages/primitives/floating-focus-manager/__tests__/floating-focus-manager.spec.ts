@@ -245,6 +245,39 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
         expect(document.activeElement).toBe(trigger);
     });
 
+    it('returns through the owner policy when a retained reference has become hidden', async () => {
+        const trigger = document.createElement('button');
+        const previous = document.createElement('input');
+        const retained = document.createElement('div');
+        retained.append(trigger);
+        document.body.append(retained, previous);
+        appended.push(retained, previous);
+        const context = createFloatingRootContext({
+            ownerDocument: document,
+            open: () => true,
+            referenceElement: trigger
+        });
+        TestBed.overrideComponent(ManagerHost, {
+            add: {
+                providers: [
+                    provideFloatingRootContext(() => context),
+                    provideFloatingFocusManagerConfig(() => ({
+                        openInteractionType: () => 'keyboard',
+                        previousFocusableElement: () => previous
+                    }))
+                ]
+            }
+        });
+        const fixture = TestBed.createComponent(ManagerHost);
+        fixture.autoDetectChanges();
+        await flush();
+        retained.hidden = true;
+        fixture.componentInstance.enabled.set(false);
+        await fixture.whenStable();
+        await flush();
+        expect(document.activeElement).toBe(previous);
+    });
+
     it('wraps both Tab edges of a managed modal scope', async () => {
         const fixture = TestBed.createComponent(ManagerHost);
         fixture.componentInstance.modal.set(true);

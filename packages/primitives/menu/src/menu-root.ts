@@ -566,7 +566,7 @@ export class RdxMenuRoot {
                     event: change.eventDetails.event
                 });
             }
-            this.focusOpenPopup(nextAutoFocus);
+            this.focusOpenPopup(nextAutoFocus, reason);
             return;
         }
 
@@ -713,6 +713,9 @@ export class RdxMenuRoot {
 
     /** This open session's return target, falling back through surviving Menu owners. */
     getReturnFocusElement(): HTMLElement | undefined {
+        // A retained submenu trigger still exists after its parent logically closes. Return through
+        // that closed owner instead of focusing a control in its hidden (or exiting) popup.
+        if (this.parentRoot && !this.parentRoot.open()) return this.parentRoot.getReturnFocusElement();
         const previous = this.focusBeforeRetainedOpen;
         if (this.parentType() === 'menubar' && this.openInteractionType() == null && previous) {
             if (
@@ -865,7 +868,7 @@ export class RdxMenuRoot {
         };
     }
 
-    private focusOpenPopup(autoFocus: RdxMenuAutoFocus): void {
+    private focusOpenPopup(autoFocus: RdxMenuAutoFocus, reason: RdxMenuOpenChangeReason): void {
         if (autoFocus === false) {
             return;
         }
@@ -882,8 +885,9 @@ export class RdxMenuRoot {
         }
 
         const items = getFocusableMenuItems(popup);
-        if (!items.length && autoFocus === 'first') this.setActiveIndex(0);
+        if (!items.length && autoFocus === 'first' && reason === 'list-navigation') this.setActiveIndex(0);
         const item = autoFocus === 'last' ? items.at(-1) : items[0];
+        if (!item && this.parentType() === 'menu') return;
         (item ?? popup).focus({ preventScroll: true });
     }
 }

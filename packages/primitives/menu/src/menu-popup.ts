@@ -1,4 +1,4 @@
-import { computed, DestroyRef, Directive, effect, ElementRef, inject, input, isDevMode, output } from '@angular/core';
+import { computed, DestroyRef, Directive, ElementRef, inject, input, isDevMode, output } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
 import { getCompositeNavigationKeys, RdxCompositeList } from '@radix-ng/primitives/composite';
 import {
@@ -52,13 +52,21 @@ import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
                 previousFocusableElement: () => rootContext.getReturnFocusElement() ?? null,
                 getInsideElements: () => rootContext.getCoordinatorElements(),
                 beforeContentFocusGuardRef: () => (element) => rootContext.setBeforeContentFocusGuard(element),
-                // Base UI's submenu policy: a submenu mount does not steal focus from its trigger.
+                // Submenu hover preserves trigger focus; keyboard entry joins scope activation.
                 // Root menus still choose first / last item vs popup container from the menu's own
                 // open policy (`autoFocus`), but the decision now lives in the focus manager instead
                 // of a separate popup effect.
                 initialFocus: () => {
-                    if (!rootContext.isOpen() || rootContext.parentType() === 'menu') {
+                    if (!rootContext.isOpen()) {
                         return false;
+                    }
+
+                    if (rootContext.parentType() === 'menu') {
+                        // Join the shared scope's position-ready activation so modal ancestors are
+                        // paused before keyboard focus enters this child. Empty/hovered children
+                        // leave focus on their trigger; later data does not restart initial focus.
+                        if (rootContext.openInteractionType() !== 'keyboard') return false;
+                        return () => getFocusableMenuItems(popup)[0] ?? false;
                     }
 
                     const autoFocus = rootContext.autoFocus();
@@ -210,22 +218,6 @@ export class RdxMenuPopup {
             clearTimeout(this.searchTimer);
         });
 
-        // Base UI moves focus into a keyboard-opened submenu via its list-navigation layer, not via the
-        // focus manager (`initialFocus={false}` for submenus). In Angular, the popup itself is the first
-        // point where the submenu DOM definitely exists, so complete the keyboard handoff here.
-        effect(() => {
-            if (
-                !this.rootContext.isOpen() ||
-                (this.wrapper && !this.wrapper.isPositioned()) ||
-                this.rootContext.parentType() !== 'menu' ||
-                this.rootContext.openInteractionType() !== 'keyboard'
-            ) {
-                return;
-            }
-
-            this.scheduleSubmenuKeyboardFocus();
-        });
-
         // Dismissal (ADR 0015): Escape, an outside press, or focus moving outside closes the menu.
         // Escape is owned by the capability (a document-level listener — it works regardless of where
         // focus currently sits, matching Base UI `useDismiss`). Deepest-first: a non-bubbling layer
@@ -318,9 +310,16 @@ export class RdxMenuPopup {
             event.preventDefault();
             event.stopPropagation();
             const items = this.menuItems();
+            const popup = this.elementRef.nativeElement;
+            const focused = popup.ownerDocument.activeElement;
+            const fromContainer = popup.contains(focused) && !items.some((item) => item.element.contains(focused));
             const current = this.currentItemIndex(items);
             // Retain the requested first index while an application-owned list is empty.
             if (forward && items.length === 0) this.rootContext.setActiveIndex(0);
+            if (fromContainer) {
+                this.focusMenuItem(forward ? items[0] : items.at(-1));
+                return true;
+            }
             const next = current + (forward ? 1 : -1);
             const destination =
                 next >= items.length
@@ -402,35 +401,6 @@ export class RdxMenuPopup {
                 break;
             }
         }
-    }
-
-    private scheduleSubmenuKeyboardFocus(attempt = 0): void {
-        const view = this.elementRef.nativeElement.ownerDocument.defaultView ?? globalThis;
-        view.requestAnimationFrame(() => this.applySubmenuKeyboardFocus(attempt));
-    }
-
-    private applySubmenuKeyboardFocus(attempt: number): void {
-        const maxAttempts = 10;
-        const popup = this.elementRef.nativeElement;
-
-        if (!this.rootContext.isOpen() || this.rootContext.parentType() !== 'menu') {
-            return;
-        }
-
-        const activeElement = popup.ownerDocument.activeElement as HTMLElement | null;
-        if (activeElement && popup.contains(activeElement)) {
-            return;
-        }
-
-        const items = this.menuItems();
-        if (items.length === 0) {
-            if (attempt < maxAttempts) {
-                this.scheduleSubmenuKeyboardFocus(attempt + 1);
-            }
-            return;
-        }
-
-        this.focusMenuItem(items[0]);
     }
 
     // The DOM fallback covers a popup whose items were all projected past it: their composite

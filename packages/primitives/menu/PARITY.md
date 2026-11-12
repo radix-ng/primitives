@@ -1,32 +1,33 @@
 # Menu — Base UI compatibility
 
-Audited 2026-11-10 against Base UI 1.9.0 commit
+Audited 2026-11-12 against Base UI 1.9.0 commit
 [`cf696d6f6e08c699c5bda24d5a033430909f2285`](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/menu).
 This is incremental behavioral evidence, not complete API or accessibility certification.
 
-| Contract                                                                        | Evidence                              | Status                                                          |
-| ------------------------------------------------------------------------------- | ------------------------------------- | --------------------------------------------------------------- |
-| Enter/Space/Up/Down opening and pointer opening                                 | Pinned suite, three engines           | Covered; keyboard highlights an item, pointer focuses the popup |
-| Roving focus, disabled focusable items, Home/End, loop/no-loop                  | Pinned suite                          | Covered                                                         |
-| Typeahead, repeated prefix and explicit label                                   | Pinned suite                          | Covered                                                         |
-| Enter/Space/click selection and closeOnClick=false                              | Pinned suite                          | Covered                                                         |
-| Canceled open/close, checkbox and radio changes                                 | Pinned suite                          | Covered                                                         |
-| Modal/non-modal outside press, Tab/Shift+Tab                                    | Pinned suite                          | Covered                                                         |
-| Keyboard submenu entry, back/Escape, RTL and whole-chain selection              | Pinned suite                          | Covered                                                         |
-| Generated/custom ARIA identities and changes between opens                      | Pinned suite                          | Covered                                                         |
-| Native ID changes while open                                                    | Angular unit and Storybook regression | Additional Angular behavior; pin keys trigger identity by id    |
-| Programmatic focus-out and WebKit pointer travel                                | Pinned suite                          | Exact known differences below                                   |
-| Deferred/retained exits, CSS completion, cancellation, late holds and reopening | Pinned suite                          | Covered                                                         |
-| Nested CSS exits and child completion                                           | Pinned suite                          | Covered with exact nested-exit-completion difference            |
-| Hover grace areas and pointer drag/release                                      | Pinned suite, three engines           | Covered; exact WebKit coordinate-travel limits below            |
-| Context Menu and Menubar composition                                            | Independent pinned suites             | Initial scope covered; see each family matrix                   |
-| Dynamic insertion/removal/reordering, disabled state and labels                 | Pinned suite                          | Covered with removed-item-focus limits                          |
-| Empty/refilled lists and removal/replacement of an open submenu owner           | Pinned suite                          | Four collection cases covered                                   |
-| Whole-root removal, cleanup, final focus and recreation                         | Pinned suite, three engines           | Covered; existing Angular destruction lifetimes                 |
-| Real touch, devices and assistive technology                                    | Not established by this suite         | Pending                                                         |
+| Contract                                                                        | Evidence                                 | Status                                                          |
+| ------------------------------------------------------------------------------- | ---------------------------------------- | --------------------------------------------------------------- |
+| Enter/Space/Up/Down opening and pointer opening                                 | Pinned suite, three engines              | Covered; keyboard highlights an item, pointer focuses the popup |
+| Roving focus, disabled focusable items, Home/End, loop/no-loop                  | Pinned suite                             | Covered                                                         |
+| Typeahead, repeated prefix and explicit label                                   | Pinned suite                             | Covered                                                         |
+| Enter/Space/click selection and closeOnClick=false                              | Pinned suite                             | Covered                                                         |
+| Canceled open/close, checkbox and radio changes                                 | Pinned suite                             | Covered                                                         |
+| Modal/non-modal outside press, Tab/Shift+Tab                                    | Pinned suite                             | Covered                                                         |
+| Keyboard submenu entry, back/Escape, RTL and whole-chain selection              | Pinned suite                             | Covered                                                         |
+| Generated/custom ARIA identities and changes between opens                      | Pinned suite                             | Covered                                                         |
+| Native ID changes while open                                                    | Angular unit and Storybook regression    | Additional Angular behavior; pin keys trigger identity by id    |
+| Programmatic focus-out and WebKit pointer travel                                | Pinned suite                             | Exact known differences below                                   |
+| Deferred/retained exits, CSS completion, cancellation, late holds and reopening | Pinned suite                             | Covered                                                         |
+| Nested CSS exits and child completion                                           | Pinned suite                             | Covered with exact nested-exit-completion difference            |
+| Hover grace areas and pointer drag/release                                      | Pinned suite, three engines              | Covered; exact WebKit coordinate-travel limits below            |
+| Context Menu and Menubar composition                                            | Independent pinned suites                | Initial scope covered; see each family matrix                   |
+| Dynamic insertion/removal/reordering, disabled state and labels                 | Pinned suite                             | Covered with removed-item-focus limits                          |
+| Empty/refilled lists and removal/replacement of an open submenu owner           | Pinned suite                             | Four collection cases covered                                   |
+| Whole-root removal, cleanup, final focus and recreation                         | Pinned suite, three engines              | Covered; existing Angular destruction lifetimes                 |
+| Empty initial opens, delayed items and hovered-child keyboard promotion         | Pinned suite and public browser examples | Covered; exact same-index child-focus limitation below          |
+| Real touch, devices and assistive technology                                    | Not established by this suite            | Pending                                                         |
 
-The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 83 scenarios and
-249 comparisons. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
+The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 97 scenarios and
+291 comparisons. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
 state. Checkbox/radio change requests are observed before cancellation; original event types and
 trusted pointer coordinates are retained. No adapter forces focus, open state or completion.
 
@@ -116,7 +117,7 @@ An Angular browser regression also repeats RTL diagonal travel with fractional p
 in a Linux CI failure. The safe polygon uses a one CSS-pixel buffer so integer MouseEvent coordinates
 do not fall through the fractional entry edge before native hit testing reaches the child.
 
-Next: empty-list keyboard promotion, touch emulation and deeper composition in the independent
+Next: touch emulation and further lifecycle/API combinations, plus deeper composition in the independent
 [Context Menu](../context-menu/PARITY.md) and [Menubar](../menubar/PARITY.md) suites.
 Device/assistive-technology work remains open. See [ADR 0038](../../../docs/adr/0038-menu-collection-boundaries.md).
 
@@ -140,3 +141,29 @@ The late-hold regression exposed a shared Presence animation callback racing its
 Completion now adopts the actual presence before unmounting, preserving checkbox state and native
 focus. Disposal invalidates queued animation promises. The test holds real CSS before F10 and
 finishes through WAAPI, preserving actual lifecycle callbacks.
+
+## Empty keyboard requests and async items
+
+Fourteen new cases compare empty Enter/Space/Up/Down opening, pointer opening, pending forward/backward
+requests, delayed root/child data, hover promotion, LTR/RTL, retained reopening and close-before-refill.
+An arrow from Popup enters the first/last item rather than incrementing a highlight whose item never
+received focus. Forward navigation in an empty open child retains logical index zero on the existing
+Root signal. Enter promotion reuses the cancelable trigger-press transaction.
+
+Newly mounted keyboard submenus hand off through the existing Floating Focus Manager's position-ready
+Angular scope activation. Its keyboard-only policy runs after modal ancestors have been paused; later
+data does not restart initial focus. The two ten-frame retry loops are removed.
+Closed ancestors resolve the return target; hidden retained references defer to the composing owner's
+fallback. Explicit final focus and deliberate moved focus retain their existing precedence.
+
+The `empty-submenu-keyboard-focus` limitation is exact: after a hovered empty child receives a forward
+request and late items arrive, the pin highlights its first item but leaves focus on the trigger.
+Repeating that arrow does not re-run focus because its logical index is unchanged. Angular's explicit
+request enters the child. Focus and resulting parent-highlight pairs are scoped to each browser for
+LTR/RTL at `entered populated submenu`. The reference remains unmodified, then both fixtures finish
+with a real pointer selection. Changed/disappeared pairs fail.
+
+Public Async Items / Async Submenu examples use Angular resource with actual Root.open parameters
+and abortable application loading. Browser checks verify pending-index continuation, no late focus
+steal, cancellation/retry, no stale retained items and top-level focus return after chain selection.
+See [ADR 0048](../../../docs/adr/0048-menu-empty-keyboard-requests.md).
