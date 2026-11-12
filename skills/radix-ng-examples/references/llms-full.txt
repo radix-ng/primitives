@@ -16108,7 +16108,7 @@ export class RdxNavigationMenuDefaultComponent {
 - ✅ Opens on hover with configurable `delay` / `closeDelay`, and a polygon grace area that keeps the popup reachable.
 - ✅ `value` / `defaultValue` model with `onValueChange`, `onOpenChange`, and `onOpenChangeComplete` outputs.
 - ✅ Keyboard navigation between triggers and top-level links (arrow keys) via the shared Composite primitive.
-- ✅ Enter / Space / entry arrow keys open a trigger and move focus into its content; arrows / Home / End navigate the open panel.
+- ✅ Enter / Space / orientation arrow keys open a trigger while retaining focus; Tab enters its content, then arrows / Home / End navigate the panel.
 - ✅ Horizontal and vertical orientations and LTR / RTL layouts.
 - ✅ Nested navigation menus; selecting a nested link also closes the parent menu.
 - ✅ Closes on Escape and outside pointer interaction, restoring focus to the trigger.
@@ -16699,8 +16699,8 @@ export class RdxNavigationMenuLargeComponent {
 
 Render a `rdxNavigationMenuRoot` inside content for a nested menu. The nested root detects its parent,
 positions its own popup next to its trigger, and links with `closeOnClick` close both roots. The nested
-triggers participate in the parent panel's arrow navigation. Press Enter or Space to enter a nested
-popup; Escape returns focus to its trigger.
+triggers participate in the parent panel's arrow navigation. Enter or Space opens a nested popup
+without moving focus; Tab enters it, and Escape returns focus to its trigger.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
@@ -17080,13 +17080,13 @@ is presentational and reflects `data-open` / `data-closed` / `data-starting-styl
 | --- | --- |
 | `ArrowLeft` / `ArrowRight` | Moves focus between triggers in a horizontal root. Respects `dir` — `ArrowLeft` moves to the previous item in LTR and to the next in RTL. |
 | `ArrowUp` / `ArrowDown` | Moves focus between triggers in a vertical root. |
-| `Enter` / `Space` | Toggles the focused trigger's content panel open or closed and moves focus into the open panel. |
-| `ArrowDown` | When a horizontal trigger is focused, opens that trigger's content panel and moves focus to the first focusable element inside it. |
-| `ArrowRight` | When a vertical (LTR) trigger is focused, opens that trigger's content panel and moves focus to the first focusable element inside it. |
-| `ArrowLeft` | When a vertical (RTL) trigger is focused, opens that trigger's content panel and moves focus to the first focusable element inside it. |
+| `Enter` / `Space` | Uses native button activation to toggle the focused trigger's panel, keeping focus on the trigger. |
+| `ArrowDown` | Opens a focused top-level horizontal trigger's panel without moving focus. |
+| `ArrowRight` | Opens a focused top-level vertical (LTR) trigger's panel without moving focus. |
+| `ArrowLeft` | Opens a focused top-level vertical (RTL) trigger's panel without moving focus. |
 | `Home` / `End` | Inside an open panel, moves focus to the first / last focusable element. |
-| `Tab` | Moves focus to the next tabbable element. Inside an open panel, advances through the panel's links; on the last one, moves focus out of the menu. |
-| `Shift` + `Tab` | Moves focus to the previous tabbable element, exiting the menu when pressed on the first trigger. |
+| `Tab` | From an open trigger, enters its content in logical order, including portaled and inline panels. Within content, advances through tabbables and then the next top-level item. |
+| `Shift` + `Tab` | From the first content element, returns to its trigger. Otherwise follows the previous tabbable, exiting the menu from its first trigger. |
 | `Escape` | Closes the open popup and returns focus to the trigger that opened it. |
 
 ---

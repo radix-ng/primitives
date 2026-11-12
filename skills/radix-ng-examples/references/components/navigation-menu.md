@@ -13,7 +13,7 @@ A collection of links and menus for website navigation.
 - ✅ Opens on hover with configurable `delay` / `closeDelay`, and a polygon grace area that keeps the popup reachable.
 - ✅ `value` / `defaultValue` model with `onValueChange`, `onOpenChange`, and `onOpenChangeComplete` outputs.
 - ✅ Keyboard navigation between triggers and top-level links (arrow keys) via the shared Composite primitive.
-- ✅ Enter / Space / entry arrow keys open a trigger and move focus into its content; arrows / Home / End navigate the open panel.
+- ✅ Enter / Space / orientation arrow keys open a trigger while retaining focus; Tab enters its content, then arrows / Home / End navigate the panel.
 - ✅ Horizontal and vertical orientations and LTR / RTL layouts.
 - ✅ Nested navigation menus; selecting a nested link also closes the parent menu.
 - ✅ Closes on Escape and outside pointer interaction, restoring focus to the trigger.

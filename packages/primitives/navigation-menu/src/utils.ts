@@ -1,45 +1,10 @@
-/**
- * Collect the tabbable elements inside a container, in DOM order, skipping hidden ones.
- */
+import { tabbable } from '@radix-ng/primitives/focus-scope';
+
+/** Collect native HTML Tab candidates, excluding inert outgoing/kept-mounted content. */
 export function getTabbableCandidates(container: HTMLElement): HTMLElement[] {
-    if (!container || !container.querySelectorAll) {
-        return [];
-    }
-
-    const TABBABLE_SELECTOR =
-        'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), ' +
-        'select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]), ' +
-        '[contenteditable="true"]:not([tabindex="-1"])';
-
-    const elements = Array.from(container.querySelectorAll(TABBABLE_SELECTOR)) as HTMLElement[];
-
-    return elements.filter((element) => {
-        if (element.tabIndex < 0) {
-            return false;
-        }
-
-        if (element.hasAttribute('disabled')) {
-            return false;
-        }
-
-        if (element.getAttribute('aria-hidden') === 'true') {
-            return false;
-        }
-
-        let current: HTMLElement | null = element;
-
-        while (current) {
-            const style = window.getComputedStyle(current);
-
-            if (style.display === 'none' || style.visibility === 'hidden') {
-                return false;
-            }
-
-            current = current.parentElement;
-        }
-
-        return true;
-    });
+    return tabbable(container).filter(
+        (element): element is HTMLElement => element.namespaceURI === 'http://www.w3.org/1999/xhtml'
+    );
 }
 
 /**

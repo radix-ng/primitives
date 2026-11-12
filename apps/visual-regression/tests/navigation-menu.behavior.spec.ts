@@ -129,6 +129,8 @@ test.describe('Navigation Menu — new floating engine migration', () => {
 
         await page.keyboard.press('ArrowDown');
         await expect(page.locator(popup)).toContainText('Styling');
+        await expect(triggers.nth(1)).toBeFocused();
+        await page.keyboard.press('Tab');
         await expect(page.locator(`${popup} a`).first()).toBeFocused();
     });
 
@@ -225,9 +227,7 @@ test('nested navigation menu keeps parent popup open when hovering a nested popu
     await expect(page.locator('[rdxNavigationMenuPopup]:has-text("Styling")')).toBeVisible();
 });
 
-test('nested navigation menu opens the nested popup with Enter and keeps arrow navigation inside it', async ({
-    page
-}) => {
+test('nested navigation menu opens with Enter, enters with Tab and keeps arrows inside the panel', async ({ page }) => {
     await gotoStory(page, 'primitives-navigation-menu--nested');
 
     await page.locator('[rdxNavigationMenuTrigger]:has-text("Overview")').click();
@@ -238,6 +238,8 @@ test('nested navigation menu opens the nested popup with Enter and keeps arrow n
 
     const nestedPopup = page.locator('[rdxNavigationMenuPopup]').filter({ hasText: 'Styling' });
     await expect(nestedPopup).toBeVisible();
+    await expect(page.locator('[rdxNavigationMenuTrigger]:has-text("Handbook")')).toBeFocused();
+    await page.keyboard.press('Tab');
 
     const nestedLinks = nestedPopup.locator('a[rdxNavigationMenuLink]');
     await expect(nestedLinks.nth(0)).toHaveCSS('text-align', 'left');
@@ -279,6 +281,79 @@ test.describe('Navigation Menu content composition and demo layout', () => {
 
     test.afterEach(() => expect(errors).toEqual([]));
 
+    for (const activation of ['click', 'Enter', 'Space', 'ArrowDown']) {
+        test(`opening with ${activation} keeps trigger focus; Tab enters and Shift+Tab returns`, async ({ page }) => {
+            await gotoStory(page, 'primitives-navigation-menu--default');
+            const overview = page.getByRole('button', { name: 'Overview', exact: true });
+            const quickStart = page.getByRole('link', { name: /^Quick Start/ });
+            await expect(overview).toBeVisible();
+            await page.keyboard.press('Tab');
+            await expect(overview).toBeFocused();
+
+            if (activation === 'click') await overview.click();
+            else await page.keyboard.press(activation);
+
+            await expect(quickStart).toBeVisible();
+            // Check beyond positioning and the next frame, where the old entry request stole focus.
+            await page.evaluate(
+                () =>
+                    new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+            );
+            await expect(overview).toBeFocused();
+
+            if (activation === 'Enter' || activation === 'Space') {
+                await page.keyboard.press(activation);
+                await expect(overview).toHaveAttribute('aria-expanded', 'false');
+                await page.keyboard.press(activation);
+                await expect(quickStart).toBeVisible();
+                await expect(overview).toBeFocused();
+            }
+
+            await page.keyboard.press('Tab');
+            await expect(quickStart).toBeFocused();
+            await page.keyboard.press('Shift+Tab');
+            await expect(overview).toBeFocused();
+        });
+    }
+
+    for (const activation of ['click', 'Enter', 'Space']) {
+        test(`nested ${activation} opens without focusing its popup`, async ({ page }) => {
+            await gotoStory(page, 'primitives-navigation-menu--nested');
+            const handbook = page.getByRole('button', { name: /Handbook/ });
+            const styling = page.getByRole('link', { name: /^Styling/ });
+            await page.getByRole('button', { name: 'Overview', exact: true }).press('ArrowDown');
+            await page.keyboard.press('Tab');
+            await expect(page.getByRole('link', { name: /^Quick Start/ })).toBeFocused();
+            await page.keyboard.press('End');
+            await expect(handbook).toBeFocused();
+
+            if (activation === 'click') await handbook.click();
+            else await page.keyboard.press(activation);
+
+            await expect(styling).toBeVisible();
+            await page.evaluate(
+                () =>
+                    new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+            );
+            // Safari can natively blur a button when its inner paragraph is clicked. Opening must
+            // leave that browser behavior intact, and must never focus the new panel's contents.
+            const nestedPopup = page.locator('[rdxNavigationMenuPopup]').filter({ hasText: 'Styling' });
+            expect(await nestedPopup.evaluate((element) => element.contains(element.ownerDocument.activeElement))).toBe(
+                false
+            );
+            if (activation === 'click') return;
+
+            await expect(handbook).toBeFocused();
+            await page.keyboard.press('Tab');
+            await expect(styling).toBeFocused();
+            await page.keyboard.press('Shift+Tab');
+            await expect(handbook).toBeFocused();
+            await expect(styling).toBeVisible();
+            await page.keyboard.press('Tab');
+            await expect(styling).toBeFocused();
+        });
+    }
+
     test('arrows reach Handbook, enter its popup and return to the parent collection', async ({ page }) => {
         await gotoStory(page, 'primitives-navigation-menu--nested');
         const overview = page.getByRole('button', { name: 'Overview', exact: true });
@@ -287,6 +362,8 @@ test.describe('Navigation Menu content composition and demo layout', () => {
         const releases = page.getByRole('link', { name: /^Releases/ });
 
         await overview.press('ArrowDown');
+        await expect(overview).toBeFocused();
+        await page.keyboard.press('Tab');
         await expect(quickStart).toBeFocused();
         await page.keyboard.press('ArrowDown');
         await expect(page.getByRole('link', { name: /^Accessibility/ })).toBeFocused();
@@ -299,6 +376,9 @@ test.describe('Navigation Menu content composition and demo layout', () => {
         await page.keyboard.press('End');
         await expect(handbook).toBeFocused();
         await page.keyboard.press('Enter');
+        await expect(page.locator('[rdxNavigationMenuPopup]').filter({ hasText: 'Styling' })).toBeVisible();
+        await expect(handbook).toBeFocused();
+        await page.keyboard.press('Tab');
         await expect(page.getByRole('link', { name: /^Styling/ })).toBeFocused();
         await page.keyboard.press('ArrowDown');
         await expect(page.getByRole('link', { name: /^Animation/ })).toBeFocused();
@@ -313,12 +393,20 @@ test.describe('Navigation Menu content composition and demo layout', () => {
         await gotoStory(page, 'primitives-navigation-menu--nested-inline');
         const resources = page.getByRole('button', { name: 'Resources', exact: true });
         await page.getByRole('button', { name: 'Browse', exact: true }).press('ArrowDown');
+        await page.keyboard.press('Tab');
         await expect(page.getByRole('button', { name: 'Learn', exact: true })).toBeFocused();
         await page.keyboard.press('ArrowDown');
         await expect(page.getByRole('button', { name: 'Develop', exact: true })).toBeFocused();
         await page.keyboard.press('ArrowDown');
         await expect(resources).toBeFocused();
         await page.keyboard.press('Enter');
+        await expect(page.getByRole('link', { name: /^Blog/ })).toBeVisible();
+        await expect(resources).toBeFocused();
+        await page.keyboard.press('Tab');
+        await expect(page.getByRole('link', { name: /^Blog/ })).toBeFocused();
+        await page.keyboard.press('Shift+Tab');
+        await expect(resources).toBeFocused();
+        await page.keyboard.press('Tab');
         await expect(page.getByRole('link', { name: /^Blog/ })).toBeFocused();
         await page.keyboard.press('ArrowDown');
         await expect(page.getByRole('link', { name: /^Changelog/ })).toBeFocused();
@@ -327,6 +415,8 @@ test.describe('Navigation Menu content composition and demo layout', () => {
         await page.keyboard.press('ArrowUp');
         await expect(resources).toBeFocused();
         await page.keyboard.press('Enter');
+        await expect(resources).toBeFocused();
+        await page.keyboard.press('Tab');
         await expect(page.getByRole('link', { name: /^Blog/ })).toBeFocused();
         await page.keyboard.press('End');
         await expect(page.getByRole('link', { name: /^Community/ })).toBeFocused();
@@ -355,6 +445,7 @@ test.describe('Navigation Menu content composition and demo layout', () => {
     test('Large Menu keeps padding outside its scrollable list', async ({ page }) => {
         await gotoStory(page, 'primitives-navigation-menu--large-menu');
         await page.getByRole('button', { name: 'Components', exact: true }).press('ArrowDown');
+        await page.keyboard.press('Tab');
         const popup = page.locator('[rdxNavigationMenuPopup]');
         const list = popup.locator('ul');
         await expect(popup).toBeVisible();
@@ -399,6 +490,8 @@ test.describe('Navigation Menu content composition and demo layout', () => {
         expect(Math.max(...rightEdges) - Math.min(...rightEdges)).toBeLessThan(1);
         const account = page.getByRole('button', { name: 'Account', exact: true });
         await account.press('ArrowRight');
+        await expect(account).toBeFocused();
+        await page.keyboard.press('Tab');
         await expect(page.getByRole('link', { name: 'Profile', exact: true })).toBeFocused();
         await page.keyboard.press('ArrowDown');
         await expect(page.getByRole('link', { name: 'Billing', exact: true })).toBeFocused();
@@ -407,6 +500,7 @@ test.describe('Navigation Menu content composition and demo layout', () => {
         await page.keyboard.press('ArrowDown');
         await expect(page.getByRole('button', { name: 'Workspace', exact: true })).toBeFocused();
         await page.keyboard.press('ArrowRight');
+        await page.keyboard.press('Tab');
         await expect(page.getByRole('link', { name: 'Members', exact: true })).toBeFocused();
     });
 });

@@ -264,6 +264,26 @@ describe('RdxNavigationMenu', () => {
         expect(root().previousValue()).toBe('one');
     });
 
+    it('leaves modified Tab shortcuts to the browser while a trigger is open', () => {
+        createComponent();
+        const [one] = triggers();
+        one.focus();
+        one.click();
+        fixture.detectChanges();
+
+        for (const modifier of ['ctrlKey', 'altKey', 'metaKey']) {
+            const event = new KeyboardEvent('keydown', {
+                key: 'Tab',
+                bubbles: true,
+                cancelable: true,
+                [modifier]: true
+            });
+            one.dispatchEvent(event);
+            expect(event.defaultPrevented).toBe(false);
+            expect(document.activeElement).toBe(one);
+        }
+    });
+
     it('keeps focus navigation separate from opening until the entry key is pressed', () => {
         createComponent();
         const [one, two] = triggers();
@@ -706,7 +726,11 @@ describe('RdxNavigationMenu nested behavior', () => {
 
         const activationEvent = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
         nestedTrigger.dispatchEvent(activationEvent);
-        expect(activationEvent.defaultPrevented).toBe(true);
+        expect(activationEvent.defaultPrevented).toBe(false);
+        expect(document.activeElement).toBe(nestedTrigger);
+        // jsdom does not synthesize a native button click from a KeyboardEvent.
+        nestedTrigger.click();
+        expect(roots[1].value()).toBeNull();
     });
 });
 

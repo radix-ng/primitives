@@ -6,8 +6,8 @@
 
 Render a `rdxNavigationMenuRoot` inside content for a nested menu. The nested root detects its parent,
 positions its own popup next to its trigger, and links with `closeOnClick` close both roots. The nested
-triggers participate in the parent panel's arrow navigation. Press Enter or Space to enter a nested
-popup; Escape returns focus to its trigger.
+triggers participate in the parent panel's arrow navigation. Enter or Space opens a nested popup
+without moving focus; Tab enters it, and Escape returns focus to its trigger.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';

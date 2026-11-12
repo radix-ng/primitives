@@ -14,15 +14,14 @@ export function handleNavigationMenuKeydown(
     if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
     const target = event.target as HTMLElement;
     if (event.key === 'Tab') {
-        // Inline children have no portal to leave. Let the enclosing viewport handle its boundary.
-        if (!root.popup()) return;
         const items = getTabbableCandidates(container);
         const index = items.indexOf(container.ownerDocument.activeElement as HTMLElement);
         if (event.shiftKey && index <= 0) {
             event.preventDefault();
             event.stopPropagation();
             root.trigger()?.focus();
-        } else if (!event.shiftKey && index === items.length - 1) {
+        } else if (!event.shiftKey && index === items.length - 1 && root.popup()) {
+            // Inline children let the enclosing portaled viewport handle forward departure.
             const list = root.list();
             const triggers = list
                 ? Array.from(list.querySelectorAll<HTMLElement>(PART)).filter(

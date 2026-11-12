@@ -11,7 +11,7 @@ import {
     untracked
 } from '@angular/core';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
-import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ENTER, injectDocument, SPACE } from '@radix-ng/primitives/core';
+import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, injectDocument, TAB } from '@radix-ng/primitives/core';
 import { provideNavigationMenuCompositeItemOwner } from './navigation-menu-composite-item-owner';
 import { RdxNavigationMenuItem } from './navigation-menu-item';
 import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
@@ -108,20 +108,16 @@ export class RdxNavigationMenuTrigger {
     }
 
     protected onKeydown(event: KeyboardEvent) {
-        if (this.disabled()) {
+        if (this.disabled() || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) {
             return;
         }
 
-        const entryKey = this.entryKey();
-
-        if (event.key === ENTER || event.key === SPACE) {
+        // Opening preserves the trigger's focus, including native Enter/Space clicks. Tab enters
+        // this item's content in logical order even when the panel is portaled after the root list.
+        if (event.key === TAB && !event.shiftKey && this.open()) {
             event.preventDefault();
-            this.rootContext.toggle(this.item.value(), this.elementRef.nativeElement, event);
-
-            if (this.open()) {
-                this.focusContent();
-            }
-
+            event.stopPropagation();
+            this.focusContent();
             return;
         }
 
@@ -129,18 +125,16 @@ export class RdxNavigationMenuTrigger {
             return;
         }
 
-        if (event.key === entryKey) {
+        if (event.key === this.entryKey()) {
             event.preventDefault();
 
             if (!this.open()) {
                 this.rootContext.open(this.item.value(), this.elementRef.nativeElement, 'list-navigation', event);
             }
-
-            this.focusContent();
         }
     }
 
-    /** The key that moves focus from the trigger into the open content, based on orientation/dir. */
+    /** The key that opens the panel while retaining trigger focus, based on orientation/dir. */
     private entryKey(): string {
         if (this.rootContext.orientation() === 'horizontal') {
             return ARROW_DOWN;
