@@ -178,7 +178,11 @@ export interface RdxMenuRootContext {
     show: (autoFocus?: RdxMenuAutoFocusInput, reason?: RdxMenuOpenChangeReason, event?: Event) => void;
     /** Open the menu without moving focus into the popup. */
     showWithoutAutoFocus: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
-    registerTrigger: (el: HTMLElement, getId?: () => string) => () => void;
+    registerTrigger: (
+        el: HTMLElement,
+        getId?: () => string,
+        getInteractionType?: (event: Event) => RdxInteractionType
+    ) => () => void;
     registerPopup: (el: HTMLElement, physicalSide?: Signal<MenuSide | undefined>, getId?: () => string) => () => void;
     setBeforeContentFocusGuard: (element: HTMLElement | null) => void;
     registerTransitionElement: (element: HTMLElement) => () => void;
@@ -277,7 +281,7 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         toggle: (reason, event) => instance.toggle(reason, event),
         show: (autoFocus, reason, event) => instance.show(autoFocus, reason, event),
         showWithoutAutoFocus: (reason, event) => instance.show(false, reason, event),
-        registerTrigger: (el, getId) => instance.registerTrigger(el, getId),
+        registerTrigger: (el, getId, getInteractionType) => instance.registerTrigger(el, getId, getInteractionType),
         registerPopup: (el, physicalSide, getId) => instance.registerPopup(el, physicalSide, getId),
         setBeforeContentFocusGuard: (element) => instance.setBeforeContentFocusGuard(element),
         registerTransitionElement: (el) => instance.registerTransitionElement(el),
@@ -335,6 +339,7 @@ export class RdxMenuRoot {
 
     private registeredTrigger: HTMLElement | undefined;
     private registeredTriggerId?: () => string;
+    private registeredTriggerInteractionType?: (event: Event) => RdxInteractionType;
     private registeredPopupId?: () => string;
     private popupArrowNavigationHandler: ((event: KeyboardEvent) => boolean) | undefined;
     private popupNavigationHandler: ((event: KeyboardEvent) => boolean) | undefined;
@@ -558,7 +563,7 @@ export class RdxMenuRoot {
                 this.onOpenChange.emit(change.payload);
                 if (change.eventDetails.isCanceled()) return;
                 this.lastOpenChangeReason.set(reason);
-                this.openInteractionType.set(reason === 'trigger-focus' ? null : getInteractionTypeFromEvent(event));
+                this.openInteractionType.set(reason === 'trigger-focus' ? null : this.resolveInteractionType(event));
                 change.commit();
                 this.floatingContext.events.emit('openchange', {
                     open: true,
@@ -586,8 +591,8 @@ export class RdxMenuRoot {
             this.lastOpenChangeReason.set(reason);
             // Record whether this open came from touch (ADR 0016 §3). Hover / mouse / keyboard all resolve
             // to false (no `'touch'` pointer type), so only a genuine touch open gates the anchored lock.
-            this.openedByTouch.set((event as PointerEvent | undefined)?.pointerType === 'touch');
-            const method = reason === 'trigger-focus' ? null : getInteractionTypeFromEvent(event);
+            const method = reason === 'trigger-focus' ? null : this.resolveInteractionType(event);
+            this.openedByTouch.set(method === 'touch');
             this.openInteractionType.set(method);
             this.pointerOrigin =
                 (method === 'mouse' || method === 'pen') && event && 'clientX' in event && 'clientY' in event
@@ -619,7 +624,7 @@ export class RdxMenuRoot {
 
             this.setAllowMouseUpTrigger(false);
             this.lastOpenChangeReason.set(reason);
-            this.closeInteractionType.set(getInteractionTypeFromEvent(event));
+            this.closeInteractionType.set(this.resolveInteractionType(event));
             this.open.set(false);
             change.commit();
             for (const child of this.childRoots()) child.close(reason, event);
@@ -696,9 +701,14 @@ export class RdxMenuRoot {
         this.close(reason, event);
     }
 
-    registerTrigger(el: HTMLElement, getId?: () => string): () => void {
+    registerTrigger(
+        el: HTMLElement,
+        getId?: () => string,
+        getInteractionType?: (event: Event) => RdxInteractionType
+    ): () => void {
         this.registeredTrigger = el;
         this.registeredTriggerId = getId;
+        this.registeredTriggerInteractionType = getInteractionType;
         this.trigger.set(el);
         this.floatingContext.triggers.add(el);
         return () => {
@@ -706,9 +716,20 @@ export class RdxMenuRoot {
             if (this.registeredTrigger === el) {
                 this.registeredTrigger = undefined;
                 this.registeredTriggerId = undefined;
+                this.registeredTriggerInteractionType = undefined;
                 this.trigger.set(undefined);
             }
         };
+    }
+
+    private resolveInteractionType(event?: Event): RdxInteractionType {
+        // Compatibility mousedown has no pointerType. Consult its trigger's native pointer history
+        // without rewriting the original event or applying stale trigger input to item/outside events.
+        const target = event?.target;
+        if (event && target && 'nodeType' in target && this.registeredTrigger?.contains(target as Node)) {
+            return this.registeredTriggerInteractionType?.(event) ?? getInteractionTypeFromEvent(event);
+        }
+        return getInteractionTypeFromEvent(event);
     }
 
     /** This open session's return target, falling back through surviving Menu owners. */

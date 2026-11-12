@@ -5,7 +5,7 @@ port is 4505. Angular fixtures are AOT compiled and React imports the unmodified
 Base UI 1.9.0 pin: `cf696d6f6e08c699c5bda24d5a033430909f2285`, archive SHA-256
 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 
-97 scenarios run in Chromium, Firefox and WebKit (291 comparisons). They cover native keyboard and
+122 scenarios define 366 planned comparisons: 335 execute, with 31 touch capability skips. They cover native keyboard and
 pointer opening, disabled/focusable items, roving focus, edges and looping, repeated and explicit-label
 typeahead, selection and stay-open items, cancelable transactions, modal/background activation,
 forward/backward Tab, checkbox/radio values, LTR/RTL submenu ownership and custom identity links.
@@ -54,7 +54,7 @@ scope. Unchanged/disappeared exceptions fail; there is no blanket normalization 
 
 Custom IDs change between opens in the differential scenario: the pin keys trigger registration
 by id. Angular additionally supports live ID changes without replacing the popup, checked through
-the Events story and unit/browser regressions. Pending work includes touch emulation, further API/lifecycle combinations and real device/AT verification.
+the Events story and unit/browser regressions. Pending work includes hybrid input, further API/lifecycle combinations and real device/AT verification.
 
 ## Whole-root removal
 
@@ -90,3 +90,21 @@ pointer selection; no adapter supplies reference focus.
 
 The public examples use Angular resource and Root.open instead of a mirrored open/loading model.
 See [ADR 0048](../../../../docs/adr/0048-menu-empty-keyboard-requests.md).
+
+## Trusted touch
+
+Twenty-five cases use actual browser touch input. Nineteen tap cases run in Chromium/WebKit; six
+cancel/pan cases run through Chromium CDP. Firefox touch and WebKit CDP gestures are skipped before
+page creation (31 capability skips). The shared CDP helper also serves Select. Original input types,
+trust and callback events remain in the observations; touch checkpoints compare native callback
+metadata alongside focus, highlight, open/pressed state, values and scrolling.
+
+Coverage includes taps, toggling, disabled commands/values, cancellation, outside press/panning,
+LTR/RTL submenus, retained reopening and small/wide touch-opened scroll policy. A wheel beside the
+popup probes page locking independently of actual pan gestures. After page panning, native scrollend
+marks readiness for the next tap; neither fixture retries input to bypass momentum scrolling.
+
+Two exact canceled-open/close focus pairs extend the existing macOS WebKit native-button-focus
+category. Linux and every other touch field remain compared. See
+[ADR 0049](../../../../docs/adr/0049-menu-trusted-touch.md). Emulation does not certify real hardware
+or assistive technology.

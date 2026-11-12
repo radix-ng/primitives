@@ -9,12 +9,15 @@ import {
     inject,
     input,
     numberAttribute,
-    PLATFORM_ID,
-    signal
+    PLATFORM_ID
 } from '@angular/core';
 import { getCompositeNavigationKeys } from '@radix-ng/primitives/composite';
 import { BooleanInput, injectId, isMouseWithinBounds, NumberInput } from '@radix-ng/primitives/core';
-import { createRdxTriggerInteraction, useTriggerFocusGuards } from '@radix-ng/primitives/floating-focus-manager';
+import {
+    createRdxTriggerInteraction,
+    getInteractionTypeFromEvent,
+    useTriggerFocusGuards
+} from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { getFocusableMenuItems } from './menu-focus';
 import { findMenuOwnerId } from './menu-owner';
@@ -42,11 +45,9 @@ const numberOrUndefined = (value: NumberInput | undefined) => (value == null ? u
         '[attr.disabled]': 'nativeButtonState() && isDisabled() ? "" : undefined',
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
         '[attr.data-popup-open]': 'triggerInteraction.dataPopupOpen()',
-        '[attr.data-pressed]': 'pressed() ? "" : undefined',
+        '[attr.data-pressed]': 'triggerInteraction.dataPopupOpen()',
         '[style.pointer-events]': 'rootContext.isOpen() && rootContext.modal() ? "auto" : undefined',
         '(pointerdown)': 'handlePointerDown($event)',
-        '(pointerup)': 'pressed.set(false)',
-        '(pointercancel)': 'pressed.set(false)',
         '(mousedown)': 'handleMouseDown($event)',
         '(click)': 'handleClick($event)',
         '(pointerenter)': 'handlePointerEnter($event)',
@@ -130,9 +131,6 @@ export class RdxMenuTrigger {
         () => this.nativeButton() || this.elementRef.nativeElement.tagName === 'BUTTON'
     );
 
-    /** Whether the trigger is currently pressed (pointer down), for Base UI's `data-pressed`. */
-    protected readonly pressed = signal(false);
-
     protected readonly isDisabled = computed(() => this.rootContext.disabled() || this.disabled());
     protected readonly triggerInteraction = createRdxTriggerInteraction({
         trigger: () => this.elementRef.nativeElement,
@@ -144,7 +142,14 @@ export class RdxMenuTrigger {
     constructor() {
         effect((onCleanup) => {
             const el = this.elementRef.nativeElement;
-            const unregister = this.rootContext.registerTrigger(el, () => this.resolvedId());
+            const unregister = this.rootContext.registerTrigger(
+                el,
+                () => this.resolvedId(),
+                (event) =>
+                    event instanceof MouseEvent
+                        ? this.triggerInteraction.clickInteractionType(event)
+                        : getInteractionTypeFromEvent(event)
+            );
             onCleanup(unregister);
         });
 
@@ -255,9 +260,6 @@ export class RdxMenuTrigger {
 
     protected handlePointerDown(event: PointerEvent): void {
         this.triggerInteraction.recordPointerDown(event);
-        if (!this.isDisabled() && event.button === 0) {
-            this.pressed.set(true);
-        }
     }
 
     protected handleClick(event: MouseEvent): void {
@@ -408,8 +410,6 @@ export class RdxMenuTrigger {
     }
 
     protected handlePointerLeave(event: PointerEvent): void {
-        this.pressed.set(false);
-
         if (event.pointerType === 'touch' || !this.openOnHover()) {
             return;
         }

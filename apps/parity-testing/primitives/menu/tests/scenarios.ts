@@ -6,6 +6,7 @@ import type { MenuDriver } from './driver';
 import { emptyScenarios } from './empty.scenarios';
 import { lifecycleScenarios } from './lifecycle.scenarios';
 import { pointerScenarios } from './pointer.scenarios';
+import { touchScenarios } from './touch.scenarios';
 
 export const scenarios = [
     ...basicCases.map((name) => ({
@@ -161,6 +162,7 @@ export const scenarios = [
     ...pointerScenarios,
     ...collectionScenarios,
     ...emptyScenarios,
+    ...touchScenarios,
     ...rootRemovalScenarios<MenuDriver>({
         popup: 'popup',
         child: 'sub-popup',

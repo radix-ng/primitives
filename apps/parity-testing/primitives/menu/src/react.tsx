@@ -7,6 +7,7 @@ import { exitClass } from '../../../shared/lifecycle';
 import { changeCollection, menuEntries, submenuEntries } from '../../../shared/menu-collection';
 import { rootRemovalExitClass, rootRemovalFinalFocus } from '../../../shared/root-removal';
 import { config, installProbe, classes as s, type Layer } from './contract';
+import { touchScrollEntries } from './touch';
 
 const settings = config();
 const trace = installProbe('react');
@@ -14,7 +15,9 @@ function ReactMenu() {
     const [rootPresent, setRootPresent] = useState(true);
     const [beforePresent, setBeforePresent] = useState(true);
     const exit = settings.removal?.animated || settings.lifecycle?.late ? rootRemovalExitClass : exitClass;
-    const [items, setItems] = useState(settings.empty && !settings.empty.nested ? [] : menuEntries);
+    const [items, setItems] = useState(
+        settings.touch?.popupScroll ? touchScrollEntries : settings.empty && !settings.empty.nested ? [] : menuEntries
+    );
     const [subItems, setSubItems] = useState(settings.empty?.nested ? [] : submenuEntries);
     const [submenuPresent, setSubmenuPresent] = useState(true);
     const actions = useRef<Menu.Root.Actions | null>(null);
@@ -26,7 +29,11 @@ function ReactMenu() {
             if (settings.lifecycle?.deferred || settings.lifecycle?.canceled) details.preventUnmountOnClose();
             if (settings.lifecycle?.canceled) details.cancel();
         }
-        if ((open && settings.name === 'cancel-open') || (!open && settings.name === 'cancel-close')) details.cancel();
+        if (
+            (open && ['cancel-open', 'touch-cancel-open'].includes(settings.name)) ||
+            (!open && ['cancel-close', 'touch-cancel-close'].includes(settings.name))
+        )
+            details.cancel();
         trace.change(layer, open, details.reason, details.isCanceled, details.event, details.trigger);
     }
     const [triggerId, setTriggerId] = useState('custom-trigger');
@@ -83,9 +90,15 @@ function ReactMenu() {
     return (
         <DirectionProvider direction={settings.dir}>
             <div className={s.layout}>
-                <div className={s.outside} data-testid="outside">
-                    Background
-                </div>
+                {settings.touch ? (
+                    <button type="button" className={s.outside} data-testid="outside">
+                        Background
+                    </button>
+                ) : (
+                    <div className={s.outside} data-testid="outside">
+                        Background
+                    </div>
+                )}
                 {beforePresent && <input className={s.outside} aria-label="Before menu" data-testid="before" />}
                 {rootPresent && (
                     <Menu.Root
@@ -111,12 +124,17 @@ function ReactMenu() {
                                 className="z-50"
                                 align="start"
                                 sideOffset={4}
-                                collisionPadding={5}
+                                collisionPadding={settings.touch?.wide ? 0 : 5}
                                 data-testid="positioner"
                             >
                                 <Menu.Popup
                                     id={settings.ids ? popupId : undefined}
-                                    className={s.popup + (settings.lifecycle?.animated ? exit : '')}
+                                    className={
+                                        s.popup +
+                                        (settings.lifecycle?.animated ? exit : '') +
+                                        (settings.touch?.popupScroll ? ' max-h-40 overflow-y-auto' : '') +
+                                        (settings.touch?.wide ? ' w-screen!' : '')
+                                    }
                                     finalFocus={settings.removal?.finalFocus ? rootRemovalFinalFocus : undefined}
                                     data-testid="popup"
                                 >
@@ -200,6 +218,7 @@ function ReactMenu() {
                                             </Menu.Item>
                                             {settings.checkbox && (
                                                 <Menu.CheckboxItem
+                                                    disabled={settings.name === 'touch-disabled-checkbox'}
                                                     render={<button />}
                                                     nativeButton
                                                     className={s.item}
@@ -234,6 +253,7 @@ function ReactMenu() {
                                                         nativeButton
                                                         className={s.item}
                                                         value="two"
+                                                        disabled={settings.name === 'touch-disabled-radio'}
                                                         data-testid="radio-two"
                                                     >
                                                         Large
@@ -258,7 +278,7 @@ function ReactMenu() {
                 )}
                 <input className={s.outside} aria-label="After menu" data-testid="after" />
             </div>
-            {settings.removal && <div className="min-h-[2000px]" />}
+            {(settings.removal || settings.touch?.pageScroll) && <div className="min-h-[2000px]" />}
         </DirectionProvider>
     );
 }

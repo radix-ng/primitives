@@ -14,7 +14,11 @@ import {
 } from '@angular/core';
 import { getCompositeNavigationKeys, RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, injectId, NumberInput, rdxPlatform } from '@radix-ng/primitives/core';
-import { RdxFloatingFocusManager } from '@radix-ng/primitives/floating-focus-manager';
+import {
+    createRdxInteractionTypeTracker,
+    getInteractionTypeFromEvent,
+    RdxFloatingFocusManager
+} from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { injectRdxMenuRootContext, RdxMenuRoot } from './menu-root';
 import {
@@ -55,6 +59,8 @@ const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();
         '(focus)': 'onFocus()',
         '(blur)': 'onBlur($event)',
         '(click)': 'onClick($event)',
+        '(mousedown)': 'onMouseDown($event)',
+        '(pointerdown)': 'onPointerDown($event)',
         '(keydown.enter)': 'onEnter($event)',
         '(keydown.space)': 'onEnter($event)',
         '(keydown.arrowleft)': 'onArrowKey($event)',
@@ -91,7 +97,8 @@ export class RdxMenuSubTrigger {
     private openedByHover = false;
     /** Whether the current open came from the keyboard — read by {@link omitExpanded}. */
     private readonly openedByKeyboard = signal(false);
-    private ignoreNextKeyboardClick = false;
+    private ignoreNextClick: 'keyboard' | 'touch' | null = null;
+    private readonly inputType = createRdxInteractionTypeTracker();
 
     /**
      * Whether to drop `aria-expanded` from the trigger. Opening a submenu flips the trigger's expanded
@@ -138,7 +145,14 @@ export class RdxMenuSubTrigger {
 
         effect((onCleanup) => {
             const el = this.elementRef.nativeElement;
-            const unregister = this.submenuContext.registerTrigger(el, () => this.resolvedId());
+            const unregister = this.submenuContext.registerTrigger(
+                el,
+                () => this.resolvedId(),
+                (event) =>
+                    event instanceof MouseEvent
+                        ? this.inputType.clickInteractionType(event)
+                        : getInteractionTypeFromEvent(event)
+            );
             submenuRootsByTrigger.set(el, this.submenuRoot);
 
             onCleanup(() => {
@@ -245,22 +259,29 @@ export class RdxMenuSubTrigger {
 
     protected onClick(event: MouseEvent): void {
         if (this.effectiveDisabled()) return;
-
-        if (this.ignoreNextKeyboardClick && event.detail === 0) {
-            this.ignoreNextKeyboardClick = false;
+        const method = this.inputType.clickInteractionType(event);
+        if (
+            (this.ignoreNextClick === 'keyboard' && event.detail === 0) ||
+            (this.ignoreNextClick === 'touch' && method === 'touch')
+        ) {
+            this.ignoreNextClick = null;
+            return;
+        }
+        if (method === 'touch') {
+            this.activateTouch(event);
             return;
         }
 
         // When the submenu opens on hover (default), hover owns its open/close, so a real **mouse** click
         // is ignored — otherwise it would toggle a just-hover-opened submenu shut (a visible flicker).
         // Base UI: `ignoreMouse: openOnHover`. A keyboard-activated click (`detail === 0`) still opens.
-        const isMouseClick = event.detail > 0;
+        const isMouseClick = method === 'mouse' || method === 'pen';
         if (this.openOnHover() && isMouseClick) {
             return;
         }
 
         this.openedByHover = false;
-        this.openedByKeyboard.set(!isMouseClick);
+        this.openedByKeyboard.set(method === 'keyboard');
         this.clearSiblingHighlights();
 
         if (this.submenuContext.isOpen()) {
@@ -275,13 +296,41 @@ export class RdxMenuSubTrigger {
         this.submenuContext.show('first', 'trigger-press', event);
     }
 
+    protected onPointerDown(event: PointerEvent): void {
+        this.ignoreNextClick = null;
+        this.inputType.recordPointerDown(event);
+        if (this.effectiveDisabled()) event.preventDefault();
+    }
+
+    protected onMouseDown(event: MouseEvent): void {
+        if (this.effectiveDisabled() || event.button !== 0 || this.inputType.clickInteractionType(event) !== 'touch')
+            return;
+        this.ignoreNextClick = 'touch';
+        this.activateTouch(event);
+    }
+
+    private activateTouch(event: MouseEvent): void {
+        this.clearOpenTimers();
+        this.openedByHover = false;
+        this.openedByKeyboard.set(false);
+        this.clearSiblingHighlights();
+        if (this.submenuContext.isOpen() && this.submenuContext.lastOpenChangeReason() !== 'trigger-hover') {
+            this.submenuContext.close('trigger-press', event);
+        } else {
+            if (!this.submenuContext.isOpen()) this.closeSiblingSubmenus();
+            // Touch preserves trigger focus. The first activation after hover promotes that open
+            // session; the next one toggles it. Its compatibility click must not activate twice.
+            this.submenuContext.showWithoutAutoFocus('trigger-press', event);
+        }
+    }
+
     protected onEnter(event: Event): void {
         if (this.effectiveDisabled()) return;
 
         event.preventDefault();
         event.stopPropagation();
         this.clearOpenTimers();
-        this.ignoreNextKeyboardClick = true;
+        this.ignoreNextClick = 'keyboard';
         this.openedByHover = false;
         this.openedByKeyboard.set(true);
         this.clearSiblingHighlights();

@@ -995,5 +995,25 @@
         "react": ["more", "sub-alpha"],
         "category": "empty-submenu-keyboard-focus",
         "browser": "webkit"
+    },
+    {
+        "scenario": "touch-cancel-open",
+        "checkpoint": "touch opening blocked",
+        "field": "focus",
+        "angular": "body",
+        "react": "primary",
+        "category": "native-button-focus",
+        "browser": "webkit",
+        "platform": "darwin"
+    },
+    {
+        "scenario": "touch-cancel-close",
+        "checkpoint": "touch trigger toggled",
+        "field": "focus",
+        "angular": "body",
+        "react": "primary",
+        "category": "native-button-focus",
+        "browser": "webkit",
+        "platform": "darwin"
     }
 ]

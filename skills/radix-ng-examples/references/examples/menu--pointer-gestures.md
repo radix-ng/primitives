@@ -14,6 +14,12 @@ Hold the primary mouse button, move onto a command, and release after the 200 ms
 select it. Disabled commands may receive hover focus but cannot activate. Checkbox/radio and
 `closeOnClick=false` items keep their usual stay-open behavior.
 
+Touch taps work with hover opening enabled. Tapping a submenu trigger opens it; tapping it again
+closes that child. Disabled items stay available to keyboard navigation and do not take pointer focus.
+The trigger's `data-pressed` remains set while its menu is open; use native `:active` for physical
+press feedback. Change details preserve the original browser event, so a touch activation may report
+its compatibility `mousedown` rather than a PointerEvent.
+
 Submenu hover uses entry delay and pointer-rest intent. A canceled opening can leave the other
 intent pending; an accepted opening consumes it.
 

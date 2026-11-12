@@ -4,6 +4,7 @@ import { createMenuProbe, type MenuProbe } from '../../../shared/menu-probe';
 import { rootRemovalCases, rootRemovalConfig } from '../../../shared/root-removal';
 import { emptyCases, emptyConfig } from './empty';
 import { pointerCases, pointerConfig } from './pointer';
+import { touchCases, touchConfig } from './touch';
 
 export const basicCases = [
     'keyboard-enter',
@@ -47,6 +48,7 @@ export const cases = [
     ...pointerCases,
     ...menuCollectionCases,
     ...emptyCases,
+    ...touchCases,
     ...rootRemovalCases,
     'lifecycle-submenu-css'
 ] as const;
@@ -64,21 +66,29 @@ export function config() {
     if (!cases.includes(name as CaseName)) throw new Error(`Unknown Menu case: ${name}`);
     const removal = rootRemovalConfig(name);
     const empty = emptyConfig(name);
+    const touch = touchConfig(name);
     return {
         name: name as CaseName,
         dir: name.endsWith('-rtl') ? ('rtl' as const) : ('ltr' as const),
         removal,
         empty,
+        touch,
         modal: removal
             ? removal.modal
             : name.startsWith('lifecycle-')
               ? name === 'lifecycle-modal-keep'
-              : !['outside-nonmodal', 'focus-out'].includes(name),
+              : !['outside-nonmodal', 'focus-out', 'touch-outside-nonmodal'].includes(name),
         loop: name !== 'no-loop',
-        disabled: name === 'disabled-trigger' || name === 'hover-root-disabled',
-        checkbox: name.startsWith('checkbox') || name.startsWith('lifecycle-') || name === 'drag-checkbox',
-        radio: name.startsWith('radio') || name === 'drag-radio',
+        disabled: ['disabled-trigger', 'hover-root-disabled', 'touch-disabled-trigger'].includes(name),
+        checkbox:
+            name.startsWith('checkbox') ||
+            name.startsWith('lifecycle-') ||
+            name === 'drag-checkbox' ||
+            ['touch-checkbox', 'touch-disabled-checkbox'].includes(name),
+        radio:
+            name.startsWith('radio') || name === 'drag-radio' || ['touch-radio', 'touch-disabled-radio'].includes(name),
         submenu:
+            touch?.submenu ||
             empty?.nested ||
             removal?.nested ||
             name.startsWith('submenu') ||
@@ -97,7 +107,11 @@ export function config() {
                   late: false
               }
             : lifecycleConfig(
-                  empty?.retained ? 'lifecycle-keep' : name === 'lifecycle-submenu-css' ? 'lifecycle-css-exit' : name
+                  empty?.retained || touch?.retained
+                      ? 'lifecycle-keep'
+                      : name === 'lifecycle-submenu-css'
+                        ? 'lifecycle-css-exit'
+                        : name
               ),
         pointer: pointerConfig(name)
     };

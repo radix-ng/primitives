@@ -95,6 +95,14 @@ export class MenuDriver {
                         ?.split(/\s+/)
                         .every((id) => document.getElementById(id)?.textContent?.trim());
                 return {
+                    ...(window.menuParity.config.touch
+                        ? {
+                              pressed: trigger.hasAttribute('data-pressed'),
+                              pageScrolled: scrollY > 0,
+                              popupScrolled: !!popup && popup.scrollTop > 0,
+                              nativeChanges: window.menuParity.nativeEvents
+                          }
+                        : {}),
                     ...(window.menuParity.config.lifecycle
                         ? {
                               ending: popup?.hasAttribute('data-ending-style') ?? false,

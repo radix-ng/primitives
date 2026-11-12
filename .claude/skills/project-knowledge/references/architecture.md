@@ -93,6 +93,15 @@ Return through a closed Menu owner instead of its retained trigger. The shared f
 hidden default references while preserving explicit and moved-focus policies. Async examples use
 Angular resource parameters derived from actual Root.open, with application-owned abortable loading.
 
+**Menu trusted touch (ADR 0049):** Menu Trigger/SubTrigger reuse the minimal native pointer tracker
+extracted from createRdxTriggerInteraction. The registered trigger supplies its input resolver to
+Root; consult it only for events inside that trigger and preserve the original compatibility
+mousedown. Touch SubTrigger activates on mousedown, consumes its following click once, and toggles
+without keyboard autofocus. Disabled command/checkbox/radio items prevent pointer focus but keep
+keyboard focusability. Trigger data-pressed follows the open session; native :active remains physical
+feedback. Menu and Select share trusted CDP pan/cancel input; Firefox touch and WebKit CDP gestures
+remain capability skips. Compare callback event types/trust instead of normalizing framework events.
+
 **Native input and collection focus (ADR 0037):** `focus-scope/observeFocusRecovery` observes actual
 inside focus and DOM mutations, including removals/moves without focusout in Firefox/WebKit. Floating
 Focus Manager and Menubar supply target policies. Boolean restoration does not steal a visible

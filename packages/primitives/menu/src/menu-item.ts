@@ -33,6 +33,7 @@ import { injectRdxMenuRootContext } from './menu-root';
         '(focus)': 'onFocus()',
         '(blur)': 'onBlur($event)',
         '(pointermove)': 'onPointerMove($event)',
+        '(pointerdown)': 'onPointerDown($event)',
         '(pointerleave)': 'onPointerLeave($event)',
         '(mouseup)': 'onMouseUp($event)',
         '(click)': 'onItemClick($event)',
@@ -105,6 +106,11 @@ export class RdxMenuItem {
         if (this.elementRef.nativeElement.ownerDocument.activeElement !== this.elementRef.nativeElement) {
             this.elementRef.nativeElement.focus({ preventScroll: true });
         }
+    }
+
+    onPointerDown(event: PointerEvent): void {
+        // Disabled items remain keyboard/hover focusable; a press must not focus or activate them.
+        if (this.effectiveDisabled()) event.preventDefault();
     }
 
     onPointerLeave(event: PointerEvent): void {

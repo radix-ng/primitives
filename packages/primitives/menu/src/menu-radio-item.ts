@@ -55,6 +55,7 @@ const radioItemContextFactory = (): RdxMenuRadioItemContext => {
         '(focus)': 'onFocus()',
         '(blur)': 'onBlur($event)',
         '(pointermove)': 'onPointerMove($event)',
+        '(pointerdown)': 'onPointerDown($event)',
         '(pointerleave)': 'onPointerLeave($event)',
         '(mouseup)': 'onMouseUp($event)',
         '(click)': 'onItemClick($event)',
@@ -134,6 +135,10 @@ export class RdxMenuRadioItem<T = unknown> {
         if (this.elementRef.nativeElement.ownerDocument.activeElement !== this.elementRef.nativeElement) {
             this.elementRef.nativeElement.focus({ preventScroll: true });
         }
+    }
+
+    onPointerDown(event: PointerEvent): void {
+        if (this.effectiveDisabled()) event.preventDefault();
     }
 
     onPointerLeave(event: PointerEvent): void {

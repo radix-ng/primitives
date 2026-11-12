@@ -1,4 +1,5 @@
 import { expect, Page, type Locator } from '@playwright/test';
+import { touchGesture } from '../../../../../tools/playwright/touch';
 import type { CaseName, Reference, TraceEvent } from '../src/contract';
 
 export interface Snapshot {
@@ -161,25 +162,7 @@ export class SelectDriver {
 
     /** Public Chromium input API: trusted browser events, never DOM dispatchEvent. */
     async gesture(target: Locator, end: 'cancel' | 'pan'): Promise<void> {
-        const start = await this.center(target);
-        const session = await this.page.context().newCDPSession(this.page);
-        try {
-            await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ ...start, id: 1 }] });
-            if (end === 'pan') {
-                for (const delta of [20, 40, 70, 100]) {
-                    await session.send('Input.dispatchTouchEvent', {
-                        type: 'touchMove',
-                        touchPoints: [{ x: start.x, y: start.y - delta, id: 1 }]
-                    });
-                }
-            }
-            await session.send('Input.dispatchTouchEvent', {
-                type: end === 'cancel' ? 'touchCancel' : 'touchEnd',
-                touchPoints: []
-            });
-        } finally {
-            await session.detach();
-        }
+        await touchGesture(this.page, target, end);
     }
 
     private async center(target: Locator): Promise<{ x: number; y: number }> {

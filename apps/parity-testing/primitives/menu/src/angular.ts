@@ -13,6 +13,7 @@ import { exitClass } from '../../../shared/lifecycle';
 import { changeCollection, menuEntries, submenuEntries } from '../../../shared/menu-collection';
 import { rootRemovalExitClass, rootRemovalFinalFocus } from '../../../shared/root-removal';
 import { classes, config, installProbe, type Layer } from './contract';
+import { touchScrollEntries } from './touch';
 
 const settings = config();
 @Component({
@@ -21,7 +22,11 @@ const settings = config();
     host: { '(document:click)': 'outside($event)', '(document:keydown)': 'command($event)' },
     template: `
         <div [class]="s.layout">
-            <div [class]="s.outside" data-testid="outside">Background</div>
+            @if (settings.touch) {
+                <button [class]="s.outside" type="button" data-testid="outside">Background</button>
+            } @else {
+                <div [class]="s.outside" data-testid="outside">Background</div>
+            }
             @if (beforePresent()) {
                 <input [class]="s.outside" aria-label="Before menu" data-testid="before" />
             }
@@ -49,7 +54,7 @@ const settings = config();
                     <ng-template [keepMounted]="settings.lifecycle?.keepMounted ?? false" rdxMenuPortal>
                         <div
                             class="z-50"
-                            [collisionPadding]="5"
+                            [collisionPadding]="settings.touch?.wide ? 0 : 5"
                             align="start"
                             sideOffset="4"
                             data-testid="positioner"
@@ -57,7 +62,12 @@ const settings = config();
                         >
                             <div
                                 [id]="settings.ids ? popupId() : undefined"
-                                [class]="s.popup + (settings.lifecycle?.animated ? exitClass : '')"
+                                [class]="
+                                    s.popup +
+                                    (settings.lifecycle?.animated ? exitClass : '') +
+                                    (settings.touch?.popupScroll ? ' max-h-40 overflow-y-auto' : '') +
+                                    (settings.touch?.wide ? ' w-screen!' : '')
+                                "
                                 [finalFocus]="finalFocus"
                                 data-testid="popup"
                                 rdxMenuPopup
@@ -138,6 +148,7 @@ const settings = config();
                                     @if (settings.checkbox) {
                                         <button
                                             [class]="s.item"
+                                            [disabled]="settings.name === 'touch-disabled-checkbox'"
                                             (onCheckedChange)="checked($event)"
                                             data-testid="check"
                                             rdxMenuCheckboxItem
@@ -157,6 +168,7 @@ const settings = config();
                                             </button>
                                             <button
                                                 [class]="s.item"
+                                                [disabled]="settings.name === 'touch-disabled-radio'"
                                                 value="two"
                                                 data-testid="radio-two"
                                                 rdxMenuRadioItem
@@ -181,7 +193,7 @@ const settings = config();
             }
             <input [class]="s.outside" aria-label="After menu" data-testid="after" />
         </div>
-        @if (settings.removal) {
+        @if (settings.removal || settings.touch?.pageScroll) {
             <div class="min-h-[2000px]"></div>
         }
     `
@@ -197,7 +209,9 @@ class AngularMenu {
     readonly settings = settings;
     readonly s = classes;
     readonly trace = installProbe('angular');
-    readonly items = signal(settings.empty && !settings.empty.nested ? [] : menuEntries);
+    readonly items = signal(
+        settings.touch?.popupScroll ? touchScrollEntries : settings.empty && !settings.empty.nested ? [] : menuEntries
+    );
     readonly subItems = signal(settings.empty?.nested ? [] : submenuEntries);
     readonly submenuPresent = signal(true);
     readonly triggerId = signal('custom-trigger');
@@ -250,7 +264,10 @@ class AngularMenu {
             if (lifecycle?.deferred || lifecycle?.canceled) change.eventDetails.preventUnmountOnClose();
             if (lifecycle?.canceled) change.eventDetails.cancel();
         }
-        if ((change.open && settings.name === 'cancel-open') || (!change.open && settings.name === 'cancel-close'))
+        if (
+            (change.open && ['cancel-open', 'touch-cancel-open'].includes(settings.name)) ||
+            (!change.open && ['cancel-close', 'touch-cancel-close'].includes(settings.name))
+        )
             change.eventDetails.cancel();
         this.trace.change(
             layer,

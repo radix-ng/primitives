@@ -1,5 +1,6 @@
 import { test } from '@playwright/test';
 import { createParityRunner } from '../../../shared/run-scenario.ts';
+import { touchConfig } from '../src/touch';
 import { MenuDriver } from './driver';
 import { scenarios } from './scenarios';
 
@@ -7,15 +8,24 @@ const run = createParityRunner({
     differences: new URL('../expected-differences.json', import.meta.url),
     scenarios,
     viewport: { width: 800, height: 600 },
+    pageOptions: (name) => ({ hasTouch: !!touchConfig(name) }),
     createDriver: (page, framework) => new MenuDriver(page, framework),
     readNativeEvents: (driver) =>
         driver.page.evaluate(() => ({
             changes: window.menuParity?.nativeEvents,
             pointerMoves: window.menuParity?.pointerMoves,
-            gestures: window.menuParity?.gestures
+            gestures: window.menuParity?.gestures,
+            inputEvents: window.menuParity?.inputEvents
         }))
 });
 for (const scenario of scenarios)
     test(scenario.name, async ({ browser, baseURL }, info) => {
+        const touch = touchConfig(scenario.name);
+        const engine = browser.browserType().name();
+        test.skip(!!touch && engine === 'firefox', 'Playwright Firefox does not support hasTouch contexts');
+        test.skip(
+            !!touch?.gesture && engine !== 'chromium',
+            'Trusted move/cancel gestures use Chromium CDP; no public WebKit gesture API'
+        );
         await run(scenario, { browser, baseURL }, info);
     });

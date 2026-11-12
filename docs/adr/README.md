@@ -80,3 +80,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0046](0046-menu-root-removal.md)                                            | Accepted               | Compare Menu-family Root removal, cleanup and recreation                             |
 | [0047](0047-independent-context-menu-roots.md)                               | Accepted               | Separate Context Menu state ownership from floating ancestry                         |
 | [0048](0048-menu-empty-keyboard-requests.md)                                 | Accepted               | Resolve Menu keyboard requests across empty collections                              |
+| [0049](0049-menu-trusted-touch.md)                                           | Accepted               | Compare Menu through trusted touch input                                             |

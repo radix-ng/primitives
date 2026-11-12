@@ -21,8 +21,13 @@ export interface RdxTriggerInteractionOptions {
     contentId?: () => string | null | undefined;
 }
 
-export interface RdxTriggerInteraction {
+export interface RdxInteractionTypeTracker {
     readonly lastPointerType: Signal<string>;
+    recordPointerDown: (event: PointerEvent) => void;
+    clickInteractionType: (event: MouseEvent) => RdxInteractionType;
+}
+
+export interface RdxTriggerInteraction extends RdxInteractionTypeTracker {
     readonly isActive: Signal<boolean>;
     readonly isInactive: Signal<boolean>;
     readonly dataState: Signal<'open' | 'closed'>;
@@ -30,8 +35,6 @@ export interface RdxTriggerInteraction {
     readonly ariaControls: Signal<string | undefined>;
     readonly ariaExpanded: Signal<boolean>;
     readonly disabled: Signal<boolean>;
-    recordPointerDown: (event: PointerEvent) => void;
-    clickInteractionType: (event: MouseEvent) => RdxInteractionType;
 }
 
 export interface RdxTriggerFocusGuardOptions {
@@ -49,30 +52,11 @@ export interface RdxTriggerFocusGuardAnchorOptions {
     enabled?: () => boolean;
 }
 
-/**
- * Shared trigger state for floating primitives. It intentionally stays small: each primitive still owns
- * its open/close business rules, while this layer normalizes active-trigger state and the open method
- * signal that must be captured before the popup/focus manager mounts.
- */
-export function createRdxTriggerInteraction(options: RdxTriggerInteractionOptions): RdxTriggerInteraction {
+/** Native pointer history shared by trigger policies without their ARIA/open-state projection. */
+export function createRdxInteractionTypeTracker(): RdxInteractionTypeTracker {
     const lastPointerType = signal('');
-    const activeTrigger = options.activeTrigger ?? (() => options.trigger());
-    const disabled = computed(() => options.disabled?.() ?? false);
-    const isActive = computed(() => options.open() && activeTrigger() === options.trigger());
-    const dataState = computed(() => (options.open() ? 'open' : 'closed'));
-    const dataPopupOpen = computed(() => (isActive() ? '' : undefined));
-    const ariaControls = computed(() => (isActive() ? (options.contentId?.() ?? undefined) : undefined));
-    const ariaExpanded = computed(() => isActive());
-
     return {
         lastPointerType: lastPointerType.asReadonly(),
-        isActive,
-        isInactive: computed(() => !isActive()),
-        dataState,
-        dataPopupOpen,
-        ariaControls,
-        ariaExpanded,
-        disabled,
         recordPointerDown: (event: PointerEvent): void => {
             lastPointerType.set(event.pointerType);
         },
@@ -91,6 +75,32 @@ export function createRdxTriggerInteraction(options: RdxTriggerInteractionOption
             }
             return interactionType;
         }
+    };
+}
+
+/**
+ * Shared trigger state for floating primitives. It intentionally stays small: each primitive still owns
+ * its open/close business rules, while this layer normalizes active-trigger state and the open method
+ * signal that must be captured before the popup/focus manager mounts.
+ */
+export function createRdxTriggerInteraction(options: RdxTriggerInteractionOptions): RdxTriggerInteraction {
+    const activeTrigger = options.activeTrigger ?? (() => options.trigger());
+    const disabled = computed(() => options.disabled?.() ?? false);
+    const isActive = computed(() => options.open() && activeTrigger() === options.trigger());
+    const dataState = computed(() => (options.open() ? 'open' : 'closed'));
+    const dataPopupOpen = computed(() => (isActive() ? '' : undefined));
+    const ariaControls = computed(() => (isActive() ? (options.contentId?.() ?? undefined) : undefined));
+    const ariaExpanded = computed(() => isActive());
+
+    return {
+        ...createRdxInteractionTypeTracker(),
+        isActive,
+        isInactive: computed(() => !isActive()),
+        dataState,
+        dataPopupOpen,
+        ariaControls,
+        ariaExpanded,
+        disabled
     };
 }
 

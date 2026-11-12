@@ -14,6 +14,53 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
 const trigger = '[rdxMenuTrigger]';
 const popup = '[rdxMenuPopup]';
 
+for (const mode of ['toggle', 'disabled', 'submenu', 'submenu RTL'] as const) {
+    test(`trusted touch ${mode} works in the public Menu examples`, async ({ browser, baseURL }) => {
+        test.skip(browser.browserType().name() === 'firefox', 'Playwright Firefox does not support touch contexts');
+        const page = await browser.newPage({ baseURL, hasTouch: true, viewport: { width: 1280, height: 800 } });
+        const errors: string[] = [];
+        page.on('pageerror', (error) => errors.push(error.message));
+        page.on('console', (message) => {
+            if (message.type() === 'error') errors.push(message.text());
+        });
+        try {
+            await gotoStory(
+                page,
+                mode === 'submenu RTL'
+                    ? 'primitives-menu--nested-rtl'
+                    : mode === 'submenu'
+                      ? 'primitives-menu--nested'
+                      : 'primitives-menu--default'
+            );
+            const primary = page.locator(trigger);
+            await primary.tap();
+            await expect(primary).toHaveAttribute('data-pressed', '');
+            await expect(page.locator(`${popup}[data-open]`)).toHaveCount(1);
+            if (mode.startsWith('submenu')) {
+                await page.locator('[rdxMenuSubTrigger]').first().tap();
+                await expect(page.locator(`${popup}[data-open]`)).toHaveCount(2);
+                await expect(page.locator(`${popup}[data-open]`).last()).toHaveAttribute(
+                    'data-side',
+                    mode === 'submenu RTL' ? 'left' : 'right'
+                );
+                await page.locator(`${popup}[data-open]`).last().locator('[rdxMenuItem]').first().tap();
+            } else if (mode === 'disabled') {
+                const box = (await page
+                    .getByRole('menuitem', { name: 'New Private Window', exact: true })
+                    .boundingBox())!;
+                await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+                await expect(page.locator(`${popup}[data-open]`)).toHaveCount(1);
+                await page.getByRole('menuitem', { name: 'New Tab', exact: true }).tap();
+            } else await primary.tap();
+            await expect(page.locator(popup)).toHaveCount(0);
+            await expect(primary).not.toHaveAttribute('data-pressed', '');
+            expect(errors).toEqual([]);
+        } finally {
+            await page.close();
+        }
+    });
+}
+
 for (const mode of ['root', 'submenu', 'canceled submenu'] as const) {
     test(`async ${mode} keeps keyboard ownership through loading and retained close`, async ({ page }) => {
         const errors: string[] = [];
