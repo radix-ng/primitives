@@ -165,6 +165,9 @@ A basic dropdown with regular items, a disabled item, and a separator.
 Enter, Space and the opening arrow choose the first/last enabled item. When every item is disabled,
 focus stays on Popup. Once open, arrows and Home/End may focus disabled items without activating
 them. A retained popup clears its Tab stops when closed and chooses its initial item again on reopen.
+Enable Nested menu to check Tab departure: forward Tab follows the portal's declaration order,
+while Shift+Tab returns to the submenu trigger and leaves the parent open. Keep mounted also checks
+the same path after closing and reopening both levels.
 
 <Canvas of={Stories.InitialFocus} />
 

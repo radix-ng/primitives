@@ -890,6 +890,9 @@ export class RdxMenuRoot {
             event ?? new Event('menu.open-change'),
             reason === 'focus-out' &&
                 this.parentType() !== 'menubar' &&
+                // A submenu's portal guard explicitly requests closing after its native Tab
+                // handoff. Like its leading content guard, that request retains the trigger.
+                !(this.parentType() === 'menu' && event?.type === 'focus') &&
                 event?.target !== this.beforeContentFocusGuard()
                 ? undefined
                 : this.trigger()

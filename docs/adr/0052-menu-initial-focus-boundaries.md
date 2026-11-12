@@ -60,6 +60,9 @@ departure. These checks certify DOM behavior, not screen reader or device behavi
 
 ## Remaining boundary
 
+Update: the nested Tab boundary below is resolved by [ADR 0053](0053-menu-portal-tab-handoff.md).
+The following describes the gap identified during this initial-focus increment.
+
 Forward Tab from a reopened retained submenu remains a separate gap. Reproduce with the new nested
 retained fixture: keyboard-open Root, enter the child, close both with Escape, reopen Root/child,
 then Tab from the enabled child item. Angular focuses More and leaves both menus open; the pin

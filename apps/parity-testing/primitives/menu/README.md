@@ -5,7 +5,7 @@ port is 4505. Angular fixtures are AOT compiled and React imports the unmodified
 Base UI 1.9.0 pin: `cf696d6f6e08c699c5bda24d5a033430909f2285`, archive SHA-256
 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 
-175 scenarios define 525 planned comparisons: 477 execute, with 48 touch capability skips. They cover native keyboard and
+181 scenarios define 543 planned comparisons: 495 execute, with 48 touch capability skips. They cover native keyboard and
 pointer opening, disabled/focusable items, roving focus, edges and looping, repeated and explicit-label
 typeahead, selection and stay-open items, cancelable transactions, modal/background activation,
 forward/backward Tab, checkbox/radio values, LTR/RTL submenu ownership and custom identity links.
@@ -46,15 +46,15 @@ Shared focus recovery observes DOM updates rather than copying a React store.
 
 `expected-differences.json` contains ten exact consequences of the pin suppressing programmatic
 focus-out, a macOS WebKit native button click-focus pair, and exact WebKit pointer-travel pairs.
-One exact completion pair records the pin dropping the submenu close callback during nested CSS
-disposal; Angular lets the actual child exit finish before deleting its owning view.
+Two exact completion pairs record the pin dropping the submenu close callback during nested CSS
+disposal and fresh whole-chain Tab departure; Angular lets the actual child exit finish before deleting its owning view.
 The intended Angular focus-out and coordinate-based hover behavior are retained. See the
 [source matrix](../../../../packages/primitives/menu/PARITY.md) for the source rationale and pending
 scope. Unchanged/disappeared exceptions fail; there is no blanket normalization or acceptance command.
 
 Custom IDs change between opens in the differential scenario: the pin keys trigger registration
 by id. Angular additionally supports live ID changes without replacing the popup, checked through
-the Events story and unit/browser regressions. Pending work includes retained-submenu Tab departure, further API/lifecycle combinations and real device/AT verification.
+the Events story and unit/browser regressions. Pending work includes cancelable focus-out, nested finalFocus, further API/lifecycle combinations and real device/AT verification.
 
 ## Whole-root removal
 
@@ -149,6 +149,18 @@ A shared initial selector prefers enabled edges; navigation still includes disab
 keeps its Tab entry while open. Bridge cleanup preserves current Angular bindings through close/reopen.
 
 All three engines pass on macOS/Linux, without new exceptions or skips. The public Initial Focus
-example has focused browser checks. Forward Tab from a reopened retained submenu is separately
-pending; its initial-focus case finishes with Escape. See
+example has focused browser checks. Nested Tab departure is subsequently covered below. See
 [ADR 0052](../../../../docs/adr/0052-menu-initial-focus-boundaries.md).
+
+## Nested portal Tab departure
+
+Six additional cases and the existing retained-submenu case compare native Tab/Shift+Tab from fresh
+and reopened children. An intervening native parent input verifies logical declaration order rather
+than an unconditional whole-chain close. The disabled edge remains keyboard-focusable, and an
+explicit End request settles through a recorded checkpoint before a separate Tab request.
+
+Run `pnpm test-parity menu --grep initial-disabled-submenu`. The shared focus manager bridges the
+structural portal's declaration anchor; native focus events own close requests and guard cleanup.
+One exact fresh-child completion pair extends nested-exit-completion; focus, close order/reasons,
+trigger identity and retained/backward completions match. See
+[ADR 0053](../../../../docs/adr/0053-menu-portal-tab-handoff.md).

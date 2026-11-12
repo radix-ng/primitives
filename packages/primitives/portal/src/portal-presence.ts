@@ -7,6 +7,7 @@ import {
     effect,
     EmbeddedViewRef,
     inject,
+    InjectionToken,
     Injector,
     input,
     linkedSignal,
@@ -17,6 +18,9 @@ import {
 } from '@angular/core';
 import { PresenceMachine, RDX_PRESENCE_CONTEXT } from '@radix-ng/primitives/presence';
 import { RdxPortalContainer, resolvePortalContainer } from './resolve-container';
+
+/** @internal Logical declaration position, independent of the portal's mount/destruction lifetime. */
+export const RDX_PORTAL_ANCHOR = new InjectionToken<Node>('RdxPortalAnchor');
 
 /**
  * Structural directive merging what `RdxPortal` + `RdxPresenceDirective` did as a pair: it mounts its
@@ -34,7 +38,10 @@ import { RdxPortalContainer, resolvePortalContainer } from './resolve-container'
  * effect moves the nodes into the container (same browser-guarded split `RdxPortal` uses).
  */
 @Directive({
-    standalone: true
+    standalone: true,
+    providers: [
+        { provide: RDX_PORTAL_ANCHOR, useFactory: () => inject(ViewContainerRef).element.nativeElement as Node }
+    ]
 })
 export class RdxPortalPresence {
     private readonly viewContainerRef = inject(ViewContainerRef);

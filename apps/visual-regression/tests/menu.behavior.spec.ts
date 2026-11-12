@@ -14,6 +14,53 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
 const trigger = '[rdxMenuTrigger]';
 const popup = '[rdxMenuPopup]';
 
+for (const retained of [false, true]) {
+    for (const backward of [false, true]) {
+        test(`Menu submenu Tab departure: retained=${retained}, backward=${backward}`, async ({ page }) => {
+            const errors: string[] = [];
+            page.on('pageerror', (error) => errors.push(error.message));
+            page.on('console', (message) => {
+                if (message.type() === 'error') errors.push(message.text());
+            });
+            await gotoStory(page, 'primitives-menu--initial-focus');
+            await page.getByLabel('Nested menu', { exact: true }).check();
+            if (retained) await page.getByLabel('Keep mounted', { exact: true }).check();
+            const primary = page.getByRole('button', { name: 'Actions', exact: true });
+            const more = page.getByRole('menuitem', { name: 'More commands', exact: true });
+            const child = page.getByRole('menuitem', { name: 'Second child command', exact: true });
+            const enter = async () => {
+                await primary.press('Enter');
+                await expect(more).toBeFocused();
+                await page.keyboard.press('ArrowRight');
+                await expect(child).toBeFocused();
+                await expect(child).toHaveAttribute('tabindex', '0');
+            };
+            await enter();
+            if (retained) {
+                await page.keyboard.press('Escape');
+                await expect(more).toBeFocused();
+                await page.keyboard.press('Escape');
+                await expect(primary).toBeFocused();
+                await enter();
+            }
+            await page.keyboard.press(backward ? 'Shift+Tab' : 'Tab');
+            if (backward) {
+                await expect(more).toBeFocused();
+                await expect(child).toBeHidden();
+                await expect(primary).toHaveAttribute('aria-expanded', 'true');
+                await page.keyboard.press('Escape');
+            } else await expect(page.getByRole('button', { name: 'After menu', exact: true })).toBeFocused();
+            await expect(primary).toHaveAttribute('aria-expanded', 'false');
+            await expect(page.locator(`${popup}:visible`)).toHaveCount(0);
+            await expect(page.locator('[data-rdx-focus-guard]')).toHaveCount(0);
+            if (retained) {
+                await expect(page.locator(`${popup} [role^="menuitem"][tabindex="0"]`)).toHaveCount(0);
+            }
+            expect(errors).toEqual([]);
+        });
+    }
+}
+
 for (const mode of ['Enter', 'Space', 'ArrowDown', 'ArrowUp', 'all disabled', 'retained'] as const) {
     test(`Menu initial focus: ${mode}`, async ({ page }) => {
         const errors: string[] = [];

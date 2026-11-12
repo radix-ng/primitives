@@ -75,6 +75,9 @@ export function ReactHosts() {
                                             </Menu.Popup>
                                         </Menu.Positioner>
                                     </Menu.Portal>
+                                    {h.initial?.parentControl && (
+                                        <input aria-label="Parent control" data-testid="parent-control" />
+                                    )}
                                 </Menu.SubmenuRoot>
                             ) : h.link ? (
                                 <Menu.LinkItem {...action} href="#host-target">

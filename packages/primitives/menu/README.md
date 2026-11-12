@@ -1,7 +1,7 @@
 # @radix-ng/primitives/menu
 
-Current differential scope: 175 scenarios, 477 executable comparisons and 48 touch capability skips.
-See [PARITY.md](PARITY.md) for the current contract and pending retained-submenu Tab departure.
+Current differential scope: 181 scenarios, 495 executable comparisons and 48 touch capability skips.
+See [PARITY.md](PARITY.md) for the current contract and pending nested focus-out/finalFocus audits.
 
 The notes below record individual implementation increments.
 
@@ -45,5 +45,13 @@ open. Shared bridge disposal preserves current Angular tabindex bindings when a 
 
 Initial Focus demonstrates disabled-first/all-disabled and keepMounted behavior. Thirteen new cases /
 39 comparisons bring the matrix to 175 cases, 477 executable comparisons and 48 touch capability
-skips. Forward Tab out of a reopened retained submenu is the next separate gap. See
+skips. Nested Tab departure was subsequently covered by ADR 0053 below. See
 [ADR 0052](../../../docs/adr/0052-menu-initial-focus-boundaries.md).
+
+Nested Tab departure now follows the structural portal's logical declaration order through the
+shared Floating Focus Manager. Forward Tab closes the chain or lands on a native control inside
+the parent; Shift+Tab closes only the child and returns to SubTrigger. Initial Focus exposes this
+path with Nested menu and Keep mounted toggles. Six new cases bring the current suite to 181 cases /
+495 executable comparisons and 48 capability skips. One exact pin-only dropped child completion
+extends the existing lifecycle exception. See [ADR 0053](../../../docs/adr/0053-menu-portal-tab-handoff.md)
+and [the matrix](PARITY.md).

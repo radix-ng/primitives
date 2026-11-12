@@ -34,6 +34,17 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
                 <div class="flex items-center gap-2">
                     <input
                         class="accent-primary"
+                        id="menu-initial-nested"
+                        #nestedToggle
+                        [checked]="nested()"
+                        (change)="nested.set(nestedToggle.checked)"
+                        type="checkbox"
+                    />
+                    <label for="menu-initial-nested">Nested menu</label>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input
+                        class="accent-primary"
                         id="menu-initial-retained"
                         #retainedToggle
                         [checked]="keepMounted()"
@@ -48,6 +59,35 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
                 <ng-template [keepMounted]="keepMounted()" rdxMenuPortal>
                     <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
                         <div [class]="m.popup" rdxMenuPopup>
+                            @if (nested()) {
+                                <ng-container rdxMenuRoot>
+                                    <button [class]="m.item" [disabled]="allDisabled()" rdxMenuSubTrigger>
+                                        More commands
+                                    </button>
+                                    <ng-template [keepMounted]="keepMounted()" rdxMenuPortal>
+                                        <div [class]="m.positioner" side="right" sideOffset="4" rdxMenuPositioner>
+                                            <div [class]="m.popup" rdxMenuPopup>
+                                                <button
+                                                    [class]="m.item"
+                                                    [disabled]="firstDisabled() || allDisabled()"
+                                                    (onSelect)="selected.set('First child command')"
+                                                    rdxMenuItem
+                                                >
+                                                    First child command
+                                                </button>
+                                                <button
+                                                    [class]="m.item"
+                                                    [disabled]="allDisabled()"
+                                                    (onSelect)="selected.set('Second child command')"
+                                                    rdxMenuItem
+                                                >
+                                                    Second child command
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </ng-container>
+                            }
                             <button
                                 [class]="m.item"
                                 [disabled]="firstDisabled() || allDisabled()"
@@ -68,6 +108,7 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
                     </div>
                 </ng-template>
             </ng-container>
+            <button [class]="cn(b.base, b.outline, b.size.md)">After menu</button>
             <output class="text-muted-foreground text-sm" aria-live="polite">Selected: {{ selected() }}</output>
         </div>
     `
@@ -79,5 +120,6 @@ export class RdxMenuInitialFocusComponent {
     protected readonly firstDisabled = signal(true);
     protected readonly allDisabled = signal(false);
     protected readonly keepMounted = signal(false);
+    protected readonly nested = signal(false);
     protected readonly selected = signal('none');
 }

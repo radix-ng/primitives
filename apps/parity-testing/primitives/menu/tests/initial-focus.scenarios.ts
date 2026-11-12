@@ -28,6 +28,23 @@ export const initialFocusScenarios = initialFocusCases.map((name) => ({
             await d.page.keyboard.press('Space');
             await d.checkpoint('disabled item does not activate', { open: true, selected: [], navigated: false });
         }
+        const depart = async () => {
+            const staysInParent = settings.departure === 'Shift+Tab' || settings.parentControl;
+            await d.page.keyboard.press(settings.departure ?? 'Tab');
+            await d.checkpoint('submenu Tab boundary departed', {
+                open: staysInParent,
+                subOpen: false,
+                focus: settings.departure === 'Shift+Tab' ? 'more' : settings.parentControl ? 'parent-control' : 'after'
+            });
+            if (staysInParent) await d.page.keyboard.press('Escape');
+            await d.closed();
+        };
+        if (settings.departure && !settings.retained) {
+            await d.page.keyboard.press('End');
+            await d.checkpoint('submenu ready to depart');
+            await depart();
+            return;
+        }
         await d.page.keyboard.press('Escape');
         if (settings.nested) await d.page.keyboard.press('Escape');
         await d.closed();
@@ -40,10 +57,11 @@ export const initialFocusScenarios = initialFocusCases.map((name) => ({
                 await expect(d.subPopup).toBeVisible();
             }
             await d.checkpoint('retained disabled boundary reopened', { open: true, selected: [] });
-            // Nested forward Tab is a separate portal-handoff gap (ADR 0052).
-            await d.page.keyboard.press('Escape');
-            if (settings.nested) await d.page.keyboard.press('Escape');
-            await d.closed();
+            if (settings.nested) await depart();
+            else {
+                await d.page.keyboard.press('Escape');
+                await d.closed();
+            }
         }
     }
 }));

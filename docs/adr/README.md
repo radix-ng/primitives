@@ -84,3 +84,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0050](0050-menu-hybrid-input.md)                                            | Accepted               | Preserve Menu sessions across mixed input                                            |
 | [0051](0051-menu-native-host-activation.md)                                  | Accepted               | Activate Menu through native host clicks                                             |
 | [0052](0052-menu-initial-focus-boundaries.md)                                | Accepted               | Resolve Menu initial focus and retained Tab-stop boundaries                          |
+| [0053](0053-menu-portal-tab-handoff.md)                                      | Accepted               | Hand off nested Menu Tab focus through Angular portal declaration order              |

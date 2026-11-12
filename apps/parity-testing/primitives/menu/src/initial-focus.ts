@@ -11,13 +11,21 @@ export const initialFocusCases = [
     'initial-disabled-all-up',
     'initial-disabled-single-enter',
     'initial-disabled-submenu',
-    'initial-disabled-submenu-retained'
+    'initial-disabled-submenu-retained',
+    'initial-disabled-submenu-tab',
+    'initial-disabled-submenu-shift-tab',
+    'initial-disabled-submenu-retained-tab',
+    'initial-disabled-submenu-retained-shift-tab',
+    'initial-disabled-submenu-control-tab',
+    'initial-disabled-submenu-retained-control-tab'
 ] as const;
 export function initialFocusConfig(name: string) {
     if (!(initialFocusCases as readonly string[]).includes(name)) return undefined;
     return {
         nested: name.includes('submenu'),
-        retained: name.endsWith('retained'),
+        retained: name.includes('-retained'),
+        departure: name.endsWith('-shift-tab') ? 'Shift+Tab' : name.endsWith('-tab') ? 'Tab' : undefined,
+        parentControl: name.includes('-control-'),
         allDisabled: name.includes('-all-'),
         single: name.includes('-single-'),
         key: name.endsWith('space')

@@ -88,6 +88,9 @@ import { installHostProbe } from './hosts-probe';
                                             </div>
                                         </div>
                                     </ng-template>
+                                    @if (h.initial?.parentControl) {
+                                        <input aria-label="Parent control" data-testid="parent-control" />
+                                    }
                                 </ng-container>
                             } @else if (h.link) {
                                 <a

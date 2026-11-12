@@ -127,8 +127,20 @@ The common portal tabbability bridge sets up after rendering, but an owning-view
 its current listener/snapshot resource before new host bindings. Idempotent after-render cleanup
 still handles replacement/destruction. Untrack initial logical-inside inspection to avoid unrelated
 subtree dependencies restarting that resource. Root retained reopening keeps one authored Tab stop.
-Forward Tab from a reopened retained submenu still needs a logical portal outside-guard handoff;
-passing initial-focus scenarios does not certify that separate path.
+Nested Tab departure was subsequently covered by ADR 0053 below.
+
+**Menu portal Tab handoff (ADR 0053):** Structural portals provide their ViewContainerRef declaration
+comment through a neutral DI token, avoiding a portal-instance cycle during immediate embedded-view
+mounting. Floating Focus Manager owns outside guards at that logical position for enabled, open,
+non-modal popups. Existing content guards honor explicit neighbor overrides before using the
+logical boundary. Native Tab traverses nested body-sibling portals and native parent controls;
+Shift+Tab retains the owning trigger policy. Document close-on-focus-out sources must belong to
+the current layer/descendants, not ancestor surfaces. Outside guards own their handoff and close
+request without a duplicate focusout request. Menu retains SubTrigger identity on explicit native
+guard focus; chain closes are parent-first. Guards disappear on close/modal change/destruction.
+A fresh child's dropped close completion extends the existing exact pin lifecycle exception;
+retained/backward focus and requests match. Cancelable focus-out, finalFocus and projection audits
+remain open. Do not replace browser Tab with keydown-driven close/focus or add a React portal store.
 
 **Native input and collection focus (ADR 0037):** `focus-scope/observeFocusRecovery` observes actual
 inside focus and DOM mutations, including removals/moves without focusout in Firefox/WebKit. Floating

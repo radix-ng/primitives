@@ -1,5 +1,19 @@
 [
     {
+        "scenario": "initial-disabled-submenu-tab",
+        "checkpoint": "submenu Tab boundary departed",
+        "field": "completions",
+        "angular": {
+            "main": [true, false],
+            "sub": [true, false]
+        },
+        "react": {
+            "main": [true, false],
+            "sub": [true]
+        },
+        "category": "nested-exit-completion"
+    },
+    {
         "scenario": "lifecycle-submenu-css",
         "checkpoint": "whole chain completed",
         "field": "completions",

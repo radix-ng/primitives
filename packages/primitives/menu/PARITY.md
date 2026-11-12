@@ -29,11 +29,11 @@ This is incremental behavioral evidence, not complete API or accessibility certi
 | Mixed mouse/touch/keyboard, retained sessions, submenu toggles/veto and ARIA              | Pinned suite, Chromium/WebKit and public examples        | Covered; exact native event/focus pairs below                   |
 | Native/custom Item, LinkItem and SubTrigger keyboard activation, modifiers and navigation | Pinned suite, three engines and public example           | Covered for button/div/anchor hosts                             |
 | Initial keyboard focus with disabled first/all/single items, nested and retained lists    | Pinned suite, three engines and public example           | Covered; enabled initial entry, disabled arrow navigation       |
-| Forward Tab from a reopened retained submenu                                              | Native diagnostic against pin, ADR 0052                  | Pending logical portal handoff                                  |
+| Forward/backward Tab through fresh/retained submenus and native parent controls           | Pinned suite, three engines and public example           | Covered; logical portal declaration handoff (ADR 0053)          |
 | Real touch, devices and assistive technology                                              | Not established by this suite                            | Pending                                                         |
 
-The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 175 scenarios and
-525 planned comparisons: 477 execute, with 48 touch capability skips. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
+The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 181 scenarios and
+543 planned comparisons: 495 execute, with 48 touch capability skips. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
 state. Checkbox/radio change requests are observed before cancellation; original event types and
 trusted pointer coordinates are retained. No adapter forces focus, open state or completion.
 
@@ -129,7 +129,7 @@ An Angular browser regression also repeats RTL diagonal travel with fractional p
 in a Linux CI failure. The safe polygon uses a one CSS-pixel buffer so integer MouseEvent coordinates
 do not fall through the fractional entry edge before native hit testing reaches the child.
 
-Next: retained-submenu Tab departure and further lifecycle/API combinations, plus deeper composition in the independent
+Next: cancelable focus-out and nested finalFocus combinations, plus deeper composition in the independent
 [Context Menu](../context-menu/PARITY.md) and [Menubar](../menubar/PARITY.md) suites.
 Device/assistive-technology work remains open. See [ADR 0038](../../../docs/adr/0038-menu-collection-boundaries.md).
 
@@ -205,7 +205,7 @@ observable, with exact source-event adaptations documented above.
 Hover promotion retains the session's original scroll policy. A fresh touch opening starts a new
 small/wide policy. Placement settles before the wheel probe on both the first and subsequent open.
 The new cases pass in Chromium/WebKit on macOS and Linux; unsupported Firefox touch contexts are
-capability skips. Further API/lifecycle and retained-submenu Tab departure audits remain open.
+capability skips. Further API/lifecycle and nested cancelable focus-out/finalFocus audits remain open.
 
 ## Native host activation
 
@@ -234,7 +234,20 @@ Tab entry while its child is open. Focus bridge disposal restores suspended attr
 owning Angular view applies closed-state tabindex bindings, so retained reopening has one authored
 Tab stop. Setup still waits for rendered queries/bindings. No exception pairs were added.
 
-Initial Focus demonstrates the contract. Native root Tab departure is checked; forward Tab out of
-a reopened retained submenu remains pending: Angular returns to More with both menus open, while
-the pin closes the chain and focuses the following input. See
-[ADR 0052](../../../docs/adr/0052-menu-initial-focus-boundaries.md) for the precise scope and next step.
+Initial Focus demonstrates the contract. Native root Tab departure is checked. Nested departure
+was subsequently covered by ADR 0053 below. See
+[ADR 0052](../../../docs/adr/0052-menu-initial-focus-boundaries.md) for the initial-focus scope.
+
+## Nested portal Tab departure
+
+The shared Floating Focus Manager uses the structural portal's ViewContainerRef declaration anchor
+for non-modal outside guards. Tab follows the logical template order across body-sibling portals;
+Shift+Tab returns to SubTrigger. An intervening input in the parent keeps that parent open while
+closing the child. Fresh and retained reopening compare native focus, highlight, Tab stops, close
+request order/reasons and trigger identity. The public Initial Focus example includes the nested path.
+
+Six new cases add 18 comparisons, plus forward departure in the existing retained-submenu case.
+One exact nested-exit-completion pair records the pin dropping a fresh child's close completion;
+Angular preserves its existing embedded-view lifecycle. Other fields and the retained/backward
+paths match. Cancelable focus-out, nested finalFocus and projected wrappers remain separate audits.
+See [ADR 0053](../../../docs/adr/0053-menu-portal-tab-handoff.md).

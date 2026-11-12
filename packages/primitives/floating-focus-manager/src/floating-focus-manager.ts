@@ -47,6 +47,7 @@ import {
     RdxFocusScopeConfigToken,
     useFocusGuardsTabbability
 } from '@radix-ng/primitives/focus-scope';
+import { RDX_PORTAL_ANCHOR } from '@radix-ng/primitives/portal';
 import { registerFocusGuardOwners, resolveFocusGuardOwner } from './focus-guard-ownership';
 import { markOthers } from './mark-others';
 
@@ -615,7 +616,15 @@ export class RdxFloatingFocusManager {
             // Document listeners also see unrelated widgets. Only this layer's own focus boundary
             // (including its guards) can initiate a close.
             const source = event.target as Node | null;
-            if (!source || !this.isRelatedTargetInside(source)) return;
+            if (
+                !source ||
+                (!this.isWithinFloatingSubtree(source) &&
+                    !(this.rootContext && this.contextContains(this.rootContext, resolveFocusGuardOwner(source))))
+            )
+                return;
+            // Outside portal guards own the synchronous handoff and its close request. Their
+            // native focusout must not race that request or report it a second time.
+            if (this.outsideFocusGuards.includes(source as HTMLElement)) return;
             const relatedTarget = event.relatedTarget as Node | null;
             if (!relatedTarget) {
                 return; // focus left to nothing (tab-away / window blur) — let the browser handle it
@@ -680,11 +689,14 @@ export class RdxFloatingFocusManager {
         return this.managedScope.focusScope.paused();
     }
 
+    private outsideFocusGuards: HTMLElement[] = [];
+
     /**
-     * Portal focus bridge (Base UI inside guards): when focus reaches the hidden guards around portaled
-     * content, redirect it either back inside the popup or to the configured neighboring tabbable node.
+     * Connect content guards to the structural portal's logical declaration, preserving nested Tab
+     * order after relocation. Explicit neighboring targets and non-portaled consumers keep their policy.
      */
     private wirePortalFocusBridge(): void {
+        const portalAnchor = inject(RDX_PORTAL_ANCHOR, { optional: true });
         effect((onCleanup) => {
             if (!this.effectiveEnabled() || !this.isFloatingOpen()) {
                 this.setBeforeContentFocusGuardRef(null);
@@ -699,9 +711,38 @@ export class RdxFloatingFocusManager {
 
             const beforeGuard = createFocusGuard(ownerDocument);
             const afterGuard = createFocusGuard(ownerDocument);
-            const unregisterGuards = registerFocusGuardOwners([beforeGuard, afterGuard], () => this.host);
+            const outsideBefore = portalAnchor && !this.effectiveModal() ? createFocusGuard(ownerDocument) : null;
+            const outsideAfter = portalAnchor && !this.effectiveModal() ? createFocusGuard(ownerDocument) : null;
+            const unregisterGuards = registerFocusGuardOwners(
+                [beforeGuard, afterGuard, ...(outsideBefore && outsideAfter ? [outsideBefore, outsideAfter] : [])],
+                () => this.host
+            );
             beforeGuard.setAttribute('data-type', 'inside');
             afterGuard.setAttribute('data-type', 'inside');
+
+            if (portalAnchor && outsideBefore && outsideAfter) {
+                this.outsideFocusGuards = [outsideBefore, outsideAfter];
+                outsideBefore.setAttribute('data-type', 'outside');
+                outsideAfter.setAttribute('data-type', 'outside');
+                portalAnchor.parentNode?.insertBefore(outsideBefore, portalAnchor);
+                portalAnchor.parentNode?.insertBefore(outsideAfter, portalAnchor.nextSibling);
+
+                outsideBefore.addEventListener('focus', (event) => {
+                    if (!event.relatedTarget || !this.isWithinFloatingSubtree(event.relatedTarget as Node)) {
+                        focus(beforeGuard);
+                    } else {
+                        focus(getPreviousTabbable(this.rootContext?.referenceElement ?? this.host));
+                    }
+                });
+                outsideAfter.addEventListener('focus', (event) => {
+                    if (!event.relatedTarget || !this.isWithinFloatingSubtree(event.relatedTarget as Node)) {
+                        focus(afterGuard);
+                        return;
+                    }
+                    focus(getNextTabbable(this.rootContext?.referenceElement ?? this.host));
+                    if (this.effectiveCloseOnFocusOut()) this.focusOut.emit(event);
+                });
+            }
 
             parent.insertBefore(beforeGuard, this.host);
             parent.insertBefore(afterGuard, this.host.nextSibling);
@@ -729,7 +770,11 @@ export class RdxFloatingFocusManager {
                 // destination is the owning trigger. Ordinary containment correctly keeps that
                 // trigger "inside", so it cannot infer this Tab departure on its own.
                 if (this.effectiveCloseOnFocusOut()) this.focusOut.emit(event);
-                focus(resolveFocusTarget(this.effectivePreviousFocusableElement()) ?? this.defaultPreviousFocusable());
+                focus(
+                    resolveFocusTarget(this.effectivePreviousFocusableElement()) ??
+                        outsideBefore ??
+                        this.defaultPreviousFocusable()
+                );
             };
 
             const onAfterFocus = (event: FocusEvent): void => {
@@ -743,7 +788,11 @@ export class RdxFloatingFocusManager {
                     return;
                 }
 
-                focus(resolveFocusTarget(this.effectiveNextFocusableElement()) ?? this.defaultNextFocusable());
+                focus(
+                    resolveFocusTarget(this.effectiveNextFocusableElement()) ??
+                        outsideAfter ??
+                        this.defaultNextFocusable()
+                );
             };
 
             beforeGuard.addEventListener('focus', onBeforeFocus);
@@ -754,6 +803,9 @@ export class RdxFloatingFocusManager {
                 afterGuard.removeEventListener('focus', onAfterFocus);
                 beforeGuard.remove();
                 afterGuard.remove();
+                outsideBefore?.remove();
+                outsideAfter?.remove();
+                if (this.outsideFocusGuards[0] === outsideBefore) this.outsideFocusGuards = [];
                 unregisterGuards();
                 this.setBeforeContentFocusGuardRef(null);
             });
