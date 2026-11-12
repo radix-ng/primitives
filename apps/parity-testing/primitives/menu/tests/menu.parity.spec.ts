@@ -16,6 +16,14 @@ const run = createParityRunner({
             pointerMoves: window.menuParity?.pointerMoves,
             gestures: window.menuParity?.gestures,
             inputEvents: window.menuParity?.inputEvents,
+            ...(window.menuParity?.config.multiTrigger?.animated
+                ? {
+                      viewportDirection:
+                          document
+                              .querySelector('[data-testid="viewport"]')
+                              ?.getAttribute('data-activation-direction') ?? null
+                  }
+                : {}),
             ...(window.menuParity?.config.projection
                 ? {
                       portalDocumentOrder: [...document.querySelectorAll('[role^="menuitem"]')].map((element) => ({

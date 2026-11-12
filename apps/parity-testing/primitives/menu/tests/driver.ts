@@ -88,7 +88,11 @@ export class MenuDriver {
             const read = () => {
                 const popup = document.querySelector<HTMLElement>('[data-testid="popup"]');
                 const sub = document.querySelector<HTMLElement>('[data-testid="sub-popup"]');
-                const trigger = document.querySelector<HTMLElement>('[data-testid="primary"]')!;
+                const trigger =
+                    (window.menuParity.config.multiTrigger && popup?.getAttribute('aria-labelledby')
+                        ? document.getElementById(popup.getAttribute('aria-labelledby')!)
+                        : null) ??
+                    document.querySelector<HTMLElement>('[data-testid="primary"], [data-testid="secondary"]')!;
                 const positioner = document.querySelector<HTMLElement>('[data-testid="positioner"]');
                 // Projected keepMounted children can portal before their parent in Angular. Compare
                 // each popup's actual item order; raw sibling portal order is attached independently.
@@ -109,11 +113,58 @@ export class MenuDriver {
                         ?.split(/\s+/)
                         .every((id) => document.getElementById(id)?.textContent?.trim());
                 return {
+                    ...(window.menuParity.config.multiTrigger
+                        ? {
+                              payloadLabel:
+                                  document.querySelector('[data-testid="active-payload"]')?.textContent?.trim() ?? '',
+                              triggers: ['primary', 'secondary'].flatMap((id) => {
+                                  const element = document.querySelector<HTMLElement>(`[data-testid="${id}"]`);
+                                  return element
+                                      ? [
+                                            {
+                                                id,
+                                                expanded: element.getAttribute('aria-expanded'),
+                                                controlsLinked:
+                                                    !!popup && element.getAttribute('aria-controls') === popup.id,
+                                                pressed: element.hasAttribute('data-pressed'),
+                                                disabled:
+                                                    element.hasAttribute('disabled') ||
+                                                    element.getAttribute('aria-disabled') === 'true'
+                                            }
+                                        ]
+                                      : [];
+                              }),
+                              ...(window.menuParity.config.multiTrigger.animated
+                                  ? {
+                                        viewport: {
+                                            current: document.querySelectorAll(
+                                                '[data-testid="viewport"] > [data-current]'
+                                            ).length,
+                                            previous: document.querySelectorAll(
+                                                '[data-testid="viewport"] > [data-previous]'
+                                            ).length,
+                                            previousInert:
+                                                document
+                                                    .querySelector('[data-testid="viewport"] > [data-previous]')
+                                                    ?.hasAttribute('inert') ?? false,
+                                            // CSS token-list semantics; raw attribute spelling is attached separately.
+                                            direction:
+                                                document
+                                                    .querySelector('[data-testid="viewport"]')
+                                                    ?.getAttribute('data-activation-direction')
+                                                    ?.split(/\s+/)
+                                                    .filter(Boolean) ?? []
+                                        }
+                                    }
+                                  : {})
+                          }
+                        : {}),
                     ...(window.menuParity.config.focusBoundary
                         ? { finalFocusCalls: window.menuParity.finalFocusCalls }
                         : {}),
                     ...(window.menuParity.config.host?.initial ||
                     window.menuParity.config.focusBoundary ||
+                    window.menuParity.config.multiTrigger ||
                     window.menuParity.config.projection
                         ? {
                               tabStops: items.map((el) => ({
@@ -155,7 +206,9 @@ export class MenuDriver {
                               pointerBlocked: !!positioner && getComputedStyle(positioner).pointerEvents === 'none'
                           }
                         : {}),
-                    open: trigger?.getAttribute('aria-expanded') === 'true',
+                    open: window.menuParity.config.multiTrigger
+                        ? !!popup && !popup.hasAttribute('data-closed')
+                        : trigger?.getAttribute('aria-expanded') === 'true',
                     disabled:
                         !!trigger &&
                         (trigger.hasAttribute('disabled') || trigger.getAttribute('aria-disabled') === 'true'),
@@ -208,6 +261,16 @@ export class MenuDriver {
             throw new Error('Menu did not settle');
         });
         this.checkpoints.push({ name, state });
+        if (await this.page.evaluate(() => window.menuParity.config.multiTrigger?.animated)) {
+            this.measurements.push({
+                name: `${name}: raw viewport direction`,
+                bounds: await this.page.evaluate(
+                    () =>
+                        document.querySelector('[data-testid="viewport"]')?.getAttribute('data-activation-direction') ??
+                        null
+                )
+            });
+        }
         expect(state, `${this.framework}: ${name}`).toEqual(expect.objectContaining(expected));
         expect(this.errors).toEqual([]);
     }

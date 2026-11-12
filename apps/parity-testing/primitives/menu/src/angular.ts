@@ -17,6 +17,7 @@ import { AngularFocusBoundary } from './focus-boundary.angular';
 import { AngularHosts } from './hosts.angular';
 import { AngularProjection } from './projection.angular';
 import { touchScrollEntries } from './touch';
+import { AngularMultiTriggers } from './triggers.angular';
 
 const settings = config();
 @Component({
@@ -308,13 +309,15 @@ class AngularMenu {
     }
 }
 void bootstrapApplication(
-    settings.projection
-        ? AngularProjection
-        : settings.focusBoundary
-          ? AngularFocusBoundary
-          : settings.host
-            ? AngularHosts
-            : AngularMenu,
+    settings.multiTrigger
+        ? AngularMultiTriggers
+        : settings.projection
+          ? AngularProjection
+          : settings.focusBoundary
+            ? AngularFocusBoundary
+            : settings.host
+              ? AngularHosts
+              : AngularMenu,
     {
         providers: [provideZonelessChangeDetection()]
     }

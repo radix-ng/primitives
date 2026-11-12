@@ -12,8 +12,10 @@ import { lifecycleScenarios } from './lifecycle.scenarios';
 import { pointerScenarios } from './pointer.scenarios';
 import { projectionScenarios } from './projection.scenarios';
 import { touchScenarios } from './touch.scenarios';
+import { multiTriggerScenarios } from './triggers.scenarios';
 
 export const scenarios = [
+    ...multiTriggerScenarios,
     ...projectionScenarios,
     ...focusBoundaryScenarios,
     ...basicCases.map((name) => ({

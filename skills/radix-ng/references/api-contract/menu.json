@@ -452,6 +452,12 @@
           "description": "Whether the menu is initially open."
         },
         {
+          "name": "defaultTriggerId",
+          "type": "string | null",
+          "default": "null",
+          "description": "Trigger used by an initially open menu."
+        },
+        {
           "name": "dir",
           "type": "Direction | undefined",
           "default": "undefined",
@@ -462,6 +468,11 @@
           "type": "boolean",
           "default": "false",
           "description": "Whether interactions with the menu are disabled."
+        },
+        {
+          "name": "handle",
+          "type": "RdxMenuHandle<Payload>",
+          "description": "Associates this Menu with triggers outside its declaring injector tree."
         },
         {
           "name": "highlightItemOnHover",
@@ -491,6 +502,12 @@
           "type": "RdxMenuOrientation",
           "default": "'vertical'",
           "description": "The menu orientation."
+        },
+        {
+          "name": "triggerId",
+          "type": "string | null",
+          "default": "null",
+          "description": "Active trigger identity. Use two-way binding with an externally controlled menu."
         }
       ],
       "outputs": [
@@ -506,7 +523,8 @@
         }
       ],
       "twoWay": [
-        "open"
+        "open",
+        "triggerId"
       ]
     },
     {
@@ -606,6 +624,11 @@
           "description": "Whether this trigger is disabled."
         },
         {
+          "name": "handle",
+          "type": "RdxMenuHandle<Payload>",
+          "description": "Connects this trigger to a Menu declared elsewhere."
+        },
+        {
           "name": "id",
           "type": "string",
           "description": "Native trigger id; defaults to a generated SSR-stable value."
@@ -621,6 +644,11 @@
           "type": "boolean",
           "default": "false",
           "description": "Whether hovering the trigger opens the menu."
+        },
+        {
+          "name": "payload",
+          "type": "Payload",
+          "description": "Data read by the Menu while this trigger is active."
         }
       ],
       "outputs": []
@@ -629,7 +657,7 @@
       "directive": "RdxMenuViewport",
       "selector": "[rdxMenuViewport]",
       "exportAs": "rdxMenuViewport",
-      "description": "A viewport that smoothly animates the popup size when its content changes\n(e.g. switching menubar menus of different sizes, or expanding a section).\n\nIt measures its content with a `ResizeObserver` and exposes the current size\nas `--popup-width` / `--popup-height` CSS variables on the host. Drive the\nanimation from the consumer side, for example:\n\n```css\n[rdxMenuPopup] {\n    width: var(--popup-width);\n    height: var(--popup-height);\n    transition: width 200ms, height 200ms;\n}\n```\n\n`data-transitioning` is present while a size change is in flight.",
+      "description": "Measures Menu content and preserves a visual snapshot while switching triggers.\nUse one direct content wrapper for directional transitions; its live Angular view stays interactive.\nPopup receives --popup-width/--popup-height, and the viewport exposes its content size.",
       "inputs": [],
       "outputs": []
     }

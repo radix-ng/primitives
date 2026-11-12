@@ -30,6 +30,9 @@ headless — state is exposed through `data-*` attributes and the consumer provi
 - ✅ Optional hover opening with grace areas; a click promotes it to a press-opened menu.
 - ✅ Hold, drag onto a command and release to select it after the native opening guard.
 - ✅ Supports uncontrolled state, `defaultOpen`, and two-way binding with `[(open)]`.
+- ✅ One popup can serve multiple inline or detached triggers, with typed trigger payloads.
+- ✅ `createRdxMenuHandle()` connects external triggers and exposes `open(id)`, `close()` and `isOpen()`.
+- ✅ Control the active trigger with `[(triggerId)]`, or use `defaultTriggerId` with `defaultOpen`.
 - ✅ `onOpenChange` reports the new `open` state together with `reason`, `trigger`, and source `event`.
 - ✅ Positions the popup with the shared Floating UI-based Popper primitive.
 - ✅ Optional visual arrow connecting the popup to its trigger (`rdxMenuArrow`).
@@ -51,6 +54,7 @@ headless — state is exposed through `data-*` attributes and the consumer provi
 
 ```typescript
 import {
+    createRdxMenuHandle,
     RdxMenuArrow,
     RdxMenuBackdrop,
     RdxMenuCheckboxItem,
@@ -153,6 +157,48 @@ content multi-root.
 ```
 
 ## Examples
+
+### Multiple triggers
+
+One Root can contain several `rdxMenuTrigger` buttons. For triggers declared outside the Root,
+create one `createRdxMenuHandle<Payload>()` per menu instance and pass it to both Root and Trigger.
+Each trigger supplies `[payload]`; read the accepted trigger's data through `root.payload()`.
+The handle's type argument also types the Root's payload in Angular templates.
+
+Only the active trigger receives `aria-controls` and `data-popup-open`. Switching an already-open
+menu keeps focus on the new trigger; arrow navigation can then enter its current items. A canceled
+switch keeps the previous trigger, payload and anchor. Payloads stay live and survive an active
+trigger's removal so content does not disappear while the popup is still open or exiting.
+
+<Canvas of={Stories.MultipleTriggers} />
+
+### Controlled triggers
+
+Use Angular's `[(open)]` and `[(triggerId)]` models for application-controlled state. Use
+`defaultOpen` and `defaultTriggerId` for initial opening. Consumer updates use Angular's normal
+signal/model lifecycle; there is no separate React-style controlled state store. User requests
+still pass through the cancelable `onOpenChange` transaction, whose `eventDetails.trigger` names
+the initiating element.
+
+The handle's `open(id)` and `close()` work while its Root is mounted. Requests without a mounted
+owner are ignored. Scope each handle to one popup owner; surviving detached triggers reconnect when
+that owner is recreated. `isOpen()` is an Angular signal.
+
+<Canvas of={Stories.ControlledTriggers} />
+
+### Animated triggers
+
+This example follows Base UI's moving-menu anatomy: detached triggers, one Positioner/Popup, and
+a Viewport containing one direct content wrapper. Positioner transitions animate location, Popup
+transitions animate width/height, and Viewport's `data-current`/`data-previous` containers animate
+the content. `data-activation-direction` is a space-separated horizontal/vertical token list.
+
+Use the positioner's `--positioner-width`/`--positioner-height` and the popup's `--popup-width`/
+`--popup-height` variables to stabilize the measured boxes. The outgoing content is an inert,
+aria-hidden visual snapshot with duplicate ids removed; the live Angular view keeps its directives
+and handlers. Reduced-motion users get immediate transitions. Styling is entirely Tailwind utilities.
+
+<Canvas of={Stories.AnimatedTriggers} />
 
 ### Default
 
@@ -535,7 +581,8 @@ Escape, ArrowLeft, Tab) and wires up Dismissable Layer and Focus Scope.
 An optional container placed inside `rdxMenuPopup` that wraps the menu content and smoothly
 animates the popup size when the content changes (e.g. a section expands, or a menubar menu of a
 different size opens). It measures content with a `ResizeObserver` and exposes the current size as
-`--popup-width` / `--popup-height` on the host; drive the animation from CSS:
+`--popup-width` / `--popup-height` on the host and the measured border-box size on Popup. Put all
+content inside one direct wrapper, including grouped items and separators; drive the animation from CSS:
 
 ```css
 [rdxMenuPopup] {

@@ -14,6 +14,97 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
 const trigger = '[rdxMenuTrigger]';
 const popup = '[rdxMenuPopup]';
 
+test('Menu Viewport: measures the live content wrapper when its item list expands', async ({ page }) => {
+    await gotoStory(page, 'primitives-menu--viewport');
+    await page.getByRole('button', { name: 'Settings', exact: true }).click();
+    const menu = page.getByRole('menu');
+    const first = (await menu.boundingBox())!;
+    await page.getByRole('menuitem', { name: 'Show advanced', exact: true }).click();
+    await expect(page.getByRole('menuitem', { name: 'API tokens', exact: true })).toBeVisible();
+    await expect.poll(async () => (await menu.boundingBox())!.height).toBeGreaterThan(first.height + 80);
+    await page.getByRole('menuitem', { name: 'Hide advanced', exact: true }).click();
+    await expect.poll(async () => Math.abs((await menu.boundingBox())!.height - first.height)).toBeLessThan(2);
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('button', { name: 'Settings', exact: true })).toBeFocused();
+});
+
+test('detached triggers: active payload, ARIA, keyboard selection and return focus', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await gotoStory(page, 'primitives-menu--multiple-triggers');
+    const library = page.getByRole('button', { name: 'Library', exact: true });
+    const playback = page.getByRole('button', { name: 'Playback', exact: true });
+    await library.click();
+    await expect(page.getByRole('menuitem', { name: 'Add to library', exact: true })).toBeVisible();
+    await playback.click();
+    await expect(library).toHaveAttribute('aria-expanded', 'false');
+    await expect(library).not.toHaveAttribute('aria-controls');
+    await expect(playback).toHaveAttribute('data-popup-open', '');
+    await expect(page.getByRole('menuitem', { name: 'Play now', exact: true })).toBeVisible();
+    await page.keyboard.press('ArrowDown');
+    await expect(page.getByRole('menuitem', { name: 'Play now', exact: true })).toBeFocused();
+    await page.keyboard.press('End');
+    await page.keyboard.press('Enter');
+    await expect(page.locator('output')).toHaveText('Last action: Sleep timer');
+    await expect(page.getByRole('menu')).toHaveCount(0);
+    await expect(playback).toBeFocused();
+    expect(errors).toEqual([]);
+});
+
+test('detached triggers: external open and controlled trigger switching', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await gotoStory(page, 'primitives-menu--controlled-triggers');
+    await page.getByRole('button', { name: 'Open playback (controlled)', exact: true }).click();
+    const playback = page.getByRole('button', { name: 'Playback', exact: true });
+    await expect(playback).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.getByRole('menuitem', { name: 'Play now', exact: true })).toBeVisible();
+    await page.getByRole('button', { name: 'Library', exact: true }).click();
+    await expect(page.getByRole('menuitem', { name: 'Create playlist', exact: true })).toBeVisible();
+    await expect(playback).toHaveAttribute('aria-expanded', 'false');
+    await page.getByRole('button', { name: 'Close menu', exact: true }).click();
+    await expect(page.getByRole('menu')).toHaveCount(0);
+    await expect(page.locator('[data-rdx-focus-guard]')).toHaveCount(0);
+    expect(errors).toEqual([]);
+});
+
+test('detached triggers: animated position, size and content keep live items interactive', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await gotoStory(page, 'primitives-menu--animated-triggers');
+    const library = page.getByRole('button', { name: 'Library', exact: true });
+    const playback = page.getByRole('button', { name: 'Playback', exact: true });
+    const share = page.getByRole('button', { name: 'Share', exact: true });
+    const menu = page.getByRole('menu');
+    await library.click();
+    await expect(page.getByRole('menuitem', { name: 'Create station', exact: true })).toBeVisible();
+    await expect(menu).not.toHaveAttribute('data-starting-style');
+    const first = (await menu.boundingBox())!;
+    await playback.click();
+    await expect(page.getByRole('menuitem', { name: 'Sleep timer', exact: true })).toBeVisible();
+    await expect.poll(async () => (await menu.boundingBox())!.width).toBeGreaterThan(first.width + 30);
+    await expect.poll(async () => (await menu.boundingBox())!.height).toBeGreaterThan(first.height + 20);
+    await expect(page.locator('[rdxMenuViewport] > [data-previous]')).toHaveCount(0);
+    const larger = (await menu.boundingBox())!;
+    await share.click();
+    await expect(page.getByRole('menuitem', { name: 'Copy link', exact: true })).toBeVisible();
+    await expect.poll(async () => (await menu.boundingBox())!.width).toBeLessThan(larger.width - 20);
+    await expect
+        .poll(async () => {
+            const anchor = (await share.boundingBox())!,
+                content = (await menu.boundingBox())!;
+            return Math.abs(anchor.x - content.x);
+        })
+        .toBeLessThan(2);
+    await expect(page.locator('[rdxMenuViewport] > [data-previous]')).toHaveCount(0);
+    await page.keyboard.press('ArrowDown');
+    await expect(page.getByRole('menuitem', { name: 'Copy link', exact: true })).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('output')).toHaveText('Last action: Copy link');
+    await expect(share).toBeFocused();
+    expect(errors).toEqual([]);
+});
+
 for (const layer of ['Parent', 'Child']) {
     for (const mode of ['callback-default', 'callback-skip']) {
         test(`Menu return callback: ${layer} ${mode}`, async ({ page }) => {

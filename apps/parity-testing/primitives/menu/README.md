@@ -5,11 +5,11 @@ port is 4505. Angular fixtures are AOT compiled and React imports the unmodified
 Base UI 1.9.0 pin: `cf696d6f6e08c699c5bda24d5a033430909f2285`, archive SHA-256
 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 
-236 scenarios define 708 planned comparisons: 660 execute, with 48 touch capability skips. They cover native keyboard and
+254 scenarios define 762 planned comparisons: 714 execute, with 48 touch capability skips. They cover native keyboard and
 pointer opening, disabled/focusable items, roving focus, edges and looping, repeated and explicit-label
 typeahead, selection and stay-open items, cancelable transactions, modal/background activation,
 forward/backward Tab, checkbox/radio values, LTR/RTL submenu ownership and custom identity links.
-Checkbox/radio models and open state remain uncontrolled. Both fixtures use native button items;
+Ordinary fixtures keep checkbox/radio and open state uncontrolled; multi-controlled cases bind application state. Both fixtures use native button items;
 React's render/nativeButton configuration adapts its element API to Angular's element directives.
 
 Eleven lifecycle scenarios compare retained checkbox state, natural CSS exits, external/late and
@@ -50,7 +50,7 @@ Shared focus recovery observes DOM updates rather than copying a React store.
 ## Reviewed limitations
 
 `expected-differences.json` contains ten exact consequences of the pin suppressing programmatic
-focus-out, a macOS WebKit native button click-focus pair, and exact WebKit pointer-travel pairs.
+focus-out and exact WebKit pointer-travel pairs. Native trigger click-focus pairs were removed after the ADR 0059 audit.
 Two exact completion pairs record the pin dropping the submenu close callback during nested CSS
 disposal and fresh whole-chain Tab departure; Angular lets the actual child exit finish before deleting its owning view.
 The intended Angular focus-out and coordinate-based hover behavior are retained. See the
@@ -109,7 +109,7 @@ LTR/RTL submenus, retained reopening and small/wide touch-opened scroll policy. 
 popup probes page locking independently of actual pan gestures. After page panning, native scrollend
 marks readiness for the next tap; neither fixture retries input to bypass momentum scrolling.
 
-Two exact canceled-open/close focus pairs extend the existing macOS WebKit native-button-focus
+Two canceled-open/close focus pairs were subsequently removed by ADR 0059; they originally extended the macOS WebKit native-button-focus
 category. Linux and every other touch field remain compared. See
 [ADR 0049](../../../../docs/adr/0049-menu-trusted-touch.md). Emulation does not certify real hardware
 or assistive technology.
@@ -125,7 +125,7 @@ Hybrid checkpoints compare the latest native callback, including type/trust, and
 aria-expanded. Full original event timelines remain in attachments. Exact native-hover-events pairs retain the original pointer/mouse source events. Keyboard activation
 now uses the actual click path in both frameworks; its ten previous event pairs were removed after
 review (ADR 0051). Composite Space/custom-host clicks are untrusted while browser inputs remain trusted. Existing macOS
-WebKit native-button-focus pairs extend to hover/touch promotion. No adapter repairs these events.
+The former WebKit hover/touch native-button-focus pairs were removed after ADR 0059. Original events remain observed.
 
 Use `pnpm test-parity menu --grep hybrid- --project=chromium` while iterating, then omit the project
 filter for the supported engines. Select existing touch/submenu and consumer scenarios when shared
@@ -208,3 +208,15 @@ retain native focus behavior. The parent-trigger return still resolves through c
 Exact callback payload pairs record the pin's empty child close type after an outside press versus
 Angular's original mouse interaction. Counts, destinations and remaining observations are unchanged.
 See [ADR 0058](../../../../docs/adr/0058-menu-nullable-final-focus.md).
+
+## Multiple triggers and animated content
+
+Run `pnpm test-parity menu --grep multi-`. Eighteen cases / 54 comparisons cover both declaring-tree
+and detached triggers, live payloads, cancellation, controlled/default identity, handle actions,
+disabled activation, trigger removal, owner recreation and retained reuse. The animated case holds
+authored CSS transitions and finishes them with WAAPI; it does not fake primitive state or focus.
+Direction attributes are compared as CSS token lists, with raw attributes attached per checkpoint.
+
+Explicit native tabindex removed fourteen old Safari focus exceptions after review. There are no
+new exceptions for this block. Existing independent pointer-travel differences remain exact. See
+[ADR 0059](../../../../docs/adr/0059-menu-multiple-triggers-and-viewport.md).

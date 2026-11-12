@@ -12,6 +12,9 @@ A headless dropdown menu anchored to a trigger button.
 - ✅ Optional hover opening with grace areas; a click promotes it to a press-opened menu.
 - ✅ Hold, drag onto a command and release to select it after the native opening guard.
 - ✅ Supports uncontrolled state, `defaultOpen`, and two-way binding with `[(open)]`.
+- ✅ One popup can serve multiple inline or detached triggers, with typed trigger payloads.
+- ✅ `createRdxMenuHandle()` connects external triggers and exposes `open(id)`, `close()` and `isOpen()`.
+- ✅ Control the active trigger with `[(triggerId)]`, or use `defaultTriggerId` with `defaultOpen`.
 - ✅ `onOpenChange` reports the new `open` state together with `reason`, `trigger`, and source `event`.
 - ✅ Positions the popup with the shared Floating UI-based Popper primitive.
 - ✅ Optional visual arrow connecting the popup to its trigger (`rdxMenuArrow`).
@@ -33,6 +36,7 @@ A headless dropdown menu anchored to a trigger button.
 
 ```typescript
 import {
+    createRdxMenuHandle,
     RdxMenuArrow,
     RdxMenuBackdrop,
     RdxMenuCheckboxItem,
@@ -136,6 +140,9 @@ content multi-root.
 
 ## Examples
 
+- [Multiple triggers](../examples/menu--multiple-triggers.md)
+- [Controlled triggers](../examples/menu--controlled-triggers.md)
+- [Animated triggers](../examples/menu--animated-triggers.md)
 - [Default](../examples/menu--default.md)
 - [Initial focus](../examples/menu--initial-focus.md)
 - [Return focus](../examples/menu--return-focus.md)

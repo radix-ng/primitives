@@ -35,7 +35,7 @@ export const RDX_MENU_ITEM_SELECTOR = [
 
 export function getFocusableMenuItems(popup: HTMLElement): HTMLElement[] {
     return Array.from(popup.querySelectorAll<HTMLElement>(RDX_MENU_ITEM_SELECTOR)).filter(
-        (item) => item.closest('[rdxMenuPopup], [role="menu"]') === popup
+        (item) => item.closest('[rdxMenuPopup], [role="menu"]') === popup && !item.closest('[data-previous]')
     );
 }
 

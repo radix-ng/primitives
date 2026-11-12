@@ -90,3 +90,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0056](0056-navigation-menu-native-tab-order.md)                             | Accepted               | Preserve Navigation Menu native Tab order                                            |
 | [0057](0057-menu-projected-composition.md)                                   | Accepted               | Preserve Menu ownership through projected Angular wrappers                           |
 | [0058](0058-menu-nullable-final-focus.md)                                    | Accepted               | Preserve explicit nullable Menu finalFocus policies                                  |
+| [0059](0059-menu-multiple-triggers-and-viewport.md)                          | Accepted               | Connect Menu triggers and share popup viewport transitions                           |

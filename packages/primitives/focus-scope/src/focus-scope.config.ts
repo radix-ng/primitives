@@ -11,6 +11,8 @@ export type RdxFocusScopeConfig = {
     trapActive?: () => boolean;
     /** Default fallback target, guarded unless the return policy explicitly requests it. */
     defaultReturnFocus?: () => HTMLElement | null | undefined;
+    /** Owner reference used when the preferred pre-open target was body or was removed. */
+    fallbackReturnFocus?: () => HTMLElement | null | undefined;
 
     /**
      * Optional return-focus policy override (ADR 0017 `returnFocus`), resolved by an enclosing

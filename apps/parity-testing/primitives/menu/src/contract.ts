@@ -10,6 +10,7 @@ import { initialFocusCases } from './initial-focus';
 import { pointerCases, pointerConfig } from './pointer';
 import { projectionCases, projectionConfig } from './projection';
 import { touchCases, touchConfig } from './touch';
+import { multiTriggerCases, multiTriggerConfig } from './triggers';
 
 export const basicCases = [
     'keyboard-enter',
@@ -49,6 +50,7 @@ export const basicCases = [
 ] as const;
 export const cases = [
     ...basicCases,
+    ...multiTriggerCases,
     ...lifecycleCases,
     ...pointerCases,
     ...menuCollectionCases,
@@ -93,6 +95,7 @@ export function config() {
         host,
         focusBoundary,
         projection,
+        multiTrigger: multiTriggerConfig(name),
         modal:
             focusBoundary?.target?.key === 'outside'
                 ? false
@@ -124,23 +127,25 @@ export function config() {
         collectionOnly: name === 'collection-empty-refill' || (!!empty && !empty.nested),
         label: name === 'explicit-label' ? 'Zebra' : undefined,
         ids: name.endsWith('-ids'),
-        lifecycle: focusBoundary
-            ? { keepMounted: focusBoundary.retained, animated: false, deferred: false, canceled: false, late: false }
-            : removal
-              ? {
-                    keepMounted: removal.retained,
-                    animated: removal.animated,
-                    deferred: removal.deferred,
-                    canceled: false,
-                    late: false
-                }
-              : lifecycleConfig(
-                    empty?.retained || touch?.retained || host?.retained || projection?.retained
-                        ? 'lifecycle-keep'
-                        : name === 'lifecycle-submenu-css'
-                          ? 'lifecycle-css-exit'
-                          : name
-                ),
+        lifecycle: multiTriggerConfig(name)?.retained
+            ? { keepMounted: true, animated: false, deferred: false, canceled: false, late: false }
+            : focusBoundary
+              ? { keepMounted: focusBoundary.retained, animated: false, deferred: false, canceled: false, late: false }
+              : removal
+                ? {
+                      keepMounted: removal.retained,
+                      animated: removal.animated,
+                      deferred: removal.deferred,
+                      canceled: false,
+                      late: false
+                  }
+                : lifecycleConfig(
+                      empty?.retained || touch?.retained || host?.retained || projection?.retained
+                          ? 'lifecycle-keep'
+                          : name === 'lifecycle-submenu-css'
+                            ? 'lifecycle-css-exit'
+                            : name
+                  ),
         pointer: pointerConfig(name)
     };
 }

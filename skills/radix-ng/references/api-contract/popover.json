@@ -321,7 +321,7 @@
     {
       "directive": "RdxPopoverViewport",
       "selector": "[rdxPopoverViewport]",
-      "description": "A viewport for animating content changes when a popover moves between triggers.\n\nRender one direct child inside the viewport. It is marked with `data-current`;\nwhen the active trigger changes, a DOM snapshot is retained as `data-previous`\nuntil its CSS animation or transition completes.",
+      "description": "Retains an inert visual snapshot while a popover moves between triggers.\nRender one direct content wrapper, marked data-current; the outgoing snapshot is data-previous.",
       "inputs": [],
       "outputs": []
     }

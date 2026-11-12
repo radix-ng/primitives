@@ -11,6 +11,7 @@ import { ReactFocusBoundary } from './focus-boundary.react';
 import { ReactHosts } from './hosts.react';
 import { ReactProjection } from './projection.react';
 import { touchScrollEntries } from './touch';
+import { ReactMultiTriggers } from './triggers.react';
 
 const settings = config();
 const trace = installProbe('react');
@@ -303,7 +304,9 @@ function ReactMenu() {
     );
 }
 createRoot(document.getElementById('root')!).render(
-    settings.projection ? (
+    settings.multiTrigger ? (
+        <ReactMultiTriggers />
+    ) : settings.projection ? (
         <ReactProjection />
     ) : settings.focusBoundary ? (
         <ReactFocusBoundary />

@@ -26,6 +26,7 @@ export * from './src/menu-checkbox-item-indicator';
 export * from './src/menu-group';
 export * from './src/menu-group-context';
 export * from './src/menu-group-label';
+export * from './src/menu-handle';
 export * from './src/menu-item';
 export * from './src/menu-link-item';
 export * from './src/menu-owner';

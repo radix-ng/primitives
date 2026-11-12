@@ -27,20 +27,22 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
                     rdxMenuPopup
                 >
                     <div rdxMenuViewport>
-                        <button [class]="m.item" [closeOnClick]="false" (onSelect)="toggle()" rdxMenuItem>
-                            {{ expanded() ? 'Hide advanced' : 'Show advanced' }}
-                        </button>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" rdxMenuItem>Profile</button>
-                        <button [class]="m.item" rdxMenuItem>Billing</button>
-
-                        @if (expanded()) {
+                        <div class="w-56">
+                            <button [class]="m.item" [closeOnClick]="false" (onSelect)="toggle()" rdxMenuItem>
+                                {{ expanded() ? 'Hide advanced' : 'Show advanced' }}
+                            </button>
                             <div [class]="m.separator" rdxMenuSeparator></div>
-                            <button [class]="m.item" rdxMenuItem>Keyboard shortcuts</button>
-                            <button [class]="m.item" rdxMenuItem>Developer tools</button>
-                            <button [class]="m.item" rdxMenuItem>Feature flags</button>
-                            <button [class]="m.item" rdxMenuItem>API tokens</button>
-                        }
+                            <button [class]="m.item" rdxMenuItem>Profile</button>
+                            <button [class]="m.item" rdxMenuItem>Billing</button>
+
+                            @if (expanded()) {
+                                <div [class]="m.separator" rdxMenuSeparator></div>
+                                <button [class]="m.item" rdxMenuItem>Keyboard shortcuts</button>
+                                <button [class]="m.item" rdxMenuItem>Developer tools</button>
+                                <button [class]="m.item" rdxMenuItem>Feature flags</button>
+                                <button [class]="m.item" rdxMenuItem>API tokens</button>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>

@@ -25,6 +25,8 @@ import { RdxMenuKeepMountedComponent } from './menu-keep-mounted';
 import keepMountedSource from './menu-keep-mounted?raw';
 import { RdxMenuLifecycleComponent } from './menu-lifecycle';
 import lifecycleSource from './menu-lifecycle?raw';
+import { RdxMenuMultipleTriggersComponent } from './menu-multiple-triggers';
+import multipleTriggersSource from './menu-multiple-triggers?raw';
 import { RdxMenuNativeElementsComponent } from './menu-native-elements';
 import nativeElementsSource from './menu-native-elements?raw';
 import { RdxMenuNestedComponent } from './menu-nested';
@@ -50,6 +52,7 @@ export default {
         moduleMetadata({
             imports: [
                 RdxMenuDefaultComponent,
+                RdxMenuMultipleTriggersComponent,
                 RdxMenuCompositionComponent,
                 RdxMenuInitialFocusComponent,
                 RdxMenuFocusReturnComponent,
@@ -72,6 +75,24 @@ export default {
 } as Meta;
 
 type Story = StoryObj;
+
+export const MultipleTriggers: Story = {
+    tags: ['!visual'],
+    parameters: source(multipleTriggersSource),
+    render: () => ({ template: '<rdx-menu-multiple-triggers />' })
+};
+
+export const ControlledTriggers: Story = {
+    tags: ['!visual'],
+    parameters: source(multipleTriggersSource),
+    render: () => ({ template: '<rdx-menu-multiple-triggers [controlled]="true" />' })
+};
+
+export const AnimatedTriggers: Story = {
+    tags: ['!visual'],
+    parameters: source(multipleTriggersSource),
+    render: () => ({ template: '<rdx-menu-multiple-triggers [animated]="true" />' })
+};
 
 export const Default: Story = {
     parameters: source(defaultSource),

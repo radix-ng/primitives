@@ -273,6 +273,7 @@ export class RdxMenuPopup {
                 if (
                     reason === 'escape-key' &&
                     !this.rootContext.isOpen() &&
+                    (this.rootContext.openInteractionType() !== null || this.rootContext.parentType() === 'menubar') &&
                     (this.focusManager.returnFocus() == null || this.focusManager.returnFocus() === true) &&
                     (this.elementRef.nativeElement.contains(target) || this.rootContext.trigger()?.contains(target))
                 ) {

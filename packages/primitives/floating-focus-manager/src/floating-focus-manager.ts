@@ -361,15 +361,9 @@ export class RdxFloatingFocusManager {
         this.focusScopeConfig.trapActive = () => this.isFloatingOpen();
         this.focusScopeConfig.defaultReturnFocus = () => {
             if (this.effectiveOpenInteractionType() == null) return undefined;
-            const reference = this.rootContext?.referenceElement;
-            const view = this.host.ownerDocument.defaultView;
-            return view &&
-                reference instanceof view.HTMLElement &&
-                reference.isConnected &&
-                !reference.closest('[hidden]')
-                ? reference
-                : resolveFocusTarget(this.effectivePreviousFocusableElement());
+            return this.defaultReferenceTarget();
         };
+        this.focusScopeConfig.fallbackReturnFocus = () => this.defaultReferenceTarget();
 
         if (!this.isBrowser) {
             return; // SSR: no DOM marking / listeners.
@@ -503,6 +497,14 @@ export class RdxFloatingFocusManager {
      */
     resolveReturnTarget(): HTMLElement | boolean | undefined {
         return this.resolveReturnFocusTarget();
+    }
+
+    private defaultReferenceTarget(): HTMLElement | null | undefined {
+        const reference = this.rootContext?.referenceElement;
+        const view = this.host.ownerDocument.defaultView;
+        return view && reference instanceof view.HTMLElement && reference.isConnected && !reference.closest('[hidden]')
+            ? reference
+            : resolveFocusTarget(this.effectivePreviousFocusableElement());
     }
 
     /** Resolve the policy at deactivation/unmount; the scope owns queued return-focus timing. */

@@ -278,10 +278,14 @@ export class RdxFocusScope {
                                     } else if (override === true || !this.shouldPreserveMovedFocus()) {
                                         const candidate =
                                             this.config.defaultReturnFocus?.() ?? previouslyFocusedElement;
+                                        const fallback = this.config.fallbackReturnFocus?.();
                                         focus(
                                             (candidate?.isConnected && candidate !== this.ownerDocument.body
                                                 ? candidate
                                                 : undefined) ??
+                                                (fallback?.isConnected && fallback !== this.ownerDocument.body
+                                                    ? fallback
+                                                    : undefined) ??
                                                 getPreviouslyFocusedElement(this.ownerDocument) ??
                                                 this.ownerDocument.body,
                                             { select: true }

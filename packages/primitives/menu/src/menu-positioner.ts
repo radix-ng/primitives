@@ -36,6 +36,7 @@ import { injectRdxMenuRootContext } from './menu-root';
         '[attr.data-rdx-menu-owner]': 'rootContext.ownerId()',
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
+        '[attr.data-instant]': 'rootContext.instantType()',
         // Base UI puts a native `hidden` on a closed positioner (`hidden: !mounted`). It matters for a
         // `keepMounted` menu: while closed-and-settled the popup stays in the DOM but must be removed from
         // layout / a11y / tab order. Gated on `visible` (not `present`/`isOpen`) so an exit animation

@@ -2964,15 +2964,25 @@ describe('Menu', () => {
             originalRO = globalThis.ResizeObserver;
             triggerResize = undefined;
             class MockResizeObserver {
+                private target?: HTMLElement;
                 constructor(private cb: ResizeObserverCallback) {
                     triggerResize = (width: number, height: number) => {
+                        if (this.target) {
+                            Object.defineProperty(this.target, 'offsetWidth', { configurable: true, get: () => width });
+                            Object.defineProperty(this.target, 'offsetHeight', {
+                                configurable: true,
+                                get: () => height
+                            });
+                        }
                         this.cb(
                             [{ contentRect: { width, height } } as ResizeObserverEntry],
                             this as unknown as ResizeObserver
                         );
                     };
                 }
-                observe() {}
+                observe(element: HTMLElement) {
+                    this.target = element;
+                }
                 disconnect() {}
                 unobserve() {}
             }
@@ -3036,6 +3046,7 @@ describe('Menu', () => {
             const viewport: HTMLElement = (f.nativeElement as HTMLElement).querySelector('[rdxMenuViewport]')!;
 
             triggerResize?.(220, 120);
+            await nextFrame();
             f.detectChanges();
 
             expect(viewport.style.getPropertyValue('--popup-width')).toBe('220px');

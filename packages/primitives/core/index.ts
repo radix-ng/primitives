@@ -26,9 +26,11 @@ export * from './src/floating/floating-registration';
 export * from './src/floating/floating-root-context';
 export * from './src/floating/floating-tree';
 export * from './src/floating/internal-backdrop';
+export * from './src/floating/popup-handle-registry';
 export * from './src/floating/provide-floating-tree';
 export * from './src/floating/trigger-registry';
 export * from './src/floating/use-popup-lifecycle';
+export * from './src/floating/use-popup-viewport';
 
 export * from './src/dom/dispatch-click';
 export * from './src/dom/document';

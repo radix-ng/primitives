@@ -11,7 +11,8 @@ import {
     model,
     output,
     signal,
-    Signal
+    Signal,
+    untracked
 } from '@angular/core';
 import type { RdxCompositeListContext } from '@radix-ng/primitives/composite';
 import {
@@ -35,6 +36,7 @@ import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 import { getFocusableMenuItems } from './menu-focus';
+import { RdxMenuHandle } from './menu-handle';
 import type { MenuSide } from './menu-safe-polygon';
 
 export const RDX_MENU_AMBIENT_DISABLED = new InjectionToken<Signal<boolean>>('RdxMenuAmbientDisabled');
@@ -158,6 +160,7 @@ export interface RdxMenuRootContext {
     contextMenuPreviousFocus: Signal<HTMLElement | undefined>;
     getReturnFocusElement: () => HTMLElement | undefined;
     triggerId: Signal<string | undefined>;
+    payload: Signal<unknown>;
     contentId: Signal<string>;
     defaultContentId: string;
     /** The popup element, once mounted. Used by submenu safe-polygon geometry. */
@@ -178,15 +181,22 @@ export interface RdxMenuRootContext {
     setActiveIndex: (index: number | null) => void;
     /** Close this menu and every ancestor — used by item selection (the whole menu dismisses). */
     closeEntireMenu: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
-    toggle: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
-    show: (autoFocus?: RdxMenuAutoFocusInput, reason?: RdxMenuOpenChangeReason, event?: Event) => void;
+    toggle: (reason?: RdxMenuOpenChangeReason, event?: Event, trigger?: HTMLElement) => void;
+    show: (
+        autoFocus?: RdxMenuAutoFocusInput,
+        reason?: RdxMenuOpenChangeReason,
+        event?: Event,
+        trigger?: HTMLElement
+    ) => void;
     /** Open the menu without moving focus into the popup. */
     showWithoutAutoFocus: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
     registerTrigger: (
         el: HTMLElement,
         getId?: () => string,
-        getInteractionType?: (event: Event) => RdxInteractionType
+        getInteractionType?: (event: Event) => RdxInteractionType,
+        payload?: () => unknown
     ) => () => void;
+    registerViewport: (onTriggerChange: (previous: HTMLElement, next: HTMLElement) => void) => () => void;
     registerPopup: (
         el: HTMLElement,
         physicalSide?: Signal<MenuSide | undefined>,
@@ -244,7 +254,7 @@ export const [injectRdxMenuRootContext, provideRdxMenuRootContext] = createConte
  */
 export const RDX_MENU_AMBIENT_MODAL = new InjectionToken<Signal<boolean>>('RdxMenuAmbientModal');
 
-function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
+function buildContext<Payload>(instance: RdxMenuRoot<Payload>): RdxMenuRootContext {
     return {
         isOpen: instance.open,
         present: instance.present,
@@ -279,7 +289,8 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         trigger: instance.trigger.asReadonly(),
         contextMenuPreviousFocus: instance.contextMenuPreviousFocus.asReadonly(),
         getReturnFocusElement: () => instance.getReturnFocusElement(),
-        triggerId: instance.triggerId,
+        triggerId: instance.resolvedTriggerId,
+        payload: instance.payload,
         contentId: instance.contentId,
         defaultContentId: instance.defaultContentId,
         popupElement: instance.popupElement.asReadonly(),
@@ -293,10 +304,12 @@ function buildContext(instance: RdxMenuRoot): RdxMenuRootContext {
         close: (reason, event) => instance.close(reason, event),
         setActiveIndex: (index) => instance.setActiveIndex(index),
         closeEntireMenu: (reason, event) => instance.closeEntireMenu(reason, event),
-        toggle: (reason, event) => instance.toggle(reason, event),
-        show: (autoFocus, reason, event) => instance.show(autoFocus, reason, event),
+        toggle: (reason, event, trigger) => instance.toggle(reason, event, trigger),
+        show: (autoFocus, reason, event, trigger) => instance.show(autoFocus, reason, event, trigger),
         showWithoutAutoFocus: (reason, event) => instance.show(false, reason, event),
-        registerTrigger: (el, getId, getInteractionType) => instance.registerTrigger(el, getId, getInteractionType),
+        registerTrigger: (el, getId, getInteractionType, payload) =>
+            instance.registerTrigger(el, getId, getInteractionType, payload),
+        registerViewport: (notify) => instance.registerViewport(notify),
         registerPopup: (el, physicalSide, getId, isTyping, list, isRestoringFocus) =>
             instance.registerPopup(el, physicalSide, getId, isTyping, list, isRestoringFocus),
         isTyping: () => instance.isTyping(),
@@ -334,12 +347,14 @@ const contextFactory = () => buildContext(inject(RdxMenuRoot));
     ],
     hostDirectives: [RdxPopper, RdxFloatingNodeRegistration]
 })
-export class RdxMenuRoot {
+export class RdxMenuRoot<Payload = unknown> {
     private readonly popper = inject(RdxPopper);
     readonly parentRoot: RdxMenuRoot | null = inject(RDX_MENU_ROOT_BOUNDARY, { optional: true, self: true })
         ? null
         : inject(RdxMenuRoot, { optional: true, skipSelf: true });
-    private readonly childRoots = signal<readonly RdxMenuRoot[]>([]);
+    private readonly childRoots = signal<
+        readonly Pick<RdxMenuRoot, 'trigger' | 'close' | 'transitionStatus' | 'unmount'>[]
+    >([]);
     private readonly providedDirection = injectDirection();
     /** Ambient modality from an enclosing coordinator (e.g. Menubar). Overrides own `modal` for top-level menus. */
     private readonly ambientModal = inject(RDX_MENU_AMBIENT_MODAL, { optional: true });
@@ -355,9 +370,20 @@ export class RdxMenuRoot {
         open: () => this.open()
     });
 
-    private registeredTrigger: HTMLElement | undefined;
-    private registeredTriggerId?: () => string;
-    private registeredTriggerInteractionType?: (event: Event) => RdxInteractionType;
+    private readonly registeredTriggers = new Map<
+        HTMLElement,
+        {
+            getId: () => string | undefined;
+            interactionType?: (event: Event) => RdxInteractionType;
+            payload?: () => unknown;
+        }
+    >();
+    private readonly triggersVersion = signal(0);
+    private readonly viewportTriggerChange = new Set<(previous: HTMLElement, next: HTMLElement) => void>();
+    private lastResolvedTriggerId: string | undefined;
+    private lastActiveTrigger: WeakRef<HTMLElement> | undefined;
+    private readonly triggerTransition = signal(false);
+    private readonly detachedPayload = signal<Payload | undefined>(undefined);
     private registeredPopupId?: () => string;
     private registeredPopupIsTyping?: () => boolean;
     private registeredPopupIsRestoringFocus?: () => boolean;
@@ -374,6 +400,20 @@ export class RdxMenuRoot {
 
     /** Whether the menu is initially open. */
     readonly defaultOpen = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /** Active trigger identity. Use two-way binding with an externally controlled menu. */
+    readonly triggerId = model<string | null>(null);
+    /** Trigger used by an initially open menu. */
+    readonly defaultTriggerId = input<string | null>(null);
+    /** Associates this Menu with triggers outside its declaring injector tree. */
+    readonly handle = input<RdxMenuHandle<Payload>>();
+    /** Data supplied by the active trigger; remains available while the menu exits. */
+    readonly payload = computed(() => {
+        this.triggersVersion();
+        if (this.triggerId() === null && this.defaultTriggerId() === null) return undefined;
+        const registration = this.registeredTriggers.get(this.trigger()!);
+        return registration ? (registration.payload?.() as Payload | undefined) : this.detachedPayload();
+    });
 
     /** Whether interactions with the menu are disabled. */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
@@ -420,9 +460,10 @@ export class RdxMenuRoot {
     private pointerMoveGuard = createPointerMoveGuard();
     private pointerOrigin?: { clientX: number; clientY: number };
     readonly defaultContentId = injectId('rdx-menu-content-');
-    readonly triggerId = computed(() => {
+    readonly resolvedTriggerId = computed(() => {
+        this.triggersVersion();
         const trigger = this.trigger();
-        return this.registeredTriggerId?.() || trigger?.id || undefined;
+        return (trigger && this.registeredTriggers.get(trigger)?.getId()) || trigger?.id || undefined;
     });
     readonly contentId = computed(() => {
         this.popupElement();
@@ -512,8 +553,10 @@ export class RdxMenuRoot {
     readonly instantType = computed<RdxMenuInstantType | undefined>(() => {
         const reason = this.lastOpenChangeReason();
         if (this.open()) {
+            if (this.triggerTransition()) return undefined;
             if (reason === 'sibling-open') return 'trigger-change';
-            if (reason === 'trigger-press' || reason === 'trigger-focus' || reason === 'list-navigation') {
+            if (reason === 'trigger-press') return this.openInteractionType() === 'keyboard' ? 'click' : undefined;
+            if (reason === 'trigger-focus' || reason === 'list-navigation') {
                 return 'click';
             }
             return undefined;
@@ -556,6 +599,29 @@ export class RdxMenuRoot {
 
         effect(() => this.popper.anchorOverride.set(this.trigger()));
 
+        effect((onCleanup) => {
+            const handle = this.handle();
+            if (handle) onCleanup(untracked(() => handle.registerRoot(buildContext(this))));
+        });
+        effect(() => {
+            const requested = this.triggerId() ?? this.defaultTriggerId();
+            this.triggersVersion();
+            const entries = [...this.registeredTriggers];
+            const previous = untracked(this.trigger);
+            let trigger = requested ? entries.find(([, entry]) => entry.getId() === requested)?.[0] : entries[0]?.[0];
+            // Native id bindings may change while an element remains the active trigger.
+            if (
+                !trigger &&
+                previous &&
+                requested === this.lastResolvedTriggerId &&
+                this.registeredTriggers.has(previous)
+            ) {
+                trigger = previous;
+            }
+            if (trigger) this.registeredTriggers.get(trigger)?.getId();
+            untracked(() => this.activateTrigger(trigger, requested !== null));
+        });
+
         // Keep the dismissal reference (the active trigger) in sync so an outside-press / focus on the
         // trigger counts as "inside" and never dismisses (ADR 0015).
         effect(() => this.floatingContext.setReferenceElement(this.trigger() ?? null));
@@ -563,20 +629,28 @@ export class RdxMenuRoot {
         effect(() => {
             if (!this.open()) {
                 this.activeIndex.set(null);
+                this.triggerTransition.set(false);
             }
         });
     }
 
-    show(autoFocus: RdxMenuAutoFocusInput = 'first', reason: RdxMenuOpenChangeReason = 'none', event?: Event) {
+    show(
+        autoFocus: RdxMenuAutoFocusInput = 'first',
+        reason: RdxMenuOpenChangeReason = 'none',
+        event?: Event,
+        trigger = this.trigger()
+    ) {
         if (this.effectiveDisabled()) {
             return;
         }
 
         const nextAutoFocus = autoFocus === true ? 'first' : autoFocus;
         this.autoFocus.set(nextAutoFocus);
+        const changingTrigger = trigger !== this.trigger();
 
         if (this.open()) {
             if (
+                changingTrigger ||
                 (reason === 'trigger-press' &&
                     (this.lastOpenChangeReason() === 'trigger-hover' ||
                         this.lastOpenChangeReason() === 'list-navigation')) ||
@@ -584,9 +658,14 @@ export class RdxMenuRoot {
                     this.parentType() === 'menubar' &&
                     this.lastOpenChangeReason() !== reason)
             ) {
-                const change = this.createOpenChangeEvent(true, reason, event);
+                const change = this.createOpenChangeEvent(true, reason, event, trigger);
                 this.onOpenChange.emit(change.payload);
                 if (change.eventDetails.isCanceled()) return;
+                if (changingTrigger) {
+                    for (const child of this.childRoots()) child.close('sibling-open', event);
+                    this.activeIndex.set(null);
+                    this.activateTrigger(trigger);
+                }
                 this.lastOpenChangeReason.set(reason);
                 this.openInteractionType.set(reason === 'trigger-focus' ? null : this.resolveInteractionType(event));
                 change.commit();
@@ -596,17 +675,18 @@ export class RdxMenuRoot {
                     event: change.eventDetails.event
                 });
             }
-            this.focusOpenPopup(nextAutoFocus, reason);
+            if (!changingTrigger || reason === 'list-navigation') this.focusOpenPopup(nextAutoFocus, reason);
             return;
         }
 
         if (!this.open()) {
-            const change = this.createOpenChangeEvent(true, reason, event);
+            const change = this.createOpenChangeEvent(true, reason, event, trigger);
             this.onOpenChange.emit(change.payload);
 
             if (change.eventDetails.isCanceled()) {
                 return;
             }
+            this.activateTrigger(trigger);
 
             // A retained popup already has its focus scope before this request. Capture actual
             // pre-open focus here, before the coordinator moves it to another trigger.
@@ -657,16 +737,21 @@ export class RdxMenuRoot {
         }
     }
 
-    toggle(reason: RdxMenuOpenChangeReason = 'trigger-press', event?: Event) {
+    toggle(reason: RdxMenuOpenChangeReason = 'trigger-press', event?: Event, trigger = this.trigger()) {
         if (this.effectiveDisabled()) {
             return;
         }
 
-        if (this.open()) {
+        if (this.open() && trigger === this.trigger()) {
             this.close(reason, event);
         } else {
             const method = getInteractionTypeFromEvent(event);
-            this.show(method === 'mouse' || method === 'touch' || method === 'pen' ? 'popup' : 'first', reason, event);
+            this.show(
+                method === 'mouse' || method === 'touch' || method === 'pen' ? 'popup' : 'first',
+                reason,
+                event,
+                trigger
+            );
         }
     }
 
@@ -728,31 +813,62 @@ export class RdxMenuRoot {
 
     registerTrigger(
         el: HTMLElement,
-        getId?: () => string,
-        getInteractionType?: (event: Event) => RdxInteractionType
+        getId: () => string | undefined = () => el.id || undefined,
+        interactionType?: (event: Event) => RdxInteractionType,
+        payload?: () => unknown
     ): () => void {
-        this.registeredTrigger = el;
-        this.registeredTriggerId = getId;
-        this.registeredTriggerInteractionType = getInteractionType;
-        this.trigger.set(el);
-        this.floatingContext.triggers.add(el);
-        return () => {
-            this.floatingContext.triggers.delete(el);
-            if (this.registeredTrigger === el) {
-                this.registeredTrigger = undefined;
-                this.registeredTriggerId = undefined;
-                this.registeredTriggerInteractionType = undefined;
-                this.trigger.set(undefined);
-            }
-        };
+        return untracked(() => {
+            const entry = { getId, interactionType, payload };
+            this.registeredTriggers.set(el, entry);
+            this.floatingContext.triggers.add(el);
+            this.triggersVersion.update((version) => version + 1);
+            const requested = this.triggerId() ?? this.defaultTriggerId();
+            if (
+                (!this.trigger() && !requested) ||
+                requested === getId() ||
+                (el === this.lastActiveTrigger?.deref() && requested === this.lastResolvedTriggerId)
+            )
+                this.activateTrigger(el, !!requested);
+            return () => {
+                if (this.registeredTriggers.get(el) !== entry) return;
+                if (this.trigger() === el) this.detachedPayload.set(entry.payload?.() as Payload | undefined);
+                this.registeredTriggers.delete(el);
+                this.floatingContext.triggers.delete(el);
+                this.triggersVersion.update((version) => version + 1);
+                if (this.trigger() === el) this.trigger.set(undefined);
+            };
+        });
+    }
+
+    registerViewport(notify: (previous: HTMLElement, next: HTMLElement) => void): () => void {
+        this.viewportTriggerChange.add(notify);
+        return () => this.viewportTriggerChange.delete(notify);
+    }
+
+    private activateTrigger(trigger: HTMLElement | undefined, updateId = true): void {
+        const previous = this.trigger();
+        if (trigger && previous && trigger !== previous && this.open()) {
+            this.triggerTransition.set(true);
+            for (const notify of this.viewportTriggerChange) notify(previous, trigger);
+        }
+        this.trigger.set(trigger);
+        if (trigger) {
+            this.lastActiveTrigger = new WeakRef(trigger);
+            const id = this.registeredTriggers.get(trigger)?.getId() || trigger.id || undefined;
+            this.lastResolvedTriggerId = id;
+            if (id && updateId) this.triggerId.set(id);
+        }
     }
 
     private resolveInteractionType(event?: Event): RdxInteractionType {
         // Compatibility mousedown has no pointerType. Consult its trigger's native pointer history
         // without rewriting the original event or applying stale trigger input to item/outside events.
         const target = event?.target;
-        if (event && target && 'nodeType' in target && this.registeredTrigger?.contains(target as Node)) {
-            return this.registeredTriggerInteractionType?.(event) ?? getInteractionTypeFromEvent(event);
+        if (event && target && 'nodeType' in target && this.trigger()?.contains(target as Node)) {
+            return (
+                this.registeredTriggers.get(this.trigger()!)?.interactionType?.(event) ??
+                getInteractionTypeFromEvent(event)
+            );
         }
         return getInteractionTypeFromEvent(event);
     }
@@ -909,7 +1025,12 @@ export class RdxMenuRoot {
         this.trigger()?.dispatchEvent(new CustomEvent('rdx-menu-close-parent', { bubbles: true }));
     }
 
-    private createOpenChangeEvent(open: boolean, reason: RdxMenuOpenChangeReason, event?: Event) {
+    private createOpenChangeEvent(
+        open: boolean,
+        reason: RdxMenuOpenChangeReason,
+        event?: Event,
+        trigger = this.trigger()
+    ) {
         const change = createCancelableChangeEventDetails(
             reason,
             event ?? new Event('menu.open-change'),
@@ -926,7 +1047,7 @@ export class RdxMenuRoot {
                 ) &&
                 event?.target !== this.beforeContentFocusGuard()
                 ? undefined
-                : this.trigger()
+                : trigger
         );
         const transaction = this.lifecycle.prepareOpenChange(open);
         change.eventDetails.preventUnmountOnClose = transaction.preventUnmountOnClose;

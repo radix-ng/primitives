@@ -9,10 +9,11 @@ import {
     inject,
     input,
     numberAttribute,
-    PLATFORM_ID
+    PLATFORM_ID,
+    untracked
 } from '@angular/core';
 import { getCompositeNavigationKeys } from '@radix-ng/primitives/composite';
-import { BooleanInput, injectId, isMouseWithinBounds, NumberInput } from '@radix-ng/primitives/core';
+import { BooleanInput, injectId, isMouseWithinBounds, NumberInput, rdxDevError } from '@radix-ng/primitives/core';
 import {
     createRdxTriggerInteraction,
     getInteractionTypeFromEvent,
@@ -20,6 +21,7 @@ import {
 } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { getFocusableMenuItems, getMenuInitialFocusItem } from './menu-focus';
+import { RdxMenuHandle } from './menu-handle';
 import { findMenuOwnerId } from './menu-owner';
 import { injectRdxMenuRootContext } from './menu-root';
 import { applyPointerTunnel, createSafePolygonHandler, hasOpenChildSubmenu } from './menu-safe-polygon';
@@ -35,18 +37,19 @@ const numberOrUndefined = (value: NumberInput | undefined) => (value == null ? u
     hostDirectives: [RdxPopperAnchor],
     host: {
         '[attr.id]': 'resolvedId()',
-        '[attr.aria-controls]': 'rootContext.isOpen() ? rootContext.contentId() : undefined',
+        '[attr.aria-controls]':
+            'triggerInteraction.isActive() && rootContext()?.isOpen() ? rootContext()?.contentId() : undefined',
         '[attr.type]': 'nativeButtonState() ? "button" : undefined',
         '[attr.role]':
-            'rootContext.hasTriggerInteractionHandler() ? "menuitem" : nativeButtonState() ? undefined : "button"',
+            'rootContext()?.hasTriggerInteractionHandler() ? "menuitem" : nativeButtonState() ? undefined : "button"',
         '[attr.aria-haspopup]': '"menu"',
-        '[attr.aria-expanded]': 'triggerInteraction.ariaExpanded()',
+        '[attr.aria-expanded]': 'rootContext() ? triggerInteraction.ariaExpanded() : undefined',
         '[attr.aria-disabled]': 'isDisabled() ? true : undefined',
         '[attr.disabled]': 'nativeButtonState() && isDisabled() ? "" : undefined',
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
         '[attr.data-popup-open]': 'triggerInteraction.dataPopupOpen()',
         '[attr.data-pressed]': 'triggerInteraction.dataPopupOpen()',
-        '[style.pointer-events]': 'rootContext.isOpen() && rootContext.modal() ? "auto" : undefined',
+        '[style.pointer-events]': 'rootContext()?.isOpen() && rootContext()?.modal() ? "auto" : undefined',
         '(pointerdown)': 'handlePointerDown($event)',
         '(mousedown)': 'handleMouseDown($event)',
         '(click)': 'handleClick($event)',
@@ -64,8 +67,16 @@ const numberOrUndefined = (value: NumberInput | undefined) => (value == null ? u
         '(keydown.space)': 'handleKeyboardToggle($event)'
     }
 })
-export class RdxMenuTrigger {
-    protected readonly rootContext = injectRdxMenuRootContext();
+export class RdxMenuTrigger<Payload = unknown> {
+    private readonly parentRootContext = injectRdxMenuRootContext(true);
+    /** Connects this trigger to a Menu declared elsewhere. */
+    readonly handle = input<RdxMenuHandle<Payload>>();
+    /** Data read by the Menu while this trigger is active. */
+    readonly payload = input<Payload>();
+    protected readonly rootContext = computed(() => {
+        const handle = this.handle();
+        return handle ? handle.context() : this.parentRootContext;
+    });
     private readonly generatedId = injectId('rdx-menu-trigger-');
     /** Native trigger id; defaults to a generated SSR-stable value. */
     readonly id = input<string>();
@@ -82,11 +93,11 @@ export class RdxMenuTrigger {
     private readonly handleDocumentMouseUp = (event: MouseEvent): void => {
         clearTimeout(this.allowMouseUpTriggerTimer);
         this.allowMouseUpTriggerTimer = undefined;
-        this.rootContext.setAllowMouseUpTrigger(false);
+        this.rootContext()?.setAllowMouseUpTrigger(false);
 
         const trigger = this.elementRef.nativeElement;
         const target = event.target as Node | null;
-        const popup = this.rootContext.popupElement();
+        const popup = this.rootContext()?.popupElement();
 
         if (target && (trigger.contains(target) || popup?.contains(target))) {
             return;
@@ -94,7 +105,7 @@ export class RdxMenuTrigger {
 
         // Everything else belonging to this menu chain: the positioner wrapping the popup, and a
         // submenu portaled as a DOM sibling rather than nested inside it (Base UI `findRootOwnerId`).
-        if (target && findMenuOwnerId(target) === this.rootContext.ownerId()) {
+        if (target && findMenuOwnerId(target) === this.rootContext()?.ownerId()) {
             return;
         }
 
@@ -105,8 +116,8 @@ export class RdxMenuTrigger {
             return;
         }
 
-        if (this.rootContext.isOpen()) {
-            this.rootContext.close('cancel-open', event);
+        if (this.rootContext()?.isOpen()) {
+            this.rootContext()?.close('cancel-open', event);
         }
     };
 
@@ -131,35 +142,55 @@ export class RdxMenuTrigger {
         () => this.nativeButton() || this.elementRef.nativeElement.tagName === 'BUTTON'
     );
 
-    protected readonly isDisabled = computed(() => this.rootContext.disabled() || this.disabled());
+    protected readonly isDisabled = computed(() => this.rootContext()?.disabled() || this.disabled());
     protected readonly triggerInteraction = createRdxTriggerInteraction({
         trigger: () => this.elementRef.nativeElement,
-        activeTrigger: () => this.rootContext.trigger(),
-        open: () => this.rootContext.isOpen(),
+        activeTrigger: () => this.rootContext()?.trigger(),
+        open: () => this.rootContext()?.isOpen() ?? false,
         disabled: () => this.isDisabled()
     });
 
     constructor() {
+        // Safari click-focuses a native button when tabindex is explicit. Preserve an authored
+        // value and let an enclosing Composite coordinator keep owning its roving Tab order.
+        const nativeTrigger = this.elementRef.nativeElement;
+        if (nativeTrigger.tagName === 'BUTTON' && !nativeTrigger.hasAttribute('tabindex')) {
+            nativeTrigger.setAttribute('tabindex', '0');
+        }
         effect((onCleanup) => {
             const el = this.elementRef.nativeElement;
-            const unregister = this.rootContext.registerTrigger(
-                el,
-                () => this.resolvedId(),
-                (event) =>
-                    event instanceof MouseEvent
-                        ? this.triggerInteraction.clickInteractionType(event)
-                        : getInteractionTypeFromEvent(event)
-            );
+            const interaction = (event: Event) =>
+                event instanceof MouseEvent
+                    ? this.triggerInteraction.clickInteractionType(event)
+                    : getInteractionTypeFromEvent(event);
+            const handle = this.handle();
+            const id = handle ? this.resolvedId() : undefined;
+            const unregister = handle
+                ? untracked(() => handle.registerTrigger(id!, el, () => this.payload(), interaction))
+                : this.parentRootContext?.registerTrigger(
+                      el,
+                      () => this.resolvedId(),
+                      interaction,
+                      () => this.payload()
+                  );
+            if (!handle && !this.parentRootContext)
+                rdxDevError(
+                    'menu/trigger-missing-root',
+                    '`rdxMenuTrigger` requires a Menu Root or a connected handle.',
+                    'components/menu'
+                );
+            if (!unregister) return;
             onCleanup(unregister);
         });
 
         effect((onCleanup) => {
-            const open = this.rootContext.isOpen();
-            const popup = this.rootContext.popupElement();
+            const open = this.rootContext()?.isOpen();
+            const active = this.triggerInteraction.isActive();
+            const popup = this.rootContext()?.popupElement();
             // A click promotes the still-open menu; release its hover tunnel when the reason changes.
-            const hover = this.rootContext.lastOpenChangeReason() === 'trigger-hover';
+            const hover = this.rootContext()?.lastOpenChangeReason() === 'trigger-hover';
 
-            if (!open) {
+            if (!open || !active) {
                 this.openedByHover = false;
                 this.lastPointer = null;
                 return;
@@ -176,7 +207,7 @@ export class RdxMenuTrigger {
                 reference: trigger,
                 floating: popup,
                 // Physical side from context — the popup's `data-side` may be a logical `inline-*` echo.
-                side: () => this.rootContext.popupPhysicalSide() ?? 'bottom',
+                side: () => this.rootContext()?.popupPhysicalSide() ?? 'bottom',
                 x: this.lastPointer.x,
                 y: this.lastPointer.y,
                 onClose: (event) => {
@@ -205,11 +236,11 @@ export class RdxMenuTrigger {
 
         useTriggerFocusGuards({
             trigger: () => this.elementRef.nativeElement,
-            close: (event) => this.rootContext.close('focus-out', event),
-            beforeContentFocusGuard: () => this.rootContext.beforeContentFocusGuard(),
+            close: (event) => this.rootContext()?.close('focus-out', event),
+            beforeContentFocusGuard: () => this.rootContext()?.beforeContentFocusGuard(),
             enabled: () => this.triggerInteraction.isActive(),
-            popupElement: () => this.rootContext.popupElement(),
-            afterTriggerFocusGuardRef: (element) => this.rootContext.setAfterTriggerFocusGuard(element)
+            popupElement: () => this.rootContext()?.popupElement(),
+            afterTriggerFocusGuardRef: (element) => this.rootContext()?.setAfterTriggerFocusGuard(element)
         });
 
         this.destroyRef.onDestroy(() => {
@@ -227,34 +258,34 @@ export class RdxMenuTrigger {
         this.clearOpenTimer();
         this.clearCloseTimer();
 
-        if (this.rootContext.hasTriggerInteractionHandler()) {
-            const wasOpen = this.rootContext.isOpen();
-            if (this.rootContext.handleTriggerInteraction({ type: 'mousedown', event })) {
+        if (this.rootContext()?.hasTriggerInteractionHandler()) {
+            const wasOpen = this.rootContext()?.isOpen();
+            if (this.rootContext()?.handleTriggerInteraction({ type: 'mousedown', event })) {
                 this.ignoreNextClick = 'mouse';
                 this.openedByHover = false;
-                if (!wasOpen && this.rootContext.isOpen()) this.armMouseUpGuard(event.currentTarget as HTMLElement);
+                if (!wasOpen && this.rootContext()?.isOpen()) this.armMouseUpGuard(event.currentTarget as HTMLElement);
             }
             return;
         }
 
         if (
             this.openOnHover() &&
-            this.rootContext.isOpen() &&
-            this.rootContext.lastOpenChangeReason() === 'trigger-hover'
+            this.rootContext()?.isOpen() &&
+            this.rootContext()?.lastOpenChangeReason() === 'trigger-hover'
         ) {
             this.ignoreNextClick = 'mouse';
-            this.rootContext.show(false, 'trigger-press', event);
-            this.openedByHover = this.rootContext.lastOpenChangeReason() === 'trigger-hover';
+            this.rootContext()?.show(false, 'trigger-press', event, this.elementRef.nativeElement);
+            this.openedByHover = this.rootContext()?.lastOpenChangeReason() === 'trigger-hover';
             return;
         }
 
-        const wasOpen = this.rootContext.isOpen();
+        const wasOpen = this.rootContext()?.isOpen();
         this.clearMouseUpGuard();
         this.ignoreNextClick = 'mouse';
         this.openedByHover = false;
-        this.rootContext.toggle('trigger-press', event);
+        this.rootContext()?.toggle('trigger-press', event, this.elementRef.nativeElement);
 
-        if (!wasOpen && this.rootContext.isOpen()) {
+        if (!wasOpen && this.rootContext()?.isOpen()) {
             this.armMouseUpGuard(event.currentTarget as HTMLElement);
         }
     }
@@ -268,7 +299,7 @@ export class RdxMenuTrigger {
             return;
         }
 
-        const wasOpen = this.rootContext.isOpen();
+        const wasOpen = this.rootContext()?.isOpen();
 
         if (this.ignoreNextClick === 'mouse' && event.detail > 0) {
             this.ignoreNextClick = null;
@@ -277,17 +308,17 @@ export class RdxMenuTrigger {
             // from a trigger/control the browser or consumer actually focused.
             if (
                 this.openOnHover() &&
-                this.rootContext.isOpen() &&
-                this.rootContext.lastOpenChangeReason() === 'trigger-press' &&
+                this.rootContext()?.isOpen() &&
+                this.rootContext()?.lastOpenChangeReason() === 'trigger-press' &&
                 this.elementRef.nativeElement.ownerDocument.activeElement ===
                     this.elementRef.nativeElement.ownerDocument.body
             ) {
-                this.rootContext.show('popup', 'trigger-press', event);
+                this.rootContext()?.show('popup', 'trigger-press', event);
             }
             return;
         }
-        if (this.rootContext.handleTriggerInteraction({ type: 'click', event })) {
-            if (event.detail === 0 && !wasOpen && this.rootContext.isOpen()) {
+        if (this.rootContext()?.handleTriggerInteraction({ type: 'click', event })) {
+            if (event.detail === 0 && !wasOpen && this.rootContext()?.isOpen()) {
                 this.restoreKeyboardPopupFocus();
             }
             return;
@@ -306,8 +337,8 @@ export class RdxMenuTrigger {
         }
 
         this.openedByHover = false;
-        this.rootContext.toggle('trigger-press', event);
-        if (event.detail === 0 && !wasOpen && this.rootContext.isOpen()) {
+        this.rootContext()?.toggle('trigger-press', event, this.elementRef.nativeElement);
+        if (event.detail === 0 && !wasOpen && this.rootContext()?.isOpen()) {
             this.restoreKeyboardPopupFocus();
         }
     }
@@ -329,8 +360,11 @@ export class RdxMenuTrigger {
     }
 
     private handleArrowNavigation(event: Event, type: 'arrowdown' | 'arrowup' | 'arrowleft' | 'arrowright'): void {
-        if (this.rootContext.handleTriggerInteraction({ type, event })) return;
-        const keys = getCompositeNavigationKeys(this.rootContext.orientation(), this.rootContext.dir());
+        if (this.rootContext()?.handleTriggerInteraction({ type, event })) return;
+        const keys = getCompositeNavigationKeys(
+            this.rootContext()?.orientation() ?? 'vertical',
+            this.rootContext()?.dir() ?? 'ltr'
+        );
         const key = (event as KeyboardEvent).key;
         const autoFocus = keys.forwardKeys.includes(key)
             ? 'first'
@@ -339,34 +373,35 @@ export class RdxMenuTrigger {
               : undefined;
         if (autoFocus === undefined) return;
         event.preventDefault();
-        if (!this.isDisabled()) this.rootContext.show(autoFocus, 'list-navigation', event);
+        if (!this.isDisabled())
+            this.rootContext()?.show(autoFocus, 'list-navigation', event, this.elementRef.nativeElement);
     }
 
     protected handleHome(event: Event): void {
-        this.rootContext.handleTriggerInteraction({ type: 'home', event });
+        this.rootContext()?.handleTriggerInteraction({ type: 'home', event });
     }
 
     protected handleEnd(event: Event): void {
-        this.rootContext.handleTriggerInteraction({ type: 'end', event });
+        this.rootContext()?.handleTriggerInteraction({ type: 'end', event });
     }
 
     protected handleEscape(event: Event): void {
-        this.rootContext.handleTriggerInteraction({ type: 'escape', event });
+        this.rootContext()?.handleTriggerInteraction({ type: 'escape', event });
     }
 
     protected handleKeyboardToggle(event: Event): void {
-        const wasOpen = this.rootContext.isOpen();
+        const wasOpen = this.rootContext()?.isOpen();
         const interactionType = event instanceof KeyboardEvent && event.key === ' ' ? 'space' : 'enter';
 
-        if (this.nativeButtonState() && !this.rootContext.hasTriggerInteractionHandler()) {
+        if (this.nativeButtonState() && !this.rootContext()?.hasTriggerInteractionHandler()) {
             return;
         }
 
-        if (this.rootContext.handleTriggerInteraction({ type: interactionType, event })) {
+        if (this.rootContext()?.handleTriggerInteraction({ type: interactionType, event })) {
             event.preventDefault();
             this.ignoreNextClick = this.nativeButtonState() ? 'keyboard' : null;
             this.openedByHover = false;
-            if (!wasOpen && this.rootContext.isOpen()) {
+            if (!wasOpen && this.rootContext()?.isOpen()) {
                 this.restoreKeyboardPopupFocus();
             }
             return;
@@ -375,14 +410,14 @@ export class RdxMenuTrigger {
         event.preventDefault();
         this.ignoreNextClick = this.nativeButtonState() ? 'keyboard' : null;
         this.openedByHover = false;
-        this.rootContext.toggle('trigger-press', event);
-        if (!wasOpen && this.rootContext.isOpen()) {
+        this.rootContext()?.toggle('trigger-press', event, this.elementRef.nativeElement);
+        if (!wasOpen && this.rootContext()?.isOpen()) {
             this.restoreKeyboardPopupFocus();
         }
     }
 
     protected handlePointerEnter(event: PointerEvent): void {
-        if (this.rootContext.handleTriggerInteraction({ type: 'pointerenter', event })) {
+        if (this.rootContext()?.handleTriggerInteraction({ type: 'pointerenter', event })) {
             return;
         }
 
@@ -394,19 +429,19 @@ export class RdxMenuTrigger {
         this.clearOpenTimer();
         this.lastPointer = { x: event.clientX, y: event.clientY };
 
-        if (this.rootContext.isOpen()) return;
+        if (this.rootContext()?.isOpen() && this.triggerInteraction.isActive()) return;
 
         const delay = this.delay() ?? 100;
         if (delay <= 0) {
             this.openedByHover = true;
-            this.rootContext.show('popup', 'trigger-hover', event);
+            this.rootContext()?.show('popup', 'trigger-hover', event, this.elementRef.nativeElement);
             return;
         }
 
         this.openTimer = setTimeout(() => {
             this.openTimer = undefined;
             this.openedByHover = true;
-            this.rootContext.show('popup', 'trigger-hover', event);
+            this.rootContext()?.show('popup', 'trigger-hover', event, this.elementRef.nativeElement);
         }, delay);
     }
 
@@ -430,7 +465,7 @@ export class RdxMenuTrigger {
         const closeDelay = this.closeDelay() ?? 0;
         this.closeTimer = setTimeout(() => {
             this.closeTimer = undefined;
-            this.rootContext.close('trigger-hover', event);
+            this.rootContext()?.close('trigger-hover', event);
         }, closeDelay);
     }
 
@@ -445,10 +480,10 @@ export class RdxMenuTrigger {
     }
 
     private armMouseUpGuard(trigger: HTMLElement): void {
-        this.rootContext.setAllowMouseUpTrigger(false);
+        this.rootContext()?.setAllowMouseUpTrigger(false);
         this.allowMouseUpTriggerTimer = setTimeout(() => {
             this.allowMouseUpTriggerTimer = undefined;
-            this.rootContext.setAllowMouseUpTrigger(true);
+            this.rootContext()?.setAllowMouseUpTrigger(true);
         }, 200);
 
         trigger.ownerDocument.addEventListener('mouseup', this.handleDocumentMouseUp, { once: true });
@@ -457,7 +492,7 @@ export class RdxMenuTrigger {
     private clearMouseUpGuard(): void {
         clearTimeout(this.allowMouseUpTriggerTimer);
         this.allowMouseUpTriggerTimer = undefined;
-        this.rootContext.setAllowMouseUpTrigger(false);
+        this.rootContext()?.setAllowMouseUpTrigger(false);
         this.elementRef.nativeElement.ownerDocument.removeEventListener('mouseup', this.handleDocumentMouseUp);
     }
 
@@ -466,11 +501,11 @@ export class RdxMenuTrigger {
         const ownerDocument = this.elementRef.nativeElement.ownerDocument;
 
         const run = () => {
-            if (!this.rootContext.isOpen()) {
+            if (!this.rootContext()?.isOpen()) {
                 return;
             }
 
-            const popup = this.rootContext.popupElement();
+            const popup = this.rootContext()?.popupElement();
             const activeElement = ownerDocument.activeElement;
 
             if (!popup || getFocusableMenuItems(popup).length === 0) {

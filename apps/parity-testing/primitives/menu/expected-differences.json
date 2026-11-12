@@ -163,16 +163,6 @@
         "category": "programmatic-focus-out"
     },
     {
-        "scenario": "cancel-open",
-        "checkpoint": "opening blocked",
-        "field": "focus",
-        "angular": "body",
-        "react": "primary",
-        "browser": "webkit",
-        "platform": "darwin",
-        "category": "native-button-focus"
-    },
-    {
         "scenario": "pointer-highlight",
         "checkpoint": "pointer highlighted",
         "field": "focus",
@@ -271,16 +261,6 @@
         "browser": "webkit",
         "platform": "darwin",
         "category": "zero-delta-pointer-travel"
-    },
-    {
-        "scenario": "hover-root-click",
-        "checkpoint": "hover click",
-        "field": "focus",
-        "angular": "popup",
-        "react": "primary",
-        "browser": "webkit",
-        "platform": "darwin",
-        "category": "native-button-focus"
     },
     {
         "scenario": "hover-root-click",
@@ -290,7 +270,7 @@
         "react": "primary",
         "browser": "webkit",
         "platform": "darwin",
-        "category": "native-button-focus"
+        "category": "zero-delta-pointer-travel"
     },
     {
         "scenario": "hover-root-click",
@@ -1011,26 +991,6 @@
         "browser": "webkit"
     },
     {
-        "scenario": "touch-cancel-open",
-        "checkpoint": "touch opening blocked",
-        "field": "focus",
-        "angular": "body",
-        "react": "primary",
-        "category": "native-button-focus",
-        "browser": "webkit",
-        "platform": "darwin"
-    },
-    {
-        "scenario": "touch-cancel-close",
-        "checkpoint": "touch trigger toggled",
-        "field": "focus",
-        "angular": "body",
-        "react": "primary",
-        "category": "native-button-focus",
-        "browser": "webkit",
-        "platform": "darwin"
-    },
-    {
         "scenario": "hybrid-hover-touch-promote",
         "checkpoint": "mouse hover opened",
         "field": "nativeChange",
@@ -1199,106 +1159,6 @@
         },
         "category": "native-hover-events",
         "browser": "webkit"
-    },
-    {
-        "scenario": "hybrid-hover-touch-promote",
-        "checkpoint": "touch requested promotion",
-        "field": "focus",
-        "angular": "popup",
-        "react": "primary",
-        "category": "native-button-focus",
-        "browser": "webkit",
-        "platform": "darwin"
-    },
-    {
-        "scenario": "hybrid-hover-touch-promote",
-        "checkpoint": "touch promotion survives pointer leave",
-        "field": "focus",
-        "angular": "popup",
-        "react": "primary",
-        "category": "native-button-focus",
-        "browser": "webkit",
-        "platform": "darwin"
-    },
-    {
-        "scenario": "hybrid-hover-touch-scroll-policy",
-        "checkpoint": "touch requested promotion",
-        "field": "focus",
-        "angular": "popup",
-        "react": "primary",
-        "category": "native-button-focus",
-        "browser": "webkit",
-        "platform": "darwin"
-    },
-    {
-        "scenario": "hybrid-hover-touch-scroll-policy",
-        "checkpoint": "touch promotion survives pointer leave",
-        "field": "focus",
-        "angular": "popup",
-        "react": "primary",
-        "category": "native-button-focus",
-        "browser": "webkit",
-        "platform": "darwin"
-    },
-    {
-        "scenario": "hybrid-hover-touch-scroll-policy",
-        "checkpoint": "promoted hover session keeps its scroll policy",
-        "field": "focus",
-        "angular": "popup",
-        "react": "primary",
-        "category": "native-button-focus",
-        "browser": "webkit",
-        "platform": "darwin"
-    },
-    {
-        "scenario": "hybrid-hover-touch-wide-scroll-policy",
-        "checkpoint": "touch requested promotion",
-        "field": "focus",
-        "angular": "popup",
-        "react": "primary",
-        "category": "native-button-focus",
-        "browser": "webkit",
-        "platform": "darwin"
-    },
-    {
-        "scenario": "hybrid-hover-touch-wide-scroll-policy",
-        "checkpoint": "touch promotion survives pointer leave",
-        "field": "focus",
-        "angular": "popup",
-        "react": "primary",
-        "category": "native-button-focus",
-        "browser": "webkit",
-        "platform": "darwin"
-    },
-    {
-        "scenario": "hybrid-hover-touch-wide-scroll-policy",
-        "checkpoint": "promoted hover session keeps its scroll policy",
-        "field": "focus",
-        "angular": "popup",
-        "react": "primary",
-        "category": "native-button-focus",
-        "browser": "webkit",
-        "platform": "darwin"
-    },
-    {
-        "scenario": "hybrid-hover-touch-cancel",
-        "checkpoint": "touch requested promotion",
-        "field": "focus",
-        "angular": "body",
-        "react": "primary",
-        "category": "native-button-focus",
-        "browser": "webkit",
-        "platform": "darwin"
-    },
-    {
-        "scenario": "hybrid-hover-touch-cancel",
-        "checkpoint": "canceled promotion retains hover dismissal",
-        "field": "focus",
-        "angular": "body",
-        "react": "primary",
-        "category": "native-button-focus",
-        "browser": "webkit",
-        "platform": "darwin"
     },
     {
         "scenario": "projection-retained-submenu",
