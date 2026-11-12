@@ -55,6 +55,7 @@ export function setupInternalBackdrop(
     let backdrop: HTMLElement | null = null;
 
     const remove = (): void => {
+        if (backdrop) context?.removeFloatingElement(backdrop);
         backdrop?.remove();
         backdrop = null;
     };
@@ -78,6 +79,7 @@ export function setupInternalBackdrop(
                 backdrop = ownerDocument.createElement('div');
                 backdrop.setAttribute('role', 'presentation');
                 backdrop.setAttribute(marker, '');
+                context?.addFloatingElement(backdrop);
                 // WebKit emits compatibility mouse events for a tapped non-interactive div only
                 // when it has a click handler. Dismiss owns the action; this opts the backdrop
                 // into that native event sequence without changing outside-press timing.

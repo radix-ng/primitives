@@ -68,7 +68,9 @@ import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
                     }
 
                     if (autoFocus === 'popup') {
-                        return popup;
+                        // A context area can contain its own tabbable control. Let the shared focus
+                        // manager choose that control, or the popup when there are no tabbables.
+                        return rootContext.parentType() === 'context-menu' ? null : popup;
                     }
 
                     return () => {

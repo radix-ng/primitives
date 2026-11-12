@@ -10,10 +10,10 @@ const run = createParityRunner({
     createDriver: (page, framework) => new ContextMenuDriver(page, framework),
     readNativeEvents: (driver) =>
         driver.page.evaluate(() => ({
-            changes: window.contextMenuParity.nativeEvents,
-            pointerMoves: window.contextMenuParity.pointerMoves,
-            gestures: window.contextMenuParity.gestures,
-            inputEvents: window.contextMenuParity.inputEvents
+            changes: window.contextMenuParity?.nativeEvents,
+            pointerMoves: window.contextMenuParity?.pointerMoves,
+            gestures: window.contextMenuParity?.gestures,
+            inputEvents: window.contextMenuParity?.inputEvents
         }))
 });
 for (const scenario of scenarios)

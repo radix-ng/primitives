@@ -70,6 +70,7 @@ standard Menu parts and positioned at the pointer, so `rdxMenuPositioner` needs 
 - [Sides](../examples/context-menu--sides.md)
 - [Shared menu across areas](../examples/context-menu--shared-menu-across-areas.md)
 - [Nested context areas](../examples/context-menu--nested-context-areas.md)
+- [Independent Roots](../examples/context-menu--independent-roots.md)
 
 ## API & styling contract
 

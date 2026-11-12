@@ -78,3 +78,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0044](0044-affected-browser-checks.md)                                      | Accepted               | Select affected browser contracts and run engines concurrently                       |
 | [0045](0045-context-menu-composition-and-native-dismissal.md)                | Accepted               | Preserve Context Menu composition through native event boundaries                    |
 | [0046](0046-menu-root-removal.md)                                            | Accepted               | Compare Menu-family Root removal, cleanup and recreation                             |
+| [0047](0047-independent-context-menu-roots.md)                               | Accepted               | Separate Context Menu state ownership from floating ancestry                         |

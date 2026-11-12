@@ -1,6 +1,7 @@
 import { createMenuProbe, type MenuProbe } from '../../../shared/menu-probe';
 import { rootRemovalCases, rootRemovalConfig } from '../../../shared/root-removal';
 import { compositionCases } from './composition';
+import { independentCases, independentConfig } from './independent';
 export const cases = [
     'right-open',
     'point-anchor',
@@ -23,6 +24,7 @@ export const cases = [
     'touch-multitouch',
     'touch-disabled',
     ...compositionCases,
+    ...independentCases,
     ...rootRemovalCases.filter((name) => name !== 'root-remove-nonmodal')
 ] as const;
 export function config() {
@@ -31,6 +33,7 @@ export function config() {
     const removal = rootRemovalConfig(name);
     return {
         name,
+        independent: independentConfig(name),
         removal,
         disabled: name === 'disabled' || name === 'touch-disabled',
         keepMounted: name === 'keep-mounted' || name === 'areas-keep-mounted' || !!removal?.retained,
@@ -41,7 +44,7 @@ export function config() {
         side: 'right' as const
     };
 }
-export type Layer = 'context' | 'context-sub';
+export type Layer = 'context' | 'context-sub' | 'outer' | 'inner' | 'inner-sub';
 export type Probe = MenuProbe<ReturnType<typeof config>, Layer>;
 declare global {
     const __PARITY_REFERENCE__: Probe['reference'];
@@ -50,7 +53,11 @@ declare global {
     }
 }
 export function installProbe(framework: string) {
-    const trace = createMenuProbe(framework, __PARITY_REFERENCE__, config(), ['context', 'context-sub'] as const);
+    const settings = config();
+    const layers: readonly Layer[] = settings.independent
+        ? ['outer', 'inner', 'inner-sub']
+        : ['context', 'context-sub'];
+    const trace = createMenuProbe(framework, __PARITY_REFERENCE__, settings, layers);
     window.contextMenuParity = trace.probe;
     return trace;
 }

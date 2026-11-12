@@ -133,6 +133,17 @@ test('context-menu — radio groups', async ({ page }) => {
     await shoot(page, 'context-menu-radio.png');
 });
 
+for (const theme of ['light', 'dark']) {
+    test(`context-menu — independent retained Roots (${theme})`, async ({ page }) => {
+        await gotoStory(page, `primitives-context-menu--independent-roots&globals=theme:${theme}`);
+        const areas = page.locator('[rdxContextMenuTrigger]');
+        await areas.first().click({ button: 'right', position: { x: 16, y: 16 } });
+        await areas.nth(1).click({ button: 'right', position: { x: 16, y: 16 } });
+        await expect(page.locator('[rdxMenuPopup][data-open]')).toHaveCount(2);
+        await shoot(page, `context-menu-independent-roots-${theme}.png`);
+    });
+}
+
 for (const [index, side] of ['top', 'right', 'bottom', 'left'].entries()) {
     test(`context-menu — ${side} side`, async ({ page }) => {
         await gotoStory(page, 'primitives-context-menu--sides');

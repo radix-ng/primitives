@@ -110,6 +110,42 @@ async function openAtTrigger(page: Page): Promise<void> {
     await expect(page.locator(popup)).toBeVisible();
 }
 
+for (const action of ['selection', 'Escape', 'outside press'] as const) {
+    test(`independent retained Roots keep the workspace open after inner ${action}`, async ({ page }) => {
+        const errors: string[] = [];
+        page.on('pageerror', (error) => errors.push(error.message));
+        page.on('console', (message) => {
+            if (message.type() === 'error') errors.push(message.text());
+        });
+        await gotoStory(page, 'primitives-context-menu--independent-roots');
+        const areas = page.locator(trigger);
+        const workspace = page.getByRole('menu', { name: 'Workspace actions', exact: true });
+        const image = page.getByRole('menu', { name: 'Image actions', exact: true });
+        await areas.first().click({ button: 'right', position: { x: 16, y: 16 } });
+        await expect(workspace).toBeVisible();
+        await expect(areas.nth(1)).toBeFocused();
+        await areas.nth(1).click({ button: 'right', position: { x: 16, y: 16 } });
+        await expect(image).toBeFocused();
+        if (action === 'selection') await page.getByRole('menuitem', { name: 'Copy image', exact: true }).click();
+        if (action === 'Escape') await page.keyboard.press('Escape');
+        if (action === 'outside press') await page.mouse.click(5, 5);
+        await expect(page.locator(`${popup}[data-open]`)).toHaveCount(1);
+        await expect(workspace).toBeVisible();
+        await expect(areas.nth(1)).toBeFocused();
+        if (action === 'selection') await expect(page.locator('output')).toHaveText('Selected: Copy image');
+
+        // Reuse the retained view and verify real pointer hit testing, not only its visibility.
+        await areas.nth(1).click({ button: 'right', position: { x: 16, y: 16 } });
+        await expect(image).toBeFocused();
+        await page.getByRole('menuitem', { name: 'Save image', exact: true }).click();
+        await expect(page.locator('output')).toHaveText('Selected: Save image');
+        await page.keyboard.press('Escape');
+        await expect(page.locator(`${popup}[data-open]`)).toHaveCount(0);
+        await expect(areas.first()).toBeFocused();
+        expect(errors).toEqual([]);
+    });
+}
+
 test('right-click opens the context menu without runtime errors', async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', (e) => errors.push(String(e)));

@@ -37,6 +37,9 @@ import type { MenuSide } from './menu-safe-polygon';
 
 export const RDX_MENU_AMBIENT_DISABLED = new InjectionToken<Signal<boolean>>('RdxMenuAmbientDisabled');
 
+/** @internal A composing root starts a new Menu owner instead of inheriting its enclosing Menu. */
+export const RDX_MENU_ROOT_BOUNDARY = new InjectionToken<boolean>('RdxMenuRootBoundary');
+
 export type RdxMenuTransitionStatus = 'starting' | 'ending' | undefined;
 /**
  * Why an open/close happened instantly (no transition). Mirrors Base UI's menu `data-instant`:
@@ -311,7 +314,9 @@ const contextFactory = () => buildContext(inject(RdxMenuRoot));
 })
 export class RdxMenuRoot {
     private readonly popper = inject(RdxPopper);
-    readonly parentRoot = inject(RdxMenuRoot, { optional: true, skipSelf: true });
+    readonly parentRoot: RdxMenuRoot | null = inject(RDX_MENU_ROOT_BOUNDARY, { optional: true, self: true })
+        ? null
+        : inject(RdxMenuRoot, { optional: true, skipSelf: true });
     private readonly childRoots = signal<readonly RdxMenuRoot[]>([]);
     private readonly providedDirection = injectDirection();
     /** Ambient modality from an enclosing coordinator (e.g. Menubar). Overrides own `modal` for top-level menus. */

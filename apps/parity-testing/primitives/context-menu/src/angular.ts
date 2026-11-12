@@ -9,6 +9,7 @@ import { createMenuPopupTemplate, menuClasses } from '../../../shared/menu-fixtu
 import { rootRemovalExitClass, rootRemovalFinalFocus } from '../../../shared/root-removal';
 import { cancelComposition } from './composition';
 import { config, installProbe, type Layer } from './contract';
+import { AngularIndependentContextMenu } from './independent.angular';
 const settings = config();
 const nested = `
     @if (settings.nested) {
@@ -130,4 +131,6 @@ class AngularContextMenu {
         );
     }
 }
-void bootstrapApplication(AngularContextMenu, { providers: [provideZonelessChangeDetection()] });
+void bootstrapApplication(settings.independent ? AngularIndependentContextMenu : AngularContextMenu, {
+    providers: [provideZonelessChangeDetection()]
+});

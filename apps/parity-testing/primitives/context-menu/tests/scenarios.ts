@@ -3,17 +3,29 @@ import { MenuFamilyDriver } from '../../../shared/menu-family-driver';
 import { rootRemovalScenarios } from '../../../shared/root-removal.scenarios';
 import { compositionCases } from '../src/composition';
 import { cases } from '../src/contract';
+import { independentCases } from '../src/independent';
 import { runComposition } from './composition.scenarios';
+import { runIndependent } from './independent.scenarios';
 export class ContextMenuDriver extends MenuFamilyDriver {
+    private independent = false;
     constructor(page: ConstructorParameters<typeof MenuFamilyDriver>[0], framework: 'angular' | 'react') {
         super(page, framework, 'contextMenuParity');
     }
     override async goto(name: string) {
-        if (name.startsWith('areas-switch')) await this.page.clock.install();
+        this.independent = name.startsWith('roots-');
+        if (name.startsWith('areas-switch') || name.startsWith('roots-')) await this.page.clock.install();
         await super.goto(name);
     }
     override async checkpoint(name: string, expected: Record<string, unknown> = {}) {
         await super.checkpoint(name, expected);
+        if (this.independent) {
+            // Independent portals have no shared mount order contract. Record membership by owner;
+            // native click/focus assertions in these scenarios verify which open popup is interactive.
+            const state = this.checkpoints.at(-1)!.state;
+            state.mounted = Object.fromEntries(
+                ['outer', 'inner', 'inner-sub'].map((owner) => [owner, (state.mounted as string[]).includes(owner)])
+            );
+        }
         this.checkpoints.at(-1)!.state.pressed =
             (await this.page.getByTestId('area').count()) > 0 &&
             (await this.page.getByTestId('area').getAttribute('data-pressed')) !== null;
@@ -112,6 +124,8 @@ const removalScenarios = rootRemovalScenarios<ContextMenuDriver>({
 export const scenarios = cases.map((name) => ({
     name,
     async run(d: ContextMenuDriver) {
+        if ((independentCases as readonly string[]).includes(name))
+            return runIndependent(d, name as (typeof independentCases)[number]);
         if (name.startsWith('root-remove-')) return removalScenarios.find((s) => s.name === name)!.run(d);
         if ((compositionCases as readonly string[]).includes(name)) {
             await runComposition(d, name as (typeof compositionCases)[number]);

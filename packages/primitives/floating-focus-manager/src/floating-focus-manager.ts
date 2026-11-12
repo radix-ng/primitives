@@ -568,8 +568,9 @@ export class RdxFloatingFocusManager {
                 // A retained scope may stay active through an interrupted exit, so it will not
                 // emit mountAutoFocus again. Reuse its native first-tabbable default on reopen.
                 enableFocusInside(popup);
-                const target = resolved ?? this.defaultInitialFocus(interactionType) ?? getTabbableCandidates(popup)[0];
-                if (target && activeElement !== target) {
+                const target =
+                    resolved ?? this.defaultInitialFocus(interactionType) ?? getTabbableCandidates(popup)[0] ?? popup;
+                if (activeElement !== target) {
                     target.focus({ preventScroll: true });
                 }
 
@@ -757,12 +758,9 @@ export class RdxFloatingFocusManager {
     }
 
     /**
-     * The marker keep-set is intentionally narrow: the popup/focus host only. Own sibling roots such as a
-     * user backdrop are DOM-footprint bookkeeping, not marker keep-set members.
-     */
-    /**
      * The kept ("avoid") subtree for the `markOthers` background-isolation passes — the floating element
-     * and any primitive-declared inside elements (e.g. a combobox input that must stay interactive).
+     * plus descendant popup ancestry and primitive-declared inside elements (e.g. a combobox input).
+     * Sibling roots such as backdrops are DOM-footprint bookkeeping, not keep-set members.
      *
      * It deliberately excludes `previous/nextFocusableElement`: those exist for focus-guard tabbability and
      * return-focus (Base UI's `markOthers(insideElements)` aria-hidden pass keeps them, but its **marker**
@@ -772,7 +770,14 @@ export class RdxFloatingFocusManager {
      * isolation tied to the floating subtree restores full modality.
      */
     private avoidElements(): Element[] {
-        return [this.host, ...this.insideElements()].filter((element): element is Element => element != null);
+        // Retained descendant portals already exist when a parent opens. Keep their popup ancestry
+        // interactive so a later open does not leave them trapped under this parent's inert pass.
+        const node = this.currentFloatingNode();
+        const descendants =
+            node?.tree.children(node, { onlyOpen: false }).map((child) => child.context?.floatingElement) ?? [];
+        return [this.host, ...this.insideElements(), ...descendants].filter(
+            (element): element is Element => element != null
+        );
     }
 
     private isFloatingOpen(): boolean {

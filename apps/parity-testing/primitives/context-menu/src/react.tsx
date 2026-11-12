@@ -9,6 +9,7 @@ import { MenuItems } from '../../../shared/menu-items';
 import { rootRemovalExitClass, rootRemovalFinalFocus } from '../../../shared/root-removal';
 import { cancelComposition } from './composition';
 import { config, installProbe, type Layer } from './contract';
+import { ReactIndependentContextMenu } from './independent.react';
 const settings = config(),
     trace = installProbe('react');
 function ReactContextMenu() {
@@ -187,4 +188,6 @@ function ReactContextMenu() {
         </DirectionProvider>
     );
 }
-createRoot(document.getElementById('root')!).render(<ReactContextMenu />);
+createRoot(document.getElementById('root')!).render(
+    settings.independent ? <ReactIndependentContextMenu trace={trace} /> : <ReactContextMenu />
+);

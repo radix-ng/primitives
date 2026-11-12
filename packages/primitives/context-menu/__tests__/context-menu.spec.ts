@@ -55,6 +55,33 @@ it.each([false, true])('a nested context area owns one native request, canceled=
     expect(event.defaultPrevented).toBe(true);
 });
 
+it('gives a nested Context Menu its own Menu owner while preserving its real submenu', () => {
+    @Component({
+        imports: [RdxContextMenuModule, RdxMenuModule],
+        template: `
+            <ng-container #outer="rdxContextMenuRoot" [disabled]="true" rdxContextMenuRoot>
+                <ng-container #inner="rdxContextMenuRoot" rdxContextMenuRoot>
+                    <div rdxContextMenuTrigger>Inner area</div>
+                    <ng-container #child="rdxMenuRoot" rdxMenuRoot />
+                </ng-container>
+            </ng-container>
+        `
+    })
+    class IndependentRoots {
+        readonly outer = viewChild.required<RdxContextMenuRoot>('outer');
+        readonly inner = viewChild.required<RdxContextMenuRoot>('inner');
+        readonly child = viewChild.required<RdxMenuRoot>('child');
+    }
+    const fixture = TestBed.createComponent(IndependentRoots);
+    fixture.detectChanges();
+    const { outer, inner, child } = fixture.componentInstance;
+    expect(inner().menuRoot.parentRoot).toBeNull();
+    expect(inner().menuRoot.effectiveDisabled()).toBe(false);
+    expect(inner().menuRoot.ownerId()).not.toBe(outer().menuRoot.ownerId());
+    expect(child().parentRoot).toBe(inner().menuRoot);
+    expect(child().ownerId()).toBe(inner().menuRoot.ownerId());
+});
+
 it('exposes close and unmount through the composed context-menu lifecycle', async () => {
     @Component({
         changeDetection: ChangeDetectionStrategy.Eager,

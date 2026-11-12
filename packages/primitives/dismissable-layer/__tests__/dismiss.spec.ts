@@ -445,6 +445,25 @@ describe('RdxDismiss', () => {
         expect(onDismiss).not.toHaveBeenCalled();
     });
 
+    it('dismisses only the owner of an internal backdrop inserted after the marker pass', async () => {
+        el().setAttribute(RDX_FLOATING_MARKER, '');
+        const outer = context(() => true, el());
+        const inner = context(() => true, el());
+        const closeOuter = vi.fn();
+        const closeInner = vi.fn();
+        build(outer, () => null, closeOuter);
+        build(inner, () => null, closeInner);
+        await flush();
+
+        const backdrop = el();
+        backdrop.setAttribute('data-rdx-menu-internal-backdrop', '');
+        inner.addFloatingElement(backdrop);
+        backdrop.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+
+        expect(closeOuter).not.toHaveBeenCalled();
+        expect(closeInner).toHaveBeenCalledWith('outside-press', expect.any(Event));
+    });
+
     it('counts an open descendant popup as inside (logical containment survives portaling)', async () => {
         const tree = new RdxFloatingTree();
         const parentCtx = context(() => true, el());

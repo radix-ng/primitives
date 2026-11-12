@@ -14,6 +14,7 @@ import {
     signal
 } from '@angular/core';
 import { BooleanInput, createContext, getActiveElement } from '@radix-ng/primitives/core';
+import { getPreviouslyFocusedElement, rememberFocusedElement } from './focus-history';
 import { RdxFocusScopeConfigToken } from './focus-scope.config';
 import { createFocusScopesStack, FocusScopeAPI } from './stack';
 import {
@@ -223,6 +224,12 @@ export class RdxFocusScope {
                         this.focusScope.resume();
 
                         const previouslyFocusedElement = getActiveElement(this.ownerDocument) as HTMLElement | null;
+                        // A modal's isolation may already have blurred the page by this microtask.
+                        // Its composing manager preserves the pre-open target in the config.
+                        rememberFocusedElement(
+                            this.ownerDocument,
+                            this.config.defaultReturnFocus?.() ?? previouslyFocusedElement
+                        );
                         const hasFocusedCandidate = composedContains(container, previouslyFocusedElement);
                         const mountEventHandler = (ev: Event) => {
                             if (this.alive) this.mountAutoFocus.emit(ev);
@@ -269,9 +276,13 @@ export class RdxFocusScope {
                                     if (override) {
                                         focus(override, { select: true });
                                     } else if (!this.shouldPreserveMovedFocus()) {
+                                        const candidate =
+                                            this.config.defaultReturnFocus?.() ?? previouslyFocusedElement;
                                         focus(
-                                            this.config.defaultReturnFocus?.() ??
-                                                previouslyFocusedElement ??
+                                            (candidate?.isConnected && candidate !== this.ownerDocument.body
+                                                ? candidate
+                                                : undefined) ??
+                                                getPreviouslyFocusedElement(this.ownerDocument) ??
                                                 this.ownerDocument.body,
                                             { select: true }
                                         );

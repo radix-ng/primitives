@@ -121,11 +121,23 @@ pointerdown/mousedown requests; keep your veto policy active until retry is allo
 
 <Canvas sourceState="hidden" of={Stories.NestedAreas} />
 
+### Independent Roots
+
+Nest another `rdxContextMenuRoot` when an area owns a separate menu and selection lifecycle.
+The inner Root has its own disabled state and cancellation policy. Selecting an image action closes
+the image menu; the workspace menu stays open. Escape closes the deepest popup first. Use
+`rdxMenuRoot` with `rdxMenuSubTrigger` for an ordinary submenu that shares its parent's command chain.
+
+Both portals below use `keepMounted`. A retained inner popup remains interactive after reopening.
+
+<Canvas sourceState="hidden" of={Stories.IndependentRoots} />
+
 ## Accessibility
 
 ### Keyboard Interactions
 
-Native pointer and keyboard context-menu events focus the popup without highlighting an item,
+Native pointer and keyboard context-menu events focus the first tabbable control, or the popup when
+there are no tabbable controls, without highlighting a menu item,
 matching Base UI. Press `ArrowDown` / `ArrowUp` to enter the list. The Menu key and `Shift` + `F10`
 follow native browser/OS support; the primitive does not synthesize unavailable platform events.
 Applications calling `root.openAt(x, y, 'first')` can explicitly choose initial item focus.

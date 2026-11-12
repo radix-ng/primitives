@@ -3,6 +3,7 @@ import type { VirtualElement } from '@floating-ui/dom';
 import { createContext, getActiveElement } from '@radix-ng/primitives/core';
 import {
     findMenuOwnerId,
+    RDX_MENU_ROOT_BOUNDARY,
     RdxMenuAutoFocusInput,
     RdxMenuOpenChangeReason,
     RdxMenuRoot
@@ -51,7 +52,11 @@ const contextFactory = (): RdxContextMenuRootContext => {
             outputs: ['openChange', 'onOpenChange', 'onOpenChangeComplete']
         }
     ],
-    providers: [provideRdxContextMenuRootContext(contextFactory)]
+    providers: [
+        provideRdxContextMenuRootContext(contextFactory),
+        // Independent Menu state still participates in the enclosing popup's floating ancestry.
+        { provide: RDX_MENU_ROOT_BOUNDARY, useValue: true }
+    ]
 })
 export class RdxContextMenuRoot {
     readonly menuRoot = inject(RdxMenuRoot);
@@ -77,8 +82,9 @@ export class RdxContextMenuRoot {
     /**
      * Open the menu with the popup anchored at the given viewport coordinates.
      *
-     * `autoFocus` defaults to `'popup'` so a right-click opens with the popup focused but no item
-     * highlighted (matching Base UI's native context-menu behavior). Pass `'first'` to opt into initial item focus. `event` is
+     * `autoFocus` defaults to `'popup'`: focus the first tabbable control, or the popup when there are
+     * no tabbables, without highlighting a menu item (Base UI). Touch focuses the popup itself.
+     * Pass `'first'` to opt into initial item focus. `event` is
      * the originating pointer event (threaded to the menu so a touch long-press is recorded for the
      * anchored scroll-lock policy, ADR 0016 §3).
      */

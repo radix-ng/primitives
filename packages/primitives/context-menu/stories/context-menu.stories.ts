@@ -4,6 +4,8 @@ import { RdxContextMenuAreasComponent } from './context-menu-areas';
 import areasSource from './context-menu-areas?raw';
 import { RdxContextMenuDefaultComponent } from './context-menu-default';
 import defaultSource from './context-menu-default?raw';
+import { RdxContextMenuIndependentComponent } from './context-menu-independent';
+import independentSource from './context-menu-independent?raw';
 import { RdxContextMenuRadioComponent } from './context-menu-radio';
 import radioSource from './context-menu-radio?raw';
 import { RdxContextMenuSidesComponent } from './context-menu-sides';
@@ -25,7 +27,8 @@ export default {
                 RdxContextMenuDefaultComponent,
                 RdxContextMenuRadioComponent,
                 RdxContextMenuSidesComponent,
-                RdxContextMenuAreasComponent
+                RdxContextMenuAreasComponent,
+                RdxContextMenuIndependentComponent
             ]
         }),
         tailwindDemoDecorator()
@@ -75,6 +78,15 @@ export const NestedAreas: Story = {
     render: () => ({
         template: html`
             <rdx-context-menu-areas [nested]="true" />
+        `
+    })
+};
+
+export const IndependentRoots: Story = {
+    parameters: source(independentSource),
+    render: () => ({
+        template: html`
+            <rdx-context-menu-independent />
         `
     })
 };

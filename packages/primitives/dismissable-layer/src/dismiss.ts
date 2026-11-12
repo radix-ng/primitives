@@ -146,11 +146,7 @@ function isInjectedAfterMark(target: EventTarget | null, context: RdxFloatingRoo
     if (!isElement(target) || isRootElement(target)) {
         return false;
     }
-    if (
-        target.closest(
-            '[data-rdx-internal-backdrop], [data-rdx-menu-internal-backdrop], [data-rdx-dialog-internal-backdrop]'
-        )
-    ) {
+    if (context.floatingElements.has(target)) {
         return false;
     }
     const targetRoot = target.getRootNode();

@@ -387,6 +387,28 @@ describe('RdxFocusScope characterization', () => {
     // ─── return focus on unmount ──────────────────────────────────────────────
 
     describe('return focus on unmount', () => {
+        it('returns to a surviving earlier target when the previous scope was removed', async () => {
+            const outside = document.createElement('button');
+            document.body.appendChild(outside);
+            outside.focus();
+            const first = TestBed.createComponent(LoopHost);
+            first.detectChanges();
+            await flush();
+            expect(document.activeElement).toBe(first.componentInstance.a().nativeElement);
+
+            const second = TestBed.createComponent(LoopHost);
+            second.detectChanges();
+            await flush();
+            expect(document.activeElement).toBe(second.componentInstance.a().nativeElement);
+            first.destroy();
+            await flush();
+            second.destroy();
+            await flush();
+
+            expect(document.activeElement).toBe(outside);
+            outside.remove();
+        });
+
         it('does not briefly steal focus when a retained scope reactivates before microtasks drain', async () => {
             const enabled = signal(true);
             TestBed.overrideProvider(RdxFocusScopeConfigToken, { useValue: { trapped: signal(false), enabled } });
