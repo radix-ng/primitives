@@ -1015,5 +1015,445 @@
         "category": "native-button-focus",
         "browser": "webkit",
         "platform": "darwin"
+    },
+    {
+        "scenario": "hybrid-hover-touch-promote",
+        "checkpoint": "mouse hover opened",
+        "field": "nativeChange",
+        "angular": {
+            "layer": "main",
+            "type": "pointerenter",
+            "trusted": true
+        },
+        "react": {
+            "layer": "main",
+            "type": "mousemove",
+            "trusted": true
+        },
+        "category": "native-hover-events",
+        "browser": "chromium"
+    },
+    {
+        "scenario": "hybrid-hover-touch-cancel",
+        "checkpoint": "mouse hover opened",
+        "field": "nativeChange",
+        "angular": {
+            "layer": "main",
+            "type": "pointerenter",
+            "trusted": true
+        },
+        "react": {
+            "layer": "main",
+            "type": "mousemove",
+            "trusted": true
+        },
+        "category": "native-hover-events",
+        "browser": "chromium"
+    },
+    {
+        "scenario": "hybrid-hover-touch-scroll-policy",
+        "checkpoint": "mouse hover opened",
+        "field": "nativeChange",
+        "angular": {
+            "layer": "main",
+            "type": "pointerenter",
+            "trusted": true
+        },
+        "react": {
+            "layer": "main",
+            "type": "mousemove",
+            "trusted": true
+        },
+        "category": "native-hover-events",
+        "browser": "chromium"
+    },
+    {
+        "scenario": "hybrid-hover-touch-wide-scroll-policy",
+        "checkpoint": "mouse hover opened",
+        "field": "nativeChange",
+        "angular": {
+            "layer": "main",
+            "type": "pointerenter",
+            "trusted": true
+        },
+        "react": {
+            "layer": "main",
+            "type": "mousemove",
+            "trusted": true
+        },
+        "category": "native-hover-events",
+        "browser": "chromium"
+    },
+    {
+        "scenario": "hybrid-hover-touch-cancel",
+        "checkpoint": "canceled promotion retains hover dismissal",
+        "field": "nativeChange",
+        "angular": {
+            "layer": "main",
+            "type": "mousemove",
+            "trusted": true
+        },
+        "react": {
+            "layer": "main",
+            "type": "mouseleave",
+            "trusted": true
+        },
+        "category": "native-hover-events",
+        "browser": "chromium"
+    },
+    {
+        "scenario": "hybrid-touch-keyboard-select",
+        "checkpoint": "second input selects",
+        "field": "nativeChange",
+        "angular": {
+            "layer": "main",
+            "type": "keydown",
+            "trusted": true
+        },
+        "react": {
+            "layer": "main",
+            "type": "click",
+            "trusted": true
+        },
+        "category": "native-keyboard-events",
+        "browser": "chromium"
+    },
+    {
+        "scenario": "hybrid-submenu-touch-keyboard",
+        "checkpoint": "mixed input selects child",
+        "field": "nativeChange",
+        "angular": {
+            "layer": "sub",
+            "type": "keydown",
+            "trusted": true
+        },
+        "react": {
+            "layer": "sub",
+            "type": "click",
+            "trusted": true
+        },
+        "category": "native-keyboard-events",
+        "browser": "chromium"
+    },
+    {
+        "scenario": "hybrid-submenu-touch-keyboard-rtl",
+        "checkpoint": "mixed input selects child",
+        "field": "nativeChange",
+        "angular": {
+            "layer": "sub",
+            "type": "keydown",
+            "trusted": true
+        },
+        "react": {
+            "layer": "sub",
+            "type": "click",
+            "trusted": true
+        },
+        "category": "native-keyboard-events",
+        "browser": "chromium"
+    },
+    {
+        "scenario": "hybrid-submenu-touch-enter",
+        "checkpoint": "keyboard activates touch child trigger",
+        "field": "nativeChange",
+        "angular": {
+            "layer": "sub",
+            "type": "keydown",
+            "trusted": true
+        },
+        "react": {
+            "layer": "sub",
+            "type": "click",
+            "trusted": true
+        },
+        "category": "native-keyboard-events",
+        "browser": "chromium"
+    },
+    {
+        "scenario": "hybrid-submenu-touch-space",
+        "checkpoint": "keyboard activates touch child trigger",
+        "field": "nativeChange",
+        "angular": {
+            "layer": "sub",
+            "type": "keydown",
+            "trusted": true
+        },
+        "react": {
+            "layer": "sub",
+            "type": "click",
+            "trusted": false
+        },
+        "category": "native-keyboard-events",
+        "browser": "chromium"
+    },
+    {
+        "scenario": "hybrid-hover-touch-promote",
+        "checkpoint": "mouse hover opened",
+        "field": "nativeChange",
+        "angular": {
+            "layer": "main",
+            "type": "pointerenter",
+            "trusted": true
+        },
+        "react": {
+            "layer": "main",
+            "type": "mousemove",
+            "trusted": true
+        },
+        "category": "native-hover-events",
+        "browser": "webkit"
+    },
+    {
+        "scenario": "hybrid-hover-touch-cancel",
+        "checkpoint": "mouse hover opened",
+        "field": "nativeChange",
+        "angular": {
+            "layer": "main",
+            "type": "pointerenter",
+            "trusted": true
+        },
+        "react": {
+            "layer": "main",
+            "type": "mousemove",
+            "trusted": true
+        },
+        "category": "native-hover-events",
+        "browser": "webkit"
+    },
+    {
+        "scenario": "hybrid-hover-touch-scroll-policy",
+        "checkpoint": "mouse hover opened",
+        "field": "nativeChange",
+        "angular": {
+            "layer": "main",
+            "type": "pointerenter",
+            "trusted": true
+        },
+        "react": {
+            "layer": "main",
+            "type": "mousemove",
+            "trusted": true
+        },
+        "category": "native-hover-events",
+        "browser": "webkit"
+    },
+    {
+        "scenario": "hybrid-hover-touch-wide-scroll-policy",
+        "checkpoint": "mouse hover opened",
+        "field": "nativeChange",
+        "angular": {
+            "layer": "main",
+            "type": "pointerenter",
+            "trusted": true
+        },
+        "react": {
+            "layer": "main",
+            "type": "mousemove",
+            "trusted": true
+        },
+        "category": "native-hover-events",
+        "browser": "webkit"
+    },
+    {
+        "scenario": "hybrid-hover-touch-cancel",
+        "checkpoint": "canceled promotion retains hover dismissal",
+        "field": "nativeChange",
+        "angular": {
+            "layer": "main",
+            "type": "mousemove",
+            "trusted": true
+        },
+        "react": {
+            "layer": "main",
+            "type": "mouseleave",
+            "trusted": true
+        },
+        "category": "native-hover-events",
+        "browser": "webkit"
+    },
+    {
+        "scenario": "hybrid-touch-keyboard-select",
+        "checkpoint": "second input selects",
+        "field": "nativeChange",
+        "angular": {
+            "layer": "main",
+            "type": "keydown",
+            "trusted": true
+        },
+        "react": {
+            "layer": "main",
+            "type": "click",
+            "trusted": true
+        },
+        "category": "native-keyboard-events",
+        "browser": "webkit"
+    },
+    {
+        "scenario": "hybrid-submenu-touch-keyboard",
+        "checkpoint": "mixed input selects child",
+        "field": "nativeChange",
+        "angular": {
+            "layer": "sub",
+            "type": "keydown",
+            "trusted": true
+        },
+        "react": {
+            "layer": "sub",
+            "type": "click",
+            "trusted": true
+        },
+        "category": "native-keyboard-events",
+        "browser": "webkit"
+    },
+    {
+        "scenario": "hybrid-submenu-touch-keyboard-rtl",
+        "checkpoint": "mixed input selects child",
+        "field": "nativeChange",
+        "angular": {
+            "layer": "sub",
+            "type": "keydown",
+            "trusted": true
+        },
+        "react": {
+            "layer": "sub",
+            "type": "click",
+            "trusted": true
+        },
+        "category": "native-keyboard-events",
+        "browser": "webkit"
+    },
+    {
+        "scenario": "hybrid-submenu-touch-enter",
+        "checkpoint": "keyboard activates touch child trigger",
+        "field": "nativeChange",
+        "angular": {
+            "layer": "sub",
+            "type": "keydown",
+            "trusted": true
+        },
+        "react": {
+            "layer": "sub",
+            "type": "click",
+            "trusted": true
+        },
+        "category": "native-keyboard-events",
+        "browser": "webkit"
+    },
+    {
+        "scenario": "hybrid-submenu-touch-space",
+        "checkpoint": "keyboard activates touch child trigger",
+        "field": "nativeChange",
+        "angular": {
+            "layer": "sub",
+            "type": "keydown",
+            "trusted": true
+        },
+        "react": {
+            "layer": "sub",
+            "type": "click",
+            "trusted": false
+        },
+        "category": "native-keyboard-events",
+        "browser": "webkit"
+    },
+    {
+        "scenario": "hybrid-hover-touch-promote",
+        "checkpoint": "touch requested promotion",
+        "field": "focus",
+        "angular": "popup",
+        "react": "primary",
+        "category": "native-button-focus",
+        "browser": "webkit",
+        "platform": "darwin"
+    },
+    {
+        "scenario": "hybrid-hover-touch-promote",
+        "checkpoint": "touch promotion survives pointer leave",
+        "field": "focus",
+        "angular": "popup",
+        "react": "primary",
+        "category": "native-button-focus",
+        "browser": "webkit",
+        "platform": "darwin"
+    },
+    {
+        "scenario": "hybrid-hover-touch-scroll-policy",
+        "checkpoint": "touch requested promotion",
+        "field": "focus",
+        "angular": "popup",
+        "react": "primary",
+        "category": "native-button-focus",
+        "browser": "webkit",
+        "platform": "darwin"
+    },
+    {
+        "scenario": "hybrid-hover-touch-scroll-policy",
+        "checkpoint": "touch promotion survives pointer leave",
+        "field": "focus",
+        "angular": "popup",
+        "react": "primary",
+        "category": "native-button-focus",
+        "browser": "webkit",
+        "platform": "darwin"
+    },
+    {
+        "scenario": "hybrid-hover-touch-scroll-policy",
+        "checkpoint": "promoted hover session keeps its scroll policy",
+        "field": "focus",
+        "angular": "popup",
+        "react": "primary",
+        "category": "native-button-focus",
+        "browser": "webkit",
+        "platform": "darwin"
+    },
+    {
+        "scenario": "hybrid-hover-touch-wide-scroll-policy",
+        "checkpoint": "touch requested promotion",
+        "field": "focus",
+        "angular": "popup",
+        "react": "primary",
+        "category": "native-button-focus",
+        "browser": "webkit",
+        "platform": "darwin"
+    },
+    {
+        "scenario": "hybrid-hover-touch-wide-scroll-policy",
+        "checkpoint": "touch promotion survives pointer leave",
+        "field": "focus",
+        "angular": "popup",
+        "react": "primary",
+        "category": "native-button-focus",
+        "browser": "webkit",
+        "platform": "darwin"
+    },
+    {
+        "scenario": "hybrid-hover-touch-wide-scroll-policy",
+        "checkpoint": "promoted hover session keeps its scroll policy",
+        "field": "focus",
+        "angular": "popup",
+        "react": "primary",
+        "category": "native-button-focus",
+        "browser": "webkit",
+        "platform": "darwin"
+    },
+    {
+        "scenario": "hybrid-hover-touch-cancel",
+        "checkpoint": "touch requested promotion",
+        "field": "focus",
+        "angular": "body",
+        "react": "primary",
+        "category": "native-button-focus",
+        "browser": "webkit",
+        "platform": "darwin"
+    },
+    {
+        "scenario": "hybrid-hover-touch-cancel",
+        "checkpoint": "canceled promotion retains hover dismissal",
+        "field": "focus",
+        "angular": "body",
+        "react": "primary",
+        "category": "native-button-focus",
+        "browser": "webkit",
+        "platform": "darwin"
     }
 ]

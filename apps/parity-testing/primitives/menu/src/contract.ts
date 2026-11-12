@@ -3,6 +3,7 @@ import { menuCollectionCases } from '../../../shared/menu-collection';
 import { createMenuProbe, type MenuProbe } from '../../../shared/menu-probe';
 import { rootRemovalCases, rootRemovalConfig } from '../../../shared/root-removal';
 import { emptyCases, emptyConfig } from './empty';
+import { hybridCases } from './hybrid';
 import { pointerCases, pointerConfig } from './pointer';
 import { touchCases, touchConfig } from './touch';
 
@@ -49,6 +50,7 @@ export const cases = [
     ...menuCollectionCases,
     ...emptyCases,
     ...touchCases,
+    ...hybridCases,
     ...rootRemovalCases,
     'lifecycle-submenu-css'
 ] as const;

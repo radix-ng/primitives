@@ -1,17 +1,8 @@
-import { expect, type Locator } from '@playwright/test';
+import { expect } from '@playwright/test';
 import { touchGesture } from '../../../../../tools/playwright/touch';
 import { touchCases } from '../src/touch';
 import type { MenuDriver } from './driver';
-
-async function tap(d: MenuDriver, target: Locator) {
-    const box = (await target.boundingBox())!;
-    await d.page.touchscreen.tap(Math.round(box.x + box.width / 2), Math.round(box.y + box.height / 2));
-}
-async function open(d: MenuDriver) {
-    await tap(d, d.trigger);
-    await expect(d.popup).toBeVisible();
-    await expect.poll(() => d.page.evaluate(() => window.menuParity.completions.main.at(-1))).toBe(true);
-}
+import { assertTrustedTouch, open, tap } from './touch-input';
 
 async function runTouch(d: MenuDriver, name: (typeof touchCases)[number]) {
     if (name === 'touch-trigger-cancel' || name === 'touch-trigger-pan') {
@@ -148,12 +139,7 @@ export const touchScenarios = touchCases.map((name) => ({
     name,
     async run(d: MenuDriver) {
         await runTouch(d, name);
-        const events = await d.page.evaluate(() => window.menuParity.inputEvents);
-        expect(events.some((event) => event.type === 'touchstart' && event.trusted)).toBe(true);
-        expect(events.every((event) => event.trusted)).toBe(true);
-        expect((await d.page.evaluate(() => window.menuParity.nativeEvents)).every((event) => event.trusted)).toBe(
-            true
-        );
+        const events = await assertTrustedTouch(d);
         if (name.includes('-cancel') && !name.startsWith('touch-cancel-'))
             expect(events.some((event) => event.type === 'pointercancel' && event.trusted)).toBe(true);
     }

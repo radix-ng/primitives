@@ -22,10 +22,10 @@ export const pointerCases = [
 
 export function pointerConfig(name: string) {
     return {
-        rootHover: name.startsWith('hover-root'),
+        rootHover: name.startsWith('hover-root') || name.startsWith('hybrid-hover'),
         submenuHover: name.startsWith('hover-submenu'),
-        delay: name.startsWith('hover-') ? 180 : undefined,
-        closeDelay: name.startsWith('hover-') ? 80 : undefined,
+        delay: name.startsWith('hover-') || name.startsWith('hybrid-hover-') ? 180 : undefined,
+        closeDelay: name.startsWith('hover-') || name.startsWith('hybrid-hover-') ? 80 : undefined,
         disabledSubmenu: name === 'hover-submenu-disabled'
     };
 }

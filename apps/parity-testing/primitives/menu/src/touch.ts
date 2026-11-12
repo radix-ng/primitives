@@ -1,3 +1,5 @@
+import { hybridCases } from './hybrid';
+
 export const touchCases = [
     'touch-open-select',
     'touch-toggle',
@@ -27,14 +29,15 @@ export const touchCases = [
 ] as const;
 
 export function touchConfig(name: string) {
-    if (!(touchCases as readonly string[]).includes(name)) return undefined;
+    const touch = (touchCases as readonly string[]).includes(name);
+    if (!touch && !(hybridCases as readonly string[]).includes(name)) return undefined;
     return {
-        gesture: /-(?:cancel|pan)$/.test(name) && !name.startsWith('touch-cancel-'),
+        gesture: touch && /-(?:cancel|pan)$/.test(name) && !name.startsWith('touch-cancel-'),
         pageScroll: name === 'touch-trigger-pan' || name === 'touch-outside-pan' || name.endsWith('-scroll-policy'),
-        wide: name === 'touch-wide-scroll-policy',
+        wide: name.endsWith('wide-scroll-policy'),
         popupScroll: name === 'touch-popup-pan',
-        submenu: name.startsWith('touch-submenu'),
-        retained: name === 'touch-retained'
+        submenu: name.startsWith('touch-submenu') || name.startsWith('hybrid-submenu'),
+        retained: name === 'touch-retained' || name === 'hybrid-sessions-retained'
     };
 }
 

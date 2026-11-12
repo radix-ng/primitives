@@ -60,6 +60,19 @@ pnpm parity:build                # type-check/build every suite
 pnpm parity:typecheck            # Node tooling types only
 ```
 
+For local iteration, select the changed scenarios before broadening to consumers:
+
+```bash
+pnpm test-parity menu --grep hybrid- --project=chromium
+pnpm test-parity menu --grep 'hybrid-|submenu-enter|hover-submenu-click'
+```
+
+Start with one engine while debugging, then run the affected cases in the other supported engines.
+Use focused Context Menu/Menubar checks for shared Menu changes, and matching Storybook behavior
+specs for public examples. Run the full suite when the affected scope is unclear, a failure calls
+for it, CI requests it, or the user explicitly asks. Rebuilding fixtures does not imply running all
+scenarios. The committed-change planner below describes CI selection; it does not inspect dirty files.
+
 The runner and shared tooling are TypeScript executed directly by Node 24 (`node apps/parity-testing/run.ts select`).
 [Node's type stripping](https://nodejs.org/docs/latest-v24.x/api/typescript.html#type-stripping) does
 not check types; the pnpm commands run a separate strict `tsc` check. Node-side imports include `.ts`

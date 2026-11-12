@@ -14,7 +14,15 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
 const trigger = '[rdxMenuTrigger]';
 const popup = '[rdxMenuPopup]';
 
-for (const mode of ['toggle', 'disabled', 'submenu', 'submenu RTL'] as const) {
+for (const mode of [
+    'toggle',
+    'disabled',
+    'submenu',
+    'submenu RTL',
+    'submenu Enter',
+    'submenu Space',
+    'submenu Arrow'
+] as const) {
     test(`trusted touch ${mode} works in the public Menu examples`, async ({ browser, baseURL }) => {
         test.skip(browser.browserType().name() === 'firefox', 'Playwright Firefox does not support touch contexts');
         const page = await browser.newPage({ baseURL, hasTouch: true, viewport: { width: 1280, height: 800 } });
@@ -28,7 +36,7 @@ for (const mode of ['toggle', 'disabled', 'submenu', 'submenu RTL'] as const) {
                 page,
                 mode === 'submenu RTL'
                     ? 'primitives-menu--nested-rtl'
-                    : mode === 'submenu'
+                    : mode.startsWith('submenu')
                       ? 'primitives-menu--nested'
                       : 'primitives-menu--default'
             );
@@ -43,7 +51,19 @@ for (const mode of ['toggle', 'disabled', 'submenu', 'submenu RTL'] as const) {
                     'data-side',
                     mode === 'submenu RTL' ? 'left' : 'right'
                 );
-                await page.locator(`${popup}[data-open]`).last().locator('[rdxMenuItem]').first().tap();
+                if (mode === 'submenu Enter' || mode === 'submenu Space') {
+                    await page.keyboard.press(mode === 'submenu Enter' ? 'Enter' : 'Space');
+                    await expect(page.locator(`${popup}[data-open]`)).toHaveCount(1);
+                    await expect(page.locator('[rdxMenuSubTrigger]').first()).toBeFocused();
+                    await primary.tap();
+                } else if (mode === 'submenu Arrow') {
+                    await page.keyboard.press('ArrowRight');
+                    await expect(page.locator('[rdxMenuSubTrigger]').first()).toHaveAttribute('aria-expanded', 'true');
+                    await expect(
+                        page.locator(`${popup}[data-open]`).last().locator('[rdxMenuItem]').first()
+                    ).toBeFocused();
+                    await page.keyboard.press('Enter');
+                } else await page.locator(`${popup}[data-open]`).last().locator('[rdxMenuItem]').first().tap();
             } else if (mode === 'disabled') {
                 const box = (await page
                     .getByRole('menuitem', { name: 'New Private Window', exact: true })

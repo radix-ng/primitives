@@ -34,6 +34,20 @@ function ReactMenu() {
             (!open && ['cancel-close', 'touch-cancel-close'].includes(settings.name))
         )
             details.cancel();
+        if (
+            settings.name === 'hybrid-hover-touch-cancel' &&
+            layer === 'main' &&
+            open &&
+            details.reason === 'trigger-press'
+        )
+            details.cancel();
+        if (
+            settings.name === 'hybrid-submenu-keyboard-touch-cancel' &&
+            layer === 'sub' &&
+            open &&
+            details.reason === 'trigger-press'
+        )
+            details.cancel();
         trace.change(layer, open, details.reason, details.isCanceled, details.event, details.trigger);
     }
     const [triggerId, setTriggerId] = useState('custom-trigger');

@@ -280,20 +280,7 @@ export class RdxMenuSubTrigger {
             return;
         }
 
-        this.openedByHover = false;
-        this.openedByKeyboard.set(method === 'keyboard');
-        this.clearSiblingHighlights();
-
-        if (this.submenuContext.isOpen()) {
-            // Toggle (close) only for a click-driven submenu (Base UI `toggle: !openOnHover`).
-            if (!this.openOnHover()) {
-                this.submenuContext.close('none');
-            }
-            return;
-        }
-
-        this.closeSiblingSubmenus();
-        this.submenuContext.show('first', 'trigger-press', event);
+        this.activatePress(event, method === 'keyboard');
     }
 
     protected onPointerDown(event: PointerEvent): void {
@@ -312,16 +299,22 @@ export class RdxMenuSubTrigger {
     private activateTouch(event: MouseEvent): void {
         this.clearOpenTimers();
         this.openedByHover = false;
-        this.openedByKeyboard.set(false);
         this.clearSiblingHighlights();
-        if (this.submenuContext.isOpen() && this.submenuContext.lastOpenChangeReason() !== 'trigger-hover') {
+        if (
+            this.submenuContext.isOpen() &&
+            this.submenuContext.lastOpenChangeReason() !== 'trigger-hover' &&
+            this.submenuContext.lastOpenChangeReason() !== 'list-navigation'
+        ) {
             this.submenuContext.close('trigger-press', event);
         } else {
             if (!this.submenuContext.isOpen()) this.closeSiblingSubmenus();
-            // Touch preserves trigger focus. The first activation after hover promotes that open
-            // session; the next one toggles it. Its compatibility click must not activate twice.
+            // Touch preserves trigger focus. Hover and arrow openings are promoted on the first
+            // press; the next touch press toggles that session. Its compatibility click must not activate twice.
             this.submenuContext.showWithoutAutoFocus('trigger-press', event);
         }
+        // A veto leaves the opening session's keyboard/ARIA policy intact. Root updates this
+        // metadata only after accepting the native touch request.
+        if (this.submenuContext.openInteractionType() === 'touch') this.openedByKeyboard.set(false);
     }
 
     protected onEnter(event: Event): void {
@@ -331,12 +324,19 @@ export class RdxMenuSubTrigger {
         event.stopPropagation();
         this.clearOpenTimers();
         this.ignoreNextClick = 'keyboard';
-        this.openedByHover = false;
-        this.openedByKeyboard.set(true);
-        this.clearSiblingHighlights();
+        this.activatePress(event, true);
+    }
 
-        if (!this.submenuContext.isOpen()) this.closeSiblingSubmenus();
-        this.submenuContext.show('first', 'trigger-press', event);
+    private activatePress(event: Event, keyboard: boolean): void {
+        this.openedByHover = false;
+        if (!this.submenuContext.isOpen()) this.openedByKeyboard.set(keyboard);
+        this.clearSiblingHighlights();
+        if (this.submenuContext.isOpen() && this.submenuContext.lastOpenChangeReason() !== 'trigger-hover') {
+            this.submenuContext.close('trigger-press', event);
+        } else {
+            if (!this.submenuContext.isOpen()) this.closeSiblingSubmenus();
+            this.submenuContext.show('first', 'trigger-press', event);
+        }
     }
 
     protected onArrowKey(event: Event): void {
@@ -351,7 +351,9 @@ export class RdxMenuSubTrigger {
         event.preventDefault();
         event.stopPropagation();
         this.openedByHover = false;
-        this.openedByKeyboard.set(true);
+        // ARIA follows the opening session. Moving into an already touch-opened child does
+        // not turn that session into a keyboard open.
+        if (!this.submenuContext.isOpen()) this.openedByKeyboard.set(true);
         this.clearSiblingHighlights();
         if (!this.submenuContext.isOpen()) this.closeSiblingSubmenus();
         this.submenuContext.show('first', 'list-navigation', event);

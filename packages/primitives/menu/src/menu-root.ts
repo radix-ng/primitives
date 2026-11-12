@@ -554,7 +554,9 @@ export class RdxMenuRoot {
 
         if (this.open()) {
             if (
-                (reason === 'trigger-press' && this.lastOpenChangeReason() === 'trigger-hover') ||
+                (reason === 'trigger-press' &&
+                    (this.lastOpenChangeReason() === 'trigger-hover' ||
+                        this.lastOpenChangeReason() === 'list-navigation')) ||
                 (reason === 'trigger-focus' &&
                     this.parentType() === 'menubar' &&
                     this.lastOpenChangeReason() !== reason)
@@ -589,8 +591,8 @@ export class RdxMenuRoot {
                 ? ((getActiveElement(this.floatingContext.ownerDocument) as HTMLElement | null) ?? undefined)
                 : undefined;
             this.lastOpenChangeReason.set(reason);
-            // Record whether this open came from touch (ADR 0016 §3). Hover / mouse / keyboard all resolve
-            // to false (no `'touch'` pointer type), so only a genuine touch open gates the anchored lock.
+            // Scroll policy follows the input that began this session (ADR 0016/0050). Promoting a
+            // hover/arrow session updates request metadata without changing its original scroll policy.
             const method = reason === 'trigger-focus' ? null : this.resolveInteractionType(event);
             this.openedByTouch.set(method === 'touch');
             this.openInteractionType.set(method);

@@ -100,7 +100,15 @@ export class MenuDriver {
                               pressed: trigger.hasAttribute('data-pressed'),
                               pageScrolled: scrollY > 0,
                               popupScrolled: !!popup && popup.scrollTop > 0,
-                              nativeChanges: window.menuParity.nativeEvents
+                              ...(window.menuParity.config.name.startsWith('hybrid-')
+                                  ? {
+                                        nativeChange: window.menuParity.nativeEvents.at(-1) ?? null,
+                                        subExpanded:
+                                            document
+                                                .querySelector('[data-testid="more"]')
+                                                ?.getAttribute('aria-expanded') ?? null
+                                    }
+                                  : { nativeChanges: window.menuParity.nativeEvents })
                           }
                         : {}),
                     ...(window.menuParity.config.lifecycle

@@ -102,6 +102,14 @@ keyboard focusability. Trigger data-pressed follows the open session; native :ac
 feedback. Menu and Select share trusted CDP pan/cancel input; Firefox touch and WebKit CDP gestures
 remain capability skips. Compare callback event types/trust instead of normalizing framework events.
 
+**Menu mixed input (ADR 0050):** Accepted Root reasons distinguish hover/arrow promotion from press
+sessions. A first touch press promotes an arrow-opened child; repeated touch or keyboard activation
+toggles a press-opened child. Preserve opening keyboard/ARIA classification on arrow entry into an
+already open child and on a vetoed touch promotion. Use Root's accepted request metadata rather than
+a second interaction store. Scroll policy follows the initial session input, independently of the
+latest promotion request. Hybrid comparisons retain original keydown/Pointer Events and the pin's
+actual click trust through exact native-event pairs; do not synthesize events to copy React utilities.
+
 **Native input and collection focus (ADR 0037):** `focus-scope/observeFocusRecovery` observes actual
 inside focus and DOM mutations, including removals/moves without focusout in Firefox/WebKit. Floating
 Focus Manager and Menubar supply target policies. Boolean restoration does not steal a visible

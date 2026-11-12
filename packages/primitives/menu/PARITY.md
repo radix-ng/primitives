@@ -26,10 +26,11 @@ This is incremental behavioral evidence, not complete API or accessibility certi
 | Empty initial opens, delayed items and hovered-child keyboard promotion              | Pinned suite and public browser examples                 | Covered; exact same-index child-focus limitation below          |
 | Trusted taps, disabled values, cancellation, retained reopening and LTR/RTL submenus | Pinned suite, Chromium/WebKit                            | Covered with native-button-focus limits                         |
 | Native touch cancel/pan and touch-opened small/wide scroll policy                    | Pinned suite, Chromium CDP; tap/wheel policy also WebKit | Covered within emulator capabilities                            |
+| Mixed mouse/touch/keyboard, retained sessions, submenu toggles/veto and ARIA         | Pinned suite, Chromium/WebKit and public examples        | Covered; exact native event/focus pairs below                   |
 | Real touch, devices and assistive technology                                         | Not established by this suite                            | Pending                                                         |
 
-The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 122 scenarios and
-366 planned comparisons: 335 execute, with 31 touch capability skips. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
+The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 139 scenarios and
+417 planned comparisons: 369 execute, with 48 touch capability skips. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
 state. Checkbox/radio change requests are observed before cancellation; original event types and
 trusted pointer coordinates are retained. No adapter forces focus, open state or completion.
 
@@ -73,6 +74,13 @@ focus manager ignores a disconnected default anchor; explicit final-focus polici
   presence from actual child closing phases so the child can finish before its owning view is
   destroyed. One exact completion pair records this limitation; ordinary non-animated chain
   selection has matching callbacks. See [ADR 0035](../../../docs/adr/0035-menu-shared-close-lifecycle.md).
+
+- **native-keyboard-events / native-hover-events:** hybrid checkpoints retain original callback
+  metadata. Angular reports its keyboard handler's keydown; the pin reports a click, including an
+  untrusted programmatic click for Space. Hover entry is Pointer Events versus mouse movement;
+  safe-polygon dismissal may report mouse movement versus mouse leave. Exact pairs compare these
+  event objects without replacing them. All physical inputs remain trusted; selection, focus,
+  reasons, ARIA and completion continue to be compared. See [ADR 0050](../../../docs/adr/0050-menu-hybrid-input.md).
 
 Exceptions are exact and fail if changed or disappeared. They do not establish complete parity.
 
@@ -119,7 +127,7 @@ An Angular browser regression also repeats RTL diagonal travel with fractional p
 in a Linux CI failure. The safe polygon uses a one CSS-pixel buffer so integer MouseEvent coordinates
 do not fall through the fractional entry edge before native hit testing reaches the child.
 
-Next: hybrid input and further lifecycle/API combinations, plus deeper composition in the independent
+Next: native/custom-host activation and further lifecycle/API combinations, plus deeper composition in the independent
 [Context Menu](../context-menu/PARITY.md) and [Menubar](../menubar/PARITY.md) suites.
 Device/assistive-technology work remains open. See [ADR 0038](../../../docs/adr/0038-menu-collection-boundaries.md).
 
@@ -183,3 +191,16 @@ Firefox touch contexts and WebKit CDP gestures are unsupported by the runner, so
 comparisons are explicit capability skips. The 44 executable touch comparisons pass on macOS and
 Linux. This evidence does not certify real devices, mobile browser UI or assistive technology.
 See [ADR 0049](../../../docs/adr/0049-menu-trusted-touch.md).
+
+## Mixed input
+
+Seventeen scenarios add 34 executable comparisons for input changes within an open menu and across
+successive/retained sessions. The first tap promotes an arrow-opened child; the next toggles it.
+Enter/Space toggles a touch-opened child. Arrow entry preserves the opening ARIA policy; a canceled
+touch promotion preserves the keyboard session. Original events and the full input timeline remain
+observable, with exact source-event adaptations documented above.
+
+Hover promotion retains the session's original scroll policy. A fresh touch opening starts a new
+small/wide policy. Placement settles before the wheel probe on both the first and subsequent open.
+The new cases pass in Chromium/WebKit on macOS and Linux; unsupported Firefox touch contexts are
+capability skips. Further API/lifecycle and native/custom-host activation audits remain open.

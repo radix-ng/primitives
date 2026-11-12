@@ -115,6 +115,75 @@ describe('Menu touch ownership', () => {
         }
     });
 
+    it.each(['Enter', ' '])('closes a touch-opened child on %s without replacing the key event', async (key) => {
+        TestBed.resetTestingModule();
+        const fixture = TestBed.createComponent(TouchMenu);
+        fixture.autoDetectChanges();
+        try {
+            fixture.componentInstance.main().open.set(true);
+            await fixture.whenStable();
+            const root = fixture.componentInstance.child();
+            const trigger = fixture.nativeElement.querySelector('[rdxMenuSubTrigger]') as HTMLElement;
+            pointer(trigger, 'touch');
+            trigger.dispatchEvent(
+                new MouseEvent('mousedown', { bubbles: true, cancelable: true, button: 0, detail: 1 })
+            );
+            trigger.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, detail: 1 }));
+            await fixture.whenStable();
+            let original: Event | undefined;
+            root.onOpenChange.subscribe((change) => {
+                original = change.event;
+            });
+            const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true });
+            trigger.dispatchEvent(event);
+            expect(root.open()).toBe(false);
+            expect(root.lastOpenChangeReason()).toBe('trigger-press');
+            expect(original).toBe(event);
+        } finally {
+            fixture.destroy();
+        }
+    });
+
+    it.each([false, true])('promotes an arrow-opened child before touch toggling (veto first: %s)', async (veto) => {
+        TestBed.resetTestingModule();
+        const fixture = TestBed.createComponent(TouchMenu);
+        fixture.autoDetectChanges();
+        try {
+            fixture.componentInstance.main().open.set(true);
+            await fixture.whenStable();
+            const root = fixture.componentInstance.child();
+            const trigger = fixture.nativeElement.querySelector('[rdxMenuSubTrigger]') as HTMLElement;
+            trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }));
+            await fixture.whenStable();
+            expect(root.lastOpenChangeReason()).toBe('list-navigation');
+            root.onOpenChange.subscribe((change) => {
+                if (veto && change.open && change.reason === 'trigger-press') {
+                    change.eventDetails.cancel();
+                    veto = false;
+                }
+            });
+            const press = () => {
+                pointer(trigger, 'touch');
+                trigger.dispatchEvent(
+                    new MouseEvent('mousedown', { bubbles: true, cancelable: true, button: 0, detail: 1 })
+                );
+                trigger.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, detail: 1 }));
+            };
+            if (veto) {
+                press();
+                expect(root.open()).toBe(true);
+                expect(root.lastOpenChangeReason()).toBe('list-navigation');
+            }
+            press();
+            expect(root.open()).toBe(true);
+            expect(root.lastOpenChangeReason()).toBe('trigger-press');
+            press();
+            expect(root.open()).toBe(false);
+        } finally {
+            fixture.destroy();
+        }
+    });
+
     it('opens a hover-capable submenu from a touch click', async () => {
         TestBed.resetTestingModule();
         const fixture = TestBed.createComponent(TouchMenu);

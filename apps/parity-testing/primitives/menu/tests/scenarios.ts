@@ -4,6 +4,7 @@ import { basicCases } from '../src/contract';
 import { collectionScenarios } from './collection.scenarios';
 import type { MenuDriver } from './driver';
 import { emptyScenarios } from './empty.scenarios';
+import { hybridScenarios } from './hybrid.scenarios';
 import { lifecycleScenarios } from './lifecycle.scenarios';
 import { pointerScenarios } from './pointer.scenarios';
 import { touchScenarios } from './touch.scenarios';
@@ -163,6 +164,7 @@ export const scenarios = [
     ...collectionScenarios,
     ...emptyScenarios,
     ...touchScenarios,
+    ...hybridScenarios,
     ...rootRemovalScenarios<MenuDriver>({
         popup: 'popup',
         child: 'sub-popup',

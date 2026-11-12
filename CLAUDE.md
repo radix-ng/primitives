@@ -387,6 +387,23 @@ Prefer the package.json scripts above over ad-hoc shell, and keep commands match
     `test-results/` + `playwright-report/` are gitignored; `*-snapshots/` baselines are committed
     (`pnpm test-visual:update` regenerates them after an intentional visual change).
 
+### Scope local checks to the change
+
+Use focused local validation by default: the changed primitive's unit tests, the new/changed parity
+scenarios, and the relevant Storybook behavior specs. Start browser iteration with one engine, then
+check the affected scenarios in the other supported engines. For example:
+
+```bash
+pnpm exec vitest run --config packages/primitives/vite.config.ts packages/primitives/menu/__tests__
+pnpm test-parity menu --grep hybrid- --project=chromium
+pnpm test-parity menu --grep 'hybrid-|submenu-enter|hover-submenu-click'
+```
+
+When changing a shared mechanism, add focused checks of its consumers (Menu changes also affect
+Context Menu and Menubar). Broaden coverage when failures or uncertain dependencies warrant it.
+Do not run all primitive tests or every parity/browser suite on each local iteration. Full runs
+belong to CI or an explicit verification request; this local strategy does not change CI gates.
+
 ## Accessibility
 
 - Follow WAI-ARIA authoring practices for the component pattern.

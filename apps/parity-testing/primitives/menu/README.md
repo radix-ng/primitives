@@ -5,7 +5,7 @@ port is 4505. Angular fixtures are AOT compiled and React imports the unmodified
 Base UI 1.9.0 pin: `cf696d6f6e08c699c5bda24d5a033430909f2285`, archive SHA-256
 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 
-122 scenarios define 366 planned comparisons: 335 execute, with 31 touch capability skips. They cover native keyboard and
+139 scenarios define 417 planned comparisons: 369 execute, with 48 touch capability skips. They cover native keyboard and
 pointer opening, disabled/focusable items, roving focus, edges and looping, repeated and explicit-label
 typeahead, selection and stay-open items, cancelable transactions, modal/background activation,
 forward/backward Tab, checkbox/radio values, LTR/RTL submenu ownership and custom identity links.
@@ -54,7 +54,7 @@ scope. Unchanged/disappeared exceptions fail; there is no blanket normalization 
 
 Custom IDs change between opens in the differential scenario: the pin keys trigger registration
 by id. Angular additionally supports live ID changes without replacing the popup, checked through
-the Events story and unit/browser regressions. Pending work includes hybrid input, further API/lifecycle combinations and real device/AT verification.
+the Events story and unit/browser regressions. Pending work includes native/custom-host activation, further API/lifecycle combinations and real device/AT verification.
 
 ## Whole-root removal
 
@@ -108,3 +108,21 @@ Two exact canceled-open/close focus pairs extend the existing macOS WebKit nativ
 category. Linux and every other touch field remain compared. See
 [ADR 0049](../../../../docs/adr/0049-menu-trusted-touch.md). Emulation does not certify real hardware
 or assistive technology.
+
+## Mixed input and local checks
+
+Seventeen hybrid cases / 34 executable comparisons cover touch/keyboard/mouse selection, successive
+and retained sessions, hover-to-touch promotion and veto, small/wide scrolling, LTR/RTL child entry,
+Enter/Space toggling and canceled child promotion. The same native touch helpers serve the touch-only
+and hybrid suites. Firefox touch contexts are explicitly skipped before page creation.
+
+Hybrid checkpoints compare the latest native callback, including type/trust, and SubTrigger's actual
+aria-expanded. Full original event timelines remain in attachments. Exact native-keyboard-events
+and native-hover-events pairs retain Angular's source events versus the pin's click/mouse handlers.
+The pin creates an untrusted composite Space click; browser inputs remain trusted. Existing macOS
+WebKit native-button-focus pairs extend to hover/touch promotion. No adapter repairs these events.
+
+Use `pnpm test-parity menu --grep hybrid- --project=chromium` while iterating, then omit the project
+filter for the supported engines. Select existing touch/submenu and consumer scenarios when shared
+Menu logic changes. Do not run every suite on each edit. See
+[ADR 0050](../../../../docs/adr/0050-menu-hybrid-input.md).

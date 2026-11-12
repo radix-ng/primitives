@@ -269,6 +269,20 @@ class AngularMenu {
             (!change.open && ['cancel-close', 'touch-cancel-close'].includes(settings.name))
         )
             change.eventDetails.cancel();
+        if (
+            settings.name === 'hybrid-hover-touch-cancel' &&
+            layer === 'main' &&
+            change.open &&
+            change.reason === 'trigger-press'
+        )
+            change.eventDetails.cancel();
+        if (
+            settings.name === 'hybrid-submenu-keyboard-touch-cancel' &&
+            layer === 'sub' &&
+            change.open &&
+            change.reason === 'trigger-press'
+        )
+            change.eventDetails.cancel();
         this.trace.change(
             layer,
             change.open,
