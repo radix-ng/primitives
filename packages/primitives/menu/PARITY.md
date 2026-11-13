@@ -37,10 +37,11 @@ This is incremental behavioral evidence, not complete API or accessibility certi
 | Highlight notifications, native input, labels, same-index replacement and nested Roots             | Pinned suite, unit tests and Item Highlight example      | Covered; exact stale text-label and existing host differences, ADR 0060 |
 | Controlled/handle reopen during CSS/deferred exits, interrupted viewport switches and Root removal | Pinned suite and Switch During Exit example              | Covered; exact hidden controlled-label association, ADR 0061            |
 | Handle ownership during overlapping Root attachment, removal and reassignment                      | Pinned suite, three engines                              | Covered; surviving owners regain control, ADR 0062                      |
+| Menu inside modal Dialog: layered dismissal, focus, retained/deferred exits and parent removal     | Pinned suite and Inside Dialog example                   | Covered; descendant backdrop ancestry, ADR 0063                         |
 | Real touch, devices and assistive technology                                                       | Not established by this suite                            | Pending                                                                 |
 
-The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 285 scenarios and
-855 planned comparisons: 807 execute, with 48 touch capability skips. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
+The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 303 scenarios and
+909 planned comparisons: 861 execute, with 48 touch capability skips. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
 state. Checkbox/radio change requests are observed before cancellation; original event types and
 trusted pointer coordinates are retained. No adapter forces focus, open state or completion.
 
@@ -402,6 +403,25 @@ is independent: the handle neither broadcasts actions nor closes the previous ow
 Use one mounted Root per handle in normal application composition. See
 [ADR 0062](../../../docs/adr/0062-menu-overlapping-handle-owners.md).
 
-Further Menu overlay composition and real device/AT verification remain separate audits.
-Popover and Dialog receive existing consumer regression checks for the shared registry change;
-their independent API/behavior parity audits are not covered by this Menu suite.
+## Menu inside Dialog
+
+Eighteen cases / 54 comparisons exercise Menu and submenu inside a modal Dialog with matching
+portal structure. They compare Escape order, item selection, Tab/Shift+Tab, modal/non-modal Menu
+outside presses, close vetoes, retained/deferred exits, parent closure, and parent destruction during
+open/CSS/deferred states. Parent recreation proves that no old focus trap or isolation survives.
+Dialog changes and completions are recorded separately from each Menu Root; all snapshots include
+native focus and Dialog/Menu visibility and inert state. No new expected differences are added.
+
+A modal Menu's backdrop is outside its own popup but belongs to its ancestor Dialog. Dismissal now
+uses the existing descendant floatingElements footprint when recording press-start containment.
+When Menu closes on pointerdown and removes that backdrop, the trailing click does not also dismiss
+Dialog. The next outside gesture remains eligible. Own-layer backdrops still dismiss their owner;
+no React synthetic-event flags, global gesture store or additional public API is introduced.
+
+The public Inside Dialog example includes a submenu, keepMounted and deferred completion. Browser
+checks cover fresh/retained layer-by-layer dismissal, focus return and explicit completion. Shared
+dismissal consumers receive focused regression checks. See
+[ADR 0063](../../../docs/adr/0063-menu-dialog-layered-dismissal.md).
+
+Menu-triggered Dialog, further Popover composition and real device/AT verification remain separate
+audits. These Menu integration comparisons do not certify Dialog's independent API/behavior parity.

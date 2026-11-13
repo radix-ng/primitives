@@ -13,6 +13,7 @@ import { exitClass, heldExitClass } from '../../../shared/lifecycle';
 import { changeCollection, menuEntries, submenuEntries } from '../../../shared/menu-collection';
 import { rootRemovalFinalFocus } from '../../../shared/root-removal';
 import { classes, config, installProbe, type Layer } from './contract';
+import { AngularDialogMenu } from './dialog.angular';
 import { AngularFocusBoundary } from './focus-boundary.angular';
 import { AngularHandleOverlap } from './handle-overlap.angular';
 import { changeHighlightEntries, createHighlightRecorder } from './highlight';
@@ -329,17 +330,19 @@ class AngularMenu {
     }
 }
 void bootstrapApplication(
-    settings.name.startsWith('handle-overlap-')
-        ? AngularHandleOverlap
-        : settings.multiTrigger
-          ? AngularMultiTriggers
-          : settings.projection
-            ? AngularProjection
-            : settings.focusBoundary
-              ? AngularFocusBoundary
-              : settings.host
-                ? AngularHosts
-                : AngularMenu,
+    settings.dialog
+        ? AngularDialogMenu
+        : settings.name.startsWith('handle-overlap-')
+          ? AngularHandleOverlap
+          : settings.multiTrigger
+            ? AngularMultiTriggers
+            : settings.projection
+              ? AngularProjection
+              : settings.focusBoundary
+                ? AngularFocusBoundary
+                : settings.host
+                  ? AngularHosts
+                  : AngularMenu,
     {
         providers: [provideZonelessChangeDetection()]
     }

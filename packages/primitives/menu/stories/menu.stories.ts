@@ -23,6 +23,8 @@ import { RdxMenuFocusReturnComponent } from './menu-focus-return';
 import focusReturnSource from './menu-focus-return?raw';
 import { RdxMenuHighlightExampleComponent } from './menu-highlight';
 import highlightSource from './menu-highlight?raw';
+import { RdxMenuInDialogComponent } from './menu-in-dialog';
+import inDialogSource from './menu-in-dialog?raw';
 import { RdxMenuInitialFocusComponent } from './menu-initial-focus';
 import initialFocusSource from './menu-initial-focus?raw';
 import { RdxMenuKeepMountedComponent } from './menu-keep-mounted';
@@ -288,4 +290,11 @@ export const Composition: Story = {
             <rdx-menu-composition />
         `
     })
+};
+
+export const InDialog: Story = {
+    tags: ['!visual'],
+    decorators: [moduleMetadata({ imports: [RdxMenuInDialogComponent] })],
+    parameters: source(inDialogSource),
+    render: () => ({ template: '<rdx-menu-in-dialog />' })
 };

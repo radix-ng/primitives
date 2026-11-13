@@ -293,6 +293,16 @@ host when projecting their children.
 
 <Canvas of={Stories.Composition} />
 
+### Inside Dialog
+
+Declare Menu inside Dialog's popup so both layers share their floating ancestry across portals.
+Escape closes the deepest menu first and returns focus through its triggers. A press on Menu's
+modal backdrop closes Menu while keeping Dialog open; a later press can dismiss Dialog itself.
+Selecting an item closes its menu chain while preserving Dialog. Keep mounted and Defer menu exit
+exercise retained views and explicit completion; Finish menu exit completes a held close.
+
+<Canvas of={Stories.InDialog} />
+
 ### Events
 
 Opening through `defaultOpen` or an external `open` binding without a native opening request focuses

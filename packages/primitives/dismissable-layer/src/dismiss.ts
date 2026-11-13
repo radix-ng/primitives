@@ -561,8 +561,8 @@ export class RdxDismiss {
 
     /**
      * Whether `target` is logically inside this layer: within this popup's floating element or one of its
-     * registered triggers, within any **open descendant** node's floating element / triggers, or within a
-     * registered branch.
+     * registered triggers, within any **open descendant** node's owned root elements / triggers, or
+     * within a registered branch. Descendant backdrops are inside the ancestor, outside their owner.
      */
     private isInside(target: EventTarget | null): boolean {
         if (this.contextContains(this.context, target)) {
@@ -574,6 +574,14 @@ export class RdxDismiss {
             for (const child of node.tree.children(node, { onlyOpen: true })) {
                 if (child.context && this.contextContains(child.context, target)) {
                     return true;
+                }
+                // A child's backdrop is outside that child, but still belongs to this ancestor.
+                // Capture this before the child closes on pointerdown and removes its hit target;
+                // the ancestor's intentional click must not dismiss a second layer of the gesture.
+                if (child.context && isNode(target)) {
+                    for (const element of child.context.floatingElements) {
+                        if (element.contains(target)) return true;
+                    }
                 }
             }
         }

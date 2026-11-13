@@ -30,6 +30,11 @@ export class MenuDriver {
     async goto(name: CaseName) {
         if (name.startsWith('root-remove-') || name.startsWith('empty-')) await this.page.clock.install();
         await this.page.goto(`/${this.framework}.html?case=${name}`);
+        if (name.startsWith('dialog-menu-')) {
+            await this.item('dialog-trigger').click();
+            await expect(this.item('dialog-popup')).toBeVisible();
+            await expect.poll(() => this.page.evaluate(() => window.menuParity.dialog?.completions.at(-1))).toBe(true);
+        }
         await expect(this.trigger).toBeVisible();
         this.metadata = await this.page.evaluate(() => window.menuParity.reference);
         await this.checkpoint('initial');
@@ -52,7 +57,8 @@ export class MenuDriver {
                 (window.menuParity.config.empty?.retained && window.menuParity.config.empty.nested) ||
                 (window.menuParity.config.focusBoundary?.retained && window.menuParity.config.focusBoundary.nested) ||
                 (window.menuParity.config.projection?.retained && window.menuParity.config.projection.nested) ||
-                (window.menuParity.config.host?.initial?.nested && window.menuParity.config.host.retained)
+                (window.menuParity.config.host?.initial?.nested && window.menuParity.config.host.retained) ||
+                (window.menuParity.config.dialog?.nested && window.menuParity.config.dialog.retained)
         );
         if (retainedSub) await expect(this.subPopup).toBeHidden();
         else await expect(this.subPopup).toHaveCount(0);
@@ -151,6 +157,20 @@ export class MenuDriver {
                         ?.split(/\s+/)
                         .every((id) => document.getElementById(id)?.textContent?.trim());
                 return {
+                    ...(window.menuParity.dialog
+                        ? {
+                              dialog: {
+                                  mounted: !!document.querySelector('[data-testid="dialog-popup"]'),
+                                  open: !!document.querySelector('[data-testid="dialog-popup"][data-open]'),
+                                  visible: visible(document.querySelector('[data-testid="dialog-popup"]')),
+                                  labelled: labelled(document.querySelector('[data-testid="dialog-popup"]')),
+                                  inert: !!document.querySelector('[data-testid="dialog-popup"]')?.closest('[inert]'),
+                                  menuInert: !!popup?.closest('[inert]'),
+                                  changes: window.menuParity.dialog.changes,
+                                  completions: window.menuParity.dialog.completions
+                              }
+                          }
+                        : {}),
                     ...(window.menuParity.highlights
                         ? {
                               highlights: Object.fromEntries(

@@ -10,7 +10,7 @@ port is 4505. Angular fixtures are AOT compiled and React imports the unmodified
 Base UI 1.9.0 pin: `cf696d6f6e08c699c5bda24d5a033430909f2285`, archive SHA-256
 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 
-285 scenarios define 855 planned comparisons: 807 execute, with 48 touch capability skips. They cover native keyboard and
+303 scenarios define 909 planned comparisons: 861 execute, with 48 touch capability skips. They cover native keyboard and
 pointer opening, disabled/focusable items, roving focus, edges and looping, repeated and explicit-label
 typeahead, selection and stay-open items, cancelable transactions, modal/background activation,
 forward/backward Tab, checkbox/radio values, LTR/RTL submenu ownership and custom identity links.
@@ -237,3 +237,17 @@ the handle's actual isOpen value. Commands only change application views/data or
 There are no new expected differences. Use one mounted Root per handle normally; overlap handling
 protects view transitions rather than broadcasting actions to several menus. See
 [ADR 0062](../../../../docs/adr/0062-menu-overlapping-handle-owners.md).
+
+## Menu inside Dialog
+
+Run `pnpm test-parity menu --grep dialog-menu-`. Eighteen cases / 54 comparisons use a modal Dialog
+hosting a Menu and optional submenu. Cases cover Escape, inside/outside presses, item selection,
+native Tab/Shift+Tab, canceled close, retained/deferred exits and parent removal/recreation while
+open or closing. F3 completes Menu's deferred exit; F4 closes the externally bound Dialog; F5/F6
+remove/recreate its application view. CSS exits use paused real animations rather than fake state.
+
+Dialog callback/completion histories are separate from the main/sub Menu channels. Native event
+types remain attached to the report. Popup names, focus, visibility and inert state are observed
+directly. A backdrop press closes Menu alone, and the next outside press closes Dialog. No new
+exceptions are needed. This is Menu composition evidence, not a full independent Dialog audit.
+See [ADR 0063](../../../../docs/adr/0063-menu-dialog-layered-dismissal.md).

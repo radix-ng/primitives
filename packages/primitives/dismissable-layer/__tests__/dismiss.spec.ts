@@ -167,6 +167,34 @@ describe('RdxDismiss', () => {
 
     // ─── outside press ─────────────────────────────────────────────────────────
 
+    it('keeps an ancestor open when its child closes from a press on the child backdrop', async () => {
+        const tree = new RdxFloatingTree();
+        const parent = context(() => true, el());
+        const childOpen = signal(true);
+        const child = context(childOpen, el());
+        const backdrop = el();
+        child.addFloatingElement(backdrop);
+        const parentNode = tree.register({ id: 'parent', parent: null, context: parent });
+        const childNode = tree.register({ id: 'child', parent: parentNode, context: child });
+        const parentClose = vi.fn();
+        const childClose = vi.fn(() => {
+            childOpen.set(false);
+            child.removeFloatingElement(backdrop);
+            backdrop.remove();
+        });
+        build(parent, () => parentNode, parentClose, { outsidePressEvent: () => 'intentional' });
+        build(child, () => childNode, childClose);
+        await flush();
+        backdrop.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+        expect(childClose).toHaveBeenCalledOnce();
+        // Removing the press target can put the native trailing click on the common ancestor.
+        document.body.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        expect(parentClose).not.toHaveBeenCalled();
+        document.body.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+        document.body.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        expect(parentClose).toHaveBeenCalledOnce();
+    });
+
     it('dismisses on a pointer press outside the layer', async () => {
         const onDismiss = vi.fn();
         const floating = el();

@@ -2,6 +2,7 @@ import { lifecycleCases, lifecycleConfig } from '../../../shared/lifecycle';
 import { menuCollectionCases } from '../../../shared/menu-collection';
 import { createMenuProbe, type MenuProbe } from '../../../shared/menu-probe';
 import { rootRemovalCases, rootRemovalConfig } from '../../../shared/root-removal';
+import { dialogMenuCases, dialogMenuConfig, type DialogProbe } from './dialog';
 import { emptyCases, emptyConfig } from './empty';
 import { focusBoundaryCases, focusBoundaryConfig } from './focus-boundary';
 import { handleOverlapCases } from './handle-overlap';
@@ -55,6 +56,7 @@ export const cases = [
     ...highlightCases,
     ...multiTriggerCases,
     ...handleOverlapCases,
+    ...dialogMenuCases,
     ...lifecycleCases,
     ...pointerCases,
     ...menuCollectionCases,
@@ -76,6 +78,7 @@ export type Probe = MenuProbe<ReturnType<typeof config>, Layer> & {
     finalFocusCalls?: { layer: Layer; type: string | null }[];
     highlights?: ReturnType<typeof createHighlightRecorder>;
     handleOpen?: () => boolean;
+    dialog?: DialogProbe;
 };
 declare global {
     const __PARITY_REFERENCE__: Probe['reference'];
@@ -93,6 +96,7 @@ export function config() {
     const focusBoundary = focusBoundaryConfig(name);
     const projection = projectionConfig(name);
     const multiTrigger = multiTriggerConfig(name);
+    const dialog = dialogMenuConfig(name);
     return {
         name: name as CaseName,
         dir: name.endsWith('-rtl') ? ('rtl' as const) : ('ltr' as const),
@@ -104,6 +108,7 @@ export function config() {
         projection,
         highlight: highlightConfig(name),
         multiTrigger,
+        dialog,
         modal:
             focusBoundary?.target?.key === 'outside'
                 ? false
@@ -124,6 +129,7 @@ export function config() {
         radio:
             name.startsWith('radio') || name === 'drag-radio' || ['touch-radio', 'touch-disabled-radio'].includes(name),
         submenu:
+            dialog?.nested ||
             highlightConfig(name)?.nested ||
             projection?.nested ||
             touch?.submenu ||
@@ -136,43 +142,51 @@ export function config() {
         collectionOnly: name === 'collection-empty-refill' || (!!empty && !empty.nested),
         label: ['explicit-label', 'highlight-explicit-label'].includes(name) ? 'Zebra' : undefined,
         ids: name.endsWith('-ids'),
-        lifecycle: multiTrigger?.lifecycle
+        lifecycle: dialog
             ? {
-                  keepMounted: multiTrigger.retained,
-                  animated: !multiTrigger.lifecycle.deferred,
-                  deferred: multiTrigger.lifecycle.deferred,
-                  canceled: false,
+                  keepMounted: dialog.retained,
+                  animated: dialog.animated,
+                  deferred: dialog.deferred,
+                  canceled: dialog.canceled,
                   late: false
               }
-            : multiTrigger?.retained
-              ? { keepMounted: true, animated: false, deferred: false, canceled: false, late: false }
-              : focusBoundary
-                ? {
-                      keepMounted: focusBoundary.retained,
-                      animated: false,
-                      deferred: false,
-                      canceled: false,
-                      late: false
-                  }
-                : removal
+            : multiTrigger?.lifecycle
+              ? {
+                    keepMounted: multiTrigger.retained,
+                    animated: !multiTrigger.lifecycle.deferred,
+                    deferred: multiTrigger.lifecycle.deferred,
+                    canceled: false,
+                    late: false
+                }
+              : multiTrigger?.retained
+                ? { keepMounted: true, animated: false, deferred: false, canceled: false, late: false }
+                : focusBoundary
                   ? {
-                        keepMounted: removal.retained,
-                        animated: removal.animated,
-                        deferred: removal.deferred,
+                        keepMounted: focusBoundary.retained,
+                        animated: false,
+                        deferred: false,
                         canceled: false,
                         late: false
                     }
-                  : lifecycleConfig(
-                        highlightConfig(name)?.retained ||
-                            empty?.retained ||
-                            touch?.retained ||
-                            host?.retained ||
-                            projection?.retained
-                            ? 'lifecycle-keep'
-                            : name === 'lifecycle-submenu-css'
-                              ? 'lifecycle-css-exit'
-                              : name
-                    ),
+                  : removal
+                    ? {
+                          keepMounted: removal.retained,
+                          animated: removal.animated,
+                          deferred: removal.deferred,
+                          canceled: false,
+                          late: false
+                      }
+                    : lifecycleConfig(
+                          highlightConfig(name)?.retained ||
+                              empty?.retained ||
+                              touch?.retained ||
+                              host?.retained ||
+                              projection?.retained
+                              ? 'lifecycle-keep'
+                              : name === 'lifecycle-submenu-css'
+                                ? 'lifecycle-css-exit'
+                                : name
+                      ),
         pointer: pointerConfig(name)
     };
 }

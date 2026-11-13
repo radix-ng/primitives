@@ -11,6 +11,65 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
     await page.waitForSelector('#storybook-root', { state: 'attached' });
 }
 
+for (const retained of [false, true]) {
+    test(`Menu inside Dialog: Escape and backdrop close one layer at a time, retained=${retained}`, async ({
+        page
+    }) => {
+        const errors = collectRuntimeDiagnostics(page);
+        await gotoStory(page, 'primitives-menu--in-dialog');
+        const dialogTrigger = page.getByRole('button', { name: 'Open workspace', exact: true });
+        await dialogTrigger.click();
+        const dialog = page.getByRole('dialog');
+        await expect(dialog).toBeVisible();
+        if (retained) await page.getByRole('checkbox', { name: 'Keep mounted', exact: true }).check();
+        const trigger = page.getByRole('button', { name: 'Actions', exact: true });
+        await trigger.press('Enter');
+        await expect(page.getByRole('menuitem', { name: 'Rename', exact: true })).toBeFocused();
+        await page.getByRole('menuitem', { name: 'Share', exact: true }).press('ArrowRight');
+        await expect(page.getByRole('menuitem', { name: 'Copy link', exact: true })).toBeFocused();
+        await page.keyboard.press('Escape');
+        await expect(page.getByRole('menuitem', { name: 'Share', exact: true })).toBeFocused();
+        await expect(dialog).toBeVisible();
+        await page.keyboard.press('Escape');
+        await expect(trigger).toBeFocused();
+        await expect(dialog).toBeVisible();
+        await trigger.click();
+        await expect(page.getByRole('menuitem', { name: 'Rename', exact: true })).toBeVisible();
+        await page.mouse.click(5, 5);
+        await expect(page.getByRole('menu')).toHaveCount(0);
+        await expect(dialog).toBeVisible();
+        await expect(trigger).toBeFocused();
+        await page.mouse.click(5, 5);
+        await expect(dialog).toHaveCount(0);
+        await expect(dialogTrigger).toBeFocused();
+        expect(errors).toEqual([]);
+    });
+}
+
+test('Menu inside Dialog: completes a deferred retained exit without closing its host', async ({ page }) => {
+    const errors = collectRuntimeDiagnostics(page);
+    await gotoStory(page, 'primitives-menu--in-dialog');
+    await page.getByRole('button', { name: 'Open workspace', exact: true }).click();
+    await page.getByRole('checkbox', { name: 'Keep mounted', exact: true }).check();
+    await page.getByRole('checkbox', { name: 'Defer menu exit', exact: true }).check();
+    await page.getByRole('button', { name: 'Actions', exact: true }).press('Enter');
+    await expect(page.getByRole('menuitem', { name: 'Rename', exact: true })).toBeFocused();
+    await expect(page.locator('output').last()).toHaveText('Completed: open');
+    await page.keyboard.press('Escape');
+    await expect(page.locator('[rdxMenuPopup]').first()).toHaveAttribute('data-ending-style', '');
+    await expect(page.getByRole('dialog')).toBeVisible();
+    await expect(page.locator('output').last()).toHaveText('Completed: open');
+    const finish = page.getByRole('button', { name: 'Finish menu exit', exact: true });
+    await finish.press('Enter');
+    await expect(page.locator('output').last()).toHaveText('Completed: open → closed');
+    await expect(page.locator('[rdxMenuPopup]').first()).toBeHidden();
+    await expect(finish).toBeFocused();
+    await expect(page.getByRole('dialog')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    expect(errors).toEqual([]);
+});
+
 const trigger = '[rdxMenuTrigger]';
 const popup = '[rdxMenuPopup]';
 

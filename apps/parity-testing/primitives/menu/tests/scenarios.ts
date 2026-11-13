@@ -2,6 +2,7 @@ import { expect } from '@playwright/test';
 import { rootRemovalScenarios } from '../../../shared/root-removal.scenarios';
 import { basicCases } from '../src/contract';
 import { collectionScenarios } from './collection.scenarios';
+import { dialogMenuScenarios } from './dialog.scenarios';
 import type { MenuDriver } from './driver';
 import { emptyScenarios } from './empty.scenarios';
 import { focusBoundaryScenarios } from './focus-boundary.scenarios';
@@ -18,6 +19,7 @@ import { multiTriggerLifecycleScenarios } from './trigger-lifecycle.scenarios';
 import { multiTriggerScenarios } from './triggers.scenarios';
 
 export const scenarios = [
+    ...dialogMenuScenarios,
     ...handleOverlapScenarios,
     ...multiTriggerLifecycleScenarios,
     ...highlightScenarios,
