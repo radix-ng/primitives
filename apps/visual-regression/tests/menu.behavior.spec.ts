@@ -14,6 +14,40 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
 const trigger = '[rdxMenuTrigger]';
 const popup = '[rdxMenuPopup]';
 
+for (const retained of [false, true]) {
+    test(`Menu switch during exit: model/handle reopening with keepMounted=${retained}`, async ({ page }) => {
+        const errors = collectRuntimeDiagnostics(page);
+        await gotoStory(page, 'primitives-menu--switch-during-exit');
+        if (retained) await page.getByLabel('Keep mounted', { exact: true }).check();
+        await page.getByRole('button', { name: 'Inbox', exact: true }).click();
+        await expect(page.getByRole('menuitem', { name: 'New message', exact: true })).toBeVisible();
+        await expect(page.locator('output')).toHaveText('Completed: open');
+        await page.keyboard.press('Escape');
+        await expect(page.locator(popup)).toHaveAttribute('data-ending-style', '');
+        await expect(page.locator('output')).toHaveText('Completed: open');
+        await page.getByRole('button', { name: 'Open Archive', exact: true }).click();
+        await expect(page.getByRole('menuitem', { name: 'Restore message', exact: true })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'Archive', exact: true })).toHaveAttribute(
+            'aria-expanded',
+            'true'
+        );
+        await expect(page.locator('output')).toHaveText('Completed: open → open');
+        await page.getByRole('button', { name: 'Close', exact: true }).click();
+        await expect(page.locator(popup)).toHaveAttribute('data-ending-style', '');
+        await page.getByRole('button', { name: 'Open Inbox', exact: true }).click();
+        await expect(page.getByRole('menuitem', { name: 'New message', exact: true })).toBeVisible();
+        await expect(page.locator('output')).toHaveText('Completed: open → open → open');
+        await page.getByRole('button', { name: 'Close', exact: true }).click();
+        await expect(page.locator(popup)).toHaveAttribute('data-ending-style', '');
+        await page.getByRole('button', { name: 'Finish exit', exact: true }).press('Enter');
+        if (retained) await expect(page.locator(popup)).toBeHidden();
+        else await expect(page.locator(popup)).toHaveCount(0);
+        await expect(page.locator('output')).toHaveText('Completed: open → open → open → closed');
+        await expect(page.getByRole('button', { name: 'Finish exit', exact: true })).toBeFocused();
+        expect(errors).toEqual([]);
+    });
+}
+
 test('Menu item highlight: previews keyboard, explicit labels, disabled hover and clearing', async ({ page }) => {
     const errors = collectRuntimeDiagnostics(page);
     await gotoStory(page, 'primitives-menu--item-highlight');

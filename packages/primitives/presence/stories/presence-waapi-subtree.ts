@@ -17,6 +17,7 @@ import { PresenceDemo } from './presence';
     // Exception to the no-story-CSS rule: this fixture deliberately runs an exit `@keyframes` on a
     // nested child to prove subtree detection. A named, descendant-targeted `@keyframes` can't be
     // expressed with headless Tailwind utilities story-locally, so the styles stay here.
+    // eslint-disable-next-line no-restricted-syntax -- Descendant keyframes exercise subtree exit detection (ADR 0011).
     styles: `
         @keyframes waapi-child-exit {
             from {

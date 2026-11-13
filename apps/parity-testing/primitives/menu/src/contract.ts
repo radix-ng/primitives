@@ -89,6 +89,7 @@ export function config() {
     const host = hostConfig(name);
     const focusBoundary = focusBoundaryConfig(name);
     const projection = projectionConfig(name);
+    const multiTrigger = multiTriggerConfig(name);
     return {
         name: name as CaseName,
         dir: name.endsWith('-rtl') ? ('rtl' as const) : ('ltr' as const),
@@ -99,7 +100,7 @@ export function config() {
         focusBoundary,
         projection,
         highlight: highlightConfig(name),
-        multiTrigger: multiTriggerConfig(name),
+        multiTrigger,
         modal:
             focusBoundary?.target?.key === 'outside'
                 ? false
@@ -132,29 +133,43 @@ export function config() {
         collectionOnly: name === 'collection-empty-refill' || (!!empty && !empty.nested),
         label: ['explicit-label', 'highlight-explicit-label'].includes(name) ? 'Zebra' : undefined,
         ids: name.endsWith('-ids'),
-        lifecycle: multiTriggerConfig(name)?.retained
-            ? { keepMounted: true, animated: false, deferred: false, canceled: false, late: false }
-            : focusBoundary
-              ? { keepMounted: focusBoundary.retained, animated: false, deferred: false, canceled: false, late: false }
-              : removal
+        lifecycle: multiTrigger?.lifecycle
+            ? {
+                  keepMounted: multiTrigger.retained,
+                  animated: !multiTrigger.lifecycle.deferred,
+                  deferred: multiTrigger.lifecycle.deferred,
+                  canceled: false,
+                  late: false
+              }
+            : multiTrigger?.retained
+              ? { keepMounted: true, animated: false, deferred: false, canceled: false, late: false }
+              : focusBoundary
                 ? {
-                      keepMounted: removal.retained,
-                      animated: removal.animated,
-                      deferred: removal.deferred,
+                      keepMounted: focusBoundary.retained,
+                      animated: false,
+                      deferred: false,
                       canceled: false,
                       late: false
                   }
-                : lifecycleConfig(
-                      highlightConfig(name)?.retained ||
-                          empty?.retained ||
-                          touch?.retained ||
-                          host?.retained ||
-                          projection?.retained
-                          ? 'lifecycle-keep'
-                          : name === 'lifecycle-submenu-css'
-                            ? 'lifecycle-css-exit'
-                            : name
-                  ),
+                : removal
+                  ? {
+                        keepMounted: removal.retained,
+                        animated: removal.animated,
+                        deferred: removal.deferred,
+                        canceled: false,
+                        late: false
+                    }
+                  : lifecycleConfig(
+                        highlightConfig(name)?.retained ||
+                            empty?.retained ||
+                            touch?.retained ||
+                            host?.retained ||
+                            projection?.retained
+                            ? 'lifecycle-keep'
+                            : name === 'lifecycle-submenu-css'
+                              ? 'lifecycle-css-exit'
+                              : name
+                    ),
         pointer: pointerConfig(name)
     };
 }

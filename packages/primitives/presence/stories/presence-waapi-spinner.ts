@@ -17,6 +17,7 @@ import { PresenceDemo } from './presence';
     // Exception to the no-story-CSS rule: this fixture needs a pre-existing infinite `@keyframes`
     // spinner to exercise the freshness filter. A named, infinite `@keyframes` can't be expressed with
     // headless Tailwind utilities story-locally, so the styles stay here.
+    // eslint-disable-next-line no-restricted-syntax -- The infinite keyframe fixture exercises the freshness filter (ADR 0011).
     styles: `
         @keyframes waapi-spin {
             to {

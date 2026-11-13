@@ -23,6 +23,7 @@ export class RdxMenuViewport {
     protected readonly viewport = usePopupViewport({
         popup: () => this.rootContext.popupElement(),
         open: () => this.rootContext.isOpen(),
+        present: () => this.rootContext.present() || this.rootContext.transitionStatus() === 'ending',
         register: (notify) => this.rootContext.registerViewport(notify)
     });
 }

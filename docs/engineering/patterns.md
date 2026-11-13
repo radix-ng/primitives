@@ -8,6 +8,10 @@ New families use `Rdx<Name><Role>` and `<name>-<role>.ts`; retain an existing fa
 
 For a new family use [radix-primitive](../../.agents/skills/radix-primitive/SKILL.md), which covers the entry, tsconfig path, peer dependencies, schematic, stories and checks.
 
+## Imports and story boundaries
+
+ESLint restricts private package paths and cross-entry `src` imports in library/application code; use public secondary entry points. Local implementation helpers remain relative imports. Unit specs may intentionally inspect internals. Story/recipe components use shared demo styles; ESLint rejects component styles, inline `<style>` blocks and static style attributes. Computed layout bindings remain available for positioning and virtualization. These rules run in the existing ESLint checks locally and in CI.
+
 ## State and reactivity
 
 Match each Base UI part's documented boolean attributes (`data-open`, `data-closed`, `data-popup-open`, `data-checked`, etc.); do not substitute a generic `data-state` enum. `data-instant` remains a string where the contract uses one. `data-starting-style` / `data-ending-style` are transient transition status, not permanent mirrors of open state. Remove absent attributes with `undefined`.

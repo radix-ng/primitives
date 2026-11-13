@@ -143,6 +143,7 @@ content multi-root.
 - [Multiple triggers](../examples/menu--multiple-triggers.md)
 - [Controlled triggers](../examples/menu--controlled-triggers.md)
 - [Animated triggers](../examples/menu--animated-triggers.md)
+- [Switch during exit](../examples/menu--switch-during-exit.md)
 - [Default](../examples/menu--default.md)
 - [Initial focus](../examples/menu--initial-focus.md)
 - [Return focus](../examples/menu--return-focus.md)

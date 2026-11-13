@@ -43,16 +43,17 @@ requests observable. Both timers cancel on leave/out, keyboard opening, accepted
 Item hover coordinates sibling closing independently of the highlight guard. A retained popup
 captures actual pre-open focus before native trigger transfer; focus-only opening has programmatic
 intent. Hidden items resolve through existing DI-owned Menu roots to visible surviving triggers.
-There is no global focus history or mirrored open state. Eleven exact Menubar pairs include two
-WebKit coordinate-travel focus/highlight limits measured on both macOS/Linux, alongside the prior
+There is no global focus history or mirrored open state. Reviewed Menubar differences include
+WebKit coordinate-travel focus/highlight limits measured on both macOS/Linux, alongside
 Tab-entry and nested-completion limits. Retained focus/completion otherwise match the pin.
 Menu orientation (ADR 0043) reuses Composite axis/RTL keys for triggers, popups and submenu
 entry. Parent orientation comes from Menu DI or the registered Menubar coordinator. Popup owns
 main-axis navigation and cross-axis return; lifecycle-owned handlers relay the original key across
 portals. A bubbled child key reaches the bar's delegated handler before that ancestor popup list,
 while direct keys stay local. Internal navigation hooks take KeyboardEvent, not a horizontal offset.
-Menubar has 77 cases / 231 comparisons. Two additional exact stale-tabindex pairs retain one Angular
-Tab stop where the pin restores an old one after synchronous return; thirteen reviewed pairs remain.
+Reviewed stale-tabindex differences retain an Angular Tab stop where the pin restores an old one
+after synchronous return. Read the [coverage matrix](../../../apps/parity-testing/COVERAGE.md) and
+[Menubar differences](../../../apps/parity-testing/primitives/menubar/expected-differences.json) for current scope and exceptions.
 
 Dialog/Drawer shared demo styles use current boolean states; Drawer uses CSS transitions so gesture
 updates do not replay entry keyframes. Browser exit tests pause/seek/finish actual WAAPI effects.

@@ -14,21 +14,21 @@ Base UI is the primary API/behavior reference; Radix UI is secondary.
 
 ## Workflow routing
 
-| Task                                            | Use                                                                        |
-| ----------------------------------------------- | -------------------------------------------------------------------------- |
-| Find architecture or a shared mechanism         | [radix-project-knowledge](.agents/skills/radix-project-knowledge/SKILL.md) |
-| Add a primitive or a new compound part          | [radix-primitive](.agents/skills/radix-primitive/SKILL.md)                 |
-| Write or change stories / public MDX            | [radix-storybook](.agents/skills/radix-storybook/SKILL.md)                 |
-| Choose, write or run regression checks          | [radix-testing](.agents/skills/radix-testing/SKILL.md)                     |
-| Review a primitive                              | [radix-review](.agents/skills/radix-review/SKILL.md)                       |
-| Maintain engineering docs or agent instructions | [radix-docs](.agents/skills/radix-docs/SKILL.md)                           |
+| Task                                            | Use                                                        |
+| ----------------------------------------------- | ---------------------------------------------------------- |
+| Find architecture or a shared mechanism         | [Engineering map](docs/engineering/README.md)              |
+| Add a primitive or a new compound part          | [radix-primitive](.agents/skills/radix-primitive/SKILL.md) |
+| Write or change stories / public MDX            | [radix-storybook](.agents/skills/radix-storybook/SKILL.md) |
+| Choose, write or run regression checks          | [radix-testing](.agents/skills/radix-testing/SKILL.md)     |
+| Review a primitive                              | [radix-review](.agents/skills/radix-review/SKILL.md)       |
+| Maintain engineering docs or agent instructions | [radix-docs](.agents/skills/radix-docs/SKILL.md)           |
 
 ## Runtime invariants
 
 - Keep primitives headless; expose each part's documented boolean state attributes (`data-open`, `data-closed`, `data-checked`, etc.). Follow the per-part contract instead of introducing a generic `data-state` enum.
 - Use signal inputs/models/outputs and typed `createContext` interfaces. Pass the docs path to `createContext`; use `undefined` to remove host attributes.
 - Prefer `hostDirectives` composition. Thin positioners extend `RdxPopperContentWrapper`; see [composition](docs/engineering/composition.md).
-- Do not introduce `@angular/cdk`, `NgZone` wrappers or independent platform sniffing. Reuse owned core utilities.
+- Avoid `NgZone` wrappers and independent platform sniffing. Reuse owned core utilities.
 - Use constructors for DI/host setup, reactive APIs for input-driven work, render hooks for DOM measurements, and `DestroyRef` for cleanup. See [patterns](docs/engineering/patterns.md) for details.
 - Preserve native semantics, associated labels, keyboard/focus behavior and RTL. Trace accessibility claims to source and tests.
 

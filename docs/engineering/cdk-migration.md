@@ -1,6 +1,6 @@
 # Owned replacements for Angular CDK
 
-**`@angular/cdk` is no longer a dependency** (not a peer, not installed by `ng-add`, not in the root lockfile). New code must not reintroduce CDK imports.
+**`@angular/cdk` is no longer a dependency** (not a peer, not installed by `ng-add`, not in the root lockfile).
 
 Own replacements for what CDK used to provide:
 

@@ -14,6 +14,54 @@ const trigger = '[rdxPopoverTrigger]';
 const positioner = '[rdxPopoverPositioner]';
 const popup = '[rdxPopoverPopup]';
 
+test('Viewport retains its outgoing content through the popup CSS exit', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    page.on('console', (message) => {
+        if (message.type() === 'error') errors.push(message.text());
+    });
+    await gotoStory(page, 'primitives-popover--viewport');
+    await page.addStyleTag({
+        content: `
+        @keyframes hold-popover-exit { from { opacity: 1; } to { opacity: 0; } }
+        [rdxPopoverViewport] > [data-current], [rdxPopoverViewport] > [data-previous] {
+            animation-duration: 30s !important;
+            animation-play-state: paused !important;
+        }
+        [rdxPopoverPopup][data-ending-style] {
+            display: block !important;
+            animation: hold-popover-exit 30s linear paused !important;
+        }
+    `
+    });
+    await page.getByRole('button', { name: 'Notifications', exact: true }).click();
+    await expect(page.getByRole('heading', { name: 'Notifications', exact: true })).toBeAttached();
+    await page.getByRole('button', { name: 'Activity', exact: true }).click();
+    const previous = page.locator('[rdxPopoverViewport] > [data-previous]');
+    await expect(previous).toHaveAttribute('data-ending-style', '');
+    await expect(previous).toHaveAttribute('inert', '');
+    await expect(previous).toContainText('You are all caught up.');
+    await page.keyboard.press('Escape');
+    await expect(page.locator(popup)).toHaveAttribute('data-ending-style', '');
+    await expect
+        .poll(() =>
+            page
+                .locator(popup)
+                .evaluate((el) => el.getAnimations().some((animation) => animation.playState === 'paused'))
+        )
+        .toBe(true);
+    await expect(previous).toHaveCount(1);
+    await expect(previous).toContainText('You are all caught up.');
+    await page.evaluate(async () => {
+        const animations = document.getAnimations();
+        animations.forEach((animation) => animation.finish());
+        await Promise.allSettled(animations.map((animation) => animation.finished));
+    });
+    await expect(page.locator(popup)).toHaveCount(0);
+    await expect(previous).toHaveCount(0);
+    expect(errors).toEqual([]);
+});
+
 for (const keepMounted of [false, true]) {
     test(`lifecycle: canceled close, deferred completion and reopen with keepMounted=${keepMounted}`, async ({
         page

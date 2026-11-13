@@ -17,6 +17,8 @@ import { RdxMenuDefaultComponent } from './menu-default';
 import defaultSource from './menu-default?raw';
 import { RdxMenuEventsComponent } from './menu-events';
 import eventsSource from './menu-events?raw';
+import { RdxMenuExitSwitchComponent } from './menu-exit-switch';
+import exitSwitchSource from './menu-exit-switch?raw';
 import { RdxMenuFocusReturnComponent } from './menu-focus-return';
 import focusReturnSource from './menu-focus-return?raw';
 import { RdxMenuHighlightExampleComponent } from './menu-highlight';
@@ -94,6 +96,13 @@ export const AnimatedTriggers: Story = {
     tags: ['!visual'],
     parameters: source(multipleTriggersSource),
     render: () => ({ template: '<rdx-menu-multiple-triggers [animated]="true" />' })
+};
+
+export const SwitchDuringExit: Story = {
+    tags: ['!visual'],
+    decorators: [moduleMetadata({ imports: [RdxMenuExitSwitchComponent] })],
+    parameters: source(exitSwitchSource),
+    render: () => ({ template: '<rdx-menu-exit-switch />' })
 };
 
 export const Default: Story = {

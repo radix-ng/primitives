@@ -1,5 +1,6 @@
 import { Menu } from '@base-ui/react/menu';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { heldExitClass } from '../../../shared/lifecycle';
 import { config, installProbe, classes as s } from './contract';
 import { multiTriggerContent } from './triggers';
 
@@ -13,10 +14,16 @@ export function ReactMultiTriggers() {
         [primaryPresent, setPrimaryPresent] = useState(true);
     const [open, setOpen] = useState(false),
         [triggerId, setTriggerId] = useState<string | null>(null);
+    const actions = useRef<Menu.Root.Actions | null>(null);
+    const previousHold = useRef<(() => void) | undefined>(undefined);
+    const closeCount = useRef(0);
     useEffect(() => {
         function command(event: KeyboardEvent) {
-            if (!['F3', 'F4', 'F6', 'F7', 'F8', 'F9', 'F10'].includes(event.key)) return;
+            if (!['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10'].includes(event.key)) return;
             event.preventDefault();
+            if (event.key === 'F1') actions.current?.unmount();
+            if (event.key === 'F2') previousHold.current?.();
+            if (event.key === 'F5') setOpen(false);
             if (event.key === 'F3')
                 setContent((data) => ({ ...data, primary: { label: 'Updated', items: ['Updated action'] } }));
             if (event.key === 'F4') {
@@ -61,6 +68,7 @@ export function ReactMultiTriggers() {
             {p.detached && <div className="flex gap-2">{triggers}</div>}
             {mounted && (
                 <Menu.Root
+                    actionsRef={actions}
                     handle={handle}
                     modal={false}
                     open={p.controlled ? open : undefined}
@@ -68,6 +76,10 @@ export function ReactMultiTriggers() {
                     defaultOpen={p.defaultOpen}
                     defaultTriggerId={p.defaultOpen ? 'secondary' : undefined}
                     onOpenChange={(next, details) => {
+                        if (p.lifecycle && !next && ++closeCount.current === 1) {
+                            previousHold.current = details.preventUnmountOnClose;
+                            if (p.lifecycle.deferred) details.preventUnmountOnClose();
+                        }
                         if (
                             (p.cancelOpen && next) ||
                             (p.cancelClose && !next) ||
@@ -88,7 +100,12 @@ export function ReactMultiTriggers() {
                             <output data-testid="active-payload">{payload?.label ?? ''}</output>
                             <Menu.Portal keepMounted={p.retained}>
                                 <Menu.Positioner className="z-50" data-testid="positioner" sideOffset={4} align="start">
-                                    <Menu.Popup className={s.popup} data-testid="popup">
+                                    <Menu.Popup
+                                        className={
+                                            s.popup + (p.lifecycle && !p.lifecycle.deferred ? heldExitClass : '')
+                                        }
+                                        data-testid="popup"
+                                    >
                                         <Menu.Viewport
                                             className={
                                                 p.animated

@@ -1177,10 +1177,11 @@ describe('Menu', () => {
             expect(document.activeElement).toBe(items[items.length - 1]);
         });
 
-        it('Escape closes the menu and returns focus to the trigger', () => {
+        it('Escape closes the menu and returns focus after its exit', async () => {
+            await vi.waitFor(() => expect(document.activeElement).toBe(items[0]));
             items[0].focus();
             keydown(popup, 'Escape');
-            fixture.detectChanges();
+            await fixture.whenStable();
 
             expect(fixture.componentInstance.open).toBe(false);
             expect(document.activeElement).toBe(trigger);
@@ -2340,16 +2341,16 @@ describe('Menu', () => {
             expect(rtlFixture.nativeElement.querySelectorAll('[rdxMenuPopup]').length).toBe(1);
         });
 
-        it('Escape closes submenu and returns focus to subTrigger', () => {
+        it('Escape closes submenu and returns focus after its exit', async () => {
             subTrigger.click();
-            fixture.detectChanges();
+            await fixture.whenStable();
 
             const subPopups: HTMLElement[] = Array.from(
                 (fixture.nativeElement as HTMLElement).querySelectorAll('[rdxMenuPopup]')
             );
             const subPopup = subPopups[subPopups.length - 1];
             keydown(subPopup, 'Escape');
-            fixture.detectChanges();
+            await fixture.whenStable();
 
             expect((fixture.nativeElement as HTMLElement).querySelectorAll('[rdxMenuPopup]').length).toBe(1);
             expect(document.activeElement).toBe(subTrigger);

@@ -67,6 +67,14 @@ import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
                         ? '-1'
                         : saved,
                 previousFocusableElement: () => rootContext.getReturnFocusElement() ?? null,
+                defaultReturnFocus: () => {
+                    if (rootContext.parentType() !== undefined || rootContext.openInteractionType() != null)
+                        return undefined;
+                    const previous = rootContext.getFocusBeforeOpen();
+                    if (previous && !previous.isConnected) return rootContext.getReturnFocusElement();
+                    if (previous && previous !== popup.ownerDocument.body && !popup.contains(previous)) return previous;
+                    return undefined;
+                },
                 nextFocusableElement: () =>
                     rootContext.parentType() === undefined ? rootContext.afterTriggerFocusGuard() : undefined,
                 getInsideElements: () => rootContext.getCoordinatorElements(),
@@ -267,13 +275,13 @@ export class RdxMenuPopup {
                 // Forward the dismissal reason + native event into the menu's open-change channel.
                 const menuReason: RdxMenuOpenChangeReason = reason === 'escape-key' ? 'escape-key' : 'outside-press';
                 this.rootContext.close(menuReason, event);
-                // Escape should restore focus synchronously to the trigger / submenu trigger so the
-                // menu chain remains keyboard-stable even before the scope's queued unmount return-focus.
+                // Menubar coordinates a synchronous trigger handoff. Other menus return through
+                // their focus scope after the accepted exit, including deferred/CSS closes.
                 const target = event.target as Node | null;
                 if (
                     reason === 'escape-key' &&
                     !this.rootContext.isOpen() &&
-                    (this.rootContext.openInteractionType() !== null || this.rootContext.parentType() === 'menubar') &&
+                    this.rootContext.parentType() === 'menubar' &&
                     (this.focusManager.returnFocus() == null || this.focusManager.returnFocus() === true) &&
                     (this.elementRef.nativeElement.contains(target) || this.rootContext.trigger()?.contains(target))
                 ) {

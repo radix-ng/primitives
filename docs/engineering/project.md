@@ -7,8 +7,8 @@ metadata:
 
 # Radix NG Primitives
 
-**Package:** `@radix-ng/primitives` (v1.0.x stable; the `1.0.0` line succeeded `0.51.0`)
-**npm:** published, tree-shakeable secondary entries (`@radix-ng/primitives/<name>`)
+**Package:** `@radix-ng/primitives`, published as tree-shakeable secondary entries (`@radix-ng/primitives/<name>`).
+Use the [library manifest](../../packages/primitives/package.json) for the current repository version and supported Angular peers, and the [changelog](../../packages/primitives/CHANGELOG.md) for release history.
 
 ## What it is
 
@@ -16,7 +16,7 @@ A headless, signals-first UI primitive library for Angular. Primitives ship **no
 
 ## Audience
 
-Angular developers building their own design systems or adopting accessible headless components. Supports Angular 21 and 22 (peer range `^21.0.0 || ^22.0.0`), targets the modern Angular signals API.
+Angular developers building their own design systems or adopting accessible headless components. The library targets Angular's signals API; compatibility is declared in the library manifest rather than duplicated here.
 
 ## Core features
 
@@ -33,8 +33,8 @@ Angular developers building their own design systems or adopting accessible head
 - No opinionated design tokens (consumers bring their own)
 - Not a full component library — consumers compose the headless primitives with their own styling
 
-## Available primitives (50+)
+## Finding a primitive
 
-accordion, alert-dialog, arrow, aspect-ratio, autocomplete, avatar, button, calendar, checkbox, collapsible, collection, combobox, composite, config, context-menu, core, cropper, date-field, date-time, dialog, dismissable-layer, drawer, editable, field, fieldset, focus-guards, focus-scope, form, input, label, menu, menubar, meter, navigation-menu, number-field, pagination, popover, popper, portal, presence, preview-card, progress, radio, scroll-area, select, separator, slider, stepper, switch, tabs, time-field, toast, toggle, toggle-group, toolbar, tooltip, visually-hidden
+Use the secondary entries in [workspace paths](../../tsconfig.base.json) to locate source and the generated [documentation index](../../skills/radix-ng-examples/references/llms.txt) to locate public usage. This avoids maintaining a separate catalog or component count here.
 
 The form layer composes as **Form → Fieldset → Field → control** (`input`, checkbox, radio, …): `field` owns one control's label/description/error/state, `fieldset` groups fields, and `form` (top layer) maps server errors onto fields by name, intercepts submit, and resets field state. See architecture.md for the cross-entry dependency direction.

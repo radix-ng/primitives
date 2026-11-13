@@ -94,6 +94,52 @@ export default defineConfig([
         }
     },
     {
+        files: ['packages/primitives/**/*.ts', 'apps/**/*.ts', 'apps/parity-testing/**/*.{tsx,mts}'],
+        ignores: ['**/__tests__/**', '**/*.spec.ts', '**/*.test.ts'],
+        rules: {
+            'no-restricted-imports': [
+                'error',
+                {
+                    patterns: [
+                        {
+                            regex: '^@radix-ng/primitives/[^/]+/',
+                            message:
+                                'Import from the public secondary entry point, for example @radix-ng/primitives/core.'
+                        },
+                        {
+                            regex: '^(?:\\.\\./){2,}[^/]+/src(?:/|$)|^(?:\\.\\./)*(?:packages/)?primitives/[^/]+/src(?:/|$)',
+                            message: "Use the other primitive's public entry point instead of importing its src files."
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    {
+        files: ['packages/primitives/**/stories/**/*.ts', 'packages/primitives/recipes/**/*.ts'],
+        rules: {
+            'no-restricted-syntax': [
+                'error',
+                {
+                    selector:
+                        "CallExpression[callee.name='Component'] > ObjectExpression > Property:matches([key.name=/^(styles|styleUrls?)$/], [key.value=/^(styles|styleUrls?)$/])",
+                    message: 'Use Tailwind utilities and shared demo classes instead of story-local component styles.'
+                },
+                {
+                    selector:
+                        "Property:matches([key.name='template'], [key.value='template']) :matches(TemplateElement[value.raw=/<style\\b/i], Literal[value=/<style\\b/i])",
+                    message: 'Use Tailwind utilities and shared demo classes instead of a story-local <style> block.'
+                },
+                {
+                    // Angular's inline-template processor handles Component metadata, but not CSF render objects.
+                    selector:
+                        "Property:matches([key.name='template'], [key.value='template']):not(CallExpression[callee.name='Component'] > ObjectExpression > Property) :matches(TemplateElement[value.raw=/\\sstyle\\s*=/i], Literal[value=/\\sstyle\\s*=/i])",
+                    message: 'Use Tailwind utilities and shared demo classes instead of a static story style attribute.'
+                }
+            ]
+        }
+    },
+    {
         files: ['apps/parity-testing/**/*.tsx', 'apps/parity-testing/**/*.mts'],
         extends: [...tseslint.configs.recommended],
         languageOptions: { globals: { ...globals.node, ...globals.browser } }
@@ -106,6 +152,13 @@ export default defineConfig([
             '@angular-eslint/template/label-has-associated-control': 'off',
             '@angular-eslint/template/prefer-self-closing-tags': 'warn',
             '@angular-eslint/template/prefer-control-flow': 'off'
+        }
+    },
+    {
+        files: ['packages/primitives/**/stories/**/*.html', 'packages/primitives/recipes/**/*.html'],
+        rules: {
+            // Virtualized and positioned demos need computed geometry; static visual styles use utilities.
+            '@angular-eslint/template/no-inline-styles': ['error', { allowBindToStyle: true, allowNgStyle: false }]
         }
     },
     ...storybook.configs['flat/recommended'],

@@ -200,6 +200,19 @@ and handlers. Reduced-motion users get immediate transitions. Styling is entirel
 
 <Canvas of={Stories.AnimatedTriggers} />
 
+### Switch during exit
+
+Reopen from another trigger while a CSS or deferred exit is pending. The accepted opening cancels
+the earlier close, so it does not emit a stale close completion. Open Inbox uses a typed handle;
+Open Archive sets Angular's open/triggerId models. Finish exit completes the current deferred close
+and is harmless while open. Keep mounted preserves the view between completed sessions.
+
+Escape returns focus after the accepted exit completes. Explicit `finalFocus` policies still apply,
+and a deliberate move to another control is respected. An outgoing Viewport snapshot can finish its
+content transition while the popup closes; Menu and Popover share that lifetime handling.
+
+<Canvas of={Stories.SwitchDuringExit} />
+
 ### Default
 
 A basic dropdown with regular items, a disabled item, and a separator.

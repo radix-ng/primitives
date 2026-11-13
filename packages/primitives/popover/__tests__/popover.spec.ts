@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RdxFloatingFocusManager } from '@radix-ng/primitives/floating-focus-manager';
@@ -1258,6 +1258,62 @@ describe('Popover', () => {
 
             expect(event.defaultPrevented).toBe(true);
         });
+    });
+
+    it('keeps the outgoing snapshot through a deferred exit and clears it at completion', async () => {
+        @Component({
+            imports: [
+                RdxPopoverRoot,
+                RdxPopoverTrigger,
+                RdxPopoverPortal,
+                RdxPopoverPositioner,
+                RdxPopoverPopup,
+                RdxPopoverViewport
+            ],
+            template: `
+                <ng-container (onOpenChange)="change($event)" rdxPopoverRoot>
+                    <button id="exit-one" payload="one" rdxPopoverTrigger>One</button>
+                    <button id="exit-two" payload="two" rdxPopoverTrigger>Two</button>
+                    <ng-template [keepMounted]="true" rdxPopoverPortal>
+                        <div rdxPopoverPositioner>
+                            <div rdxPopoverPopup>
+                                <div rdxPopoverViewport><div>Live content</div></div>
+                            </div>
+                        </div>
+                    </ng-template>
+                </ng-container>
+            `
+        })
+        class ExitingViewport {
+            readonly root = viewChild.required(RdxPopoverRoot);
+            change(change: RdxPopoverOpenChange) {
+                if (!change.open) change.eventDetails.preventUnmountOnClose();
+            }
+        }
+        const f = TestBed.createComponent(ExitingViewport);
+        try {
+            await f.whenStable();
+            const root = f.componentInstance.root();
+            const triggers = f.nativeElement.querySelectorAll('[rdxPopoverTrigger]') as NodeListOf<HTMLButtonElement>;
+            triggers[0].click();
+            await f.whenStable();
+            const viewport = document.querySelector('[rdxPopoverViewport]')!;
+            const current = viewport.querySelector<HTMLElement>('[data-current]')!;
+            current.style.transitionDuration = '60s';
+            triggers[1].click();
+            await f.whenStable();
+            const previous = viewport.querySelector('[data-previous]');
+            expect(previous).not.toBeNull();
+            root.close();
+            await f.whenStable();
+            expect(root.open()).toBe(false);
+            expect(viewport.querySelector('[data-previous]')).toBe(previous);
+            root.unmount();
+            await f.whenStable();
+            expect(viewport.querySelector('[data-previous]')).toBeNull();
+        } finally {
+            f.destroy();
+        }
     });
 
     it('retains previous viewport content while switching triggers', () => {

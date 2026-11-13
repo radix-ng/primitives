@@ -20,6 +20,7 @@ export class PresenceDemo {}
     // Exception to the no-story-CSS rule: this fixture exists to drive a real enter/exit `@keyframes`
     // pair through the presence machine. Named `@keyframes` cannot be expressed with headless Tailwind
     // utilities story-locally (they'd have to live in the global theme), so the styles stay here.
+    // eslint-disable-next-line no-restricted-syntax -- Named WAAPI keyframes are the behavior under test (ADR 0011).
     styles: `
         @keyframes presence-enter {
             from {

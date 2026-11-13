@@ -1,3 +1,5 @@
+import { multiTriggerLifecycleCases, multiTriggerLifecycleConfig } from './trigger-lifecycle';
+
 export const multiTriggerCases = [
     'multi-inline-pointer',
     'multi-inline-keyboard',
@@ -16,17 +18,20 @@ export const multiTriggerCases = [
     'multi-remove-active',
     'multi-replace-root',
     'multi-retained-reopen',
-    'multi-animated-switch'
+    'multi-animated-switch',
+    ...multiTriggerLifecycleCases
 ] as const;
 
 export function multiTriggerConfig(name: string) {
     if (!(multiTriggerCases as readonly string[]).includes(name)) return undefined;
+    const lifecycle = multiTriggerLifecycleConfig(name);
     return {
         detached: !name.startsWith('multi-inline-'),
-        controlled: name.startsWith('multi-controlled-'),
+        controlled: name.startsWith('multi-controlled-') || !!lifecycle?.controlled,
         defaultOpen: name === 'multi-default-open',
-        retained: name === 'multi-retained-reopen',
-        animated: name === 'multi-animated-switch',
+        retained: name === 'multi-retained-reopen' || !!lifecycle?.retained,
+        animated: name === 'multi-animated-switch' || !!lifecycle?.viewport,
+        lifecycle,
         disabled: name === 'multi-disabled-trigger',
         cancelOpen: name === 'multi-cancel-open',
         cancelSwitch: name === 'multi-cancel-switch',

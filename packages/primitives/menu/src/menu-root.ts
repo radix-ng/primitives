@@ -160,6 +160,7 @@ export interface RdxMenuRootContext {
     trigger: Signal<HTMLElement | undefined>;
     contextMenuPreviousFocus: Signal<HTMLElement | undefined>;
     getReturnFocusElement: () => HTMLElement | undefined;
+    getFocusBeforeOpen: () => HTMLElement | undefined;
     triggerId: Signal<string | undefined>;
     payload: Signal<unknown>;
     contentId: Signal<string>;
@@ -290,6 +291,7 @@ function buildContext<Payload>(instance: RdxMenuRoot<Payload>): RdxMenuRootConte
         trigger: instance.trigger.asReadonly(),
         contextMenuPreviousFocus: instance.contextMenuPreviousFocus.asReadonly(),
         getReturnFocusElement: () => instance.getReturnFocusElement(),
+        getFocusBeforeOpen: () => instance.getFocusBeforeOpen(),
         triggerId: instance.resolvedTriggerId,
         payload: instance.payload,
         contentId: instance.contentId,
@@ -880,6 +882,11 @@ export class RdxMenuRoot<Payload = unknown> {
             );
         }
         return getInteractionTypeFromEvent(event);
+    }
+
+    /** @internal Native focus captured when a mounted popup is reused for another opening session. */
+    getFocusBeforeOpen(): HTMLElement | undefined {
+        return this.focusBeforeRetainedOpen;
     }
 
     /** This open session's return target, falling back through surviving Menu owners. */

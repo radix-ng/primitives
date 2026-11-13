@@ -150,6 +150,8 @@ export interface RdxFloatingFocusManagerConfig {
     /** Render/layout readiness for the first focus activation. A later resize must not reactivate the scope. */
     initialFocusReady?: () => boolean;
     returnFocus?: () => RdxReturnFocus;
+    /** A composing owner can supply a guarded default at return time, after its view has exited. */
+    defaultReturnFocus?: () => HTMLElement | undefined;
     restoreFocus?: () => boolean | 'popup';
     previousFocusableElement?: () => RdxFocusTarget;
     nextFocusableElement?: () => RdxFocusTarget;
@@ -360,6 +362,8 @@ export class RdxFloatingFocusManager {
         this.focusScopeConfig.returnFocus = () => this.resolveReturnFocusTarget();
         this.focusScopeConfig.trapActive = () => this.isFloatingOpen();
         this.focusScopeConfig.defaultReturnFocus = () => {
+            const target = this.config?.defaultReturnFocus?.();
+            if (target !== undefined) return target;
             if (this.effectiveOpenInteractionType() == null) return undefined;
             return this.defaultReferenceTarget();
         };

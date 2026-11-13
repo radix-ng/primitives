@@ -1,107 +1,58 @@
----
-name: deployment
-description: CI/CD pipeline, release process, Storybook/docs publishing, and monitoring for Radix NG
-metadata:
-  type: project
----
+# Builds, CI and releases
 
-# Deployment
+## Current configuration
 
-## CI/CD — GitHub Actions
+Read configuration for current versions, commands and job options rather than maintaining another copy here.
 
-All workflows are in `.github/workflows/`.
+| Question                                                   | Source                                                                              |
+| ---------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Development tools, dependency versions and package scripts | [Root package.json](../../package.json)                                             |
+| Node selection and supported runtime range                 | [.nvmrc](../../.nvmrc) and root manifest `engines`                                  |
+| Library version, Angular compatibility and runtime peers   | [Library package.json](../../packages/primitives/package.json)                      |
+| Build/release dependencies and release actions             | [nx.json](../../nx.json), [library targets](../../packages/primitives/project.json) |
+| CI commands, required gates, platforms and matrices        | [CI workflow](../../.github/workflows/ci.yml)                                       |
+| Dependency installation and Node setup in CI               | [Shared setup action](../../.github/actions/setup/action.yml)                       |
 
-**`ci.yml`** — runs on every push to `main` and on PRs:
+## CI responsibilities
 
-Each job checks out and runs shared dependency setup (`.github/actions/setup`). 2. `lint` — prettier check + stylelint + eslint (all `--max-warnings=0`). The same `--max-warnings=0` eslint/stylelint run is also wired into the **pre-commit hook** (husky + lint-staged), so a `warn` behaves like an `error` locally and in CI — see the "Linting — zero-warning policy" gotchas in patterns.md before touching lint config. 3. `unit` — affected Vitest targets, including the library and SSR render specs 4. `builds` — affected build, schematics and typecheck targets, including the SSR consumer templates 5. `skills` — validates contributor setup (`pnpm agents:check`, `pnpm agents:test`), then regenerates the LLM skills bundle (`pnpm skills:build`) and fails if the committed output drifts from the Storybook docs, or if the generator's own eager-load budget or integrity guards throw — keeping the bundle in sync and self-consistent (see architecture.md) 6. `scope` — derives affected browser coverage from `nx-set-shas` and actual primitive imports; global/core or unknown changes and missing history select full coverage. Planner tests run before selection. 7. `comparisons` / `browsers` — selected pinned suites run in separate jobs; selected floating behavior and docs checks run in parallel Chromium/Firefox/WebKit jobs on Ubuntu 24.04. Documentation/unit-only edits can skip browsers. Manual CI dispatch defaults to full coverage. 8. `parity` — preserves the required aggregate gate for selected comparisons/browser jobs, including a successful empty selection. 9. `summary` — gate job; fails if any of lint/unit/builds/skills/parity fails
+CI checks formatting/lint, affected unit tests, builds and consumer template types. The SSR app participates in affected tests/builds. Contributor setup and the generated consumer bundle have their own checks; see [agent setup](agent-setup.md) and [consumer skills](consumer-skills.md).
 
-**`chromatic.yml`** — visual regression on push to `main` via Chromaui action. `exitZeroOnChanges: true` — changes are flagged but don't fail the build; review happens in Chromatic dashboard.
+Browser coverage is selected from changed primitive/story imports by the [affected planner](../../tools/playwright/affected.ts). Shared infrastructure, unknown changes and missing history select broad coverage. Pinned comparisons and Storybook regressions have separate jobs; their aggregate preserves the required gate when the selection is empty. Use the workflow for the current job names and engine/platform matrix, and the [comparison README](../../apps/parity-testing/README.md) for local invocation and evidence.
 
-**`publish.yml`** — triggered by a GitHub **Release** being created (`release: created`) or manual `workflow_dispatch`. Builds the library + schematics, then runs `nx release publish`. The publish step derives the npm **dist-tag from the version**: a prerelease (version containing `-`, e.g. `1.0.0-beta.0`) publishes under its prerelease identifier (`beta`/`rc`/`alpha`), a stable version publishes under `latest`. This keeps `npm i @radix-ng/primitives` resolving the stable release while a beta is in flight. Provenance is enabled (`NPM_CONFIG_PROVENANCE: true`).
-
-**Algolia crawler** — manual dispatch only; re-crawls `https://radix-ng.com` for search index.
+The [Chromatic workflow](../../.github/workflows/chromatic.yml) publishes visual changes for review. Its configured change-handling policy determines whether differences fail a run; review the dashboard for actual visual changes.
 
 ## Release process
 
-Managed by `nx release` (Nx release tooling). The config lives in `nx.json` under `release` (independent versioning, project `primitives`, `conventionalCommits: false` so the version is passed explicitly, `changelog.createRelease: github`). Published to npm as `@radix-ng/primitives` with secondary entries.
+Releases use Nx. Read `release` in [nx.json](../../nx.json) for project selection, version actions, changelog generation and Git/GitHub behavior. The current repository version comes from the library manifest; release history lives in [CHANGELOG.md](../../packages/primitives/CHANGELOG.md).
 
-**Publishing is CI-driven, not local.** The canonical flow is to run the combined command locally with an explicit version and `--skip-publish`, e.g. `npx nx release 1.0.0-beta.0 --skip-publish`. That one command builds primitives, bumps the version + CHANGELOG, commits, tags (`primitives@<version>`), **pushes to origin**, and **creates the GitHub Release** — all before any publish. Creating the Release fires `publish.yml`, which performs the actual npm publish (with the version-derived dist-tag). `--skip-publish` is required so the library is published only by CI, never twice.
+Use the combined `nx release <version> --skip-publish` flow with an explicit intended version. The repository's release configuration spans versioning, changelog and Git actions; those steps belong to the combined command. Keep `--skip-publish` so the local command prepares the release while npm publication remains CI-driven. The root manifest contains the dry-run and release script aliases.
 
-Notes:
+Creating a GitHub Release triggers the [publish workflow](../../.github/workflows/publish.yml), which builds the library and schematics before publishing. The workflow derives the npm dist-tag from the package version: prerelease identifiers receive their corresponding tag; stable releases use `latest`. It also configures npm provenance. Mark a prerelease GitHub Release as **Pre-release** rather than **Latest**.
 
-- The standalone `nx release version` / `nx release changelog` subcommands fail in this repo because `nx.json` sets the top-level `release.git`; only the combined `nx release` command works.
-- Creating the GitHub Release needs local GitHub auth (`GITHUB_TOKEN`/`GH_TOKEN` env or `gh auth`); without it the Release step fails and CI is never triggered.
-- For prereleases, mark the GitHub Release as **Pre-release** (not "Latest") so the repo's latest-release pointer stays on the stable version. Install a prerelease explicitly: `npm i @radix-ng/primitives@beta`.
-- `pnpm release:dry-run` previews version bumps and release notes; `pnpm release:primitives` cuts version + changelog without publishing.
-- Current version: `1.0.x` stable, published under the `latest` dist-tag (the `1.0.0` line succeeded the previous stable `0.51.0`; source of truth is `packages/primitives/package.json`).
+Local GitHub Release creation needs GitHub authentication (`GITHUB_TOKEN` / `GH_TOKEN` or `gh auth`). Review the configured release actions when preparing a release; generating version notes and publishing are distinct steps.
 
-## Storybook — also the public site
+## Applications and documentation
 
-Storybook now serves the public documentation site on the main domain `https://radix-ng.com`.
+Use script aliases from the root manifest and target options from the owning project file.
 
-- **Dev:** `pnpm storybook:primitives` → `http://localhost:4400`
-- **Build check:** `nx run radix-storybook:build-storybook` (add `--skip-nx-cache` to force rebuild)
-- **Static serve:** `pnpm static-storybook`
-- **Output:** `dist/radix-storybook/`
-- **LLM endpoints:** the generated skills bundle is served as static files via `staticDirs` (`apps/radix-storybook/.storybook/main.ts`), so `/llms.txt`, `/llms-full.txt`, and `/<section>/<slug>.md` are available on the main domain. Source: `skills/radix-ng-examples/references/` (see LLM consumer skills below and architecture.md).
+| Area                    | Purpose and configuration                                                                                                                                                                                            |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Storybook / public docs | [Storybook targets](../../apps/radix-storybook/project.json) define the dev port, output directory and static serving. [main.ts](../../apps/radix-storybook/.storybook/main.ts) configures the generated LLM routes. |
+| SSR consumer            | [SSR targets](../../apps/radix-ssr-testing/project.json) and render specs exercise server rendering, hydration and public-template compatibility.                                                                    |
+| Playground              | [Playground targets](../../apps/radix-playground/project.json) support manual consumer integration checks.                                                                                                           |
+| Performance             | [Benchmark project](../../apps/radix-perf-testing/project.json) and the [performance handbook](../../apps/radix-storybook/docs/guides/performance.docs.mdx) describe real-browser measurements.                      |
+| Browser regression      | [Visual regression README](../../apps/visual-regression/README.md) describes behavior checks, screenshots, baseline updates and reports.                                                                             |
+| API documentation       | [TypeDoc builder](../../tools/scripts/api-doc/build.mjs) defines API-doc generation.                                                                                                                                 |
 
-## LLM consumer skills
+Storybook serves the public site at `https://radix-ng.com`. Its static generated bundle supplies `/llms.txt`, `/llms-full.txt` and `/<section>/<slug>.md`; offline consumer skills use the same content. See [the consumer pipeline](consumer-skills.md) for generation triggers and integrity checks.
 
-`pnpm skills:build` regenerates the Agent Skills bundle under `skills/` from the Storybook docs (generator in `tools/scripts/skills/`). Run it after changing public API, `*.docs.mdx` or demo source. The output is committed, CI-verified (the `skills` job above), and excluded from Prettier via `.prettierignore` so it isn't reformatted into drift — a new generated output directory must be added there too. Contents and architecture: see architecture.md. Published via skills.sh: `npx skills add radix-ng/primitives/skills`.
+## Environment variables and monitoring
 
-## SSR testing app
+| Secret                              | Purpose                          |
+| ----------------------------------- | -------------------------------- |
+| `CHROMATIC_PROJECT_TOKEN`           | Chromatic visual regression      |
+| `ALGOLIA_DOCSEARCH_CRAWLER_USER_ID` | Algolia crawler                  |
+| `ALGOLIA_DOCSEARCH_CRAWLER_API_KEY` | Algolia crawler                  |
+| `ALGOLIA_DOCSEARCH_API_KEY`         | Search on the documentation site |
 
-- **Serve:** `pnpm primitives:ssr:serve`
-- **Build:** `pnpm primitives:ssr:build`
-- **Run built server:** `pnpm primitives:ssr:dist`
-- Used for smoke-testing that primitives work under Angular SSR
-
-## Playground app
-
-- **Serve:** `pnpm playground`
-- **Build:** `pnpm playground:build`
-- Used for manual Angular integration checks outside Storybook
-
-## Performance testing app
-
-- **Run:** `pnpm primitives:bench`
-- Used for focused Vitest-backed performance benchmarks
-
-## Visual regression app
-
-- **Run:** `pnpm test-visual`
-- **Update baselines:** `pnpm test-visual:update`
-- **Report:** `pnpm test-visual:report`
-- Playwright specs live under `apps/visual-regression/tests/` and run against the built Storybook.
-
-## TypeDoc API reference
-
-`pnpm primitives:build:typedoc` — generates API docs via `tools/scripts/api-doc/build.mjs`
-
-## Environment variables (CI secrets)
-
-| Secret                              | Used by                     |
-| ----------------------------------- | --------------------------- |
-| `CHROMATIC_PROJECT_TOKEN`           | Chromatic visual regression |
-| `ALGOLIA_DOCSEARCH_CRAWLER_USER_ID` | Algolia crawler             |
-| `ALGOLIA_DOCSEARCH_CRAWLER_API_KEY` | Algolia crawler             |
-| `ALGOLIA_DOCSEARCH_API_KEY`         | Algolia search on docs site |
-
-## Monitoring
-
-- Visual regressions: Chromatic dashboard (triggered on each `main` push)
-- Search: Algolia DocSearch (manually triggered crawler)
-- No application server monitoring (it's a library, not a running service)
-
-## Primitive differential comparisons
-
-Development and CI use Node.js 24 (`.nvmrc`, minimum 24.15.0). CI setup reads this file.
-The CI scope planner discovers `primitives/*/suite.json` under `apps/parity-testing` and follows
-primitive/story imports to select dependent suites and floating regressions. Each selected pinned
-suite runs `pnpm test-parity <name>` in its own job; browser regressions run in three parallel engine
-jobs. Shared core/configuration or unknown changes and missing Git history select everything.
-Manual CI dispatch with `full` forces all discovered suites and existing floating/docs checks.
-The `parity` aggregate gate retains the required check name. Artifacts contain per-primitive
-observations and known-difference summaries. `pnpm test-parity select` runs one suite locally.
-The runner and shared tooling use native Node 24 TypeScript execution with a separate strict type check. See
-`apps/parity-testing/README.md` and ADR 0029; a passing drift check is not full behavioral parity.
+The [Algolia crawler workflow](../../.github/workflows/algolia-docsearch-crawler.yml) runs on manual dispatch. Visual regressions are reviewed in Chromatic. This is a library and static documentation site, so there is no library application server to monitor.

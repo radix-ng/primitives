@@ -22,6 +22,8 @@ When the tracked working tree matches the index, the hook uses `--no-stash --no-
 
 ## Environment and tool-specific settings
 
-Use `.nvmrc` and the `package.json` engine range; select Node with `nvm use` before running package scripts. A tool's stale `PATH` override can bypass the shell's selected version.
+Use `.nvmrc` and the `package.json` engine range. With nvm, interactive zsh should use its `load-nvmrc` / `chpwd` integration to switch when entering or leaving a project. Login shells also need to initialize nvm (`. "$NVM_DIR/nvm.sh" --no-use`) and run `nvm use --silent` when `nvm_find_nvmrc` finds a file; this covers non-interactive tool commands and fresh worktrees. Keep this in personal shell profiles rather than hardcoding a Node installation path in the repository.
+
+Restart existing terminals/agent sessions after changing shell profiles: a running process or saved shell snapshot can retain its previous `PATH`. Verify a fresh shell with `zsh -lc 'node --version'` from the project or worktree. A tool-specific `PATH` override can bypass the selected version.
 
 `.claude/settings.json` contains shared Claude Code permissions/plugin settings. `.claude/settings.local.json` contains personal overrides and is not tracked. These are Claude configuration, not Codex execution permissions. Keep workflows in shared instructions rather than accumulating one-off shell commands in settings. Personal/global skills and installed plugins are outside the repository's contributor setup.

@@ -20,6 +20,7 @@ export class RdxPopoverViewport {
     protected readonly viewport = usePopupViewport({
         popup: () => this.floatingRoot.floatingElement as HTMLElement | undefined,
         open: () => this.rootContext.isOpen(),
+        present: () => this.rootContext.present() || this.rootContext.transitionStatus() === 'ending',
         register: (notify) => this.rootContext.registerViewport(notify),
         measure: false
     });

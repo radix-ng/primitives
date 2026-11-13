@@ -4,6 +4,8 @@ import { getMaxTransitionDuration } from '../composables/use-transition-status';
 export interface RdxPopupViewportConfig {
     popup: () => HTMLElement | undefined;
     open: () => boolean;
+    /** Retains outgoing content through an accepted exit, including a retained Portal. */
+    present?: () => boolean;
     register: (notify: (previous: HTMLElement, next: HTMLElement) => void) => () => void;
     measure?: boolean;
 }
@@ -38,7 +40,7 @@ class PopupViewport {
     constructor(private readonly config: RdxPopupViewportConfig) {
         const unregister = config.register((previous, next) => this.start(previous, next));
         effect(() => {
-            if (!config.open()) this.cleanup();
+            if (!(config.present?.() ?? config.open())) this.cleanup();
         });
         afterNextRender(() => {
             this.markCurrent();

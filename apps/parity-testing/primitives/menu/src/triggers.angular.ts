@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
-import { createRdxMenuHandle, RdxMenuModule, type RdxMenuOpenChange } from '@radix-ng/primitives/menu';
+import { Component, signal, viewChild } from '@angular/core';
+import { createRdxMenuHandle, RdxMenuModule, RdxMenuRoot, type RdxMenuOpenChange } from '@radix-ng/primitives/menu';
+import { heldExitClass } from '../../../shared/lifecycle';
 import { classes, config, installProbe } from './contract';
 import { multiTriggerContent } from './triggers';
 
@@ -61,7 +62,11 @@ import { multiTriggerContent } from './triggers';
                     <output data-testid="active-payload">{{ root.payload()?.label ?? '' }}</output>
                     <ng-template [keepMounted]="p.retained" rdxMenuPortal>
                         <div class="z-50" data-testid="positioner" sideOffset="4" align="start" rdxMenuPositioner>
-                            <div [class]="s.popup" data-testid="popup" rdxMenuPopup>
+                            <div
+                                [class]="s.popup + (p.lifecycle && !p.lifecycle.deferred ? exitClass : '')"
+                                data-testid="popup"
+                                rdxMenuPopup
+                            >
                                 <div [class]="p.animated ? viewportClass : ''" data-testid="viewport" rdxMenuViewport>
                                     <div [class]="p.animated ? contentClass : ''">
                                         @for (item of root.payload()?.items; track item) {
@@ -97,12 +102,19 @@ export class AngularMultiTriggers {
     readonly open = signal(false);
     readonly triggerId = signal<string | null>(null);
     readonly trace = installProbe('angular');
+    readonly exitClass = heldExitClass;
+    private readonly root = viewChild(RdxMenuRoot);
+    private previousHold?: () => void;
+    private closeCount = 0;
     readonly viewportClass =
         'relative [&>[data-previous]]:absolute [&>[data-previous]]:inset-0 [&>[data-current]]:transition-opacity [&>[data-previous]]:transition-opacity [&>[data-current]]:duration-[60s] [&>[data-previous]]:duration-[60s] [&>[data-current][data-starting-style]]:opacity-0 [&>[data-previous][data-ending-style]]:opacity-0';
     readonly contentClass = '';
     command(event: KeyboardEvent): void {
-        if (!['F3', 'F4', 'F6', 'F7', 'F8', 'F9', 'F10'].includes(event.key)) return;
+        if (!['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10'].includes(event.key)) return;
         event.preventDefault();
+        if (event.key === 'F1') this.root()?.unmount();
+        if (event.key === 'F2') this.previousHold?.();
+        if (event.key === 'F5') this.open.set(false);
         if (event.key === 'F3')
             this.content.update((data) => ({ ...data, primary: { label: 'Updated', items: ['Updated action'] } }));
         if (event.key === 'F4') {
@@ -120,6 +132,10 @@ export class AngularMultiTriggers {
         if (event.key === 'F10') this.primaryPresent.set(false);
     }
     change(change: RdxMenuOpenChange): void {
+        if (this.p.lifecycle && !change.open && ++this.closeCount === 1) {
+            this.previousHold = change.eventDetails.preventUnmountOnClose;
+            if (this.p.lifecycle.deferred) change.eventDetails.preventUnmountOnClose();
+        }
         if (
             (this.p.cancelOpen && change.open) ||
             (this.p.cancelClose && !change.open) ||

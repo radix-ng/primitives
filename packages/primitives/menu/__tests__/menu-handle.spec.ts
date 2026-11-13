@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { createRdxMenuHandle, RdxMenuModule, RdxMenuRoot } from '../index';
+import { createRdxMenuHandle, RdxMenuModule, RdxMenuOpenChange, RdxMenuRoot } from '../index';
 
 @Component({
     imports: [RdxMenuModule],
@@ -22,6 +22,65 @@ class Host {
 }
 
 describe('Menu handle ownership', () => {
+    it.each([false, true])(
+        'returns through the completed exit after a handle reopen, retained=%s',
+        async (retained) => {
+            @Component({
+                imports: [RdxMenuModule],
+                template: `
+                    <button id="first" [handle]="handle" rdxMenuTrigger>First</button>
+                    <button id="second" [handle]="handle" rdxMenuTrigger>Second</button>
+                    <ng-container
+                        [handle]="handle"
+                        [modal]="false"
+                        (onOpenChange)="change($event)"
+                        (onOpenChangeComplete)="completed.push($event)"
+                        rdxMenuRoot
+                    >
+                        <ng-template [keepMounted]="keep" rdxMenuPortal>
+                            <div rdxMenuPositioner>
+                                <div rdxMenuPopup><button rdxMenuItem>Action</button></div>
+                            </div>
+                        </ng-template>
+                    </ng-container>
+                `
+            })
+            class ReopeningHost {
+                readonly handle = createRdxMenuHandle();
+                readonly keep = retained;
+                readonly completed: boolean[] = [];
+                private closes = 0;
+                change(change: RdxMenuOpenChange) {
+                    if (!change.open && ++this.closes === 1) change.eventDetails.preventUnmountOnClose();
+                }
+            }
+            const fixture = TestBed.createComponent(ReopeningHost);
+            try {
+                await fixture.whenStable();
+                const first = fixture.nativeElement.querySelector('#first') as HTMLButtonElement;
+                const second = fixture.nativeElement.querySelector('#second') as HTMLButtonElement;
+                first.focus();
+                fixture.componentInstance.handle.open('first');
+                await fixture.whenStable();
+                await vi.waitFor(() => expect(fixture.componentInstance.completed).toEqual([true]));
+                const popup = document.querySelector('[rdxMenuPopup]')!;
+                expect(document.activeElement).toBe(popup);
+                fixture.componentInstance.handle.close();
+                await fixture.whenStable();
+                expect(document.activeElement).toBe(popup);
+                expect(fixture.componentInstance.completed).toEqual([true]);
+                fixture.componentInstance.handle.open('second');
+                await fixture.whenStable();
+                await vi.waitFor(() => expect(fixture.componentInstance.completed).toEqual([true, true]));
+                fixture.componentInstance.handle.close();
+                await fixture.whenStable();
+                await vi.waitFor(() => expect(fixture.componentInstance.completed).toEqual([true, true, false]));
+                await vi.waitFor(() => expect(document.activeElement).toBe(retained ? first : second));
+            } finally {
+                fixture.destroy();
+            }
+        }
+    );
     it('an unattached explicit handle does not fall back to an unrelated declaring Menu', () => {
         @Component({
             imports: [RdxMenuModule],

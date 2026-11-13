@@ -1,5 +1,13 @@
 [
     {
+        "scenario": "multi-exit-controlled-retained",
+        "checkpoint": "new session completed",
+        "field": "labelled",
+        "angular": false,
+        "react": true,
+        "category": "controlled-retained-label"
+    },
+    {
         "scenario": "highlight-replace",
         "checkpoint": "collection updated",
         "field": "focus",
