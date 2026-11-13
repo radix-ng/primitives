@@ -70,7 +70,7 @@ export default defineConfig([
         // DI/host-element setup, effect()/computed()/linkedSignal() for input-driven logic, and
         // inject(DestroyRef).onDestroy() for cleanup. AfterViewInit is intentionally excluded —
         // it needs afterNextRender()/afterRenderEffect(), migrated case by case. Story/demo and
-        // test files are not covered (they live outside src/). See CLAUDE.md / patterns.md.
+        // test files are not covered (they live outside src/). See AGENTS.md / docs/engineering/patterns.md.
         files: ['packages/primitives/**/src/**/*.ts'],
         rules: {
             'no-restricted-syntax': [
@@ -78,16 +78,17 @@ export default defineConfig([
                 {
                     selector: "MethodDefinition[key.name='ngOnInit']",
                     message:
-                        'Avoid ngOnInit in signals-first code: use the constructor for DI/host-element setup and effect()/computed() for input()-driven logic. See CLAUDE.md.'
+                        'Avoid ngOnInit in signals-first code: use the constructor for DI/host-element setup and effect()/computed() for input()-driven logic. See docs/engineering/patterns.md.'
                 },
                 {
                     selector: "MethodDefinition[key.name='ngOnChanges']",
                     message:
-                        'Avoid ngOnChanges: react to input() signals with effect()/computed()/linkedSignal(). See CLAUDE.md.'
+                        'Avoid ngOnChanges: react to input() signals with effect()/computed()/linkedSignal(). See docs/engineering/patterns.md.'
                 },
                 {
                     selector: "MethodDefinition[key.name='ngOnDestroy']",
-                    message: 'Avoid ngOnDestroy: use inject(DestroyRef).onDestroy(() => …) for cleanup. See CLAUDE.md.'
+                    message:
+                        'Avoid ngOnDestroy: use inject(DestroyRef).onDestroy(() => …) for cleanup. See docs/engineering/patterns.md.'
                 }
             ]
         }

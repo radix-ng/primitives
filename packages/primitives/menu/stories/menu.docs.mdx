@@ -299,6 +299,22 @@ React portal's suppression of that event is a documented compatibility differenc
 
 <Canvas of={Stories.Events} />
 
+### Item highlight
+
+Use `(onItemHighlighted)` to preview the current command as the user navigates. `$event` contains
+`item` (the native element, or `undefined` after clearing), `label`, `reason` and the original native
+`event`. The reason is `keyboard` for arrows/typeahead, `pointer` for hover/leave, and `none` for
+opening, closing or collection changes. Changes without native input carry a generic `Event`.
+
+The label uses the item's explicit `label` input, falling back to its text content. Repeating the
+same item does not emit again. Replacing the element at the same index does emit; changing only
+its label does not. Each nested Root reports its own highlighted item.
+
+The event type narrows with `reason`: checking `keyboard` gives a `KeyboardEvent`, and `pointer`
+gives a `MouseEvent | PointerEvent`.
+
+<Canvas of={Stories.ItemHighlight} />
+
 ### Radio items
 
 A radio group selects exactly one option. Selecting an item keeps the menu open (`closeOnClick`

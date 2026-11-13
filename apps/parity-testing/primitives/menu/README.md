@@ -1,11 +1,16 @@
 # Menu behavioral comparisons
 
+The `highlight-` block compares per-Root callback sequences, native source-event identity, labels,
+disabled hover, collection replacement/reorder and LTR/RTL children. Raw cross-Root order and native
+event types accompany the report. The pin's stale fallback text label has one exact exception;
+existing pointer-travel and removed-item-focus limitations retain their scoped observations.
+
 Run `pnpm test-parity menu` with Node 24. The runner discovers this suite automatically; preview
 port is 4505. Angular fixtures are AOT compiled and React imports the unmodified shared reference.
 Base UI 1.9.0 pin: `cf696d6f6e08c699c5bda24d5a033430909f2285`, archive SHA-256
 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 
-254 scenarios define 762 planned comparisons: 714 execute, with 48 touch capability skips. They cover native keyboard and
+267 scenarios define 801 planned comparisons: 753 execute, with 48 touch capability skips. They cover native keyboard and
 pointer opening, disabled/focusable items, roving focus, edges and looping, repeated and explicit-label
 typeahead, selection and stay-open items, cancelable transactions, modal/background activation,
 forward/backward Tab, checkbox/radio values, LTR/RTL submenu ownership and custom identity links.

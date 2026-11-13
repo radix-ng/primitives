@@ -378,7 +378,7 @@ added spec asserting `<div rdxXxxPortal>` misuse throws in dev mode.
 - `skills/` bundle, `llms.txt`, all anatomy MDX blocks, SSR-testing pages, and perf benches must be
   regenerated/updated in the same PRs (CI verifies the generated bundle).
 - Project docs must be updated in the same PRs: the "Shared composition primitives" section of
-  `CLAUDE.md` and `.claude/skills/project-knowledge/references/architecture.md` (both describe
+  `CLAUDE.md` and `docs/engineering/architecture.md` (both describe
   `portal`/`presence` as the attribute-directive pair), plus
   `apps/radix-storybook/docs/guides/animation.docs.mdx` (its "lifecycle owner" table references
   `RdxPresenceDirective` mounting — add the structural portal case) and

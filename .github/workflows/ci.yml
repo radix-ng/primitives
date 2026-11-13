@@ -91,6 +91,11 @@ jobs:
 
       - uses: ./.github/actions/setup
 
+      - name: Verify contributor setup
+        run: |
+          pnpm agents:test
+          pnpm agents:check
+
       - name: Verify skills bundle is up to date
         run: |
           node --test tools/scripts/skills/*.test.mjs

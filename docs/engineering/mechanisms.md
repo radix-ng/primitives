@@ -1,0 +1,28 @@
+# Mechanism notes
+
+Open only the note relevant to the change; these are implementation constraints, not required startup reading.
+
+- [Native input bridge (ADR 0025)](mechanisms/native-input-bridge-adr-0025.md)
+- [Shared label behavior (ADR 0024)](mechanisms/shared-label-behavior-adr-0024.md)
+- [Menu contracts (ADR 0034)](mechanisms/menu-contracts-adr-0034.md)
+- [Menu pointer/composition contracts (ADR 0036)](mechanisms/menu-pointer-composition-contracts-adr-0036.md)
+- [Context Menu composition (ADR 0045)](mechanisms/context-menu-composition-adr-0045.md)
+- [Menu-family Root removal (ADR 0046)](mechanisms/menu-family-root-removal-adr-0046.md)
+- [Independent Context Menu Roots (ADR 0047)](mechanisms/independent-context-menu-roots-adr-0047.md)
+- [Menu empty keyboard requests (ADR 0048)](mechanisms/menu-empty-keyboard-requests-adr-0048.md)
+- [Menu trusted touch (ADR 0049)](mechanisms/menu-trusted-touch-adr-0049.md)
+- [Menu mixed input (ADR 0050)](mechanisms/menu-mixed-input-adr-0050.md)
+- [Menu native host activation (ADR 0051)](mechanisms/menu-native-host-activation-adr-0051.md)
+- [Menu initial focus (ADR 0052)](mechanisms/menu-initial-focus-adr-0052.md)
+- [Menu portal Tab handoff (ADR 0053)](mechanisms/menu-portal-tab-handoff-adr-0053.md)
+- [Menu focus-out/finalFocus (ADR 0054)](mechanisms/menu-focus-out-finalfocus-adr-0054.md)
+- [Native input and collection focus (ADR 0037)](mechanisms/native-input-and-collection-focus-adr-0037.md)
+- [Framework adaptation during parity work](mechanisms/framework-adaptation-during-parity-work.md)
+- [Popup close lifecycle (ADR 0026)](mechanisms/popup-close-lifecycle-adr-0026.md)
+- [Popover lifecycle (ADR 0033)](mechanisms/popover-lifecycle-adr-0033.md)
+- [Retained focus scopes (ADR 0027)](mechanisms/retained-focus-scopes-adr-0027.md)
+- [Floating focus readiness and composition (ADR 0032)](mechanisms/floating-focus-readiness-and-composition-adr-0032.md)
+- [Select arbitrary Value (ADR 0028)](mechanisms/select-arbitrary-value-adr-0028.md)
+- [Typeahead matching](mechanisms/typeahead-matching.md)
+- [Desktop browser verification](mechanisms/desktop-browser-verification.md)
+- [Pointer movement](mechanisms/pointer-movement.md)

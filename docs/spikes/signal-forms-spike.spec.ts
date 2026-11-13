@@ -4,7 +4,7 @@
  * ARCHIVED ARTIFACT — not part of the test suite. Ran 9/9 green against the
  * experimental `@angular/forms/signals` in 21.2.9 (2026-06-11), findings are
  * recorded in `docs/adr/0004-field-signal-forms-adapter.md` ("Spike outcome")
- * and `.claude/skills/project-knowledge/references/signal-forms-readiness.md`.
+ * and `docs/engineering/signal-forms-readiness.md`.
  *
  * TO RE-RUN AT THE ANGULAR 22 BUMP (the last gate step before claiming Signal
  * Forms compatibility): copy this file back to

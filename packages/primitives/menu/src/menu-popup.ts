@@ -343,9 +343,9 @@ export class RdxMenuPopup {
             const fromContainer = popup.contains(focused) && !items.some((item) => item.element.contains(focused));
             const current = this.currentItemIndex(items);
             // Retain the requested first index while an application-owned list is empty.
-            if (forward && items.length === 0) this.rootContext.setActiveIndex(0);
+            if (forward && items.length === 0) this.rootContext.setActiveIndex(0, event);
             if (fromContainer) {
-                this.focusMenuItem(forward ? items[0] : items.at(-1));
+                this.focusMenuItem(forward ? items[0] : items.at(-1), event);
                 return true;
             }
             const next = current + (forward ? 1 : -1);
@@ -359,7 +359,7 @@ export class RdxMenuPopup {
                           ? items.length - 1
                           : 0
                       : next;
-            this.focusMenuItem(items[destination]);
+            this.focusMenuItem(items[destination], event);
             return true;
         }
 
@@ -387,13 +387,13 @@ export class RdxMenuPopup {
             case 'Home': {
                 event.preventDefault();
                 event.stopPropagation();
-                this.focusMenuItem(items[0]);
+                this.focusMenuItem(items[0], event);
                 break;
             }
             case 'End': {
                 event.preventDefault();
                 event.stopPropagation();
-                this.focusMenuItem(items[items.length - 1]);
+                this.focusMenuItem(items[items.length - 1], event);
                 break;
             }
             // Escape is owned by the dismissal capability (a document-level listener that works
@@ -431,7 +431,7 @@ export class RdxMenuPopup {
                         query,
                         startIndex
                     );
-                    this.focusMenuItem(index === undefined ? undefined : items[index]);
+                    this.focusMenuItem(index === undefined ? undefined : items[index], event);
                 }
                 break;
             }
@@ -485,12 +485,12 @@ export class RdxMenuPopup {
         return items.findIndex((item) => item.element === current);
     }
 
-    private focusMenuItem(item: RdxMenuCompositeItem | undefined): void {
+    private focusMenuItem(item: RdxMenuCompositeItem | undefined, event?: Event): void {
         if (!item) {
             return;
         }
 
-        this.rootContext.setActiveIndex(item.index);
+        this.rootContext.setActiveIndex(item.index, event);
         item.element.focus({ preventScroll: true });
     }
 }

@@ -1,0 +1,3 @@
+# Flattened overlay anatomy (ADR 0010)
+
+popup primitives match Base UI's two-element `Positioner → Popup` anatomy: a single **structural** `*rdxXxxPortal` directive (on an `ng-template`, composing `RdxPortalPresence`) merges the old portal + presence wrapper elements into one and relocates its template root(s) into the container with no extra wrapper. A dev-mode misuse guard throws if `rdxXxxPortal` is put on a non-`ng-template`. Migrated: popover (pilot), tooltip, preview-card, dialog/drawer/alert-dialog, combobox/autocomplete, navigation-menu, menu, select; the shared engine is `RdxPortalPresence` (`portal`) + `PresenceMachine` (`presence`). Multi-root templates (dialog backdrop + popup) are supported — the machine watches every `HTMLElement` root.

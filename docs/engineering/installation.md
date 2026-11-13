@@ -1,0 +1,7 @@
+# Installation and runtime dependencies
+
+- Consumers should install the package with `ng add @radix-ng/primitives`. In Nx Angular workspaces, document/use `npx ng add @radix-ng/primitives` from the workspace root; if the package is already installed, `nx g @radix-ng/primitives:ng-add` can run the schematic directly.
+- Runtime packages imported by published primitives must be declared as peer dependencies in `packages/primitives/package.json` and installed by the `ng-add` schematic.
+- Current runtime peers installed by `ng-add`: `@angular/common` (matched to the app's `@angular/core` version), `@floating-ui/dom`, `@internationalized/date`, and `@internationalized/number`.
+- **`@angular/cdk` has been fully removed** — it is no longer a peer dependency, is not installed by `ng-add`, and is absent from the lockfile. Do not reintroduce CDK imports. Own replacements: `injectId('rdx-…-')` / `RdxIdGenerator` for `_IdGenerator`; `RdxLiveAnnouncer` (`core`) for `LiveAnnouncer`; `isPlatformBrowser(inject(PLATFORM_ID))` for `Platform`; the `Direction`, `BooleanInput`, and `NumberInput` type aliases all live in `core/src/types.ts`. CDK Dialog/Overlay, `cdk/portal`, and `CdkTrapFocus` were already replaced earlier (consumers no longer need `@angular/cdk/overlay-prebuilt.css`). See the full breakdown in `docs/engineering/architecture.md`.
+- Keep `apps/radix-storybook/docs/overview/installation.docs.mdx` in sync whenever the install command, peer dependency list, or schematic behavior changes.

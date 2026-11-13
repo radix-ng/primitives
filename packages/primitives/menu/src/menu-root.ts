@@ -37,6 +37,7 @@ import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primi
 import { RdxPopper } from '@radix-ng/primitives/popper';
 import { getFocusableMenuItems } from './menu-focus';
 import { RdxMenuHandle } from './menu-handle';
+import { RdxMenuItemHighlightedEvent, useMenuHighlight } from './menu-highlight';
 import type { MenuSide } from './menu-safe-polygon';
 
 export const RDX_MENU_AMBIENT_DISABLED = new InjectionToken<Signal<boolean>>('RdxMenuAmbientDisabled');
@@ -178,7 +179,7 @@ export interface RdxMenuRootContext {
     registerPresence: RdxPopupLifecycle['registerPresence'];
     skipExitAnimation: Signal<boolean>;
     close: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
-    setActiveIndex: (index: number | null) => void;
+    setActiveIndex: (index: number | null, event?: Event) => void;
     /** Close this menu and every ancestor — used by item selection (the whole menu dismisses). */
     closeEntireMenu: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
     toggle: (reason?: RdxMenuOpenChangeReason, event?: Event, trigger?: HTMLElement) => void;
@@ -302,7 +303,7 @@ function buildContext<Payload>(instance: RdxMenuRoot<Payload>): RdxMenuRootConte
         registerPresence: instance.registerPresence,
         skipExitAnimation: instance.skipExitAnimation,
         close: (reason, event) => instance.close(reason, event),
-        setActiveIndex: (index) => instance.setActiveIndex(index),
+        setActiveIndex: (index, event) => instance.setActiveIndex(index, event),
         closeEntireMenu: (reason, event) => instance.closeEntireMenu(reason, event),
         toggle: (reason, event, trigger) => instance.toggle(reason, event, trigger),
         show: (autoFocus, reason, event, trigger) => instance.show(autoFocus, reason, event, trigger),
@@ -445,6 +446,9 @@ export class RdxMenuRoot<Payload = unknown> {
     /** Emits after opening or accepted close completion, including a pending external exit. */
     readonly onOpenChangeComplete = output<boolean>();
 
+    /** Emits when the highlighted item changes, including clearing and collection replacement. */
+    readonly onItemHighlighted = output<RdxMenuItemHighlightedEvent>();
+
     private readonly lifecycle = usePopupLifecycle(
         this.open,
         (open) => this.onOpenChangeComplete.emit(open),
@@ -476,6 +480,13 @@ export class RdxMenuRoot<Payload = unknown> {
     readonly afterTriggerFocusGuard = signal<HTMLElement | null>(null);
     readonly transitionStatus = this.lifecycle.status;
     readonly activeIndex = signal<number | null>(null);
+    private readonly updateHighlight = useMenuHighlight({
+        open: this.open,
+        activeIndex: this.activeIndex,
+        list: this.popupCompositeList,
+        popup: this.popupElement,
+        emit: (details) => this.onItemHighlighted.emit(details)
+    });
     /** How focus moves into the popup when it opens; false preserves the current focus. */
     readonly autoFocus = signal<RdxMenuAutoFocus>('popup');
     readonly isSubmenu = signal(false);
@@ -628,7 +639,7 @@ export class RdxMenuRoot<Payload = unknown> {
 
         effect(() => {
             if (!this.open()) {
-                this.activeIndex.set(null);
+                this.setActiveIndex(null);
                 this.triggerTransition.set(false);
             }
         });
@@ -663,7 +674,7 @@ export class RdxMenuRoot<Payload = unknown> {
                 if (change.eventDetails.isCanceled()) return;
                 if (changingTrigger) {
                     for (const child of this.childRoots()) child.close('sibling-open', event);
-                    this.activeIndex.set(null);
+                    this.setActiveIndex(null);
                     this.activateTrigger(trigger);
                 }
                 this.lastOpenChangeReason.set(reason);
@@ -764,14 +775,12 @@ export class RdxMenuRoot<Payload = unknown> {
         return this.pointerMoveGuard(event);
     }
 
-    setActiveIndex(index: number | null): void {
+    setActiveIndex(index: number | null, event?: Event): void {
         if (this.effectiveDisabled() && index !== null) {
             return;
         }
 
-        if (this.activeIndex() !== index) {
-            this.activeIndex.set(index);
-        }
+        this.updateHighlight(index, event);
     }
 
     /** @ignore Records where a context-menu gesture started (see {@link consumeInitialCursorPoint}). */

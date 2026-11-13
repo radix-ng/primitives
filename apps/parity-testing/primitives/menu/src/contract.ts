@@ -4,6 +4,7 @@ import { createMenuProbe, type MenuProbe } from '../../../shared/menu-probe';
 import { rootRemovalCases, rootRemovalConfig } from '../../../shared/root-removal';
 import { emptyCases, emptyConfig } from './empty';
 import { focusBoundaryCases, focusBoundaryConfig } from './focus-boundary';
+import { highlightCases, highlightConfig, type createHighlightRecorder } from './highlight';
 import { hostCases, hostConfig, type HostClick } from './hosts';
 import { hybridCases } from './hybrid';
 import { initialFocusCases } from './initial-focus';
@@ -50,6 +51,7 @@ export const basicCases = [
 ] as const;
 export const cases = [
     ...basicCases,
+    ...highlightCases,
     ...multiTriggerCases,
     ...lifecycleCases,
     ...pointerCases,
@@ -70,6 +72,7 @@ export type Probe = MenuProbe<ReturnType<typeof config>, Layer> & {
     hostClicks?: HostClick[];
     hostSubmissions?: number;
     finalFocusCalls?: { layer: Layer; type: string | null }[];
+    highlights?: ReturnType<typeof createHighlightRecorder>;
 };
 declare global {
     const __PARITY_REFERENCE__: Probe['reference'];
@@ -95,6 +98,7 @@ export function config() {
         host,
         focusBoundary,
         projection,
+        highlight: highlightConfig(name),
         multiTrigger: multiTriggerConfig(name),
         modal:
             focusBoundary?.target?.key === 'outside'
@@ -116,6 +120,7 @@ export function config() {
         radio:
             name.startsWith('radio') || name === 'drag-radio' || ['touch-radio', 'touch-disabled-radio'].includes(name),
         submenu:
+            highlightConfig(name)?.nested ||
             projection?.nested ||
             touch?.submenu ||
             empty?.nested ||
@@ -125,7 +130,7 @@ export function config() {
             name.startsWith('collection-submenu') ||
             name === 'lifecycle-submenu-css',
         collectionOnly: name === 'collection-empty-refill' || (!!empty && !empty.nested),
-        label: name === 'explicit-label' ? 'Zebra' : undefined,
+        label: ['explicit-label', 'highlight-explicit-label'].includes(name) ? 'Zebra' : undefined,
         ids: name.endsWith('-ids'),
         lifecycle: multiTriggerConfig(name)?.retained
             ? { keepMounted: true, animated: false, deferred: false, canceled: false, late: false }
@@ -140,7 +145,11 @@ export function config() {
                       late: false
                   }
                 : lifecycleConfig(
-                      empty?.retained || touch?.retained || host?.retained || projection?.retained
+                      highlightConfig(name)?.retained ||
+                          empty?.retained ||
+                          touch?.retained ||
+                          host?.retained ||
+                          projection?.retained
                           ? 'lifecycle-keep'
                           : name === 'lifecycle-submenu-css'
                             ? 'lifecycle-css-exit'
@@ -153,7 +162,7 @@ export function installProbe(framework: string) {
     const trace = createMenuProbe(framework, __PARITY_REFERENCE__, config(), ['main', 'sub'] as const);
     document.documentElement.dir = trace.probe.config.dir;
     window.menuParity = trace.probe;
-    return trace;
+    return { ...trace, probe: trace.probe as Probe };
 }
 export const classes = {
     layout: 'fixed start-24 top-16 grid w-60 gap-3',

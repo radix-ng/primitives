@@ -14,6 +14,32 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
 const trigger = '[rdxMenuTrigger]';
 const popup = '[rdxMenuPopup]';
 
+test('Menu item highlight: previews keyboard, explicit labels, disabled hover and clearing', async ({ page }) => {
+    const errors = collectRuntimeDiagnostics(page);
+    await gotoStory(page, 'primitives-menu--item-highlight');
+    const trigger = page.getByRole('button', { name: 'Command preview', exact: true });
+    const output = page.locator('output');
+    await trigger.press('Enter');
+    await expect(output).toContainText('Highlighted: Open file');
+    await page.keyboard.press('ArrowDown');
+    await expect(output).toContainText('Highlighted: Save file');
+    await expect(output).toContainText('Reason: keyboard');
+    await page.keyboard.press('e');
+    await expect(output).toContainText('Highlighted: Export document');
+    await page.getByRole('menuitem', { name: 'Print document', exact: true }).hover();
+    await expect(output).toContainText('Highlighted: Print document');
+    await expect(output).toContainText('Reason: pointer');
+    await page.getByRole('menuitem', { name: 'Save file', exact: true }).hover();
+    await expect(output).toContainText('Highlighted: Save file');
+    await expect(output).toContainText('Reason: pointer');
+    await page.mouse.move(5, 5);
+    await expect(output).toContainText('Highlighted: none');
+    await expect(output).toContainText('Reason: pointer');
+    await page.keyboard.press('Escape');
+    await expect(trigger).toBeFocused();
+    expect(errors).toEqual([]);
+});
+
 function collectRuntimeDiagnostics(page: Page): string[] {
     const diagnostics: string[] = [];
     page.on('pageerror', (error) => diagnostics.push(error.message));

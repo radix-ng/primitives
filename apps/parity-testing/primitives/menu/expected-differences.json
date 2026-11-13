@@ -1,5 +1,439 @@
 [
     {
+        "scenario": "highlight-replace",
+        "checkpoint": "collection updated",
+        "field": "focus",
+        "angular": "new",
+        "react": "body",
+        "browser": "firefox",
+        "platform": "darwin",
+        "category": "removed-item-focus"
+    },
+    {
+        "scenario": "highlight-replace",
+        "checkpoint": "collection updated",
+        "field": "focus",
+        "angular": "new",
+        "react": "body",
+        "browser": "firefox",
+        "platform": "linux",
+        "category": "removed-item-focus"
+    },
+    {
+        "scenario": "highlight-disabled-hover",
+        "checkpoint": "hovered",
+        "field": "highlights",
+        "angular": {
+            "main": [
+                {
+                    "layer": "main",
+                    "item": "blocked",
+                    "label": "Blocked",
+                    "reason": "pointer",
+                    "native": true,
+                    "event": "mouse",
+                    "key": null
+                }
+            ],
+            "sub": []
+        },
+        "react": {
+            "main": [],
+            "sub": []
+        },
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "highlight-disabled-hover",
+        "checkpoint": "hovered",
+        "field": "highlights",
+        "angular": {
+            "main": [
+                {
+                    "layer": "main",
+                    "item": "blocked",
+                    "label": "Blocked",
+                    "reason": "pointer",
+                    "native": true,
+                    "event": "mouse",
+                    "key": null
+                }
+            ],
+            "sub": []
+        },
+        "react": {
+            "main": [],
+            "sub": []
+        },
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "highlight-disabled-hover",
+        "checkpoint": "hovered",
+        "field": "focus",
+        "angular": "blocked",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "highlight-disabled-hover",
+        "checkpoint": "hovered",
+        "field": "focus",
+        "angular": "blocked",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "highlight-disabled-hover",
+        "checkpoint": "hovered",
+        "field": "highlighted",
+        "angular": ["blocked"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "highlight-disabled-hover",
+        "checkpoint": "hovered",
+        "field": "highlighted",
+        "angular": ["blocked"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "highlight-disabled-hover",
+        "checkpoint": "pointer left",
+        "field": "highlights",
+        "angular": {
+            "main": [
+                {
+                    "layer": "main",
+                    "item": "blocked",
+                    "label": "Blocked",
+                    "reason": "pointer",
+                    "native": true,
+                    "event": "mouse",
+                    "key": null
+                },
+                {
+                    "layer": "main",
+                    "item": null,
+                    "label": null,
+                    "reason": "pointer",
+                    "native": true,
+                    "event": "mouse",
+                    "key": null
+                }
+            ],
+            "sub": []
+        },
+        "react": {
+            "main": [],
+            "sub": []
+        },
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "highlight-disabled-hover",
+        "checkpoint": "pointer left",
+        "field": "highlights",
+        "angular": {
+            "main": [
+                {
+                    "layer": "main",
+                    "item": "blocked",
+                    "label": "Blocked",
+                    "reason": "pointer",
+                    "native": true,
+                    "event": "mouse",
+                    "key": null
+                },
+                {
+                    "layer": "main",
+                    "item": null,
+                    "label": null,
+                    "reason": "pointer",
+                    "native": true,
+                    "event": "mouse",
+                    "key": null
+                }
+            ],
+            "sub": []
+        },
+        "react": {
+            "main": [],
+            "sub": []
+        },
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "highlight-pointer",
+        "checkpoint": "hovered",
+        "field": "highlights",
+        "angular": {
+            "main": [
+                {
+                    "layer": "main",
+                    "item": "bravo",
+                    "label": "Bravo",
+                    "reason": "pointer",
+                    "native": true,
+                    "event": "mouse",
+                    "key": null
+                }
+            ],
+            "sub": []
+        },
+        "react": {
+            "main": [],
+            "sub": []
+        },
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "highlight-pointer",
+        "checkpoint": "hovered",
+        "field": "highlights",
+        "angular": {
+            "main": [
+                {
+                    "layer": "main",
+                    "item": "bravo",
+                    "label": "Bravo",
+                    "reason": "pointer",
+                    "native": true,
+                    "event": "mouse",
+                    "key": null
+                }
+            ],
+            "sub": []
+        },
+        "react": {
+            "main": [],
+            "sub": []
+        },
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "highlight-pointer",
+        "checkpoint": "hovered",
+        "field": "focus",
+        "angular": "bravo",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "highlight-pointer",
+        "checkpoint": "hovered",
+        "field": "focus",
+        "angular": "bravo",
+        "react": "popup",
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "highlight-pointer",
+        "checkpoint": "hovered",
+        "field": "highlighted",
+        "angular": ["bravo"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "highlight-pointer",
+        "checkpoint": "hovered",
+        "field": "highlighted",
+        "angular": ["bravo"],
+        "react": [],
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "highlight-pointer",
+        "checkpoint": "pointer left",
+        "field": "highlights",
+        "angular": {
+            "main": [
+                {
+                    "layer": "main",
+                    "item": "bravo",
+                    "label": "Bravo",
+                    "reason": "pointer",
+                    "native": true,
+                    "event": "mouse",
+                    "key": null
+                },
+                {
+                    "layer": "main",
+                    "item": null,
+                    "label": null,
+                    "reason": "pointer",
+                    "native": true,
+                    "event": "mouse",
+                    "key": null
+                }
+            ],
+            "sub": []
+        },
+        "react": {
+            "main": [],
+            "sub": []
+        },
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "highlight-pointer",
+        "checkpoint": "pointer left",
+        "field": "highlights",
+        "angular": {
+            "main": [
+                {
+                    "layer": "main",
+                    "item": "bravo",
+                    "label": "Bravo",
+                    "reason": "pointer",
+                    "native": true,
+                    "event": "mouse",
+                    "key": null
+                },
+                {
+                    "layer": "main",
+                    "item": null,
+                    "label": null,
+                    "reason": "pointer",
+                    "native": true,
+                    "event": "mouse",
+                    "key": null
+                }
+            ],
+            "sub": []
+        },
+        "react": {
+            "main": [],
+            "sub": []
+        },
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "highlight-replace",
+        "checkpoint": "collection updated",
+        "field": "focus",
+        "angular": "new",
+        "react": "body",
+        "browser": "webkit",
+        "platform": "darwin",
+        "category": "removed-item-focus"
+    },
+    {
+        "scenario": "highlight-replace",
+        "checkpoint": "collection updated",
+        "field": "focus",
+        "angular": "new",
+        "react": "body",
+        "browser": "webkit",
+        "platform": "linux",
+        "category": "removed-item-focus"
+    },
+    {
+        "scenario": "highlight-label-update",
+        "checkpoint": "collection updated",
+        "field": "highlights",
+        "angular": {
+            "main": [
+                {
+                    "layer": "main",
+                    "item": "alpha",
+                    "label": "Alpha",
+                    "reason": "none",
+                    "native": false,
+                    "event": "other",
+                    "key": null
+                },
+                {
+                    "layer": "main",
+                    "item": "blocked",
+                    "label": "Blocked",
+                    "reason": "keyboard",
+                    "native": true,
+                    "event": "keyboard",
+                    "key": "ArrowDown"
+                },
+                {
+                    "layer": "main",
+                    "item": "alpha",
+                    "label": "Updated action",
+                    "reason": "keyboard",
+                    "native": true,
+                    "event": "keyboard",
+                    "key": "Home"
+                }
+            ],
+            "sub": []
+        },
+        "react": {
+            "main": [
+                {
+                    "layer": "main",
+                    "item": "alpha",
+                    "label": "Alpha",
+                    "reason": "none",
+                    "native": false,
+                    "event": "other",
+                    "key": null
+                },
+                {
+                    "layer": "main",
+                    "item": "blocked",
+                    "label": "Blocked",
+                    "reason": "keyboard",
+                    "native": true,
+                    "event": "keyboard",
+                    "key": "ArrowDown"
+                },
+                {
+                    "layer": "main",
+                    "item": "alpha",
+                    "label": "Alpha",
+                    "reason": "keyboard",
+                    "native": true,
+                    "event": "keyboard",
+                    "key": "Home"
+                }
+            ],
+            "sub": []
+        },
+        "category": "stale-highlight-text-label"
+    },
+    {
         "scenario": "initial-disabled-submenu-tab",
         "checkpoint": "submenu Tab boundary departed",
         "field": "completions",

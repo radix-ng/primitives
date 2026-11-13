@@ -548,13 +548,14 @@ export const demoMenu = {
     item: cn(
         'relative flex w-full cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none',
         'data-[highlighted]:bg-muted data-[highlighted]:outline data-[highlighted]:outline-1 data-[highlighted]:outline-border',
-        'data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
+        // Disabled menu commands remain hover/keyboard focusable; the primitive blocks activation.
+        'data-[disabled]:opacity-50'
     ),
     /** Checkbox / radio items reserve leading space for the indicator. */
     selectableItem: cn(
         'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 ps-8 pe-2 text-start text-sm outline-none',
         'data-[highlighted]:bg-muted data-[highlighted]:outline data-[highlighted]:outline-1 data-[highlighted]:outline-border',
-        'data-[disabled]:pointer-events-none data-[disabled]:opacity-50'
+        'data-[disabled]:opacity-50'
     ),
     /** Center the selection indicator independently of the row's line height. */
     itemIndicator:

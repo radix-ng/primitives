@@ -14,7 +14,9 @@ apps/visual-regression/test-results/
 CHANGELOG.md
 
 # Vendored Angular skill references (github.com/angular/skills) — kept unmodified upstream
-.claude/skills/angular-developer/references/
+.agents/skills/angular-developer/
+.claude/skills/
+skills-lock.json
 
 # Generated LLM skill bundle (tools/scripts/skills/generate.mjs) — emitted verbatim from the
 # Storybook docs, so it must not be reformatted (would drift from the generator output).

@@ -102,7 +102,7 @@ export class RdxMenuLinkItem {
         if (this.rootContext && !this.rootContext.highlightItemOnHover()) {
             return;
         }
-        this.setActiveIndex();
+        this.setActiveIndex(event);
         if (this.elementRef.nativeElement.ownerDocument.activeElement !== this.elementRef.nativeElement) {
             this.elementRef.nativeElement.focus({ preventScroll: true });
         }
@@ -118,7 +118,7 @@ export class RdxMenuLinkItem {
         }
         if (this.elementRef.nativeElement.ownerDocument.activeElement === this.elementRef.nativeElement) {
             this.isFocused.set(false);
-            this.clearActiveIndex();
+            this.clearActiveIndex(event);
             this.elementRef.nativeElement.closest<HTMLElement>('[rdxMenuPopup]')?.focus({ preventScroll: true });
         }
     }
@@ -156,20 +156,20 @@ export class RdxMenuLinkItem {
         handleMenuItemKeyup(event, this.elementRef.nativeElement);
     }
 
-    private setActiveIndex(): void {
+    private setActiveIndex(event?: Event): void {
         if (!this.rootContext || this.rootContext.disabled()) {
             return;
         }
 
         const index = this.listItem.index();
         if (index !== -1) {
-            this.rootContext.setActiveIndex(index);
+            this.rootContext.setActiveIndex(index, event);
         }
     }
 
-    private clearActiveIndex(): void {
+    private clearActiveIndex(event?: Event): void {
         if (this.rootContext?.activeIndex() === this.listItem.index()) {
-            this.rootContext.setActiveIndex(null);
+            this.rootContext.setActiveIndex(null, event);
         }
     }
 }

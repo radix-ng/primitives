@@ -27,6 +27,7 @@ export * from './src/menu-group';
 export * from './src/menu-group-context';
 export * from './src/menu-group-label';
 export * from './src/menu-handle';
+export type { RdxMenuHighlightReason, RdxMenuItemHighlightedEvent } from './src/menu-highlight';
 export * from './src/menu-item';
 export * from './src/menu-link-item';
 export * from './src/menu-owner';

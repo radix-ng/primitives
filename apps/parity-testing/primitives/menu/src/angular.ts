@@ -14,6 +14,7 @@ import { changeCollection, menuEntries, submenuEntries } from '../../../shared/m
 import { rootRemovalFinalFocus } from '../../../shared/root-removal';
 import { classes, config, installProbe, type Layer } from './contract';
 import { AngularFocusBoundary } from './focus-boundary.angular';
+import { changeHighlightEntries, createHighlightRecorder } from './highlight';
 import { AngularHosts } from './hosts.angular';
 import { AngularProjection } from './projection.angular';
 import { touchScrollEntries } from './touch';
@@ -42,6 +43,7 @@ const settings = config();
                     [disabled]="settings.disabled"
                     (onOpenChange)="change('main', $event)"
                     (onOpenChangeComplete)="trace.complete('main', $event)"
+                    (onItemHighlighted)="trace.probe.highlights?.record('main', $event.item, $event)"
                     rdxMenuRoot
                 >
                     <button
@@ -79,7 +81,13 @@ const settings = config();
                                 @for (item of items(); track item.id) {
                                     <button
                                         [class]="s.item"
-                                        [label]="item.id === 'alpha' ? settings.label : undefined"
+                                        [label]="
+                                            settings.name === 'highlight-explicit-label-update'
+                                                ? item.label
+                                                : item.id === 'alpha'
+                                                  ? settings.label
+                                                  : undefined
+                                        "
                                         [disabled]="item.disabled"
                                         [attr.data-testid]="item.id"
                                         (onSelect)="trace.select(item.id)"
@@ -93,6 +101,9 @@ const settings = config();
                                         <ng-container
                                             (onOpenChange)="change('sub', $event)"
                                             (onOpenChangeComplete)="trace.complete('sub', $event)"
+                                            (onItemHighlighted)="
+                                                trace.probe.highlights?.record('sub', $event.item, $event)
+                                            "
                                             rdxMenuRoot
                                         >
                                             <button
@@ -223,7 +234,15 @@ class AngularMenu {
     readonly submenuPresent = signal(true);
     readonly triggerId = signal('custom-trigger');
     readonly popupId = signal('custom-popup');
+    constructor() {
+        if (settings.highlight) this.trace.probe.highlights = createHighlightRecorder();
+    }
     command(event: KeyboardEvent) {
+        if (settings.highlight?.mutation && event.key === 'F3') {
+            event.preventDefault();
+            this.items.update((items) => changeHighlightEntries(items, settings.name));
+            return;
+        }
         if (settings.empty && ['F3', 'F4'].includes(event.key)) {
             event.preventDefault();
             if (settings.empty.nested) this.subItems.set(event.key === 'F3' ? submenuEntries : []);

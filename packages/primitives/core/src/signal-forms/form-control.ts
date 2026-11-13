@@ -17,7 +17,7 @@ import { InputSignal, InputSignalWithTransform, ModelSignal, OutputRef } from '@
  * `string | undefined`, and boolean inputs carry a coercion transform).
  *
  * The real Angular types stay isolated in `@radix-ng/primitives/signal-forms`.
- * See ADR 0018 and `.claude/skills/project-knowledge/references/signal-forms-readiness.md`.
+ * See ADR 0018 and `docs/engineering/signal-forms-readiness.md`.
  */
 
 /** An optional control-state member exposed as an Angular input signal (with or without a coercion transform). */

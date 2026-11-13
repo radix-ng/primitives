@@ -3,7 +3,7 @@
 - Status: Rejected
 - Date: 2026-06-07
 - Decision owners: Radix NG maintainers
-- Related: `apps/radix-storybook` (now serves the docs + generated LLM routes); removed `apps/radix-docs` (Astro); `CLAUDE.md` and `.claude/skills/project-knowledge/references/architecture.md` record the Storybook-as-docs decision
+- Related: `apps/radix-storybook` (now serves the docs + generated LLM routes); removed `apps/radix-docs` (Astro); `CLAUDE.md` and `docs/engineering/architecture.md` record the Storybook-as-docs decision
 
 > **Rejected (2026-07-12).** The proposed AnalogJS docs app was never built, and the Astro `apps/radix-docs`
 > it aimed to replace was removed. Storybook (`apps/radix-storybook`) now serves the public docs and the

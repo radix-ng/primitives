@@ -150,6 +150,7 @@ content multi-root.
 - [Pointer gestures](../examples/menu--pointer-gestures.md)
 - [Composition](../examples/menu--composition.md)
 - [Events](../examples/menu--events.md)
+- [Item highlight](../examples/menu--item-highlight.md)
 - [Radio items](../examples/menu--radio-items.md)
 - [Checkbox items](../examples/menu--checkbox-items.md)
 - [With labels](../examples/menu--with-labels.md)

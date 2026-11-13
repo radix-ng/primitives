@@ -1,0 +1,17 @@
+# Storybook handbook map
+
+Before changing primitive behavior, wrappers, demos, or docs, read the relevant handbook page instead
+of rediscovering the project conventions from individual stories:
+
+| Topic            | Read first                                                                                   | Use when                                                                                                                                                   |
+| ---------------- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Styling demos    | `packages/primitives/storybook/styling.docs.mdx` (`Guides/Styling`)                          | Adding or changing story markup, Tailwind utilities, semantic tokens, or shared demo classes                                                               |
+| Composition      | `apps/radix-storybook/docs/guides/composition.docs.mdx` (`Guides/Composition`)               | Applying primitives to custom markup, stacking directives, or building wrapper components with `hostDirectives`                                            |
+| Customization    | `apps/radix-storybook/docs/guides/customization.docs.mdx` (`Guides/Customization`)           | Working with inputs, outputs, controlled state, two-way binding, DOM events, or primitive-specific hooks                                                   |
+| Animation        | `apps/radix-storybook/docs/guides/animation.docs.mdx` (`Guides/Animation`)                   | Adding transitions, CSS `@keyframes`, `RdxPresenceDirective`, Angular 21+ `animate.enter` / `animate.leave`, or JavaScript animation libraries             |
+| Forms            | `apps/radix-storybook/docs/guides/forms.docs.mdx` (`Guides/Forms`)                           | Integrating controls with Reactive / template-driven / Signal Forms, `ControlValueAccessor`, the two-layer control + `Field` split, Signal Forms readiness |
+| Naming           | `apps/radix-storybook/docs/guides/naming-conventions.docs.mdx` (`Guides/Naming Conventions`) | Naming selectors and directive classes                                                                                                                     |
+| Consumer theming | `apps/radix-storybook/docs/overview/theming.docs.mdx` (`Overview/Theming`)                   | Documenting `data-*` state styling, design tokens, or dark mode                                                                                            |
+| Accessibility    | `apps/radix-storybook/docs/overview/accessibility.docs.mdx` (`Overview/Accessibility`)       | Reviewing semantics, labels, keyboard navigation, or focus management                                                                                      |
+| SSR & Hydration  | `apps/radix-storybook/docs/guides/ssr.docs.mdx` (`Guides/Server-Side Rendering`)             | SSR/hydration behavior — stable IDs (`injectId`), platform guards, portal no-op on server, browser-only positioning, hydration-mismatch troubleshooting    |
+| Performance      | `apps/radix-storybook/docs/guides/performance.docs.mdx` (`Guides/Performance`)               | Benchmark suite (`pnpm primitives:bench`, `apps/radix-perf-testing`) — reading the report, writing a bench, the harness; design in `docs/adr/0009`         |

@@ -16,6 +16,10 @@ const run = createParityRunner({
             pointerMoves: window.menuParity?.pointerMoves,
             gestures: window.menuParity?.gestures,
             inputEvents: window.menuParity?.inputEvents,
+            highlightEvents: window.menuParity?.highlights && {
+                sequence: window.menuParity.highlights.changes,
+                nativeEvents: window.menuParity.highlights.raw
+            },
             ...(window.menuParity?.config.multiTrigger?.animated
                 ? {
                       viewportDirection:

@@ -113,6 +113,16 @@ export class MenuDriver {
                         ?.split(/\s+/)
                         .every((id) => document.getElementById(id)?.textContent?.trim());
                 return {
+                    ...(window.menuParity.highlights
+                        ? {
+                              highlights: Object.fromEntries(
+                                  ['main', 'sub'].map((layer) => [
+                                      layer,
+                                      window.menuParity.highlights!.changes.filter((change) => change.layer === layer)
+                                  ])
+                              )
+                          }
+                        : {}),
                     ...(window.menuParity.config.multiTrigger
                         ? {
                               payloadLabel:

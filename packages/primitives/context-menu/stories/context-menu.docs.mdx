@@ -149,6 +149,10 @@ item text, and `Escape` closes the menu.
 
 ### RdxContextMenuRoot
 
+`(onItemHighlighted)` forwards the composed Menu output: `$event` contains the native `item`,
+`label`, `reason` (`keyboard`, `pointer`, `none`) and source `event`. Nested Menu Roots report their
+own highlights. See the Menu **Item highlight** example for the event contract.
+
 Groups all parts of the context menu and provides the Menu context consumed by the popup. Composes
 the Menu primitive, so it forwards the `open` (two-way), `disabled`, `modal`, `loopFocus`, and
 `highlightItemOnHover` inputs and the `onOpenChange` / `onOpenChangeComplete` outputs from

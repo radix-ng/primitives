@@ -72,7 +72,7 @@ const submenuRootsByTrigger = new WeakMap<HTMLElement, RdxMenuRoot>();
         '(keydown.arrowdown)': 'onArrowKey($event)',
         '(pointermove)': 'onPointerMove($event)',
         '(pointerenter)': 'onPointerEnter($event)',
-        '(pointerleave)': 'onPointerLeave()',
+        '(pointerleave)': 'onPointerLeave($event)',
         '(pointerout)': 'onPointerOut($event)',
         '(rdx-menu-subtrigger-clear-highlight)': 'clearHighlight()'
     }
@@ -371,7 +371,7 @@ export class RdxMenuSubTrigger {
 
         this.lastPointer = { x: event.clientX, y: event.clientY };
         this.clearSiblingHighlights();
-        this.setParentActiveIndex();
+        this.setParentActiveIndex(event);
         const el = this.elementRef.nativeElement;
         this.parentMenuRoot?.onItemHover(el, event);
         if (this.submenuContext.highlightItemOnHover() && el.ownerDocument.activeElement !== el) {
@@ -412,13 +412,13 @@ export class RdxMenuSubTrigger {
         this.restTimer = undefined;
     }
 
-    protected onPointerLeave(): void {
+    protected onPointerLeave(event?: PointerEvent): void {
         this.clearOpenTimers();
         if (
             !this.submenuContext.isOpen() &&
             this.elementRef.nativeElement.ownerDocument.activeElement === this.elementRef.nativeElement
         ) {
-            this.clearHighlight();
+            this.clearHighlight(event);
             this.parentMenuRoot?.popupElement()?.focus({ preventScroll: true });
         }
     }
@@ -435,12 +435,12 @@ export class RdxMenuSubTrigger {
         if (this.elementRef.nativeElement.contains(event.relatedTarget as Node | null)) {
             return;
         }
-        this.onPointerLeave();
+        this.onPointerLeave(event);
     }
 
-    protected clearHighlight(): void {
+    protected clearHighlight(event?: Event): void {
         this.isFocused.set(false);
-        this.clearParentActiveIndex();
+        this.clearParentActiveIndex(event);
     }
 
     private siblingTriggers(): HTMLElement[] {
@@ -467,18 +467,18 @@ export class RdxMenuSubTrigger {
         }
     }
 
-    private setParentActiveIndex(): void {
+    private setParentActiveIndex(event?: Event): void {
         const index = this.listItem.index();
         if (index === -1 || !this.parentMenuRoot || this.parentMenuRoot.effectiveDisabled()) {
             return;
         }
 
-        this.parentMenuRoot.setActiveIndex(index);
+        this.parentMenuRoot.setActiveIndex(index, event);
     }
 
-    private clearParentActiveIndex(): void {
+    private clearParentActiveIndex(event?: Event): void {
         if (this.parentMenuRoot?.activeIndex() === this.listItem.index()) {
-            this.parentMenuRoot.setActiveIndex(null);
+            this.parentMenuRoot.setActiveIndex(null, event);
         }
     }
 }

@@ -1,1 +1,5 @@
-pnpm lint-staged
+if git diff --quiet; then
+    pnpm exec lint-staged --no-stash --no-hide-partially-staged
+else
+    pnpm exec lint-staged
+fi

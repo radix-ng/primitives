@@ -56,7 +56,7 @@ import {
 /**
  * `input()` transform for `sideOffset` / `alignOffset`: coerce string/number attribute values to a
  * number but pass an {@link OffsetFunction} through untouched. A **named** module-level function (not
- * an inline arrow) so compodoc parses the file — see CLAUDE.md's compodoc gotcha.
+ * an inline arrow) so compodoc parses the file — see docs/engineering/consumer-skills.md's compodoc gotcha.
  */
 function coerceOffset(value: number | OffsetFunction | string | null | undefined): number | OffsetFunction {
     return typeof value === 'function' ? value : numberAttribute(value);

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RdxContextMenuModule, RdxContextMenuRoot } from '@radix-ng/primitives/context-menu';
-import { RdxMenuModule, RdxMenuOpenChange, RdxMenuRoot } from '@radix-ng/primitives/menu';
+import { RdxMenuItemHighlightedEvent, RdxMenuModule, RdxMenuOpenChange, RdxMenuRoot } from '@radix-ng/primitives/menu';
 import { afterEach, vi } from 'vitest';
 
 function rightClick(target: Element, clientX = 120, clientY = 80) {
@@ -22,6 +22,41 @@ function flushRaf() {
 
 afterEach(() => {
     vi.useRealTimers();
+});
+
+it('forwards Menu highlight notifications through the Context Menu host directive', async () => {
+    @Component({
+        imports: [RdxContextMenuModule, RdxMenuModule],
+        template: `
+            <ng-container (onItemHighlighted)="changes.push($event)" rdxContextMenuRoot>
+                <div rdxContextMenuTrigger>Context area</div>
+                <div *rdxMenuPortal rdxMenuPositioner>
+                    <div rdxMenuPopup><button rdxMenuItem>Open document</button></div>
+                </div>
+            </ng-container>
+        `
+    })
+    class HighlightHost {
+        readonly root = viewChild.required(RdxContextMenuRoot);
+        readonly changes: RdxMenuItemHighlightedEvent[] = [];
+    }
+    const fixture = TestBed.createComponent(HighlightHost);
+    try {
+        await fixture.whenStable();
+        fixture.componentInstance.root().openAt(120, 80);
+        await fixture.whenStable();
+        const event = new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true });
+        document.querySelector('[rdxMenuPopup]')!.dispatchEvent(event);
+        await fixture.whenStable();
+        expect(fixture.componentInstance.changes.at(-1)).toEqual({
+            item: document.querySelector('[rdxMenuItem]'),
+            label: 'Open document',
+            reason: 'keyboard',
+            event
+        });
+    } finally {
+        fixture.destroy();
+    }
 });
 
 it.each([false, true])('a nested context area owns one native request, canceled=%s', async (cancel) => {

@@ -75,7 +75,7 @@ ADR 0004 kept `Field` form-agnostic and **deferred** a Signal Forms adapter whil
   template-driven forms — those still require `ControlValueAccessor`, so controls keep CVA (dual).
 
 This ADR records the decision to **build** the adapter, not to re-derive the readiness analysis — see
-`.claude/skills/project-knowledge/references/signal-forms-readiness.md` for the full conformance matrix.
+`docs/engineering/signal-forms-readiness.md` for the full conformance matrix.
 
 ## Decision
 

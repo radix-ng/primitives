@@ -1,0 +1,3 @@
+# Menu multiple triggers and moving viewports (ADR 0059)
+
+Menu Root keeps registrations by native element, exposes `[(triggerId)]`/`defaultTriggerId` and a typed `payload()` through `createRdxMenuHandle<Payload>()`. Explicit handles remain authoritative while unattached; native button tabindex is supplied only when unauthored. `core/floating/popup-handle-registry.ts` shares root/trigger replacement lifetimes with Popover and Dialog. `core/floating/use-popup-viewport.ts` shares inert visual snapshots and transition cleanup with Popover; use one direct live content wrapper. Menu publishes measured size to Popup/Positioner. Programmatic focus return prefers the pre-open control, with a connected owner-reference fallback supplied to the shared Focus Scope.

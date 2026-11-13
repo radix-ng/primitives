@@ -19,6 +19,8 @@ import { RdxMenuEventsComponent } from './menu-events';
 import eventsSource from './menu-events?raw';
 import { RdxMenuFocusReturnComponent } from './menu-focus-return';
 import focusReturnSource from './menu-focus-return?raw';
+import { RdxMenuHighlightExampleComponent } from './menu-highlight';
+import highlightSource from './menu-highlight?raw';
 import { RdxMenuInitialFocusComponent } from './menu-initial-focus';
 import initialFocusSource from './menu-initial-focus?raw';
 import { RdxMenuKeepMountedComponent } from './menu-keep-mounted';
@@ -243,6 +245,13 @@ export const Events: Story = {
             <rdx-menu-events />
         `
     })
+};
+
+export const ItemHighlight: Story = {
+    tags: ['!visual'],
+    decorators: [moduleMetadata({ imports: [RdxMenuHighlightExampleComponent] })],
+    parameters: source(highlightSource),
+    render: () => ({ template: '<rdx-menu-highlight-example />' })
 };
 
 export const Lifecycle: Story = {

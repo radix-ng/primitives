@@ -5,6 +5,7 @@ import { collectionScenarios } from './collection.scenarios';
 import type { MenuDriver } from './driver';
 import { emptyScenarios } from './empty.scenarios';
 import { focusBoundaryScenarios } from './focus-boundary.scenarios';
+import { highlightScenarios } from './highlight.scenarios';
 import { hostScenarios } from './hosts.scenarios';
 import { hybridScenarios } from './hybrid.scenarios';
 import { initialFocusScenarios } from './initial-focus.scenarios';
@@ -15,6 +16,7 @@ import { touchScenarios } from './touch.scenarios';
 import { multiTriggerScenarios } from './triggers.scenarios';
 
 export const scenarios = [
+    ...highlightScenarios,
     ...multiTriggerScenarios,
     ...projectionScenarios,
     ...focusBoundaryScenarios,

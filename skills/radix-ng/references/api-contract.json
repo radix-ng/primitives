@@ -4290,6 +4290,11 @@
           ],
           "outputs": [
             {
+              "name": "onItemHighlighted",
+              "type": "RdxMenuItemHighlightedEvent",
+              "description": "Emits when the highlighted item changes, including clearing and collection replacement."
+            },
+            {
               "name": "onOpenChange",
               "type": "RdxMenuOpenChange",
               "description": "Emits when the open state changes."

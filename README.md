@@ -140,6 +140,9 @@ Want something else? Open an [issue](https://github.com/radix-ng/primitives/issu
 
 ## Contributing
 
+For agent-assisted development, start with [AGENTS.md](AGENTS.md) and the [engineering map](docs/engineering/README.md).
+Contributor skills live in `.agents/skills/`; `skills/` contains the separately distributed consumer bundle.
+
 Contributions are welcome! The repository is an Nx monorepo:
 
 ```

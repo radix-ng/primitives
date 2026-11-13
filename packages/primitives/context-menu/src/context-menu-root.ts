@@ -49,7 +49,7 @@ const contextFactory = (): RdxContextMenuRootContext => {
         {
             directive: RdxMenuRoot,
             inputs: ['open', 'disabled', 'modal', 'loopFocus', 'highlightItemOnHover'],
-            outputs: ['openChange', 'onOpenChange', 'onOpenChangeComplete']
+            outputs: ['openChange', 'onOpenChange', 'onOpenChangeComplete', 'onItemHighlighted']
         }
     ],
     providers: [

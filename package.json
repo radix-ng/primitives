@@ -29,6 +29,8 @@
         "primitives:ssr:dist": "node dist/apps/radix-ssr-testing/server/server.mjs",
         "primitives:build:typedoc": "node tools/scripts/api-doc/build.mjs",
         "skills:build": "node tools/scripts/skills/generate.mjs",
+        "agents:check": "node tools/scripts/agents/check.mjs",
+        "agents:test": "node --test tools/scripts/agents/*.test.mjs",
         "----Playground---": "-----------------------------------------------------------------------",
         "playground": "nx serve radix-playground",
         "playground:docs-index": "node tools/scripts/playground/generate-mascot-docs.mjs",

@@ -8,6 +8,7 @@ import { changeCollection, menuEntries, submenuEntries } from '../../../shared/m
 import { rootRemovalFinalFocus } from '../../../shared/root-removal';
 import { config, installProbe, classes as s, type Layer } from './contract';
 import { ReactFocusBoundary } from './focus-boundary.react';
+import { changeHighlightEntries, createHighlightRecorder } from './highlight';
 import { ReactHosts } from './hosts.react';
 import { ReactProjection } from './projection.react';
 import { touchScrollEntries } from './touch';
@@ -15,6 +16,7 @@ import { ReactMultiTriggers } from './triggers.react';
 
 const settings = config();
 const trace = installProbe('react');
+if (settings.highlight) trace.probe.highlights = createHighlightRecorder();
 function ReactMenu() {
     const [rootPresent, setRootPresent] = useState(true);
     const [beforePresent, setBeforePresent] = useState(true);
@@ -65,6 +67,11 @@ function ReactMenu() {
         };
         document.addEventListener('click', outside);
         const command = (event: KeyboardEvent) => {
+            if (settings.highlight?.mutation && event.key === 'F3') {
+                event.preventDefault();
+                setItems((items) => changeHighlightEntries(items, settings.name));
+                return;
+            }
             if (settings.empty && ['F3', 'F4'].includes(event.key)) {
                 event.preventDefault();
                 if (settings.empty.nested) setSubItems(event.key === 'F3' ? submenuEntries : []);
@@ -129,6 +136,7 @@ function ReactMenu() {
                         disabled={settings.disabled}
                         onOpenChange={(open, details) => change('main', open, details)}
                         onOpenChangeComplete={(open) => trace.complete('main', open)}
+                        onItemHighlighted={(item, details) => trace.probe.highlights?.record('main', item, details)}
                     >
                         <Menu.Trigger
                             id={settings.ids ? triggerId : undefined}
@@ -166,7 +174,13 @@ function ReactMenu() {
                                             nativeButton
                                             className={s.item}
                                             disabled={item.disabled}
-                                            label={item.id === 'alpha' ? settings.label : undefined}
+                                            label={
+                                                settings.name === 'highlight-explicit-label-update'
+                                                    ? item.label
+                                                    : item.id === 'alpha'
+                                                      ? settings.label
+                                                      : undefined
+                                            }
                                             data-testid={item.id}
                                             onClick={() => trace.select(item.id)}
                                         >
@@ -179,6 +193,9 @@ function ReactMenu() {
                                                 <Menu.SubmenuRoot
                                                     onOpenChange={(open, details) => change('sub', open, details)}
                                                     onOpenChangeComplete={(open) => trace.complete('sub', open)}
+                                                    onItemHighlighted={(item, details) =>
+                                                        trace.probe.highlights?.record('sub', item, details)
+                                                    }
                                                 >
                                                     <Menu.SubmenuTrigger
                                                         render={<button />}

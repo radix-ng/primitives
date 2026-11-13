@@ -1,0 +1,3 @@
+# Switch follows the Base UI part set
+
+`switch` was realigned to `Root`/`Thumb`/`Input` (no-suffix classes, `createContext`). `data-checked`/`data-unchecked` replace `data-state`; added `data-disabled`/`data-readonly`/`data-required`. The root gained Base UI props `readOnly` (focusable but not toggleable), `name` and `value` (submitted via the hidden `[rdxSwitchInput]` checkbox), keeping the existing `RdxControlValueAccessor` host-directive for Reactive Forms. This also advanced `signal-forms-readiness.md` (adds `readonly`/`name`) and dropped CDK `_IdGenerator` for the `core` generator (prep #6). The `invalid`/`errors`/`touched`/`dirty` batch is still deferred to the shared Signal Forms pattern.

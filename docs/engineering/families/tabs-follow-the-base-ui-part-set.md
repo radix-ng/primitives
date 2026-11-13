@@ -1,0 +1,3 @@
+# Tabs follow the Base UI part set
+
+`tabs` was realigned to `Root`/`List`/`Tab`/`Panel`/`Indicator` (newer no-suffix class names). Activation moved to the `List` (`activateOnFocus`, default **manual**) instead of the root; `data-active`/`data-hidden`/`data-activation-direction`/`data-starting-style`/`data-ending-style` replace `data-state`. `Panel` stays mounted and toggles `hidden` by default; `*rdxTabsPanelPresence` opts into real unmount with exit animations (Tabs keeps this two-directive presence pattern; Collapsible/Accordion dropped theirs — see the Collapsible note above). `Indicator` exposes the active tab geometry as `--active-tab-*` CSS variables.
