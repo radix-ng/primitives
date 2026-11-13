@@ -13,6 +13,7 @@ import {
     TemplateRef,
     ViewContainerRef
 } from '@angular/core';
+import type { RdxPopupPresenceRegistration } from '@radix-ng/primitives/core';
 import { PresenceMachine } from './presence-machine';
 
 /**
@@ -22,7 +23,7 @@ import { PresenceMachine } from './presence-machine';
 export type RdxPresenceContext = {
     present: Signal<boolean>;
     skipExitAnimation?: Signal<boolean>;
-    registerPresence?: (presence: { mounted: Signal<boolean>; keepMounted: () => boolean }) => () => void;
+    registerPresence?: (presence: RdxPopupPresenceRegistration) => () => void;
 };
 
 export const RDX_PRESENCE_CONTEXT = new InjectionToken<RdxPresenceContext>('RdxPresenceContext');
@@ -63,7 +64,6 @@ export class RdxPresenceDirective {
 
     constructor() {
         const context = inject(RDX_PRESENCE_CONTEXT);
-        const unregister = context.registerPresence?.({ mounted: this.mounted.asReadonly(), keepMounted: () => false });
         const machine = new PresenceMachine({
             present: context.present,
             skipExitAnimation: context.skipExitAnimation,
@@ -71,6 +71,11 @@ export class RdxPresenceDirective {
             injector: inject(Injector),
             mountView: () => this.mountView(),
             destroyView: () => this.destroyView()
+        });
+        const unregister = context.registerPresence?.({
+            mounted: this.mounted.asReadonly(),
+            keepMounted: () => false,
+            pendingExit: () => machine.isExitPending
         });
 
         inject(DestroyRef).onDestroy(() => {

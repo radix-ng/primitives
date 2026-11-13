@@ -81,10 +81,6 @@ export class RdxPortalPresence {
     private readonly mounted = signal(false);
 
     constructor() {
-        const unregister = this.presenceContext.registerPresence?.({
-            mounted: this.mounted.asReadonly(),
-            keepMounted: this.keepMounted
-        });
         const machine = new PresenceMachine({
             present: this.present,
             skipExitAnimation: this.presenceContext.skipExitAnimation,
@@ -92,6 +88,11 @@ export class RdxPortalPresence {
             injector: inject(Injector),
             mountView: () => this.mountView(),
             destroyView: () => this.destroyView()
+        });
+        const unregister = this.presenceContext.registerPresence?.({
+            mounted: this.mounted.asReadonly(),
+            keepMounted: this.keepMounted,
+            pendingExit: () => machine.isExitPending
         });
 
         // Relocate reactively: re-runs whenever the resolved container changes or the view is

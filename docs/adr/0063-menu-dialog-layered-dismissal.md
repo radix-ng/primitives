@@ -24,6 +24,10 @@ Reuse the floating tree, owned element registry and local press-start state. No 
 additional public inputs, global gesture ledger or timer is needed. Focus containment and the
 current layer's own outside-press policy keep using their existing boundaries.
 
+[ADR 0065](0065-menu-popover-composition.md) narrows the extra-root containment to press-start capture
+and owned-content filtering. Trap-focus Popover's sloppy pointerdown can close both surfaces; Dialog's
+intentional trailing click keeps its protection. The per-layer outside-press policy stays authoritative.
+
 ## Evidence and scope
 
 Eighteen Menu cases / 54 comparisons use matching Dialog → Menu → optional submenu anatomy. They

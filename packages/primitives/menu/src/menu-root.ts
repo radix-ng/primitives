@@ -9,6 +9,7 @@ import {
     InjectionToken,
     input,
     model,
+    OnDestroy,
     output,
     signal,
     Signal,
@@ -26,6 +27,7 @@ import {
     injectId,
     provideFloatingRootContext,
     provideFloatingTree,
+    RDX_FLOATING_REGISTRATION,
     RdxCancelableChangeEventDetails,
     RdxFloatingNodeRegistration,
     RdxFloatingRootContext,
@@ -350,8 +352,9 @@ const contextFactory = () => buildContext(inject(RdxMenuRoot));
     ],
     hostDirectives: [RdxPopper, RdxFloatingNodeRegistration]
 })
-export class RdxMenuRoot<Payload = unknown> {
+export class RdxMenuRoot<Payload = unknown> implements OnDestroy {
     private readonly popper = inject(RdxPopper);
+    private readonly parentFloatingRegistration = inject(RDX_FLOATING_REGISTRATION, { optional: true, skipSelf: true });
     readonly parentRoot: RdxMenuRoot | null = inject(RDX_MENU_ROOT_BOUNDARY, { optional: true, self: true })
         ? null
         : inject(RdxMenuRoot, { optional: true, skipSelf: true });
@@ -653,6 +656,16 @@ export class RdxMenuRoot<Payload = unknown> {
                 this.triggerTransition.set(false);
             }
         });
+    }
+
+    // eslint-disable-next-line no-restricted-syntax -- Final live output before subscription cleanup; DestroyRef is too late (ADR 0065).
+    ngOnDestroy(): void {
+        // Directive destruction hooks run before Angular disconnects outputs. A final accepted
+        // non-animated close can finish here even if an ancestor removes its declaring view.
+        const parent = this.parentFloatingRegistration?.node()?.context;
+        if (parent && !parent.open()) {
+            this.lifecycle.finishPendingCloseOnDestroy();
+        }
     }
 
     show(

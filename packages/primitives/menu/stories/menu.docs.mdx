@@ -317,6 +317,16 @@ To keep Menu open behind Dialog, place Dialog Root and its trigger inside Menu's
 
 <Canvas of={Stories.OpenDialog} />
 
+### Inside Popover
+
+Declare Menu inside Popover's popup so portaled commands keep their floating ancestry. Escape
+closes the submenu, Menu, then Popover. Selecting an item preserves Popover; clicking outside both
+surfaces closes both in the default trap-focus mode. Modal popover blocks outside interaction and
+page scrolling, and outside presses dismiss one layer at a time. Keep menu mounted and Defer menu exit demonstrate Menu's
+exit controls.
+
+<Canvas of={Stories.InPopover} />
+
 ### Events
 
 Opening through `defaultOpen` or an external `open` binding without a native opening request focuses

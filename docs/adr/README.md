@@ -96,3 +96,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0062](0062-menu-overlapping-handle-owners.md)                               | Accepted               | Restore Menu handle ownership across overlapping Roots                               |
 | [0063](0063-menu-dialog-layered-dismissal.md)                                | Accepted               | Preserve Dialog when a child Menu backdrop dismisses Menu                            |
 | [0064](0064-menu-item-dialog-focus-transfer.md)                              | Accepted               | Transfer Menu item focus to Dialog and return past hidden views                      |
+| [0065](0065-menu-popover-composition.md)                                     | Accepted               | Compose Menu/Popover through each layer's native outside-press policy                |

@@ -39,10 +39,11 @@ This is incremental behavioral evidence, not complete API or accessibility certi
 | Handle ownership during overlapping Root attachment, removal and reassignment                      | Pinned suite, three engines                              | Covered; surviving owners regain control, ADR 0062                      |
 | Menu inside modal Dialog: layered dismissal, focus, retained/deferred exits and parent removal     | Pinned suite and Inside Dialog example                   | Covered; descendant backdrop ancestry, ADR 0063                         |
 | Dialog opened by Menu item: focus transfer, retained exits, native composition and drag release    | Pinned suite and Open Dialog example                     | Covered; shared focus-scope ownership, ADR 0064                         |
+| Menu inside Popover: layered dismissal, modalities, focus, exits and owner removal                 | Pinned suite and Inside Popover example                  | Covered with modal-backdrop limit; per-layer press timing, ADR 0065     |
 | Real touch, devices and assistive technology                                                       | Not established by this suite                            | Pending                                                                 |
 
-The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 321 scenarios and
-963 planned comparisons: 915 execute, with 48 touch capability skips. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
+The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 345 scenarios and
+1035 planned comparisons: 987 execute, with 48 touch capability skips. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
 state. Checkbox/radio change requests are observed before cancellation; original event types and
 trusted pointer coordinates are retained. No adapter forces focus, open state or completion.
 
@@ -444,5 +445,30 @@ portal and optional retained/deferred exit. Browser checks prove focus remains i
 completion and returns after Dialog closes. menuImports is exported for standalone composition.
 See [ADR 0064](../../../docs/adr/0064-menu-item-dialog-focus-transfer.md).
 
-Further Popover composition and real device/AT verification remain separate audits. These Menu
-integration comparisons do not certify Dialog's independent API/behavior parity.
+## Menu inside Popover
+
+Twenty-four cases / 72 comparisons cover non-modal, modal and trap-focus Popover hosts, modal and
+non-modal Menus, Escape order, selection, native Tab/Shift+Tab, inside/outside presses, vetoes,
+retained/deferred exits and parent closure/removal during an open or CSS/deferred state. Destroyed
+parents are recreated through application state. Host callbacks are separate from Menu callbacks;
+focus, live ARIA, isolation, visibility and completion arrays are observed without new exceptions.
+
+Trap-focus Popover's sloppy pointerdown closes both surfaces when pressed outside both; Dialog's intentional
+click retains its one-layer behavior. Descendant backdrop ownership is used for press-start capture
+and third-party filtering, while the actual outside surface still follows each layer's policy.
+Owned child backdrops created after a marker pass remain eligible, unlike injected third-party DOM.
+
+Popover now uses intentional mouse clicks in ordinary/modal mode and sloppy pointerdown in
+trap-focus mode, following the pin. A fast click can still remove Menu before its close effect runs.
+Its ngOnDestroy finishes an accepted ordinary close before Angular disconnects outputs, only when
+a closed floating ancestor removes the owner. Open Roots, vetoes, manual holds and interrupted CSS
+exits remain incomplete. Presence/transition helpers expose their existing pending phase for the
+shared lifecycle guard; cleanup still uses DestroyRef. The Inside Popover example covers nested
+keyboard focus, selection, outside dismissal and explicit completion. Outside-both comparisons use
+non-modal Menu with ordinary/modal Popover. With modal Menu, the pin's React capture marker and removed backdrop make
+parent dismissal unstable; equivalence for that combination is not claimed. Angular browser checks
+cover its own deterministic modal Menu behavior.
+See [ADR 0065](../../../docs/adr/0065-menu-popover-composition.md).
+
+Popover opened by a Menu item and real device/AT verification remain separate audits. Menu host
+integration evidence does not certify independent Popover or Dialog API/behavior parity.

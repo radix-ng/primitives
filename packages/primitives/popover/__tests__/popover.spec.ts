@@ -727,15 +727,23 @@ describe('Popover', () => {
         expect(defaultOpenTrigger.getAttribute('aria-expanded')).toBe('true');
     });
 
-    it('closes when a pointerdown event happens outside', async () => {
-        trigger.click();
-        fixture.detectChanges();
-        await new Promise((resolve) => setTimeout(resolve));
-
-        document.body.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }));
-        fixture.detectChanges();
-
-        expect(fixture.componentInstance.open).toBe(false);
+    it.each([false, true, 'trap-focus'] as const)('uses the Base UI mouse press phase for modal=%s', async (modal) => {
+        const modeFixture = TestBed.createComponent(ModalHostComponent);
+        try {
+            modeFixture.componentInstance.modal = modal;
+            await modeFixture.whenStable();
+            const modeTrigger: HTMLButtonElement = modeFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
+            modeTrigger.click();
+            await modeFixture.whenStable();
+            document.body.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }));
+            await modeFixture.whenStable();
+            expect(modeTrigger.getAttribute('aria-expanded')).toBe(modal === 'trap-focus' ? 'false' : 'true');
+            document.body.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 1 }));
+            await modeFixture.whenStable();
+            expect(modeTrigger.getAttribute('aria-expanded')).toBe('false');
+        } finally {
+            modeFixture.destroy();
+        }
     });
 
     it('closes rather than reopens when the open trigger is pressed', async () => {

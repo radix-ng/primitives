@@ -167,6 +167,25 @@ describe('RdxDismiss', () => {
 
     // ─── outside press ─────────────────────────────────────────────────────────
 
+    it('a sloppy ancestor also closes when pointerdown dismisses its child through the child backdrop', async () => {
+        const tree = new RdxFloatingTree();
+        const parent = context(() => true, el());
+        const child = context(() => true, el());
+        parent.floatingElement!.setAttribute(RDX_FLOATING_MARKER, '');
+        const backdrop = el();
+        child.addFloatingElement(backdrop);
+        const parentNode = tree.register({ id: 'parent', parent: null, context: parent });
+        const childNode = tree.register({ id: 'child', parent: parentNode, context: child });
+        const parentClose = vi.fn(),
+            childClose = vi.fn();
+        build(parent, () => parentNode, parentClose);
+        build(child, () => childNode, childClose);
+        await flush();
+        backdrop.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+        expect(parentClose).toHaveBeenCalledOnce();
+        expect(childClose).toHaveBeenCalledOnce();
+    });
+
     it('keeps an ancestor open when its child closes from a press on the child backdrop', async () => {
         const tree = new RdxFloatingTree();
         const parent = context(() => true, el());

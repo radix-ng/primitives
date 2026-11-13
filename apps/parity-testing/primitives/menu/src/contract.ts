@@ -11,7 +11,9 @@ import { hostCases, hostConfig, type HostClick } from './hosts';
 import { hybridCases } from './hybrid';
 import { initialFocusCases } from './initial-focus';
 import { itemDialogCases, itemDialogConfig } from './item-dialog';
+import type { OverlayProbe } from './overlay-probe';
 import { pointerCases, pointerConfig } from './pointer';
+import { popoverMenuCases, popoverMenuConfig } from './popover';
 import { projectionCases, projectionConfig } from './projection';
 import { touchCases, touchConfig } from './touch';
 import { multiTriggerCases, multiTriggerConfig } from './triggers';
@@ -59,6 +61,7 @@ export const cases = [
     ...handleOverlapCases,
     ...dialogMenuCases,
     ...itemDialogCases,
+    ...popoverMenuCases,
     ...lifecycleCases,
     ...pointerCases,
     ...menuCollectionCases,
@@ -81,6 +84,7 @@ export type Probe = MenuProbe<ReturnType<typeof config>, Layer> & {
     highlights?: ReturnType<typeof createHighlightRecorder>;
     handleOpen?: () => boolean;
     dialog?: DialogProbe;
+    popover?: OverlayProbe;
 };
 declare global {
     const __PARITY_REFERENCE__: Probe['reference'];
@@ -100,6 +104,8 @@ export function config() {
     const multiTrigger = multiTriggerConfig(name);
     const dialog = dialogMenuConfig(name);
     const itemDialog = itemDialogConfig(name);
+    const popover = popoverMenuConfig(name);
+    const hosted = popover ?? dialog;
     return {
         name: name as CaseName,
         dir: name.endsWith('-rtl') ? ('rtl' as const) : ('ltr' as const),
@@ -113,16 +119,18 @@ export function config() {
         multiTrigger,
         dialog,
         itemDialog,
-        modal:
-            focusBoundary?.target?.key === 'outside'
-                ? false
-                : projection
-                  ? !projection.cancelFocus
-                  : removal
-                    ? removal.modal
-                    : name.startsWith('lifecycle-')
-                      ? name === 'lifecycle-modal-keep'
-                      : !['outside-nonmodal', 'focus-out', 'touch-outside-nonmodal'].includes(name),
+        popover,
+        modal: popover
+            ? popover.menuModal
+            : focusBoundary?.target?.key === 'outside'
+              ? false
+              : projection
+                ? !projection.cancelFocus
+                : removal
+                  ? removal.modal
+                  : name.startsWith('lifecycle-')
+                    ? name === 'lifecycle-modal-keep'
+                    : !['outside-nonmodal', 'focus-out', 'touch-outside-nonmodal'].includes(name),
         loop: name !== 'no-loop',
         disabled: ['disabled-trigger', 'hover-root-disabled', 'touch-disabled-trigger'].includes(name),
         checkbox:
@@ -133,6 +141,7 @@ export function config() {
         radio:
             name.startsWith('radio') || name === 'drag-radio' || ['touch-radio', 'touch-disabled-radio'].includes(name),
         submenu:
+            popover?.nested ||
             itemDialog?.nested ||
             dialog?.nested ||
             highlightConfig(name)?.nested ||
@@ -148,12 +157,12 @@ export function config() {
         label: ['explicit-label', 'highlight-explicit-label'].includes(name) ? 'Zebra' : undefined,
         ids: name.endsWith('-ids'),
         lifecycle:
-            dialog || itemDialog
+            hosted || itemDialog
                 ? {
-                      keepMounted: (dialog ?? itemDialog)!.retained,
-                      animated: (dialog ?? itemDialog)!.animated,
-                      deferred: (dialog ?? itemDialog)!.deferred,
-                      canceled: dialog?.canceled ?? itemDialog!.canceledClose,
+                      keepMounted: (hosted ?? itemDialog)!.retained,
+                      animated: (hosted ?? itemDialog)!.animated,
+                      deferred: (hosted ?? itemDialog)!.deferred,
+                      canceled: hosted?.canceled ?? itemDialog!.canceledClose,
                       late: false
                   }
                 : multiTrigger?.lifecycle

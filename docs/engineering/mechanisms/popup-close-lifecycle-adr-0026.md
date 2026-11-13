@@ -1,5 +1,9 @@
 # Popup close lifecycle (ADR 0026)
 
+For Menu owner disposal before its normal removal effects finish, see
+[ADR 0065](../../adr/0065-menu-popover-composition.md). The owner hook notifies before output cleanup;
+Presence and transition helpers supply their actual pending CSS phase so interrupted exits stay incomplete.
+
 `core/floating/use-popup-lifecycle.ts` coordinates an accepted
 close transaction, an external-animation hold, transition completion and registered Presence views.
 Select, Popover and Menu compose this helper: Root exposes `close()` / `unmount()`, and Portal forwards `keepMounted`.

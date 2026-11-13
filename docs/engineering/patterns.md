@@ -29,6 +29,10 @@ Use `input`, `model` and `output`; boolean inputs use Angular's `booleanAttribut
 
 ESLint restricts `ngOnInit` / `ngOnChanges` / `ngOnDestroy` in primitive `src/**`. Render-hook migration is case-specific; story and test code have different lifecycle needs. The demos, SSR app and unit suite run zoneless. Attach DOM listeners directly and update signals; use platform/render guards for browser work rather than `NgZone` wrappers.
 
+Menu's final accepted-close notification during a closed ancestor's disposal uses `ngOnDestroy`
+before Angular removes output subscriptions. Cleanup still uses DestroyRef. This narrow exception
+has a local ESLint justification and lifecycle guards; see [ADR 0065](../adr/0065-menu-popover-composition.md).
+
 ## Context and composition
 
 Use `createContext<RdxFooRootContext>('FooRootContext', 'components/foo')` with the docs path (`components/<name>` or `utils/<name>`). Required injectors already throw and return a non-nullable type; no trailing `!` is needed. The optional `injectFooContext(true)` returns null.

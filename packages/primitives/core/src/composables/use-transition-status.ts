@@ -18,6 +18,8 @@ export type RdxTransitionStatus = 'starting' | 'ending' | undefined;
 const TRANSITION_FALLBACK_BUFFER = 50;
 
 export interface RdxTransitionStatusRef {
+    /** Actual exit motion owns completion; read during owner disposal, not as reactive state. */
+    readonly isExitPending: boolean;
     /** Reactive transition phase, intended for `data-starting-style` / `data-ending-style` bindings. */
     readonly status: Signal<RdxTransitionStatus>;
     /**
@@ -116,6 +118,9 @@ export function useTransitionStatus(onComplete: (open: boolean) => void): RdxTra
     destroyRef.onDestroy(clearTimers);
 
     return {
+        get isExitPending() {
+            return status() === 'ending' && timer !== undefined;
+        },
         status: status.asReadonly(),
         registerElement: (registered: HTMLElement) => {
             element = registered;

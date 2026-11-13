@@ -154,6 +154,7 @@ content multi-root.
 - [Composition](../examples/menu--composition.md)
 - [Inside Dialog](../examples/menu--inside-dialog.md)
 - [Open Dialog](../examples/menu--open-dialog.md)
+- [Inside Popover](../examples/menu--inside-popover.md)
 - [Events](../examples/menu--events.md)
 - [Item highlight](../examples/menu--item-highlight.md)
 - [Radio items](../examples/menu--radio-items.md)

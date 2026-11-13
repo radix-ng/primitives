@@ -141,6 +141,11 @@ export class RdxPopoverPopup {
         new RdxDismiss(this.floatingContext, () => this.registration?.node() ?? null, {
             escapeKey: () => true,
             outsidePress: () => true,
+            // Base UI uses a completed mouse click, except while trapping focus without isolation.
+            outsidePressEvent: () => ({
+                mouse: this.rootContext.modal() === 'trap-focus' ? 'sloppy' : 'intentional',
+                touch: 'sloppy'
+            }),
             focusOutside: () => false,
             onEscapeKeyDown: (event) => this.escapeKeyDown.emit(event),
             onPointerDownOutside: (event) => {

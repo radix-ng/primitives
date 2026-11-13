@@ -17,6 +17,7 @@ const run = createParityRunner({
             gestures: window.menuParity?.gestures,
             inputEvents: window.menuParity?.inputEvents,
             dialogEvents: window.menuParity?.dialog?.nativeEvents,
+            popoverEvents: window.menuParity?.popover?.nativeEvents,
             highlightEvents: window.menuParity?.highlights && {
                 sequence: window.menuParity.highlights.changes,
                 nativeEvents: window.menuParity.highlights.raw

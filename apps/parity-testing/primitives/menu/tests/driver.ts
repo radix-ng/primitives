@@ -13,7 +13,7 @@ export class MenuDriver {
     ) {
         page.on('pageerror', (error) => this.errors.push(error.message));
         page.on('console', (message) => {
-            if (message.type() === 'error') this.errors.push(message.text());
+            if (message.type() === 'error' || /NG095[36]/.test(message.text())) this.errors.push(message.text());
         });
     }
     get trigger() {
@@ -35,6 +35,11 @@ export class MenuDriver {
             await this.item('dialog-trigger').click();
             await expect(this.item('dialog-popup')).toBeVisible();
             await expect.poll(() => this.page.evaluate(() => window.menuParity.dialog?.completions.at(-1))).toBe(true);
+        }
+        if (name.startsWith('popover-menu-')) {
+            await this.item('host-trigger').click();
+            await expect(this.item('host-popup')).toBeVisible();
+            await expect.poll(() => this.page.evaluate(() => window.menuParity.popover?.completions.at(-1))).toBe(true);
         }
         await expect(this.trigger).toBeVisible();
         this.metadata = await this.page.evaluate(() => window.menuParity.reference);
@@ -59,7 +64,8 @@ export class MenuDriver {
                 (window.menuParity.config.focusBoundary?.retained && window.menuParity.config.focusBoundary.nested) ||
                 (window.menuParity.config.projection?.retained && window.menuParity.config.projection.nested) ||
                 (window.menuParity.config.host?.initial?.nested && window.menuParity.config.host.retained) ||
-                (window.menuParity.config.dialog?.nested && window.menuParity.config.dialog.retained)
+                (window.menuParity.config.dialog?.nested && window.menuParity.config.dialog.retained) ||
+                (window.menuParity.config.popover?.nested && window.menuParity.config.popover.retained)
         );
         if (retainedSub) await expect(this.subPopup).toBeHidden();
         else await expect(this.subPopup).toHaveCount(0);
@@ -159,6 +165,20 @@ export class MenuDriver {
                         .every((id) => document.getElementById(id)?.textContent?.trim());
                 const isolated = (el: HTMLElement | null) => !!el?.closest('[inert], [aria-hidden="true"]');
                 return {
+                    ...(window.menuParity.popover
+                        ? {
+                              popover: {
+                                  mounted: !!document.querySelector('[data-testid="host-popup"]'),
+                                  open: !!document.querySelector('[data-testid="host-popup"][data-open]'),
+                                  visible: visible(document.querySelector('[data-testid="host-popup"]')),
+                                  labelled: labelled(document.querySelector('[data-testid="host-popup"]')),
+                                  isolated: isolated(document.querySelector('[data-testid="host-popup"]')),
+                                  menuIsolated: isolated(popup),
+                                  changes: window.menuParity.popover.changes,
+                                  completions: window.menuParity.popover.completions
+                              }
+                          }
+                        : {}),
                     ...(window.menuParity.dialog
                         ? {
                               dialog: {

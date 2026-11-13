@@ -31,15 +31,7 @@ export function dialogMenuConfig(name: string) {
     };
 }
 
-export interface DialogProbe {
-    changes: { open: boolean; reason: string; canceled: boolean }[];
-    completions: boolean[];
-    nativeEvents: { type: string; trusted: boolean }[];
-}
-
-export function createDialogProbe(): DialogProbe {
-    return { changes: [], completions: [], nativeEvents: [] };
-}
+export { createOverlayProbe as createDialogProbe, type OverlayProbe as DialogProbe } from './overlay-probe';
 
 export const dialogClass =
     'fixed start-24 top-16 z-10 grid w-[480px] gap-3 rounded border border-border bg-popover p-6 text-popover-foreground shadow-md outline-none';

@@ -7,6 +7,9 @@
 Set `modal` on `rdxPopoverRoot` to block outside interaction, or use `"trap-focus"` to keep focus
 inside while leaving document scrolling and outside pointer interactions available.
 
+Outside mouse presses close on a completed click. In `"trap-focus"` mode, they close on pointerdown
+so outside elements become accessible immediately.
+
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';

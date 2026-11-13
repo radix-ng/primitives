@@ -14,12 +14,14 @@ import { initialFocusScenarios } from './initial-focus.scenarios';
 import { itemDialogScenarios } from './item-dialog.scenarios';
 import { lifecycleScenarios } from './lifecycle.scenarios';
 import { pointerScenarios } from './pointer.scenarios';
+import { popoverMenuScenarios } from './popover.scenarios';
 import { projectionScenarios } from './projection.scenarios';
 import { touchScenarios } from './touch.scenarios';
 import { multiTriggerLifecycleScenarios } from './trigger-lifecycle.scenarios';
 import { multiTriggerScenarios } from './triggers.scenarios';
 
 export const scenarios = [
+    ...popoverMenuScenarios,
     ...itemDialogScenarios,
     ...dialogMenuScenarios,
     ...handleOverlapScenarios,

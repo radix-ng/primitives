@@ -73,8 +73,8 @@ export class RdxFloatingRootContext {
      * a Dialog backdrop relocated as a separate body sibling). This is DOM-footprint bookkeeping for
      * primitive-specific checks; `markOthers` keep-sets are intentionally narrower and do not include
      * sibling roots such as backdrops. Distinct from {@link floatingElement} (the single popup, used for
-     * this layer's own press / focus containment). Ancestor dismissal also recognizes these owned roots,
-     * so a press on a child's backdrop does not dismiss the ancestor with the same gesture.
+     * this layer's own press / focus containment). Ancestor dismissal recognizes owned roots during
+     * press-start capture and third-party filtering; outside-press timing still belongs to each layer.
      */
     get floatingElements(): ReadonlySet<Element> {
         return this.floatingElementsRef;

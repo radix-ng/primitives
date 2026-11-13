@@ -5,6 +5,8 @@ import { RdxTransitionStatus, useTransitionStatus } from '../composables/use-tra
 export interface RdxPopupPresenceRegistration {
     readonly mounted: Signal<boolean>;
     readonly keepMounted: () => boolean;
+    /** Read only during owner disposal; Presence keeps the actual animation phase. */
+    readonly pendingExit?: () => boolean;
 }
 
 export interface RdxPopupOpenChangeTransaction {
@@ -21,6 +23,8 @@ export interface RdxPopupLifecycle {
     registerElement: (element: HTMLElement) => () => void;
     registerPresence: (presence: RdxPopupPresenceRegistration) => () => void;
     prepareOpenChange: (open: boolean) => RdxPopupOpenChangeTransaction;
+    /** @internal Call from the owner's ngOnDestroy, before Angular disconnects its outputs. */
+    finishPendingCloseOnDestroy: () => void;
     /** Complete a pending close. A stale call while open, or after completion, does nothing. */
     unmount: () => void;
 }
@@ -51,6 +55,12 @@ export function usePopupLifecycle(
     let pendingClose: object | undefined;
     let closingTransition: object | undefined;
 
+    const finalizeClose = () => {
+        pendingClose = undefined;
+        closing.set(false);
+        enteredOpen = false;
+        onComplete(false);
+    };
     const completeClose = () => {
         if (
             destroyRef.destroyed ||
@@ -62,11 +72,8 @@ export function usePopupLifecycle(
         ) {
             return;
         }
-        pendingClose = undefined;
-        closing.set(false);
         // Explicit completion is a lifecycle boundary even if unmount() ran before the render effect.
-        enteredOpen = false;
-        onComplete(false);
+        finalizeClose();
     };
 
     const transition = useTransitionStatus((nextOpen) => {
@@ -154,6 +161,20 @@ export function usePopupLifecycle(
         present: computed(() => open() || deferred()),
         status: computed(() => (closing() ? 'ending' : transition.status())),
         skipExitAnimation: skipExitAnimation.asReadonly(),
+        finishPendingCloseOnDestroy: () => {
+            // Angular marks the view destroyed before directive hooks, then disconnects outputs.
+            // Only this hook window can notify an accepted close; a DestroyRef callback is too late.
+            if (
+                destroyRef.destroyed &&
+                pendingClose &&
+                !open() &&
+                !deferred() &&
+                !transition.isExitPending &&
+                !presences().some((presence) => presence.pendingExit?.())
+            ) {
+                finalizeClose();
+            }
+        },
         registerElement: transition.registerElement,
         registerPresence: (presence) => {
             presences.update((current) => [...current, presence]);

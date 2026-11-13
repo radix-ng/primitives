@@ -1,11 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnDestroy, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useTransitionStatus } from '../src/composables/use-transition-status';
 import { usePopupLifecycle } from '../src/floating/use-popup-lifecycle';
 
 @Component({ template: '' })
-class Host {
+class Host implements OnDestroy {
     readonly open = signal(false);
     readonly completions: boolean[] = [];
     readonly lifecycle = usePopupLifecycle(this.open, (open) => {
@@ -16,6 +16,9 @@ class Host {
         }
     });
     reopenOnComplete = false;
+    ngOnDestroy() {
+        this.lifecycle.finishPendingCloseOnDestroy();
+    }
 }
 
 describe('shared popup lifecycle', () => {
@@ -40,6 +43,29 @@ describe('shared popup lifecycle', () => {
         host = fixture.componentInstance;
         await settle();
     });
+
+    it.each(['automatic', 'deferred', 'css', 'retained-css'] as const)(
+        'owner destruction completes only an accepted automatic close: %s',
+        async (mode) => {
+            change(true);
+            await settle();
+            await vi.waitFor(() => expect(host.completions).toEqual([true]));
+            host.lifecycle.registerPresence({
+                mounted: signal(true),
+                keepMounted: () => mode === 'retained-css',
+                pendingExit: () => mode === 'css'
+            });
+            if (mode === 'retained-css') {
+                const element = document.createElement('div');
+                element.style.animationDuration = '10s';
+                host.lifecycle.registerElement(element);
+            }
+            change(false, mode === 'deferred');
+            if (mode === 'retained-css') await settle();
+            fixture.destroy();
+            expect(host.completions).toEqual(mode === 'automatic' ? [true, false] : [true]);
+        }
+    );
 
     it('completes an automatic close once and ignores later unmount actions', async () => {
         change(true);

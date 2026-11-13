@@ -373,7 +373,9 @@ export class RdxDismiss {
             if (!this.active() || this.isInside(event.target) || !outsidePress(event)) {
                 return;
             }
-            if (isInjectedAfterMark(event.target, this.context)) {
+            // A descendant backdrop can register after the marker pass. It is owned popup DOM,
+            // not injected third-party content, even though it remains outside the dismiss surface.
+            if (isInjectedAfterMark(event.target, this.context) && !this.isInside(event.target, true)) {
                 return;
             }
             if (isScrollbarPress(event)) {
@@ -395,7 +397,7 @@ export class RdxDismiss {
         let mouseDownRetry = false;
         const handlePressStart = (event: Event): void => {
             mouseDownRetry = false;
-            pressStartedInside = this.isInside(event.target);
+            pressStartedInside = this.isInside(event.target, true);
             currentPointerType = ((event as PointerEvent).pointerType as 'mouse' | 'touch' | 'pen') || '';
         };
         const handlePointerCancel = (): void => {
@@ -566,10 +568,11 @@ export class RdxDismiss {
 
     /**
      * Whether `target` is logically inside this layer: within this popup's floating element or one of its
-     * registered triggers, within any **open descendant** node's owned root elements / triggers, or
-     * within a registered branch. Descendant backdrops are inside the ancestor, outside their owner.
+     * registered triggers, within any **open descendant** node's popup / triggers, or within a branch.
+     * Ownership checks also include descendant backdrops: press-start capture protects intentional
+     * trailing clicks, and the third-party guard recognizes owned DOM. Sloppy presses still bubble.
      */
-    private isInside(target: EventTarget | null): boolean {
+    private isInside(target: EventTarget | null, includeChildRoots = false): boolean {
         if (this.contextContains(this.context, target)) {
             return true;
         }
@@ -583,7 +586,7 @@ export class RdxDismiss {
                 // A child's backdrop is outside that child, but still belongs to this ancestor.
                 // Capture this before the child closes on pointerdown and removes its hit target;
                 // the ancestor's intentional click must not dismiss a second layer of the gesture.
-                if (child.context && isNode(target)) {
+                if (includeChildRoots && child.context && isNode(target)) {
                     for (const element of child.context.floatingElements) {
                         if (element.contains(target)) return true;
                     }

@@ -94,6 +94,11 @@ export class PresenceMachine {
     private waapiPending = false;
     private safetyTimer: ReturnType<typeof setTimeout> | null = null;
 
+    /** Whether disposal would interrupt an actual suspended CSS exit. */
+    get isExitPending(): boolean {
+        return this.state === 'unmountSuspended';
+    }
+
     constructor(private readonly host: PresenceMachineHost) {
         this.prevPresent = host.present();
         this.state = this.prevPresent ? 'mounted' : 'unmounted';
