@@ -86,6 +86,44 @@ export class MenuDriver {
     async checkpoint(name: string, expected: Record<string, unknown> = {}) {
         const state = await this.page.evaluate(async () => {
             const read = () => {
+                if (window.menuParity.handleOpen) {
+                    const trigger = document.querySelector<HTMLElement>('[data-testid="primary"]')!;
+                    return {
+                        handleOpen: window.menuParity.handleOpen(),
+                        expanded: trigger.getAttribute('aria-expanded'),
+                        roots: ['older', 'newer'].map((id, index) => {
+                            const popup = document.querySelector<HTMLElement>(
+                                `[data-testid="${index === 0 ? 'popup' : 'sub-popup'}"]`
+                            );
+                            const output = document.querySelector(`[data-testid="${id}-payload"]`);
+                            return {
+                                id,
+                                mounted: !!output,
+                                open: !!popup && !popup.hasAttribute('data-closed'),
+                                visible:
+                                    !!popup &&
+                                    popup.getClientRects().length > 0 &&
+                                    getComputedStyle(popup).visibility !== 'hidden',
+                                payload: output?.textContent?.trim() ?? null,
+                                role: popup?.getAttribute('role') ?? null,
+                                labelled: !!popup && popup.getAttribute('aria-labelledby') === trigger.id,
+                                controlsLinked: !!popup && trigger.getAttribute('aria-controls') === popup.id,
+                                items: [...(popup?.querySelectorAll('[role="menuitem"]') ?? [])].map((item) => ({
+                                    id: item.getAttribute('data-testid'),
+                                    text: item.textContent?.trim(),
+                                    highlighted: item.hasAttribute('data-highlighted')
+                                }))
+                            };
+                        }),
+                        focus:
+                            document.activeElement === document.body
+                                ? 'body'
+                                : (document.activeElement?.getAttribute('data-testid') ?? 'other'),
+                        changes: window.menuParity.changes,
+                        completions: window.menuParity.completions,
+                        selected: window.menuParity.selected
+                    };
+                }
                 const popup = document.querySelector<HTMLElement>('[data-testid="popup"]');
                 const sub = document.querySelector<HTMLElement>('[data-testid="sub-popup"]');
                 const trigger =

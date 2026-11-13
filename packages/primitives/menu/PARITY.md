@@ -36,10 +36,11 @@ This is incremental behavioral evidence, not complete API or accessibility certi
 | Multiple/detached triggers, payloads, handle actions, controlled identity and animated switching   | Pinned suite and three public examples                   | Covered; shared handle and viewport mechanisms, ADR 0059                |
 | Highlight notifications, native input, labels, same-index replacement and nested Roots             | Pinned suite, unit tests and Item Highlight example      | Covered; exact stale text-label and existing host differences, ADR 0060 |
 | Controlled/handle reopen during CSS/deferred exits, interrupted viewport switches and Root removal | Pinned suite and Switch During Exit example              | Covered; exact hidden controlled-label association, ADR 0061            |
+| Handle ownership during overlapping Root attachment, removal and reassignment                      | Pinned suite, three engines                              | Covered; surviving owners regain control, ADR 0062                      |
 | Real touch, devices and assistive technology                                                       | Not established by this suite                            | Pending                                                                 |
 
-The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 279 scenarios and
-837 planned comparisons: 789 execute, with 48 touch capability skips. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
+The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 285 scenarios and
+855 planned comparisons: 807 execute, with 48 touch capability skips. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
 state. Checkbox/radio change requests are observed before cancellation; original event types and
 trusted pointer coordinates are retained. No adapter forces focus, open state or completion.
 
@@ -384,5 +385,23 @@ that association after close completion. The Popup is hidden and absent from the
 visible associations, focus and completion agree. No React controlled-prop ownership detection is
 added to Angular's models. See [ADR 0061](../../../docs/adr/0061-menu-interrupted-trigger-exits.md).
 
-Overlapping owners sharing one handle, further overlay composition and real device/AT verification
-remain separate audits.
+## Overlapping handle owners
+
+Six cases / 18 comparisons cover the temporary overlap of independently mounted Roots using one
+handle. The latest attachment owns detached triggers, imperative actions and isOpen. Removing an
+inactive Root leaves the current owner connected; removing or reassigning the current Root restores
+the latest surviving owner. Trigger replacement under the same id, current payloads, complete
+detachment/recreation and an already-open previous owner are compared without new exceptions.
+
+The shared registry keeps context registrations in attachment order and reconnects existing native
+triggers only when the active owner changes. Cleanup belongs to its exact registration. Angular's
+signals remain the reactive boundary; no fallback React store or subscription layer is needed.
+Menu resolves its popup label through the current native trigger or the accepted trigger id, so a
+still-open previous owner keeps its name while the trigger is connected elsewhere. Root open state
+is independent: the handle neither broadcasts actions nor closes the previous owner automatically.
+Use one mounted Root per handle in normal application composition. See
+[ADR 0062](../../../docs/adr/0062-menu-overlapping-handle-owners.md).
+
+Further Menu overlay composition and real device/AT verification remain separate audits.
+Popover and Dialog receive existing consumer regression checks for the shared registry change;
+their independent API/behavior parity audits are not covered by this Menu suite.

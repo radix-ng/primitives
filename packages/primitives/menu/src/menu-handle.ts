@@ -3,7 +3,11 @@ import { createPopupHandleRegistry } from '@radix-ng/primitives/core';
 import type { RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
 import type { RdxMenuRootContext } from './menu-root';
 
-/** Connects a Menu to triggers declared outside its Angular injector tree. */
+/**
+ * Connects a Menu to triggers declared outside its Angular injector tree.
+ * Use one mounted Root per handle. During transient overlap, the newest Root controls the handle;
+ * detaching it restores the most recently attached surviving Root.
+ */
 export class RdxMenuHandle<Payload = unknown> {
     private readonly registry = createPopupHandleRegistry<
         RdxMenuRootContext,

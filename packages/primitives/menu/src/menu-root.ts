@@ -469,7 +469,15 @@ export class RdxMenuRoot<Payload = unknown> {
     readonly resolvedTriggerId = computed(() => {
         this.triggersVersion();
         const trigger = this.trigger();
-        return (trigger && this.registeredTriggers.get(trigger)?.getId()) || trigger?.id || undefined;
+        // A detached trigger can move to a newer handle owner while this popup is still open.
+        // Preserve the accepted identity until a current native registration takes precedence.
+        return (
+            (trigger && this.registeredTriggers.get(trigger)?.getId()) ||
+            trigger?.id ||
+            this.triggerId() ||
+            this.defaultTriggerId() ||
+            undefined
+        );
     });
     readonly contentId = computed(() => {
         this.popupElement();

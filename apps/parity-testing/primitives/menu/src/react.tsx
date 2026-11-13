@@ -8,6 +8,7 @@ import { changeCollection, menuEntries, submenuEntries } from '../../../shared/m
 import { rootRemovalFinalFocus } from '../../../shared/root-removal';
 import { config, installProbe, classes as s, type Layer } from './contract';
 import { ReactFocusBoundary } from './focus-boundary.react';
+import { ReactHandleOverlap } from './handle-overlap.react';
 import { changeHighlightEntries, createHighlightRecorder } from './highlight';
 import { ReactHosts } from './hosts.react';
 import { ReactProjection } from './projection.react';
@@ -321,7 +322,9 @@ function ReactMenu() {
     );
 }
 createRoot(document.getElementById('root')!).render(
-    settings.multiTrigger ? (
+    settings.name.startsWith('handle-overlap-') ? (
+        <ReactHandleOverlap />
+    ) : settings.multiTrigger ? (
         <ReactMultiTriggers />
     ) : settings.projection ? (
         <ReactProjection />

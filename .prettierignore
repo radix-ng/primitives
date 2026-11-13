@@ -13,8 +13,8 @@ apps/visual-regression/test-results/
 
 CHANGELOG.md
 
-# Vendored Angular skill references (github.com/angular/skills) — kept unmodified upstream
-.agents/skills/angular-developer/
+# Agent skills — excluded from project formatting
+.agents/skills/
 .claude/skills/
 skills-lock.json
 

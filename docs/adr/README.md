@@ -93,3 +93,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0059](0059-menu-multiple-triggers-and-viewport.md)                          | Accepted               | Connect Menu triggers and share popup viewport transitions                           |
 | [0060](0060-menu-highlight-notifications.md)                                 | Accepted               | Report Menu highlights from Angular's rendered collection                            |
 | [0061](0061-menu-interrupted-trigger-exits.md)                               | Accepted               | Preserve Menu sessions through interrupted trigger exits                             |
+| [0062](0062-menu-overlapping-handle-owners.md)                               | Accepted               | Restore Menu handle ownership across overlapping Roots                               |

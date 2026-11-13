@@ -4,6 +4,7 @@ import { createMenuProbe, type MenuProbe } from '../../../shared/menu-probe';
 import { rootRemovalCases, rootRemovalConfig } from '../../../shared/root-removal';
 import { emptyCases, emptyConfig } from './empty';
 import { focusBoundaryCases, focusBoundaryConfig } from './focus-boundary';
+import { handleOverlapCases } from './handle-overlap';
 import { highlightCases, highlightConfig, type createHighlightRecorder } from './highlight';
 import { hostCases, hostConfig, type HostClick } from './hosts';
 import { hybridCases } from './hybrid';
@@ -53,6 +54,7 @@ export const cases = [
     ...basicCases,
     ...highlightCases,
     ...multiTriggerCases,
+    ...handleOverlapCases,
     ...lifecycleCases,
     ...pointerCases,
     ...menuCollectionCases,
@@ -73,6 +75,7 @@ export type Probe = MenuProbe<ReturnType<typeof config>, Layer> & {
     hostSubmissions?: number;
     finalFocusCalls?: { layer: Layer; type: string | null }[];
     highlights?: ReturnType<typeof createHighlightRecorder>;
+    handleOpen?: () => boolean;
 };
 declare global {
     const __PARITY_REFERENCE__: Probe['reference'];

@@ -5,6 +5,7 @@ import { collectionScenarios } from './collection.scenarios';
 import type { MenuDriver } from './driver';
 import { emptyScenarios } from './empty.scenarios';
 import { focusBoundaryScenarios } from './focus-boundary.scenarios';
+import { handleOverlapScenarios } from './handle-overlap.scenarios';
 import { highlightScenarios } from './highlight.scenarios';
 import { hostScenarios } from './hosts.scenarios';
 import { hybridScenarios } from './hybrid.scenarios';
@@ -17,6 +18,7 @@ import { multiTriggerLifecycleScenarios } from './trigger-lifecycle.scenarios';
 import { multiTriggerScenarios } from './triggers.scenarios';
 
 export const scenarios = [
+    ...handleOverlapScenarios,
     ...multiTriggerLifecycleScenarios,
     ...highlightScenarios,
     ...multiTriggerScenarios,

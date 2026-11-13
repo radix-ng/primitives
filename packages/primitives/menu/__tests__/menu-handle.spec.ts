@@ -22,6 +22,58 @@ class Host {
 }
 
 describe('Menu handle ownership', () => {
+    it.each(['older', 'newer'] as const)(
+        'keeps the surviving Root usable when the %s Root detaches',
+        async (removed) => {
+            @Component({
+                imports: [RdxMenuModule],
+                template: `
+                    <button id="first" [handle]="handle" [payload]="value()" rdxMenuTrigger>First</button>
+                    @for (id of owners(); track id) {
+                        <div [attr.data-owner]="id" [handle]="handle" rdxMenuRoot></div>
+                    }
+                `
+            })
+            class OverlappingHost {
+                readonly handle = createRdxMenuHandle<string>();
+                readonly owners = signal(['older']);
+                readonly value = signal('initial');
+            }
+            const fixture = TestBed.createComponent(OverlappingHost);
+            try {
+                await fixture.whenStable();
+                const app = fixture.componentInstance;
+                app.owners.set(['older', 'newer']);
+                await fixture.whenStable();
+                const roots = fixture.debugElement.queryAll(By.directive(RdxMenuRoot));
+                const older = roots[0].injector.get(RdxMenuRoot);
+                const newer = roots[1].injector.get(RdxMenuRoot);
+                app.handle.open('first');
+                await fixture.whenStable();
+                expect(newer.open()).toBe(true);
+                expect(older.open()).toBe(false);
+                app.handle.close();
+                await fixture.whenStable();
+                app.owners.set([removed === 'older' ? 'newer' : 'older']);
+                app.value.set('updated');
+                await fixture.whenStable();
+                const trigger = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
+                trigger.click();
+                await fixture.whenStable();
+                const surviving = removed === 'older' ? newer : older;
+                expect(surviving.open()).toBe(true);
+                expect(surviving.trigger()).toBe(trigger);
+                expect(surviving.payload()).toBe('updated');
+                expect(app.handle.isOpen()).toBe(true);
+                app.handle.close();
+                await fixture.whenStable();
+                expect(surviving.open()).toBe(false);
+            } finally {
+                fixture.destroy();
+            }
+        }
+    );
+
     it.each([false, true])(
         'returns through the completed exit after a handle reopen, retained=%s',
         async (retained) => {

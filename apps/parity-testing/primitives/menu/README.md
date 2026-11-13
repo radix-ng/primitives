@@ -10,7 +10,7 @@ port is 4505. Angular fixtures are AOT compiled and React imports the unmodified
 Base UI 1.9.0 pin: `cf696d6f6e08c699c5bda24d5a033430909f2285`, archive SHA-256
 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 
-279 scenarios define 837 planned comparisons: 789 execute, with 48 touch capability skips. They cover native keyboard and
+285 scenarios define 855 planned comparisons: 807 execute, with 48 touch capability skips. They cover native keyboard and
 pointer opening, disabled/focusable items, roving focus, edges and looping, repeated and explicit-label
 typeahead, selection and stay-open items, cancelable transactions, modal/background activation,
 forward/backward Tab, checkbox/radio values, LTR/RTL submenu ownership and custom identity links.
@@ -225,3 +225,15 @@ Direction attributes are compared as CSS token lists, with raw attributes attach
 Explicit native tabindex removed fourteen old Safari focus exceptions after review. There are no
 new exceptions for this block. Existing independent pointer-travel differences remain exact. See
 [ADR 0059](../../../../docs/adr/0059-menu-multiple-triggers-and-viewport.md).
+
+## Overlapping handle owners
+
+Run `pnpm test-parity menu --grep handle-overlap-`. Six cases / 18 comparisons cover newest-owner
+selection, removal in either order, handle reassignment, replacement of the native trigger under
+the same id, updated payloads, complete detachment/recreation and restoration of an open owner.
+The existing main/sub probe channels identify independent older/newer Roots in this fixture.
+Snapshots compare each Root's payload, popup, native focus, ARIA and callback history along with
+the handle's actual isOpen value. Commands only change application views/data or call public APIs.
+There are no new expected differences. Use one mounted Root per handle normally; overlap handling
+protects view transitions rather than broadcasting actions to several menus. See
+[ADR 0062](../../../../docs/adr/0062-menu-overlapping-handle-owners.md).

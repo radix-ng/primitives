@@ -2,6 +2,39 @@ import { signal } from '@angular/core';
 import { createPopupHandleRegistry } from '../src/floating/popup-handle-registry';
 
 describe('popup handle registration lifetimes', () => {
+    it('restores surviving owners in attachment order with the latest trigger and payload', () => {
+        const registrations = new Map<object, Map<string, string>>();
+        const connect = vi.fn((owner: object, id: string, trigger: { payload: () => string | undefined }) => {
+            const connected = registrations.get(owner) ?? new Map<string, string>();
+            registrations.set(owner, connected);
+            connected.set(id, trigger.payload()!);
+            return () => connected.delete(id);
+        });
+        const registry = createPopupHandleRegistry<object, string>(connect);
+        const first = {},
+            second = {},
+            third = {};
+        const oldTrigger = registry.registerTrigger('row', document.createElement('button'), () => 'old');
+        const removeFirst = registry.registerRoot(first);
+        const removeSecond = registry.registerRoot(second);
+        const removeThird = registry.registerRoot(third);
+        registry.registerTrigger('row', document.createElement('button'), () => 'updated');
+        oldTrigger();
+        removeThird();
+        expect(registry.root()).toBe(second);
+        expect(registrations.get(second)?.get('row')).toBe('updated');
+        expect(registrations.get(third)?.size).toBe(0);
+        // Cleanup is scoped to its registration, including repeated destruction notifications.
+        removeThird();
+        expect(registry.root()).toBe(second);
+        removeSecond();
+        expect(registry.root()).toBe(first);
+        expect(registrations.get(first)?.get('row')).toBe('updated');
+        removeFirst();
+        expect(registry.root()).toBeUndefined();
+        for (const connected of registrations.values()) expect(connected.size).toBe(0);
+    });
+
     it('connects triggers declared before the root and reads current application payloads', () => {
         const value = signal('first');
         const disconnect = vi.fn();

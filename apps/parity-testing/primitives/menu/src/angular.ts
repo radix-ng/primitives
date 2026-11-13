@@ -14,6 +14,7 @@ import { changeCollection, menuEntries, submenuEntries } from '../../../shared/m
 import { rootRemovalFinalFocus } from '../../../shared/root-removal';
 import { classes, config, installProbe, type Layer } from './contract';
 import { AngularFocusBoundary } from './focus-boundary.angular';
+import { AngularHandleOverlap } from './handle-overlap.angular';
 import { changeHighlightEntries, createHighlightRecorder } from './highlight';
 import { AngularHosts } from './hosts.angular';
 import { AngularProjection } from './projection.angular';
@@ -328,15 +329,17 @@ class AngularMenu {
     }
 }
 void bootstrapApplication(
-    settings.multiTrigger
-        ? AngularMultiTriggers
-        : settings.projection
-          ? AngularProjection
-          : settings.focusBoundary
-            ? AngularFocusBoundary
-            : settings.host
-              ? AngularHosts
-              : AngularMenu,
+    settings.name.startsWith('handle-overlap-')
+        ? AngularHandleOverlap
+        : settings.multiTrigger
+          ? AngularMultiTriggers
+          : settings.projection
+            ? AngularProjection
+            : settings.focusBoundary
+              ? AngularFocusBoundary
+              : settings.host
+                ? AngularHosts
+                : AngularMenu,
     {
         providers: [provideZonelessChangeDetection()]
     }

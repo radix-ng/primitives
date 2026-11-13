@@ -11,8 +11,11 @@ still pass through the cancelable `onOpenChange` transaction, whose `eventDetail
 the initiating element.
 
 The handle's `open(id)` and `close()` work while its Root is mounted. Requests without a mounted
-owner are ignored. Scope each handle to one popup owner; surviving detached triggers reconnect when
-that owner is recreated. `isOpen()` is an Angular signal.
+owner are ignored. `isOpen()` is an Angular signal. Scope each handle to one popup owner; surviving
+detached triggers reconnect when that owner is recreated. If Roots briefly overlap during a view
+transition, the most recently attached Root receives trigger interactions and handle actions.
+Removing it, or assigning it another handle, restores the previous surviving Root. Each Root keeps
+its own open state; sharing a handle does not open or close every Root together.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
