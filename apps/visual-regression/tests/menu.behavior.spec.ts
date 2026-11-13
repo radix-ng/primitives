@@ -14,6 +14,15 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
 const trigger = '[rdxMenuTrigger]';
 const popup = '[rdxMenuPopup]';
 
+function collectRuntimeDiagnostics(page: Page): string[] {
+    const diagnostics: string[] = [];
+    page.on('pageerror', (error) => diagnostics.push(error.message));
+    page.on('console', (message) => {
+        if (message.type() === 'error' || message.text().includes('NG0956')) diagnostics.push(message.text());
+    });
+    return diagnostics;
+}
+
 test('Menu Viewport: measures the live content wrapper when its item list expands', async ({ page }) => {
     await gotoStory(page, 'primitives-menu--viewport');
     await page.getByRole('button', { name: 'Settings', exact: true }).click();
@@ -29,8 +38,7 @@ test('Menu Viewport: measures the live content wrapper when its item list expand
 });
 
 test('detached triggers: active payload, ARIA, keyboard selection and return focus', async ({ page }) => {
-    const errors: string[] = [];
-    page.on('pageerror', (error) => errors.push(error.message));
+    const errors = collectRuntimeDiagnostics(page);
     await gotoStory(page, 'primitives-menu--multiple-triggers');
     const library = page.getByRole('button', { name: 'Library', exact: true });
     const playback = page.getByRole('button', { name: 'Playback', exact: true });
@@ -52,8 +60,7 @@ test('detached triggers: active payload, ARIA, keyboard selection and return foc
 });
 
 test('detached triggers: external open and controlled trigger switching', async ({ page }) => {
-    const errors: string[] = [];
-    page.on('pageerror', (error) => errors.push(error.message));
+    const errors = collectRuntimeDiagnostics(page);
     await gotoStory(page, 'primitives-menu--controlled-triggers');
     await page.getByRole('button', { name: 'Open playback (controlled)', exact: true }).click();
     const playback = page.getByRole('button', { name: 'Playback', exact: true });
@@ -69,8 +76,7 @@ test('detached triggers: external open and controlled trigger switching', async 
 });
 
 test('detached triggers: animated position, size and content keep live items interactive', async ({ page }) => {
-    const errors: string[] = [];
-    page.on('pageerror', (error) => errors.push(error.message));
+    const errors = collectRuntimeDiagnostics(page);
     await gotoStory(page, 'primitives-menu--animated-triggers');
     const library = page.getByRole('button', { name: 'Library', exact: true });
     const playback = page.getByRole('button', { name: 'Playback', exact: true });

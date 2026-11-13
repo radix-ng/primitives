@@ -24,7 +24,7 @@ interface MenuContent {
     id: string;
     heading: string;
     width: string;
-    groups: string[][];
+    groups: { id: string; items: string[] }[];
 }
 
 const menus: MenuContent[] = [
@@ -33,8 +33,8 @@ const menus: MenuContent[] = [
         heading: 'Library',
         width: 'w-52',
         groups: [
-            ['Add to library', 'Add to favorites'],
-            ['Create playlist', 'Create station']
+            { id: 'library-add', items: ['Add to library', 'Add to favorites'] },
+            { id: 'library-create', items: ['Create playlist', 'Create station'] }
         ]
     },
     {
@@ -42,8 +42,8 @@ const menus: MenuContent[] = [
         heading: 'Playback',
         width: 'w-64',
         groups: [
-            ['Play now', 'Add to queue'],
-            ['Play next', 'Play last', 'Sleep timer']
+            { id: 'playback-queue', items: ['Play now', 'Add to queue'] },
+            { id: 'playback-options', items: ['Play next', 'Play last', 'Sleep timer'] }
         ]
     },
     {
@@ -51,8 +51,8 @@ const menus: MenuContent[] = [
         heading: 'Share',
         width: 'w-56',
         groups: [
-            ['Copy link', 'Copy embed code'],
-            ['Share to contacts', 'Share to social']
+            { id: 'share-copy', items: ['Copy link', 'Copy embed code'] },
+            { id: 'share-send', items: ['Share to contacts', 'Share to social'] }
         ]
     }
 ];
@@ -102,14 +102,14 @@ const menus: MenuContent[] = [
                     <div [class]="cn(m.popup, 'p-0!', animated() ? popupAnimation : '')" rdxMenuPopup>
                         <div [class]="cn('relative', animated() ? viewportAnimation : '')" rdxMenuViewport>
                             <div [class]="cn(root.payload()?.width, 'p-1')">
-                                @for (group of root.payload()?.groups; track $index) {
+                                @for (group of root.payload()?.groups; track group.id) {
                                     <div rdxMenuGroup>
                                         @if ($first) {
                                             <div [class]="m.groupLabel" rdxMenuGroupLabel>
                                                 {{ root.payload()?.heading }}
                                             </div>
                                         }
-                                        @for (item of group; track item) {
+                                        @for (item of group.items; track item) {
                                             <button
                                                 [class]="cn(m.item, 'text-start')"
                                                 (onSelect)="selected.set(item)"
