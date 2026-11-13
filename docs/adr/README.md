@@ -95,3 +95,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0061](0061-menu-interrupted-trigger-exits.md)                               | Accepted               | Preserve Menu sessions through interrupted trigger exits                             |
 | [0062](0062-menu-overlapping-handle-owners.md)                               | Accepted               | Restore Menu handle ownership across overlapping Roots                               |
 | [0063](0063-menu-dialog-layered-dismissal.md)                                | Accepted               | Preserve Dialog when a child Menu backdrop dismisses Menu                            |
+| [0064](0064-menu-item-dialog-focus-transfer.md)                              | Accepted               | Transfer Menu item focus to Dialog and return past hidden views                      |

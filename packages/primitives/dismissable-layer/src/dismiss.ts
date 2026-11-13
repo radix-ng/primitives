@@ -2,6 +2,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { DestroyRef, inject, PLATFORM_ID } from '@angular/core';
 import { RdxFloatingNode, RdxFloatingRootContext, rdxPlatform } from '@radix-ng/primitives/core';
 import { RDX_FLOATING_MARKER } from '@radix-ng/primitives/floating-focus-manager';
+import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 
 /** Why a dismissal was requested — mirrors Base UI's open-change `reason` strings (`useDismiss.ts`). */
 export type RdxDismissReason = 'escape-key' | 'outside-press' | 'focus-outside';
@@ -274,6 +275,7 @@ export class RdxDismiss {
         const outsidePressBubbles = config.outsidePressBubbles ?? alwaysTrue;
         const outsidePressEvent = config.outsidePressEvent ?? sloppy;
         const focusOutside = config.focusOutside ?? alwaysTrue;
+        const focusScope = inject(RdxFocusScope, { optional: true, self: true });
 
         // Plain function (not `computed`) so it re-reads `open()` per event even when `open` is not a
         // signal — while still tracking signals when read inside a reactive context.
@@ -334,6 +336,9 @@ export class RdxDismiss {
             if (event.key !== 'Escape' || !this.active() || !escapeKey(event) || isComposing) {
                 return;
             }
+            // A newer independent popup can pause this scope without joining its floating tree.
+            // Keep descendant bubbling eligible, but leave the other popup's native Escape to it.
+            if (focusScope?.focusScope.paused() && !this.isInside(event.target)) return;
             // A non-bubbling layer yields to a deeper non-bubbling open layer (Base UI:
             // `!escapeKeyBubbles && hasBlockingChild`). A bubbling layer never yields.
             if (!escapeKeyBubbles() && this.hasBlockingChild('escape-key')) {

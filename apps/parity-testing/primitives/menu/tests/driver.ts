@@ -1,5 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 import type { CaseName, Probe } from '../src/contract';
+import { readItemDialogIsolation } from './item-dialog.observations';
 
 export class MenuDriver {
     readonly checkpoints: { name: string; state: Record<string, unknown> }[] = [];
@@ -156,6 +157,7 @@ export class MenuDriver {
                         ?.getAttribute('aria-labelledby')
                         ?.split(/\s+/)
                         .every((id) => document.getElementById(id)?.textContent?.trim());
+                const isolated = (el: HTMLElement | null) => !!el?.closest('[inert], [aria-hidden="true"]');
                 return {
                     ...(window.menuParity.dialog
                         ? {
@@ -165,7 +167,7 @@ export class MenuDriver {
                                   visible: visible(document.querySelector('[data-testid="dialog-popup"]')),
                                   labelled: labelled(document.querySelector('[data-testid="dialog-popup"]')),
                                   inert: !!document.querySelector('[data-testid="dialog-popup"]')?.closest('[inert]'),
-                                  menuInert: !!popup?.closest('[inert]'),
+                                  menuIsolated: isolated(popup),
                                   changes: window.menuParity.dialog.changes,
                                   completions: window.menuParity.dialog.completions
                               }
@@ -270,7 +272,9 @@ export class MenuDriver {
                     ...(window.menuParity.config.lifecycle
                         ? {
                               ending: popup?.hasAttribute('data-ending-style') ?? false,
-                              inert: positioner?.hasAttribute('inert') ?? false,
+                              ...(window.menuParity.config.itemDialog
+                                  ? { menuIsolated: isolated(positioner) }
+                                  : { inert: positioner?.hasAttribute('inert') ?? false }),
                               pointerBlocked: !!positioner && getComputedStyle(positioner).pointerEvents === 'none'
                           }
                         : {}),
@@ -329,6 +333,12 @@ export class MenuDriver {
             throw new Error('Menu did not settle');
         });
         this.checkpoints.push({ name, state });
+        if (await this.page.evaluate(() => !!window.menuParity.config.itemDialog)) {
+            this.measurements.push({
+                name: `${name}: raw isolation`,
+                bounds: await this.page.evaluate(readItemDialogIsolation)
+            });
+        }
         if (await this.page.evaluate(() => window.menuParity.config.multiTrigger?.animated)) {
             this.measurements.push({
                 name: `${name}: raw viewport direction`,

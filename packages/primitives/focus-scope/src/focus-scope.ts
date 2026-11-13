@@ -17,6 +17,7 @@ import { BooleanInput, createContext, getActiveElement } from '@radix-ng/primiti
 import { getPreviouslyFocusedElement, rememberFocusedElement } from './focus-history';
 import { RdxFocusScopeConfigToken } from './focus-scope.config';
 import { createFocusScopesStack, FocusScopeAPI } from './stack';
+import { isFocusableElement } from './tabbable';
 import {
     AUTOFOCUS_ON_MOUNT,
     AUTOFOCUS_ON_UNMOUNT,
@@ -280,10 +281,10 @@ export class RdxFocusScope {
                                             this.config.defaultReturnFocus?.() ?? previouslyFocusedElement;
                                         const fallback = this.config.fallbackReturnFocus?.();
                                         focus(
-                                            (candidate?.isConnected && candidate !== this.ownerDocument.body
+                                            (candidate !== this.ownerDocument.body && isFocusableElement(candidate)
                                                 ? candidate
                                                 : undefined) ??
-                                                (fallback?.isConnected && fallback !== this.ownerDocument.body
+                                                (fallback !== this.ownerDocument.body && isFocusableElement(fallback)
                                                     ? fallback
                                                     : undefined) ??
                                                 getPreviouslyFocusedElement(this.ownerDocument) ??

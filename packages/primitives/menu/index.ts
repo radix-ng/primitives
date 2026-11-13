@@ -44,7 +44,7 @@ export * from './src/menu-trigger';
 export * from './src/menu-utils';
 export * from './src/menu-viewport';
 
-const menuImports = [
+export const menuImports = [
     RdxMenuRoot,
     RdxMenuTrigger,
     RdxMenuSubTrigger,

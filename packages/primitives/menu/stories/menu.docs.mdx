@@ -77,10 +77,12 @@ import {
 } from '@radix-ng/primitives/menu';
 ```
 
-Or import all parts through the module:
+Or add all standalone parts to a component's imports:
 
 ```typescript
-import { RdxMenuModule } from '@radix-ng/primitives/menu';
+import { menuImports } from '@radix-ng/primitives/menu';
+
+// @Component({ imports: [...menuImports], ... })
 ```
 
 ## Anatomy
@@ -302,6 +304,18 @@ Selecting an item closes its menu chain while preserving Dialog. Keep mounted an
 exercise retained views and explicit completion; Finish menu exit completes a held close.
 
 <Canvas of={Stories.InDialog} />
+
+### Open Dialog
+
+Compose `rdxMenuItem` and `rdxDialogTrigger` on the same native button. A Dialog handle connects
+the item to a Root outside the menu portal, so closing Menu does not destroy Dialog. Menu's normal
+selection closes the menu chain while Dialog receives focus. After Dialog closes, focus returns to
+the surviving menu trigger, including when Menu's item remains mounted but hidden.
+
+To keep Menu open behind Dialog, place Dialog Root and its trigger inside Menu's popup and set
+`[closeOnClick]="false"` on the composed item. Dialog then closes first and returns focus to that item.
+
+<Canvas of={Stories.OpenDialog} />
 
 ### Events
 

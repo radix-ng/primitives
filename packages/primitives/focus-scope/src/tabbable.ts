@@ -127,8 +127,9 @@ function isVisibleInTabbableTree(element: Element, isAncestor: boolean): boolean
     return !!styles && styles.display !== 'none';
 }
 
-function isFocusableElement(element: Element | null): element is FocusableElement {
-    if (!isFocusableCandidate(element) || !element.isConnected || element.matches(':disabled')) {
+/** @internal Shared with guarded return-focus selection; public detection stays in utils.ts. */
+export function isFocusableElement(element: Element | null | undefined): element is FocusableElement {
+    if (!element || !isFocusableCandidate(element) || !element.isConnected || element.matches(':disabled')) {
         return false;
     }
 

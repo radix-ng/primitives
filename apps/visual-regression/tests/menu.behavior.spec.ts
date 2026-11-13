@@ -12,6 +12,52 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
 }
 
 for (const retained of [false, true]) {
+    test(`Menu opens Dialog: keeps focus through menu completion and returns to its trigger, retained=${retained}`, async ({
+        page
+    }) => {
+        const errors = collectRuntimeDiagnostics(page);
+        await gotoStory(page, 'primitives-menu--open-dialog');
+        if (retained) await page.getByRole('checkbox', { name: 'Keep mounted', exact: true }).check();
+        const trigger = page.getByRole('button', { name: 'Document actions', exact: true });
+        await trigger.press('Enter');
+        await expect(page.locator('output')).toHaveText('Menu completed: open');
+        await page.getByRole('menuitem', { name: 'Rename document…', exact: true }).press('Enter');
+        const field = page.getByRole('textbox', { name: 'Document name', exact: true });
+        await expect(field).toBeFocused();
+        await expect(page.locator('output')).toHaveText('Menu completed: open → closed');
+        await expect(field).toBeFocused();
+        await page.getByRole('button', { name: 'Cancel', exact: true }).press('Enter');
+        await expect(page.getByRole('dialog')).toHaveCount(0);
+        await expect(trigger).toBeFocused();
+        await trigger.press('Enter');
+        await expect(page.getByRole('menuitem', { name: 'Rename document…', exact: true })).toBeFocused();
+        expect(errors).toEqual([]);
+    });
+}
+
+test('Menu opens Dialog: deferred menu completion preserves deliberate dialog focus', async ({ page }) => {
+    const errors = collectRuntimeDiagnostics(page);
+    await gotoStory(page, 'primitives-menu--open-dialog');
+    await page.getByRole('checkbox', { name: 'Keep mounted', exact: true }).check();
+    await page.getByRole('checkbox', { name: 'Defer menu exit', exact: true }).check();
+    const trigger = page.getByRole('button', { name: 'Document actions', exact: true });
+    await trigger.press('Enter');
+    await expect(page.locator('output')).toHaveText('Menu completed: open');
+    await page.getByRole('menuitem', { name: 'Rename document…', exact: true }).press('Enter');
+    await expect(page.getByRole('textbox', { name: 'Document name', exact: true })).toBeFocused();
+    await expect(page.locator('[rdxMenuPopup]')).toHaveAttribute('data-ending-style', '');
+    await expect(page.locator('output')).toHaveText('Menu completed: open');
+    const finish = page.getByRole('button', { name: 'Finish menu exit', exact: true });
+    await finish.press('Enter');
+    await expect(page.locator('output')).toHaveText('Menu completed: open → closed');
+    await expect(finish).toBeFocused();
+    await page.getByRole('button', { name: 'Cancel', exact: true }).press('Enter');
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    await expect(trigger).toBeFocused();
+    expect(errors).toEqual([]);
+});
+
+for (const retained of [false, true]) {
     test(`Menu inside Dialog: Escape and backdrop close one layer at a time, retained=${retained}`, async ({
         page
     }) => {

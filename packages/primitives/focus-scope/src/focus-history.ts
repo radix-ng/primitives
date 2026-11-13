@@ -1,3 +1,5 @@
+import { isFocusableElement } from './tabbable';
+
 /** Surviving return targets when a popup replaces the previously focused popup in the same gesture. */
 const history = new WeakMap<Document, WeakRef<HTMLElement>[]>();
 
@@ -11,5 +13,9 @@ export function rememberFocusedElement(document: Document, element: HTMLElement 
 export function getPreviouslyFocusedElement(document: Document): HTMLElement | undefined {
     const entries = (history.get(document) ?? []).filter((entry) => entry.deref()?.isConnected);
     history.set(document, entries);
-    return entries.at(-1)?.deref();
+    for (let index = entries.length - 1; index >= 0; index--) {
+        const element = entries[index].deref();
+        if (isFocusableElement(element)) return element;
+    }
+    return undefined;
 }

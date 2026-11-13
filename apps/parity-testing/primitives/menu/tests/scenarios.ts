@@ -11,6 +11,7 @@ import { highlightScenarios } from './highlight.scenarios';
 import { hostScenarios } from './hosts.scenarios';
 import { hybridScenarios } from './hybrid.scenarios';
 import { initialFocusScenarios } from './initial-focus.scenarios';
+import { itemDialogScenarios } from './item-dialog.scenarios';
 import { lifecycleScenarios } from './lifecycle.scenarios';
 import { pointerScenarios } from './pointer.scenarios';
 import { projectionScenarios } from './projection.scenarios';
@@ -19,6 +20,7 @@ import { multiTriggerLifecycleScenarios } from './trigger-lifecycle.scenarios';
 import { multiTriggerScenarios } from './triggers.scenarios';
 
 export const scenarios = [
+    ...itemDialogScenarios,
     ...dialogMenuScenarios,
     ...handleOverlapScenarios,
     ...multiTriggerLifecycleScenarios,

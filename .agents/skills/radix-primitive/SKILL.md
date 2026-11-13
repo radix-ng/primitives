@@ -11,13 +11,13 @@ Read [patterns](../../../docs/engineering/patterns.md) and the matching [pinned 
 
 - Define the family anatomy, host elements, public inputs/outputs, state attributes and keyboard/focus behavior.
 - Create `packages/primitives/<name>/` with source, `index.ts`, `ng-package.json`, tests and stories. Register the secondary path in `tsconfig.base.json`.
-- Provide explicit typed contexts and compose shared mechanisms. New families use `Rdx<Name><Role>` / `<name>-<role>.ts`; add an imports array or NgModule when consistent with the public API.
+- Provide explicit typed contexts and compose shared mechanisms. New families use `Rdx<Name><Role>` / `<name>-<role>.ts`; add an imports array when consistent with the public API.
 
 ## New part in an existing family
 
 - Read the family's Root/context, a neighboring part and its exports first. Reuse existing state and ownership; extend the context only when the new behavior needs it.
 - Add the part within the existing entry. Follow that family's naming, host semantics and composition pattern, including established `Directive` suffixes.
-- Export the public part and update the family's existing imports array/NgModule where applicable. Keep its `ng-package.json` and tsconfig alias unchanged unless the task actually introduces a separate entry.
+- Export the public part and update the family's existing imports array where applicable. Keep its `ng-package.json` and tsconfig alias unchanged unless the task actually introduces a separate entry.
 - Cover the part's behavior and integration with the existing family; update that family's anatomy/examples rather than scaffolding another root.
 
 ## Shared implementation and verification

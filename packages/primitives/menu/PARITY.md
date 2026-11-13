@@ -38,10 +38,11 @@ This is incremental behavioral evidence, not complete API or accessibility certi
 | Controlled/handle reopen during CSS/deferred exits, interrupted viewport switches and Root removal | Pinned suite and Switch During Exit example              | Covered; exact hidden controlled-label association, ADR 0061            |
 | Handle ownership during overlapping Root attachment, removal and reassignment                      | Pinned suite, three engines                              | Covered; surviving owners regain control, ADR 0062                      |
 | Menu inside modal Dialog: layered dismissal, focus, retained/deferred exits and parent removal     | Pinned suite and Inside Dialog example                   | Covered; descendant backdrop ancestry, ADR 0063                         |
+| Dialog opened by Menu item: focus transfer, retained exits, native composition and drag release    | Pinned suite and Open Dialog example                     | Covered; shared focus-scope ownership, ADR 0064                         |
 | Real touch, devices and assistive technology                                                       | Not established by this suite                            | Pending                                                                 |
 
-The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 303 scenarios and
-909 planned comparisons: 861 execute, with 48 touch capability skips. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
+The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 321 scenarios and
+963 planned comparisons: 915 execute, with 48 touch capability skips. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
 state. Checkbox/radio change requests are observed before cancellation; original event types and
 trusted pointer coordinates are retained. No adapter forces focus, open state or completion.
 
@@ -423,5 +424,25 @@ checks cover fresh/retained layer-by-layer dismissal, focus return and explicit 
 dismissal consumers receive focused regression checks. See
 [ADR 0063](../../../docs/adr/0063-menu-dialog-layered-dismissal.md).
 
-Menu-triggered Dialog, further Popover composition and real device/AT verification remain separate
-audits. These Menu integration comparisons do not certify Dialog's independent API/behavior parity.
+## Dialog opened by a Menu item
+
+Eighteen cases / 54 comparisons exercise selection opening an independent controlled Dialog or a
+Dialog handle trigger on the same native item. They include Enter/Space/pointer selection, trusted
+press-drag-release, submenu selection, retained portals and CSS/deferred completion. A second
+composition keeps Menu open through closeOnClick=false with a nested Dialog; Tab/Shift+Tab,
+pointer departure, close veto and canceled Dialog opening are compared without new exceptions.
+
+Shared Focus Scope uses existing focusability checks for default return candidates and history.
+A connected but hidden retained item is skipped, so the surviving opener can receive focus.
+Focus-out stands down while its scope is paused. Dismissal yields a paused scope's unrelated Escape
+while preserving logical descendant bubbling. No per-Menu focus history or React open counter is
+introduced. Angular keeps native inert isolation; comparisons observe actual inert/aria-hidden
+isolation, with raw attributes and ancestor locations attached per checkpoint as measurements.
+
+The Open Dialog example composes rdxMenuItem and rdxDialogTrigger, with Dialog Root outside the Menu
+portal and optional retained/deferred exit. Browser checks prove focus remains in Dialog during Menu
+completion and returns after Dialog closes. menuImports is exported for standalone composition.
+See [ADR 0064](../../../docs/adr/0064-menu-item-dialog-focus-transfer.md).
+
+Further Popover composition and real device/AT verification remain separate audits. These Menu
+integration comparisons do not certify Dialog's independent API/behavior parity.

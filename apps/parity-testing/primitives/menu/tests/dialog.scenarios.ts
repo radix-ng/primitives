@@ -21,7 +21,7 @@ export const dialogMenuScenarios = dialogMenuCases.map((name) => ({
         await d.checkpoint('menu entered inside dialog', {
             open: true,
             visible: true,
-            dialog: expect.objectContaining({ open: true, visible: true, menuInert: false })
+            dialog: expect.objectContaining({ open: true, visible: true, menuIsolated: false })
         });
         if (settings.nested) {
             await d.openSub();

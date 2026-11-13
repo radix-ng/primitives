@@ -25,6 +25,7 @@ Base UI is the primary API/behavior reference; Radix UI is secondary.
 
 ## Runtime invariants
 
+- Use standalone components, directives and pipes with direct imports; do not introduce NgModules or `standalone: false`.
 - Keep primitives headless; expose each part's documented boolean state attributes (`data-open`, `data-closed`, `data-checked`, etc.). Follow the per-part contract instead of introducing a generic `data-state` enum.
 - Use signal inputs/models/outputs and typed `createContext` interfaces. Pass the docs path to `createContext`; use `undefined` to remove host attributes.
 - Prefer `hostDirectives` composition. Thin positioners extend `RdxPopperContentWrapper`; see [composition](docs/engineering/composition.md).

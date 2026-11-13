@@ -12,6 +12,7 @@ import { ReactFocusBoundary } from './focus-boundary.react';
 import { ReactHandleOverlap } from './handle-overlap.react';
 import { changeHighlightEntries, createHighlightRecorder } from './highlight';
 import { ReactHosts } from './hosts.react';
+import { ReactItemDialog } from './item-dialog.react';
 import { ReactProjection } from './projection.react';
 import { touchScrollEntries } from './touch';
 import { ReactMultiTriggers } from './triggers.react';
@@ -323,7 +324,9 @@ function ReactMenu() {
     );
 }
 createRoot(document.getElementById('root')!).render(
-    settings.dialog ? (
+    settings.itemDialog ? (
+        <ReactItemDialog />
+    ) : settings.dialog ? (
         <ReactDialogMenu />
     ) : settings.name.startsWith('handle-overlap-') ? (
         <ReactHandleOverlap />

@@ -39,6 +39,8 @@ import { RdxMenuNestedComponent } from './menu-nested';
 import { RdxMenuNestedRtlComponent } from './menu-nested-rtl';
 import nestedRtlSource from './menu-nested-rtl?raw';
 import nestedSource from './menu-nested?raw';
+import { RdxMenuOpenDialogComponent } from './menu-open-dialog';
+import openDialogSource from './menu-open-dialog?raw';
 import { RdxMenuPointerComponent } from './menu-pointer';
 import pointerSource from './menu-pointer?raw';
 import { RdxMenuViewportExampleComponent } from './menu-viewport';
@@ -297,4 +299,11 @@ export const InDialog: Story = {
     decorators: [moduleMetadata({ imports: [RdxMenuInDialogComponent] })],
     parameters: source(inDialogSource),
     render: () => ({ template: '<rdx-menu-in-dialog />' })
+};
+
+export const OpenDialog: Story = {
+    tags: ['!visual'],
+    decorators: [moduleMetadata({ imports: [RdxMenuOpenDialogComponent] })],
+    parameters: source(openDialogSource),
+    render: () => ({ template: '<rdx-menu-open-dialog />' })
 };

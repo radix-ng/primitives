@@ -624,6 +624,7 @@ export class RdxFloatingFocusManager {
                 !this.isFloatingOpen() ||
                 !this.effectiveCloseOnFocusOut() ||
                 this.effectiveModal() ||
+                this.scopePaused() ||
                 pointerDown
             ) {
                 return;

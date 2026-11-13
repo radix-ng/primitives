@@ -10,7 +10,7 @@ port is 4505. Angular fixtures are AOT compiled and React imports the unmodified
 Base UI 1.9.0 pin: `cf696d6f6e08c699c5bda24d5a033430909f2285`, archive SHA-256
 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 
-303 scenarios define 909 planned comparisons: 861 execute, with 48 touch capability skips. They cover native keyboard and
+321 scenarios define 963 planned comparisons: 915 execute, with 48 touch capability skips. They cover native keyboard and
 pointer opening, disabled/focusable items, roving focus, edges and looping, repeated and explicit-label
 typeahead, selection and stay-open items, cancelable transactions, modal/background activation,
 forward/backward Tab, checkbox/radio values, LTR/RTL submenu ownership and custom identity links.
@@ -251,3 +251,17 @@ types remain attached to the report. Popup names, focus, visibility and inert st
 directly. A backdrop press closes Menu alone, and the next outside press closes Dialog. No new
 exceptions are needed. This is Menu composition evidence, not a full independent Dialog audit.
 See [ADR 0063](../../../../docs/adr/0063-menu-dialog-layered-dismissal.md).
+
+## Dialog opened by an item
+
+Run `pnpm test-parity menu --grep item-dialog-`. Eighteen cases / 54 comparisons cover independent
+controlled/handle Dialogs, native item+trigger composition, submenu selection, retained/CSS/deferred
+exits, canceled Menu close, press-drag-release, and nested Dialogs with closeOnClick=false. Nested
+cases check native Tab/Shift+Tab, pointer departure and canceled Dialog opening. F3 completes the
+current Menu exit; paused CSS finishes through native WAAPI. Fixtures do not move focus themselves.
+
+Dialog focus and callbacks remain separate from Menu observations. Isolation is measured from
+actual inert/aria-hidden ancestors, with raw attribute spelling retained in checkpoint measurements.
+The drag guard uses a monotonic page clock; WebKit's native event timeStamp can have a different
+origin and is retained as raw input evidence. No new exceptions are added. See
+[ADR 0064](../../../../docs/adr/0064-menu-item-dialog-focus-transfer.md).

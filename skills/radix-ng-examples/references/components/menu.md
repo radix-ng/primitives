@@ -59,10 +59,12 @@ import {
 } from '@radix-ng/primitives/menu';
 ```
 
-Or import all parts through the module:
+Or add all standalone parts to a component's imports:
 
 ```typescript
-import { RdxMenuModule } from '@radix-ng/primitives/menu';
+import { menuImports } from '@radix-ng/primitives/menu';
+
+// @Component({ imports: [...menuImports], ... })
 ```
 
 ## Anatomy
@@ -151,6 +153,7 @@ content multi-root.
 - [Pointer gestures](../examples/menu--pointer-gestures.md)
 - [Composition](../examples/menu--composition.md)
 - [Inside Dialog](../examples/menu--inside-dialog.md)
+- [Open Dialog](../examples/menu--open-dialog.md)
 - [Events](../examples/menu--events.md)
 - [Item highlight](../examples/menu--item-highlight.md)
 - [Radio items](../examples/menu--radio-items.md)
