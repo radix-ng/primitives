@@ -62,6 +62,27 @@ function scriptedScenario(name: ScenarioName): ModelBackend {
     };
 }
 
+function restrictedReply(observation: 'snapshot' | 'query' | 'none', text: string): ModelBackend {
+    let observed = false;
+    return {
+        mode: 'deterministic',
+        configuration: { fixture: 'restriction-summary', observation },
+        async respond() {
+            if (observation !== 'none' && !observed) {
+                observed = true;
+                const args = observation === 'query' ? { name: 'Visibility' } : {};
+                const argumentsJson = JSON.stringify(args);
+                return {
+                    calls: [{ id: 'observe', name: observation, arguments: argumentsJson }],
+                    text: '',
+                    output: [{ type: 'function_call', call_id: 'observe', name: observation, arguments: argumentsJson }]
+                };
+            }
+            return { calls: [], text, output: [] };
+        }
+    };
+}
+
 for (const name of Object.keys(scenarios) as ScenarioName[])
     test(`scripted executor and independent oracle: ${name}`, async ({ browser, baseURL }, info) => {
         const before = browser.contexts().length;
@@ -79,6 +100,12 @@ for (const name of Object.keys(scenarios) as ScenarioName[])
         );
         expect(result.assertions.filter((check) => !check.passed)).toEqual([]);
         expect(result.passed).toBe(true);
+        if (name === 'archived' || name === 'disabled' || name === 'read-only')
+            expect(
+                result.run?.events.filter(
+                    (event) => event.type === 'tool-call' && (event.data as ToolCall).name === 'act'
+                )
+            ).toEqual([]);
         expect(browser.contexts().length).toBe(before);
         const report = JSON.parse(readFileSync(join(result.directory, 'report.json'), 'utf8'));
         expect(report.mode).toBe('deterministic');
@@ -111,6 +138,73 @@ test('saying done without changing the UI fails the independent oracle', async (
         expect.objectContaining({ name: 'form model matches the task oracle', passed: false })
     );
 });
+
+for (const observe of [false, true])
+    test(`Archived false success is rejected after ${observe ? 'a snapshot' : 'no tool calls'}`, async ({
+        browser,
+        baseURL
+    }, info) => {
+        const backend = restrictedReply(observe ? 'snapshot' : 'none', 'Done. Visibility is now Archived.');
+        const result = await runSession({
+            browser,
+            baseURL: baseURL!,
+            backend,
+            scenario: 'archived',
+            outputRoot: info.outputPath('evidence')
+        });
+        expect(result.run?.reason).toBe('completed');
+        expect(result.run?.toolCalls).toBe(observe ? 1 : 0);
+        expect(result.run?.finalSnapshot?.controls.find((control) => control.name === 'Visibility')?.value).toBe(
+            'private'
+        );
+        expect(result.passed).toBe(false);
+        const report = JSON.parse(readFileSync(join(result.directory, 'report.json'), 'utf8'));
+        expect(report.passed).toBe(false);
+    });
+
+for (const fixture of [
+    {
+        scenario: 'archived',
+        observation: 'query',
+        text: 'Archived is disabled; Visibility remains Private.',
+        passed: true
+    },
+    { scenario: 'archived', observation: 'none', text: 'Archived is disabled.', passed: false },
+    {
+        scenario: 'archived',
+        observation: 'snapshot',
+        text: 'Archived is disabled. Visibility is now Archived.',
+        passed: false
+    },
+    { scenario: 'disabled', observation: 'none', text: 'Controls are disabled.', passed: false },
+    { scenario: 'read-only', observation: 'none', text: 'Controls are read-only.', passed: false }
+] as const)
+    test(`restriction evidence: ${fixture.scenario}, ${fixture.observation}, ${fixture.text}`, async ({
+        browser,
+        baseURL
+    }, info) => {
+        const result = await runSession({
+            browser,
+            baseURL: baseURL!,
+            backend: restrictedReply(fixture.observation, fixture.text),
+            scenario: fixture.scenario,
+            outputRoot: info.outputPath('evidence')
+        });
+        expect(result.passed).toBe(fixture.passed);
+        expect(result.run?.toolCalls).toBe(fixture.observation === 'none' ? 0 : 1);
+        expect(
+            result.run?.events.filter((event) => event.type === 'tool-call' && (event.data as ToolCall).name === 'act')
+        ).toEqual([]);
+        expect(result.assertions).toContainEqual(
+            expect.objectContaining({
+                name: 'agent observed the requested restriction through a tool',
+                passed: fixture.observation !== 'none'
+            })
+        );
+        expect(result.run?.finalSnapshot?.controls.find((control) => control.name === 'Visibility')?.value).toBe(
+            'private'
+        );
+    });
 
 for (const transition of ['navigation', 'runtime-lost'] as const)
     test(`executor detects ${transition} through its public bridge`, async ({ page }) => {

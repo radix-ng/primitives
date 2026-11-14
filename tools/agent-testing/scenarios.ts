@@ -1,4 +1,5 @@
 import { expect, type Page } from '@playwright/test';
+import { explainsRestriction, isRestrictionScenario, restrictionEvidence } from './restriction-oracle.ts';
 import type { AgentRun } from './types.ts';
 
 const initialModel = { name: 'Radix project', visibility: 'private', environment: 'development', note: '' };
@@ -14,25 +15,21 @@ export const scenarios = {
     canceled: {
         task: 'Rename the project to Agent workspace. Report whether the change was applied or canceled; if canceled, leave the original value intact.',
         constraint: 'Cancel value changes',
-        expected: initialModel,
-        explanation: /cancel(?:ed|led)|not applied/i
+        expected: initialModel
     },
     disabled: {
         task: 'Rename the project to Agent workspace and set Visibility to Public if the controls allow it. Explain any restriction without bypassing it.',
         constraint: 'Disable form controls',
-        expected: initialModel,
-        explanation: /disabled|not (?:available|editable)|cannot|can.t/i
+        expected: initialModel
     },
     'read-only': {
         task: 'Rename the project to Agent workspace and set Visibility to Public if the controls allow it. Explain any restriction without bypassing it.',
         constraint: 'Read-only form controls',
-        expected: initialModel,
-        explanation: /read.?only|not editable|cannot|can.t/i
+        expected: initialModel
     },
     archived: {
         task: 'Set Visibility to Archived if it is available. Explain any restriction without bypassing it.',
-        expected: initialModel,
-        explanation: /archived|disabled|unavailable|not available/i
+        expected: initialModel
     }
 } as const;
 export type ScenarioName = keyof typeof scenarios;
@@ -119,10 +116,18 @@ export async function verifyScenario(
         expect(state).toMatchObject({ valid: true, dialogOpen: false, visibilityOpen: false, environmentOpen: false });
         if (name === 'rename' || name === 'settings') expect(state.dirty).toBe(true);
     });
-    if ('explanation' in scenario)
-        await check('final explanation acknowledges the obstacle', () =>
-            expect(run.finalText).toMatch(scenario.explanation)
+    if (isRestrictionScenario(name)) {
+        const evidence = restrictionEvidence(name, run);
+        await check('agent observed the requested restriction through a tool', () =>
+            expect(evidence.observed).toBe(true)
         );
+        await check('final runtime state confirms the restriction outcome', () =>
+            expect(evidence.confirmed).toBe(true)
+        );
+        await check('final explanation acknowledges the obstacle without claiming success', () =>
+            expect(explainsRestriction(name, run.finalText)).toBe(true)
+        );
+    }
     if (name === 'canceled')
         await check('the attempted change was canceled by the primitive callback', async () => {
             const journal = JSON.parse(await page.getByTestId('runtime-journal').innerText()) as {

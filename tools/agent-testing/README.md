@@ -15,7 +15,40 @@ pnpm build-site
 pnpm exec http-server dist/radix-site -a 127.0.0.1 -p 4496 -c-1
 ```
 
-In another terminal, set `OPENAI_API_KEY` through your local shell/secret manager and choose a model
+For the ChatGPT subscription allowance, install Codex CLI 0.169.0 or newer and sign in with
+`codex login`. `codex login status` must report `Logged in using ChatGPT`; API-key logins are rejected.
+Choose a model available to your Codex account (`--model` or `CODEX_MODEL`):
+
+```bash
+codex login status
+pnpm agent:run --provider codex --scenario rename --model YOUR_CODEX_MODEL_ID
+pnpm agent:run --provider codex --scenario archived --model YOUR_CODEX_MODEL_ID
+pnpm agent:run --provider codex --scenario all --model YOUR_CODEX_MODEL_ID
+```
+
+The `codex` provider delegates authentication and subscription accounting to the official CLI.
+The executor never reads or copies credentials, sends subscription tokens through the API backend, or falls
+back to paid API requests. API-key and endpoint environment overrides are excluded from the CLI
+environment. An unavailable model, exhausted allowance or CLI failure stops the run.
+
+Its transport is recorded as `codex-exec-json`: every decision starts a new ephemeral CLI session
+in a temporary directory, with the complete ordered executor history encoded as JSON. The CLI returns
+one structured decision for `snapshot`, `query`, `act`, or a final answer. This is JSON decision
+transport, not native function calling. The shared executor validates and executes decisions through
+the same runtime boundary as the API provider. Native CLI tools, plugins, repository instructions and
+skills are disabled; native tool events are rejected. CLI diagnostics are discarded, and temporary
+decision files/processes are cleaned up on completion or interruption. This does not change Codex's
+own provider retention policies.
+
+`--max-steps` counts decisions, including the final answer. Each response records the requested model
+and CLI-reported usage when available; the run configuration records the CLI version, transport and
+ChatGPT authentication method. Replaying the complete history in separate sessions adds overhead;
+this experiment does not measure equivalence to API function calling or subscription usage limits.
+Codex defaults to a 60-second request timeout and a 300-second total timeout. It accepts
+`--reasoning-effort` but rejects `--max-output-tokens` and `--api-key-env`.
+
+The default `openai` provider uses separately billed API access. In another terminal, set
+`OPENAI_API_KEY` through your local shell/secret manager and choose a model
 available to your API account. `OPENAI_MODEL` supplies its ID; `--model` overrides that ID. No model
 is selected implicitly. ChatGPT/Codex login credentials are not reused as API credentials.
 
@@ -46,7 +79,7 @@ pnpm agent:run --scenario rename --model YOUR_MODEL_ID \
 `--reasoning-effort` is optional; choose an effort supported by your model. Output tokens include
 reasoning where applicable. An incomplete response is a provider error, not a successful completion.
 The step limit counts model requests; the separate tool limit also bounds an unexpected batch.
-The request timer covers the full SDK call, and the total timer covers preparation, the agent loop,
+The request timer covers the full provider call, and the total timer covers preparation, the agent loop,
 and independent verification. Timeouts/SIGINT abort requests, close the owned context and retain the
 available evidence. If the page has disappeared, a final snapshot or screenshot can be unavailable;
 the report records that instead of presenting an old observation as final state.
@@ -104,16 +137,26 @@ the model starts. The model receives a goal in ordinary text, without a prescrib
 | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `rename`     | Project name becomes `Agent workspace`, Visibility becomes Public; UI, form model, runtime and one callback per edit agree.                                                                            |
 | `settings`   | Dialog opens; Change note becomes `Ready for production`, Environment becomes Production; UI was observed displaying both, the model retains them, and Dialog/Select close and registrations clean up. |
-| `canceled`   | Preparation enables value cancellation; the attempted rename emits a canceled callback/result, values remain original, and the final answer acknowledges cancellation.                                 |
-| `disabled`   | Preparation disables the form; values remain original and the answer acknowledges the restriction. Correctly declining based on snapshot flags is allowed.                                             |
-| `read-only`  | Preparation makes the form read-only; values remain original and the answer acknowledges the restriction.                                                                                              |
-| `archived`   | The disabled Archived option is handled without changing the value or bypassing the restriction.                                                                                                       |
+| `canceled`   | The requested rename has a matching canceled tool result and callback, values remain original, and the answer explains cancellation without claiming the edit succeeded.                               |
+| `disabled`   | The agent observes the disabled flag for both requested controls, values remain original, and the answer explains the restriction. No `act` attempt is required.                                       |
+| `read-only`  | The agent observes the read-only flag for both requested controls, values remain original, and the answer explains the restriction. No `act` attempt is required.                                      |
+| `archived`   | The agent observes that Visibility's exact `archived` option is disabled, keeps Private, and explains that Archived is unavailable without claiming it was selected.                                   |
 
 The observer reads actual UI values and the published Signal Forms model after actions, separately
 from tool results. These observations are evidence, not extra model tools. Final checks also inspect
 controlled open bindings, callback counts/payloads, overlays and the final registry. A model's
-“done” response alone fails the oracle. Obstacle explanations have a small English phrase check;
-this is a bounded task check, not a general semantic judge.
+“done” response alone fails the oracle. Restriction discovery comes from the agent's own
+`snapshot`/`query` results or a contextual action refusal; the executor's final observer snapshot
+does not establish model discovery. A correct snapshot/query-based refusal can pass without `act`.
+The final runtime state must independently confirm the restriction/outcome. Cancellation additionally
+requires the exact input, requested value and matching canceled action result plus the real callback.
+
+Obstacle explanations use bounded English checks for the task subject and actual reason. Mentioning
+Archived alone, inventing a restriction without observing it, negating the actual restriction or
+combining a refusal with a common contradictory success claim fails. For example, “Done. Visibility
+is now Archived.” fails with or without an earlier snapshot; “Archived is disabled” can pass after
+the corresponding tool observation. These conservative checks are not a general semantic or
+adversarial-language judge. Tests explicitly cover both false success and legitimate refusal.
 
 For an arbitrary `--task`, UI/model/runtime consistency is still checked, but no semantic goal oracle
 is invented: `goalChecked` is false and `passed` is null. `integrationPassed` and the exit code describe
@@ -148,12 +191,21 @@ pnpm agents:check
 
 Node tests use scripted replies/fake HTTP transport for success, refusals, cancellation, invalid calls,
 timeouts, step/tool limits, schema contracts, credential handling, and SDK wire/history behavior.
+Codex process tests cover login preflight, JSON decisions, tool rejection, sanitized failures and
+cleanup. With Codex installed, an additional offline contract check inspects its actual request:
+
+```bash
+RUN_CODEX_CONTRACT=1 node --test tools/agent-testing/codex.contract.test.ts
+```
+
+That fixture uses a loopback provider without authentication and asserts an empty native tool list;
+it does not contact a model or modify the real login. It is skipped in the default Node suite.
 Playwright executor checks use the real app and bridge with an explicitly scripted backend; they cover
 all six oracles, false success, runtime loss/navigation, timeout cleanup and evidence. The runtime suite
 also checks modality with stale observations, canceled repeated selection/focus and Dialog spacing in
 real browsers. Both configs share the existing composed-site static server helper.
 
-These checks do **not** invoke a model or estimate LLM task quality. Live runs require API access and
-are separately labeled and reported. This implementation was checked without provider credentials;
-no live model run is claimed. Real-model reliability, prompt injection robustness, other applications,
-screen readers, production hosting and additional providers remain outside this experiment.
+These deterministic checks do **not** invoke a model or estimate LLM task quality. Live runs require
+API access or a ChatGPT-authenticated Codex subscription and are separately labeled and reported.
+Real-model reliability, prompt injection robustness, other applications, screen readers and production
+hosting remain outside this experiment.

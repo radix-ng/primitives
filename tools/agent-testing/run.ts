@@ -2,6 +2,7 @@ import { chromium } from '@playwright/test';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
+import { codexBackend } from './codex.ts';
 import { openAIBackend } from './openai.ts';
 import { scenarios, type ScenarioName } from './scenarios.ts';
 import { toolDefinitions } from './schemas.ts';
@@ -9,6 +10,7 @@ import { runSession } from './session.ts';
 import { defaultLimits } from './types.ts';
 
 export const help = `Radix NG local runtime agent (Node 24, pnpm)
+  pnpm agent:run --provider codex --scenario all --model MODEL
   pnpm agent:run --task "Rename the project to My project" --model MODEL
   pnpm agent:run --scenario all --model MODEL
   pnpm agent:run --schemas | --list | --help
@@ -16,11 +18,15 @@ export const help = `Radix NG local runtime agent (Node 24, pnpm)
 Serve the built site first: pnpm build-site
   pnpm exec http-server dist/radix-site -a 127.0.0.1 -p 4496 -c-1
 
-Credentials: OPENAI_API_KEY, or --api-key-env VARIABLE. Model: --model or OPENAI_MODEL.
+Provider: --provider openai (default) or codex.
+OpenAI: OPENAI_API_KEY, or --api-key-env VARIABLE. Model: --model or OPENAI_MODEL.
+Codex: codex login with ChatGPT (subscription allowance). Model: --model or CODEX_MODEL.
+Codex requires CLI >= 0.169.0, uses isolated JSON decisions, and never falls back to API billing.
 Options: --base-url (default http://127.0.0.1:4496), --out (default dist/agent-testing)
   --max-steps 16 --max-tool-calls 48 --request-timeout-ms 30000 --total-timeout-ms 180000
   --max-output-tokens 2048 --reasoning-effort none|minimal|low|medium|high|xhigh
-Each scenario owns a fresh context. This command makes real OpenAI requests; it has no replay mode.`;
+Codex defaults: --request-timeout-ms 60000 --total-timeout-ms 300000; no --max-output-tokens.
+Each scenario owns a fresh context. Both providers make live model requests; there is no replay mode.`;
 
 export function configuration(args: string[], env: NodeJS.ProcessEnv = process.env) {
     const { values } = parseArgs({
@@ -34,7 +40,8 @@ export function configuration(args: string[], env: NodeJS.ProcessEnv = process.e
             task: { type: 'string' },
             scenario: { type: 'string' },
             model: { type: 'string' },
-            'api-key-env': { type: 'string', default: 'OPENAI_API_KEY' },
+            provider: { type: 'string', default: 'openai' },
+            'api-key-env': { type: 'string' },
             'base-url': { type: 'string', default: 'http://127.0.0.1:4496' },
             out: { type: 'string', default: 'dist/agent-testing' },
             'max-steps': { type: 'string' },
@@ -57,15 +64,19 @@ export function configuration(args: string[], env: NodeJS.ProcessEnv = process.e
         throw new Error('Choose exactly one of --task or --scenario.');
     if (values.scenario && values.scenario !== 'all' && !Object.hasOwn(scenarios, values.scenario))
         throw new Error('Unknown scenario. Use --list.');
-    const model = values.model ?? env['OPENAI_MODEL'];
-    if (!model?.trim()) throw new Error('Set --model or OPENAI_MODEL.');
-    if (!/^[A-Z_][A-Z0-9_]*$/.test(values['api-key-env']!))
-        throw new Error('--api-key-env must name an environment variable.');
-    const apiKey = env[values['api-key-env']!];
-    if (!apiKey?.trim())
-        throw new Error(
-            `The credential environment variable ${values['api-key-env']} is not set. No live run was performed.`
-        );
+    if (values.provider !== 'openai' && values.provider !== 'codex')
+        throw new Error('Choose --provider openai or codex.');
+    const provider = values.provider;
+    const modelVariable = provider === 'codex' ? 'CODEX_MODEL' : 'OPENAI_MODEL';
+    const model = values.model ?? env[modelVariable];
+    if (!model?.trim()) throw new Error(`Set --model or ${modelVariable}.`);
+    if (provider === 'codex' && (values['api-key-env'] !== undefined || values['max-output-tokens'] !== undefined))
+        throw new Error('The codex provider does not accept --api-key-env or --max-output-tokens.');
+    const apiKeyVariable = values['api-key-env'] ?? 'OPENAI_API_KEY';
+    if (!/^[A-Z_][A-Z0-9_]*$/.test(apiKeyVariable)) throw new Error('--api-key-env must name an environment variable.');
+    const apiKey = provider === 'openai' ? env[apiKeyVariable] : undefined;
+    if (provider === 'openai' && !apiKey?.trim())
+        throw new Error(`The credential environment variable ${apiKeyVariable} is not set. No live run was performed.`);
     const baseURL = new URL(values['base-url']!);
     if (
         !['http:', 'https:'].includes(baseURL.protocol) ||
@@ -89,16 +100,25 @@ export function configuration(args: string[], env: NodeJS.ProcessEnv = process.e
         task: values.task,
         scenario: values.scenario as ScenarioName | 'all' | undefined,
         model,
+        provider,
         apiKey,
         baseURL: baseURL.origin,
         outputRoot: resolve(values.out!),
-        maxOutputTokens: integer('max-output-tokens', 2048, 32_768),
+        ...(provider === 'openai' ? { maxOutputTokens: integer('max-output-tokens', 2048, 32_768) } : {}),
         reasoningEffort: effort as 'none' | 'minimal' | 'low' | 'medium' | 'high' | 'xhigh' | undefined,
         limits: {
             maxSteps: integer('max-steps', defaultLimits.maxSteps, 100),
             maxToolCalls: integer('max-tool-calls', defaultLimits.maxToolCalls, 300),
-            requestTimeoutMs: integer('request-timeout-ms', defaultLimits.requestTimeoutMs, 300_000),
-            totalTimeoutMs: integer('total-timeout-ms', defaultLimits.totalTimeoutMs, 900_000)
+            requestTimeoutMs: integer(
+                'request-timeout-ms',
+                provider === 'codex' ? 60_000 : defaultLimits.requestTimeoutMs,
+                300_000
+            ),
+            totalTimeoutMs: integer(
+                'total-timeout-ms',
+                provider === 'codex' ? 300_000 : defaultLimits.totalTimeoutMs,
+                900_000
+            )
         }
     };
 }
@@ -136,13 +156,30 @@ async function main() {
         console.log(config.display);
         return;
     }
-    const backend = openAIBackend(config);
     const abort = new AbortController();
     const onInterrupt = () => abort.abort();
     process.on('SIGINT', onInterrupt);
     process.on('SIGTERM', onInterrupt);
     let browser: Awaited<ReturnType<typeof chromium.launch>> | undefined;
     try {
+        let backend;
+        try {
+            backend =
+                config.provider === 'codex'
+                    ? await codexBackend({ ...config, signal: abort.signal })
+                    : openAIBackend({ ...config, apiKey: config.apiKey! });
+        } catch (error) {
+            console.error(
+                abort.signal.aborted
+                    ? 'Agent executor interrupted.'
+                    : error instanceof Error
+                      ? error.message
+                      : 'The model backend could not start.'
+            );
+            process.exitCode = abort.signal.aborted ? 130 : 1;
+            return;
+        }
+        abort.signal.throwIfAborted();
         browser = await chromium.launch({
             env: browserEnvironment(),
             timeout: Math.min(30_000, config.limits.totalTimeoutMs)
@@ -156,7 +193,7 @@ async function main() {
                 backend,
                 scenario,
                 signal: abort.signal,
-                secrets: [config.apiKey]
+                secrets: config.apiKey ? [config.apiKey] : []
             });
             console.log(
                 JSON.stringify({
