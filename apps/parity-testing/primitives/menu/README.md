@@ -10,7 +10,7 @@ port is 4505. Angular fixtures are AOT compiled and React imports the unmodified
 Base UI 1.9.0 pin: `cf696d6f6e08c699c5bda24d5a033430909f2285`, archive SHA-256
 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 
-345 scenarios define 1035 planned comparisons: 987 execute, with 48 touch capability skips. They cover native keyboard and
+368 scenarios define 1104 planned comparisons: 1056 execute, with 48 touch capability skips. They cover native keyboard and
 pointer opening, disabled/focusable items, roving focus, edges and looping, repeated and explicit-label
 typeahead, selection and stay-open items, cancelable transactions, modal/background activation,
 forward/backward Tab, checkbox/radio values, LTR/RTL submenu ownership and custom identity links.
@@ -283,3 +283,29 @@ in trap-focus mode. A fast accepted close finishes through Menu's final live own
 before Angular disconnects outputs. Manual holds and interrupted CSS exits are not completed.
 The driver also rejects Angular late-output diagnostics (NG0953). No new expected differences are
 needed. See [ADR 0065](../../../../docs/adr/0065-menu-popover-composition.md).
+
+## Popover opened by an item
+
+Run `pnpm test-parity menu --grep item-popover-`. Twenty-three cases / 69 comparisons use matching
+native buttons, real custom anchors, uncontrolled retained Menu state and observed overlay callbacks.
+The independent editor's Root outlives the Menu portal and anchors to the surviving opener. Nested
+and detached trigger compositions keep Menu open with closeOnClick=false. A closing item should not
+serve as the only available anchor or trigger: the pin can lose focus and dismiss that composition.
+
+Enter/Space/pointer, submenu and trusted drag-release activation; CSS/deferred completion; vetoes;
+modal/trap-focus editors; hover focus and outside presses retain their native effects. Geometry is
+asserted against the live anchor in each framework and attached as raw measurements. F3 completes
+a manual hold; native WAAPI finishes authored CSS. Popup isolation observations are shared with
+item-to-Dialog cases; state and actions remain owned by each primitive. Four exact WebKit hover
+fields extend the existing zero-delta-pointer-travel category. See
+[ADR 0066](../../../../docs/adr/0066-menu-item-popover-focus-boundaries.md).
+
+The pin's WebKit hover ignores zero movement deltas despite changing trusted coordinates. That
+engine records the exact focus/highlight difference and stops before parent-focused Escape, which
+it cannot reach through this gesture. Chromium/Firefox compare Escape; Angular browser regressions
+cover it in all three engines.
+
+A retained Menu portal also retains its Popover Root: closing Menu after hover leaves that editor
+open in both frameworks. The retained hover case observes this lifetime without resetting state.
+The public Nested Popover example explicitly resets its application-owned editor state on Menu
+close so retained views follow the example's desired lifetime.

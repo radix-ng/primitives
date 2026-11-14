@@ -7,3 +7,7 @@ modal scopes loop; logical close releases traps immediately. Paused parents cann
 return focus. Default interaction-driven return uses the actual trigger behind the moved-focus
 guard; programmatic opens retain previous-focus semantics. The independent Select/Popover pinned
 suites and three-engine floating consumer regressions are tracked in `apps/parity-testing/COVERAGE.md`.
+
+Menu item editors use persistent anchors or keep their trigger mounted. Popover family boundaries,
+trigger-only transient blur protection, and separate marker/control isolation keeps are documented
+in [ADR 0066](../../adr/0066-menu-item-popover-focus-boundaries.md).

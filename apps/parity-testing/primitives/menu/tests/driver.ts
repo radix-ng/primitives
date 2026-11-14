@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 import type { CaseName, Probe } from '../src/contract';
-import { readItemDialogIsolation } from './item-dialog.observations';
+import { readPopupIsolation } from './overlay.observations';
 
 export class MenuDriver {
     readonly checkpoints: { name: string; state: Record<string, unknown> }[] = [];
@@ -164,15 +164,18 @@ export class MenuDriver {
                         ?.split(/\s+/)
                         .every((id) => document.getElementById(id)?.textContent?.trim());
                 const isolated = (el: HTMLElement | null) => !!el?.closest('[inert], [aria-hidden="true"]');
+                const popover = document.querySelector<HTMLElement>(
+                    '[data-testid="host-popup"], [data-testid="item-popup"]'
+                );
                 return {
                     ...(window.menuParity.popover
                         ? {
                               popover: {
-                                  mounted: !!document.querySelector('[data-testid="host-popup"]'),
-                                  open: !!document.querySelector('[data-testid="host-popup"][data-open]'),
-                                  visible: visible(document.querySelector('[data-testid="host-popup"]')),
-                                  labelled: labelled(document.querySelector('[data-testid="host-popup"]')),
-                                  isolated: isolated(document.querySelector('[data-testid="host-popup"]')),
+                                  mounted: !!popover,
+                                  open: !!popover?.hasAttribute('data-open'),
+                                  visible: visible(popover),
+                                  labelled: labelled(popover),
+                                  isolated: isolated(popover),
                                   menuIsolated: isolated(popup),
                                   changes: window.menuParity.popover.changes,
                                   completions: window.menuParity.popover.completions
@@ -353,10 +356,17 @@ export class MenuDriver {
             throw new Error('Menu did not settle');
         });
         this.checkpoints.push({ name, state });
-        if (await this.page.evaluate(() => !!window.menuParity.config.itemDialog)) {
+        const activatedPopup = await this.page.evaluate(() =>
+            window.menuParity.config.itemPopover
+                ? 'item-popup'
+                : window.menuParity.config.itemDialog
+                  ? 'dialog-popup'
+                  : null
+        );
+        if (activatedPopup) {
             this.measurements.push({
                 name: `${name}: raw isolation`,
-                bounds: await this.page.evaluate(readItemDialogIsolation)
+                bounds: await this.page.evaluate(readPopupIsolation, ['popup', 'positioner', activatedPopup])
             });
         }
         if (await this.page.evaluate(() => window.menuParity.config.multiTrigger?.animated)) {

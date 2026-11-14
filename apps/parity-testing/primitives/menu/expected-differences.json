@@ -1883,5 +1883,41 @@
             }
         ],
         "category": "parent-close-interaction-type"
+    },
+    {
+        "scenario": "item-popover-stay-hover",
+        "checkpoint": "hover returns focus to the menu",
+        "field": "focus",
+        "angular": "omega",
+        "react": "popover-cancel",
+        "browser": "webkit",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "item-popover-stay-hover",
+        "checkpoint": "hover returns focus to the menu",
+        "field": "highlighted",
+        "angular": ["omega"],
+        "react": ["alpha"],
+        "browser": "webkit",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "item-popover-stay-hover-retained",
+        "checkpoint": "hover returns focus to the menu",
+        "field": "focus",
+        "angular": "omega",
+        "react": "popover-cancel",
+        "browser": "webkit",
+        "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "item-popover-stay-hover-retained",
+        "checkpoint": "hover returns focus to the menu",
+        "field": "highlighted",
+        "angular": ["omega"],
+        "react": ["alpha"],
+        "browser": "webkit",
+        "category": "zero-delta-pointer-travel"
     }
 ]

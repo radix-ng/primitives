@@ -18,14 +18,11 @@ the floating focus manager; it does not reactivate autofocus on later layout upd
 
 ## Exact reviewed differences
 
-- `outside-close-reason`: on the outside button press, Chromium/Firefox (and Linux WebKit) close with Angular
-  `outside-press` versus the pin's `focus-out`. Both dismiss once and preserve the same actual
-  focus. Keep the native pointer pipeline; do not synthesize React's compatibility dispatch order.
 - `native-button-focus`: macOS WebKit keeps focus on Angular's popup when a Close press is canceled,
   whereas the pin focuses Close. Angular leaves native button tabindex unset; Base UI's button
   hook emits explicit tabindex. The cancellation, open state and completions still match.
 
-These four browser/platform-scoped exception pairs (three per tested platform) are exact: changed or disappeared differences fail.
+This macOS WebKit exception is exact: a changed or disappeared difference fails.
 They are limitations, not full parity. See [the source matrix](../../../../packages/primitives/popover/PARITY.md).
 Hover delays/grace areas, detached handles/payloads, custom portals, RTL/Arrow and real device/assistive-technology coverage remain separate work.
 
@@ -41,3 +38,12 @@ The default autofocus fallback is shared with Select and other floating consumer
 The late-hold case shares Menu's paused CSS exit. F10 requests the hold before the scenario
 finishes the real animation through WAAPI, so protocol latency cannot exhaust a short exit first.
 Draft value and native focus remain compared with the pin throughout the hold.
+
+## Menu composition and outside-focus refinement
+
+Menu's item-to-Popover suite compares both independent and nested editors, persistent geometry,
+completion, hover and native return focus. The shared manager now protects transient trigger blur
+without suppressing outside focus-out. The previous outside-close-reason entries are removed: the
+actual native reason matches the pin. Marker and control isolation keep-sets remain separate,
+keeping a modal trigger usable while unrelated controls stay inert. See
+[ADR 0066](../../../../docs/adr/0066-menu-item-popover-focus-boundaries.md).

@@ -10,6 +10,9 @@ inside while leaving document scrolling and outside pointer interactions availab
 Outside mouse presses close on a completed click. In `"trap-focus"` mode, they close on pointerdown
 so outside elements become accessible immediately.
 
+A modal Popover keeps its trigger usable while isolating unrelated controls. The trigger can
+close the popup with a second click.
+
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';

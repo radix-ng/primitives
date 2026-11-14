@@ -1,6 +1,7 @@
 import { computed, DestroyRef, Directive, ElementRef, inject, output } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
 import {
+    getActiveElement,
     RDX_FLOATING_REGISTRATION,
     RDX_FLOATING_ROOT_CONTEXT,
     RdxFloatingNodeRegistration,
@@ -11,7 +12,7 @@ import {
     provideFloatingFocusManagerConfig,
     RdxFloatingFocusManager
 } from '@radix-ng/primitives/floating-focus-manager';
-import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
+import { composedContains, RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
 import { injectRdxPopoverRootContext } from './popover-root';
 
@@ -50,6 +51,9 @@ import { injectRdxPopoverRootContext } from './popover-root';
                 inert: () => rootContext.modal() === true && rootContext.hasPopupClose(),
                 restoreFocus: () => 'popup',
                 previousFocusableElement: () => rootContext.trigger() ?? null,
+                // A first Popover Root owns its focus boundary independently of an enclosing Menu
+                // or Dialog. Nested Popovers retain their family's related-ancestor behavior.
+                closeOnAncestorFocus: () => !rootContext.nested,
                 beforeContentFocusGuardRef: () => (element) => rootContext.setBeforeContentFocusGuard(element),
                 // Keep return-focus ownership throughout a pending exit, including an external hold.
                 // A retained view deactivates after completion. Trapping/isolation follow logical
@@ -139,7 +143,8 @@ export class RdxPopoverPopup {
         // Dismissal: Escape + outside-press always close (no pointer-dismissal opt-out). Focus-out is
         // owned by the focus manager (below), so the capability's own focus-out is disabled.
         new RdxDismiss(this.floatingContext, () => this.registration?.node() ?? null, {
-            escapeKey: () => true,
+            escapeKey: () => !this.focusReturnedToAncestor(),
+            escapeKeyBubbles: () => this.focusReturnedToAncestor(),
             outsidePress: () => true,
             // Base UI uses a completed mouse click, except while trapping focus without isolation.
             outsidePressEvent: () => ({
@@ -165,5 +170,21 @@ export class RdxPopoverPopup {
                 this.rootContext.close('focus-out', event);
             }
         });
+    }
+
+    private focusReturnedToAncestor(): boolean {
+        if (this.rootContext.nested || this.focusScope.isTrapped()) return false;
+        const active = getActiveElement(this.host.ownerDocument);
+        if (!active || composedContains(this.host, active) || this.floatingContext.triggers.contains(active))
+            return false;
+        const node = this.registration?.node();
+        return (
+            node?.tree
+                .ancestors(node)
+                .some(
+                    (ancestor) =>
+                        ancestor.context?.floatingElement && composedContains(ancestor.context.floatingElement, active)
+                ) ?? false
+        );
     }
 }

@@ -11,6 +11,7 @@ import { hostCases, hostConfig, type HostClick } from './hosts';
 import { hybridCases } from './hybrid';
 import { initialFocusCases } from './initial-focus';
 import { itemDialogCases, itemDialogConfig } from './item-dialog';
+import { itemPopoverCases, itemPopoverConfig } from './item-popover';
 import type { OverlayProbe } from './overlay-probe';
 import { pointerCases, pointerConfig } from './pointer';
 import { popoverMenuCases, popoverMenuConfig } from './popover';
@@ -61,6 +62,7 @@ export const cases = [
     ...handleOverlapCases,
     ...dialogMenuCases,
     ...itemDialogCases,
+    ...itemPopoverCases,
     ...popoverMenuCases,
     ...lifecycleCases,
     ...pointerCases,
@@ -104,6 +106,8 @@ export function config() {
     const multiTrigger = multiTriggerConfig(name);
     const dialog = dialogMenuConfig(name);
     const itemDialog = itemDialogConfig(name);
+    const itemPopover = itemPopoverConfig(name);
+    const activated = itemPopover ?? itemDialog;
     const popover = popoverMenuConfig(name);
     const hosted = popover ?? dialog;
     return {
@@ -119,6 +123,7 @@ export function config() {
         multiTrigger,
         dialog,
         itemDialog,
+        itemPopover,
         popover,
         modal: popover
             ? popover.menuModal
@@ -142,6 +147,7 @@ export function config() {
             name.startsWith('radio') || name === 'drag-radio' || ['touch-radio', 'touch-disabled-radio'].includes(name),
         submenu:
             popover?.nested ||
+            itemPopover?.nested ||
             itemDialog?.nested ||
             dialog?.nested ||
             highlightConfig(name)?.nested ||
@@ -157,12 +163,12 @@ export function config() {
         label: ['explicit-label', 'highlight-explicit-label'].includes(name) ? 'Zebra' : undefined,
         ids: name.endsWith('-ids'),
         lifecycle:
-            hosted || itemDialog
+            hosted || activated
                 ? {
-                      keepMounted: (hosted ?? itemDialog)!.retained,
-                      animated: (hosted ?? itemDialog)!.animated,
-                      deferred: (hosted ?? itemDialog)!.deferred,
-                      canceled: hosted?.canceled ?? itemDialog!.canceledClose,
+                      keepMounted: (hosted ?? activated)!.retained,
+                      animated: (hosted ?? activated)!.animated,
+                      deferred: (hosted ?? activated)!.deferred,
+                      canceled: hosted?.canceled ?? activated!.canceledClose,
                       late: false
                   }
                 : multiTrigger?.lifecycle

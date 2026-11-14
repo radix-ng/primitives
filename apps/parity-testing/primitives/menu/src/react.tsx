@@ -13,6 +13,7 @@ import { ReactHandleOverlap } from './handle-overlap.react';
 import { changeHighlightEntries, createHighlightRecorder } from './highlight';
 import { ReactHosts } from './hosts.react';
 import { ReactItemDialog } from './item-dialog.react';
+import { ReactItemPopover } from './item-popover.react';
 import { ReactPopoverMenu } from './popover.react';
 import { ReactProjection } from './projection.react';
 import { touchScrollEntries } from './touch';
@@ -325,7 +326,9 @@ function ReactMenu() {
     );
 }
 createRoot(document.getElementById('root')!).render(
-    settings.popover ? (
+    settings.itemPopover ? (
+        <ReactItemPopover />
+    ) : settings.popover ? (
         <ReactPopoverMenu />
     ) : settings.itemDialog ? (
         <ReactItemDialog />

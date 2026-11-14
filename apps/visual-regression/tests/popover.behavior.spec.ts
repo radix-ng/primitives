@@ -168,6 +168,20 @@ test.describe('Popover — new floating engine migration', () => {
         await expect(page.locator(popup)).toHaveCount(0);
     });
 
+    test('a modal popover preserves its trigger while isolating unrelated controls', async ({ page }) => {
+        await gotoStory(page, 'primitives-popover--modal');
+        const opener = page.getByRole('button', { name: 'Open popover', exact: true });
+        const outside = page.locator('button').filter({ hasText: 'Outside interaction target:' });
+        await opener.click();
+        await expect(page.locator(popup)).toBeVisible();
+        expect(await opener.evaluate((el) => !!el.closest('[inert]'))).toBe(false);
+        expect(await outside.evaluate((el) => !!el.closest('[inert]'))).toBe(true);
+        await opener.click();
+        await expect(page.locator(popup)).toHaveCount(0);
+        await expect(opener).toBeFocused();
+        expect(await outside.evaluate((el) => !!el.closest('[inert]'))).toBe(false);
+    });
+
     test('a hover-opened popover does NOT pull focus into the popup (Base UI parity)', async ({ page }) => {
         await gotoStory(page, 'primitives-popover--hover');
         await page.locator(trigger).first().hover();
@@ -202,27 +216,30 @@ test.describe('Popover — new floating engine migration', () => {
                 [rdxPopoverPopup][data-closed] { animation: rdx-test-out 2000ms forwards }`
         });
 
-        const rootState = () =>
-            page.locator('#storybook-root').evaluate((el) => ({
-                inert: el.hasAttribute('inert'),
-                marked: el.hasAttribute('data-rdx-floating-inert')
-            }));
+        const backgroundState = () =>
+            page
+                .locator('button')
+                .filter({ hasText: 'Outside interaction target:' })
+                .evaluate((el) => ({
+                    inert: !!el.closest('[inert]'),
+                    marked: !!el.closest('[data-rdx-floating-inert]')
+                }));
 
         await page.locator(trigger).first().click();
         await expect(page.locator(popup)).toBeVisible();
         // A modal popover marks and inerts outside content while open (background isolation), like Dialog.
-        expect(await rootState()).toEqual({ inert: true, marked: true });
+        expect(await backgroundState()).toEqual({ inert: true, marked: true });
 
         await page.locator('[rdxPopoverClose]').click();
 
         // Mid-exit: the popup is closing (`data-closed`) but still mounted. Base UI keeps the focus manager
         // mounted for trap / return-focus, but releases marker + isolation when `open` flips false.
         await expect(page.locator(popup)).toHaveAttribute('data-closed', '');
-        expect(await rootState()).toEqual({ inert: false, marked: false });
+        expect(await backgroundState()).toEqual({ inert: false, marked: false });
 
         // Still released after unmount.
         await expect(page.locator(popup)).toHaveCount(0);
-        expect(await rootState()).toEqual({ inert: false, marked: false });
+        expect(await backgroundState()).toEqual({ inert: false, marked: false });
     });
 
     test('releases the scroll lock at close-start, before the exit animation finishes (ADR 0016 §2)', async ({

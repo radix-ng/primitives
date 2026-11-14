@@ -24,6 +24,57 @@ afterEach(() => {
     vi.useRealTimers();
 });
 
+it.each([false, true])(
+    'isolates a virtual context menu without exempting its return target; retained=%s',
+    async (retained) => {
+        @Component({
+            imports: [RdxContextMenuModule, RdxMenuModule],
+            template: `
+                <input data-before aria-label="Before context menu" />
+                <ng-container rdxContextMenuRoot>
+                    <div rdxContextMenuTrigger>Context area</div>
+                    <ng-template [keepMounted]="retained" rdxMenuPortal>
+                        <div rdxMenuPositioner>
+                            <div rdxMenuPopup><button rdxMenuItem>Command</button></div>
+                        </div>
+                    </ng-template>
+                </ng-container>
+                <button data-outside>Outside</button>
+            `
+        })
+        class VirtualMenu {
+            readonly root = viewChild.required(RdxContextMenuRoot);
+            readonly retained = retained;
+        }
+        const fixture = TestBed.createComponent(VirtualMenu);
+        try {
+            await fixture.whenStable();
+            const before = fixture.nativeElement.querySelector('[data-before]') as HTMLInputElement;
+            const outside = fixture.nativeElement.querySelector('[data-outside]') as HTMLButtonElement;
+            // WebKit may leave body focused on right-click; a later retained opening captures a control.
+            for (const previous of [document.body, before]) {
+                (document.activeElement as HTMLElement)?.blur();
+                previous.focus();
+                fixture.componentInstance.root().openAt(120, 80);
+                await fixture.whenStable();
+                await vi.waitFor(() => {
+                    expect(document.querySelector('[rdxMenuPopup]')).toBe(document.activeElement);
+                    expect(outside.closest('[inert]')).not.toBeNull();
+                    expect(before.closest('[inert]')).not.toBeNull();
+                });
+                fixture.componentInstance.root().close();
+                await fixture.whenStable();
+                // jsdom does not blur a retained popup when its positioner becomes hidden.
+                if (previous !== document.body || !retained)
+                    await vi.waitFor(() => expect(document.activeElement).toBe(previous));
+                expect(outside.closest('[inert]')).toBeNull();
+            }
+        } finally {
+            fixture.destroy();
+        }
+    }
+);
+
 it('forwards Menu highlight notifications through the Context Menu host directive', async () => {
     @Component({
         imports: [RdxContextMenuModule, RdxMenuModule],

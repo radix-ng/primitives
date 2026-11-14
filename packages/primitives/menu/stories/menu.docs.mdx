@@ -317,6 +317,25 @@ To keep Menu open behind Dialog, place Dialog Root and its trigger inside Menu's
 
 <Canvas of={Stories.OpenDialog} />
 
+### Open Popover
+
+Set Popover's `open` from an item's `onSelect` and keep its Root outside the closing Menu portal.
+Use a persistent anchor, such as the Menu trigger, so positioning stays valid after the item is
+removed or hidden. Keep mounted and Defer menu exit demonstrate focus staying in the editor
+through Menu completion.
+
+<Canvas of={Stories.OpenPopover} />
+
+### Nested Popover
+
+Combine `rdxMenuItem` and `rdxPopoverTrigger` with `closeOnClick=false` to keep the item and its
+Popover Root available while editing. Escape from the editor returns to the item, then closes
+Menu. Trap focus in editor optionally keeps keyboard navigation inside Popover.
+With Keep mounted, the example also resets the editor's `open` state when Menu closes. Retaining
+the Menu portal preserves its nested Root and state; hiding Menu alone does not close Popover.
+
+<Canvas of={Stories.NestedPopover} />
+
 ### Inside Popover
 
 Declare Menu inside Popover's popup so portaled commands keep their floating ancestry. Escape

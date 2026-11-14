@@ -11,6 +11,98 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
     await page.waitForSelector('#storybook-root', { state: 'attached' });
 }
 
+for (const [retained, deferred] of [
+    [false, false],
+    [true, false],
+    [true, true]
+]) {
+    test(`Menu opens Popover: keeps a live anchor and focus through close; retained=${retained}, deferred=${deferred}`, async ({
+        page
+    }) => {
+        const errors = collectRuntimeDiagnostics(page);
+        await gotoStory(page, 'primitives-menu--open-popover');
+        if (retained) await page.getByRole('checkbox', { name: 'Keep mounted', exact: true }).check();
+        if (deferred) await page.getByRole('checkbox', { name: 'Defer menu exit', exact: true }).check();
+        const trigger = page.getByRole('button', { name: 'Document actions', exact: true });
+        await trigger.press('Enter');
+        await expect(page.locator('output')).toHaveText('Menu completed: open');
+        await page.getByRole('menuitem', { name: 'Rename document…', exact: true }).press('Enter');
+        const field = page.getByRole('textbox', { name: 'Document name', exact: true });
+        await expect(field).toBeFocused();
+        await expect
+            .poll(async () => {
+                const anchor = (await trigger.boundingBox())!;
+                const popup = (await page.locator('[rdxPopoverPopup]').boundingBox())!;
+                const side = await page.locator('[rdxPopoverPositioner]').getAttribute('data-side');
+                const arrowHeight = await page
+                    .locator('[rdxPopoverArrow]')
+                    .evaluate((el: HTMLElement) => el.offsetHeight);
+                return Math.abs(
+                    side === 'right'
+                        ? popup.x - anchor.x - anchor.width - 8 - arrowHeight
+                        : anchor.x - popup.x - popup.width - 8 - arrowHeight
+                );
+            })
+            .toBeLessThan(2);
+        if (deferred) {
+            await expect(page.locator('[rdxMenuPopup]')).toHaveAttribute('data-ending-style', '');
+            await page.getByRole('button', { name: 'Finish menu exit', exact: true }).press('Enter');
+        }
+        await expect(page.locator('output')).toHaveText('Menu completed: open → closed');
+        await field.press('Escape');
+        await expect(page.locator('[rdxPopoverPopup]')).toHaveCount(0);
+        await expect(trigger).toBeFocused();
+        await trigger.press('Enter');
+        await expect(page.getByRole('menuitem', { name: 'Rename document…', exact: true })).toBeFocused();
+        expect(errors).toEqual([]);
+    });
+}
+
+for (const retained of [false, true]) {
+    test(`Menu nested Popover: returns to its item before closing the menu; retained=${retained}`, async ({ page }) => {
+        const errors = collectRuntimeDiagnostics(page);
+        await gotoStory(page, 'primitives-menu--nested-popover');
+        if (retained) await page.getByRole('checkbox', { name: 'Keep mounted', exact: true }).check();
+        const trigger = page.getByRole('button', { name: 'Quick actions', exact: true });
+        await trigger.press('Enter');
+        const item = page.getByRole('menuitem', { name: 'Quick rename…', exact: true });
+        await item.press('Enter');
+        await expect(page.getByRole('textbox', { name: 'Document name', exact: true })).toBeFocused();
+        await expect(page.getByRole('menu')).toBeVisible();
+        await page.keyboard.press('Escape');
+        await expect(page.locator('[rdxPopoverPopup]')).toHaveCount(0);
+        await expect(item).toBeFocused();
+        await page.keyboard.press('Escape');
+        await expect(page.getByRole('menu')).toHaveCount(0);
+        await expect(trigger).toBeFocused();
+        expect(errors).toEqual([]);
+    });
+}
+
+for (const retained of [false, true]) {
+    test(`Menu nested Popover: hovering returns native Escape ownership to Menu; retained=${retained}`, async ({
+        page
+    }) => {
+        const errors = collectRuntimeDiagnostics(page);
+        await gotoStory(page, 'primitives-menu--nested-popover');
+        if (retained) await page.getByRole('checkbox', { name: 'Keep mounted', exact: true }).check();
+        await page.getByRole('button', { name: 'Quick actions', exact: true }).press('Enter');
+        await page.getByRole('menuitem', { name: 'Quick rename…', exact: true }).press('Enter');
+        await expect(page.getByRole('textbox', { name: 'Document name', exact: true })).toBeFocused();
+        const item = (await page.getByRole('menuitem', { name: 'Duplicate', exact: true }).boundingBox())!;
+        // Move across the item: the menu intentionally ignores a stationary first pointer event.
+        await page.mouse.move(item.x + 4, item.y + item.height / 2);
+        await page.mouse.move(item.x + item.width / 2, item.y + item.height / 2, { steps: 3 });
+        await expect(page.getByRole('menuitem', { name: 'Duplicate', exact: true })).toBeFocused();
+        await expect(page.locator('[rdxPopoverPopup]')).toBeVisible();
+        await page.keyboard.press('Escape');
+        await expect(page.getByRole('menu')).toHaveCount(0);
+        await expect(page.locator('[rdxPopoverPopup]')).toHaveCount(0);
+        await expect(page.getByRole('button', { name: 'Quick actions', exact: true })).toBeFocused();
+        expect(errors).toEqual([]);
+    });
+}
+
 for (const modal of [false, true]) {
     for (const retained of [false, true]) {
         test(`Menu inside Popover: layered focus, selection and outside dismissal; modal=${modal}, retained=${retained}`, async ({

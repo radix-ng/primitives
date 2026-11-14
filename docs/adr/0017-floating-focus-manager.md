@@ -15,6 +15,9 @@ while undefined/false suppress return focus.
 Programmatic pre-open preference and the surviving owner-reference fallback are refined by
 [ADR 0059](0059-menu-multiple-triggers-and-viewport.md).
 
+Marker/control keep-set separation, trigger-only press protection and Popover family focus
+boundaries are refined by [ADR 0066](0066-menu-item-popover-focus-boundaries.md).
+
 > Splits the focus / a11y-isolation / marker concerns out of ADR 0016 so one owner holds the independent
 > focus-policy set. Architectural decisions are settled below; Phase 0 fills two parity-characterization
 > tables before implementation.

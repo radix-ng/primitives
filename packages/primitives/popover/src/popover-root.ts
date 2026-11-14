@@ -71,6 +71,7 @@ const transformModal = (value: BooleanInput | 'trap-focus'): RdxPopoverModal =>
 const context = () => contextFor(inject(RdxPopoverRoot));
 
 export interface RdxPopoverRootContext {
+    nested: boolean;
     contentId: string;
     descriptionId: Signal<string | undefined>;
     isOpen: Signal<boolean>;
@@ -143,6 +144,8 @@ export type RdxPopoverTransitionStatus = RdxTransitionStatus;
     hostDirectives: [RdxPopper]
 })
 export class RdxPopoverRoot {
+    /** @internal Family ownership follows Angular's declaration injector. */
+    readonly nested = inject(RdxPopoverRoot, { optional: true, skipSelf: true }) !== null;
     private readonly popper = inject(RdxPopper);
     private readonly destroyRef = inject(DestroyRef);
 
@@ -600,6 +603,7 @@ export class RdxPopoverRoot {
 
 function contextFor(root: RdxPopoverRoot): RdxPopoverRootContext {
     return {
+        nested: root.nested,
         contentId: root.contentId,
         descriptionId: root.descriptionId.asReadonly(),
         isOpen: root.open,

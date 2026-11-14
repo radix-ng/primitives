@@ -66,8 +66,12 @@ import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
                     element.matches(RDX_MENU_ITEM_SELECTOR)
                         ? '-1'
                         : saved,
-                previousFocusableElement: () => rootContext.getReturnFocusElement() ?? null,
+                // A context area's captured return target is not a popup control. Keeping it in
+                // the isolation pass can exempt the whole document when WebKit left focus on body.
+                previousFocusableElement: () =>
+                    rootContext.parentType() === 'context-menu' ? null : (rootContext.getReturnFocusElement() ?? null),
                 defaultReturnFocus: () => {
+                    if (rootContext.parentType() === 'context-menu') return rootContext.getReturnFocusElement();
                     if (rootContext.parentType() !== undefined || rootContext.openInteractionType() != null)
                         return undefined;
                     const previous = rootContext.getFocusBeforeOpen();

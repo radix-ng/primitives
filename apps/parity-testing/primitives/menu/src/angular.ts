@@ -19,6 +19,7 @@ import { AngularHandleOverlap } from './handle-overlap.angular';
 import { changeHighlightEntries, createHighlightRecorder } from './highlight';
 import { AngularHosts } from './hosts.angular';
 import { AngularItemDialog } from './item-dialog.angular';
+import { AngularItemPopover } from './item-popover.angular';
 import { AngularPopoverMenu } from './popover.angular';
 import { AngularProjection } from './projection.angular';
 import { touchScrollEntries } from './touch';
@@ -332,23 +333,25 @@ class AngularMenu {
     }
 }
 void bootstrapApplication(
-    settings.popover
-        ? AngularPopoverMenu
-        : settings.itemDialog
-          ? AngularItemDialog
-          : settings.dialog
-            ? AngularDialogMenu
-            : settings.name.startsWith('handle-overlap-')
-              ? AngularHandleOverlap
-              : settings.multiTrigger
-                ? AngularMultiTriggers
-                : settings.projection
-                  ? AngularProjection
-                  : settings.focusBoundary
-                    ? AngularFocusBoundary
-                    : settings.host
-                      ? AngularHosts
-                      : AngularMenu,
+    settings.itemPopover
+        ? AngularItemPopover
+        : settings.popover
+          ? AngularPopoverMenu
+          : settings.itemDialog
+            ? AngularItemDialog
+            : settings.dialog
+              ? AngularDialogMenu
+              : settings.name.startsWith('handle-overlap-')
+                ? AngularHandleOverlap
+                : settings.multiTrigger
+                  ? AngularMultiTriggers
+                  : settings.projection
+                    ? AngularProjection
+                    : settings.focusBoundary
+                      ? AngularFocusBoundary
+                      : settings.host
+                        ? AngularHosts
+                        : AngularMenu,
     {
         providers: [provideZonelessChangeDetection()]
     }

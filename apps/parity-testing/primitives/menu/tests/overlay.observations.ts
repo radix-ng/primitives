@@ -1,6 +1,6 @@
 // Compare actual isolation across native inert and aria-hidden; retain its raw spelling separately.
-export function readItemDialogIsolation() {
-    return ['popup', 'positioner', 'dialog-popup'].map((id) => {
+export function readPopupIsolation(ids: string[]) {
+    return ids.map((id) => {
         const element = document.querySelector(`[data-testid="${id}"]`);
         const roots = [];
         for (let ancestor = element; ancestor; ancestor = ancestor.parentElement) {

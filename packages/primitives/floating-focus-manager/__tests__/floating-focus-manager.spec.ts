@@ -535,6 +535,24 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
         expect(sibling.hasAttribute(RDX_FLOATING_MARKER)).toBe(true); // marker still applied (active)
     });
 
+    it('keeps a modal focus target usable while isolating unrelated siblings and marking its ancestry', async () => {
+        const app = document.createElement('div');
+        const trigger = document.createElement('button');
+        const outside = document.createElement('button');
+        app.append(trigger, outside);
+        document.body.append(app);
+        appended.push(app);
+        TestBed.overrideComponent(ManagerHost, {
+            add: { providers: [provideFloatingFocusManagerConfig(() => ({ previousFocusableElement: () => trigger }))] }
+        });
+        const fixture = TestBed.createComponent(ManagerHost);
+        fixture.componentInstance.modal.set(true);
+        await fixture.whenStable();
+        expect(trigger.closest('[inert]')).toBeNull();
+        expect(outside.closest('[inert]')).not.toBeNull();
+        expect(app.hasAttribute(RDX_FLOATING_MARKER)).toBe(true);
+    });
+
     it('does not keep additional owned sibling roots from the marker pass', async () => {
         const backdrop = document.createElement('div');
         document.body.appendChild(backdrop);
@@ -779,20 +797,44 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
         expect(emitted()).toBe(true);
     });
 
-    it('does NOT emit during a pointer press (a drag must not close)', async () => {
+    it('keeps outside-press focus-out eligible before pointerup', async () => {
         const outside = document.createElement('button');
         document.body.appendChild(outside);
         appended.push(outside);
 
         const { host, emitted } = await setupManager();
-        document.dispatchEvent(new Event('pointerdown'));
+        outside.dispatchEvent(new Event('pointerdown', { bubbles: true }));
         focusOutTo(host, outside);
-        expect(emitted()).toBe(false);
-
-        document.dispatchEvent(new Event('pointerup'));
-        focusOutTo(host, outside);
-        expect(emitted()).toBe(true); // after the press ends, focus-out closes again
+        expect(emitted()).toBe(true);
     });
+
+    it.each(['pointerup', 'pointercancel', 'next task'])(
+        'protects a transient trigger blur and clears protection on %s',
+        async (end) => {
+            const trigger = document.createElement('button');
+            const outside = document.createElement('button');
+            document.body.append(trigger, outside);
+            appended.push(trigger, outside);
+            const context = createFloatingRootContext({
+                ownerDocument: document,
+                open: () => true,
+                referenceElement: trigger
+            });
+            TestBed.overrideComponent(ManagerHost, { add: { providers: [provideFloatingRootContext(() => context)] } });
+            const fixture = TestBed.createComponent(ManagerHost);
+            await fixture.whenStable();
+            const host = fixture.componentInstance.scope().nativeElement;
+            let emitted = false;
+            fixture.componentInstance.manager().focusOut.subscribe(() => (emitted = true));
+            trigger.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+            focusOutTo(host, outside);
+            expect(emitted).toBe(false);
+            if (end === 'next task') await new Promise<void>((resolve) => setTimeout(resolve, 0));
+            else trigger.dispatchEvent(new Event(end, { bubbles: true }));
+            focusOutTo(host, outside);
+            expect(emitted).toBe(true);
+        }
+    );
 
     it('does NOT emit when closeOnFocusOut is false', async () => {
         const outside = document.createElement('button');

@@ -38,11 +38,15 @@ import multipleTriggersSource from './menu-multiple-triggers?raw';
 import { RdxMenuNativeElementsComponent } from './menu-native-elements';
 import nativeElementsSource from './menu-native-elements?raw';
 import { RdxMenuNestedComponent } from './menu-nested';
+import { RdxMenuNestedPopoverComponent } from './menu-nested-popover';
+import nestedPopoverSource from './menu-nested-popover?raw';
 import { RdxMenuNestedRtlComponent } from './menu-nested-rtl';
 import nestedRtlSource from './menu-nested-rtl?raw';
 import nestedSource from './menu-nested?raw';
 import { RdxMenuOpenDialogComponent } from './menu-open-dialog';
 import openDialogSource from './menu-open-dialog?raw';
+import { RdxMenuOpenPopoverComponent } from './menu-open-popover';
+import openPopoverSource from './menu-open-popover?raw';
 import { RdxMenuPointerComponent } from './menu-pointer';
 import pointerSource from './menu-pointer?raw';
 import { RdxMenuViewportExampleComponent } from './menu-viewport';
@@ -315,4 +319,18 @@ export const InPopover: Story = {
     decorators: [moduleMetadata({ imports: [RdxMenuInPopoverComponent] })],
     parameters: source(inPopoverSource),
     render: () => ({ template: '<rdx-menu-in-popover />' })
+};
+
+export const OpenPopover: Story = {
+    tags: ['!visual'],
+    decorators: [moduleMetadata({ imports: [RdxMenuOpenPopoverComponent] })],
+    parameters: source(openPopoverSource),
+    render: () => ({ template: '<rdx-menu-open-popover />' })
+};
+
+export const NestedPopover: Story = {
+    tags: ['!visual'],
+    decorators: [moduleMetadata({ imports: [RdxMenuNestedPopoverComponent] })],
+    parameters: source(nestedPopoverSource),
+    render: () => ({ template: '<rdx-menu-nested-popover />' })
 };

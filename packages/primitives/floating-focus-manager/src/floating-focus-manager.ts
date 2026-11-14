@@ -160,6 +160,8 @@ export interface RdxFloatingFocusManagerConfig {
     getInsideElements?: () => Array<Element | null | undefined>;
     openInteractionType?: () => RdxInteractionType;
     closeInteractionType?: () => RdxInteractionType;
+    /** Treat press-driven ancestor focus as departure; keyboard/hover ownership stays related. */
+    closeOnAncestorFocus?: () => boolean;
 }
 
 export type RdxFocusGuardRef =
@@ -401,7 +403,7 @@ export class RdxFloatingFocusManager {
             if (!this.effectiveEnabled() || !this.isFloatingOpen() || !this.effectiveInert()) {
                 return;
             }
-            releaseIsolation = markOthers(this.avoidElements(), { inert: true, mark: false });
+            releaseIsolation = markOthers(this.avoidElements(true), { inert: true, mark: false });
             onCleanup(clearIsolation);
         });
         const releaseClosedResources = () => {
@@ -605,18 +607,34 @@ export class RdxFloatingFocusManager {
     /**
      * Close-on-focus-out (ADR 0017 §3): a **non-modal** active popup closes when focus moves to a node
      * unrelated to the floating tree — not the popup, its trigger(s), a focus guard, or an ancestor /
-     * descendant popup — and not during a pointer press (a drag must not close it). Mirrors Base UI's
+     * descendant popup — with transient trigger-press blur protection. Mirrors Base UI's
      * `FloatingFocusManager` `!modal` branch (`movedToUnrelatedNode`).
      */
     private wireCloseOnFocusOut(): void {
         const ownerDocument = this.host.ownerDocument;
-        let pointerDown = false;
+        let pointerDown: 'trigger' | 'content' | 'outside' | null = null;
+        let pointerDownReset: ReturnType<typeof setTimeout> | undefined;
 
-        const onPointerDown = (): void => {
-            pointerDown = true;
-        };
         const onPointerUp = (): void => {
-            pointerDown = false;
+            pointerDown = null;
+            clearTimeout(pointerDownReset);
+            pointerDownReset = undefined;
+        };
+        const onPointerDown = (event: PointerEvent): void => {
+            onPointerUp();
+            const target = event.target as Node | null;
+            const reference = this.rootContext?.referenceElement;
+            // Safari may blur a pressed trigger before the click toggles it. Outside presses must
+            // remain eligible for focus-out; they are not a drag from this popup's own trigger.
+            const onTrigger =
+                !!target &&
+                ((!!reference && composedContains(reference, target)) || !!this.rootContext?.triggers.contains(target));
+            pointerDown = onTrigger
+                ? 'trigger'
+                : target && this.isWithinFloatingSubtree(target)
+                  ? 'content'
+                  : 'outside';
+            if (pointerDown === 'trigger') pointerDownReset = setTimeout(onPointerUp, 0);
         };
         const onFocusOut = (event: FocusEvent): void => {
             if (
@@ -625,7 +643,7 @@ export class RdxFloatingFocusManager {
                 !this.effectiveCloseOnFocusOut() ||
                 this.effectiveModal() ||
                 this.scopePaused() ||
-                pointerDown
+                pointerDown === 'trigger'
             ) {
                 return;
             }
@@ -645,7 +663,7 @@ export class RdxFloatingFocusManager {
             if (!relatedTarget) {
                 return; // focus left to nothing (tab-away / window blur) — let the browser handle it
             }
-            if (this.isRelatedTargetInside(relatedTarget)) {
+            if (this.isRelatedTargetInside(relatedTarget, pointerDown === 'outside')) {
                 return; // moved to a related node (trigger / ancestor / descendant) — keep open
             }
             this.focusOut.emit(event);
@@ -657,6 +675,7 @@ export class RdxFloatingFocusManager {
         ownerDocument.addEventListener('focusout', onFocusOut, true);
 
         inject(DestroyRef).onDestroy(() => {
+            onPointerUp();
             ownerDocument.removeEventListener('pointerdown', onPointerDown, true);
             ownerDocument.removeEventListener('pointerup', onPointerUp, true);
             ownerDocument.removeEventListener('pointercancel', onPointerUp, true);
@@ -841,20 +860,23 @@ export class RdxFloatingFocusManager {
      * plus descendant popup ancestry and primitive-declared inside elements (e.g. a combobox input).
      * Sibling roots such as backdrops are DOM-footprint bookkeeping, not keep-set members.
      *
-     * It deliberately excludes `previous/nextFocusableElement`: those exist for focus-guard tabbability and
-     * return-focus (Base UI's `markOthers(insideElements)` aria-hidden pass keeps them, but its **marker**
-     * pass — `markOthers([floating, ...portalNodes])` — does not). A modal popover declares its trigger as
-     * `previousFocusableElement`; sparing it here used to leak the trigger's whole ancestor chain (the app
-     * root) out of the isolation, so a modal popover failed to inert/mark the dimmed background. Keeping the
-     * isolation tied to the floating subtree restores full modality.
+     * Marker keeps exclude previous/next focus targets. Isolation keeps include them, matching Base
+     * UI's separate aria-hidden pass: a modal Popover trigger remains usable. markOthers walks its
+     * ancestor chain and isolates unrelated siblings; the application root itself need not be inert.
      */
-    private avoidElements(): Element[] {
+    private avoidElements(includeFocusTargets = false): Element[] {
         // Retained descendant portals already exist when a parent opens. Keep their popup ancestry
         // interactive so a later open does not leave them trapped under this parent's inert pass.
         const node = this.currentFloatingNode();
         const descendants =
             node?.tree.children(node, { onlyOpen: false }).map((child) => child.context?.floatingElement) ?? [];
-        return [this.host, ...this.insideElements(), ...descendants].filter(
+        const controls = includeFocusTargets
+            ? [
+                  resolveFocusTarget(this.effectivePreviousFocusableElement()),
+                  resolveFocusTarget(this.effectiveNextFocusableElement())
+              ]
+            : [];
+        return [this.host, ...this.insideElements(), ...descendants, ...controls].filter(
             (element): element is Element => element != null
         );
     }
@@ -864,7 +886,7 @@ export class RdxFloatingFocusManager {
     }
 
     /** Whether `relatedTarget` is inside the popup, its trigger(s), or an ancestor / descendant popup. */
-    private isRelatedTargetInside(relatedTarget: Node): boolean {
+    private isRelatedTargetInside(relatedTarget: Node, outsidePress = false): boolean {
         relatedTarget = resolveFocusGuardOwner(relatedTarget);
         if (this.isWithinFloatingSubtree(relatedTarget)) return true;
         if (this.rootContext && this.contextContains(this.rootContext, relatedTarget)) {
@@ -881,6 +903,17 @@ export class RdxFloatingFocusManager {
         const node = this.currentFloatingNode();
         if (node) {
             for (const ancestor of node.tree.ancestors(node)) {
+                // A first Popover family's boundary is independent for pressed focus. Native
+                // Menu hover can still return focus to its ancestor without dismissing the editor.
+                if (this.config?.closeOnAncestorFocus?.()) {
+                    if (
+                        !outsidePress &&
+                        ancestor.context?.floatingElement &&
+                        composedContains(ancestor.context.floatingElement, relatedTarget)
+                    )
+                        return true;
+                    continue;
+                }
                 // An ancestor popup's focus host is related; its arbitrary controls are outside this
                 // child layer. Moving to another field in a Dialog should close its Select.
                 if (

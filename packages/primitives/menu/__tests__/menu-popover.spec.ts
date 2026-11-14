@@ -6,7 +6,11 @@ import { menuImports, type RdxMenuOpenChange } from '../index';
 @Component({
     imports: [...menuImports, ...popoverImports],
     template: `
-        <ng-container (onOpenChangeComplete)="hostCompletions.push($event)" rdxPopoverRoot>
+        <ng-container
+            (onOpenChange)="hostChanges.push($event.reason)"
+            (onOpenChangeComplete)="hostCompletions.push($event)"
+            rdxPopoverRoot
+        >
             <button id="host-trigger" rdxPopoverTrigger>Open</button>
             <ng-template rdxPopoverPortal>
                 <div rdxPopoverPositioner>
@@ -30,6 +34,7 @@ import { menuImports, type RdxMenuOpenChange } from '../index';
     `
 })
 class Host {
+    readonly hostChanges: string[] = [];
     readonly hostCompletions: boolean[] = [];
     readonly menuCompletions: boolean[] = [];
     defer = false;
@@ -58,6 +63,10 @@ describe('Menu inside Popover press phases', () => {
                 (document.querySelector('#menu-trigger') as HTMLButtonElement).click();
                 await fixture.whenStable();
                 await vi.waitFor(() => expect(fixture.componentInstance.menuCompletions).toEqual([true]));
+                // A fresh gesture starts after dismissal's next-task opening-press guard installs.
+                await new Promise<void>((resolve) => setTimeout(resolve, 0));
+                expect(fixture.componentInstance.hostChanges).toEqual(['trigger-press']);
+                expect(document.querySelector('[rdxMenuPopup]')).not.toBeNull();
                 document.body.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }));
                 if (!fast) {
                     await fixture.whenStable();
