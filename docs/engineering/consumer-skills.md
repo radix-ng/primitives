@@ -35,7 +35,12 @@ with the committed bundle, including content changes within the same package ver
 
 The public Agents guides are maintained in `apps/radix-storybook/docs/agents/`. Their rendered
 Markdown lives in `radix-ng-examples/references/agents/` and is indexed by both LLM exports.
-Storybook links between exported documents become relative Markdown links in the offline bundle.
+The renderer retains Storybook destinations until `markdown-bundle.mjs` has assembled the final
+component indexes and example shards. Links to examples then target their source shards; linked
+narrative sections omitted by the compact index are retained. Both Markdown links and HTML card
+`href`s become relative links, resolved from each exported file (including the full dump).
+`markdown-links.mjs` validates local files and heading anchors in that final output, excluding code
+examples. A file existing without the requested section is a build failure too.
 
 `apps/radix-storybook/tsconfig.agents.json` compiles the four referenced consumer examples with strict
 Angular template checks. `apps/visual-regression/tests/agents.behavior.spec.ts` checks their browser

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { createMarkdownBundle } from './markdown-bundle.mjs';
 import { getStorybookDocs } from './storybook-docs.mjs';
 
 const docs = getStorybookDocs();
@@ -19,12 +20,12 @@ test('public Agents, Learn and Overview MDX are exported as their own sections',
 });
 
 test('Storybook links become usable offline Markdown links and blocks do not leak into exports', () => {
-    const start = docs.find(({ section, slug }) => section === 'agents' && slug === 'getting-started');
-    assert.match(start.body, /\]\(compose-components\.md\)/);
-    assert.match(start.body, /\]\(\.\.\/overview\/installation\.md\)/);
-    assert.doesNotMatch(start.body, /<Meta\b|^import /m);
-    const old = docs.find(({ section, slug }) => section === 'overview' && slug === 'skills');
-    assert.match(old.body, /\]\(\.\.\/agents\/getting-started\.md\)/);
+    const { files } = createMarkdownBundle(docs, { versionLine: 'Test version' });
+    const start = files.get('agents/getting-started.md');
+    assert.match(start, /\]\(compose-components\.md\)/);
+    assert.match(start, /\]\(\.\.\/overview\/installation\.md\)/);
+    assert.doesNotMatch(start, /<Meta\b|^import /m);
+    assert.match(files.get('overview/skills.md'), /\]\(\.\.\/agents\/getting-started\.md\)/);
 });
 
 test('composition examples export real source from the existing stories', () => {

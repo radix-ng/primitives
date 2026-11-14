@@ -14,7 +14,7 @@ Start by selecting your library, then follow the guide to build forms with Radix
 <div className="sb-unstyled not-prose mt-8 grid gap-4 sm:grid-cols-2 sm:gap-6">
   <a
     className="group border-border bg-background hover:border-foreground/20 flex flex-col rounded-2xl border p-6 no-underline shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
-    href="./?path=/docs/recipes-forms-signal-forms--docs"
+    href="signal-forms.md"
     target="_top"
   >
     <span className="flex items-center justify-between">
@@ -38,7 +38,7 @@ Start by selecting your library, then follow the guide to build forms with Radix
 
   <a
     className="group border-border bg-background hover:border-foreground/20 flex flex-col rounded-2xl border p-6 no-underline shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
-    href="./?path=/docs/recipes-forms-tanstack-form--docs"
+    href="tanstack-form.md"
     target="_top"
   >
     <span className="flex items-center justify-between">

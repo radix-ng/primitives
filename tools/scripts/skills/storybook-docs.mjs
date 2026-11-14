@@ -339,20 +339,8 @@ const parseDoc = (filePath) => {
     };
 };
 
-export const getStorybookDocs = () => {
-    const docs = [...findDocs(primitivesRoot), ...findDocs(publicDocsRoot)]
+export const getStorybookDocs = () =>
+    [...findDocs(primitivesRoot), ...findDocs(publicDocsRoot)]
         .map(parseDoc)
         .filter(Boolean)
         .sort((a, b) => a.group.localeCompare(b.group) || a.title.localeCompare(b.title));
-    const routes = new Map(docs.map((doc) => [doc.storybookId, `${doc.section}/${doc.slug}.md`]));
-    return docs.map((doc) => ({
-        ...doc,
-        body: doc.body.replace(
-            /\]\((?:\.\/|\/)?\?path=\/docs\/([\w-]+)--docs(#[^)]*)?\)/g,
-            (link, id, fragment = '') => {
-                const target = routes.get(id);
-                return target ? `](${path.posix.relative(doc.section, target)}${fragment})` : link;
-            }
-        )
-    }));
-};

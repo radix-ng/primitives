@@ -105,7 +105,7 @@ template-driven forms** do so through `ControlValueAccessor` (`formControl`, `fo
 | [Checkbox](../components/checkbox.md)         | `checked` (+ `indeterminate`)  | ✅                                 |
 | [Checkbox Group](../components/checkbox.md)   | `value` (`string[]`)           | ✅                                 |
 | [Switch](../components/switch.md)             | `checked`                      | ✅                                 |
-| [Radio Group](?path=/docs/primitives-radio--docs)         | `value`                        | ✅                                 |
+| [Radio Group](../components/radio.md)   | `value`                        | ✅                                 |
 | [Slider](../components/slider.md)             | `value` (`number \| number[]`) | ✅                                 |
 | [Number Field](../components/number-field.md) | `value`                        | ✅                                 |
 | [Toggle Group](../components/toggle-group.md) | `value`                        | ✅                                 |
@@ -411,7 +411,7 @@ resetProfile(event: Event) {
 }
 ```
 
-The [full lifecycle recipe](../components/signal-forms.md#async-validation-and-reset-lifecycle)
+The [full lifecycle recipe](../examples/signal-forms--async-validation-and-reset-lifecycle.md)
 combines this with `validateAsync`, pending UI, Fieldset composition, and Angular-owned submission.
 
 ## Why this is forward-compatible

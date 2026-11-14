@@ -19,6 +19,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { generateApiContract } from './api-contract.mjs';
+import { createMarkdownBundle } from './markdown-bundle.mjs';
+import { validateMarkdownLinks } from './markdown-links.mjs';
 import { getStorybookDocs } from './storybook-docs.mjs';
 import { parseDataAttributes } from './styling-contract.mjs';
 
@@ -106,63 +108,6 @@ const parseExamples = (content) => {
     return examples;
 };
 
-// Split a rendered doc body's "## Examples" section into one block per example,
-// fence-aware so a "###"-looking line inside example source never splits a block.
-const splitRenderedExamples = (body) => {
-    const section = sectionBody(body, 'Examples');
-    if (!section) return [];
-
-    const blocks = [];
-    let current = null;
-    let inFence = false;
-    for (const line of section.split('\n')) {
-        if (line.trim().startsWith('```')) inFence = !inFence;
-        const heading = !inFence && /^###\s+(.+?)\s*$/.exec(line);
-        if (heading) {
-            current = { name: heading[1].trim(), lines: [] };
-            blocks.push(current);
-        } else if (current) {
-            current.lines.push(line);
-        }
-    }
-    return blocks.map(({ name, lines }) => ({ name, slug: titleToSlug(name), block: lines.join('\n').trim() }));
-};
-
-// Component docs become a lightweight INDEX (ADR: progressive disclosure): description +
-// Features + Import + Anatomy, then links to each example's full-source shard and to the
-// per-primitive API/styling contract shards. The full source is NOT inlined here — it lives
-// in the example shards; the whole-doc dump stays in llms-full.txt. Stable public URL, no
-// accidental full-source load.
-const buildComponentIndex = (doc, meta) => {
-    const section = (heading) => {
-        const body = sectionBody(doc.body, heading);
-        return body ? `## ${heading}\n\n${body}` : '';
-    };
-    const examples = (meta.examples ?? [])
-        .map((ex) => {
-            const description = ex.description ? ` — ${ex.description}` : '';
-            return `- [${ex.name}](../examples/${doc.slug}--${titleToSlug(ex.name)}.md)${description}`;
-        })
-        .join('\n');
-
-    return [
-        `# ${doc.title}`,
-        doc.description,
-        `> Index — full source of each example is one click away in \`../examples/${doc.slug}--*.md\`; the whole-doc dump is in \`../llms-full.txt\`.`,
-        `> ${versionLine}`,
-        section('Features'),
-        section('Import'),
-        section('Anatomy'),
-        examples ? `## Examples\n\n${examples}` : '',
-        '## API & styling contract',
-        `Machine-readable contracts for this primitive live in the \`radix-ng\` skill:\n` +
-            `- API (selectors, inputs, outputs, two-way bindings): \`references/api-contract/${doc.slug}.json\`\n` +
-            `- Styling (parts + \`data-*\`): \`references/styling-contract/${doc.slug}.json\``
-    ]
-        .filter(Boolean)
-        .join('\n\n');
-};
-
 const mdxMeta = new Map(
     findMdx(primitivesRoot).map((filePath) => {
         const content = fs.readFileSync(filePath, 'utf8').replace(/\r\n?/g, '\n');
@@ -184,6 +129,7 @@ const mdxMeta = new Map(
 
 const docs = getStorybookDocs();
 const metaFor = (doc) => mdxMeta.get(`${doc.section}/${doc.slug}`) ?? {};
+const { files: markdownFiles, exampleShardCount, fullDocs } = createMarkdownBundle(docs, { versionLine, metaFor });
 
 // 1. bundled per-component docs + llms-full.txt (offline, no site dependency)
 const refsRoot = path.join(skillsRoot, 'radix-ng-examples/references');
@@ -198,44 +144,14 @@ for (const section of ['agents', 'overview', 'learn', 'components', 'utils', 'gu
     }
 }
 
-for (const doc of docs) {
-    const content = doc.section === 'components' ? buildComponentIndex(doc, metaFor(doc)) : doc.body;
-    write(path.join(refsRoot, doc.section, `${doc.slug}.md`), `${content}\n`);
-}
-
-// 1b. Per-example shards: references/examples/<slug>--<example>.md — one file per
-// documented example (that example's source + a pointer back to its component doc).
-// A consumer agent can (re)load a single example (~few KB) instead of the whole
-// component doc; this is the granular unit the recovery protocol reaches for after a
-// context compaction. Non-breaking: the full components/<slug>.md doc is unchanged.
-let exampleShardCount = 0;
-for (const doc of docs.filter((entry) => entry.section === 'components')) {
-    const seen = new Set();
-    for (const { name, slug, block } of splitRenderedExamples(doc.body)) {
-        if (seen.has(slug)) {
-            throw new Error(
-                `Duplicate example slug "${slug}" in component "${doc.slug}" — two example headings ` +
-                    `resolve to the same shard filename. Rename one heading in its .docs.mdx.`
-            );
-        }
-        seen.add(slug);
-        const shard = [
-            `# ${doc.title} — ${name}`,
-            `> One example from the [${doc.title}](../components/${doc.slug}.md) index — imports, anatomy, and links to the API and styling contracts are there.`,
-            `> ${versionLine}`,
-            block
-        ].join('\n\n');
-        write(path.join(refsRoot, 'examples', `${doc.slug}--${slug}.md`), `${shard}\n`);
-        exampleShardCount++;
-    }
-}
+for (const [file, content] of markdownFiles) write(path.join(refsRoot, file), `${content}\n`);
 
 const llmsFull = [
     '# Radix NG Primitives — Full Documentation',
     'Unstyled, accessible, signals-first Angular primitives for building design systems and web apps.',
     'Examples use Angular signals and Tailwind CSS v4 utilities; the primitives themselves are styling-agnostic.',
     versionLine,
-    ...docs.map((doc) => `---\n\n${doc.body}`)
+    ...fullDocs.map((body) => `---\n\n${body}`)
 ].join('\n\n');
 write(path.join(refsRoot, 'llms-full.txt'), `${llmsFull}\n`);
 
@@ -423,15 +339,15 @@ for (const file of fs.readdirSync(path.join(skillsRoot, 'radix-ng/references/sty
     if (!docSlugs.has(slug)) errors.push(`orphan styling-contract/${file}: no doc "${slug}"`);
 }
 
-const checkLinks = (fileAbs) => {
-    for (const match of fs.readFileSync(fileAbs, 'utf8').matchAll(/\]\((\.[^)]+\.md)\)/g)) {
-        if (!fs.existsSync(path.resolve(path.dirname(fileAbs), match[1]))) {
-            errors.push(`${path.relative(skillsRoot, fileAbs)}: broken link ${match[1]}`);
-        }
-    }
-};
-checkLinks(path.join(skillsRoot, 'radix-ng-examples/SKILL.md'));
-for (const doc of docs) checkLinks(path.join(refsRoot, doc.section, `${doc.slug}.md`));
+errors.push(
+    ...validateMarkdownLinks(
+        new Map([
+            ...[...markdownFiles].map(([file, content]) => [`references/${file}`, content]),
+            ['SKILL.md', examplesSkill],
+            ['references/llms-full.txt', llmsFull]
+        ])
+    )
+);
 for (const doc of docs.filter((doc) => doc.section === 'agents')) {
     for (const [, reference] of doc.body.matchAll(/`references\/(examples\/[^`]+\.md)`/g)) {
         if (!reference.includes('<') && !fs.existsSync(path.join(refsRoot, reference)))
@@ -495,5 +411,7 @@ console.log(`✓ ${exampleShardCount} example shards → ${path.relative(workspa
 console.log(`✓ llms.txt + llms-full.txt (${docs.length} docs)`);
 console.log(`✓ styling-contract: ${contract.length} shards + deprecated monolith`);
 console.log(`✓ api-contract: ${api.primitives} shards + deprecated monolith (${api.parts} parts)`);
-console.log(`✓ integrity guards passed (version, correspondence, orphans, links, ${publicRoutes} public routes)`);
+console.log(
+    `✓ integrity guards passed (version, correspondence, orphans, links/anchors, ${publicRoutes} public routes)`
+);
 console.log(`✓ radix-ng-examples/SKILL.md (${totalExamples} examples / ${componentDocs.length} components)`);
