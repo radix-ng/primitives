@@ -8,9 +8,9 @@ Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs
 
 ## Agents
 
-- [Build with Radix NG](https://radix-ng.com/docs/agents/build-with-radix-ng.md): Find the smallest documented primitive and adapt a nearby working example.
+- [Build with Radix NG](https://radix-ng.com/docs/agents/build-with-radix-ng.md): Build your application's styled components on top of headless primitives.
 - [Compose components](https://radix-ng.com/docs/agents/compose-components.md): Preserve Angular ownership while adapting headless parts to your application.
-- [Getting started](https://radix-ng.com/docs/agents/getting-started.md): Give a coding agent version-aware contracts, focused examples and a verification task.
+- [Getting started](https://radix-ng.com/docs/agents/getting-started.md): Give a coding agent context to build and verify your own Angular UI components.
 - [Reference](https://radix-ng.com/docs/agents/reference.md): Retrieve one versioned contract or example before loading the full documentation.
 - [Verify the result](https://radix-ng.com/docs/agents/verify-the-result.md): Compile the consumer's templates and verify observable interaction contracts.
 
@@ -20,7 +20,7 @@ Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs
 - [Base UI patterns for Angular](https://radix-ng.com/docs/overview/base-ui-patterns.md): Radix NG brings Base UI's architecture and behavior to Angular through directives, signals, and dependency injection.
 - [Installation](https://radix-ng.com/docs/overview/installation.md): Installation
 - [Introduction](https://radix-ng.com/docs/overview/introduction.md): Introduction
-- [Skills](https://radix-ng.com/docs/overview/skills.md): Consumer skills are documented in the Agents section.
+- [Skills](https://radix-ng.com/docs/overview/skills.md): Help a coding agent build your own Angular UI on headless primitives.
 - [Theming](https://radix-ng.com/docs/overview/theming.md): Theming
 
 ## Learn

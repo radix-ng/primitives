@@ -1,10 +1,27 @@
 # Getting started
 
-#### Give a coding agent version-aware contracts, focused examples and a verification task.
+#### Give a coding agent context to build and verify your own Angular UI components.
 
-Radix NG's consumer skills help an agent find the documented Angular API and assemble headless
-components with your design system. They provide context; they do not guarantee that generated code
-compiles, is accessible, or behaves correctly in your application.
+Radix NG is a headless library. Its skills help an agent build your application's components on top
+of the primitives while preserving their behavior. Your application supplies the appearance.
+
+- **Installing skills gives the agent context:** documentation, versioned API contracts and example
+  source from `radix-ng` and `radix-ng-examples`.
+- **Assigning a UI task should produce application code:** your own standalone Angular component,
+  such as `AppSelect`, integrated with your styles and chosen forms approach, plus a report of the
+  checks performed and their results.
+
+Installing skills does not create components. You can start with one component and a chosen styling
+approach; a finished design system is not a prerequisite.
+
+| Responsibility   | What it supplies                                                               |
+| ---------------- | ------------------------------------------------------------------------------ |
+| Radix NG         | Headless primitives, state, composition and interaction mechanisms.            |
+| Skills           | Instructions for using the API, example source and documented checks to adapt. |
+| Your application | Visual tokens, CSS, the product API of wrappers, content and business logic.   |
+
+Skills provide context, not a guarantee of correctness. Compile and test the assembled UI in your
+application, and support keyboard, focus and accessibility claims with the checks you actually ran.
 
 ## Install the consumer skills
 
@@ -47,17 +64,30 @@ verify selectors, inputs, outputs and value types. Current online docs can be ne
 ```text
 Use the radix-ng and radix-ng-examples skills.
 
-Task: build [the interaction] in this application's existing design system.
+Task: create our AppSelect on Radix NG for [route or use case].
+Interaction: [selection mode, options, labels, value and disabled/read-only behavior].
+Appearance: [project tokens and CSS/Tailwind conventions, or the chosen styling approach].
+Forms: [the project's form strategy, or explicit value bindings if no forms are needed].
+Acceptance: [expected value updates, validation, keyboard selection, closing and focus return].
+
 First identify the installed @radix-ng/primitives and Angular versions.
 Read the relevant per-primitive API and styling contracts and the closest example.
 If the bundle version differs, verify the API against installed exports and types.
 Use standalone components and preserve the documented DI and projection boundaries.
-Compile the application's Angular templates, then check labels, keyboard and focus.
-Report which checks ran, their results and anything still unverified.
+Implement the component and integrate it with this application's styles and forms.
+Compile the application's Angular templates, then check the acceptance criteria.
+Return the implementation and integration changes, the commands/checks run and their results,
+and anything still unverified. Do not claim a check passed if it was not run.
 ```
 
-Provide the application route, form strategy and acceptance criteria with the task. Prefer a small
-interaction you can run and inspect before expanding the page.
+Replace the bracketed requirements with your choices. See
+[Build with Radix NG](build-with-radix-ng.md) for the expected AppSelect
+deliverable. Prefer one interaction you can run and inspect before expanding the page.
+
+## Separate runtime experiment
+
+Agent Playground's `snapshot` / `query` / `act` experiment controls an already running application.
+It is separate from creating UI components and is not installed with the consumer skills.
 
 ## Continue
 

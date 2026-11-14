@@ -4,10 +4,33 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 # Build with Radix NG
 
-#### Find the smallest documented primitive and adapt a nearby working example.
+#### Build your application's styled components on top of headless primitives.
 
 Start with the version check in [Getting started](./?path=/docs/agents-getting-started--docs).
 Use the local bundle for focused retrieval rather than loading the complete documentation each time.
+
+## From a request to your AppSelect
+
+> Create our AppSelect on Radix NG using the project's existing tokens.
+
+The expected result is code in your application that you can reuse as part of its UI or design
+system. Describe the interaction, styling conventions, form strategy and acceptance criteria using
+the prompt in [Getting started](./?path=/docs/agents-getting-started--docs).
+
+Ask the agent to deliver:
+
+- A standalone Angular `AppSelect` component using public Radix NG imports, with template imports
+  or `hostDirectives` composition appropriate to its parts.
+- A deliberate wrapper API with value/open bindings and outputs consistent with the installed
+  primitive contract, integrated with the form strategy you selected.
+- Your own styling using the project's tokens and CSS conventions, including focus and validation
+  states. Replace Storybook helpers with application-owned styles and dependencies.
+- Results from strict Angular template compilation and checks for labels, value updates, keyboard
+  selection, closing and focus return. Name the checks that ran and anything still unverified.
+
+Radix NG supplies the interaction mechanisms; the wrapper's visual tokens, CSS, product API,
+content and business logic belong to your application. If you do not have a design system yet,
+start with this one component and an explicit styling approach, then add variants as needed.
 
 ## Choose the interaction
 
