@@ -209,3 +209,48 @@ These deterministic checks do **not** invoke a model or estimate LLM task qualit
 API access or a ChatGPT-authenticated Codex subscription and are separately labeled and reported.
 Real-model reliability, prompt injection robustness, other applications, screen readers and production
 hosting remain outside this experiment.
+
+## Reproducible subscription baseline
+
+Run one initial `--scenario all` pass into `<baseline>/initial`, inspect every failure, and retain its
+reports. Fix executor infrastructure before starting the measurement series; do not weaken scenario
+assertions. Freeze the checkout (HEAD, dirty patch and source digests), build, model, reasoning effort,
+CLI/browser versions and limits. Then run three separate `--scenario all` passes into
+`<baseline>/final/attempt-1`, `attempt-2` and `attempt-3`. Every session already creates a fresh browser
+context. Stop at a provider/allowance error; do not silently retry or substitute replay evidence.
+
+Create `<baseline>/baseline.json` with `model`, `reasoningEffort`, `series.initial.stopReason`,
+`series.final.stopReason`, and `limitations`. Optional `reviews` keys are report paths relative to the
+baseline directory; each failed report needs a `classification` and `analysis` based on its evidence.
+Use runtime, executor, oracle, model-action/answer or provider/subscription classifications as
+appropriate; leave uncertainty explicit. Record verification commands and versions in this manifest.
+Then generate both summaries from the retained reports:
+
+```bash
+node tools/agent-testing/summarize.ts dist/agent-testing/YOUR_BASELINE
+```
+
+The summary separates the initial six runs from the final eighteen, checks identical recorded
+revision/settings within each series, and links every artifact. `decisionsRequested` includes failed
+requests; `decisionsReturned` counts responses. Model runtime calls exclude preparation and independent
+observer snapshots. Token totals sum only available CLI fields and retain raw per-response usage;
+they do not measure subscription percentages. A missing run remains missing, and an unreviewed failed
+report stays explicitly unreviewed. Reports remain the source of truth; the summary is not another
+semantic oracle or a source-to-build attestation.
+
+To reevaluate saved responses after a restriction-oracle fix, keep the historical baseline intact and
+write to a separate directory:
+
+```bash
+node tools/agent-testing/reevaluate.ts \
+  dist/agent-testing/YOUR_BASELINE \
+  dist/agent-testing/YOUR_REEVALUATION
+```
+
+This offline command records the original report path/hash, old/new verdicts and oracle version/source
+hash in `reevaluation.json` and `reevaluation.md`. Only completed restriction scenarios are rechecked:
+model-observed evidence, the final runtime snapshot and the explanation. All other saved browser
+assertions remain gates; interrupted runs retain their termination and verdict. There are no browser
+or provider requests, and original reports/summaries are never rewritten. Passive descriptions such as
+"Visibility set to Private" must match the captured final value; active or contradictory change claims
+remain rejected. This is a separate reevaluation, not a replacement live baseline.

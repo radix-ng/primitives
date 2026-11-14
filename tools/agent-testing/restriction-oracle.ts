@@ -13,10 +13,37 @@ const explanations = {
 } as const;
 export type RestrictionScenario = keyof typeof explanations;
 export const isRestrictionScenario = (name: string): name is RestrictionScenario => Object.hasOwn(explanations, name);
+export const restrictionOracleVersion = 'restriction-oracle/2';
+
+/** Passive present-state descriptions must name a value in the independent final snapshot. */
+function describesCurrentSetting(clause: string, index: number, controls: readonly ControlSnapshot[]): boolean {
+    const subject = clause.slice(0, index).trimEnd();
+    const setting = /^set\s+to\s+(.+)$/
+        .exec(clause.slice(index))?.[1]
+        .trim()
+        .replace(/^["']|["']$/g, '');
+    if (setting === undefined) return false;
+    return controls.some((control) => {
+        if (control.kind !== 'input' && control.kind !== 'select') return false;
+        const name = control.name.toLowerCase();
+        if (
+            ![name, `${name} is`, `${name} is still`, `${name} remains`].some(
+                (phrase) => subject === phrase || subject.endsWith(` ${phrase}`)
+            )
+        )
+            return false;
+        const values = [control.value, control.options?.find((option) => option.value === control.value)?.label];
+        return values.some((value) => typeof value === 'string' && value.toLowerCase() === setting);
+    });
+}
 
 /** Conservative English checks for these fixed scenarios, not a general natural-language judge. */
-export function explainsRestriction(name: RestrictionScenario, text: string): boolean {
-    const normalized = text.toLowerCase().replaceAll('’', "'");
+export function explainsRestriction(
+    name: RestrictionScenario,
+    text: string,
+    controls: readonly ControlSnapshot[] = []
+): boolean {
+    const normalized = text.toLowerCase().replaceAll('’', "'").replace(/[“”]/g, '"');
     const clauses = normalized.split(/[.!?;,\n]+|\b(?:and|but|however|although|yet)\b/);
     const negatedReason =
         /\b(?:not|never|isn't|aren't|wasn't|weren't)\s+(?:disabled|unavailable|unselectable|blocked|restricted|read[ -]?only|canceled|cancelled|vetoed)\b/;
@@ -26,14 +53,17 @@ export function explainsRestriction(name: RestrictionScenario, text: string): bo
 
     const claimsFinalValue =
         /\b(?:visibility|project(?: name)?|name|value|selection|it)\s+(?:(?:is|was|has become)\s+(?:now\s+)?|now\s+)(?:archived|public|agent workspace)\b/;
-    const edit = /\b(?:renamed|changed|updated|set|selected|applied|switched|saved|made)\b/;
+    const edit = /\b(?:renamed|changed|updated|set|selected|applied|switched|saved|made)\b/g;
     const taskSubject = /\b(?:project|visibility|archived|public|agent workspace|changes?|request|it)\b/;
     const deniedEdit =
         /\b(?:not|no|never|cannot|can't|couldn't|could not|unable|didn't|did not)\b|\b(?:tried|attempted|requested|request|failed)\s+to\b/;
     return !clauses.some((clause) => {
         if (claimsFinalValue.test(clause)) return true;
-        const claim = edit.exec(clause);
-        return claim !== null && taskSubject.test(clause) && !deniedEdit.test(clause.slice(0, claim.index));
+        if (!taskSubject.test(clause)) return false;
+        return [...clause.matchAll(edit)].some((claim) => {
+            if (claim[0] === 'set' && describesCurrentSetting(clause, claim.index, controls)) return false;
+            return !deniedEdit.test(clause.slice(0, claim.index));
+        });
     });
 }
 

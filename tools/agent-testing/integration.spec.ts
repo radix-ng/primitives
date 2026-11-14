@@ -177,6 +177,18 @@ for (const fixture of [
         passed: false
     },
     { scenario: 'disabled', observation: 'none', text: 'Controls are disabled.', passed: false },
+    ...(['snapshot', 'none'] as const).map((observation) => ({
+        scenario: 'disabled' as const,
+        observation,
+        text: 'Both controls are disabled, so no changes were made. The project remains “Radix project” with Visibility set to Private.',
+        passed: observation === 'snapshot'
+    })),
+    {
+        scenario: 'disabled',
+        observation: 'snapshot',
+        text: 'Controls are disabled. The project remains unchanged with Visibility set to Public.',
+        passed: false
+    },
     { scenario: 'read-only', observation: 'none', text: 'Controls are read-only.', passed: false }
 ] as const)
     test(`restriction evidence: ${fixture.scenario}, ${fixture.observation}, ${fixture.text}`, async ({

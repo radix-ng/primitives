@@ -125,7 +125,7 @@ export async function verifyScenario(
             expect(evidence.confirmed).toBe(true)
         );
         await check('final explanation acknowledges the obstacle without claiming success', () =>
-            expect(explainsRestriction(name, run.finalText)).toBe(true)
+            expect(explainsRestriction(name, run.finalText, run.finalSnapshot?.controls)).toBe(true)
         );
     }
     if (name === 'canceled')
