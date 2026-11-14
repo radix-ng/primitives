@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { toolInputSchemas, toolResultSchemas } from '../../radix-playground/src/app/agent-runtime/protocol';
 import type { AgentRuntimeApi, ControlSnapshot, RuntimeLog } from '../../radix-playground/src/app/agent-runtime/types';
 import { holdExitAnimations } from '../helpers/exit-animations';
 
@@ -465,6 +466,93 @@ test('selecting the current value closes an open Select without another value ca
     expect((await act(page, { id: select.id, action: 'select-option', value: 'private' })).status).toBe('unchanged');
     expect(await events(page, 'select.value')).toEqual([]);
     expect((await events(page, 'select.open')).length).toBe(2);
+});
+
+test('selecting the current value reports a canceled close, preserves focus and can retry after the veto', async ({
+    page
+}) => {
+    const select = await control(page, 'Visibility');
+    await page.getByRole('checkbox', { name: 'Cancel Select close', exact: true }).check();
+    await act(page, { id: select.id, action: 'open' });
+    await expect(page.locator('[rdxSelectPopup]')).toBeFocused();
+    const result = await act(page, { id: select.id, action: 'select-option', value: 'private' });
+    expect(result).toMatchObject({
+        status: 'canceled',
+        before: { value: 'private', open: true },
+        after: { value: 'private', open: true }
+    });
+    await expect(page.locator('[rdxSelectPopup]')).toBeFocused();
+    expect((await formState(page))['visibilityOpen']).toBe(true);
+    expect((await model(page)).visibility).toBe('private');
+    expect(await events(page, 'select.value')).toEqual([]);
+    expect(await events(page, 'select.open')).toContainEqual(expect.objectContaining({ open: false, canceled: true }));
+    await page.getByRole('checkbox', { name: 'Cancel Select close', exact: true }).uncheck();
+    // Establish an explicit outside focus target across native macOS/WebKit focus preferences.
+    await page.getByRole('checkbox', { name: 'Cancel Select close', exact: true }).focus();
+    expect((await act(page, { id: select.id, action: 'select-option', value: 'private' })).status).toBe('applied');
+    await expect(page.locator('[rdxSelectPopup]')).toHaveCount(0);
+    // Unlocking deliberately focused an outside control; closing must preserve that focus.
+    await expect(page.getByRole('checkbox', { name: 'Cancel Select close', exact: true })).toBeFocused();
+    await act(page, { id: select.id, action: 'open' });
+    await expect(page.locator('[rdxSelectPopup]')).toBeFocused();
+    await act(page, { id: select.id, action: 'select-option', value: 'private' });
+    await expect(page.locator('[rdxSelectPopup]')).toHaveCount(0);
+    await expect(page.getByRole('combobox', { name: 'Visibility', exact: true })).toBeFocused();
+    expect(await events(page, 'select.value')).toEqual([]);
+});
+
+test('tool schemas agree with real boundary validation and contextual refusal results', async ({ page }) => {
+    const input = await control(page, 'Project name');
+    const state = await snapshot(page);
+    expect(toolResultSchemas.snapshot.safeParse(state).success).toBe(true);
+    expect(input.constraints).toEqual({ required: true, maxLength: 120 });
+    for (const filter of [{}, { name: 'Project name' }, { id: 'missing' }, { kind: 'button' }, { extra: true }, null]) {
+        const result = await query(page, filter);
+        expect(result.status === 'invalid-query').toBe(!toolInputSchemas.query.safeParse(filter).success);
+        expect(toolResultSchemas.query.safeParse(result).success).toBe(true);
+    }
+    for (const command of [
+        { id: input.id, action: 'set-value', value: 'Schema project' },
+        { id: input.id, action: 'set-value' },
+        { id: input.id, action: 'set-value', value: null },
+        { id: input.id, action: 'open', value: 'unexpected' },
+        { id: input.id, action: 'set-value', value: 'x', extra: true },
+        { id: 'missing', action: 'open' },
+        { id: input.id, action: 'toString' }
+    ]) {
+        const result = await act(page, command);
+        if (!toolInputSchemas.act.safeParse(command).success) expect(result.status).toBe('refused');
+        expect(toolResultSchemas.act.safeParse(result).success).toBe(true);
+    }
+    const invalidSnapshot = await page.evaluate(() => {
+        try {
+            (window as RuntimeWindow).radixAgentRuntime!.snapshot({ extra: true });
+            return false;
+        } catch {
+            return true;
+        }
+    });
+    expect(invalidSnapshot).toBe(true);
+});
+
+test('Project settings keeps vertical separation between description, fields and footer', async ({ page }) => {
+    await act(page, { id: (await control(page, 'Project settings')).id, action: 'open' });
+    const popup = page.getByRole('dialog', { name: 'Project settings', exact: true });
+    const description = (await popup.locator('[rdxDialogDescription]').boundingBox())!;
+    const fields = await popup.getByTestId('agent-dialog-fields').evaluate((element) =>
+        [...element.children].map((child) => {
+            const rect = child.getBoundingClientRect();
+            return { top: rect.top, bottom: rect.bottom };
+        })
+    );
+    expect(fields[0].top - description.y - description.height).toBeGreaterThanOrEqual(20);
+    expect(fields[1].top - fields[0].bottom).toBeGreaterThanOrEqual(16);
+    expect(fields[2].top - fields[1].bottom).toBeGreaterThanOrEqual(16);
+    const close = (await popup.getByRole('button', { name: 'Close via runtime', exact: true }).boundingBox())!;
+    expect(close.y - fields[2].bottom).toBeGreaterThanOrEqual(20);
+    const link = (await popup.getByRole('link', { name: 'All primitives', exact: true }).boundingBox())!;
+    expect(link.y - close.y - close.height).toBeGreaterThanOrEqual(12);
+    await popup.screenshot({ path: test.info().outputPath('dialog-layout.png'), animations: 'disabled' });
 });
 
 test('a late child Select exit cannot steal restored focus after runtime Dialog close', async ({ page }) => {

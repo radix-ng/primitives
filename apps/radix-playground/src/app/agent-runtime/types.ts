@@ -16,6 +16,7 @@ export interface ControlSnapshot {
     readonly readOnly?: boolean;
     readonly value?: unknown;
     readonly open?: boolean;
+    readonly constraints?: { readonly required: boolean; readonly maxLength?: number };
     readonly options?: readonly SelectOption[];
     readonly actions: readonly ActionName[];
 }
@@ -45,7 +46,7 @@ export interface ActResult {
     readonly after?: ControlSnapshot;
 }
 export interface AgentRuntimeApi {
-    snapshot(): RuntimeSnapshot;
+    snapshot(parameters?: unknown): RuntimeSnapshot;
     query(query: unknown): QueryResult;
     act(command: unknown): Promise<ActResult>;
 }

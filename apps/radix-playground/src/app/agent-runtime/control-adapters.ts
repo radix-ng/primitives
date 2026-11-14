@@ -29,7 +29,11 @@ export function registerInput(
                 value: input.value() ?? element.value,
                 available: inActiveScope(element) && available(),
                 disabled: element.disabled,
-                readOnly: element.readOnly
+                readOnly: element.readOnly,
+                constraints: {
+                    required: element.required,
+                    ...(element.maxLength >= 0 ? { maxLength: element.maxLength } : {})
+                }
             }),
             actions: {
                 'set-value': {

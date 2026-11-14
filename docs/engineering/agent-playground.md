@@ -1,7 +1,9 @@
 # Agent Playground experiment
 
 `/playground/agents` is a local experiment in `apps/radix-playground`. It reuses the playground shell,
-theme, primitive styles and navigation. No model, external service or WebMCP is connected. The adapter
+theme, primitive styles and navigation. An opt-in [local executor](../../tools/agent-testing/README.md)
+can connect an OpenAI model to the existing runtime; no model or external service runs in the frontend.
+WebMCP remains separate. The adapter
 is application code under `src/app/agent-runtime`; it is not an npm export or a primitive API.
 
 ## Boundary and lifecycle
@@ -20,7 +22,8 @@ if (found.status === 'matched') {
 }
 ```
 
-`types.ts` is the contract. `snapshot()` and `query()` return detached data and do not log, mutate
+`types.ts` describes the application contract; `protocol.ts` supplies shared validators and generated
+JSON Schemas for the executor. `snapshot()` and `query()` return detached data and do not log, mutate
 controls or move focus. Queries use exact optional `id`, `kind` and `name` filters; multiple matches
 return `ambiguous` with all matches. Commands require an instance ID, never a guessed first match.
 Names are read from the page's `aria-labelledby`, `aria-label` and native labels. Closed Dialog is
@@ -31,9 +34,12 @@ Only explicit registrations are visible. The main Input, Visibility Select and D
 entries; opening Dialog mounts Change note Input and Environment Select, yielding five. Navigation,
 mascot and experiment controls are outside the registry. Select options come from the same declared
 metadata used by `[items]` and the rendered options, including disabled options while closed.
+Input snapshots also expose the native required and maximum-length constraints.
 Availability follows the primitive's native `inert` boundary, including inert ancestors. An open
 Dialog is addressed through its popup rather than its background trigger, so its own close command
 remains available. Background Input/Select commands are refused without changing values or focus.
+Availability is read again when executing each action, so an ID from before opening the Dialog does
+not authorize a background edit afterward.
 
 The root registry allocates monotonically increasing IDs for this application lifetime. Component
 `DestroyRef` callbacks remove registrations and unsubscribe from primitive outputs. IDs are not
@@ -63,6 +69,9 @@ an already satisfied command is a no-op without another callback. Selecting the 
 open Select still requests closing it, without another value callback; the result describes that open
 state change. A second concurrent command gets
 `busy`; it cannot overwrite an in-flight command's result.
+The demo's **Cancel Select close** switch exercises the repeated-selection veto: no value callback
+is emitted, the popup remains open, and the result is `canceled`. After lifting the veto, closing
+preserves deliberate outside focus or returns to the trigger when focus still belongs to the popup.
 
 Results settle after Angular render stability and report actual state. This does not promise that CSS
 exit animations have finished. Browser checks additionally await portal removal and finish a held
@@ -85,6 +94,7 @@ serves `dist/radix-site` with a plain static HTTP server, without an SPA fallbac
 on-disk `playground/agents/index.html`, direct loading, refresh, JS/CSS responses, a missing-route 404,
 shell navigation and theme. `tools/scripts/build-site.mjs` lists the route explicitly.
 The registry table keeps names readable and scrolls within its section at narrow widths.
+The Dialog uses a spaced grid for its fields and separates description, form controls and footer.
 
 `agents-playground.behavior.spec.ts` uses the window API for commands, real keyboard/UI interactions,
 and waiting assertions. It covers snapshot purity, exact/ambiguous lookup, events and form models,
@@ -92,5 +102,20 @@ cancellation, disabled/read-only behavior, modal focus, nested Escape, late exit
 navigation with an open Dialog/Select. It installs page/console error listeners before loading.
 macOS WebKit uses Option+Tab for native full-keyboard navigation, matching existing project checks.
 
-This is runtime integration coverage. It does not evaluate LLM generation, screen-reader behavior,
-or a general adapter for arbitrary consumer applications.
+## Local model execution
+
+The executor under `tools/agent-testing/` launches an owned Chromium context and gives the model only
+`snapshot`, `query` and `act`. It uses the same validation schemas, observed instance IDs, a captured
+runtime boundary, bounded requests/steps/duration and incremental evidence. Credentials remain in
+Node; they are not forwarded into the browser process. Every scenario has its own initial state and
+independent UI/form/runtime assertions. See its [README](../../tools/agent-testing/README.md) for model
+setup, commands, scenarios, artifact format and limitations.
+
+`pnpm agent:test` and `pnpm agent:test-browser` are deterministic checks using scripted responses or
+fake HTTP transport. `pnpm agent:run --scenario all --model YOUR_MODEL_ID` makes real provider requests
+against a separately served local build. Reports distinguish these modes; an unavailable API key
+does not silently select replay. A final model answer does not establish task success by itself.
+
+Runtime integration, executor integration and live model task outcomes are separate evidence. None
+certifies LLM code generation, screen-reader behavior, prompt injection resistance or a general adapter
+for arbitrary consumer applications. Public npm adapters, WebMCP and a chat interface remain separate work.

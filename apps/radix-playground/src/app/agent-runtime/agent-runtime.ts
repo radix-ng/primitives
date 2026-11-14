@@ -1,4 +1,5 @@
 import { ApplicationRef, DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { commandEnvelopeSchema, toolInputSchemas } from './protocol';
 import {
     ActionName,
     ActResult,
@@ -11,9 +12,6 @@ import {
     RuntimeSnapshot
 } from './types';
 
-const record = (value: unknown): value is Record<string, unknown> =>
-    typeof value === 'object' && value !== null && !Array.isArray(value);
-
 @Injectable({ providedIn: 'root' })
 export class AgentRuntime implements AgentRuntimeApi {
     private readonly app = inject(ApplicationRef);
@@ -24,7 +22,7 @@ export class AgentRuntime implements AgentRuntimeApi {
     readonly journal = this.log.asReadonly();
     readonly pending = signal(false);
     readonly api: AgentRuntimeApi = Object.freeze({
-        snapshot: () => this.snapshot(),
+        snapshot: (parameters?: unknown) => this.snapshot(parameters),
         query: (query: unknown) => this.query(query),
         act: (command: unknown) => this.act(command)
     });
@@ -50,20 +48,18 @@ export class AgentRuntime implements AgentRuntimeApi {
         });
     }
 
-    snapshot(): RuntimeSnapshot {
+    snapshot(parameters: unknown = {}): RuntimeSnapshot {
+        if (!toolInputSchemas.snapshot.safeParse(parameters).success)
+            throw new TypeError('snapshot accepts only an empty argument object.');
         return { controls: [...this.registrations()].map(([id, entry]) => this.read(id, entry)) };
     }
 
     query(query: unknown): QueryResult {
-        if (
-            !record(query) ||
-            Object.keys(query).some((key) => !['id', 'kind', 'name'].includes(key)) ||
-            Object.values(query).some((value) => typeof value !== 'string') ||
-            ('kind' in query && !['input', 'select', 'dialog'].includes(String(query['kind'])))
-        ) {
+        const parsed = toolInputSchemas.query.safeParse(query);
+        if (!parsed.success) {
             return { status: 'invalid-query', matches: [] };
         }
-        const filter = query as ControlQuery;
+        const filter: ControlQuery = parsed.data;
         const matches = this.snapshot().controls.filter(
             (control) =>
                 (filter.id === undefined || control.id === filter.id) &&
@@ -86,20 +82,16 @@ export class AgentRuntime implements AgentRuntimeApi {
         ]);
     }
 
-    async act(command: unknown): Promise<ActResult> {
+    async act(input: unknown): Promise<ActResult> {
         const finish = (result: ActResult) => {
             this.append('result', result);
             return result;
         };
         const refuse = (code: string, message: string, before?: ControlSnapshot) =>
             finish({ status: 'refused', code, message, ...(before ? { before, after: before } : {}) });
-        if (
-            !record(command) ||
-            typeof command['id'] !== 'string' ||
-            typeof command['action'] !== 'string' ||
-            Object.keys(command).some((key) => !['id', 'action', 'value'].includes(key))
-        )
-            return refuse('invalid-command', 'Expected an id, an action and optional value.');
+        const parsed = commandEnvelopeSchema.safeParse(input);
+        if (!parsed.success) return refuse('invalid-command', 'Expected an id, an action and optional value.');
+        const command = parsed.data;
         this.append('command', {
             id: command['id'],
             action: command['action'],

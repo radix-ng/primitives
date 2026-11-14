@@ -14,6 +14,7 @@ export class ProjectDemo {
     readonly dialogDisabled = signal(false);
     readonly cancelValues = signal(false);
     readonly cancelDialog = signal(false);
+    readonly cancelSelectClose = signal(false);
     readonly dialogOpen = signal(false);
     readonly visibilityOpen = signal(false);
     readonly environmentOpen = signal(false);
@@ -61,7 +62,14 @@ export class ProjectDemo {
         });
     }
     selectOpen(name: string, change: RdxSelectOpenChangeEvent): void {
-        this.runtime.recordEvent({ event: 'select.open', name, open: change.open, reason: change.eventDetails.reason });
+        if (!change.open && this.cancelSelectClose()) change.eventDetails.cancel();
+        this.runtime.recordEvent({
+            event: 'select.open',
+            name,
+            open: change.open,
+            canceled: change.eventDetails.isCanceled(),
+            reason: change.eventDetails.reason
+        });
     }
     dialogChange(change: RdxDialogOpenChange): void {
         if (this.cancelDialog()) change.eventDetails.cancel();

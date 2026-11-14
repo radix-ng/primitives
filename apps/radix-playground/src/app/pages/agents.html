@@ -4,7 +4,7 @@
         <h1 class="text-foreground mt-1 text-2xl font-semibold tracking-tight">Agent Playground</h1>
         <p class="text-muted-foreground mt-2 max-w-prose text-sm">
             Inspect explicitly registered controls and run predefined commands against real primitives. No model or
-            external service is connected.
+            external service runs in this page. The opt-in local CLI can connect an LLM to this runtime.
         </p>
     </header>
 
@@ -48,27 +48,29 @@
                                 <p rdxDialogDescription [class]="d.description">
                                     Review the environment and add a change note.
                                 </p>
-                                <app-agent-input
-                                    label="Change note"
-                                    [available]="demo.dialogOpen()"
-                                    [field]="demo.fields.note"
-                                />
-                                <app-agent-select
-                                    label="Environment"
-                                    [available]="demo.dialogOpen()"
-                                    [field]="demo.fields.environment"
-                                    [options]="demo.environmentOptions"
-                                    [(open)]="demo.environmentOpen"
-                                />
-                                <label class="flex items-center gap-2 text-sm">
-                                    <input
-                                        #cancelInside
-                                        type="checkbox"
-                                        [checked]="demo.cancelDialog()"
-                                        (change)="demo.cancelDialog.set(cancelInside.checked)"
+                                <div data-testid="agent-dialog-fields" class="my-6 grid gap-5">
+                                    <app-agent-input
+                                        label="Change note"
+                                        [available]="demo.dialogOpen()"
+                                        [field]="demo.fields.note"
                                     />
-                                    Cancel dialog changes
-                                </label>
+                                    <app-agent-select
+                                        label="Environment"
+                                        [available]="demo.dialogOpen()"
+                                        [field]="demo.fields.environment"
+                                        [options]="demo.environmentOptions"
+                                        [(open)]="demo.environmentOpen"
+                                    />
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input
+                                            #cancelInside
+                                            type="checkbox"
+                                            [checked]="demo.cancelDialog()"
+                                            (change)="demo.cancelDialog.set(cancelInside.checked)"
+                                        />
+                                        Cancel dialog changes
+                                    </label>
+                                </div>
                                 <div [class]="d.footer">
                                     <button
                                         type="button"
@@ -79,7 +81,10 @@
                                     </button>
                                     <button rdxDialogClose [class]="cn(b.base, b.primary, b.size.sm)">Done</button>
                                 </div>
-                                <a routerLink="/playground" class="text-muted-foreground text-sm underline">
+                                <a
+                                    routerLink="/playground"
+                                    class="text-muted-foreground mt-4 inline-block text-sm underline"
+                                >
                                     All primitives
                                 </a>
                             </div>
@@ -148,6 +153,15 @@
                         (change)="demo.cancelDialog.set(cancelDialog.checked)"
                     />
                     Cancel dialog changes
+                </label>
+                <label class="flex items-center gap-2">
+                    <input
+                        #cancelSelectClose
+                        type="checkbox"
+                        [checked]="demo.cancelSelectClose()"
+                        (change)="demo.cancelSelectClose.set(cancelSelectClose.checked)"
+                    />
+                    Cancel Select close
                 </label>
             </fieldset>
             <div class="flex flex-wrap gap-2">

@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "target": "es2022",
+        "module": "preserve",
+        "moduleResolution": "bundler",
+        "strict": true,
+        "noEmit": true,
+        "skipLibCheck": true,
+        "allowImportingTsExtensions": true,
+        "erasableSyntaxOnly": true,
+        "verbatimModuleSyntax": true,
+        "types": ["node"]
+    },
+    "include": [
+        "*.ts",
+        "../../apps/radix-playground/src/app/agent-runtime/protocol.ts",
+        "../../apps/radix-playground/src/app/agent-runtime/types.ts"
+    ]
+}
