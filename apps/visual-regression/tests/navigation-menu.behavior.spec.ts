@@ -526,6 +526,8 @@ test.describe('Navigation Menu content composition and demo layout', () => {
         const popup = page.locator('[rdxNavigationMenuPopup]');
         const list = popup.locator('ul');
         await expect(popup).toBeVisible();
+        // Tab enters the portaled content on an animation frame; visible does not mean focused yet.
+        await expect(popup.getByRole('link', { name: /^Accordion/ })).toBeFocused();
         expect(await list.evaluate((element) => element.scrollHeight > element.clientHeight)).toBe(true);
         await page.keyboard.press('End');
         const last = page.getByRole('link', { name: /^Tooltip/ });
