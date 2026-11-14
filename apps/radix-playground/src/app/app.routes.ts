@@ -7,6 +7,7 @@ export const appRoutes: Routes = [
         loadComponent: () => import('./playground-shell'),
         children: [
             { path: '', pathMatch: 'full', loadComponent: () => import('./pages/home') },
+            { path: 'agents', loadComponent: () => import('./pages/agents') },
             { path: 'accordion', loadComponent: () => import('./pages/accordion') },
             { path: 'checkbox', loadComponent: () => import('./pages/checkbox') },
             { path: 'dialog', loadComponent: () => import('./pages/dialog') },

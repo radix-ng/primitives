@@ -19,6 +19,7 @@
         "test-browser:select": "nx run radix-storybook:build-storybook && playwright test -c apps/visual-regression/playwright.select.config.ts",
         "test-browser:floating": "nx run radix-storybook:build-storybook && playwright test -c apps/visual-regression/playwright.floating.config.ts",
         "test-browser:docs": "nx run radix-storybook:build-storybook && playwright test -c apps/visual-regression/playwright.docs.config.ts",
+        "test-browser:agents": "pnpm build-site && playwright test -c apps/visual-regression/playwright.playground.config.ts",
         "test-consumer": "node tools/consumer-testing/run.mjs",
         "----Radix Primitives---": "-----------------------------------------------------------------",
         "primitives:build": "nx run primitives:build",

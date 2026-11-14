@@ -53,6 +53,18 @@ import { ThemeStore } from './shared/theme';
                             {{ item.label }}
                         </a>
                     }
+                    <span
+                        class="text-muted-foreground hidden px-2 pt-4 pb-1.5 text-xs font-semibold uppercase md:block"
+                    >
+                        Experiments
+                    </span>
+                    <a
+                        class="text-muted-foreground hover:bg-muted hover:text-foreground shrink-0 rounded-md px-2.5 py-1.5 text-sm no-underline transition-colors md:px-2"
+                        routerLink="/playground/agents"
+                        routerLinkActive="bg-muted !text-foreground font-medium"
+                    >
+                        Agents
+                    </a>
                 </nav>
             </aside>
 

@@ -31,6 +31,7 @@ if (existsSync(storybookPublic)) {
 
 const spaRoutes = [
     'playground',
+    'playground/agents',
     'playground/accordion',
     'playground/checkbox',
     'playground/dialog',

@@ -18,6 +18,7 @@ Contributor guidance for maintaining Radix NG. Start with [AGENTS.md](../../AGEN
 | Installation, peers and schematic                 | [Installation](installation.md)                                                                     |
 | CI, releases, hosting and operational commands    | [Deployment](deployment.md)                                                                         |
 | Generated public docs and consumer skills         | [Consumer pipeline](consumer-skills.md)                                                             |
+| Local agent runtime and playground experiment     | [Agent Playground](agent-playground.md)                                                             |
 | Reproducible Base UI sources                      | [Upstream reference](upstream-reference.md)                                                         |
 | Contributor skill maintenance                     | [Agent setup](agent-setup.md)                                                                       |
 

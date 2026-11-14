@@ -1,0 +1,251 @@
+<div class="mx-auto max-w-6xl space-y-6">
+    <header>
+        <p class="text-muted-foreground text-xs font-semibold uppercase">Local experiment</p>
+        <h1 class="text-foreground mt-1 text-2xl font-semibold tracking-tight">Agent Playground</h1>
+        <p class="text-muted-foreground mt-2 max-w-prose text-sm">
+            Inspect explicitly registered controls and run predefined commands against real primitives. No model or
+            external service is connected.
+        </p>
+    </header>
+
+    <div class="grid gap-6 xl:grid-cols-2">
+        <section aria-labelledby="agent-form-heading" class="border-border bg-background rounded-xl border p-6">
+            <h2 id="agent-form-heading" class="text-lg font-semibold">Project settings</h2>
+            <form rdxFormRoot class="mt-5 grid gap-5" [rdxSignalForm]="demo.fields" (onFormSubmit)="saved()">
+                <app-agent-input label="Project name" [field]="demo.fields.name" />
+                <app-agent-select
+                    label="Visibility"
+                    [field]="demo.fields.visibility"
+                    [options]="demo.visibilityOptions"
+                    [(open)]="demo.visibilityOpen"
+                />
+                <div class="flex flex-wrap gap-2">
+                    <button type="submit" [class]="cn(b.base, b.primary, b.size.sm)">Save project</button>
+                    <ng-container
+                        rdxDialogRoot
+                        [handle]="dialog"
+                        [(open)]="demo.dialogOpen"
+                        (onOpenChange)="demo.dialogChange($event)"
+                    >
+                        <button
+                            #dialogTrigger
+                            id="agent-project-settings-trigger"
+                            rdxDialogTrigger
+                            [class]="cn(b.base, b.outline, b.size.sm)"
+                            [disabled]="demo.dialogDisabled()"
+                            [handle]="dialog"
+                        >
+                            Project settings
+                        </button>
+                        <ng-template rdxDialogPortal>
+                            <div
+                                data-testid="agent-backdrop"
+                                rdxDialogBackdrop
+                                [class]="cn(d.backdrop, d.backdropAnimated)"
+                            ></div>
+                            <div #dialogPopup rdxDialogPopup [class]="cn(d.popup, d.popupAnimated)">
+                                <h2 rdxDialogTitle [class]="d.title">Project settings</h2>
+                                <p rdxDialogDescription [class]="d.description">
+                                    Review the environment and add a change note.
+                                </p>
+                                <app-agent-input
+                                    label="Change note"
+                                    [available]="demo.dialogOpen()"
+                                    [field]="demo.fields.note"
+                                />
+                                <app-agent-select
+                                    label="Environment"
+                                    [available]="demo.dialogOpen()"
+                                    [field]="demo.fields.environment"
+                                    [options]="demo.environmentOptions"
+                                    [(open)]="demo.environmentOpen"
+                                />
+                                <label class="flex items-center gap-2 text-sm">
+                                    <input
+                                        #cancelInside
+                                        type="checkbox"
+                                        [checked]="demo.cancelDialog()"
+                                        (change)="demo.cancelDialog.set(cancelInside.checked)"
+                                    />
+                                    Cancel dialog changes
+                                </label>
+                                <div [class]="d.footer">
+                                    <button
+                                        type="button"
+                                        [class]="cn(b.base, b.outline, b.size.sm)"
+                                        (click)="run('dialog', 'Project settings', 'close')"
+                                    >
+                                        Close via runtime
+                                    </button>
+                                    <button rdxDialogClose [class]="cn(b.base, b.primary, b.size.sm)">Done</button>
+                                </div>
+                                <a routerLink="/playground" class="text-muted-foreground text-sm underline">
+                                    All primitives
+                                </a>
+                            </div>
+                        </ng-template>
+                    </ng-container>
+                </div>
+            </form>
+            <h3 class="mt-6 text-sm font-medium">Application model · Signal Forms</h3>
+            <pre data-testid="project-model" class="bg-muted mt-2 overflow-auto rounded-md p-3 text-xs">{{
+                demo.model() | json
+            }}</pre>
+            <pre data-testid="project-form-state" class="text-muted-foreground mt-2 text-xs">{{
+                formState() | json
+            }}</pre>
+        </section>
+
+        <section aria-labelledby="agent-command-heading" class="border-border bg-background rounded-xl border p-6">
+            <h2 id="agent-command-heading" class="text-lg font-semibold">Runtime commands</h2>
+            <p class="text-muted-foreground mt-1 text-sm">
+                Only the controls in this demo are registered. Reads do not move focus. IDs belong to an instance and
+                expire when it is destroyed.
+            </p>
+            <fieldset class="my-4 grid gap-2 text-sm">
+                <legend class="mb-2 font-medium">Demo constraints</legend>
+                <label class="flex items-center gap-2">
+                    <input
+                        #locked
+                        type="checkbox"
+                        [checked]="demo.locked()"
+                        (change)="demo.locked.set(locked.checked)"
+                    />
+                    Disable form controls
+                </label>
+                <label class="flex items-center gap-2">
+                    <input
+                        #readOnly
+                        type="checkbox"
+                        [checked]="demo.readOnly()"
+                        (change)="demo.readOnly.set(readOnly.checked)"
+                    />
+                    Read-only form controls
+                </label>
+                <label class="flex items-center gap-2">
+                    <input
+                        #dialogDisabled
+                        type="checkbox"
+                        [checked]="demo.dialogDisabled()"
+                        (change)="demo.dialogDisabled.set(dialogDisabled.checked)"
+                    />
+                    Disable dialog trigger
+                </label>
+                <label class="flex items-center gap-2">
+                    <input
+                        #cancel
+                        type="checkbox"
+                        [checked]="demo.cancelValues()"
+                        (change)="demo.cancelValues.set(cancel.checked)"
+                    />
+                    Cancel value changes
+                </label>
+                <label class="flex items-center gap-2">
+                    <input
+                        #cancelDialog
+                        type="checkbox"
+                        [checked]="demo.cancelDialog()"
+                        (change)="demo.cancelDialog.set(cancelDialog.checked)"
+                    />
+                    Cancel dialog changes
+                </label>
+            </fieldset>
+            <div class="flex flex-wrap gap-2">
+                <button type="button" [class]="cn(b.base, b.outline, b.size.sm)" (click)="inspect()">Snapshot</button>
+                <button type="button" [class]="cn(b.base, b.outline, b.size.sm)" (click)="findInput()">
+                    Find project name
+                </button>
+                <button
+                    type="button"
+                    [class]="cn(b.base, b.outline, b.size.sm)"
+                    [disabled]="runtime.pending()"
+                    (click)="run('input', 'Project name', 'set-value', 'Agent project')"
+                >
+                    Rename via runtime
+                </button>
+                <button
+                    type="button"
+                    [class]="cn(b.base, b.outline, b.size.sm)"
+                    [disabled]="runtime.pending()"
+                    (click)="run('select', 'Visibility', 'select-option', 'public')"
+                >
+                    Choose Public via runtime
+                </button>
+                <button
+                    type="button"
+                    [class]="cn(b.base, b.outline, b.size.sm)"
+                    [disabled]="runtime.pending()"
+                    (click)="run('dialog', 'Project settings', 'open')"
+                >
+                    Open dialog via runtime
+                </button>
+                <button
+                    type="button"
+                    [class]="cn(b.base, b.outline, b.size.sm)"
+                    (click)="run('input', 'Project name', 'open')"
+                >
+                    Unsupported action
+                </button>
+                <button type="button" [class]="cn(b.base, b.outline, b.size.sm)" (click)="unknown()">
+                    Unknown instance
+                </button>
+            </div>
+            <pre data-testid="runtime-result" class="bg-muted mt-4 max-h-72 overflow-auto rounded-md p-3 text-xs">{{
+                lastResult() | json
+            }}</pre>
+        </section>
+    </div>
+
+    <section
+        aria-labelledby="agent-registry-heading"
+        class="border-border bg-background overflow-x-auto rounded-xl border p-6"
+    >
+        <h2 id="agent-registry-heading" class="text-lg font-semibold">Registered controls</h2>
+        <table class="mt-3 w-full min-w-[720px] text-left text-sm">
+            <thead class="whitespace-nowrap">
+                <tr>
+                    <th class="p-2">Instance</th>
+                    <th class="p-2">Name</th>
+                    <th class="p-2">State</th>
+                    <th class="p-2">Declared actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (control of runtime.snapshot().controls; track control.id) {
+                    <tr data-testid="registered-control" class="border-border border-t">
+                        <td class="p-2 whitespace-nowrap">
+                            <span class="font-mono text-xs">{{ control.id }}</span>
+                            <br />
+                            {{ control.kind }}
+                        </td>
+                        <td class="p-2 whitespace-nowrap">{{ control.name }}</td>
+                        <td class="p-2">
+                            <pre class="text-xs">{{
+                                {
+                                    value: control.value,
+                                    open: control.open,
+                                    disabled: control.disabled,
+                                    readOnly: control.readOnly,
+                                    available: control.available,
+                                    options: control.options
+                                } | json
+                            }}</pre>
+                        </td>
+                        <td class="p-2 font-mono text-xs whitespace-nowrap">{{ control.actions.join(', ') }}</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+    <section aria-labelledby="agent-journal-heading" class="border-border bg-background rounded-xl border p-6">
+        <div class="flex items-center justify-between gap-3">
+            <h2 id="agent-journal-heading" class="text-lg font-semibold">Action journal</h2>
+            <button type="button" [class]="cn(b.base, b.outline, b.size.sm)" (click)="runtime.clearJournal()">
+                Clear journal
+            </button>
+        </div>
+        <pre data-testid="runtime-journal" class="bg-muted mt-3 max-h-96 overflow-auto rounded-md p-3 text-xs">{{
+            runtime.journal() | json
+        }}</pre>
+    </section>
+</div>
