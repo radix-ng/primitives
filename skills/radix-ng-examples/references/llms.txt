@@ -2,81 +2,118 @@
 
 Unstyled, accessible, signals-first Angular primitives for building design systems and web apps.
 
-Full documentation in one file: https://radix-ng.com/llms-full.txt
+Full documentation in one file: https://radix-ng.com/docs/llms-full.txt
 
 Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
+## Agents
+
+- [Build with Radix NG](https://radix-ng.com/docs/agents/build-with-radix-ng.md): Find the smallest documented primitive and adapt a nearby working example.
+- [Compose components](https://radix-ng.com/docs/agents/compose-components.md): Preserve Angular ownership while adapting headless parts to your application.
+- [Getting started](https://radix-ng.com/docs/agents/getting-started.md): Give a coding agent version-aware contracts, focused examples and a verification task.
+- [Reference](https://radix-ng.com/docs/agents/reference.md): Retrieve one versioned contract or example before loading the full documentation.
+- [Verify the result](https://radix-ng.com/docs/agents/verify-the-result.md): Compile the consumer's templates and verify observable interaction contracts.
+
+## Overview
+
+- [Accessibility](https://radix-ng.com/docs/overview/accessibility.md): Accessibility
+- [Base UI patterns for Angular](https://radix-ng.com/docs/overview/base-ui-patterns.md): Radix NG brings Base UI's architecture and behavior to Angular through directives, signals, and dependency injection.
+- [Installation](https://radix-ng.com/docs/overview/installation.md): Installation
+- [Introduction](https://radix-ng.com/docs/overview/introduction.md): Introduction
+- [Skills](https://radix-ng.com/docs/overview/skills.md): Consumer skills are documented in the Agents section.
+- [Theming](https://radix-ng.com/docs/overview/theming.md): Theming
+
+## Learn
+
+- [Anatomy & parts](https://radix-ng.com/docs/learn/anatomy-and-parts.md): Why a primitive is several directives, and how they find each other.
+- [Build a styled component](https://radix-ng.com/docs/learn/build-a-styled-component.md): The end-to-end tutorial: a bare Popover becomes a polished, reusable component.
+- [Composition](https://radix-ng.com/docs/learn/composition.md): Building your own directives and components _on top_ of primitives, not around them.
+- [Controlled & uncontrolled](https://radix-ng.com/docs/learn/controlled-and-uncontrolled.md): Why primitives just work out of the box, and when to take the wheel.
+- [Learn Radix NG](https://radix-ng.com/docs/learn/introduction.md): A guided path from "what is a headless primitive" to your own styled component.
+- [State & data attributes](https://radix-ng.com/docs/learn/state-data-attributes.md): Where a primitive's state lives, and how you turn it into a look.
+
 ## Components
 
-- [Accordion](https://radix-ng.com/components/accordion.md): A vertically stacked set of interactive headings that each reveal an associated section of content.
-- [Alert Dialog](https://radix-ng.com/components/alert-dialog.md): A modal dialog that interrupts the user with important content and expects a response.
-- [Aspect Ratio](https://radix-ng.com/components/aspect-ratio.md): Displays content within a desired ratio.
-- [Autocomplete](https://radix-ng.com/components/autocomplete.md): A text input with a list of suggestions: free-form text whose value **is** the input string, with the active option tracked via `aria-activedescendant`.
-- [Avatar](https://radix-ng.com/components/avatar.md): An image element with a fallback for representing the user.
-- [Button](https://radix-ng.com/components/button.md): A button, or any element that should behave like one.
-- [Calendar](https://radix-ng.com/components/calendar.md): Displays dates and days of the week, facilitating date-related interactions.
-- [Checkbox](https://radix-ng.com/components/checkbox.md): A control that allows the user to toggle between checked and not checked.
-- [Collapsible](https://radix-ng.com/components/collapsible.md): A collapsible panel controlled by a button.
-- [Combobox](https://radix-ng.com/components/combobox.md): A filterable select: a text input that filters a list of options, with the highlighted option tracked via `aria-activedescendant`.
-- [Context Menu](https://radix-ng.com/components/context-menu.md): A menu that appears at the pointer on right click (or touch long-press), built on the Menu primitive.
-- [Cropper](https://radix-ng.com/components/cropper.md): Headless component for interactive image cropping — inspired by the experience on [X](https://x.com/).
-- [Date Field](https://radix-ng.com/components/date-field.md): Enables users to input specific dates within a designated field.
-- [Dialog](https://radix-ng.com/components/dialog.md): A window overlaid on the page, rendering the content underneath inert.
-- [Drawer](https://radix-ng.com/components/drawer.md): An edge-anchored sheet that opens over the page and dismisses with a swipe.
-- [Editable](https://radix-ng.com/components/editable.md): An inline text field that swaps a read-only preview for an editable input.
-- [Field](https://radix-ng.com/components/field.md): Groups a control with accessible label, description, error message, and field state.
-- [Fieldset](https://radix-ng.com/components/fieldset.md): Groups related form controls with a legend and shared disabled state.
-- [Form](https://radix-ng.com/components/form.md): The top of the forms layer cake: aggregates fields, maps server errors by name, and intercepts submit and reset.
-- [Input](https://radix-ng.com/components/input.md): A native text input with headless state attributes and Field integration.
-- [Label](https://radix-ng.com/components/label.md): Renders an accessible label associated with controls.
-- [Menu](https://radix-ng.com/components/menu.md): A headless dropdown menu anchored to a trigger button.
-- [Menubar](https://radix-ng.com/components/menubar.md): A visually persistent menu common in desktop applications that provides quick access to a consistent set of commands.
-- [Meter](https://radix-ng.com/components/meter.md): A graphical display of a numeric value within a range.
-- [Navigation Menu](https://radix-ng.com/components/navigation-menu.md): A collection of links and menus for website navigation.
-- [Number Field](https://radix-ng.com/components/number-field.md): A numeric input with stepper buttons, drag-to-scrub, locale-aware formatting and keyboard control.
-- [OTP Field](https://radix-ng.com/components/otp-field.md): A headless one-time-code control built from one native input per character.
-- [Pagination](https://radix-ng.com/components/pagination.md): Displays data in paged format and provides navigation between pages.
-- [Popover](https://radix-ng.com/components/popover.md): An accessible popup anchored to a button.
-- [Preview Card](https://radix-ng.com/components/preview-card.md): A popup that appears when a link is hovered or focused, showing a visual preview.
-- [Progress](https://radix-ng.com/components/progress.md): Displays task completion with accessible label, value, track, and indicator parts.
-- [Radio Group](https://radix-ng.com/components/radio.md): A set of checkable buttons—known as radio buttons—where no more than one of the buttons can be checked at a time.
-- [Scroll Area](https://radix-ng.com/components/scroll-area.md): A native scroll container with a custom, cross-browser scrollbar.
-- [Select](https://radix-ng.com/components/select.md): A control that presents a list of options for the user to pick from, triggered by a button.
-- [Separator](https://radix-ng.com/components/separator.md): A separator element accessible to screen readers.
-- [Signal Forms](https://radix-ng.com/components/signal-forms.md): Bridge Angular [Signal Forms](https://angular.dev/guide/forms/signals/overview) into headless `Field` and `Form`.
-- [Slider](https://radix-ng.com/components/slider.md): An input where the user selects a value, or a range of values, from within a given range.
-- [Stepper](https://radix-ng.com/components/stepper.md): A set of steps that are used to indicate progress through a multi-step process.
-- [Switch](https://radix-ng.com/components/switch.md): A control that allows the user to toggle between checked and not checked.
-- [Tabs](https://radix-ng.com/components/tabs.md): A set of layered sections of content—known as tab panels—that are displayed one at a time.
-- [Time Field](https://radix-ng.com/components/time-field.md): A segmented time input that lets users enter a time hour-by-hour with full keyboard control and localization.
-- [Toast](https://radix-ng.com/components/toast.md): A succinct, low-priority message that appears temporarily, stacks, and can be swiped away.
-- [Toggle](https://radix-ng.com/components/toggle.md): A two-state button that can be either on or off.
-- [Toggle Group](https://radix-ng.com/components/toggle-group.md): A set of two-state buttons that can be toggled on or off.
-- [Toolbar](https://radix-ng.com/components/toolbar.md): A container for grouping a set of controls, such as buttons, toggle groups or menus.
-- [Tooltip](https://radix-ng.com/components/tooltip.md): Displays contextual information when a trigger is hovered or focused.
+- [Accordion](https://radix-ng.com/docs/components/accordion.md): A vertically stacked set of interactive headings that each reveal an associated section of content.
+- [Alert Dialog](https://radix-ng.com/docs/components/alert-dialog.md): A modal dialog that interrupts the user with important content and expects a response.
+- [Aspect Ratio](https://radix-ng.com/docs/components/aspect-ratio.md): Displays content within a desired ratio.
+- [Autocomplete](https://radix-ng.com/docs/components/autocomplete.md): A text input with a list of suggestions: free-form text whose value **is** the input string, with the active option tracked via `aria-activedescendant`.
+- [Avatar](https://radix-ng.com/docs/components/avatar.md): An image element with a fallback for representing the user.
+- [Button](https://radix-ng.com/docs/components/button.md): A button, or any element that should behave like one.
+- [Calendar](https://radix-ng.com/docs/components/calendar.md): Displays dates and days of the week, facilitating date-related interactions.
+- [Checkbox](https://radix-ng.com/docs/components/checkbox.md): A control that allows the user to toggle between checked and not checked.
+- [Collapsible](https://radix-ng.com/docs/components/collapsible.md): A collapsible panel controlled by a button.
+- [Combobox](https://radix-ng.com/docs/components/combobox.md): A filterable select: a text input that filters a list of options, with the highlighted option tracked via `aria-activedescendant`.
+- [Context Menu](https://radix-ng.com/docs/components/context-menu.md): A menu that appears at the pointer on right click (or touch long-press), built on the Menu primitive.
+- [Cropper](https://radix-ng.com/docs/components/cropper.md): Headless component for interactive image cropping — inspired by the experience on [X](https://x.com/).
+- [Date Field](https://radix-ng.com/docs/components/date-field.md): Enables users to input specific dates within a designated field.
+- [Dialog](https://radix-ng.com/docs/components/dialog.md): A window overlaid on the page, rendering the content underneath inert.
+- [Drawer](https://radix-ng.com/docs/components/drawer.md): An edge-anchored sheet that opens over the page and dismisses with a swipe.
+- [Editable](https://radix-ng.com/docs/components/editable.md): An inline text field that swaps a read-only preview for an editable input.
+- [Field](https://radix-ng.com/docs/components/field.md): Groups a control with accessible label, description, error message, and field state.
+- [Fieldset](https://radix-ng.com/docs/components/fieldset.md): Groups related form controls with a legend and shared disabled state.
+- [Form](https://radix-ng.com/docs/components/form.md): The top of the forms layer cake: aggregates fields, maps server errors by name, and intercepts submit and reset.
+- [Input](https://radix-ng.com/docs/components/input.md): A native text input with headless state attributes and Field integration.
+- [Label](https://radix-ng.com/docs/components/label.md): Renders an accessible label associated with controls.
+- [Menu](https://radix-ng.com/docs/components/menu.md): A headless dropdown menu anchored to a trigger button.
+- [Menubar](https://radix-ng.com/docs/components/menubar.md): A visually persistent menu common in desktop applications that provides quick access to a consistent set of commands.
+- [Meter](https://radix-ng.com/docs/components/meter.md): A graphical display of a numeric value within a range.
+- [Navigation Menu](https://radix-ng.com/docs/components/navigation-menu.md): A collection of links and menus for website navigation.
+- [Number Field](https://radix-ng.com/docs/components/number-field.md): A numeric input with stepper buttons, drag-to-scrub, locale-aware formatting and keyboard control.
+- [OTP Field](https://radix-ng.com/docs/components/otp-field.md): A headless one-time-code control built from one native input per character.
+- [Pagination](https://radix-ng.com/docs/components/pagination.md): Displays data in paged format and provides navigation between pages.
+- [Popover](https://radix-ng.com/docs/components/popover.md): An accessible popup anchored to a button.
+- [Preview Card](https://radix-ng.com/docs/components/preview-card.md): A popup that appears when a link is hovered or focused, showing a visual preview.
+- [Progress](https://radix-ng.com/docs/components/progress.md): Displays task completion with accessible label, value, track, and indicator parts.
+- [Radio Group](https://radix-ng.com/docs/components/radio.md): A set of checkable buttons—known as radio buttons—where no more than one of the buttons can be checked at a time.
+- [Scroll Area](https://radix-ng.com/docs/components/scroll-area.md): A native scroll container with a custom, cross-browser scrollbar.
+- [Select](https://radix-ng.com/docs/components/select.md): A control that presents a list of options for the user to pick from, triggered by a button.
+- [Separator](https://radix-ng.com/docs/components/separator.md): A separator element accessible to screen readers.
+- [Signal Forms](https://radix-ng.com/docs/components/signal-forms.md): Bridge Angular [Signal Forms](https://angular.dev/guide/forms/signals/overview) into headless `Field` and `Form`.
+- [Slider](https://radix-ng.com/docs/components/slider.md): An input where the user selects a value, or a range of values, from within a given range.
+- [Stepper](https://radix-ng.com/docs/components/stepper.md): A set of steps that are used to indicate progress through a multi-step process.
+- [Switch](https://radix-ng.com/docs/components/switch.md): A control that allows the user to toggle between checked and not checked.
+- [Tabs](https://radix-ng.com/docs/components/tabs.md): A set of layered sections of content—known as tab panels—that are displayed one at a time.
+- [Time Field](https://radix-ng.com/docs/components/time-field.md): A segmented time input that lets users enter a time hour-by-hour with full keyboard control and localization.
+- [Toast](https://radix-ng.com/docs/components/toast.md): A succinct, low-priority message that appears temporarily, stacks, and can be swiped away.
+- [Toggle](https://radix-ng.com/docs/components/toggle.md): A two-state button that can be either on or off.
+- [Toggle Group](https://radix-ng.com/docs/components/toggle-group.md): A set of two-state buttons that can be toggled on or off.
+- [Toolbar](https://radix-ng.com/docs/components/toolbar.md): A container for grouping a set of controls, such as buttons, toggle groups or menus.
+- [Tooltip](https://radix-ng.com/docs/components/tooltip.md): Displays contextual information when a trigger is hovered or focused.
 
 ## Utilities
 
-- [Composite](https://radix-ng.com/utils/composite.md): Composite
-- [Direction Provider](https://radix-ng.com/utils/direction-provider.md): Provides reading direction to descendant primitives through Angular DI.
-- [Dismissable Layer](https://radix-ng.com/utils/dismissable-layer.md): Dismissable Layer
-- [Focus Scope](https://radix-ng.com/utils/focus-scope.md): Manages focus within a component boundary with support for trapping and looping focus navigation.
-- [injectId](https://radix-ng.com/utils/inject-id.md): Generates unique, SSR-stable element IDs — the Angular counterpart of React's `useId`.
-- [LiveAnnouncer](https://radix-ng.com/utils/live-announcer.md): Announces messages to screen readers through an `aria-live` region, without moving focus.
-- [Popper](https://radix-ng.com/utils/popper.md): Positions floating content relative to an anchor.
-- [Portal](https://radix-ng.com/utils/portal.md): Renders its host element into a different part of the DOM (`document.body` by default).
-- [Presence](https://radix-ng.com/utils/presence.md): Presence
-- [Visually Hidden](https://radix-ng.com/utils/visually-hidden.md): Hides content visually while keeping it available to assistive technology.
+- [Composite](https://radix-ng.com/docs/utils/composite.md): Composite
+- [Direction Provider](https://radix-ng.com/docs/utils/direction-provider.md): Provides reading direction to descendant primitives through Angular DI.
+- [Dismissable Layer](https://radix-ng.com/docs/utils/dismissable-layer.md): Dismissable Layer
+- [Focus Scope](https://radix-ng.com/docs/utils/focus-scope.md): Manages focus within a component boundary with support for trapping and looping focus navigation.
+- [injectId](https://radix-ng.com/docs/utils/inject-id.md): Generates unique, SSR-stable element IDs — the Angular counterpart of React's `useId`.
+- [LiveAnnouncer](https://radix-ng.com/docs/utils/live-announcer.md): Announces messages to screen readers through an `aria-live` region, without moving focus.
+- [Popper](https://radix-ng.com/docs/utils/popper.md): Positions floating content relative to an anchor.
+- [Portal](https://radix-ng.com/docs/utils/portal.md): Renders its host element into a different part of the DOM (`document.body` by default).
+- [Presence](https://radix-ng.com/docs/utils/presence.md): Presence
+- [Visually Hidden](https://radix-ng.com/docs/utils/visually-hidden.md): Hides content visually while keeping it available to assistive technology.
 
 ## Guides
 
-- [Styling guide for demos](https://radix-ng.com/guides/styling.md): Styling guide for demos
+- [Animation](https://radix-ng.com/docs/guides/animation.md): A guide to animating Radix NG primitives with native CSS and Angular 21+.
+- [Composition](https://radix-ng.com/docs/guides/composition.md): A guide to composing Radix NG primitives with your own Angular components and markup.
+- [Customization](https://radix-ng.com/docs/guides/customization.md): A guide to customizing the behavior of Radix NG primitives.
+- [Dates and Times](https://radix-ng.com/docs/guides/dates.md): Dates and Times
+- [Forms](https://radix-ng.com/docs/guides/forms.md): Forms
+- [Forms migration after 1.0.10](https://radix-ng.com/docs/guides/forms-migration.md): Forms migration after 1.0.10
+- [Inject Context](https://radix-ng.com/docs/guides/inject-context.md): Inject Context
+- [Naming Conventions](https://radix-ng.com/docs/guides/naming-conventions.md): Naming Conventions
+- [Numbers and Currencies](https://radix-ng.com/docs/guides/numbers.md): Numbers and Currencies
+- [Performance Benchmarks](https://radix-ng.com/docs/guides/performance.md): Performance Benchmarks
+- [Server-Side Rendering & Hydration](https://radix-ng.com/docs/guides/ssr.md): Server-Side Rendering & Hydration
+- [Styling guide for demos](https://radix-ng.com/docs/guides/styling.md): Styling guide for demos
 
 ## Recipes
 
-- [Confirmation Dialog](https://radix-ng.com/recipes/confirmation-dialog.md): An imperative `confirm()` that returns a `Promise<boolean>`, built on the Alert Dialog primitive.
-- [Forms](https://radix-ng.com/recipes/forms.md): Build accessible, headless forms with Radix NG `Field` / `Form` and the form library of your choice.
-- [Notification Dropdown](https://radix-ng.com/recipes/notification-dropdown.md): A bell trigger opening a scrollable list of notifications with an unread badge.
-- [Signal Forms](https://radix-ng.com/recipes/signal-forms.md): Build accessible forms with Angular **Signal Forms** and the headless `Field` parts.
-- [Split Button](https://radix-ng.com/recipes/split-button.md): A primary action paired with a menu of related actions, joined as one control.
-- [TanStack Form](https://radix-ng.com/recipes/tanstack-form.md): Build accessible forms with **TanStack Form** and **Zod**, using the headless `Field` parts.
+- [Confirmation Dialog](https://radix-ng.com/docs/recipes/confirmation-dialog.md): An imperative `confirm()` that returns a `Promise<boolean>`, built on the Alert Dialog primitive.
+- [Forms](https://radix-ng.com/docs/recipes/forms.md): Build accessible, headless forms with Radix NG `Field` / `Form` and the form library of your choice.
+- [Notification Dropdown](https://radix-ng.com/docs/recipes/notification-dropdown.md): A bell trigger opening a scrollable list of notifications with an unread badge.
+- [Signal Forms](https://radix-ng.com/docs/recipes/signal-forms.md): Build accessible forms with Angular **Signal Forms** and the headless `Field` parts.
+- [Split Button](https://radix-ng.com/docs/recipes/split-button.md): A primary action paired with a menu of related actions, joined as one control.
+- [TanStack Form](https://radix-ng.com/docs/recipes/tanstack-form.md): Build accessible forms with **TanStack Form** and **Zod**, using the headless `Field` parts.

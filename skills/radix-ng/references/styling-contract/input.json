@@ -5,7 +5,53 @@
   "section": "components",
   "description": "A native text input with headless state attributes and Field integration.",
   "doc": "radix-ng-examples/references/components/input.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-input--docs",
-  "anatomy": "<div rdxFieldRoot>\n    <label rdxFieldLabel>Email</label>\n    <input rdxInput />\n    <p rdxFieldDescription>Used for account notifications.</p>\n    <p rdxFieldError>Enter a valid email address.</p>\n</div>",
-  "dataAttributes": []
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-input--docs",
+  "anatomy": "<div rdxFieldRoot>\n  <label rdxFieldLabel>Email</label>\n  <input rdxInput />\n  <p rdxFieldDescription>Used for account notifications.</p>\n  <p rdxFieldError>Enter a valid email address.</p>\n</div>",
+  "dataAttributes": [
+    {
+      "attribute": "data-invalid",
+      "parts": "RdxInputDirective",
+      "values": "Displayed validation is invalid."
+    },
+    {
+      "attribute": "data-valid",
+      "parts": "RdxInputDirective",
+      "values": "Displayed validation is valid."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "RdxInputDirective",
+      "values": "The input or its Field is disabled."
+    },
+    {
+      "attribute": "data-required",
+      "parts": "RdxInputDirective",
+      "values": "The input or its Field is required."
+    },
+    {
+      "attribute": "data-readonly",
+      "parts": "RdxInputDirective",
+      "values": "The input is read-only."
+    },
+    {
+      "attribute": "data-filled",
+      "parts": "RdxInputDirective",
+      "values": "The input contains a value."
+    },
+    {
+      "attribute": "data-focused",
+      "parts": "RdxInputDirective",
+      "values": "The input is focused."
+    },
+    {
+      "attribute": "data-touched",
+      "parts": "RdxInputDirective",
+      "values": "The input has been touched."
+    },
+    {
+      "attribute": "data-dirty",
+      "parts": "RdxInputDirective",
+      "values": "The value has changed from its initial value."
+    }
+  ]
 }

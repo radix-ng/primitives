@@ -21,12 +21,12 @@ A native scroll container with a custom, cross-browser scrollbar.
 
 ```typescript
 import {
-    RdxScrollAreaRoot,
-    RdxScrollAreaViewport,
-    RdxScrollAreaContent,
-    RdxScrollAreaScrollbar,
-    RdxScrollAreaThumb,
-    RdxScrollAreaCorner
+  RdxScrollAreaRoot,
+  RdxScrollAreaViewport,
+  RdxScrollAreaContent,
+  RdxScrollAreaScrollbar,
+  RdxScrollAreaThumb,
+  RdxScrollAreaCorner
 } from '@radix-ng/primitives/scroll-area';
 ```
 
@@ -44,21 +44,21 @@ both scrollbars are present.
 
 ```html
 <div rdxScrollAreaRoot>
-    <div rdxScrollAreaViewport>
-        <div rdxScrollAreaContent>
-            <!-- scrollable content -->
-        </div>
+  <div rdxScrollAreaViewport>
+    <div rdxScrollAreaContent>
+      <!-- scrollable content -->
     </div>
+  </div>
 
-    <div rdxScrollAreaScrollbar orientation="vertical">
-        <div rdxScrollAreaThumb></div>
-    </div>
+  <div rdxScrollAreaScrollbar orientation="vertical">
+    <div rdxScrollAreaThumb></div>
+  </div>
 
-    <div rdxScrollAreaScrollbar orientation="horizontal">
-        <div rdxScrollAreaThumb></div>
-    </div>
+  <div rdxScrollAreaScrollbar orientation="horizontal">
+    <div rdxScrollAreaThumb></div>
+  </div>
 
-    <div rdxScrollAreaCorner></div>
+  <div rdxScrollAreaCorner></div>
 </div>
 ```
 

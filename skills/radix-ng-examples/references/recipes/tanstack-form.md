@@ -7,7 +7,7 @@ create a form with `injectForm`, validate it with a **Zod** schema through TanSt
 support, handle errors, and keep everything accessible — the headless `Field` markup is identical to the
 Signal Forms recipe, only the engine differs.
 
-> **Angular-first note:** [Signal Forms](?path=/docs/recipes-forms-signal-forms--docs) is the recommended
+> **Angular-first note:** [Signal Forms](signal-forms.md) is the recommended
 > path — its `rdxSignalField` adapter reports field state into `Field` automatically, so you write no
 > per-field `[invalid]`/`[touched]`. TanStack exposes a field `api` rather than a `ControlValueAccessor`,
 > so this recipe stays a **manual integration**: each field forwards its `[invalid]`/`[touched]` and the

@@ -1,13 +1,13 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as Stories from './stepper.stories';
-import {RdxStepperRootDirective} from "../src/stepper-root.directive";
-import {RdxStepperItemDirective} from "../src/stepper-item.directive";
+import { RdxStepperRootDirective } from '../src/stepper-root.directive';
+import { RdxStepperItemDirective } from '../src/stepper-item.directive';
 
 <Meta title="Primitives/Stepper" />
 
 # Stepper
 
-####  A set of steps that are used to indicate progress through a multi-step process.
+#### A set of steps that are used to indicate progress through a multi-step process.
 
 <Canvas sourceState="hidden" of={Stories.Default} />
 
@@ -23,16 +23,16 @@ import {RdxStepperItemDirective} from "../src/stepper-item.directive";
 Import all parts and piece them together.
 
 ```html
-<div rdxStepperRoot >
-    <div rdxStepperItem >
-        <div rdxStepperSeparator></div>
-        <button rdxStepperTrigger>
-            <div rdxStepperIndicator></div>
-        </button>
+<div rdxStepperRoot>
+  <div rdxStepperItem>
+    <div rdxStepperSeparator></div>
+    <button rdxStepperTrigger>
+      <div rdxStepperIndicator></div>
+    </button>
 
-        <h4 rdxStepperTitle></h4>
-        <p rdxStepperDescription></p>
-    </div>
+    <h4 rdxStepperTitle></h4>
+    <p rdxStepperDescription></p>
+  </div>
 </div>
 ```
 
@@ -42,9 +42,7 @@ Import all parts and piece them together.
 activation before the current step changes.
 
 ```html
-<div [value]="step()" (onValueChange)="setStep($event)" rdxStepperRoot>
-    ...
-</div>
+<div [value]="step()" (onValueChange)="setStep($event)" rdxStepperRoot>...</div>
 ```
 
 ```ts
@@ -74,6 +72,15 @@ The step item component.
 
 <ArgTypes of={RdxStepperItemDirective} />
 
+## Data attributes
+
+| Attribute          | Parts                          | Present when / value                                                      |
+| ------------------ | ------------------------------ | ------------------------------------------------------------------------- |
+| `data-linear`      | Root                           | Linear navigation is enabled.                                             |
+| `data-orientation` | Root, Item, Trigger, Separator | `"horizontal"` / `"vertical"`.                                            |
+| `data-state`       | Item, Trigger, Separator       | `"active"` / `"inactive"` / `"completed"`.                                |
+| `data-disabled`    | Item, Trigger                  | The step is disabled or cannot be focused in the current linear sequence. |
+
 ## Examples
 
 ### Vertical
@@ -88,8 +95,8 @@ The step item component.
 
 ### Keyboard Interactions
 
-| Key | Description |
-| --- | ----------- |
-| `Enter` / `Space` | Activates the focused step trigger, setting it as the current step. |
-| `ArrowRight` / `ArrowDown` | Moves focus to the next step trigger (respects orientation). |
-| `ArrowLeft` / `ArrowUp` | Moves focus to the previous step trigger (respects orientation). |
+| Key                        | Description                                                         |
+| -------------------------- | ------------------------------------------------------------------- |
+| `Enter` / `Space`          | Activates the focused step trigger, setting it as the current step. |
+| `ArrowRight` / `ArrowDown` | Moves focus to the next step trigger (respects orientation).        |
+| `ArrowLeft` / `ArrowUp`    | Moves focus to the previous step trigger (respects orientation).    |

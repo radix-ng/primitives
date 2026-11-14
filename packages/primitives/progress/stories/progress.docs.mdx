@@ -72,11 +72,11 @@ The same primitive state can drive an SVG circular progress indicator.
 The three status attributes below are shared by every part; the per-part tables list the additional
 attributes each one exposes.
 
-| Attribute            | Present when                                  |
-| -------------------- | --------------------------------------------- |
-| `data-complete`      | The value has reached `max`.                  |
-| `data-progressing`   | The value is between `min` and `max`.         |
-| `data-indeterminate` | The value is `null` (unknown).                |
+| Attribute            | Parts                                | Present when                          |
+| -------------------- | ------------------------------------ | ------------------------------------- |
+| `data-complete`      | Root, Label, Value, Track, Indicator | The value has reached `max`.          |
+| `data-progressing`   | Root, Label, Value, Track, Indicator | The value is between `min` and `max`. |
+| `data-indeterminate` | Root, Label, Value, Track, Indicator | The value is `null` (unknown).        |
 
 ### Root
 
@@ -87,11 +87,11 @@ container element (typically a `<div>`).
 
 **Data attributes**
 
-| Attribute   | Value                                          |
-| ----------- | ---------------------------------------------- |
-| `data-value`| The current value (absent when indeterminate). |
-| `data-min`  | The minimum value.                             |
-| `data-max`  | The maximum value.                             |
+| Attribute    | Value                                          |
+| ------------ | ---------------------------------------------- |
+| `data-value` | The current value (absent when indeterminate). |
+| `data-min`   | The minimum value.                             |
+| `data-max`   | The maximum value.                             |
 
 ### Label
 
@@ -105,11 +105,11 @@ is already announced via the root's `aria-valuenow` / `aria-valuetext`.
 
 **Data attributes**
 
-| Attribute   | Value                                          |
-| ----------- | ---------------------------------------------- |
-| `data-value`| The current value (absent when indeterminate). |
-| `data-min`  | The minimum value.                             |
-| `data-max`  | The maximum value.                             |
+| Attribute    | Value                                          |
+| ------------ | ---------------------------------------------- |
+| `data-value` | The current value (absent when indeterminate). |
+| `data-min`   | The minimum value.                             |
+| `data-max`   | The maximum value.                             |
 
 ### Track
 
@@ -117,11 +117,11 @@ is already announced via the root's `aria-valuenow` / `aria-valuetext`.
 
 **Data attributes**
 
-| Attribute   | Value                                          |
-| ----------- | ---------------------------------------------- |
-| `data-value`| The current value (absent when indeterminate). |
-| `data-min`  | The minimum value.                             |
-| `data-max`  | The maximum value.                             |
+| Attribute    | Value                                          |
+| ------------ | ---------------------------------------------- |
+| `data-value` | The current value (absent when indeterminate). |
+| `data-min`   | The minimum value.                             |
+| `data-max`   | The maximum value.                             |
 
 ### Indicator
 
@@ -129,12 +129,12 @@ is already announced via the root's `aria-valuenow` / `aria-valuetext`.
 
 **Data attributes**
 
-| Attribute     | Value                                                       |
-| ------------- | ----------------------------------------------------------- |
-| `data-value`  | The current value (absent when indeterminate).              |
-| `data-min`    | The minimum value.                                          |
-| `data-max`    | The maximum value.                                          |
-| `data-percent`| The completion percentage (absent when indeterminate).      |
+| Attribute      | Value                                                  |
+| -------------- | ------------------------------------------------------ |
+| `data-value`   | The current value (absent when indeterminate).         |
+| `data-min`     | The minimum value.                                     |
+| `data-max`     | The maximum value.                                     |
+| `data-percent` | The completion percentage (absent when indeterminate). |
 
 ## Accessibility
 

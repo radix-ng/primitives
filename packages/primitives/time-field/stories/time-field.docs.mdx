@@ -156,3 +156,14 @@ granularity, and validation state. Exposes `data-disabled`, `data-readonly`, and
 `part`; everything else is read from the root context.
 
 <ArgTypes of={RdxTimeFieldInputDirective} />
+
+## Data attributes
+
+| Attribute       | Parts       | Present when                 |
+| --------------- | ----------- | ---------------------------- |
+| `data-disabled` | Root, Input | The field is disabled.       |
+| `data-readonly` | Root        | The field is read-only.      |
+| `data-invalid`  | Root, Input | The field is invalid.        |
+| `data-valid`    | Root        | The field is valid.          |
+| `data-touched`  | Root        | The field has been touched.  |
+| `data-dirty`    | Root        | The field value has changed. |

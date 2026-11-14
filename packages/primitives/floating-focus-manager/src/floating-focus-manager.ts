@@ -567,7 +567,7 @@ export class RdxFloatingFocusManager {
             let attempt = 0;
             let frame: number;
             const applyInitialFocus = () => {
-                if (!this.effectiveEnabled() || !this.isFloatingOpen()) {
+                if (!this.effectiveEnabled() || !this.isFloatingOpen() || this.scopePaused()) {
                     return;
                 }
 
@@ -702,8 +702,8 @@ export class RdxFloatingFocusManager {
                 ),
             target: (previous, moved, visible) => {
                 const content = this.rootContext?.floatingElement ?? this.host;
-                if (this.effectiveRestoreFocus() === 'popup') return content;
                 if (!moved && visible) return undefined;
+                if (this.effectiveRestoreFocus() === 'popup') return content;
                 return composedContains(content, previous) && visible
                     ? previous
                     : (getTabbableCandidates(content).at(-1) ?? content);

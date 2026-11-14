@@ -5,7 +5,18 @@
   "section": "components",
   "description": "A two-state button that can be either on or off.",
   "doc": "radix-ng-examples/references/components/toggle.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-toggle--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-toggle--docs",
   "anatomy": "<button rdxToggle aria-label=\"Toggle italic\">\n    <icon />\n</button>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-pressed",
+      "parts": "Toggle",
+      "values": "Present when the toggle is on."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Toggle",
+      "values": "Present when disabled."
+    }
+  ]
 }

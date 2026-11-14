@@ -1,0 +1,146 @@
+# State & data attributes
+
+#### Where a primitive's state lives, and how you turn it into a look.
+
+This is the most important idea in the whole library. Once it clicks, every primitive feels the
+same: you stop asking "what classes does this add?" and start asking "what state does it publish,
+and how do I want that state to look?".
+
+## The problem with classes
+
+A traditional component library decides your markup _and_ your class names for you:
+
+```html
+<!-- A styled library — the look is baked in, the state is hidden inside -->
+<div class="switch switch--on switch--lg">...</div>
+```
+
+To restyle it you override its CSS, fight its specificity, and hope the internal class names never
+change. The state (`--on`) is something the library _did to your DOM_, not something you can cleanly
+read or react to.
+
+## The headless approach: state as data
+
+A Radix NG primitive never adds visual classes. Instead it writes its current state onto the
+element as `data-*` attributes, and leaves the styling entirely to you:
+
+```html
+<!-- Radix NG — no styling opinion, every piece of state is readable in the DOM -->
+<button rdxSwitchRoot role="switch" aria-checked="true" data-checked>
+  <span rdxSwitchThumb data-checked></span>
+</button>
+```
+
+`data-checked`, `data-disabled`, `data-active`, `data-orientation` — these aren't styling hooks the
+team happened to add. They _are_ the public API for appearance. The rule across the library:
+
+> **Behavior in, `data-*` out.** The primitive owns the state; you own how the state looks.
+
+Toggle the switch below, then inspect it in devtools — watch `data-checked` and `data-unchecked`
+swap on the root and the thumb every time you click:
+
+```typescript
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RdxLabelDirective } from '@radix-ng/primitives/label';
+import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'switch-default-example',
+    imports: [RdxLabelDirective, RdxSwitchRoot, RdxSwitchThumb],
+    template: `
+        <label class="text-foreground flex items-center gap-3 text-sm font-medium" rdxLabel htmlFor="airplane-mode">
+            Airplane mode
+            <button
+                class="bg-muted data-[checked]:bg-primary focus-visible:ring-ring relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-0 p-0 shadow-sm transition-colors outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+                id="airplane-mode"
+                rdxSwitchRoot
+                defaultChecked
+            >
+                <span
+                    class="bg-background pointer-events-none block size-5 translate-x-0.5 rounded-full shadow-sm transition-transform data-[checked]:translate-x-[22px]"
+                    rdxSwitchThumb
+                ></span>
+            </button>
+        </label>
+    `
+})
+export class SwitchDefaultExample {}
+```
+
+## State is a _present-or-absent_ attribute, not a value
+
+Notice there is no `data-state="checked"`. Following [Base UI](https://base-ui.com/), many parts
+express state as **paired presence attributes**: the relevant one is present (with an empty
+value), the other is absent.
+
+```ts
+// From the Switch root — this is the whole pattern
+host: {
+  '[attr.data-checked]': 'checkedState() ? "" : undefined',
+  '[attr.data-unchecked]': 'checkedState() ? undefined : ""',
+  '[attr.data-disabled]': 'isDisabled() ? "" : undefined'
+}
+```
+
+`undefined` removes the attribute entirely, so `[data-checked]` matches _only_ when the switch is
+actually on. That's why you always write the bare selector `[data-checked]` and never
+`[data-checked='true']`. Read the exact part contract: Collapsible Panel publishes `data-open` / `data-closed`, Tabs Tab
+publishes `data-active`, and Accordion Trigger uses `data-panel-open`. Some parts, including Toast
+Root and Stepper Item, retain documented `data-state` values. Orientation and placement attributes
+also carry values rather than using presence semantics.
+
+## Styling the state
+
+Because state is just attributes, you style it with plain CSS attribute selectors. No framework,
+no special API:
+
+```css
+/* Base look — applies in every state */
+[rdxSwitchRoot] {
+  border-radius: 9999px;
+  transition: background 150ms;
+}
+
+/* React to the state the primitive published */
+[rdxSwitchRoot][data-checked] {
+  background: var(--accent);
+}
+
+/* Disabled is exposed the same way — as a bare attribute */
+[rdxSwitchRoot][data-disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+```
+
+The exact same selectors work in Tailwind via arbitrary variants, so you never leave your utility
+workflow:
+
+```html
+<button class="data-[checked]:bg-accent rounded-full transition-colors data-[disabled]:opacity-50" rdxSwitchRoot>
+  <span class="transition-transform data-[checked]:translate-x-4" rdxSwitchThumb></span>
+</button>
+```
+
+## The payoff: one primitive, many looks
+
+Nothing about the primitive changes between a quiet settings toggle and a bold marketing switch —
+only your CSS does. The same `<button rdxSwitchRoot>` works in both, because the primitive published
+the same `data-checked` in each case and your stylesheet decided the rest.
+
+This is also why the per-primitive pages list their data attributes prominently: that list is the
+contract you style against.
+
+## Try it yourself
+
+1. Open the demo above and add a CSS rule for `[data-unchecked]` — give the off state a muted
+   background.
+2. Add `disabled` to the switch in your own copy and confirm `data-disabled` appears, then style it.
+3. Animate the thumb's `translate` on `[data-checked]` — see **Guides/Animation**, which is built
+   entirely on the `data-*` attributes you just learned to read.
+
+## Next
+
+→ **Controlled & uncontrolled** — the switch above managed its own on/off state. Next: why that
+works without any wiring, and how to take control when your app needs to.

@@ -3,7 +3,7 @@
 #### An imperative `confirm()` that returns a `Promise<boolean>`, built on the Alert Dialog primitive.
 
 Rather than declaring an alert dialog at every call site, this recipe wraps the
-[Alert Dialog](?path=/docs/primitives-alert-dialog--docs) primitive in a small service. You call
+[Alert Dialog](../components/alert-dialog.md) primitive in a small service. You call
 `confirm({ title, description })` from anywhere and `await` the result — the service opens one shared,
 presence-gated dialog and resolves `true` on confirm or `false` on cancel (including Escape).
 
@@ -159,10 +159,10 @@ export class ConfirmationDialogExample {
 
 ## Composed from
 
-- **[Alert Dialog](?path=/docs/primitives-alert-dialog--docs)** (`rdxAlertDialogRoot` / `…Portal` /
+- **[Alert Dialog](../components/alert-dialog.md)** (`rdxAlertDialogRoot` / `…Portal` /
   `…Backdrop` / `…Popup` / `…Title` / `…Description`) — the modal dialog, driven by `[open]` and
   `(openChange)` instead of a trigger.
-- **[Button](?path=/docs/primitives-button--docs)** (`rdxButton`) — the call-site action that awaits the
+- **[Button](../components/button.md)** (`rdxButton`) — the call-site action that awaits the
   result.
 
 ## Anatomy

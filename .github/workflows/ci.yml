@@ -99,6 +99,7 @@ jobs:
       - name: Verify skills bundle is up to date
         run: |
           node --test tools/scripts/skills/*.test.mjs
+          pnpm exec ngc -p apps/radix-storybook/tsconfig.agents.json
           pnpm skills:build
           if [ -n "$(git status --porcelain skills)" ]; then
             echo "::error::Skills bundle is out of date. Run 'pnpm skills:build' and commit the result."

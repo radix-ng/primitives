@@ -5,7 +5,78 @@
   "section": "components",
   "description": "A set of checkable buttons—known as radio buttons—where no more than one of the buttons can be checked at a time.",
   "doc": "radix-ng-examples/references/components/radio.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-radio--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-radio--docs",
   "anatomy": "<div rdxRadioRoot name=\"density\">\n  <label>\n    <span rdxRadioItem value=\"default\">\n      <span rdxRadioIndicator></span>\n      <input rdxRadioItemInput />\n    </span>\n    Default\n  </label>\n</div>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-disabled",
+      "parts": "RadioGroup",
+      "values": "the group is disabled."
+    },
+    {
+      "attribute": "data-checked",
+      "parts": "RadioGroupItem",
+      "values": "the radio is selected."
+    },
+    {
+      "attribute": "data-unchecked",
+      "parts": "RadioGroupItem",
+      "values": "the radio is not selected."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "RadioGroupItem",
+      "values": "the radio or its group is disabled."
+    },
+    {
+      "attribute": "data-readonly",
+      "parts": "RadioGroupItem",
+      "values": "the radio or its group is read-only."
+    },
+    {
+      "attribute": "data-required",
+      "parts": "RadioGroupItem",
+      "values": "the radio or its group is required."
+    },
+    {
+      "attribute": "data-composite-item-active",
+      "parts": "RadioGroupItem",
+      "values": "the radio is the active (selected) composite item."
+    },
+    {
+      "attribute": "data-checked",
+      "parts": "RadioIndicator",
+      "values": "the radio is selected."
+    },
+    {
+      "attribute": "data-unchecked",
+      "parts": "RadioIndicator",
+      "values": "the radio is not selected."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "RadioIndicator",
+      "values": "the radio or its group is disabled."
+    },
+    {
+      "attribute": "data-readonly",
+      "parts": "RadioIndicator",
+      "values": "the radio or its group is read-only."
+    },
+    {
+      "attribute": "data-required",
+      "parts": "RadioIndicator",
+      "values": "the radio or its group is required."
+    },
+    {
+      "attribute": "data-starting-style",
+      "parts": "RadioIndicator",
+      "values": "the indicator just mounted (use to animate it in)."
+    },
+    {
+      "attribute": "data-ending-style",
+      "parts": "RadioIndicator",
+      "values": "the indicator is unchecked (use to animate it out)."
+    }
+  ]
 }

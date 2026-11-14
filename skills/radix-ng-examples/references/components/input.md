@@ -25,10 +25,10 @@ Use `rdxInput` directly on a native input. Wrap it in Field when you need label,
 
 ```html
 <div rdxFieldRoot>
-    <label rdxFieldLabel>Email</label>
-    <input rdxInput />
-    <p rdxFieldDescription>Used for account notifications.</p>
-    <p rdxFieldError>Enter a valid email address.</p>
+  <label rdxFieldLabel>Email</label>
+  <input rdxInput />
+  <p rdxFieldDescription>Used for account notifications.</p>
+  <p rdxFieldError>Enter a valid email address.</p>
 </div>
 ```
 

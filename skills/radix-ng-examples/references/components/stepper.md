@@ -18,16 +18,16 @@ A set of steps that are used to indicate progress through a multi-step process.
 Import all parts and piece them together.
 
 ```html
-<div rdxStepperRoot >
-    <div rdxStepperItem >
-        <div rdxStepperSeparator></div>
-        <button rdxStepperTrigger>
-            <div rdxStepperIndicator></div>
-        </button>
+<div rdxStepperRoot>
+  <div rdxStepperItem>
+    <div rdxStepperSeparator></div>
+    <button rdxStepperTrigger>
+      <div rdxStepperIndicator></div>
+    </button>
 
-        <h4 rdxStepperTitle></h4>
-        <p rdxStepperDescription></p>
-    </div>
+    <h4 rdxStepperTitle></h4>
+    <p rdxStepperDescription></p>
+  </div>
 </div>
 ```
 

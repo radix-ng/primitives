@@ -28,7 +28,8 @@ async function openConsumer(consumer: Consumer, anchor: Locator) {
 }
 
 for (const consumer of consumers.filter((entry) => entry.action !== 'toast')) {
-    test(`${consumer.name}: a secondary outside press ${consumer.name === 'navigation-menu' ? 'waits for an intentional click' : 'closes the popup'}`, async ({
+    const intentional = consumer.name === 'navigation-menu' || consumer.name === 'popover';
+    test(`${consumer.name}: a secondary outside press ${intentional ? 'waits for an intentional click' : 'closes the popup'}`, async ({
         page
     }) => {
         await page.goto(`/iframe.html?id=primitives-${consumer.name}--default&viewMode=story`);
@@ -37,7 +38,7 @@ for (const consumer of consumers.filter((entry) => entry.action !== 'toast')) {
         await expect(popup).toBeVisible();
         await expect(page.locator(`[rdx${consumer.part}Positioner]`).first()).toHaveCSS('visibility', 'visible');
         await page.mouse.click(5, 5, { button: 'right' });
-        if (consumer.name === 'navigation-menu') {
+        if (intentional) {
             await expect(popup).toBeVisible();
         } else await expect(popup).toBeHidden();
     });

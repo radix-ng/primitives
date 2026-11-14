@@ -5,7 +5,7 @@
   "section": "utils",
   "description": "Renders its host element into a different part of the DOM (`document.body` by default).",
   "doc": "radix-ng-examples/references/utils/portal.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-portal--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-portal--docs",
   "anatomy": "<div rdxPortal>This content is moved to the document body.</div>",
   "dataAttributes": []
 }

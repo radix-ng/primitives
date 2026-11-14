@@ -5,7 +5,88 @@
   "section": "components",
   "description": "An input where the user selects a value, or a range of values, from within a given range.",
   "doc": "radix-ng-examples/references/components/slider.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-slider--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-slider--docs",
   "anatomy": "<div rdxSliderRoot>\n    <output rdxSliderValue></output>\n    <div rdxSliderControl>\n        <div rdxSliderTrack>\n            <div rdxSliderIndicator></div>\n            <div rdxSliderThumb>\n                <input rdxSliderThumbInput />\n            </div>\n        </div>\n    </div>\n</div>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-orientation",
+      "parts": "Root",
+      "values": "\"horizontal\" | \"vertical\""
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Root",
+      "values": "Present when disabled."
+    },
+    {
+      "attribute": "data-dragging",
+      "parts": "Root",
+      "values": "Present while a thumb is dragged."
+    },
+    {
+      "attribute": "data-orientation",
+      "parts": "Control",
+      "values": "\"horizontal\" | \"vertical\""
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Control",
+      "values": "Present when disabled."
+    },
+    {
+      "attribute": "data-dragging",
+      "parts": "Control",
+      "values": "Present while a thumb is dragged."
+    },
+    {
+      "attribute": "data-orientation",
+      "parts": "Track",
+      "values": "\"horizontal\" | \"vertical\""
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Track",
+      "values": "Present when disabled."
+    },
+    {
+      "attribute": "data-dragging",
+      "parts": "Track",
+      "values": "Present while a thumb is dragged."
+    },
+    {
+      "attribute": "data-orientation",
+      "parts": "Indicator",
+      "values": "\"horizontal\" | \"vertical\""
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Indicator",
+      "values": "Present when disabled."
+    },
+    {
+      "attribute": "data-dragging",
+      "parts": "Indicator",
+      "values": "Present while a thumb is dragged."
+    },
+    {
+      "attribute": "data-index",
+      "parts": "Thumb",
+      "values": "Numeric index of the thumb."
+    },
+    {
+      "attribute": "data-orientation",
+      "parts": "Thumb",
+      "values": "\"horizontal\" | \"vertical\""
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Thumb",
+      "values": "Present when the thumb is disabled."
+    },
+    {
+      "attribute": "data-dragging",
+      "parts": "Thumb",
+      "values": "Present while a thumb is dragged."
+    }
+  ]
 }

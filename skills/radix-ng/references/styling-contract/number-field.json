@@ -5,7 +5,33 @@
   "section": "components",
   "description": "A numeric input with stepper buttons, drag-to-scrub, locale-aware formatting and keyboard control.",
   "doc": "radix-ng-examples/references/components/number-field.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-number-field--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-number-field--docs",
   "anatomy": "<div rdxNumberFieldRoot>\n  <span rdxNumberFieldScrubArea>\n    <label>Label</label>\n    <span rdxNumberFieldScrubAreaCursor></span>\n  </span>\n  <div rdxNumberFieldGroup>\n    <button rdxNumberFieldDecrement></button>\n    <input rdxNumberFieldInput />\n    <button rdxNumberFieldIncrement></button>\n  </div>\n</div>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-disabled",
+      "parts": "Root, Group, Input, Increment, Decrement, Scrub Area",
+      "values": "The field or button is disabled."
+    },
+    {
+      "attribute": "data-readonly",
+      "parts": "Root, Group, Input, Increment, Decrement, Scrub Area",
+      "values": "The field is read-only."
+    },
+    {
+      "attribute": "data-required",
+      "parts": "Root, Group, Input",
+      "values": "The field is required."
+    },
+    {
+      "attribute": "data-scrubbing",
+      "parts": "Root, Group, Scrub Area",
+      "values": "A scrub gesture is in progress."
+    },
+    {
+      "attribute": "data-pressed",
+      "parts": "Increment, Decrement",
+      "values": "The stepper button is held."
+    }
+  ]
 }

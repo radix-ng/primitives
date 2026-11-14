@@ -5,7 +5,98 @@
   "section": "components",
   "description": "Displays contextual information when a trigger is hovered or focused.",
   "doc": "radix-ng-examples/references/components/tooltip.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-tooltip--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-tooltip--docs",
   "anatomy": "<ng-container rdxTooltip>\n    <button rdxTooltipTrigger>+</button>\n\n    <div *rdxTooltipPortal sideOffset=\"8\" rdxTooltipPositioner>\n        <div rdxTooltipPopup>Add to library</div>\n        <span rdxTooltipArrow></span>\n    </div>\n</ng-container>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-popup-open",
+      "parts": "Trigger",
+      "values": "This trigger's tooltip is open."
+    },
+    {
+      "attribute": "data-trigger-disabled",
+      "parts": "Trigger",
+      "values": "The trigger is disabled."
+    },
+    {
+      "attribute": "data-open",
+      "parts": "Positioner",
+      "values": "The tooltip is open."
+    },
+    {
+      "attribute": "data-closed",
+      "parts": "Positioner",
+      "values": "The tooltip is closed."
+    },
+    {
+      "attribute": "data-side",
+      "parts": "Positioner",
+      "values": "Resolved side after collision handling — top / right / bottom / left."
+    },
+    {
+      "attribute": "data-align",
+      "parts": "Positioner",
+      "values": "Resolved alignment — start / center / end."
+    },
+    {
+      "attribute": "data-anchor-hidden",
+      "parts": "Positioner",
+      "values": "The anchor is clipped/off-screen and the popup is hidden."
+    },
+    {
+      "attribute": "data-open",
+      "parts": "Popup",
+      "values": "The tooltip is open."
+    },
+    {
+      "attribute": "data-closed",
+      "parts": "Popup",
+      "values": "The tooltip is closed."
+    },
+    {
+      "attribute": "data-side",
+      "parts": "Popup",
+      "values": "Resolved side — top / right / bottom / left."
+    },
+    {
+      "attribute": "data-align",
+      "parts": "Popup",
+      "values": "Resolved alignment — start / center / end."
+    },
+    {
+      "attribute": "data-instant",
+      "parts": "Popup",
+      "values": "The open/close was instant — delay / dismiss / focus / tracking-cursor."
+    },
+    {
+      "attribute": "data-open",
+      "parts": "Arrow",
+      "values": "The tooltip is open."
+    },
+    {
+      "attribute": "data-closed",
+      "parts": "Arrow",
+      "values": "The tooltip is closed."
+    },
+    {
+      "attribute": "data-side",
+      "parts": "Arrow",
+      "values": "Resolved side — top / right / bottom / left."
+    },
+    {
+      "attribute": "data-align",
+      "parts": "Arrow",
+      "values": "Resolved alignment — start / center / end."
+    },
+    {
+      "attribute": "data-instant",
+      "parts": "Arrow",
+      "values": "The open/close was instant — delay / dismiss / focus / tracking-cursor."
+    },
+    {
+      "attribute": "data-uncentered",
+      "parts": "Arrow",
+      "values": "The arrow was shifted from center to stay within the popup."
+    }
+  ]
 }

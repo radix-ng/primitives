@@ -5,7 +5,7 @@
   "section": "components",
   "description": "Displays content within a desired ratio.",
   "doc": "radix-ng-examples/references/components/aspect-ratio.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-aspect-ratio--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-aspect-ratio--docs",
   "anatomy": "",
   "dataAttributes": []
 }

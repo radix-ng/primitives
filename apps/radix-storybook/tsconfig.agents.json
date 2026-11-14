@@ -1,0 +1,16 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "noEmit": true,
+        "skipLibCheck": true,
+        "types": ["node"]
+    },
+    "files": [
+        "../../packages/primitives/field/stories/field-reactive-forms.ts",
+        "../../packages/primitives/select/stories/select-focus-management.ts",
+        "../../packages/primitives/menu/stories/menu-open-dialog.ts",
+        "../../packages/primitives/tabs/stories/tabs-projected-wrapper.ts"
+    ],
+    "include": [],
+    "references": []
+}

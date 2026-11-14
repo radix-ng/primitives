@@ -5,7 +5,103 @@
   "section": "components",
   "description": "A headless dropdown menu anchored to a trigger button.",
   "doc": "radix-ng-examples/references/components/menu.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-menu--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-menu--docs",
   "anatomy": "<ng-container #root=\"rdxMenuRoot\" rdxMenuRoot>\n    <button rdxMenuTrigger>Open</button>\n\n    <ng-template rdxMenuPortal>\n        <!-- optional backdrop — a sibling root, before the positioner -->\n        <div rdxMenuBackdrop></div>\n\n        <div sideOffset=\"4\" rdxMenuPositioner>\n            <div rdxMenuPopup>\n                <span rdxMenuArrow></span>\n\n                <!-- regular item -->\n                <button rdxMenuItem>New Tab</button>\n\n                <!-- link item — does not close by default -->\n                <a rdxMenuLinkItem href=\"/settings\">Settings</a>\n\n                <div rdxMenuSeparator></div>\n\n                <!-- checkbox item — does not close the menu -->\n                <label rdxMenuCheckboxItem>\n                    <span rdxMenuCheckboxItemIndicator></span>\n                    Show Bookmarks\n                </label>\n\n                <!-- radio group — items do not close the menu by default -->\n                <div rdxMenuRadioGroup>\n                    <label value=\"grid\" rdxMenuRadioItem>\n                        <span rdxMenuRadioItemIndicator></span>\n                        Grid View\n                    </label>\n                    <label value=\"list\" rdxMenuRadioItem>\n                        <span rdxMenuRadioItemIndicator></span>\n                        List View\n                    </label>\n                </div>\n\n                <div rdxMenuSeparator></div>\n\n                <!-- group with a label -->\n                <div rdxMenuGroup>\n                    <span rdxMenuGroupLabel>Section</span>\n                    <button rdxMenuItem>Item</button>\n                </div>\n\n                <div rdxMenuSeparator></div>\n\n                <!-- submenu: wrap trigger + popup in a nested rdxMenuRoot -->\n                <ng-container #sub=\"rdxMenuRoot\" rdxMenuRoot>\n                    <button rdxMenuSubTrigger>More options ›</button>\n\n                    <div *rdxMenuPortal side=\"right\" align=\"start\" sideOffset=\"4\" rdxMenuPositioner>\n                        <div rdxMenuPopup>\n                            <button rdxMenuItem>Sub item A</button>\n                            <button rdxMenuItem>Sub item B</button>\n                        </div>\n                    </div>\n                </ng-container>\n            </div>\n        </div>\n    </ng-template>\n</ng-container>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-popup-open",
+      "parts": "RdxMenuTrigger",
+      "values": "The menu is open."
+    },
+    {
+      "attribute": "data-pressed",
+      "parts": "RdxMenuTrigger",
+      "values": "The trigger's menu is open."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "RdxMenuTrigger",
+      "values": "The trigger is disabled."
+    },
+    {
+      "attribute": "data-open",
+      "parts": "RdxMenuPopup",
+      "values": "The menu is open."
+    },
+    {
+      "attribute": "data-closed",
+      "parts": "RdxMenuPopup",
+      "values": "The menu is closed."
+    },
+    {
+      "attribute": "data-side",
+      "parts": "RdxMenuPopup",
+      "values": "Resolved side — top / right / bottom / left."
+    },
+    {
+      "attribute": "data-align",
+      "parts": "RdxMenuPopup",
+      "values": "Resolved alignment — start / center / end."
+    },
+    {
+      "attribute": "data-starting-style",
+      "parts": "RdxMenuPopup",
+      "values": "The enter transition is about to run."
+    },
+    {
+      "attribute": "data-ending-style",
+      "parts": "RdxMenuPopup",
+      "values": "The exit transition is running."
+    },
+    {
+      "attribute": "data-instant",
+      "parts": "RdxMenuPopup",
+      "values": "An open/close happened with no transition — click / dismiss / group / trigger-change."
+    },
+    {
+      "attribute": "data-checked",
+      "parts": "RdxMenuCheckboxItem",
+      "values": "The item is checked."
+    },
+    {
+      "attribute": "data-unchecked",
+      "parts": "RdxMenuCheckboxItem",
+      "values": "The item is unchecked."
+    },
+    {
+      "attribute": "data-indeterminate",
+      "parts": "RdxMenuCheckboxItem",
+      "values": "The item is indeterminate."
+    },
+    {
+      "attribute": "data-highlighted",
+      "parts": "RdxMenuCheckboxItem",
+      "values": "The item is highlighted."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "RdxMenuCheckboxItem",
+      "values": "The item is disabled."
+    },
+    {
+      "attribute": "data-checked",
+      "parts": "RdxMenuRadioItem",
+      "values": "The item is selected."
+    },
+    {
+      "attribute": "data-unchecked",
+      "parts": "RdxMenuRadioItem",
+      "values": "The item is not selected."
+    },
+    {
+      "attribute": "data-highlighted",
+      "parts": "RdxMenuRadioItem",
+      "values": "The item is highlighted."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "RdxMenuRadioItem",
+      "values": "The item is disabled."
+    }
+  ]
 }

@@ -46,7 +46,11 @@ export const initialFocusScenarios = initialFocusCases.map((name) => ({
             return;
         }
         await d.page.keyboard.press('Escape');
-        if (settings.nested) await d.page.keyboard.press('Escape');
+        if (settings.nested) {
+            // Start the next gesture in the parent, after child focus-scope deactivation.
+            await expect(d.item('more')).toBeFocused();
+            await d.page.keyboard.press('Escape');
+        }
         await d.closed();
         await d.checkpoint('boundary closed', { open: false });
         if (settings.retained) {

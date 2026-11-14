@@ -20,15 +20,16 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { generateApiContract } from './api-contract.mjs';
 import { getStorybookDocs } from './storybook-docs.mjs';
+import { parseDataAttributes } from './styling-contract.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const workspaceRoot = path.resolve(__dirname, '../../..');
 const primitivesRoot = path.join(workspaceRoot, 'packages/primitives');
 const skillsRoot = path.join(workspaceRoot, 'skills');
 
-// Storybook is served on the main domain and also serves the LLM docs bundle as static files
+// Storybook is served under /docs and also serves the LLM docs bundle as static files
 // (see apps/radix-storybook/.storybook/main.ts staticDirs): /llms.txt, /llms-full.txt, /<section>/<slug>.md.
-const SITE_URL = 'https://radix-ng.com';
+const SITE_URL = 'https://radix-ng.com/docs';
 
 // Version stamp: lets a consumer's agent detect that the docs bundle and the installed
 // @radix-ng/primitives version have drifted apart.
@@ -76,30 +77,6 @@ const sectionBody = (content, heading) => {
     const rest = content.slice(start.index + start[0].length);
     const next = /^##\s+/m.exec(rest);
     return (next ? rest.slice(0, next.index) : rest).trim();
-};
-
-const parseDataAttributes = (content) => {
-    const body = sectionBody(content, 'Data attributes');
-    if (!body) return [];
-
-    const rows = body
-        .split('\n')
-        .map((line) => line.trim())
-        .filter((line) => line.startsWith('|') && !/^\|[\s:|-]+\|?$/.test(line));
-
-    const cells = (line) =>
-        line
-            .replace(/^\||\|$/g, '')
-            .split(/(?<!\\)\|/) // split on table pipes only, keep escaped \| inside a cell
-            .map((cell) => cell.trim().replace(/\\\|/g, '|').replace(/`/g, ''));
-
-    return rows
-        .slice(1) // drop the header row
-        .map((line) => {
-            const [attribute, parts, values] = cells(line);
-            return attribute ? { attribute, parts: parts ?? '', values: values ?? '' } : null;
-        })
-        .filter(Boolean);
 };
 
 const parseAnatomy = (content) => {
@@ -210,7 +187,7 @@ const metaFor = (doc) => mdxMeta.get(`${doc.section}/${doc.slug}`) ?? {};
 
 // 1. bundled per-component docs + llms-full.txt (offline, no site dependency)
 const refsRoot = path.join(skillsRoot, 'radix-ng-examples/references');
-for (const section of ['components', 'utils', 'guides', 'recipes', 'examples']) {
+for (const section of ['agents', 'overview', 'learn', 'components', 'utils', 'guides', 'recipes', 'examples']) {
     const sectionRoot = path.join(refsRoot, section);
     if (!fs.existsSync(sectionRoot)) continue;
 
@@ -264,6 +241,9 @@ write(path.join(refsRoot, 'llms-full.txt'), `${llmsFull}\n`);
 
 // llms.txt index (served at SITE_URL/llms.txt) — links to the served per-page Markdown
 const sectionTitles = {
+    agents: 'Agents',
+    overview: 'Overview',
+    learn: 'Learn',
     components: 'Components',
     utils: 'Utilities',
     guides: 'Guides',
@@ -346,9 +326,9 @@ const examplesSkill = `---
 name: radix-ng-examples
 description: |
   Index of every documented @radix-ng/primitives example. Use when implementing a UI
-  feature to find a working, copy-paste-ready Angular pattern built on the primitives.
-  Each component has an index doc linking to per-example source shards you can copy-paste.
-compatibility: Requires @radix-ng/primitives installed in an Angular 21 project.
+  feature to find a documented Angular pattern built on the primitives.
+  Each component has an index doc linking to per-example source shards you can adapt.
+compatibility: Requires @radix-ng/primitives in an Angular project matching the package's peer dependencies.
 license: MIT
 metadata:
   author: radix-ng
@@ -365,6 +345,10 @@ Working examples built on \`@radix-ng/primitives\`. Full source is **bundled off
 
 ## How to use this skill
 
+Compare the installed library version with the shard's \`version\` or generation stamp first. If
+they differ, installed exports and \`.d.ts\` files take precedence. Compile the consumer's Angular
+templates and check its behavior; examples and skills do not guarantee a correct generated result.
+
 1. Describe the UI you want to build (e.g. "a multi-select combobox", "a form field with validation").
 2. Find the matching component below by name and description.
 3. Open that component's bundled \`references/components/<slug>.md\` — an index with the import,
@@ -374,6 +358,9 @@ Working examples built on \`@radix-ng/primitives\`. Full source is **bundled off
 
 To style a primitive with a custom design system, pair an example with its per-primitive data-attribute
 contract in the \`radix-ng\` skill (\`references/styling-contract/<slug>.json\`).
+
+For installation, composition and verification tasks, read \`references/agents/getting-started.md\`
+and follow its links to the other Agents guides.
 
 **Reload a single example** (e.g. after your context is compacted): open
 \`references/examples/<component>--<example>.md\` — one file per example, just that example's source,
@@ -397,6 +384,13 @@ const api = generateApiContract({ workspaceRoot, primitivesRoot, skillsRoot, ver
 const errors = [];
 const warnings = [];
 let publicRoutes = 0;
+for (const primitive of contract) {
+    for (const hook of primitive.dataAttributes) {
+        if (!/^data-[a-z0-9-]+$/.test(hook.attribute) || !hook.parts || !hook.values) {
+            errors.push(`styling-contract/${primitive.slug}.json: incomplete documented hook ${JSON.stringify(hook)}`);
+        }
+    }
+}
 const componentSlugs = docs.filter((doc) => doc.section === 'components').map((doc) => doc.slug);
 const stylingSlugs = new Set(contract.map((primitive) => primitive.slug));
 const apiSlugs = new Set(api.slugs);
@@ -437,10 +431,16 @@ const checkLinks = (fileAbs) => {
     }
 };
 checkLinks(path.join(skillsRoot, 'radix-ng-examples/SKILL.md'));
-for (const slug of componentSlugs) checkLinks(path.join(refsRoot, 'components', `${slug}.md`));
+for (const doc of docs) checkLinks(path.join(refsRoot, doc.section, `${doc.slug}.md`));
+for (const doc of docs.filter((doc) => doc.section === 'agents')) {
+    for (const [, reference] of doc.body.matchAll(/`references\/(examples\/[^`]+\.md)`/g)) {
+        if (!reference.includes('<') && !fs.existsSync(path.join(refsRoot, reference)))
+            errors.push(`Agents/${doc.slug}: missing example ${reference}`);
+    }
+}
 
 // Public-route stability: every URL llms.txt advertises must resolve to a served file. The bundle is
-// served at radix-ng.com/<path> ← references/<path> (Storybook staticDirs map references/ to the site
+// served at radix-ng.com/docs/<path> ← references/<path> (Storybook staticDirs map references/ to the site
 // root). With the CI drift check on llms.txt this means a public URL can neither 404 silently nor change
 // unreviewed — a renamed/removed slug shows up as a reviewable diff in llms.txt.
 const llmsTxt = fs.readFileSync(path.join(refsRoot, 'llms.txt'), 'utf8');

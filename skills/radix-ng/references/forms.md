@@ -11,7 +11,7 @@ required state.
 ```html
 <div rdxFieldRoot>
   <label rdxFieldLabel>Email</label>
-  <input rdxInput rdxFieldControl type="email" />
+  <input rdxInput type="email" />
   <p rdxFieldDescription>We'll never share it.</p>
   <p rdxFieldError>Enter a valid email.</p>
 </div>
@@ -20,6 +20,10 @@ required state.
 Parts: `rdxFieldRoot`, `rdxFieldLabel`, `rdxFieldDescription`, `rdxFieldError`, and either
 `rdxFieldControl` or a compatible control such as `rdxInput`. The label is wired to the control
 automatically — no manual `for`/`id`.
+
+Use `rdxFieldControl` for an ordinary native control; `rdxInput` already implements the Field
+integration. For Angular Reactive Forms, follow the documented `rdxNgControlField` example; Field
+does not create validators on its own. For Signal Forms, read the version-matched Signal Forms example.
 
 ## Input
 

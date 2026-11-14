@@ -5,7 +5,108 @@
   "section": "components",
   "description": "A text input with a list of suggestions: free-form text whose value **is** the input string, with the active option tracked via `aria-activedescendant`.",
   "doc": "radix-ng-examples/references/components/autocomplete.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-autocomplete--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-autocomplete--docs",
   "anatomy": "<div rdxAutocompleteRoot>\n  <div rdxAutocompleteInputGroup>\n    <input rdxAutocompleteInput />\n    <button rdxAutocompleteClear></button>\n  </div>\n\n  <div *rdxAutocompletePortal rdxAutocompletePositioner>\n    <div rdxAutocompletePopup>\n      <div rdxAutocompleteList>\n        <div rdxAutocompleteGroup>\n          <div rdxAutocompleteGroupLabel></div>\n          <div rdxAutocompleteItem>\n            <span rdxAutocompleteItemIndicator></span>\n          </div>\n        </div>\n      </div>\n      <div rdxAutocompleteEmpty></div>\n    </div>\n  </div>\n</div>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-popup-open",
+      "parts": "RdxAutocompleteInput",
+      "values": "The popup is open."
+    },
+    {
+      "attribute": "data-list-empty",
+      "parts": "RdxAutocompleteInput",
+      "values": "No matching suggestions are visible."
+    },
+    {
+      "attribute": "data-filled",
+      "parts": "RdxAutocompleteInput",
+      "values": "The input contains a value."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "RdxAutocompleteInput",
+      "values": "The input is disabled."
+    },
+    {
+      "attribute": "data-invalid",
+      "parts": "RdxAutocompleteInput",
+      "values": "Displayed validation is invalid."
+    },
+    {
+      "attribute": "data-valid",
+      "parts": "RdxAutocompleteInput",
+      "values": "Displayed validation is valid."
+    },
+    {
+      "attribute": "data-required",
+      "parts": "RdxAutocompleteInput",
+      "values": "The input is required."
+    },
+    {
+      "attribute": "data-focused",
+      "parts": "RdxAutocompleteInput",
+      "values": "The input is focused."
+    },
+    {
+      "attribute": "data-touched",
+      "parts": "RdxAutocompleteInput",
+      "values": "The input has been touched."
+    },
+    {
+      "attribute": "data-dirty",
+      "parts": "RdxAutocompleteInput",
+      "values": "The input value has changed."
+    },
+    {
+      "attribute": "data-highlighted",
+      "parts": "RdxAutocompleteItem",
+      "values": "The suggestion is highlighted."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "RdxAutocompleteItem",
+      "values": "The suggestion is disabled."
+    },
+    {
+      "attribute": "data-hidden",
+      "parts": "RdxAutocompleteItem",
+      "values": "The suggestion is filtered out."
+    },
+    {
+      "attribute": "data-open",
+      "parts": "RdxAutocompletePopup",
+      "values": "The popup is open."
+    },
+    {
+      "attribute": "data-closed",
+      "parts": "RdxAutocompletePopup",
+      "values": "The popup is closed."
+    },
+    {
+      "attribute": "data-empty",
+      "parts": "RdxAutocompletePopup",
+      "values": "No matching suggestions are visible."
+    },
+    {
+      "attribute": "data-side",
+      "parts": "RdxAutocompletePopup",
+      "values": "The resolved placement side."
+    },
+    {
+      "attribute": "data-align",
+      "parts": "RdxAutocompletePopup",
+      "values": "The resolved placement alignment."
+    },
+    {
+      "attribute": "data-starting-style",
+      "parts": "RdxAutocompletePopup",
+      "values": "The enter transition is starting."
+    },
+    {
+      "attribute": "data-ending-style",
+      "parts": "RdxAutocompletePopup",
+      "values": "The exit transition is running."
+    }
+  ]
 }

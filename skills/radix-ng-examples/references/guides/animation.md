@@ -1,0 +1,211 @@
+# Animation
+
+#### A guide to animating Radix NG primitives with native CSS and Angular 21+.
+
+Radix NG primitives are headless. They expose state through `data-*` attributes and leave animation
+styles to your application. Prefer native CSS transitions and `@keyframes`; you do not need the
+legacy `@angular/animations` package for these approaches.
+
+Angular 21 also provides compiler-level
+[`animate.enter` and `animate.leave`](https://angular.dev/guide/animations) APIs. They apply CSS
+classes at the correct lifecycle points and wait for the longest CSS transition or keyframe
+animation before removing an element from the DOM.
+
+## Choosing an approach
+
+Use the lifecycle owner to choose the animation API:
+
+| Scenario                                                             | Recommended approach                                                                                  |
+| -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| The element always remains mounted                                   | CSS transition driven by that part's documented hook or a class                                       |
+| Your template adds and removes the element with `@if`                | Angular `animate.enter` and `animate.leave`                                                           |
+| A Radix NG presence directive mounts and unmounts the primitive part | CSS `@keyframes` **or** transitions driven by the documented open/closed or `data-ending-style` hooks |
+| A third-party JavaScript library owns the animation                  | Angular animation callbacks or a controlled primitive                                                 |
+
+## CSS transitions
+
+Use transitions for elements that remain mounted while their state changes. Transitions can reverse
+smoothly if the user changes state before an animation completes.
+
+For example, `rdxCollapsiblePanel` remains available while its close transition finishes:
+
+```html
+<div [open]="open()" rdxCollapsibleRoot>
+  <button rdxCollapsibleTrigger>Toggle</button>
+  <div class="CollapsiblePanel" rdxCollapsiblePanel [keepMounted]="true">...</div>
+</div>
+```
+
+```css
+.CollapsiblePanel {
+  overflow: hidden;
+  transition:
+    height 200ms ease-out,
+    opacity 200ms ease-out;
+}
+
+.CollapsiblePanel[data-open] {
+  height: var(--collapsible-panel-height);
+  opacity: 1;
+}
+
+.CollapsiblePanel[data-closed] {
+  height: 0;
+  opacity: 0;
+}
+```
+
+`rdxCollapsiblePanel` exposes the measured width and height as CSS custom properties
+(`--collapsible-panel-width` / `--collapsible-panel-height`) and stays mounted for the duration of
+its exit transition before hiding (`data-ending-style` is present while it runs).
+
+## CSS keyframe animations
+
+Use `@keyframes` when a primitive part is conditionally mounted through a Radix NG presence directive
+or through a structural portal such as `*rdxPopoverPortal` / `*rdxTooltipPortal` (which merge portal +
+presence). The exit animation can go on the portal's root element (the positioner) **or any element
+inside it** (the popup) — see [Exit animations](#exit-animations-keyframes-or-transitions) below.
+
+```html
+<div *rdxPopoverPortal rdxPopoverPositioner>
+  <div class="PopoverPopup" rdxPopoverPopup>...</div>
+</div>
+```
+
+```css
+@keyframes popup-open {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes popup-close {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+.PopoverPopup[data-open] {
+  animation: popup-open 200ms ease-out;
+}
+
+.PopoverPopup[data-closed] {
+  animation: popup-close 200ms ease-in;
+}
+```
+
+### Exit animations: keyframes or transitions
+
+After the closed state is applied, the presence machine inspects the running animations
+([Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Element/getAnimations)) on the
+template's root element **and its whole subtree**. It keeps the element mounted until every exit
+animation _started by the close_ has finished, then unmounts. If nothing animates, it unmounts
+immediately.
+
+This means:
+
+- **Keyframes or transitions both work.** A `@keyframes` exit (`data-closed`) and a transition
+  (a property change under `data-ending-style`) are detected the same way.
+- **Any element in the template carries the exit.** With a structural portal you can put the exit on
+  the positioner (the root) or on the popup nested inside it — you do **not** need a separate
+  "decoy" keyframe on the positioner just to keep the popup mounted.
+- **Pre-existing animations are ignored.** A spinner or other animation that was already running
+  before the close does not delay the unmount; only animations that start with the close count.
+
+A duration-based safety net (the longest declared transition/animation duration plus a small buffer)
+guarantees the element still unmounts if an animation is interrupted or never reports completion.
+
+## Angular `animate.enter` and `animate.leave`
+
+When your application owns the conditional rendering, use Angular's built-in lifecycle APIs. They
+work with native CSS and do not require `@angular/animations`.
+
+```html
+<button type="button" (click)="open.update((value) => !value)">Toggle</button>
+
+@if (open()) {
+<div animate.enter="entering" animate.leave="leaving">Content</div>
+}
+```
+
+```css
+.entering {
+  animation: fade-in 150ms ease-out;
+}
+
+.leaving {
+  animation: fade-out 150ms ease-in;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+```
+
+Use this for application content around primitives. Do not add `animate.leave` to a part already
+managed by `RdxPresenceDirective`; both APIs would try to control the same unmount lifecycle.
+
+## Animating with Tailwind
+
+Tailwind utilities work well for simple transitions because primitives expose `data-open` /
+`data-closed`:
+
+```html
+<div
+  class="transition-opacity duration-200 data-[closed]:opacity-0 data-[open]:opacity-100"
+  rdxCollapsiblePanel
+  [keepMounted]="true"
+>
+  ...
+</div>
+```
+
+For presence-managed exits, define reusable keyframes in your application's global Tailwind CSS and
+apply animation utilities for the open and closed states.
+
+## JavaScript animation libraries
+
+For application-owned conditional elements, Angular's
+[`animate.enter` and `animate.leave` event bindings](https://angular.dev/guide/animations#event-bindings-functions-and-third-party-libraries)
+can integrate third-party animation libraries.
+
+For a primitive-owned lifecycle, use a controlled primitive and keep the content mounted until the
+library's exit animation completes. Avoid mixing multiple lifecycle owners on the same element.
+
+## Legacy Angular animations
+
+The legacy `@angular/animations` APIs are not required for new Radix NG integrations. Native CSS,
+`animate.enter`, and `animate.leave` cover the common cases with less framework-specific code.
+
+Existing code that already uses legacy Angular animations can continue to do so while it is being
+migrated. See Angular's
+[animations documentation](https://angular.dev/guide/animations) for the current compiler-level
+APIs and the separate legacy documentation.

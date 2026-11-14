@@ -2,8 +2,8 @@
 
 #### A primary action paired with a menu of related actions, joined as one control.
 
-A split button is not a primitive — it is a composition. The [Button](?path=/docs/primitives-button--docs)
-primitive provides the primary action, and the [Menu](?path=/docs/primitives-menu--docs) primitive
+A split button is not a primitive — it is a composition. The [Button](../components/button.md)
+primitive provides the primary action, and the [Menu](../components/menu.md) primitive
 provides the secondary actions in a dropdown. The two `<button>` elements share a rounded shell so they
 look like one control while staying independently focusable and accessible.
 
@@ -82,8 +82,8 @@ export class SplitButtonExample {
 
 ## Composed from
 
-- **[Button](?path=/docs/primitives-button--docs)** (`rdxButton`) — the primary action on the left.
-- **[Menu](?path=/docs/primitives-menu--docs)** (`rdxMenuRoot` / `rdxMenuTrigger` / `rdxMenuPositioner` /
+- **[Button](../components/button.md)** (`rdxButton`) — the primary action on the left.
+- **[Menu](../components/menu.md)** (`rdxMenuRoot` / `rdxMenuTrigger` / `rdxMenuPositioner` /
   `rdxMenuPopup` / `rdxMenuItem` / `rdxMenuSeparator`) — the chevron trigger and the dropdown of related
   actions.
 
@@ -209,6 +209,6 @@ itself follows the WAI-ARIA menu button pattern provided by the Menu primitive.
 | `Enter` / `Space`       | Activates the focused button — runs the primary action, or opens the menu.        |
 | `ArrowDown` / `ArrowUp` | When the trigger is focused, opens the menu and focuses the first / last item.     |
 
-Once the menu is open it follows the [Menu](?path=/docs/primitives-menu--docs) keyboard model —
+Once the menu is open it follows the [Menu](../components/menu.md) keyboard model —
 `ArrowUp` / `ArrowDown` move between items, `Home` / `End` jump to the first / last item, typeahead
 matches item text, and `Escape` closes the menu and returns focus to the trigger.

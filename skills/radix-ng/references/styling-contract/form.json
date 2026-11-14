@@ -5,7 +5,28 @@
   "section": "components",
   "description": "The top of the forms layer cake: aggregates fields, maps server errors by name, and intercepts submit and reset.",
   "doc": "radix-ng-examples/references/components/form.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-form--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-form--docs",
   "anatomy": "<form rdxFormRoot [errors]=\"serverErrors\">\n    <fieldset rdxFieldsetRoot>\n        <legend rdxFieldsetLegend>Account</legend>\n        <div rdxFieldRoot name=\"email\">\n            <label rdxFieldLabel>Email</label>\n            <input rdxFieldControl name=\"email\" type=\"email\" />\n            <p rdxFieldError #err=\"rdxFieldError\">{{ err.messages().join(' ') }}</p>\n        </div>\n    </fieldset>\n    <button type=\"submit\">Submit</button>\n</form>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-invalid",
+      "parts": "RdxFormRoot",
+      "values": "Any registered field is invalid."
+    },
+    {
+      "attribute": "data-dirty",
+      "parts": "RdxFormRoot",
+      "values": "Any registered field has been edited."
+    },
+    {
+      "attribute": "data-touched",
+      "parts": "RdxFormRoot",
+      "values": "Any registered field has been touched."
+    },
+    {
+      "attribute": "data-submitting",
+      "parts": "RdxFormRoot",
+      "values": "A registered RdxFormState provider reports the form is submitting."
+    }
+  ]
 }

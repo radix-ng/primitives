@@ -1,6 +1,6 @@
 # Context Menu — Base UI compatibility
 
-Audited 2026-11-12 against Base UI 1.9.0 commit
+Audited 2026-11-14 against Base UI 1.9.0 commit
 [`cf696d6f6e08c699c5bda24d5a033430909f2285`](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/context-menu).
 This is incremental evidence, not complete API or accessibility certification.
 
@@ -94,6 +94,8 @@ interactive through outer isolation; only the backdrop's owner handles a press o
 backdrop. A same-gesture switch returns focus through a surviving target when the old popup was
 removed. Mounted membership is recorded by owner for independent portals, whose sibling insertion
 order is not a shared API; pointer hit testing, focus and all requests/completions are still compared.
+The backdrop carries the same menu-chain identity as its positioner; another chain ignores that
+press even when the shared dismissal guard recognizes the element as owned popup DOM.
 
 The 48 new comparisons introduce no exceptions. Menu state uses a self-scoped DI boundary; shared
 floating ancestry remains intact. See [ADR 0047](../../../docs/adr/0047-independent-context-menu-roots.md).

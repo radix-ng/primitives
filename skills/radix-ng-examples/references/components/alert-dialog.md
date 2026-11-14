@@ -19,16 +19,16 @@ A modal dialog that interrupts the user with important content and expects a res
 
 ```typescript
 import {
-    alertDialogImports,
-    createRdxAlertDialogHandle,
-    RdxAlertDialogBackdrop,
-    RdxAlertDialogClose,
-    RdxAlertDialogDescription,
-    RdxAlertDialogPopup,
-    RdxAlertDialogPortal,
-    RdxAlertDialogRoot,
-    RdxAlertDialogTitle,
-    RdxAlertDialogTrigger
+  alertDialogImports,
+  createRdxAlertDialogHandle,
+  RdxAlertDialogBackdrop,
+  RdxAlertDialogClose,
+  RdxAlertDialogDescription,
+  RdxAlertDialogPopup,
+  RdxAlertDialogPortal,
+  RdxAlertDialogRoot,
+  RdxAlertDialogTitle,
+  RdxAlertDialogTrigger
 } from '@radix-ng/primitives/alert-dialog';
 ```
 
@@ -42,17 +42,17 @@ import { RdxAlertDialogModule } from '@radix-ng/primitives/alert-dialog';
 
 ```html
 <div rdxAlertDialogRoot>
-    <button rdxAlertDialogTrigger>Delete</button>
+  <button rdxAlertDialogTrigger>Delete</button>
 
-    <ng-template rdxAlertDialogPortal>
-        <div rdxAlertDialogBackdrop></div>
-        <div rdxAlertDialogPopup>
-            <h2 rdxAlertDialogTitle>Are you sure?</h2>
-            <p rdxAlertDialogDescription>This action cannot be undone.</p>
-            <button rdxAlertDialogClose>Cancel</button>
-            <button rdxAlertDialogClose>Confirm</button>
-        </div>
-    </ng-template>
+  <ng-template rdxAlertDialogPortal>
+    <div rdxAlertDialogBackdrop></div>
+    <div rdxAlertDialogPopup>
+      <h2 rdxAlertDialogTitle>Are you sure?</h2>
+      <p rdxAlertDialogDescription>This action cannot be undone.</p>
+      <button rdxAlertDialogClose>Cancel</button>
+      <button rdxAlertDialogClose>Confirm</button>
+    </div>
+  </ng-template>
 </div>
 ```
 

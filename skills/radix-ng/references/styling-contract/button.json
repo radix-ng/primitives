@@ -5,7 +5,13 @@
   "section": "components",
   "description": "A button, or any element that should behave like one.",
   "doc": "radix-ng-examples/references/components/button.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-button--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-button--docs",
   "anatomy": "<button rdxButton>...</button>\n\n<!-- or on any other host -->\n<a rdxButton href=\"...\">...</a>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-disabled",
+      "parts": "RdxButtonDirective",
+      "values": "The button is disabled."
+    }
+  ]
 }

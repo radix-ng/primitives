@@ -38,6 +38,11 @@ backdrops without marking arbitrary injected content as inside. Intentional pare
 trailing click of a child's backdrop gesture; sloppy parents may close on its pointerdown. The
 existing floating tree and owned-element registry remain authoritative.
 
+Menu backdrops also carry the positioner's existing menu-chain owner identity. A Menu ignores an
+outside press on another chain's backdrop, including a nested independent Context Menu Root.
+Submenus retain their parent's identity and normal chain dismissal. This keeps independent Root
+dismissal separate without splitting the shared floating ancestry or adding a global layer store.
+
 Use standalone imports and shared Tailwind styles in the Inside Popover example. Host callbacks
 share only an observation shape with Dialog; each primitive retains its native state and actions.
 The example defaults to trap-focus and can enable a fully modal host.

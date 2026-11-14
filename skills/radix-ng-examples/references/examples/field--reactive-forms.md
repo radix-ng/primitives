@@ -10,10 +10,10 @@ it becomes visible. Use `rdxFieldError[match]` for a specific Angular error key.
 
 ```html
 <div rdxFieldRoot required>
-    <label rdxFieldLabel>Email</label>
-    <input formControlName="email" rdxFieldControl rdxNgControlField />
-    <p match="required" rdxFieldError>Email is required.</p>
-    <p match="email" rdxFieldError>Enter a valid email address.</p>
+  <label rdxFieldLabel>Email</label>
+  <input formControlName="email" rdxFieldControl rdxNgControlField />
+  <p match="required" rdxFieldError>Email is required.</p>
+  <p match="email" rdxFieldError>Enter a valid email address.</p>
 </div>
 ```
 

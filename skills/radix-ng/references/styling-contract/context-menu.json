@@ -5,7 +5,23 @@
   "section": "components",
   "description": "A menu that appears at the pointer on right click (or touch long-press), built on the Menu primitive.",
   "doc": "radix-ng-examples/references/components/context-menu.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-context-menu--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-context-menu--docs",
   "anatomy": "<ng-container #root=\"rdxContextMenuRoot\" rdxContextMenuRoot>\n  <div rdxContextMenuTrigger>Right click here</div>\n\n  <div *rdxMenuPortal rdxMenuPositioner>\n    <div rdxMenuPopup>\n      <button rdxMenuItem>Back</button>\n      <button rdxMenuItem>Reload</button>\n\n      <div rdxMenuSeparator></div>\n\n      <!-- submenu -->\n      <ng-container #sub=\"rdxMenuRoot\" rdxMenuRoot>\n        <button rdxMenuSubTrigger>More Tools ›</button>\n        <div *rdxMenuPortal side=\"right\" align=\"start\" rdxMenuPositioner>\n          <div rdxMenuPopup>\n            <button rdxMenuItem>Save Page As…</button>\n          </div>\n        </div>\n      </ng-container>\n    </div>\n  </div>\n</ng-container>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-popup-open",
+      "parts": "RdxContextMenuTrigger",
+      "values": "The context menu is open."
+    },
+    {
+      "attribute": "data-pressed",
+      "parts": "RdxContextMenuTrigger",
+      "values": "The context menu is open."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "RdxContextMenuTrigger",
+      "values": "The trigger is disabled."
+    }
+  ]
 }

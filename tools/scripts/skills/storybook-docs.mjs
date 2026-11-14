@@ -14,9 +14,16 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const primitivesRoot = path.resolve(__dirname, '../../../packages/primitives');
+const publicDocsRoot = path.resolve(__dirname, '../../../apps/radix-storybook/docs');
 
 const groupToSection = (group) => {
     switch (group) {
+        case 'Agents':
+            return 'agents';
+        case 'Overview':
+            return 'overview';
+        case 'Learn':
+            return 'learn';
         case 'Utilities':
             return 'utils';
         case 'Guides':
@@ -32,6 +39,12 @@ const groupToSection = (group) => {
 
 const sectionLabel = (section) => {
     switch (section) {
+        case 'agents':
+            return 'Agents';
+        case 'overview':
+            return 'Overview';
+        case 'learn':
+            return 'Learn';
         case 'utils':
             return 'Utilities';
         case 'guides':
@@ -59,7 +72,13 @@ const getSlug = (filePath) => {
     // per-recipe subfolders — always slug by filename regardless of nesting depth.
     const inRecipes = path.relative(primitivesRoot, filePath).split(path.sep)[0] === 'recipes';
 
-    if (inRecipes || packageName === 'primitives' || packageName === 'core' || fileName === 'sheet') {
+    if (
+        path.relative(primitivesRoot, filePath).startsWith('..') ||
+        inRecipes ||
+        packageName === 'primitives' ||
+        packageName === 'core' ||
+        fileName === 'sheet'
+    ) {
         return titleToSlug(fileName);
     }
 
@@ -314,13 +333,26 @@ const parseDoc = (filePath) => {
         section,
         slug,
         title,
+        storybookId: content.match(/<Meta\b[^>]*\bid=["']([^"']+)["']/)?.[1] ?? titleToSlug(metaTitle ?? title),
         description,
         body: cleanStorybookMdx(content, filePath)
     };
 };
 
-export const getStorybookDocs = () =>
-    findDocs(primitivesRoot)
+export const getStorybookDocs = () => {
+    const docs = [...findDocs(primitivesRoot), ...findDocs(publicDocsRoot)]
         .map(parseDoc)
         .filter(Boolean)
         .sort((a, b) => a.group.localeCompare(b.group) || a.title.localeCompare(b.title));
+    const routes = new Map(docs.map((doc) => [doc.storybookId, `${doc.section}/${doc.slug}.md`]));
+    return docs.map((doc) => ({
+        ...doc,
+        body: doc.body.replace(
+            /\]\((?:\.\/|\/)?\?path=\/docs\/([\w-]+)--docs(#[^)]*)?\)/g,
+            (link, id, fragment = '') => {
+                const target = routes.get(id);
+                return target ? `](${path.posix.relative(doc.section, target)}${fragment})` : link;
+            }
+        )
+    }));
+};

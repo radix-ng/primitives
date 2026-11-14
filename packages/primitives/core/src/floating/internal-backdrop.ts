@@ -25,6 +25,8 @@ export interface RdxInternalBackdropOptions {
     cutout?: () => Element | null;
     /** Marker attribute applied to the backdrop. Defaults to {@link RDX_INTERNAL_BACKDROP_ATTR}. */
     marker?: string;
+    /** Primitive-owned DOM metadata, applied when the backdrop is created. */
+    attributes?: Readonly<Record<string, string>>;
     /** Let pointer/wheel events pass through the backdrop while keeping it mounted for lifecycle parity. */
     passThrough?: () => boolean;
 }
@@ -79,6 +81,9 @@ export function setupInternalBackdrop(
                 backdrop = ownerDocument.createElement('div');
                 backdrop.setAttribute('role', 'presentation');
                 backdrop.setAttribute(marker, '');
+                for (const [attribute, value] of Object.entries(options.attributes ?? {})) {
+                    backdrop.setAttribute(attribute, value);
+                }
                 context?.addFloatingElement(backdrop);
                 // WebKit emits compatibility mouse events for a tapped non-interactive div only
                 // when it has a click handler. Dismiss owns the action; this opts the backdrop

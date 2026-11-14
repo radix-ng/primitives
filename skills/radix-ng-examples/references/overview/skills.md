@@ -1,0 +1,17 @@
+# Skills
+
+#### Consumer skills are documented in the Agents section.
+
+Install `radix-ng` and `radix-ng-examples` with:
+
+```bash
+npx skills add radix-ng/primitives/skills
+```
+
+Continue with [Agents — Getting started](../agents/getting-started.md) for version
+checks and a starter prompt, or [Reference](../agents/reference.md) for exports.
+
+Use `radix-ng/references/api-contract/<slug>.json` and
+`radix-ng/references/styling-contract/<slug>.json` for the primitive you are building. The installed
+package's exports and types take precedence over a bundle from another version. Skills help retrieve
+context; compile and test the resulting UI in your own application.

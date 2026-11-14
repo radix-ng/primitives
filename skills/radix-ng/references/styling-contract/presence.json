@@ -5,7 +5,7 @@
   "section": "utils",
   "description": "Presence",
   "doc": "radix-ng-examples/references/utils/presence.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-presence--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-presence--docs",
   "anatomy": "",
   "dataAttributes": []
 }

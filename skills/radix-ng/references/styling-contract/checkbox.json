@@ -5,7 +5,113 @@
   "section": "components",
   "description": "A control that allows the user to toggle between checked and not checked.",
   "doc": "radix-ng-examples/references/components/checkbox.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-checkbox--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-checkbox--docs",
   "anatomy": "<div rdxCheckboxRoot>\n  <button rdxCheckboxButton>\n    <svg rdxCheckboxIndicator lucideCheck />\n  </button>\n  <input rdxCheckboxInput />\n</div>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-checked",
+      "parts": "Root",
+      "values": "The checkbox is checked."
+    },
+    {
+      "attribute": "data-unchecked",
+      "parts": "Root",
+      "values": "The checkbox is unchecked."
+    },
+    {
+      "attribute": "data-indeterminate",
+      "parts": "Root",
+      "values": "The checkbox is in the mixed state."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Root",
+      "values": "The checkbox is disabled."
+    },
+    {
+      "attribute": "data-readonly",
+      "parts": "Root",
+      "values": "The checkbox is read-only."
+    },
+    {
+      "attribute": "data-required",
+      "parts": "Root",
+      "values": "The checkbox is required."
+    },
+    {
+      "attribute": "data-checked",
+      "parts": "Button",
+      "values": "The checkbox is checked."
+    },
+    {
+      "attribute": "data-unchecked",
+      "parts": "Button",
+      "values": "The checkbox is unchecked."
+    },
+    {
+      "attribute": "data-indeterminate",
+      "parts": "Button",
+      "values": "The checkbox is in the mixed state."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Button",
+      "values": "The checkbox is disabled."
+    },
+    {
+      "attribute": "data-readonly",
+      "parts": "Button",
+      "values": "The checkbox is read-only."
+    },
+    {
+      "attribute": "data-required",
+      "parts": "Button",
+      "values": "The checkbox is required."
+    },
+    {
+      "attribute": "data-checked",
+      "parts": "Indicator",
+      "values": "The checkbox is checked."
+    },
+    {
+      "attribute": "data-unchecked",
+      "parts": "Indicator",
+      "values": "The checkbox is unchecked."
+    },
+    {
+      "attribute": "data-indeterminate",
+      "parts": "Indicator",
+      "values": "The checkbox is in the mixed state."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Indicator",
+      "values": "The checkbox is disabled."
+    },
+    {
+      "attribute": "data-readonly",
+      "parts": "Indicator",
+      "values": "The checkbox is read-only."
+    },
+    {
+      "attribute": "data-required",
+      "parts": "Indicator",
+      "values": "The checkbox is required."
+    },
+    {
+      "attribute": "data-starting-style",
+      "parts": "Indicator",
+      "values": "The indicator is visible (enter motion)."
+    },
+    {
+      "attribute": "data-ending-style",
+      "parts": "Indicator",
+      "values": "The indicator is hidden (exit motion)."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Checkbox Group",
+      "values": "The group is disabled."
+    }
+  ]
 }

@@ -2,9 +2,9 @@
 
 #### A bell trigger opening a scrollable list of notifications with an unread badge.
 
-This is a composition, not a primitive. The [Popover](?path=/docs/primitives-popover--docs) provides
+This is a composition, not a primitive. The [Popover](../components/popover.md) provides
 the anchored, dismissable panel and its focus management; the
-[ScrollArea](?path=/docs/primitives-scroll-area--docs) provides the custom scrollbar over a long list.
+[ScrollArea](../components/scroll-area.md) provides the custom scrollbar over a long list.
 The recipe adds the unread count badge, per-item read state, and "mark all read".
 
 ```typescript
@@ -162,10 +162,10 @@ export class NotificationDropdownExample {
 
 ## Composed from
 
-- **[Popover](?path=/docs/primitives-popover--docs)** (`rdxPopoverRoot` / `rdxPopoverTrigger` /
+- **[Popover](../components/popover.md)** (`rdxPopoverRoot` / `rdxPopoverTrigger` /
   `rdxPopoverPortal` / `rdxPopoverPositioner` / `rdxPopoverPopup` / `rdxPopoverTitle`) — the bell
   trigger and the anchored panel.
-- **[ScrollArea](?path=/docs/primitives-scroll-area--docs)** (`rdxScrollAreaRoot` / `…Viewport` /
+- **[ScrollArea](../components/scroll-area.md)** (`rdxScrollAreaRoot` / `…Viewport` /
   `…Content` / `…Scrollbar` / `…Thumb`) — the scrollable notification list with a styled scrollbar.
 
 ## Anatomy
@@ -366,7 +366,7 @@ export class NotificationDropdownExample {
 Give the icon-only trigger an `aria-label`. The Popover primitive manages focus (moving it into the
 panel and restoring it on close) and dismissal (Escape and outside-pointer). Each notification is a real
 `<button>`, so the list is fully keyboard operable. For live updates, announce new notifications with the
-[LiveAnnouncer](?path=/docs/utilities-liveannouncer--docs) so they reach screen readers even when the
+[LiveAnnouncer](../utils/live-announcer.md) so they reach screen readers even when the
 panel is closed.
 
 ### Keyboard Interactions

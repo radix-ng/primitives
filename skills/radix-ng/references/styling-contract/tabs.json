@@ -5,7 +5,88 @@
   "section": "components",
   "description": "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
   "doc": "radix-ng-examples/references/components/tabs.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-tabs--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-tabs--docs",
   "anatomy": "<div rdxTabsRoot>\n    <div rdxTabsList>\n        <button rdxTabsTab value=\"1\"></button>\n        <button rdxTabsTab value=\"2\"></button>\n        <span rdxTabsIndicator></span>\n    </div>\n    <div rdxTabsPanel value=\"1\"></div>\n    <div rdxTabsPanel value=\"2\"></div>\n</div>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-orientation",
+      "parts": "TabsRoot",
+      "values": "\"horizontal\" | \"vertical\""
+    },
+    {
+      "attribute": "data-activation-direction",
+      "parts": "TabsRoot",
+      "values": "\"left\" | \"right\" | \"up\" | \"down\" | \"none\""
+    },
+    {
+      "attribute": "data-orientation",
+      "parts": "TabsList",
+      "values": "\"horizontal\" | \"vertical\""
+    },
+    {
+      "attribute": "data-activation-direction",
+      "parts": "TabsList",
+      "values": "\"left\" | \"right\" | \"up\" | \"down\" | \"none\""
+    },
+    {
+      "attribute": "data-active",
+      "parts": "TabsTab",
+      "values": "Present when the tab is active."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "TabsTab",
+      "values": "Present when the tab is disabled."
+    },
+    {
+      "attribute": "data-orientation",
+      "parts": "TabsTab",
+      "values": "\"horizontal\" | \"vertical\""
+    },
+    {
+      "attribute": "data-activation-direction",
+      "parts": "TabsTab",
+      "values": "\"left\" | \"right\" | \"up\" | \"down\" | \"none\""
+    },
+    {
+      "attribute": "data-hidden",
+      "parts": "TabsPanel",
+      "values": "Present when the panel is inactive."
+    },
+    {
+      "attribute": "data-index",
+      "parts": "TabsPanel",
+      "values": "Numeric index of the panel."
+    },
+    {
+      "attribute": "data-starting-style",
+      "parts": "TabsPanel",
+      "values": "Present while the enter transition runs."
+    },
+    {
+      "attribute": "data-ending-style",
+      "parts": "TabsPanel",
+      "values": "Present while the exit transition runs."
+    },
+    {
+      "attribute": "data-orientation",
+      "parts": "TabsPanel",
+      "values": "\"horizontal\" | \"vertical\""
+    },
+    {
+      "attribute": "data-activation-direction",
+      "parts": "TabsPanel",
+      "values": "\"left\" | \"right\" | \"up\" | \"down\" | \"none\""
+    },
+    {
+      "attribute": "data-orientation",
+      "parts": "TabsIndicator",
+      "values": "The tabs orientation — horizontal / vertical."
+    },
+    {
+      "attribute": "data-activation-direction",
+      "parts": "TabsIndicator",
+      "values": "Direction the selection last moved — left/right/up/down/none."
+    }
+  ]
 }

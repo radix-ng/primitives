@@ -5,7 +5,7 @@
   "section": "components",
   "description": "Renders an accessible label associated with controls.",
   "doc": "radix-ng-examples/references/components/label.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-label--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-label--docs",
   "anatomy": "",
   "dataAttributes": []
 }

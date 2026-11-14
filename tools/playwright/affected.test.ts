@@ -63,6 +63,14 @@ test('direct browser edits select that spec, without pinned comparisons', () => 
     assert.deepEqual(result.floating, [spec('menubar')]);
     assert.deepEqual(result.suites, []);
 });
+test('Agents reference families select their browser checks without broadening to unrelated suites', () => {
+    for (const family of ['field', 'select', 'menu', 'tabs']) {
+        const result = plan([`packages/primitives/${family}/src/root.ts`]);
+        assert.equal(result.docs, true, family);
+        assert.equal(result.full, false, family);
+    }
+    assert.equal(plan(['packages/primitives/button/src/button.directive.ts']).docs, false);
+});
 test('helper changes follow transitive relative imports and do not select unrelated specs', () => {
     const helper = 'apps/visual-regression/helpers/clock.ts';
     const intermediate = 'apps/visual-regression/helpers/navigation.ts';
@@ -84,6 +92,9 @@ test('documentation-only, unit-only and generated skill changes do not launch br
         assert.deepEqual(result.suites, []);
     }
     assert.equal(plan(['apps/visual-regression/tests/docs-navigation.behavior.spec.ts']).docs, true);
+    const agents = plan(['apps/visual-regression/tests/agents.behavior.spec.ts']);
+    assert.equal(agents.docs, true);
+    assert.equal(agents.full, false);
 });
 test('the dependency graph reads actual aliases and relative story composition', () => {
     const sources = {

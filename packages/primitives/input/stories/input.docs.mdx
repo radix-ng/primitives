@@ -1,6 +1,6 @@
-import {Canvas, Meta, ArgTypes} from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, ArgTypes } from '@storybook/addon-docs/blocks';
 import * as Stories from './input.stories';
-import {RdxInputDirective} from '../src/input.directive';
+import { RdxInputDirective } from '../src/input.directive';
 
 <Meta title="Primitives/Input" />
 
@@ -29,10 +29,10 @@ Use `rdxInput` directly on a native input. Wrap it in Field when you need label,
 
 ```html
 <div rdxFieldRoot>
-    <label rdxFieldLabel>Email</label>
-    <input rdxInput />
-    <p rdxFieldDescription>Used for account notifications.</p>
-    <p rdxFieldError>Enter a valid email address.</p>
+  <label rdxFieldLabel>Email</label>
+  <input rdxInput />
+  <p rdxFieldDescription>Used for account notifications.</p>
+  <p rdxFieldError>Enter a valid email address.</p>
 </div>
 ```
 
@@ -65,3 +65,21 @@ Combines multiple inputs, Field state, a checkbox, and a submit button in a larg
 ## API Reference
 
 <ArgTypes of={RdxInputDirective} />
+
+**Data attributes**
+
+| Attribute       | Present when                                  |
+| --------------- | --------------------------------------------- |
+| `data-invalid`  | Displayed validation is invalid.              |
+| `data-valid`    | Displayed validation is valid.                |
+| `data-disabled` | The input or its Field is disabled.           |
+| `data-required` | The input or its Field is required.           |
+| `data-readonly` | The input is read-only.                       |
+| `data-filled`   | The input contains a value.                   |
+| `data-focused`  | The input is focused.                         |
+| `data-touched`  | The input has been touched.                   |
+| `data-dirty`    | The value has changed from its initial value. |
+
+Inside Field, `validationMode` can leave displayed validation neutral: both `data-valid` and
+`data-invalid` are then absent. Use `rdxInput` directly; it already integrates with Field and does
+not need `rdxFieldControl` on the same element.

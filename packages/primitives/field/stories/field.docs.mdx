@@ -32,12 +32,12 @@ the small `rdxNgControlField` / `rdxSignalField` adapters.
 
 ```typescript
 import {
-    RdxFieldRoot,
-    RdxFieldLabel,
-    RdxFieldControl,
-    RdxFieldDescription,
-    RdxFieldError,
-    RdxNgControlField
+  RdxFieldRoot,
+  RdxFieldLabel,
+  RdxFieldControl,
+  RdxFieldDescription,
+  RdxFieldError,
+  RdxNgControlField
 } from '@radix-ng/primitives/field';
 ```
 
@@ -45,10 +45,10 @@ import {
 
 ```html
 <div rdxFieldRoot>
-    <label rdxFieldLabel>Label</label>
-    <input rdxFieldControl />
-    <p rdxFieldDescription>Description</p>
-    <p rdxFieldError>Error</p>
+  <label rdxFieldLabel>Label</label>
+  <input rdxFieldControl />
+  <p rdxFieldDescription>Description</p>
+  <p rdxFieldError>Error</p>
 </div>
 ```
 
@@ -58,16 +58,16 @@ reflecting the field's validation state; its `disabled` is OR'd with the root's.
 
 ```html
 <div rdxFieldRoot>
-    <div rdxFieldItem>
-        <label rdxFieldLabel>Option A</label>
-        <input rdxFieldControl type="radio" />
-        <p rdxFieldDescription>Description A</p>
-    </div>
-    <div rdxFieldItem>
-        <label rdxFieldLabel>Option B</label>
-        <input rdxFieldControl type="radio" />
-    </div>
-    <p rdxFieldError>Error</p>
+  <div rdxFieldItem>
+    <label rdxFieldLabel>Option A</label>
+    <input rdxFieldControl type="radio" />
+    <p rdxFieldDescription>Description A</p>
+  </div>
+  <div rdxFieldItem>
+    <label rdxFieldLabel>Option B</label>
+    <input rdxFieldControl type="radio" />
+  </div>
+  <p rdxFieldError>Error</p>
 </div>
 ```
 
@@ -93,10 +93,10 @@ it becomes visible. Use `rdxFieldError[match]` for a specific Angular error key.
 
 ```html
 <div rdxFieldRoot required>
-    <label rdxFieldLabel>Email</label>
-    <input formControlName="email" rdxFieldControl rdxNgControlField />
-    <p match="required" rdxFieldError>Email is required.</p>
-    <p match="email" rdxFieldError>Enter a valid email address.</p>
+  <label rdxFieldLabel>Email</label>
+  <input formControlName="email" rdxFieldControl rdxNgControlField />
+  <p match="required" rdxFieldError>Email is required.</p>
+  <p match="email" rdxFieldError>Enter a valid email address.</p>
 </div>
 ```
 
@@ -117,3 +117,20 @@ enough.
 <ArgTypes of={RdxFieldControl} />
 <ArgTypes of={RdxFieldDescription} />
 <ArgTypes of={RdxFieldError} />
+
+## Data attributes
+
+Each part exposes its own subset. Presence attributes have an empty string value when present.
+
+| Attribute       | Parts                                                                            | Present when                                                         |
+| --------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `data-invalid`  | RdxFieldRoot, RdxFieldControl                                                    | Displayed validation is invalid; absent while validation is neutral. |
+| `data-valid`    | RdxFieldRoot, RdxFieldControl                                                    | Displayed validation is valid; absent while validation is neutral.   |
+| `data-invalid`  | RdxFieldLabel, RdxFieldDescription                                               | The field is invalid.                                                |
+| `data-invalid`  | RdxFieldError                                                                    | The error is visible and the field is invalid.                       |
+| `data-disabled` | RdxFieldRoot, RdxFieldControl, RdxFieldLabel, RdxFieldDescription, RdxFieldError | The field is disabled.                                               |
+| `data-required` | RdxFieldRoot, RdxFieldControl, RdxFieldLabel                                     | The field is required.                                               |
+| `data-dirty`    | RdxFieldRoot, RdxFieldControl                                                    | The control value has changed.                                       |
+| `data-touched`  | RdxFieldRoot, RdxFieldControl                                                    | The control has been touched.                                        |
+| `data-filled`   | RdxFieldRoot, RdxFieldControl                                                    | The control contains a value.                                        |
+| `data-focused`  | RdxFieldRoot, RdxFieldControl                                                    | The control is focused.                                              |

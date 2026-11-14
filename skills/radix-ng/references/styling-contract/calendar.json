@@ -5,7 +5,63 @@
   "section": "components",
   "description": "Displays dates and days of the week, facilitating date-related interactions.",
   "doc": "radix-ng-examples/references/components/calendar.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-calendar--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-calendar--docs",
   "anatomy": "<div rdxCalendarRoot #root=\"rdxCalendarRoot\">\n  <div rdxCalendarHeader>\n    <button type=\"button\" rdxCalendarPrev></button>\n    <div #head=\"rdxCalendarHeading\" rdxCalendarHeading>{{ head.headingValue() }}</div>\n    <button type=\"button\" rdxCalendarNext></button>\n  </div>\n\n  <table rdxCalendarGrid>\n    @for (month of root.months(); track $index) {\n    <thead rdxCalendarGridHead>\n      <tr rdxCalendarGridRow>\n        @for (day of root.weekDays(); track $index) {\n        <th rdxCalendarHeadCell>{{ day }}</th>\n        }\n      </tr>\n    </thead>\n    <tbody rdxCalendarGridBody>\n      @for (weekDates of month.weeks; track $index) {\n      <tr rdxCalendarGridRow>\n        @for (weekDate of weekDates; track $index) {\n        <td rdxCalendarCell>\n          <div #cell=\"rdxCalendarCellTrigger\" rdxCalendarCellTrigger>{{ cell.dayValue() }}</div>\n        </td>\n        }\n      </tr>\n      }\n    </tbody>\n    }\n  </table>\n</div>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-readonly",
+      "parts": "Grid",
+      "values": "Present when readonly"
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Grid",
+      "values": "Present when disabled"
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Cell",
+      "values": "Present when disabled"
+    },
+    {
+      "attribute": "data-selected",
+      "parts": "Cell Trigger",
+      "values": "Present when selected"
+    },
+    {
+      "attribute": "data-value",
+      "parts": "Cell Trigger",
+      "values": "The ISO string value of the date."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Cell Trigger",
+      "values": "Present when disabled"
+    },
+    {
+      "attribute": "data-unavailable",
+      "parts": "Cell Trigger",
+      "values": "Present when unavailable"
+    },
+    {
+      "attribute": "data-today",
+      "parts": "Cell Trigger",
+      "values": "Present when today"
+    },
+    {
+      "attribute": "data-outside-view",
+      "parts": "Cell Trigger",
+      "values": "Present when the date is outside the current month it is displayed in."
+    },
+    {
+      "attribute": "data-outside-visible-view",
+      "parts": "Cell Trigger",
+      "values": "Present when the date is outside the months that are visible on the calendar."
+    },
+    {
+      "attribute": "data-focused",
+      "parts": "Cell Trigger",
+      "values": "Present when focused"
+    }
+  ]
 }

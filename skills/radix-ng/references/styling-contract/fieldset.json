@@ -5,7 +5,18 @@
   "section": "components",
   "description": "Groups related form controls with a legend and shared disabled state.",
   "doc": "radix-ng-examples/references/components/fieldset.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-fieldset--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-fieldset--docs",
   "anatomy": "<fieldset rdxFieldsetRoot>\n  <legend rdxFieldsetLegend>Shipping address</legend>\n  <!-- fields -->\n</fieldset>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-disabled",
+      "parts": "Root",
+      "values": "The fieldset is disabled."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Legend",
+      "values": "The fieldset is disabled."
+    }
+  ]
 }

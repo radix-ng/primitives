@@ -1,0 +1,107 @@
+# Accessibility
+
+Radix NG primitives are designed against the WAI-ARIA specification, the
+WAI-ARIA Authoring Practices Guide (APG), and WCAG 2.2, and are tested for the
+keyboard and focus behaviors documented on each primitive's page.
+
+We take care of many of the difficult implementation details related to accessibility, including `aria` and `role` attributes, focus management, and keyboard navigation. That means that users should be able to use our components as-is in most contexts and rely on functionality to follow the expected accessibility design patterns.
+
+## How we decide what semantics to use
+
+We follow a strict order of sources, from most to least authoritative for a
+given decision. Each layer is consulted only when the layer above it does not
+already provide what we need.
+
+1. **Native HTML first.** If a native element already carries the right
+   semantics and behavior (a `<button>`, `<label>`, `<fieldset>`, `<dialog>`,
+   form controls), we use it. ARIA itself is explicit that it is a _supplement_
+   to native semantics, not a replacement for them when the host language
+   already provides equivalent meaning — see the
+   [first rule of ARIA use](https://www.w3.org/TR/using-aria/#firstrule).
+2. **[WAI-ARIA](https://www.w3.org/TR/wai-aria-1.2/).** For custom widgets that
+   have no native equivalent, we add roles, states, and properties to convey
+   meaning to assistive technology.
+3. **[WAI-ARIA APG](https://www.w3.org/WAI/ARIA/apg/).** We use the Authoring
+   Practices Guide as the reference for _how_ to apply those semantics —
+   keyboard interaction and focus management for each
+   [common pattern](https://www.w3.org/WAI/ARIA/apg/patterns/). The APG is W3C
+   authoring guidance, not a normative standard like WCAG or the ARIA spec.
+4. **[WCAG 2.2](https://www.w3.org/TR/WCAG22/).** We treat the WCAG success
+   criteria as the behavioral bar a primitive must clear: keyboard operability,
+   focus order, no keyboard trap, labels, error identification, and
+   name/role/value.
+
+Each primitive's **Accessibility** section maps these sources to its concrete
+implementation, and links the specific APG pattern and WCAG success criteria it
+is built against.
+
+> We do **not** claim WCAG conformance for the library as a whole — conformance
+> depends on how you assemble and style the primitives in your application. What
+> we provide are headless building blocks _designed against_ these references and
+> _tested for_ the documented keyboard and focus behaviors.
+
+## WAI-ARIA
+
+[WAI-ARIA](https://www.w3.org/TR/wai-aria-1.2/), published and maintained by the W3C, specifies the semantics for many common UI patterns that show up in Radix Primitives. This is designed to provide meaning for controls that aren't built using elements provided by the browser. For example, if you use a `div` instead of a `button` element to create a button, there are attributes you need to add to the `div` in order to convey that it's a button for screen readers or voice recognition tools.
+
+In addition to semantics, there are behaviors that are expected from different types of components. A `button` element is going to respond to certain interactions in ways that a `div` will not, so it's up to the developer to reimplement those interactions with JavaScript. The [WAI-ARIA authoring practices](https://www.w3.org/TR/wai-aria-practices-1.2/) provide additional guidance for implementing behaviors for various controls that come with Radix Primitives.
+
+## Accessible Labels
+
+With many built-in form controls, the native HTML `label` element is designed to provide semantic meaning and context for corresponding `input` elements. For non-form control elements,
+or for custom controls like those provided by Radix Primitives, [WAI-ARIA provides a specification](https://www.w3.org/TR/wai-aria-1.2/#namecalculation) for how to provide accessible names and descriptions to those controls.
+
+Where possible, Radix Primitives include abstractions to make labelling our controls simple. The `Label` primitive is designed to work with many of our controls.
+Ultimately it's up to you to provide those labels so that users have the proper context when navigating your application.
+
+## Keyboard Navigation
+
+Many complex components, like `Tabs` and `Dialog`, come with expectations from users on how to interact with their content using a keyboard or other non-mouse input modalities.
+Radix Primitives provide basic keyboard support in accordance with the [WAI-ARIA authoring practices](https://www.w3.org/TR/wai-aria-practices-1.2/).
+
+## Focus Management
+
+Proper keyboard navigation and good labelling often go hand-in-hand with managing focus. When a user interacts with an element and something changes as a result, it's often helpful to move focus with the interaction so that the next tab stop is logical depending on the new context of the app. And for screen reader users, moving focus often results in an announcement to convey this new context, which relies on proper labelling.
+
+In many Radix Primitives, we move focus based on the interactions a user normally takes in a given component.
+For example, in `AlertDialog`, when the modal is opened, focus is programmatically moved to a `Cancel` button
+element to anticipate a response to the prompt.
+
+## Dev-mode diagnostics
+
+A headless library fails quietly: a misused part doesn't render wrong, it just stops working — the
+popup never opens, the label is never announced, the state is never styled. To surface these mistakes,
+the primitives emit **development-only** diagnostics. All of them are stripped from production builds
+(`isDevMode()` is `false`), so they never reach your users and add no runtime cost in production.
+
+Every message is prefixed with a stable, greppable code in the form `[rdx:<primitive>/<slug>]` and
+links to the relevant docs page.
+
+**Warnings** (`console.warn`, deduplicated so each code logs at most once per page load) flag a
+recoverable mistake:
+
+| Code                                | Fires when                                                                                                  |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `field/unassociated-label`          | `rdxFieldLabel` is placed on a non-`<label>` element, so its `for` attribute can't associate the control.    |
+| `preview-card/trigger-element`      | `rdxPreviewCardTrigger` is on a non-interactive, non-focusable host (use a `<button>`/`<a>` or add `tabindex`). |
+| `autocomplete/virtualized-item-label` | `rdxAutocompleteRoot` is `virtualized` with object items but has no `itemToStringValue` to label them.       |
+| `tabs/tab-outside-list`             | `rdxTabsTab` is rendered outside its `rdxTabsList`, so it gets no roving tabindex and arrow keys can't reach it. |
+| `toggle-group/missing-toggle-value` | `rdxToggle` sits inside an `rdxToggleGroup` without a `value`, so the group can't derive its pressed state.  |
+| `menu/items-outside-composite`      | `rdxMenuPopup` holds menu items registered with another list (projected in from a wrapper), so keyboard navigation skips them. |
+
+**Errors** (thrown in dev) flag markup that cannot work at all: the structural portal guards
+(`<primitive>/portal-on-element`), thrown when a structural `*rdx…Portal` directive is used as a plain
+attribute on an element instead of an `ng-template`, and `popover/trigger-missing-root`, thrown when
+`rdxPopoverTrigger` has neither an enclosing `rdxPopoverRoot` nor a `handle` connected to one.
+
+Most parts that require a specific host element enforce it through their **selector** (e.g.
+`button[rdxSelectTrigger]`, `label[rdxLabel]`), so the mistake is caught at compile time and needs no
+runtime check.
+
+## Debugging in Angular DevTools
+
+Root state signals, computeds, and long-lived effects carry a `debugName` (e.g. `RdxPopoverRoot.state`,
+`RdxPopoverRoot.startTransition`) so they show up by name — instead of anonymous nodes — in the Angular
+DevTools signal graph and profiler.
+
+Source: [Radix UI](https://www.radix-ui.com/)

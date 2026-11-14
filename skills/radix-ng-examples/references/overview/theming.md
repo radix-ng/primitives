@@ -1,0 +1,126 @@
+# Theming
+
+Radix NG primitives are **headless**: the directives ship no styles of their own. They render
+the correct semantics (roles, `aria-*`) and expose their state through `data-*` attributes, so
+you stay in full control of the look and feel. You can style them with plain CSS, CSS Modules,
+Tailwind, or any other approach.
+
+## Styling with data attributes
+
+Read each part's documented attributes before styling it. Presence attributes are absent when the
+state is inactive; valued attributes such as orientation retain their documented values. There is
+no universal state enum across all parts.
+
+```css
+/* state */
+[data-open] {
+}
+[data-closed] {
+}
+
+/* flags (present only when active) */
+[data-disabled] {
+}
+[data-highlighted] {
+}
+
+/* orientation / direction */
+[data-orientation='vertical'] {
+}
+[dir='rtl'] {
+}
+```
+
+For example, Accordion Trigger uses `data-panel-open`; its Panel exposes `data-open` and transition
+hooks such as `data-ending-style` (it does not expose `data-closed`):
+
+```css
+.AccordionTrigger[data-panel-open] {
+  background-color: var(--accent);
+}
+
+.AccordionPanel[data-ending-style] {
+  opacity: 0;
+}
+```
+
+## Enter / exit animations
+
+Because state lives on `data-*` attributes, you can drive CSS animations straight from them.
+Primitives backed by `RdxPresenceDirective` (e.g. Tooltip, Select, Collapsible content) keep
+the element mounted until the exit animation defined for the closed state finishes:
+
+```css
+.SelectPopup[data-open] {
+  animation: fade-in 150ms ease-out;
+}
+.SelectPopup[data-closed] {
+  animation: fade-out 150ms ease-in;
+}
+```
+
+For size-based animations, components such as Collapsible and Accordion expose CSS variables
+with the measured dimensions:
+
+```css
+.AccordionPanel[data-open] {
+  animation: slide-down 150ms ease-out;
+}
+
+@keyframes slide-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--accordion-panel-height);
+  }
+}
+```
+
+## Design tokens & dark mode
+
+Use CSS custom properties to centralize your palette, and override them under a theme selector
+(a `data-theme` attribute or a `.dark` class) to support light/dark — no JavaScript required.
+
+```css
+:root {
+  --background: white;
+  --foreground: oklch(14.5% 1% 264deg);
+  --border: oklch(90% 1% 264deg);
+  --primary: oklch(20.5% 1% 264deg);
+}
+
+:root[data-theme='dark'] {
+  --background: oklch(14.5% 1% 264deg);
+  --foreground: oklch(96% 0.5% 264deg);
+  --border: oklch(30% 1% 264deg);
+  --primary: oklch(92% 0.5% 264deg);
+}
+```
+
+```css
+.Button {
+  color: var(--foreground);
+  background-color: var(--background);
+  border: 1px solid var(--border);
+}
+```
+
+## Using Tailwind
+
+The primitives work well with Tailwind — apply utility classes to the part elements and use
+state variants for the `data-*` attributes:
+
+```html
+<button
+  class="border-border bg-background text-foreground data-[panel-open]:bg-muted rounded-md border px-4 py-2"
+  rdxAccordionTrigger
+>
+  Trigger
+</button>
+```
+
+Map your design tokens to Tailwind theme colors (Tailwind v4 uses a CSS-first `@theme` block)
+so utilities like `bg-background` and `border-border` resolve to the variables above. This is
+exactly how the demos in this Storybook are themed; the theme toggle in the toolbar simply sets
+`data-theme` on the document root.

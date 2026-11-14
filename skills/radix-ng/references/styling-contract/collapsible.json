@@ -5,7 +5,63 @@
   "section": "components",
   "description": "A collapsible panel controlled by a button.",
   "doc": "radix-ng-examples/references/components/collapsible.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-collapsible--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-collapsible--docs",
   "anatomy": "<div rdxCollapsibleRoot>\n  <button rdxCollapsibleTrigger>Trigger</button>\n  <div rdxCollapsiblePanel>Panel</div>\n</div>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-open",
+      "parts": "Root",
+      "values": "The collapsible is open."
+    },
+    {
+      "attribute": "data-closed",
+      "parts": "Root",
+      "values": "The collapsible is closed."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Root",
+      "values": "The collapsible is disabled."
+    },
+    {
+      "attribute": "data-panel-open",
+      "parts": "Trigger",
+      "values": "The panel is open."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Trigger",
+      "values": "The collapsible is disabled."
+    },
+    {
+      "attribute": "data-starting-style",
+      "parts": "Trigger",
+      "values": "The panel is in the enter transition."
+    },
+    {
+      "attribute": "data-ending-style",
+      "parts": "Trigger",
+      "values": "The panel is in the exit transition."
+    },
+    {
+      "attribute": "data-open",
+      "parts": "Panel",
+      "values": "The panel is open."
+    },
+    {
+      "attribute": "data-closed",
+      "parts": "Panel",
+      "values": "The panel is closed."
+    },
+    {
+      "attribute": "data-starting-style",
+      "parts": "Panel",
+      "values": "The panel is in the enter transition."
+    },
+    {
+      "attribute": "data-ending-style",
+      "parts": "Panel",
+      "values": "The panel is in the exit transition."
+    }
+  ]
 }

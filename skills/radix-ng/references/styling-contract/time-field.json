@@ -5,7 +5,38 @@
   "section": "components",
   "description": "A segmented time input that lets users enter a time hour-by-hour with full keyboard control and localization.",
   "doc": "radix-ng-examples/references/components/time-field.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-time-field--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-time-field--docs",
   "anatomy": "<div rdxTimeFieldRoot>\n  @for (item of root.segmentContents(); track $index) {\n  <div rdxTimeFieldInput [part]=\"item.part\">{{ item.value }}</div>\n  }\n  <input rdxVisuallyHiddenInput feature=\"focusable\" />\n</div>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-disabled",
+      "parts": "Root, Input",
+      "values": "The field is disabled."
+    },
+    {
+      "attribute": "data-readonly",
+      "parts": "Root",
+      "values": "The field is read-only."
+    },
+    {
+      "attribute": "data-invalid",
+      "parts": "Root, Input",
+      "values": "The field is invalid."
+    },
+    {
+      "attribute": "data-valid",
+      "parts": "Root",
+      "values": "The field is valid."
+    },
+    {
+      "attribute": "data-touched",
+      "parts": "Root",
+      "values": "The field has been touched."
+    },
+    {
+      "attribute": "data-dirty",
+      "parts": "Root",
+      "values": "The field value has changed."
+    }
+  ]
 }

@@ -48,8 +48,8 @@ swap on the root and the thumb every time you click:
 
 ## State is a _present-or-absent_ attribute, not a value
 
-Notice there is no `data-state="checked"`. Following [Base UI](https://base-ui.com/), this library
-expresses state as **paired presence attributes**: the relevant one is present (with an empty
+Notice there is no `data-state="checked"`. Following [Base UI](https://base-ui.com/), many parts
+express state as **paired presence attributes**: the relevant one is present (with an empty
 value), the other is absent.
 
 ```ts
@@ -63,9 +63,10 @@ host: {
 
 `undefined` removes the attribute entirely, so `[data-checked]` matches _only_ when the switch is
 actually on. That's why you always write the bare selector `[data-checked]` and never
-`[data-checked='true']`. The same shape repeats everywhere: Collapsible publishes
-`data-open` / `data-closed`, Tabs publishes `data-active`, every disableable part publishes
-`data-disabled`.
+`[data-checked='true']`. Read the exact part contract: Collapsible Panel publishes `data-open` / `data-closed`, Tabs Tab
+publishes `data-active`, and Accordion Trigger uses `data-panel-open`. Some parts, including Toast
+Root and Stepper Item, retain documented `data-state` values. Orientation and placement attributes
+also carry values rather than using presence semantics.
 
 ## Styling the state
 
@@ -95,11 +96,8 @@ The exact same selectors work in Tailwind via arbitrary variants, so you never l
 workflow:
 
 ```html
-<button
-  rdxSwitchRoot
-  class="rounded-full transition-colors data-[checked]:bg-accent data-[disabled]:opacity-50"
->
-  <span rdxSwitchThumb class="transition-transform data-[checked]:translate-x-4"></span>
+<button class="data-[checked]:bg-accent rounded-full transition-colors data-[disabled]:opacity-50" rdxSwitchRoot>
+  <span class="transition-transform data-[checked]:translate-x-4" rdxSwitchThumb></span>
 </button>
 ```
 

@@ -5,7 +5,7 @@
   "section": "utils",
   "description": "Positions floating content relative to an anchor.",
   "doc": "radix-ng-examples/references/utils/popper.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-popper--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-popper--docs",
   "anatomy": "<div rdxPopperRoot>\n    <button rdxPopperAnchor>Anchor</button>\n\n    <div side=\"top\" sideOffset=\"8\" rdxPopperContentWrapper>\n        <div rdxPopperContent>Floating content</div>\n        <span rdxPopperArrow></span>\n    </div>\n</div>",
   "dataAttributes": [
     {

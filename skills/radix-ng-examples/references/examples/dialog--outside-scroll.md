@@ -4,7 +4,7 @@
 
 > Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
-Make the `rdxDialogViewport` fill the screen and compose a custom [Scroll Area](?path=/docs/primitives-scroll-area--docs)
+Make the `rdxDialogViewport` fill the screen and compose a custom [Scroll Area](scroll-area.md)
 inside it, so the whole dialog scrolls — with a styled overlay scrollbar — when it is taller than the
 screen. Center the popup with the scroll-area content's `min-h-full items-center` layout and give it
 vertical margin so it can grow past the bottom edge.

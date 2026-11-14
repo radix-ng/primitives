@@ -46,6 +46,7 @@ class ManagerHost {
     readonly returnFocus = signal<RdxReturnFocus>(true);
     readonly restoreFocus = signal<boolean | 'popup'>(false);
     readonly scope = viewChild.required('scope', { read: ElementRef });
+    readonly focusScope = viewChild.required('scope', { read: RdxFocusScope });
     readonly a = viewChild.required('a', { read: ElementRef });
     readonly b = viewChild.required('b', { read: ElementRef });
     readonly manager = viewChild.required(RdxFloatingFocusManager);
@@ -106,35 +107,43 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
     afterEach(() => appended.splice(0).forEach((el) => el.remove()));
     beforeEach(() => TestBed.resetTestingModule());
 
-    it('restoreFocus=true repairs removal even when the browser sends no focusout', async () => {
-        const fixture = TestBed.createComponent(ManagerHost),
-            host = fixture.componentInstance;
-        host.restoreFocus.set(true);
-        host.closeOnFocusOut.set(false);
-        fixture.detectChanges();
-        await fixture.whenStable();
-        await flush();
-        host.a().nativeElement.focus();
-        host.a().nativeElement.remove();
-        await flush();
-        await flush();
-        expect(document.activeElement).toBe(host.b().nativeElement);
-    });
+    it.each([true, 'popup'] as const)(
+        'restoreFocus=%s repairs removal even when the browser sends no focusout',
+        async (policy) => {
+            const fixture = TestBed.createComponent(ManagerHost),
+                host = fixture.componentInstance;
+            host.restoreFocus.set(policy);
+            host.closeOnFocusOut.set(false);
+            fixture.detectChanges();
+            await fixture.whenStable();
+            await flush();
+            host.a().nativeElement.focus();
+            host.a().nativeElement.remove();
+            await flush();
+            await flush();
+            expect(document.activeElement).toBe(
+                policy === 'popup' ? host.scope().nativeElement : host.b().nativeElement
+            );
+        }
+    );
 
-    it('restoreFocus=true preserves an explicit blur of a visible control', async () => {
-        const fixture = TestBed.createComponent(ManagerHost),
-            host = fixture.componentInstance;
-        host.restoreFocus.set(true);
-        host.closeOnFocusOut.set(false);
-        fixture.detectChanges();
-        await fixture.whenStable();
-        await flush();
-        host.a().nativeElement.focus();
-        host.a().nativeElement.blur();
-        await flush();
-        await flush();
-        expect(document.activeElement).toBe(document.body);
-    });
+    it.each([true, 'popup'] as const)(
+        'restoreFocus=%s preserves an explicit blur of a visible control',
+        async (policy) => {
+            const fixture = TestBed.createComponent(ManagerHost),
+                host = fixture.componentInstance;
+            host.restoreFocus.set(policy);
+            host.closeOnFocusOut.set(false);
+            fixture.detectChanges();
+            await fixture.whenStable();
+            await flush();
+            host.a().nativeElement.focus();
+            host.a().nativeElement.blur();
+            await flush();
+            await flush();
+            expect(document.activeElement).toBe(document.body);
+        }
+    );
 
     it('recognizes native keyboard PointerEvent clicks without reclassifying real touch clicks', () => {
         const keyboardClick = new MouseEvent('click', { detail: 0 });
@@ -165,6 +174,17 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
         await fixture.whenStable();
         await flush();
         expect(document.activeElement).toBe(fixture.componentInstance.a().nativeElement);
+    });
+
+    it('does not run pending initial-focus recovery while its scope is paused', async () => {
+        const fixture = TestBed.createComponent(ManagerHost);
+        fixture.autoDetectChanges();
+        await fixture.whenStable();
+        const scope = fixture.componentInstance.focusScope();
+        scope.focusScope.pause();
+        fixture.componentInstance.a().nativeElement.blur();
+        await flush();
+        expect(document.activeElement).toBe(document.body);
     });
 
     it('waits for positioning before autofocus and does not reactivate on later layout updates', async () => {

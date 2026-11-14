@@ -111,9 +111,14 @@ const config: StorybookConfig = {
         });
     },
 
-    // Serve the generated LLM docs bundle (tools/scripts/skills) at the deploy root, so
+    // Serve the generated LLM docs bundle (tools/scripts/skills) at Storybook's base, so
     // /llms.txt, /llms-full.txt, and /<section>/<slug>.md are available for LLM consumers.
-    staticDirs: ['../public', { from: '../../../skills/radix-ng-examples/references', to: '/' }],
+    staticDirs: [
+        '../public',
+        { from: '../../../skills/radix-ng-examples/references', to: '/' },
+        { from: '../../../skills/radix-ng/references/api-contract', to: '/api-contract' },
+        { from: '../../../skills/radix-ng/references/styling-contract', to: '/styling-contract' }
+    ],
 
     docs: {}
 };

@@ -5,7 +5,28 @@
   "section": "components",
   "description": "A graphical display of a numeric value within a range.",
   "doc": "radix-ng-examples/references/components/meter.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-meter--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-meter--docs",
   "anatomy": "<div rdxMeterRoot [value]=\"24\">\n  <span rdxMeterLabel>Storage used</span>\n  <div rdxMeterTrack>\n    <div rdxMeterIndicator></div>\n  </div>\n  <span rdxMeterValue></span>\n</div>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-value",
+      "parts": "Root, Value, Track, Indicator",
+      "values": "The current numeric value."
+    },
+    {
+      "attribute": "data-min",
+      "parts": "Root, Value, Track, Indicator",
+      "values": "The minimum value."
+    },
+    {
+      "attribute": "data-max",
+      "parts": "Root, Value, Track, Indicator",
+      "values": "The maximum value."
+    },
+    {
+      "attribute": "data-percent",
+      "parts": "Root, Value, Track, Indicator",
+      "values": "The current percentage within the range."
+    }
+  ]
 }

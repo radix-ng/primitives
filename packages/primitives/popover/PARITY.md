@@ -4,22 +4,23 @@ Audited 2026-11-14 against Base UI 1.9.0 commit
 [`cf696d6f6e08c699c5bda24d5a033430909f2285`](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/popover).
 This is incremental behavioral coverage, not complete API or accessibility certification.
 
-| Contract                                                    | Evidence                         | Status                                     |
-| ----------------------------------------------------------- | -------------------------------- | ------------------------------------------ |
-| Keyboard, pointer, toggle, disabled                         | Pinned suite, three engines      | Covered scenarios                          |
-| Cancelable open/close and completion ordering               | Pinned suite                     | Covered scenarios                          |
-| Default/explicit autofocus, Escape return                   | Pinned suite                     | Covered scenarios                          |
-| Modal/trap-focus wrapping and outside dismissal             | Pinned suite                     | Covered scenarios; exact differences below |
-| Trigger switch and native text editing                      | Pinned suite                     | Covered scenarios                          |
-| Live/frozen tracking, clipping recovery                     | Pinned suite                     | Covered scenarios                          |
-| Arrow, structural portal, scroll-lock release               | Angular Storybook regressions    | Pinned comparisons pending                 |
-| CSS/deferred exit, retained draft and interrupted reopening | Pinned suite, three engines      | Covered scenarios                          |
-| Select child, modal child and custom portal                 | Select differential suite        | Composition scenarios covered              |
-| Hover/grace areas, handles/payloads, RTL                    | Not yet compared                 | Pending                                    |
-| Real Safari/devices and assistive technology                | Automation cannot establish this | Manual verification pending                |
+| Contract                                                    | Evidence                         | Status                                          |
+| ----------------------------------------------------------- | -------------------------------- | ----------------------------------------------- |
+| Keyboard, pointer, toggle, disabled                         | Pinned suite, three engines      | Covered scenarios                               |
+| Cancelable open/close and completion ordering               | Pinned suite                     | Covered scenarios                               |
+| Default/explicit autofocus, Escape return                   | Pinned suite                     | Covered scenarios                               |
+| Modal/trap-focus wrapping and outside dismissal             | Pinned suite                     | Covered scenarios; exact differences below      |
+| Secondary outside press                                     | Pinned suite, three engines      | Intentional default/modal; immediate trap-focus |
+| Trigger switch and native text editing                      | Pinned suite                     | Covered scenarios                               |
+| Live/frozen tracking, clipping recovery                     | Pinned suite                     | Covered scenarios                               |
+| Arrow, structural portal, scroll-lock release               | Angular Storybook regressions    | Pinned comparisons pending                      |
+| CSS/deferred exit, retained draft and interrupted reopening | Pinned suite, three engines      | Covered scenarios                               |
+| Select child, modal child and custom portal                 | Select differential suite        | Composition scenarios covered                   |
+| Hover/grace areas, handles/payloads, RTL                    | Not yet compared                 | Pending                                         |
+| Real Safari/devices and assistive technology                | Automation cannot establish this | Manual verification pending                     |
 
-The [runner](../../../apps/parity-testing/primitives/popover/README.md) defines 25 scenarios,
-75 engine comparisons and one exact macOS WebKit difference: canceled Close retains native Safari
+The [runner](../../../apps/parity-testing/primitives/popover/README.md) defines 28 scenarios,
+84 engine comparisons and one exact macOS WebKit difference: canceled Close retains native Safari
 button click-focus behavior. Outside close now reports the native focus-out reason in line with the
 pin; the three earlier outside-close-reason entries are removed. Payloads are observed directly.
 
@@ -27,6 +28,12 @@ Default autofocus waits for a positioned popup, restores the portal's natural ta
 and focuses the first candidate. Managed modal scopes loop at both Tab edges and release trapping
 at logical close. Default return uses the actual trigger for an interaction-driven open if focus
 has not deliberately moved elsewhere; explicit return policies retain their priority.
+
+An ordinary or modal Popover waits for a completed primary click; a secondary press on unfocusable
+background does not dismiss it. Trap-focus mode closes on pointerdown. Focus recovery only repairs
+removed or hidden content: a visible field's native blur must not refocus the popup or change the
+reason reported by the next outside click. Three secondary-press cases compare these phases and
+the actual native focus without new difference exceptions.
 
 ## Close lifecycle increment
 

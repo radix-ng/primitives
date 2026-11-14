@@ -1,0 +1,118 @@
+# Verify the result
+
+#### Compile the consumer's templates and verify observable interaction contracts.
+
+Use the application's existing build and test commands. Run its Angular template compiler with
+strict template checks: a TypeScript-only transpile cannot establish that Angular bindings are valid.
+Check public imports, standalone `imports`, input types, event payloads and exposed wrapper bindings.
+
+## Observe the rendered result
+
+- Find controls by role and accessible name; verify label and description relationships.
+- Exercise the documented keyboard path, including disabled controls, selection and dismissal.
+- Check initial focus, containment where required, and focus return after closing.
+- Exercise nested overlays and real portal/exit behavior in a browser. DOM-only tests cannot prove
+  positioning, visibility, native focus or scrolling.
+- Check that no runtime or Angular errors appear during the interaction.
+
+Follow the relevant primitive's [accessibility documentation](../overview/accessibility.md).
+An automated check covers its assertions, not complete accessibility conformance.
+
+## Reproducible coding-agent tasks
+
+The prompts below are a small evaluation set. Pair each one with the starter prompt from
+[Getting started](getting-started.md) and your application's constraints.
+The referenced examples and tests are maintained fixtures, **not evidence that an agent generated
+them successfully**. No agent-generation success rate is established by these fixture checks.
+
+### Form with labels and validation
+
+```text
+Build a standalone email form using Radix NG Field and Angular Reactive Forms.
+Use a visible Email label, description, required/email validators and separate error messages.
+Preserve invalid, dirty and touched styling through the documented state hooks.
+Compile the Angular template and verify the form with keyboard input.
+```
+
+Reference: [Field — Reactive Forms](../components/field.md), bundled source
+`references/examples/field--reactive-forms.md`.
+
+Success criteria:
+
+- Public Field imports and `ReactiveFormsModule`; valid `formControlName`, `rdxFieldControl` and
+  `rdxNgControlField` bindings compile without permissive schemas.
+- The native input is named Email and is connected to the visible description and errors.
+- Keyboard submission reveals the required error. Entering invalid email shows the email error;
+  correcting it clears displayed invalid state. Dirty/touched state reflects actual interaction.
+- `Tab` moves between the input and Submit; submission does not strand focus.
+
+### Select inside Dialog
+
+```text
+Build a Dialog titled Choose a fruit with a labelled Fruit Select inside it.
+Offer Apple, Banana and Cherry. Keep selection state when the Select closes.
+Escape must close the Select before the Dialog; each close restores the right trigger.
+Compile the Angular template and verify keyboard selection and nested focus in a browser.
+```
+
+Reference: [Select — Focus management](../components/select.md), using its Dialog shell;
+bundled source `references/examples/select--focus-management.md`.
+
+Success criteria:
+
+- Public Select and Dialog imports, portal anatomy and value/open bindings compile.
+- The Dialog and combobox have the requested accessible names before selecting an option.
+- `Enter` opens Select, arrows change the highlighted option, and `Enter` commits selection.
+- Closing Select preserves the Dialog and returns focus to the combobox; the next `Escape` closes
+  the Dialog and focuses Open dialog. Focus remains contained while the modal Dialog is open.
+
+### Open Dialog from Menu
+
+```text
+Build a Document actions Menu with a Rename document item that opens a labelled Dialog.
+The Dialog contains a Document name input and Cancel/Save actions.
+Use the documented composition and handle API, and preserve Dialog focus while the Menu exits.
+Compile the Angular template and verify keyboard activation and focus return.
+```
+
+Reference: [Menu — Opening a dialog from an item](../components/menu.md), bundled source
+`references/examples/menu--open-dialog.md`.
+
+Success criteria:
+
+- Public Menu/Dialog imports, `rdxMenuItem` + `rdxDialogTrigger` composition and handle bindings compile.
+- `Enter` opens Menu and activates Rename document. The Menu closes and the Dialog's input receives
+  focus without the Menu's exit restoring focus underneath it.
+- The Dialog has a title, description and labelled input. `Tab` stays within the modal Dialog.
+- `Escape` or Cancel closes the Dialog and returns focus to Document actions.
+
+### Tabs wrapper using hostDirectives
+
+```text
+Build a standalone Tabs wrapper with RdxTabsRoot composed through hostDirectives.
+Keep its list in the wrapper view and project three consumer tabs and their panels.
+Preserve Root DI ownership, active state and keyboard navigation without reimplementing Tabs.
+Compile the projected consumer template and verify Arrow, Home, End and activation keys.
+```
+
+Reference: [Tabs — Projected through wrapper](../components/tabs.md), bundled source
+`references/examples/tabs--projected-through-a-wrapper.md`.
+
+Success criteria:
+
+- Public Tabs imports and `hostDirectives` metadata compile, including the consuming template.
+- Projected tabs resolve the host's Root and the inner List without missing-context errors.
+- Tabs and panels have linked roles and names; exactly one tab is selected and tabbable.
+- Arrow keys, `Home` and `End` move focus; activation follows the documented mode, and the
+  corresponding panel becomes visible. `Tab` can leave the tab list.
+
+## Fixture checks versus generation runs
+
+In the Radix NG repository, `apps/radix-storybook/tsconfig.agents.json` checks these example templates
+with Angular, and `apps/visual-regression/tests/agents.behavior.spec.ts` exercises the four fixtures
+through the existing Playwright setup. They verify examples that an agent can consult.
+
+To evaluate generation, run the prompts in clean consumer projects with recorded library, bundle,
+Angular and agent/model versions. Preserve the exact prompt, generated diff, compiler output and
+browser results for each task. Report unassisted results separately from human fixes. A checked
+reference example does not count as a generation run.

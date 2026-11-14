@@ -31,8 +31,14 @@ pnpm skills:build
 This regenerates, from the Storybook docs (the source of truth):
 
 - `radix-ng/references/styling-contract.json`
+- `radix-ng/references/api-contract/<slug>.json` and `styling-contract/<slug>.json` (prefer these versioned shards)
 - `radix-ng-examples/SKILL.md`
 - `radix-ng-examples/references/**` (per-component `.md` + `llms-full.txt`)
+
+The public [Agents guide](https://radix-ng.com/docs/?path=/docs/agents-getting-started--docs) is also
+bundled under `radix-ng-examples/references/agents/`. Compare the shard version with the installed
+package before using it; installed exports and types take precedence when versions differ. Compile
+and check generated UI in the consumer application.
 
 Hand-authored (never overwritten by the generator):
 

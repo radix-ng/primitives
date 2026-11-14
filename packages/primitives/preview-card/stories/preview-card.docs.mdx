@@ -118,11 +118,11 @@ content reached from a link — not a dialog — the trigger carries **no** `ari
 
 **Data attributes**
 
-| Attribute         | Present when                          |
-| ----------------- | ------------------------------------- |
-| `data-popup-open` | The preview card is open.             |
-| `data-pressed`    | The trigger is pressed.               |
-| `data-disabled`   | The trigger is disabled.              |
+| Attribute         | Present when              |
+| ----------------- | ------------------------- |
+| `data-popup-open` | The preview card is open. |
+| `data-pressed`    | The trigger is pressed.   |
+| `data-disabled`   | The trigger is disabled.  |
 
 ### Positioner
 
@@ -130,8 +130,14 @@ Positions the popup against the active trigger or a custom anchor.
 
 <ArgTypes of={RdxPreviewCardPositioner} />
 
-**Data attributes**: `data-open`, `data-closed`, `data-side`, `data-align`, `data-anchor-hidden`,
-`data-instant` (`delay`-free: `'focus'` / `'dismiss'`).
+| Attribute            | Present when / value                             |
+| -------------------- | ------------------------------------------------ |
+| `data-open`          | The preview card is open.                        |
+| `data-closed`        | The preview card is closed.                      |
+| `data-side`          | The resolved placement side.                     |
+| `data-align`         | The resolved placement alignment.                |
+| `data-anchor-hidden` | The anchor is fully occluded.                    |
+| `data-instant`       | `focus` / `dismiss` for a delay-free transition. |
 
 **CSS variables**: `--anchor-width` / `--anchor-height`, `--available-width` / `--available-height`,
 `--transform-origin`.
@@ -144,14 +150,14 @@ The floating preview surface. It exposes dismiss events and transition attribute
 
 **Data attributes**
 
-| Attribute             | Present when / value                                                       |
-| --------------------- | ------------------------------------------------------------------------- |
-| `data-open`           | The preview card is open.                                                  |
-| `data-closed`         | The preview card is closed.                                               |
-| `data-side`           | Resolved side — `top` / `right` / `bottom` / `left`.                       |
-| `data-align`          | Resolved alignment — `start` / `center` / `end`.                          |
-| `data-starting-style` | The enter transition is about to run.                                     |
-| `data-ending-style`   | The exit transition is running.                                           |
+| Attribute             | Present when / value                                                                      |
+| --------------------- | ----------------------------------------------------------------------------------------- |
+| `data-open`           | The preview card is open.                                                                 |
+| `data-closed`         | The preview card is closed.                                                               |
+| `data-side`           | Resolved side — `top` / `right` / `bottom` / `left`.                                      |
+| `data-align`          | Resolved alignment — `start` / `center` / `end`.                                          |
+| `data-starting-style` | The enter transition is about to run.                                                     |
+| `data-ending-style`   | The exit transition is running.                                                           |
 | `data-instant`        | An instant open/close — `focus` (focus open) / `dismiss` (trigger-press or Escape close). |
 
 ### Arrow, Backdrop, and Viewport
@@ -166,7 +172,7 @@ The floating preview surface. It exposes dismiss events and transition attribute
 
 ### Keyboard Interactions
 
-| Key                     | Description                                                                                       |
-| ----------------------- | ------------------------------------------------------------------------------------------------- |
+| Key                     | Description                                                                                           |
+| ----------------------- | ----------------------------------------------------------------------------------------------------- |
 | `Tab` / `Shift` + `Tab` | Moves focus onto the trigger (opening the preview card after the delay) or away from it (closing it). |
-| `Escape`                | Closes the open preview card.                                                                     |
+| `Escape`                | Closes the open preview card.                                                                         |

@@ -5,7 +5,7 @@
   "section": "components",
   "description": "An image element with a fallback for representing the user.",
   "doc": "radix-ng-examples/references/components/avatar.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-avatar--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-avatar--docs",
   "anatomy": "<span rdxAvatarRoot>\n  <img rdxAvatarImage src=\"...\" alt=\"...\" />\n  <span rdxAvatarFallback>AB</span>\n</span>",
   "dataAttributes": []
 }

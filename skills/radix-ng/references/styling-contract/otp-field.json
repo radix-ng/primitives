@@ -5,7 +5,58 @@
   "section": "components",
   "description": "A headless one-time-code control built from one native input per character.",
   "doc": "radix-ng-examples/references/components/otp-field.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-otp-field--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-otp-field--docs",
   "anatomy": "<label id=\"verification-code-label\" for=\"verification-code\">Verification code</label>\n<div\n  rdxOtpFieldRoot\n  [id]=\"'verification-code'\"\n  aria-labelledby=\"verification-code-label\"\n  [length]=\"6\"\n  name=\"verificationCode\"\n  [autoComplete]=\"'one-time-code'\"\n>\n  <input rdxOtpFieldInput />\n  <input rdxOtpFieldInput />\n  <input rdxOtpFieldInput />\n  <input rdxOtpFieldInput />\n  <input rdxOtpFieldInput />\n  <input rdxOtpFieldInput />\n</div>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-disabled",
+      "parts": "Root, Input",
+      "values": "Present when interaction is disabled."
+    },
+    {
+      "attribute": "data-readonly",
+      "parts": "Root, Input",
+      "values": "Present when edits are disallowed."
+    },
+    {
+      "attribute": "data-required",
+      "parts": "Root, Input",
+      "values": "Present when a complete value is required."
+    },
+    {
+      "attribute": "data-valid",
+      "parts": "Root, Input",
+      "values": "Present when the form state is valid."
+    },
+    {
+      "attribute": "data-invalid",
+      "parts": "Root, Input",
+      "values": "Present when the form state is invalid."
+    },
+    {
+      "attribute": "data-dirty",
+      "parts": "Root, Input",
+      "values": "Present after the value changes."
+    },
+    {
+      "attribute": "data-touched",
+      "parts": "Root, Input",
+      "values": "Present after focus leaves the field."
+    },
+    {
+      "attribute": "data-complete",
+      "parts": "Root, Input",
+      "values": "Present when the value has one character per slot."
+    },
+    {
+      "attribute": "data-filled",
+      "parts": "Root, Input",
+      "values": "Root: any character; Input: that slot has a character."
+    },
+    {
+      "attribute": "data-focused",
+      "parts": "Root, Input",
+      "values": "Present while any slot has focus."
+    }
+  ]
 }

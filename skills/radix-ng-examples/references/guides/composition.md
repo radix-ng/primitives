@@ -1,0 +1,176 @@
+# Composition
+
+#### A guide to composing Radix NG primitives with your own Angular components and markup.
+
+Radix NG primitives are headless attribute directives. They add behavior, accessibility attributes,
+and `data-*` state to the host element without choosing your markup or styles. In most cases,
+composition is as simple as applying a directive to the element that should own the behavior.
+
+## Composing custom markup
+
+Use a primitive directive on your own element and keep the content, classes, and application event
+handlers in the template.
+
+```html
+<button
+    rdxButton
+    class="rounded-md bg-primary px-3 py-2 text-primary-foreground"
+    (click)="save()"
+>
+    Save changes
+</button>
+```
+
+The directive and your template share the same host element. There is no wrapper element and no
+equivalent of a React `render` prop or `asChild` prop.
+
+## Composing multiple primitives
+
+Angular can apply multiple directives to the same host element. Use this when one element needs
+behavior from more than one primitive.
+
+For example, a button inside a toolbar can combine button semantics with toolbar keyboard
+navigation:
+
+```html
+<div rdxToolbarRoot aria-label="Formatting">
+    <button rdxToolbarButton rdxButton>Bold</button>
+    <button rdxToolbarButton rdxButton>Italic</button>
+</div>
+```
+
+Each directive remains responsible for one concern. The resulting element receives the combined
+host bindings and event handling without additional markup.
+
+## Composing custom components
+
+When a design-system component should always include primitive behavior, compose the directive into
+the component with Angular's
+[directive composition API](https://angular.dev/guide/directives/directive-composition-api).
+
+```ts
+import { Component } from '@angular/core';
+import { RdxButtonDirective } from '@radix-ng/primitives/button';
+
+@Component({
+    selector: 'app-icon-button',
+    template: '<ng-content />',
+    hostDirectives: [
+        {
+            directive: RdxButtonDirective,
+            inputs: ['disabled', 'focusableWhenDisabled']
+        }
+    ]
+})
+export class IconButton {}
+```
+
+```html
+<app-icon-button [disabled]="saving">Save</app-icon-button>
+```
+
+Inputs and outputs from a host directive are private by default. List the ones that should be part
+of your wrapper's public API in `inputs` and `outputs`. You can alias them when the wrapper should
+use a different name:
+
+```ts
+hostDirectives: [
+    {
+        directive: RdxButtonDirective,
+        inputs: ['disabled: buttonDisabled']
+    }
+]
+```
+
+## Projecting compound parts
+
+Angular content projection preserves the injector ancestry of the template that declared a node.
+Rendering a projected part through `<ng-content>` changes its DOM position, but it does not make the
+part a dependency-injection child of directives inside the wrapper's view.
+
+This distinction matters when a compound primitive has an intermediate provider-bearing part. A
+portable wrapper exposes that part on its own host so its projected children share the same declaring
+tree:
+
+```ts
+@Component({
+    selector: 'app-tabs',
+    template: '<ng-content />',
+    hostDirectives: [RdxTabsRoot]
+})
+export class AppTabs {}
+
+@Component({
+    selector: 'app-tabs-list',
+    template: '<ng-content />',
+    hostDirectives: [RdxTabsList]
+})
+export class AppTabsList {}
+```
+
+```html
+<app-tabs>
+    <app-tabs-list>
+        <button rdxTabsTab value="account">Account</button>
+        <button rdxTabsTab value="password">Password</button>
+    </app-tabs-list>
+    <div rdxTabsPanel value="account">Account settings</div>
+    <div rdxTabsPanel value="password">Password settings</div>
+</app-tabs>
+```
+
+Tabs and Navigation Menu also support projecting their top-level composite items into a List owned by
+the wrapper's template: each primitive explicitly bridges the List's composite ownership through its
+Root. The Root itself must stay in the projected content's declaring tree — compose it onto the
+wrapper's host, the way `app-tabs` does above. Moving the Root into the wrapper's template puts it out
+of the projected parts' reach and they throw a missing-context error. Do not assume an arbitrary
+compound primitive provides the same bridge; expose provider-bearing parts as wrapper hosts unless that
+primitive documents otherwise.
+
+Menu supports projecting item parts into a Popup declared in the wrapper's template. Its Root
+publishes the popup collection and restoration state through the same ownership bridge; SubTrigger
+joins the parent popup's collection. Compose Menu Root onto the wrapper host so projected parts can
+inject it. Keep provider-bearing groups such as RadioGroup on their wrapper host when projecting
+group items. See the Menu Composition example for mixed internal/projected items and nested portals.
+
+## Changing the rendered element
+
+Because primitives are attribute directives, you choose the rendered element directly in the
+template. Prefer the native element whose semantics match the interaction.
+
+```html
+<button rdxButton>Save</button>
+<a href="/account">Account</a>
+```
+
+Some primitives intentionally support other host elements. For example, `rdxButton` adds button
+semantics and keyboard activation to a non-button host when a real `<button>` cannot be used:
+
+```html
+<span rdxButton>Open menu</span>
+```
+
+Use a non-native host only when necessary. Native elements provide the strongest semantics with the
+least additional behavior.
+
+## Composing library internals
+
+The same `hostDirectives` API is used inside Radix NG to build complex primitives from smaller
+ones. For example, an accordion item reuses collapsible root behavior and exposes the inputs that
+belong to the accordion API:
+
+```ts
+@Directive({
+    selector: '[rdxAccordionItem]',
+    hostDirectives: [
+        {
+            directive: RdxCollapsibleRootDirective,
+            inputs: ['disabled: disabled', 'open: open']
+        }
+    ]
+})
+export class RdxAccordionItemDirective {}
+```
+
+Keep composed directives focused: reuse an existing primitive when its behavior already matches,
+and expose only the inputs and outputs that make sense for the public wrapper.

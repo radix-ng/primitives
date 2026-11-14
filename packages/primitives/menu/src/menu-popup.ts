@@ -27,6 +27,8 @@ import {
     RDX_MENU_ITEM_SELECTOR,
     RdxMenuCompositeItem
 } from './menu-focus';
+import { MENU_INTERNAL_BACKDROP_ATTR } from './menu-internal-backdrop';
+import { findMenuOwnerId } from './menu-owner';
 import { injectRdxMenuRootContext, RdxMenuOpenChangeReason } from './menu-root';
 
 /**
@@ -268,7 +270,15 @@ export class RdxMenuPopup {
             escapeKey: (event) =>
                 this.rootContext.parentType() !== 'menubar' || this.rootContext.ownsCoordinatorEscape(event),
             escapeKeyBubbles: () => this.rootContext.closeParentOnEsc(),
-            outsidePress: () => true,
+            outsidePress: (event) => {
+                const target = event.target as Node | null;
+                // Independent Context Menu Roots share floating ancestry, not a command chain.
+                // Their backdrop dismisses its own menu; submenus retain their owner's identity.
+                return (
+                    !(target?.nodeType === 1 && (target as Element).hasAttribute(MENU_INTERNAL_BACKDROP_ATTR)) ||
+                    findMenuOwnerId(target) === this.rootContext.ownerId()
+                );
+            },
             focusOutside: () => false,
             onEscapeKeyDown: (event) => this.escapeKeyDown.emit(event),
             onPointerDownOutside: (event) => {

@@ -4,7 +4,7 @@ import { desktopBrowserProjects } from '../../tools/playwright/browser-projects.
 import base from './playwright.config';
 
 export default defineConfig(base, {
-    testMatch: '**/docs-navigation.behavior.spec.ts',
+    testMatch: ['**/docs-navigation.behavior.spec.ts', '**/agents.behavior.spec.ts'],
     outputDir: './test-results/docs',
     reporter: [['html', { outputFolder: 'playwright-report/docs', open: 'never' }], ['list']],
     workers: 2,

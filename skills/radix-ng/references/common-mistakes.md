@@ -3,7 +3,8 @@
 LLMs reliably know **Radix UI (React)**, **Base UI (React)**, and **older versions of
 radix-ng** — and confidently generate the wrong API from that knowledge. This file lists the
 known failure modes. When generated code doesn't match an example in `radix-ng-examples`,
-assume the example is right and this knowledge is stale.
+compare the bundle's version with the installed package first. Installed exports and types take
+precedence over a mismatched example.
 
 ## You are not writing React
 
@@ -33,12 +34,19 @@ If you generate `rdxSelectContent` or `rdxSelectViewport`, you are using the **r
 | -------------------------------- | ---------------------------- |
 | `rdxSelectContent`               | `rdxSelectPopup`             |
 | `rdxSelectViewport`              | `rdxSelectList`              |
-| `rdxSelectLabel`                 | `rdxSelectGroupLabel`        |
 | `rdxSelectPopperPositionWrapper` | `rdxSelectPositioner`        |
 | `rdxSelectPopperPositionContent` | `rdxSelectPositionerContent` |
 
 New parts that didn't exist before: `rdxSelectBackdrop`, `rdxSelectIcon`, `rdxSelectSeparator`.
 Read `radix-ng-examples/references/components/select.md` before assembling a Select.
+
+`rdxSelectLabel` is a current API: it labels the Select trigger before the popup opens.
+`rdxSelectGroupLabel` labels an option group inside the popup; these parts serve different purposes.
+
+### Accordion uses Panel
+
+Use `rdxAccordionPanel` / `RdxAccordionPanelDirective`, not the old `rdxAccordionContent` name.
+The Trigger exposes `data-panel-open`; the Panel exposes `data-open` and transition hooks, without `data-closed`.
 
 ### `@angular/cdk` is gone
 
@@ -71,11 +79,11 @@ primitive** (`rdxMenuPopup`, `rdxMenuItem`, …) — there are no `rdxContextMen
 
 ## Signals & state gotchas
 
-- **Uncontrolled default**: use the `defaultValue` / `defaultOpen` input. Binding `[value]`
-  one-way makes it controlled — then keep it updated, or the UI snaps back.
+- **State ownership**: check that part's documented model and default inputs. Use `[(value)]` /
+  `[(open)]` when the application owns state; use default inputs only where the contract lists them.
 - **Don't mutate the DOM to change state.** Write to the model (`[(value)]`, `[(open)]`) or call
-  the documented methods via `exportAs` references — never toggle `data-state` attributes yourself.
+  the documented methods via `exportAs` references. The primitive owns its state attributes.
 - **`data-*` presence attributes** (`data-disabled`, `data-invalid`, …) have an **empty string**
   value when on. Match presence (`[data-disabled]`), not a value (`[data-disabled="true"]` fails).
 - **Styling hook ≠ API.** `data-*` attributes are CSS hooks the primitive writes; selectors and
-  inputs are the API you write. Don't set `data-state="open"` in a template expecting it to open.
+  inputs are the API you write. Setting `data-open` on a template does not open a popup.

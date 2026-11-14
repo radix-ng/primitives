@@ -1,5 +1,6 @@
 import { Injector } from '@angular/core';
 import { setupInternalBackdrop } from '@radix-ng/primitives/core';
+import { MENU_OWNER_ATTR } from './menu-owner';
 import { RdxMenuRootContext } from './menu-root';
 
 /** Marker attribute on the menu's internal backdrop element. */
@@ -31,6 +32,7 @@ export function setupMenuInternalBackdrop(
 ): void {
     setupInternalBackdrop(positioner, injector, {
         marker: MENU_INTERNAL_BACKDROP_ATTR,
+        attributes: { [MENU_OWNER_ATTR]: rootContext.ownerId() },
         isOpen: () => rootContext.isOpen(),
         cutout: () => cutoutElement(rootContext),
         shouldRender: () => {

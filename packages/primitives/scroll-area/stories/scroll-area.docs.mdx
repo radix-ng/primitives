@@ -31,12 +31,12 @@ plain Tailwind utilities driven by `data-*` attributes and CSS variables.
 
 ```typescript
 import {
-    RdxScrollAreaRoot,
-    RdxScrollAreaViewport,
-    RdxScrollAreaContent,
-    RdxScrollAreaScrollbar,
-    RdxScrollAreaThumb,
-    RdxScrollAreaCorner
+  RdxScrollAreaRoot,
+  RdxScrollAreaViewport,
+  RdxScrollAreaContent,
+  RdxScrollAreaScrollbar,
+  RdxScrollAreaThumb,
+  RdxScrollAreaCorner
 } from '@radix-ng/primitives/scroll-area';
 ```
 
@@ -54,21 +54,21 @@ both scrollbars are present.
 
 ```html
 <div rdxScrollAreaRoot>
-    <div rdxScrollAreaViewport>
-        <div rdxScrollAreaContent>
-            <!-- scrollable content -->
-        </div>
+  <div rdxScrollAreaViewport>
+    <div rdxScrollAreaContent>
+      <!-- scrollable content -->
     </div>
+  </div>
 
-    <div rdxScrollAreaScrollbar orientation="vertical">
-        <div rdxScrollAreaThumb></div>
-    </div>
+  <div rdxScrollAreaScrollbar orientation="vertical">
+    <div rdxScrollAreaThumb></div>
+  </div>
 
-    <div rdxScrollAreaScrollbar orientation="horizontal">
-        <div rdxScrollAreaThumb></div>
-    </div>
+  <div rdxScrollAreaScrollbar orientation="horizontal">
+    <div rdxScrollAreaThumb></div>
+  </div>
 
-    <div rdxScrollAreaCorner></div>
+  <div rdxScrollAreaCorner></div>
 </div>
 ```
 
@@ -111,11 +111,11 @@ lets a horizontal `mask-image` fade the tabs at whichever edge still has more to
 The overflow attributes below are shared by Root, Viewport, Content, and Scrollbar; the per-part
 tables list the extras each one adds.
 
-| Attribute                                                       | Present when                                      |
-| -------------------------------------------------------------- | ------------------------------------------------- |
-| `data-has-overflow-x` / `data-has-overflow-y`                  | Content overflows on that axis.                   |
-| `data-overflow-x-start` / `-x-end` / `-y-start` / `-y-end`     | There is hidden content past that edge.           |
-| `data-scrolling`                                               | A scroll is currently in progress.                |
+| Attribute                                                                                         | Parts                              | Present when                            |
+| ------------------------------------------------------------------------------------------------- | ---------------------------------- | --------------------------------------- |
+| `data-has-overflow-x` / `data-has-overflow-y`                                                     | Root, Viewport, Content, Scrollbar | Content overflows on that axis.         |
+| `data-overflow-x-start` / `data-overflow-x-end` / `data-overflow-y-start` / `data-overflow-y-end` | Root, Viewport, Content, Scrollbar | There is hidden content past that edge. |
+| `data-scrolling`                                                                                  | Root, Viewport, Content, Scrollbar | A scroll is currently in progress.      |
 
 ### Root
 
@@ -123,14 +123,14 @@ Groups all parts of the scroll area and owns the shared scroll/overflow state.
 
 <ArgTypes of={RdxScrollAreaRoot} />
 
-**Data attributes:** the shared overflow set above, plus `data-orientation`.
+Exposes the shared overflow attributes above.
 
 **CSS variables**
 
-| Variable                       | Description                          |
-| ------------------------------ | ------------------------------------ |
-| `--scroll-area-corner-width`   | Width of the corner between scrollbars.  |
-| `--scroll-area-corner-height`  | Height of the corner between scrollbars. |
+| Variable                      | Description                              |
+| ----------------------------- | ---------------------------------------- |
+| `--scroll-area-corner-width`  | Width of the corner between scrollbars.  |
+| `--scroll-area-corner-height` | Height of the corner between scrollbars. |
 
 ### Viewport
 
@@ -142,13 +142,16 @@ that rule inline. If your app provides Angular's `CSP_NONCE` token, that nonce i
 style element. Set `disableStyleElements` on `Root` when you want to ship the scrollbar-hiding CSS
 yourself.
 
-**Data attributes:** the shared overflow set, plus `tabindex` (`0` while it overflows, `-1` otherwise)
-and `data-id`.
+Exposes the shared overflow attributes and `tabindex` (`0` while it overflows, `-1` otherwise).
+
+| Attribute | Value                                  |
+| --------- | -------------------------------------- |
+| `data-id` | The root id with a `-viewport` suffix. |
 
 **CSS variables**
 
-| Variable                                                       | Description                                  |
-| -------------------------------------------------------------- | -------------------------------------------- |
+| Variable                                                            | Description                                |
+| ------------------------------------------------------------------- | ------------------------------------------ |
 | `--scroll-area-overflow-x-start` / `-x-end` / `-y-start` / `-y-end` | Distance of hidden content past each edge. |
 
 ### Content
@@ -162,14 +165,20 @@ A vertical or horizontal scrollbar track. Hosts the `Thumb`.
 
 <ArgTypes of={RdxScrollAreaScrollbar} />
 
-**Data attributes:** the shared overflow set, plus `data-orientation`, `data-hovering`, and `data-id`.
+Exposes the shared overflow attributes and these additional hooks:
+
+| Attribute          | Present when / value                    |
+| ------------------ | --------------------------------------- |
+| `data-orientation` | `"horizontal"` / `"vertical"`.          |
+| `data-hovering`    | The pointer is over the scroll area.    |
+| `data-id`          | The root id with a `-scrollbar` suffix. |
 
 **CSS variables**
 
-| Variable                       | Description           |
-| ------------------------------ | --------------------- |
-| `--scroll-area-thumb-width`    | Computed thumb width.  |
-| `--scroll-area-thumb-height`   | Computed thumb height. |
+| Variable                     | Description            |
+| ---------------------------- | ---------------------- |
+| `--scroll-area-thumb-width`  | Computed thumb width.  |
+| `--scroll-area-thumb-height` | Computed thumb height. |
 
 ### Thumb
 
@@ -177,10 +186,10 @@ The draggable indicator inside a `Scrollbar`. Reads everything from context — 
 
 **Data attributes**
 
-| Attribute          | Value                                                  |
-| ------------------ | ------------------------------------------------------ |
-| `data-orientation` | `"horizontal"` \| `"vertical"`.                        |
-| `data-scrolling`   | Present while a scroll is in progress on its axis.     |
+| Attribute          | Value                                              |
+| ------------------ | -------------------------------------------------- |
+| `data-orientation` | `"horizontal"` \| `"vertical"`.                    |
+| `data-scrolling`   | Present while a scroll is in progress on its axis. |
 
 ### Corner
 

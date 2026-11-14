@@ -11,14 +11,15 @@ Tailwind, or any other approach.
 
 ## Styling with data attributes
 
-Every stateful part reflects its state via `data-*` attributes that you can target from CSS.
-Use `undefined` semantics in mind — an attribute is only present when the state is active.
+Read each part's documented attributes before styling it. Presence attributes are absent when the
+state is inactive; valued attributes such as orientation retain their documented values. There is
+no universal state enum across all parts.
 
 ```css
 /* state */
-[data-state='open'] {
+[data-open] {
 }
-[data-state='closed'] {
+[data-closed] {
 }
 
 /* flags (present only when active) */
@@ -34,15 +35,16 @@ Use `undefined` semantics in mind — an attribute is only present when the stat
 }
 ```
 
-For example, styling an accordion trigger and its content:
+For example, Accordion Trigger uses `data-panel-open`; its Panel exposes `data-open` and transition
+hooks such as `data-ending-style` (it does not expose `data-closed`):
 
 ```css
-.AccordionTrigger[data-state='open'] {
-    background-color: var(--accent);
+.AccordionTrigger[data-panel-open] {
+  background-color: var(--accent);
 }
 
-.AccordionContent[data-state='closed'] {
-    display: none;
+.AccordionPanel[data-ending-style] {
+  opacity: 0;
 }
 ```
 
@@ -53,11 +55,11 @@ Primitives backed by `RdxPresenceDirective` (e.g. Tooltip, Select, Collapsible c
 the element mounted until the exit animation defined for the closed state finishes:
 
 ```css
-.Content[data-state='open'] {
-    animation: fade-in 150ms ease-out;
+.SelectPopup[data-open] {
+  animation: fade-in 150ms ease-out;
 }
-.Content[data-state='closed'] {
-    animation: fade-out 150ms ease-in;
+.SelectPopup[data-closed] {
+  animation: fade-out 150ms ease-in;
 }
 ```
 
@@ -65,17 +67,17 @@ For size-based animations, components such as Collapsible and Accordion expose C
 with the measured dimensions:
 
 ```css
-.AccordionContent[data-state='open'] {
-    animation: slide-down 150ms ease-out;
+.AccordionPanel[data-open] {
+  animation: slide-down 150ms ease-out;
 }
 
 @keyframes slide-down {
-    from {
-        height: 0;
-    }
-    to {
-        height: var(--radix-accordion-content-height);
-    }
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--accordion-panel-height);
+  }
 }
 ```
 
@@ -86,25 +88,25 @@ Use CSS custom properties to centralize your palette, and override them under a 
 
 ```css
 :root {
-    --background: white;
-    --foreground: oklch(14.5% 1% 264deg);
-    --border: oklch(90% 1% 264deg);
-    --primary: oklch(20.5% 1% 264deg);
+  --background: white;
+  --foreground: oklch(14.5% 1% 264deg);
+  --border: oklch(90% 1% 264deg);
+  --primary: oklch(20.5% 1% 264deg);
 }
 
 :root[data-theme='dark'] {
-    --background: oklch(14.5% 1% 264deg);
-    --foreground: oklch(96% 0.5% 264deg);
-    --border: oklch(30% 1% 264deg);
-    --primary: oklch(92% 0.5% 264deg);
+  --background: oklch(14.5% 1% 264deg);
+  --foreground: oklch(96% 0.5% 264deg);
+  --border: oklch(30% 1% 264deg);
+  --primary: oklch(92% 0.5% 264deg);
 }
 ```
 
 ```css
 .Button {
-    color: var(--foreground);
-    background-color: var(--background);
-    border: 1px solid var(--border);
+  color: var(--foreground);
+  background-color: var(--background);
+  border: 1px solid var(--border);
 }
 ```
 
@@ -115,10 +117,10 @@ state variants for the `data-*` attributes:
 
 ```html
 <button
-    class="border-border bg-background text-foreground data-[state=open]:bg-muted rounded-md border px-4 py-2"
-    rdxAccordionTrigger
+  class="border-border bg-background text-foreground data-[panel-open]:bg-muted rounded-md border px-4 py-2"
+  rdxAccordionTrigger
 >
-    Trigger
+  Trigger
 </button>
 ```
 

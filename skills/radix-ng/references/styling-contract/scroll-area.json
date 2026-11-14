@@ -5,7 +5,73 @@
   "section": "components",
   "description": "A native scroll container with a custom, cross-browser scrollbar.",
   "doc": "radix-ng-examples/references/components/scroll-area.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-scroll-area--docs",
-  "anatomy": "<div rdxScrollAreaRoot>\n    <div rdxScrollAreaViewport>\n        <div rdxScrollAreaContent>\n            <!-- scrollable content -->\n        </div>\n    </div>\n\n    <div rdxScrollAreaScrollbar orientation=\"vertical\">\n        <div rdxScrollAreaThumb></div>\n    </div>\n\n    <div rdxScrollAreaScrollbar orientation=\"horizontal\">\n        <div rdxScrollAreaThumb></div>\n    </div>\n\n    <div rdxScrollAreaCorner></div>\n</div>",
-  "dataAttributes": []
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-scroll-area--docs",
+  "anatomy": "<div rdxScrollAreaRoot>\n  <div rdxScrollAreaViewport>\n    <div rdxScrollAreaContent>\n      <!-- scrollable content -->\n    </div>\n  </div>\n\n  <div rdxScrollAreaScrollbar orientation=\"vertical\">\n    <div rdxScrollAreaThumb></div>\n  </div>\n\n  <div rdxScrollAreaScrollbar orientation=\"horizontal\">\n    <div rdxScrollAreaThumb></div>\n  </div>\n\n  <div rdxScrollAreaCorner></div>\n</div>",
+  "dataAttributes": [
+    {
+      "attribute": "data-has-overflow-x",
+      "parts": "Root, Viewport, Content, Scrollbar",
+      "values": "Content overflows on that axis."
+    },
+    {
+      "attribute": "data-has-overflow-y",
+      "parts": "Root, Viewport, Content, Scrollbar",
+      "values": "Content overflows on that axis."
+    },
+    {
+      "attribute": "data-overflow-x-start",
+      "parts": "Root, Viewport, Content, Scrollbar",
+      "values": "There is hidden content past that edge."
+    },
+    {
+      "attribute": "data-overflow-x-end",
+      "parts": "Root, Viewport, Content, Scrollbar",
+      "values": "There is hidden content past that edge."
+    },
+    {
+      "attribute": "data-overflow-y-start",
+      "parts": "Root, Viewport, Content, Scrollbar",
+      "values": "There is hidden content past that edge."
+    },
+    {
+      "attribute": "data-overflow-y-end",
+      "parts": "Root, Viewport, Content, Scrollbar",
+      "values": "There is hidden content past that edge."
+    },
+    {
+      "attribute": "data-scrolling",
+      "parts": "Root, Viewport, Content, Scrollbar",
+      "values": "A scroll is currently in progress."
+    },
+    {
+      "attribute": "data-id",
+      "parts": "Viewport",
+      "values": "The root id with a -viewport suffix."
+    },
+    {
+      "attribute": "data-orientation",
+      "parts": "Scrollbar",
+      "values": "\"horizontal\" / \"vertical\"."
+    },
+    {
+      "attribute": "data-hovering",
+      "parts": "Scrollbar",
+      "values": "The pointer is over the scroll area."
+    },
+    {
+      "attribute": "data-id",
+      "parts": "Scrollbar",
+      "values": "The root id with a -scrollbar suffix."
+    },
+    {
+      "attribute": "data-orientation",
+      "parts": "Thumb",
+      "values": "\"horizontal\" | \"vertical\"."
+    },
+    {
+      "attribute": "data-scrolling",
+      "parts": "Thumb",
+      "values": "Present while a scroll is in progress on its axis."
+    }
+  ]
 }

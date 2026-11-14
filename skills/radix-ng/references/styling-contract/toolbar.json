@@ -5,7 +5,58 @@
   "section": "components",
   "description": "A container for grouping a set of controls, such as buttons, toggle groups or menus.",
   "doc": "radix-ng-examples/references/components/toolbar.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-toolbar--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-toolbar--docs",
   "anatomy": "<div rdxToolbarRoot>\n    <div rdxToolbarGroup>\n        <button rdxToolbarButton></button>\n        <button rdxToolbarButton></button>\n    </div>\n    <div rdxToolbarSeparator></div>\n    <input rdxToolbarInput />\n    <a rdxToolbarLink></a>\n</div>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-orientation",
+      "parts": "ToolbarRoot",
+      "values": "\"horizontal\" | \"vertical\""
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "ToolbarRoot",
+      "values": "Present when disabled."
+    },
+    {
+      "attribute": "data-orientation",
+      "parts": "ToolbarButton",
+      "values": "\"horizontal\" | \"vertical\""
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "ToolbarButton",
+      "values": "Present when disabled."
+    },
+    {
+      "attribute": "data-focusable",
+      "parts": "ToolbarButton",
+      "values": "Present when focusable while disabled."
+    },
+    {
+      "attribute": "data-orientation",
+      "parts": "ToolbarInput",
+      "values": "\"horizontal\" | \"vertical\""
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "ToolbarInput",
+      "values": "Present when disabled."
+    },
+    {
+      "attribute": "data-focusable",
+      "parts": "ToolbarInput",
+      "values": "Present when focusable while disabled."
+    },
+    {
+      "attribute": "data-orientation",
+      "parts": "ToolbarGroup",
+      "values": "\"horizontal\" | \"vertical\""
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "ToolbarGroup",
+      "values": "Present when disabled."
+    }
+  ]
 }

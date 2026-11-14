@@ -5,7 +5,58 @@
   "section": "components",
   "description": "A control that allows the user to toggle between checked and not checked.",
   "doc": "radix-ng-examples/references/components/switch.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-switch--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-switch--docs",
   "anatomy": "<button rdxSwitchRoot [(checked)]=\"checked\">\n    <input rdxSwitchInput />\n    <span rdxSwitchThumb></span>\n</button>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-checked",
+      "parts": "Root",
+      "values": "the switch is on."
+    },
+    {
+      "attribute": "data-unchecked",
+      "parts": "Root",
+      "values": "the switch is off."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Root",
+      "values": "the switch is disabled."
+    },
+    {
+      "attribute": "data-readonly",
+      "parts": "Root",
+      "values": "the switch is readonly."
+    },
+    {
+      "attribute": "data-required",
+      "parts": "Root",
+      "values": "the switch is required."
+    },
+    {
+      "attribute": "data-checked",
+      "parts": "Thumb",
+      "values": "the switch is on."
+    },
+    {
+      "attribute": "data-unchecked",
+      "parts": "Thumb",
+      "values": "the switch is off."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Thumb",
+      "values": "the switch is disabled."
+    },
+    {
+      "attribute": "data-readonly",
+      "parts": "Thumb",
+      "values": "the switch is readonly."
+    },
+    {
+      "attribute": "data-required",
+      "parts": "Thumb",
+      "values": "the switch is required."
+    }
+  ]
 }

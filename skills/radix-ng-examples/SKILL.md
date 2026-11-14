@@ -2,9 +2,9 @@
 name: radix-ng-examples
 description: |
   Index of every documented @radix-ng/primitives example. Use when implementing a UI
-  feature to find a working, copy-paste-ready Angular pattern built on the primitives.
-  Each component has an index doc linking to per-example source shards you can copy-paste.
-compatibility: Requires @radix-ng/primitives installed in an Angular 21 project.
+  feature to find a documented Angular pattern built on the primitives.
+  Each component has an index doc linking to per-example source shards you can adapt.
+compatibility: Requires @radix-ng/primitives in an Angular project matching the package's peer dependencies.
 license: MIT
 metadata:
   author: radix-ng
@@ -17,9 +17,13 @@ metadata:
 > Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
 Working examples built on `@radix-ng/primitives`. Full source is **bundled offline** under
-`references/`; browse visually at https://radix-ng.com.
+`references/`; browse visually at https://radix-ng.com/docs.
 
 ## How to use this skill
+
+Compare the installed library version with the shard's `version` or generation stamp first. If
+they differ, installed exports and `.d.ts` files take precedence. Compile the consumer's Angular
+templates and check its behavior; examples and skills do not guarantee a correct generated result.
 
 1. Describe the UI you want to build (e.g. "a multi-select combobox", "a form field with validation").
 2. Find the matching component below by name and description.
@@ -30,6 +34,9 @@ Working examples built on `@radix-ng/primitives`. Full source is **bundled offli
 
 To style a primitive with a custom design system, pair an example with its per-primitive data-attribute
 contract in the `radix-ng` skill (`references/styling-contract/<slug>.json`).
+
+For installation, composition and verification tasks, read `references/agents/getting-started.md`
+and follow its links to the other Agents guides.
 
 **Reload a single example** (e.g. after your context is compacted): open
 `references/examples/<component>--<example>.md` — one file per example, just that example's source,

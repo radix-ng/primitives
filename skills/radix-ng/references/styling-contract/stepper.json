@@ -5,7 +5,28 @@
   "section": "components",
   "description": "A set of steps that are used to indicate progress through a multi-step process.",
   "doc": "radix-ng-examples/references/components/stepper.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-stepper--docs",
-  "anatomy": "<div rdxStepperRoot >\n    <div rdxStepperItem >\n        <div rdxStepperSeparator></div>\n        <button rdxStepperTrigger>\n            <div rdxStepperIndicator></div>\n        </button>\n\n        <h4 rdxStepperTitle></h4>\n        <p rdxStepperDescription></p>\n    </div>\n</div>",
-  "dataAttributes": []
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-stepper--docs",
+  "anatomy": "<div rdxStepperRoot>\n  <div rdxStepperItem>\n    <div rdxStepperSeparator></div>\n    <button rdxStepperTrigger>\n      <div rdxStepperIndicator></div>\n    </button>\n\n    <h4 rdxStepperTitle></h4>\n    <p rdxStepperDescription></p>\n  </div>\n</div>",
+  "dataAttributes": [
+    {
+      "attribute": "data-linear",
+      "parts": "Root",
+      "values": "Linear navigation is enabled."
+    },
+    {
+      "attribute": "data-orientation",
+      "parts": "Root, Item, Trigger, Separator",
+      "values": "\"horizontal\" / \"vertical\"."
+    },
+    {
+      "attribute": "data-state",
+      "parts": "Item, Trigger, Separator",
+      "values": "\"active\" / \"inactive\" / \"completed\"."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Item, Trigger",
+      "values": "The step is disabled or cannot be focused in the current linear sequence."
+    }
+  ]
 }

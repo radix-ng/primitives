@@ -8,6 +8,9 @@ export const basicCases = [
     'cancel-open',
     'cancel-close',
     'outside',
+    'secondary-outside',
+    'secondary-outside-modal',
+    'secondary-outside-trap-focus',
     'modal',
     'trap-focus',
     'initial-focus',
@@ -45,9 +48,9 @@ export function config() {
     if (!cases.includes(name as CaseName)) throw new Error(`Unknown Popover case: ${name}`);
     return {
         name: name as CaseName,
-        modal: ['modal', 'lifecycle-modal-keep'].includes(name)
+        modal: ['modal', 'lifecycle-modal-keep', 'secondary-outside-modal'].includes(name)
             ? (true as const)
-            : name === 'trap-focus'
+            : ['trap-focus', 'secondary-outside-trap-focus'].includes(name)
               ? ('trap-focus' as const)
               : (false as const),
         lifecycle: lifecycleConfig(name),

@@ -69,9 +69,7 @@ provided by the root, so it does not need an extra input.
 number (or `null`). Call `eventDetails.cancel()` to reject a value before it updates.
 
 ```html
-<div [value]="value()" (onValueChange)="setValue($event)" rdxNumberFieldRoot>
-    ...
-</div>
+<div [value]="value()" (onValueChange)="setValue($event)" rdxNumberFieldRoot>...</div>
 ```
 
 ```ts
@@ -127,12 +125,13 @@ The control integrates with `formControlName`, exposing the numeric value to the
 
 The state attributes below are shared by most parts; each part's table lists the ones it exposes.
 
-| Attribute        | Present when                                  |
-| ---------------- | --------------------------------------------- |
-| `data-disabled`  | The field is disabled.                        |
-| `data-readonly`  | The field is read-only.                       |
-| `data-required`  | The field is required.                        |
-| `data-scrubbing` | A scrub gesture is in progress.               |
+| Attribute        | Parts                                                | Present when                     |
+| ---------------- | ---------------------------------------------------- | -------------------------------- |
+| `data-disabled`  | Root, Group, Input, Increment, Decrement, Scrub Area | The field or button is disabled. |
+| `data-readonly`  | Root, Group, Input, Increment, Decrement, Scrub Area | The field is read-only.          |
+| `data-required`  | Root, Group, Input                                   | The field is required.           |
+| `data-scrubbing` | Root, Group, Scrub Area                              | A scrub gesture is in progress.  |
+| `data-pressed`   | Increment, Decrement                                 | The stepper button is held.      |
 
 ### Root
 

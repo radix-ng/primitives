@@ -5,7 +5,7 @@
   "section": "utils",
   "description": "Dismissable Layer",
   "doc": "radix-ng-examples/references/utils/dismissable-layer.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-dismissable-layer--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-dismissable-layer--docs",
   "anatomy": "",
   "dataAttributes": []
 }

@@ -5,7 +5,23 @@
   "section": "components",
   "description": "A visually persistent menu common in desktop applications that provides quick access to a consistent set of commands.",
   "doc": "radix-ng-examples/references/components/menubar.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-menubar--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-menubar--docs",
   "anatomy": "<div rdxMenubarRoot>\n  <ng-container rdxMenuRoot>\n    <button rdxMenuTrigger>File</button>\n    <ng-template rdxMenuPortal>\n      <div align=\"start\" sideOffset=\"4\" rdxMenuPositioner>\n        <div rdxMenuPopup>\n          <div rdxMenuItem>New</div>\n          <div rdxMenuItem>Open</div>\n          <div rdxMenuItem>Save</div>\n          <ng-container rdxMenuRoot>\n            <div rdxMenuSubTrigger>Export</div>\n            <ng-template rdxMenuPortal>\n              <div side=\"inline-end\" align=\"start\" sideOffset=\"-4\" alignOffset=\"-4\" rdxMenuPositioner>\n                <div rdxMenuPopup>\n                  <div rdxMenuItem>PDF</div>\n                  <div rdxMenuItem>PNG</div>\n                  <div rdxMenuItem>SVG</div>\n                </div>\n              </div>\n            </ng-template>\n          </ng-container>\n          <div rdxMenuSeparator></div>\n          <div rdxMenuItem>Print</div>\n        </div>\n      </div>\n    </ng-template>\n  </ng-container>\n  <ng-container rdxMenuRoot>\n    <button rdxMenuTrigger>Edit</button>\n    <ng-template rdxMenuPortal>\n      <div align=\"start\" sideOffset=\"4\" rdxMenuPositioner>\n        <div rdxMenuPopup>\n          <div rdxMenuItem>Cut</div>\n          <div rdxMenuItem>Copy</div>\n          <div rdxMenuItem>Paste</div>\n        </div>\n      </div>\n    </ng-template>\n  </ng-container>\n</div>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-popup-open",
+      "parts": "Menu Trigger",
+      "values": "This trigger's menu is open."
+    },
+    {
+      "attribute": "data-pressed",
+      "parts": "Menu Trigger",
+      "values": "The trigger is pressed."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Menu Trigger",
+      "values": "The trigger is disabled."
+    }
+  ]
 }

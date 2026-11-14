@@ -30,7 +30,7 @@ const playgroundPrimitives = new Set([
     'switch',
     'tabs'
 ]);
-const storybookDocSections = new Set(['guides', 'learn', 'overview']);
+const storybookDocSections = new Set(['agents', 'guides', 'learn', 'overview']);
 
 const read = (filePath) => fs.readFileSync(filePath, 'utf8');
 

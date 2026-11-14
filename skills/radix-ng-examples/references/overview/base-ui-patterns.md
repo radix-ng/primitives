@@ -1,0 +1,296 @@
+# Base UI patterns for Angular
+
+#### Radix NG brings Base UI's architecture and behavior to Angular through directives, signals, and dependency injection.
+
+If you have used Base UI before, most Radix NG concepts should feel familiar. Primitives are
+assembled from individual parts, support controlled and uncontrolled state, ship without styles,
+and expose their state through `data-*` attributes.
+
+Radix NG is not an automatic port or a drop-in replacement for Base UI. It adapts Base UI patterns
+to Angular's template syntax, signals, dependency injection, forms, and directive composition API.
+
+## At a glance
+
+| Concept | Base UI | Radix NG |
+| --- | --- | --- |
+| Framework | React | Angular |
+| Composition | React components | Angular directives |
+| State configuration | Props | Signal inputs and models |
+| Controlled state | `open` and `onOpenChange` | `[open]`, `(onOpenChange)`, or `[(open)]` |
+| Uncontrolled state | `defaultOpen` | `[defaultOpen]` |
+| Context between parts | React context | Angular dependency injection |
+| Custom elements | `render` prop | Apply a directive to compatible markup |
+| Styling state | `data-*` attributes | `data-*` attributes |
+| Forms | Native forms and React integrations | Native forms, Angular Forms, and Signal Forms |
+| Styling | Any CSS solution | Any CSS solution |
+
+## One anatomy, two frameworks
+
+Both libraries describe compound primitives as a set of parts:
+
+```text
+Popover
+├── Root
+├── Trigger
+├── Portal
+├── Positioner
+├── Popup
+├── Title
+└── Description
+```
+
+In Base UI, those parts are React components:
+
+```tsx
+import { Popover } from '@base-ui/react/popover';
+
+<Popover.Root>
+    <Popover.Trigger>Notifications</Popover.Trigger>
+
+    <Popover.Portal>
+        <Popover.Positioner sideOffset={8}>
+            <Popover.Popup>
+                <Popover.Title>Notifications</Popover.Title>
+                <Popover.Description>You are all caught up.</Popover.Description>
+            </Popover.Popup>
+        </Popover.Positioner>
+    </Popover.Portal>
+</Popover.Root>;
+```
+
+In Radix NG, the parts are Angular directives applied to markup you own:
+
+```typescript
+import { Component } from '@angular/core';
+import { RdxPopoverModule } from '@radix-ng/primitives/popover';
+
+@Component({
+    selector: 'app-notifications',
+    imports: [RdxPopoverModule],
+    template: `
+        <ng-container rdxPopoverRoot>
+            <button rdxPopoverTrigger>Notifications</button>
+
+            <div *rdxPopoverPortal sideOffset="8" rdxPopoverPositioner>
+                <div rdxPopoverPopup>
+                    <h2 rdxPopoverTitle>Notifications</h2>
+                    <p rdxPopoverDescription>You are all caught up.</p>
+                </div>
+            </div>
+        </ng-container>
+    `
+})
+export class NotificationsComponent {}
+```
+
+The anatomy and behavior are similar. The main difference is the composition mechanism: Angular
+directives replace React components.
+
+## Directives instead of a render prop
+
+Base UI's `render` prop lets a primitive use custom React elements or components:
+
+```tsx
+<Menu.Trigger render={<MyButton />}>Open menu</Menu.Trigger>
+```
+
+Radix NG primitives are directives, so you apply them directly to compatible native elements or
+custom components:
+
+```html
+<button rdxMenuTrigger>Open menu</button>
+
+<app-icon-button aria-label="Open menu" rdxMenuTrigger />
+```
+
+When building reusable Angular components, use `hostDirectives` to compose primitive behavior into
+the component:
+
+```typescript
+import { Component } from '@angular/core';
+import { RdxMenuTrigger } from '@radix-ng/primitives/menu';
+
+@Component({
+    selector: 'app-menu-trigger',
+    template: '<ng-content />',
+    hostDirectives: [RdxMenuTrigger]
+})
+export class MenuTriggerComponent {}
+```
+
+See [Guides/Composition](../guides/composition.md) for more composition patterns.
+
+## Controlled and uncontrolled state
+
+Like Base UI, Radix NG manages state internally by default and lets the application take control
+when needed.
+
+Use a default value when the primitive should manage its own state:
+
+```html
+<ng-container [defaultOpen]="true" rdxPopoverRoot>
+    ...
+</ng-container>
+```
+
+Use Angular two-way binding when application state should control the primitive:
+
+```typescript
+import { Component, signal } from '@angular/core';
+import { RdxPopoverModule } from '@radix-ng/primitives/popover';
+
+@Component({
+    selector: 'app-controlled-popover',
+    imports: [RdxPopoverModule],
+    template: `
+        <ng-container [(open)]="open" rdxPopoverRoot>
+            ...
+        </ng-container>
+    `
+})
+export class ControlledPopoverComponent {
+    protected readonly open = signal(false);
+}
+```
+
+Many primitives also expose change outputs for reacting to user interactions. Check the API
+Reference on the primitive's page because output names and event details can vary by primitive.
+
+See [Guides/Customization](../guides/customization.md) and
+[Learn/Controlled & uncontrolled](../learn/controlled-and-uncontrolled.md) for the full
+state model.
+
+## Styling through state
+
+Both libraries are headless and publish state through `data-*` attributes. The primitive owns
+behavior; your application owns visual design.
+
+```html
+<button
+    class="rounded-md border border-border px-3 py-2 data-[open]:bg-muted"
+    rdxPopoverTrigger
+>
+    Notifications
+</button>
+
+<div
+    class="rounded-lg border border-border bg-popover p-4 data-[open]:animate-in data-[closed]:animate-out"
+    rdxPopoverPopup
+>
+    ...
+</div>
+```
+
+Each primitive page documents the attributes exposed by its parts. See
+[Learn/State & data attributes](../learn/state-data-attributes.md) for the underlying
+styling model.
+
+## Intentional differences
+
+Radix NG follows Base UI anatomy and behavior where they fit Angular, but the public APIs do not
+always match literally.
+
+### Angular-native APIs
+
+Radix NG uses Angular-native tools instead of reproducing React APIs:
+
+- signal inputs with `input()`;
+- two-way state with `model()` and `[(value)]`;
+- Angular outputs for change notifications;
+- dependency injection for communication between parts;
+- `hostDirectives` for reusable composition;
+- Angular templates for portal and presence content;
+- Angular Forms and Signal Forms integrations.
+
+### Change events
+
+Base UI change callbacks commonly include a shared event details object with a reason and
+cancellation controls. Radix NG does not currently provide that shared shape across every
+primitive. Some primitives expose simple value change outputs, while others provide additional
+primitive-specific details.
+
+Use the primitive's API Reference as the source of truth.
+
+### Part names
+
+Radix NG generally uses familiar Base UI part names such as `Root`, `Trigger`, `Positioner`,
+`Popup`, `Item`, and `Indicator`.
+
+Names may differ because of Angular conventions, backwards compatibility, or implementation
+details. Check the primitive's Anatomy section before translating an example directly.
+
+### CSP nonces and inline styles
+
+Base UI ships a `CSPProvider` / `CSPContext` that threads a `nonce` and a `disableStyleElements`
+flag through React context so its components can attach the nonce to the inline `<style>` elements
+they render. Radix NG deliberately does **not** port that provider, for two reasons:
+
+- **Angular already plumbs the nonce framework-wide.** Angular has a built-in
+  [`CSP_NONCE`](https://angular.dev/api/core/CSP_NONCE) token (and reads an `ngCspNonce` attribute on
+  the application root element), and its renderer applies the nonce to the styles it injects.
+  Re-creating a React-style context would duplicate what the framework already provides.
+- **Headless primitives barely inject styles at all.** Directives carry no styles, so there is
+  almost nothing to attach a nonce to. The one exception is Scroll Area, which appends a tiny
+  stylesheet to `<head>` to hide the native WebKit scrollbar — something that genuinely cannot be
+  expressed with inline styles. It reads Angular's `CSP_NONCE` directly and also exposes a
+  `disableStyleElements` input to opt out of the injected stylesheet entirely.
+
+So the two values Base UI's provider carries map onto Angular-native tools instead of a bespoke
+provider:
+
+| Base UI CSP config     | Radix NG                                                                     |
+| ---------------------- | ---------------------------------------------------------------------------- |
+| `nonce`                | Angular's built-in `CSP_NONCE` token / `ngCspNonce` on the app root element   |
+| `disableStyleElements` | A `disableStyleElements` input on the primitive that injects styles (Scroll Area) |
+
+If you set a nonce with `CSP_NONCE`, Scroll Area's injected stylesheet picks it up automatically —
+no extra Radix NG provider is required.
+
+## Translating a Base UI example
+
+Base UI examples are useful architectural references even when the syntax differs:
+
+1. Find the corresponding Radix NG primitive.
+2. Recreate the same part anatomy with Angular directives.
+3. Replace React props with Angular inputs and outputs.
+4. Replace React state with Angular signals.
+5. Apply styles to the elements carrying Radix NG directives.
+6. Check the Radix NG API Reference for intentional differences.
+
+For example, this Base UI accordion root:
+
+```tsx
+<Accordion.Root defaultValue={['settings']}>...</Accordion.Root>
+```
+
+becomes:
+
+```html
+<div [defaultValue]="['settings']" rdxAccordionRoot>...</div>
+```
+
+## When to choose Radix NG
+
+Radix NG is a good fit when you need:
+
+- Base UI-like headless primitives for Angular;
+- complete control over markup and styling;
+- an accessible foundation for a design system;
+- built-in keyboard navigation, focus management, and dismissal behavior;
+- signals-first APIs;
+- Angular Forms, SSR, and hydration support.
+
+If you need ready-made visual styles and higher-level components, explore the libraries built on
+top of Radix NG:
+
+- [OriginUI for Angular](https://originui-ng.com/)
+- [shadcn/ui for Angular](https://ui.adrianub.dev/)
+
+## Next steps
+
+- Follow [Overview/Installation](installation.md) to add the library.
+- Complete [Learn/Build a styled component](../learn/build-a-styled-component.md).
+- Read [Guides/Composition](../guides/composition.md),
+  [Guides/Customization](../guides/customization.md), and
+  [Guides/Forms](../guides/forms.md).
+- Open a primitive page and start with its Anatomy section.

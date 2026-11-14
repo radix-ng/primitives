@@ -5,7 +5,88 @@
   "section": "components",
   "description": "A popup that appears when a link is hovered or focused, showing a visual preview.",
   "doc": "radix-ng-examples/references/components/preview-card.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-preview-card--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-preview-card--docs",
   "anatomy": "<ng-container rdxPreviewCardRoot>\n  <a href=\"#\" rdxPreviewCardTrigger>Preview link</a>\n\n  <div *rdxPreviewCardPortal rdxPreviewCardPositioner>\n    <div rdxPreviewCardPopup>\n      <span rdxPreviewCardArrow></span>\n      <div rdxPreviewCardViewport>Preview content</div>\n    </div>\n  </div>\n</ng-container>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-popup-open",
+      "parts": "Trigger",
+      "values": "The preview card is open."
+    },
+    {
+      "attribute": "data-pressed",
+      "parts": "Trigger",
+      "values": "The trigger is pressed."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Trigger",
+      "values": "The trigger is disabled."
+    },
+    {
+      "attribute": "data-open",
+      "parts": "Positioner",
+      "values": "The preview card is open."
+    },
+    {
+      "attribute": "data-closed",
+      "parts": "Positioner",
+      "values": "The preview card is closed."
+    },
+    {
+      "attribute": "data-side",
+      "parts": "Positioner",
+      "values": "The resolved placement side."
+    },
+    {
+      "attribute": "data-align",
+      "parts": "Positioner",
+      "values": "The resolved placement alignment."
+    },
+    {
+      "attribute": "data-anchor-hidden",
+      "parts": "Positioner",
+      "values": "The anchor is fully occluded."
+    },
+    {
+      "attribute": "data-instant",
+      "parts": "Positioner",
+      "values": "focus / dismiss for a delay-free transition."
+    },
+    {
+      "attribute": "data-open",
+      "parts": "Popup",
+      "values": "The preview card is open."
+    },
+    {
+      "attribute": "data-closed",
+      "parts": "Popup",
+      "values": "The preview card is closed."
+    },
+    {
+      "attribute": "data-side",
+      "parts": "Popup",
+      "values": "Resolved side — top / right / bottom / left."
+    },
+    {
+      "attribute": "data-align",
+      "parts": "Popup",
+      "values": "Resolved alignment — start / center / end."
+    },
+    {
+      "attribute": "data-starting-style",
+      "parts": "Popup",
+      "values": "The enter transition is about to run."
+    },
+    {
+      "attribute": "data-ending-style",
+      "parts": "Popup",
+      "values": "The exit transition is running."
+    },
+    {
+      "attribute": "data-instant",
+      "parts": "Popup",
+      "values": "An instant open/close — focus (focus open) / dismiss (trigger-press or Escape close)."
+    }
+  ]
 }

@@ -20,12 +20,12 @@ Groups a control with accessible label, description, error message, and field st
 
 ```typescript
 import {
-    RdxFieldRoot,
-    RdxFieldLabel,
-    RdxFieldControl,
-    RdxFieldDescription,
-    RdxFieldError,
-    RdxNgControlField
+  RdxFieldRoot,
+  RdxFieldLabel,
+  RdxFieldControl,
+  RdxFieldDescription,
+  RdxFieldError,
+  RdxNgControlField
 } from '@radix-ng/primitives/field';
 ```
 
@@ -33,10 +33,10 @@ import {
 
 ```html
 <div rdxFieldRoot>
-    <label rdxFieldLabel>Label</label>
-    <input rdxFieldControl />
-    <p rdxFieldDescription>Description</p>
-    <p rdxFieldError>Error</p>
+  <label rdxFieldLabel>Label</label>
+  <input rdxFieldControl />
+  <p rdxFieldDescription>Description</p>
+  <p rdxFieldError>Error</p>
 </div>
 ```
 
@@ -46,16 +46,16 @@ reflecting the field's validation state; its `disabled` is OR'd with the root's.
 
 ```html
 <div rdxFieldRoot>
-    <div rdxFieldItem>
-        <label rdxFieldLabel>Option A</label>
-        <input rdxFieldControl type="radio" />
-        <p rdxFieldDescription>Description A</p>
-    </div>
-    <div rdxFieldItem>
-        <label rdxFieldLabel>Option B</label>
-        <input rdxFieldControl type="radio" />
-    </div>
-    <p rdxFieldError>Error</p>
+  <div rdxFieldItem>
+    <label rdxFieldLabel>Option A</label>
+    <input rdxFieldControl type="radio" />
+    <p rdxFieldDescription>Description A</p>
+  </div>
+  <div rdxFieldItem>
+    <label rdxFieldLabel>Option B</label>
+    <input rdxFieldControl type="radio" />
+  </div>
+  <p rdxFieldError>Error</p>
 </div>
 ```
 

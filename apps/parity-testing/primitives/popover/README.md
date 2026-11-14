@@ -4,13 +4,20 @@ Reference: Base UI 1.9.0, commit `cf696d6f6e08c699c5bda24d5a033430909f2285`,
 archive SHA-256 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 The reference is unmodified. Run `pnpm test-parity popover` on Node 24.
 
-Twenty-five scenarios run in Chromium, Firefox and WebKit (75 comparisons): keyboard opening and
+Twenty-eight scenarios run in Chromium, Firefox and WebKit (84 comparisons): keyboard opening and
 Escape/return focus; pointer close; trigger toggling; disabled trigger; canceled open/close;
 outside press; modal and trap-focus Tab wrapping; explicit initial focus; trigger switching;
 native text editing; live anchor translation/resize; frozen tracking; clipping and recovery.
 The same actions observe native focus, expanded triggers, ARIA links, draft value, completion
 callbacks, cancelable change payloads and the default clipping flag. Bounds and original event
 types are retained in observations. No adapter forces focus, controlled state or completion.
+
+Three secondary-outside cases distinguish ordinary/modal intentional clicks from trap-focus
+pointerdown. They observe right-click on unfocusable background and the native focus left there.
+Primary outside clicks have separate scenarios: WebKit's browser context menu can consume the first
+left press after right-click, independently of either primitive. Restore-focus does not repair a
+visible field's ordinary blur; removal and hiding still recover focus. No secondary-press exceptions
+are needed.
 
 Angular's explicit initial-focus target uses a native template reference. Base UI's `true` policy
 is not copied as a new Angular boolean input. Positioning readiness is shared with Menu through

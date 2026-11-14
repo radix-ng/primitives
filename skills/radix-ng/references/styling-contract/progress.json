@@ -5,7 +5,88 @@
   "section": "components",
   "description": "Displays task completion with accessible label, value, track, and indicator parts.",
   "doc": "radix-ng-examples/references/components/progress.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-progress--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-progress--docs",
   "anatomy": "<div rdxProgressRoot [value]=\"70\">\n  <span rdxProgressLabel>Upload progress</span>\n  <span rdxProgressValue></span>\n  <div rdxProgressTrack>\n    <div rdxProgressIndicator></div>\n  </div>\n</div>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-complete",
+      "parts": "Root, Label, Value, Track, Indicator",
+      "values": "The value has reached max."
+    },
+    {
+      "attribute": "data-progressing",
+      "parts": "Root, Label, Value, Track, Indicator",
+      "values": "The value is between min and max."
+    },
+    {
+      "attribute": "data-indeterminate",
+      "parts": "Root, Label, Value, Track, Indicator",
+      "values": "The value is null (unknown)."
+    },
+    {
+      "attribute": "data-value",
+      "parts": "Root",
+      "values": "The current value (absent when indeterminate)."
+    },
+    {
+      "attribute": "data-min",
+      "parts": "Root",
+      "values": "The minimum value."
+    },
+    {
+      "attribute": "data-max",
+      "parts": "Root",
+      "values": "The maximum value."
+    },
+    {
+      "attribute": "data-value",
+      "parts": "Value",
+      "values": "The current value (absent when indeterminate)."
+    },
+    {
+      "attribute": "data-min",
+      "parts": "Value",
+      "values": "The minimum value."
+    },
+    {
+      "attribute": "data-max",
+      "parts": "Value",
+      "values": "The maximum value."
+    },
+    {
+      "attribute": "data-value",
+      "parts": "Track",
+      "values": "The current value (absent when indeterminate)."
+    },
+    {
+      "attribute": "data-min",
+      "parts": "Track",
+      "values": "The minimum value."
+    },
+    {
+      "attribute": "data-max",
+      "parts": "Track",
+      "values": "The maximum value."
+    },
+    {
+      "attribute": "data-value",
+      "parts": "Indicator",
+      "values": "The current value (absent when indeterminate)."
+    },
+    {
+      "attribute": "data-min",
+      "parts": "Indicator",
+      "values": "The minimum value."
+    },
+    {
+      "attribute": "data-max",
+      "parts": "Indicator",
+      "values": "The maximum value."
+    },
+    {
+      "attribute": "data-percent",
+      "parts": "Indicator",
+      "values": "The completion percentage (absent when indeterminate)."
+    }
+  ]
 }

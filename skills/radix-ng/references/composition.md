@@ -13,7 +13,7 @@ part in its declaring injector ancestry unless the primitive documents an explic
     <h3 rdxAccordionHeader>
       <button rdxAccordionTrigger>…</button>
     </h3>
-    <div rdxAccordionContent>…</div>
+    <div rdxAccordionPanel>…</div>
   </div>
 </div>
 ```
@@ -21,7 +21,7 @@ part in its declaring injector ancestry unless the primitive documents an explic
 Rules:
 
 - Don't flatten the hierarchy or move a Trigger/Content outside its Root.
-- Copy the part structure from the primitive's example / `styling-contract.json` anatomy verbatim.
+- Read the primitive's example and `styling-contract/<slug>.json` anatomy before adapting its structure.
 - Remember that `<ng-content>` changes where a node renders, not the injector ancestry it was declared
   with. Prefer exposing intermediate provider-bearing parts as wrapper hosts.
 - Each part is a directive you import from the secondary entry point, e.g.
@@ -55,7 +55,11 @@ re-implementing behavior:
 @Component({
   selector: 'app-accordion',
   hostDirectives: [
-    { directive: RdxAccordionRootDirective, inputs: ['value', 'defaultValue', 'disabled', 'orientation'] }
+    {
+      directive: RdxAccordionRootDirective,
+      inputs: ['value', 'defaultValue', 'disabled', 'orientation'],
+      outputs: ['valueChange']
+    }
   ],
   template: `
     <ng-content />

@@ -106,7 +106,7 @@ export function selectChecks(input: {
         }
         if (file.startsWith('apps/visual-regression/tests/')) {
             if (input.specs.includes(file)) specs.add(file);
-            else if (file.endsWith('/docs-navigation.behavior.spec.ts')) docs = true;
+            else if (/\/(docs-navigation|agents)\.behavior\.spec\.ts$/.test(file)) docs = true;
             else if (file.endsWith('.visual.spec.ts')) continue;
             else full = true;
             continue;
@@ -122,6 +122,8 @@ export function selectChecks(input: {
         reasons.push(file);
     }
     const affected = dependents(seeds, input.families);
+    // Public Agents reference fixtures cover these four families (tsconfig.agents.json).
+    docs ||= ['field', 'select', 'menu', 'tabs'].some((family) => affected.has(family));
     for (const suite of input.suites) if (affected.has(suite)) suites.add(suite);
     for (const file of input.specs) {
         if (

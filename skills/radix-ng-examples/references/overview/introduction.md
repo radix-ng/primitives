@@ -1,0 +1,91 @@
+# Introduction
+
+**Headless, signals-first UI primitives with first-class Angular Forms support.**
+
+Radix NG is a headless, signals-first UI primitive library for Angular, focused on accessibility,
+customization, and developer experience. It ships unstyled, composable primitives that expose state
+through `data-*` attributes, giving you full control over markup and styling.
+
+The project began as an Angular port of [Radix UI](https://www.radix-ui.com/) and now primarily
+adapts [Base UI](https://base-ui.com/) architecture and behavior to Angular through directives,
+signals, and dependency injection.
+
+Use the primitives as the foundation of a design system or adopt them incrementally in an existing
+application.
+
+Forms are a first-class Angular-native integration rather than a separate form engine. Reactive Forms,
+`ngModel`, and Signal Forms use the same controls, accessible Field anatomy, and `data-*` contract;
+Angular continues to own values, validation, submission, and reset.
+
+<div className="not-prose my-6 grid gap-3 sm:grid-cols-2">
+  <a
+    className="border-border bg-muted text-foreground hover:bg-accent block rounded-md border p-4 no-underline transition-colors"
+    href={`https://www.npmjs.com/package/@radix-ng/primitives/v/${packageJson.version}`}
+    target="_blank"
+    rel="noreferrer"
+  >
+    <span className="text-muted-foreground block text-xs font-medium">NPM package</span>
+    <span className="mt-1 block font-mono text-sm">@radix-ng/primitives@{packageJson.version}</span>
+  </a>
+  <a
+    className="border-border bg-muted text-foreground hover:bg-accent block rounded-md border p-4 no-underline transition-colors"
+    href={`https://github.com/radix-ng/primitives/releases/tag/primitives%40${packageJson.version}`}
+    target="_blank"
+    rel="noreferrer"
+  >
+    <span className="text-muted-foreground block text-xs font-medium">GitHub release</span>
+    <span className="mt-1 block font-mono text-sm">primitives@{packageJson.version}</span>
+  </a>
+</div>
+
+## Features
+
+- **Headless** — no styles, full control. State is exposed through `data-*` attributes and CSS
+  custom properties so any styling approach works.
+- **Accessible** — built to the [WAI-ARIA authoring practices](https://www.w3.org/WAI/ARIA/apg/),
+  with keyboard navigation, focus management, and correct `role` / `aria-*` attributes.
+- **Signals-first** — modern Angular API throughout: `input()`, `model()`, `computed()`,
+  `signal()`, `effect()`.
+- **Angular-native forms** — one Field and control contract across Reactive Forms, `ngModel`, and
+  [Signal Forms](../components/signal-forms.md), backed by an executable integration matrix.
+- **Composable** — primitives compose via Angular's
+  [Directive Composition API](https://angular.dev/guide/directives/directive-composition-api)
+  (`hostDirectives`) and shared building blocks (Popper, Dismissable Layer, Focus Scope, …).
+- **Uncontrolled by default** — all internal behavior is wired up out of the box; pass a
+  controlled value only when you need to.
+- **Tree-shakeable** — granular secondary entry points (`@radix-ng/primitives/<name>`); you pay
+  only for what you import.
+- **AI-ready** — installable [Agents](../agents/getting-started.md) teach AI coding assistants
+  the primitive APIs, examples, and `data-*` styling contract, and provide a workflow for compiling and checking the result.
+
+## Styling
+
+Components ship with zero styles. Apply your own via the `data-*` state attributes that each
+primitive exposes — for example `[data-open]`, `[data-disabled]`, `[data-highlighted]` —
+using vanilla CSS, Tailwind, CSS Modules, or any other tooling.
+
+## Ecosystem
+
+- [OriginUI for Angular](https://originui-ng.com/) — production-ready styled components built on
+  these primitives
+- [shadcn/ui for Angular](https://ui.adrianub.dev/) — shadcn-style components
+- [DataGrid](https://originui-ng.com/table) — built with TanStack Table
+
+## Community
+
+- [Discord](https://discord.gg/NaJb2XRWX9) — questions, feedback, showcase
+- [Telegram](https://t.me/headless_angular) — development news and releases
+- [GitHub Discussions](https://github.com/radix-ng/primitives/discussions) — longer-form
+  questions and proposals
+- [GitHub Issues](https://github.com/radix-ng/primitives) — bug reports and feature requests
+
+## Credits
+
+Built on the shoulders of:
+
+- [Radix UI](https://radix-ui.com) (MIT License)
+- [Base UI](https://base-ui.com) (MIT License)
+- [Radix Vue](https://radix-vue.com) (MIT License)
+- [Radix Svelte](https://radix-svelte.com) (MIT License)
+- [Spartan UI](https://www.spartan.ng/) (MIT License)
+- [NG Primitives](https://ng-primitives.mintlify.app) (CC BY-ND 4.0)

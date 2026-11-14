@@ -149,6 +149,8 @@ const preview: Preview = {
                 order: [
                     'Overview',
                     ['Introduction', 'Installation'],
+                    'Agents',
+                    ['Getting started', 'Build with Radix NG', 'Compose components', 'Verify the result', 'Reference'],
                     'Learn',
                     [
                         'Introduction',

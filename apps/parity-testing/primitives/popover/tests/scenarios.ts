@@ -34,6 +34,16 @@ export const scenarios = [
                 await d.checkpoint('close canceled', { open: true, completions: [true] });
                 return;
             }
+            if (name.startsWith('secondary-outside')) {
+                await d.page.mouse.click(5, 5, { button: 'right' });
+                if (name === 'secondary-outside-trap-focus') {
+                    await d.closed();
+                    await d.checkpoint('secondary outside press closes trapping popup', { open: false });
+                } else {
+                    await d.checkpoint('secondary outside press awaits intentional click', { open: true });
+                }
+                return;
+            }
             if (name === 'trap-focus') {
                 await expect(d.page.getByTestId('field')).toBeFocused();
                 await d.page.keyboard.press('Shift+Tab');

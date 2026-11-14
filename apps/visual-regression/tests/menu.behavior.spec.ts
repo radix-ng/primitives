@@ -321,7 +321,10 @@ test('Menu item highlight: previews keyboard, explicit labels, disabled hover an
     await expect(output).toContainText('Reason: keyboard');
     await page.keyboard.press('e');
     await expect(output).toContainText('Highlighted: Export document');
-    await page.getByRole('menuitem', { name: 'Print document', exact: true }).hover();
+    const print = (await page.getByRole('menuitem', { name: 'Print document', exact: true }).boundingBox())!;
+    // The first zero-delta move has no known cursor origin; travel across the item before asserting hover.
+    await page.mouse.move(print.x + 4, print.y + print.height / 2);
+    await page.mouse.move(print.x + print.width / 2, print.y + print.height / 2, { steps: 3 });
     await expect(output).toContainText('Highlighted: Print document');
     await expect(output).toContainText('Reason: pointer');
     await page.getByRole('menuitem', { name: 'Save file', exact: true }).hover();

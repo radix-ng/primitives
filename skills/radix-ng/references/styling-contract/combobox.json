@@ -5,7 +5,123 @@
   "section": "components",
   "description": "A filterable select: a text input that filters a list of options, with the highlighted option tracked via `aria-activedescendant`.",
   "doc": "radix-ng-examples/references/components/combobox.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-combobox--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-combobox--docs",
   "anatomy": "<div rdxComboboxRoot>\n  <input rdxComboboxInput placeholder=\"Search…\" />\n  <button rdxComboboxClear><!-- clear icon --></button>\n  <button rdxComboboxTrigger><!-- chevron icon --></button>\n\n  <div *rdxComboboxPortal rdxComboboxPositioner>\n    <div rdxComboboxPopup>\n      <div rdxComboboxList>\n        <div rdxComboboxGroup>\n          <div rdxComboboxGroupLabel>Group</div>\n          <div value=\"apple\" rdxComboboxItem>\n            <span rdxComboboxItemIndicator><!-- check icon --></span>\n            Apple\n          </div>\n        </div>\n      </div>\n      <div rdxComboboxEmpty>No results.</div>\n    </div>\n  </div>\n</div>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-popup-open",
+      "parts": "RdxComboboxInput",
+      "values": "The popup is open."
+    },
+    {
+      "attribute": "data-list-empty",
+      "parts": "RdxComboboxInput",
+      "values": "No options match the query."
+    },
+    {
+      "attribute": "data-placeholder",
+      "parts": "RdxComboboxInput",
+      "values": "No value is selected."
+    },
+    {
+      "attribute": "data-filled",
+      "parts": "RdxComboboxInput",
+      "values": "A value is selected."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "RdxComboboxInput",
+      "values": "The input is disabled."
+    },
+    {
+      "attribute": "data-invalid",
+      "parts": "RdxComboboxInput",
+      "values": "Validity state (via Field)."
+    },
+    {
+      "attribute": "data-valid",
+      "parts": "RdxComboboxInput",
+      "values": "Validity state (via Field)."
+    },
+    {
+      "attribute": "data-required",
+      "parts": "RdxComboboxInput",
+      "values": "The control is required."
+    },
+    {
+      "attribute": "data-focused",
+      "parts": "RdxComboboxInput",
+      "values": "The input is focused (via Field)."
+    },
+    {
+      "attribute": "data-selected",
+      "parts": "RdxComboboxItem",
+      "values": "The item is selected."
+    },
+    {
+      "attribute": "data-highlighted",
+      "parts": "RdxComboboxItem",
+      "values": "The item is highlighted (keyboard / hover)."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "RdxComboboxItem",
+      "values": "The item is disabled."
+    },
+    {
+      "attribute": "data-hidden",
+      "parts": "RdxComboboxItem",
+      "values": "The item is filtered out (a deliberate Radix extra)."
+    },
+    {
+      "attribute": "data-side",
+      "parts": "RdxComboboxPositioner",
+      "values": "The resolved placement side."
+    },
+    {
+      "attribute": "data-align",
+      "parts": "RdxComboboxPositioner",
+      "values": "The resolved placement alignment."
+    },
+    {
+      "attribute": "data-anchor-hidden",
+      "parts": "RdxComboboxPositioner",
+      "values": "The anchor is fully occluded."
+    },
+    {
+      "attribute": "data-open",
+      "parts": "RdxComboboxPopup",
+      "values": "The popup is open."
+    },
+    {
+      "attribute": "data-closed",
+      "parts": "RdxComboboxPopup",
+      "values": "The popup is closed."
+    },
+    {
+      "attribute": "data-empty",
+      "parts": "RdxComboboxPopup",
+      "values": "No options match the query."
+    },
+    {
+      "attribute": "data-side",
+      "parts": "RdxComboboxPopup",
+      "values": "Resolved side — top / right / bottom / left."
+    },
+    {
+      "attribute": "data-align",
+      "parts": "RdxComboboxPopup",
+      "values": "Resolved alignment — start / center / end."
+    },
+    {
+      "attribute": "data-starting-style",
+      "parts": "RdxComboboxPopup",
+      "values": "The enter transition is about to run."
+    },
+    {
+      "attribute": "data-ending-style",
+      "parts": "RdxComboboxPopup",
+      "values": "The exit transition is running."
+    }
+  ]
 }

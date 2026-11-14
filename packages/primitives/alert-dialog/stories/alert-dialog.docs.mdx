@@ -27,16 +27,16 @@ dialog part.
 
 ```typescript
 import {
-    alertDialogImports,
-    createRdxAlertDialogHandle,
-    RdxAlertDialogBackdrop,
-    RdxAlertDialogClose,
-    RdxAlertDialogDescription,
-    RdxAlertDialogPopup,
-    RdxAlertDialogPortal,
-    RdxAlertDialogRoot,
-    RdxAlertDialogTitle,
-    RdxAlertDialogTrigger
+  alertDialogImports,
+  createRdxAlertDialogHandle,
+  RdxAlertDialogBackdrop,
+  RdxAlertDialogClose,
+  RdxAlertDialogDescription,
+  RdxAlertDialogPopup,
+  RdxAlertDialogPortal,
+  RdxAlertDialogRoot,
+  RdxAlertDialogTitle,
+  RdxAlertDialogTrigger
 } from '@radix-ng/primitives/alert-dialog';
 ```
 
@@ -50,17 +50,17 @@ import { RdxAlertDialogModule } from '@radix-ng/primitives/alert-dialog';
 
 ```html
 <div rdxAlertDialogRoot>
-    <button rdxAlertDialogTrigger>Delete</button>
+  <button rdxAlertDialogTrigger>Delete</button>
 
-    <ng-template rdxAlertDialogPortal>
-        <div rdxAlertDialogBackdrop></div>
-        <div rdxAlertDialogPopup>
-            <h2 rdxAlertDialogTitle>Are you sure?</h2>
-            <p rdxAlertDialogDescription>This action cannot be undone.</p>
-            <button rdxAlertDialogClose>Cancel</button>
-            <button rdxAlertDialogClose>Confirm</button>
-        </div>
-    </ng-template>
+  <ng-template rdxAlertDialogPortal>
+    <div rdxAlertDialogBackdrop></div>
+    <div rdxAlertDialogPopup>
+      <h2 rdxAlertDialogTitle>Are you sure?</h2>
+      <p rdxAlertDialogDescription>This action cannot be undone.</p>
+      <button rdxAlertDialogClose>Cancel</button>
+      <button rdxAlertDialogClose>Confirm</button>
+    </div>
+  </ng-template>
 </div>
 ```
 
@@ -130,6 +130,20 @@ inputs: `handle`, `payload`, `id`, and `disabled`. See the Dialog reference for 
 
 These are thin wrappers around the matching dialog parts and read their behavior from context. See the
 Dialog docs for their full reference.
+
+## Data attributes
+
+Alert Dialog composes the corresponding Dialog parts. These hooks are inherited on their hosts.
+
+| Attribute                 | Parts                     | Present when                                  |
+| ------------------------- | ------------------------- | --------------------------------------------- |
+| `data-popup-open`         | Trigger                   | The alert dialog is open.                     |
+| `data-open`               | Popup, Backdrop, Viewport | The alert dialog is open.                     |
+| `data-closed`             | Popup, Backdrop, Viewport | The alert dialog is closed.                   |
+| `data-starting-style`     | Popup, Backdrop, Viewport | The enter transition is starting.             |
+| `data-ending-style`       | Popup, Backdrop, Viewport | The exit transition is running.               |
+| `data-nested`             | Popup, Backdrop, Viewport | The alert dialog is nested in another dialog. |
+| `data-nested-dialog-open` | Popup, Backdrop, Viewport | A descendant dialog is open.                  |
 
 ## Accessibility
 

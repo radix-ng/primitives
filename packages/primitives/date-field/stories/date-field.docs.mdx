@@ -1,13 +1,13 @@
-import {ArgTypes, Canvas, Meta} from "@storybook/addon-docs/blocks";
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as Stories from './date-field.stories';
-import {RdxDateFieldRootDirective} from "../src/date-field-root.directive";
-import {RdxDateFieldInputDirective} from "../src/date-field-input.directive";
+import { RdxDateFieldRootDirective } from '../src/date-field-root.directive';
+import { RdxDateFieldInputDirective } from '../src/date-field-input.directive';
 
 <Meta title="Primitives/Date Field" />
 
 # Date Field
 
-####  Enables users to input specific dates within a designated field.
+#### Enables users to input specific dates within a designated field.
 
 <Canvas sourceState="hidden" of={Stories.Default} />
 
@@ -50,8 +50,8 @@ Import all parts and piece them together.
 
 ```html
 <div rdxDateFieldRoot>
-    <div rdxDateFieldInput></div>
-    <input rdxVisuallyHiddenInput />
+  <div rdxDateFieldInput></div>
+  <input rdxVisuallyHiddenInput />
 </div>
 ```
 
@@ -83,26 +83,43 @@ and interaction state. See the [Signal Forms matrix](?path=/docs/primitives-sign
 
 <ArgTypes of={RdxDateFieldInputDirective} />
 
+## Data attributes
+
+| Attribute       | Parts       | Present when                 |
+| --------------- | ----------- | ---------------------------- |
+| `data-disabled` | Root, Input | The field is disabled.       |
+| `data-readonly` | Root        | The field is read-only.      |
+| `data-invalid`  | Root, Input | The field is invalid.        |
+| `data-valid`    | Root        | The field is valid.          |
+| `data-touched`  | Root        | The field has been touched.  |
+| `data-dirty`    | Root        | The field value has changed. |
+
 ## Examples
 
 ### With locale
 
 #### Gregorian
+
 <Canvas sourceState="hidden" of={Stories.LocalesGregorian} />
 
 #### Hebrew
+
 <Canvas sourceState="hidden" of={Stories.LocalesHebrew} />
 
 #### Taiwan
+
 <Canvas sourceState="hidden" of={Stories.LocalesTaiwan} />
 
 #### Japanese
+
 <Canvas sourceState="hidden" of={Stories.LocalesJapanese} />
 
 #### Persian
+
 <Canvas sourceState="hidden" of={Stories.LocalesPersian} />
 
 #### Russian
+
 <Canvas sourceState="hidden" of={Stories.LocalesRussian} />
 
 ### Invalid

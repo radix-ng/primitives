@@ -27,23 +27,23 @@ An edge-anchored sheet that opens over the page and dismisses with a swipe.
 
 ```typescript
 import {
-    createRdxDrawerHandle,
-    provideRdxDrawerProvider,
-    RdxDrawerBackdrop,
-    RdxDrawerClose,
-    RdxDrawerContent,
-    RdxDrawerDescription,
-    RdxDrawerIndent,
-    RdxDrawerIndentBackground,
-    RdxDrawerPopup,
-    RdxDrawerPortal,
-    RdxDrawerProviderDirective,
-    RdxDrawerRoot,
-    RdxDrawerSwipeArea,
-    RdxDrawerTitle,
-    RdxDrawerTrigger,
-    RdxDrawerVirtualKeyboardProvider,
-    RdxDrawerViewport
+  createRdxDrawerHandle,
+  provideRdxDrawerProvider,
+  RdxDrawerBackdrop,
+  RdxDrawerClose,
+  RdxDrawerContent,
+  RdxDrawerDescription,
+  RdxDrawerIndent,
+  RdxDrawerIndentBackground,
+  RdxDrawerPopup,
+  RdxDrawerPortal,
+  RdxDrawerProviderDirective,
+  RdxDrawerRoot,
+  RdxDrawerSwipeArea,
+  RdxDrawerTitle,
+  RdxDrawerTrigger,
+  RdxDrawerVirtualKeyboardProvider,
+  RdxDrawerViewport
 } from '@radix-ng/primitives/drawer';
 ```
 
@@ -69,23 +69,23 @@ while a gesture is active:
 
 ```css
 [rdxDrawerBackdrop] {
-    opacity: 1;
-    transition: opacity 200ms ease;
+  opacity: 1;
+  transition: opacity 200ms ease;
 }
 [rdxDrawerBackdrop][data-starting-style],
 [rdxDrawerBackdrop][data-closed] {
-    opacity: 0;
+  opacity: 0;
 }
 [rdxDrawerPopup] {
-    transform: translate3d(var(--drawer-swipe-movement-x, 0), var(--drawer-swipe-movement-y, 0), 0);
-    transition: transform 300ms ease;
+  transform: translate3d(var(--drawer-swipe-movement-x, 0), var(--drawer-swipe-movement-y, 0), 0);
+  transition: transform 300ms ease;
 }
 [rdxDrawerPopup][data-starting-style],
 [rdxDrawerPopup][data-closed] {
-    transform: translateY(100%);
+  transform: translateY(100%);
 }
 [rdxDrawerPopup][data-swiping] {
-    transition: none;
+  transition: none;
 }
 ```
 
@@ -94,19 +94,19 @@ The same popup transition works without a backdrop. If you choose exit keyframes
 
 ```html
 <div rdxDrawerRoot>
-    <button rdxDrawerTrigger>Open</button>
+  <button rdxDrawerTrigger>Open</button>
 
-    <ng-template rdxDrawerPortal>
-        <div rdxDrawerBackdrop></div>
-        <div rdxDrawerViewport>
-            <div rdxDrawerPopup>
-                <h2 rdxDrawerTitle>Title</h2>
-                <p rdxDrawerDescription>Description</p>
-                <div rdxDrawerContent>…scrollable body…</div>
-                <button rdxDrawerClose>Close</button>
-            </div>
-        </div>
-    </ng-template>
+  <ng-template rdxDrawerPortal>
+    <div rdxDrawerBackdrop></div>
+    <div rdxDrawerViewport>
+      <div rdxDrawerPopup>
+        <h2 rdxDrawerTitle>Title</h2>
+        <p rdxDrawerDescription>Description</p>
+        <div rdxDrawerContent>…scrollable body…</div>
+        <button rdxDrawerClose>Close</button>
+      </div>
+    </div>
+  </ng-template>
 </div>
 ```
 

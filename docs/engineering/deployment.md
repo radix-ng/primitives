@@ -44,7 +44,7 @@ Use script aliases from the root manifest and target options from the owning pro
 | Browser regression      | [Visual regression README](../../apps/visual-regression/README.md) describes behavior checks, screenshots, baseline updates and reports.                                                                             |
 | API documentation       | [TypeDoc builder](../../tools/scripts/api-doc/build.mjs) defines API-doc generation.                                                                                                                                 |
 
-Storybook serves the public site at `https://radix-ng.com`. Its static generated bundle supplies `/llms.txt`, `/llms-full.txt` and `/<section>/<slug>.md`; offline consumer skills use the same content. See [the consumer pipeline](consumer-skills.md) for generation triggers and integrity checks.
+The composed site mounts Storybook at `https://radix-ng.com/docs/`. Its static generated bundle supplies `llms.txt`, `llms-full.txt`, per-page Markdown and per-primitive JSON contracts relative to that base; offline consumer skills use the same content. See [the consumer pipeline](consumer-skills.md) for generation triggers and integrity checks.
 
 ## Environment variables and monitoring
 

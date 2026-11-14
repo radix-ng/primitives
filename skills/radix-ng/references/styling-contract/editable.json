@@ -5,7 +5,38 @@
   "section": "components",
   "description": "An inline text field that swaps a read-only preview for an editable input.",
   "doc": "radix-ng-examples/references/components/editable.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-editable--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-editable--docs",
   "anatomy": "<div rdxEditableRoot>\n    <div rdxEditableArea>\n        <span rdxEditablePreview></span>\n        <input rdxEditableInput />\n    </div>\n\n    <button rdxEditableEditTrigger></button>\n    <button rdxEditableSubmitTrigger></button>\n    <button rdxEditableCancelTrigger></button>\n</div>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-placeholder-shown",
+      "parts": "Area, Preview",
+      "values": "When not editing."
+    },
+    {
+      "attribute": "data-focus",
+      "parts": "Area",
+      "values": "While editing."
+    },
+    {
+      "attribute": "data-empty",
+      "parts": "Area",
+      "values": "When the value is empty."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Area, Input",
+      "values": "When disabled."
+    },
+    {
+      "attribute": "data-readonly",
+      "parts": "Area, Input",
+      "values": "When read-only."
+    },
+    {
+      "attribute": "data-auto-resize",
+      "parts": "Area, Preview, Input",
+      "values": "When autoResize is enabled."
+    }
+  ]
 }

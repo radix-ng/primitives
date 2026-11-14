@@ -5,7 +5,13 @@
   "section": "components",
   "description": "A separator element accessible to screen readers.",
   "doc": "radix-ng-examples/references/components/separator.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-separator--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-separator--docs",
   "anatomy": "<div rdxSeparatorRoot></div>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-orientation",
+      "parts": "RdxSeparatorRootDirective",
+      "values": "\"horizontal\" | \"vertical\""
+    }
+  ]
 }

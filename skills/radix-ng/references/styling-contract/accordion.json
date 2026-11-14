@@ -5,7 +5,88 @@
   "section": "components",
   "description": "A vertically stacked set of interactive headings that each reveal an associated section of content.",
   "doc": "radix-ng-examples/references/components/accordion.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-accordion--docs",
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-accordion--docs",
   "anatomy": "<div rdxAccordionRoot>\n  <div rdxAccordionItem>\n    <div rdxAccordionHeader>\n      <button rdxAccordionTrigger></button>\n    </div>\n    <div rdxAccordionPanel></div>\n  </div>\n</div>",
-  "dataAttributes": []
+  "dataAttributes": [
+    {
+      "attribute": "data-orientation",
+      "parts": "Root",
+      "values": "Always — \"horizontal\" | \"vertical\"."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Root",
+      "values": "The accordion is disabled."
+    },
+    {
+      "attribute": "data-open",
+      "parts": "Item",
+      "values": "The item is open."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Item",
+      "values": "The item is disabled."
+    },
+    {
+      "attribute": "data-index",
+      "parts": "Item",
+      "values": "Always — the item's zero-based index."
+    },
+    {
+      "attribute": "data-open",
+      "parts": "Header",
+      "values": "The item is open."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Header",
+      "values": "The item is disabled."
+    },
+    {
+      "attribute": "data-index",
+      "parts": "Header",
+      "values": "Always — the item's zero-based index."
+    },
+    {
+      "attribute": "data-panel-open",
+      "parts": "Trigger",
+      "values": "The item's panel is open."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Trigger",
+      "values": "The item is disabled."
+    },
+    {
+      "attribute": "data-open",
+      "parts": "Panel",
+      "values": "The panel is open."
+    },
+    {
+      "attribute": "data-orientation",
+      "parts": "Panel",
+      "values": "Always — \"horizontal\" | \"vertical\"."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Panel",
+      "values": "The item is disabled."
+    },
+    {
+      "attribute": "data-index",
+      "parts": "Panel",
+      "values": "Always — the item's zero-based index."
+    },
+    {
+      "attribute": "data-starting-style",
+      "parts": "Panel",
+      "values": "The panel is animating in."
+    },
+    {
+      "attribute": "data-ending-style",
+      "parts": "Panel",
+      "values": "The panel is animating out."
+    }
+  ]
 }

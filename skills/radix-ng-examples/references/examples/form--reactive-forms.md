@@ -8,7 +8,7 @@ The complete recipe composes Form → Fieldset → Field → Control with `rdxNg
 validation, error-key matching, server errors that clear on edit, submit reveal/focus, and reset.
 Reactive Forms remains the value/validation source of truth; Form never stops `(ngSubmit)` propagation.
 It is intentionally paired with the
-[Signal Forms account recipe](?path=/docs/primitives-signal-forms--docs#one-recipe-two-angular-apis):
+[Signal Forms account recipe](signal-forms.md#one-recipe-two-angular-apis):
 the UI and behavior stay the same while Angular's binding, validation, submission, and reset APIs
 change.
 

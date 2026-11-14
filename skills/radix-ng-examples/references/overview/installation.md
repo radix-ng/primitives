@@ -1,0 +1,90 @@
+# Installation
+
+A quick tutorial to walk through installing the package and using your first primitive.
+
+Radix NG supports **Angular 21+**.
+
+## Installing the packages
+
+Use Angular CLI to add the library and its runtime peer dependencies:
+
+```bash
+ng add @radix-ng/primitives
+```
+
+The schematic updates `package.json` and installs the packages with your configured package
+manager. It adds:
+
+- `@floating-ui/dom` — powers positioning for floating primitives (Popover, Tooltip, Select, …).
+- `@internationalized/date` — powers calendar and date/time primitives.
+- `@internationalized/number` — powers locale-aware number primitives.
+
+The schematic also offers to add an **AI assistant instructions** section to your `AGENTS.md` /
+`CLAUDE.md` (creating `AGENTS.md` if neither exists), so coding agents pick up the library's
+docs, Agent Skills, and headless conventions automatically. Decline the prompt or pass
+`--ai-setup=false` to skip it; the section is marked with
+`<!-- @radix-ng/primitives:start -->` comments and is safe to edit or remove.
+
+If you need to update `package.json` without running the package manager install, pass
+`--skip-install`:
+
+```bash
+ng add @radix-ng/primitives --skip-install
+```
+
+## Nx workspaces
+
+In an Nx Angular workspace, run the same Angular CLI schematic from the workspace root:
+
+```bash
+npx ng add @radix-ng/primitives
+```
+
+This package exposes an Angular `ng-add` schematic. If the package is already installed and you
+prefer Nx generator syntax, you can run the schematic directly:
+
+```bash
+nx g @radix-ng/primitives:ng-add
+```
+
+Alternatively, install the packages manually:
+
+```bash
+npm install @radix-ng/primitives @floating-ui/dom @internationalized/date @internationalized/number
+```
+
+## Import the parts
+
+Each primitive is published as its own secondary entry point, so you import only what you use
+from `@radix-ng/primitives/<name>`:
+
+```typescript
+import { Component } from '@angular/core';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { RdxLabelDirective } from '@radix-ng/primitives/label';
+
+@Component({
+    selector: 'app-root',
+    imports: [RdxLabelDirective],
+    template: `
+        <label rdxLabel htmlFor="firstName">First Name</label>
+        <input id="firstName" type="text" />
+    `
+})
+export class App {}
+
+bootstrapApplication(App);
+```
+
+The primitives are headless — they carry no styles. See **Theming** for how to style the parts
+via their `data-*` attributes.
+
+## Using with an AI assistant
+
+Building with Claude Code, Cursor, or another AI agent? Install the
+[Skills](skills.md) so your assistant knows the primitive APIs, examples,
+and `data-*` styling contract:
+
+```bash
+npx skills add radix-ng/primitives/skills
+```

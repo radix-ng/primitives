@@ -1,0 +1,113 @@
+# Naming Conventions
+
+Consistent naming keeps the library readable and predictable. Every primitive is a **headless
+directive** (or set of directives) applied to your own markup via an **attribute selector** — there
+are no custom HTML elements. This page documents how those directives, selectors, and supporting
+types are named.
+
+## Prefix
+
+- **Selectors / `exportAs`** use the lowercase prefix `rdx` (e.g. `rdxSelectTrigger`). This
+  distinguishes Radix NG directives from native Angular and third-party directives.
+- **Class names** use the PascalCase prefix `Rdx` (e.g. `RdxSelectTrigger`).
+
+## Attribute selectors, not custom elements
+
+Primitives are applied as attributes on the element you already render. You bring the tag; the
+directive adds behavior, ARIA, and `data-*` state.
+
+```html
+<!-- ✅ attribute selector on your own element -->
+<button rdxSelectTrigger>Open</button>
+<div rdxPopoverRoot>…</div>
+
+<!-- ❌ there are no custom Radix elements -->
+<rdxSelectTrigger></rdxSelectTrigger>
+```
+
+This is what makes the library headless: you keep full control of the tag, classes, and styling,
+and style state through `data-*` attributes the directive sets.
+
+## Naming format
+
+| Thing               | Pattern                                        | Example                      |
+| ------------------- | ---------------------------------------------- | ---------------------------- |
+| Directive class     | `Rdx<Name><Role>Directive` (legacy)            | `RdxAccordionItemDirective`  |
+| Directive class     | `Rdx<Name><Role>` (current style)              | `RdxSelectRoot`              |
+| Selector            | `[rdx<Name><Role>]`                            | `[rdxAccordionItem]`         |
+| `exportAs`          | `rdx<Name><Role>`                              | `rdxAccordionItem`           |
+| Context type        | `Rdx<Name>RootContext` (current) / `<Name>RootContext` (legacy) | `RdxSelectRootContext` / `AccordionRootContext` |
+| Context injectors   | `inject<Name>RootContext` / `provide<Name>RootContext` | `injectSelectRootContext` |
+| NgModule (optional) | `Rdx<Name>Module`                              | `RdxAccordionModule`         |
+
+Where `<Name>` is the primitive family (`Select`, `Popover`, `Accordion`) and `<Role>` is the part
+(`Root`, `Trigger`, `Item`, `Popup`, …).
+
+## Two generations of class names
+
+The codebase contains two naming styles. Both are correct — match the style of the primitive you are
+editing.
+
+- **Legacy** — class ends in `Directive`, source file is `<name>-<role>.directive.ts`. Example:
+  `RdxAccordionRootDirective` in `accordion-root.directive.ts`.
+- **Current** — class has no `Directive` suffix, source file is `<name>-<role>.ts`. New primitives
+  use this style. Example: `RdxSelectRoot` in `select-root.ts`.
+
+The **selector and `exportAs` are identical across both generations** — only the class name and file
+name differ. Selectors are never renamed for the suffix; `[rdxSelectRoot]` is the selector whether
+the class is `RdxSelectRoot` or `RdxSelectRootDirective`.
+
+## Compound primitives
+
+Most primitives are a family of parts that share a root context. Name each part `Rdx<Name><Role>`
+with a matching `[rdx<Name><Role>]` selector. Real examples:
+
+```html
+<!-- Select (current style: RdxSelectRoot, RdxSelectTrigger, … in select-*.ts) -->
+<div rdxSelectRoot>
+  <button rdxSelectTrigger>
+    <span rdxSelectValue></span>
+    <span rdxSelectIcon></span>
+  </button>
+
+  <ng-container *rdxSelectPortal>
+    <div rdxSelectPositioner>
+      <div rdxSelectPopup>
+        <div rdxSelectItem>
+          <span rdxSelectItemText>Option</span>
+          <span rdxSelectItemIndicator></span>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+```
+
+```html
+<!-- Accordion (legacy style: RdxAccordionRootDirective, … in accordion-*.directive.ts) -->
+<div rdxAccordionRoot>
+  <div rdxAccordionItem>
+    <h3 rdxAccordionHeader>
+      <button rdxAccordionTrigger>Trigger</button>
+    </h3>
+    <div rdxAccordionPanel>Panel content</div>
+  </div>
+</div>
+```
+
+## Guidelines
+
+1. **Attribute selectors only** — never expose a custom element; apply directives to the consumer's
+   own tags.
+2. **Descriptive part names** — `<Role>` should name the part's purpose (`Trigger`, `Popup`,
+   `Indicator`), not its implementation. Avoid abbreviations.
+3. **Selector ↔ `exportAs` mirror the class** — `RdxSelectTrigger` → `[rdxSelectTrigger]` →
+   `exportAs: 'rdxSelectTrigger'`.
+4. **Match the surrounding generation** — keep a primitive internally consistent (don't mix
+   `Directive`-suffixed and suffix-less classes within one family).
+5. **Context follows the family** — `Rdx<Name>RootContext` (current) or `<Name>RootContext`
+   (legacy), with `inject<Name>RootContext` / `provide<Name>RootContext` (no generation difference in
+   the injector names).
+
+Following these conventions keeps selectors predictable for consumers and the source consistent for
+contributors.

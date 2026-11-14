@@ -23,8 +23,8 @@ Import all parts and piece them together.
 
 ```html
 <div rdxDateFieldRoot>
-    <div rdxDateFieldInput></div>
-    <input rdxVisuallyHiddenInput />
+  <div rdxDateFieldInput></div>
+  <input rdxVisuallyHiddenInput />
 </div>
 ```
 

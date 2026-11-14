@@ -5,7 +5,63 @@
   "section": "components",
   "description": "An edge-anchored sheet that opens over the page and dismisses with a swipe.",
   "doc": "radix-ng-examples/references/components/drawer.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-drawer--docs",
-  "anatomy": "<div rdxDrawerRoot>\n    <button rdxDrawerTrigger>Open</button>\n\n    <ng-template rdxDrawerPortal>\n        <div rdxDrawerBackdrop></div>\n        <div rdxDrawerViewport>\n            <div rdxDrawerPopup>\n                <h2 rdxDrawerTitle>Title</h2>\n                <p rdxDrawerDescription>Description</p>\n                <div rdxDrawerContent>…scrollable body…</div>\n                <button rdxDrawerClose>Close</button>\n            </div>\n        </div>\n    </ng-template>\n</div>",
-  "dataAttributes": []
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-drawer--docs",
+  "anatomy": "<div rdxDrawerRoot>\n  <button rdxDrawerTrigger>Open</button>\n\n  <ng-template rdxDrawerPortal>\n    <div rdxDrawerBackdrop></div>\n    <div rdxDrawerViewport>\n      <div rdxDrawerPopup>\n        <h2 rdxDrawerTitle>Title</h2>\n        <p rdxDrawerDescription>Description</p>\n        <div rdxDrawerContent>…scrollable body…</div>\n        <button rdxDrawerClose>Close</button>\n      </div>\n    </div>\n  </ng-template>\n</div>",
+  "dataAttributes": [
+    {
+      "attribute": "data-open",
+      "parts": "Popup, Backdrop, Viewport, SwipeArea",
+      "values": "The drawer is open / closed."
+    },
+    {
+      "attribute": "data-closed",
+      "parts": "Popup, Backdrop, Viewport, SwipeArea",
+      "values": "The drawer is open / closed."
+    },
+    {
+      "attribute": "data-starting-style",
+      "parts": "Popup, Backdrop, Viewport",
+      "values": "The enter / exit transition is running."
+    },
+    {
+      "attribute": "data-ending-style",
+      "parts": "Popup, Backdrop, Viewport",
+      "values": "The enter / exit transition is running."
+    },
+    {
+      "attribute": "data-swiping",
+      "parts": "Popup, Backdrop, SwipeArea",
+      "values": "A swipe gesture is active."
+    },
+    {
+      "attribute": "data-swipe-dismiss",
+      "parts": "Popup",
+      "values": "A swipe release has committed to dismissal."
+    },
+    {
+      "attribute": "data-swipe-direction",
+      "parts": "Popup, SwipeArea",
+      "values": "The configured swipe direction."
+    },
+    {
+      "attribute": "data-expanded",
+      "parts": "Popup",
+      "values": "The drawer is at its most open snap point."
+    },
+    {
+      "attribute": "data-nested-drawer-open",
+      "parts": "Popup, Backdrop",
+      "values": "A descendant drawer is open."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "SwipeArea",
+      "values": "Swipe-to-open interaction is disabled."
+    },
+    {
+      "attribute": "data-active",
+      "parts": "Indent, IndentBackground",
+      "values": "The provider has an active drawer."
+    }
+  ]
 }

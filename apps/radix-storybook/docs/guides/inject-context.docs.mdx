@@ -41,9 +41,9 @@ import { Signal } from '@angular/core';
 import { createContext } from '@radix-ng/primitives/core';
 
 export interface RdxFooContext {
-    readonly value: Signal<number>;
-    readonly disabled: Signal<boolean>;
-    increment(): void;
+  readonly value: Signal<number>;
+  readonly disabled: Signal<boolean>;
+  increment(): void;
 }
 
 export const [injectFooContext, provideFooContext] = createContext<RdxFooContext>('RdxFooContext');
@@ -59,29 +59,29 @@ import { booleanAttribute, Directive, inject, input, signal } from '@angular/cor
 import { provideFooContext, RdxFooContext } from './foo-context';
 
 const fooContext = (): RdxFooContext => {
-    const root = inject(RdxFooRoot);
+  const root = inject(RdxFooRoot);
 
-    return {
-        value: root.value,
-        disabled: root.disabled,
-        increment: () => root.increment()
-    };
+  return {
+    value: root.value,
+    disabled: root.disabled,
+    increment: () => root.increment()
+  };
 };
 
 @Directive({
-    selector: '[rdxFooRoot]',
-    providers: [provideFooContext(fooContext)]
+  selector: '[rdxFooRoot]',
+  providers: [provideFooContext(fooContext)]
 })
 export class RdxFooRoot {
-    readonly disabled = input(false, { transform: booleanAttribute });
+  readonly disabled = input(false, { transform: booleanAttribute });
 
-    readonly value = signal(0);
+  readonly value = signal(0);
 
-    increment(): void {
-        if (!this.disabled()) {
-            this.value.update((current) => current + 1);
-        }
+  increment(): void {
+    if (!this.disabled()) {
+      this.value.update((current) => current + 1);
     }
+  }
 }
 ```
 
@@ -97,14 +97,14 @@ import { Directive } from '@angular/core';
 import { injectFooContext } from './foo-context';
 
 @Directive({
-    selector: '[rdxFooItem]',
-    host: {
-        '[attr.data-disabled]': 'context.disabled() ? "" : undefined',
-        '(click)': 'context.increment()'
-    }
+  selector: '[rdxFooItem]',
+  host: {
+    '[attr.data-disabled]': 'context.disabled() ? "" : undefined',
+    '(click)': 'context.increment()'
+  }
 })
 export class RdxFooItem {
-    protected readonly context = injectFooContext();
+  protected readonly context = injectFooContext();
 }
 ```
 
@@ -112,8 +112,8 @@ export class RdxFooItem {
 
 ```html
 <div rdxFooRoot>
-    <button rdxFooItem>Increment</button>
-    <button rdxFooItem>Increment</button>
+  <button rdxFooItem>Increment</button>
+  <button rdxFooItem>Increment</button>
 </div>
 ```
 
@@ -139,7 +139,7 @@ provider and the (optional) injector stay in one place.
 
 - **Expose signals, not the instance.** Map the root's signals onto a small, read-only context type
   so consumers can't mutate internal state directly.
-- **Derive with `computed()`.** Put derived state (e.g. `data-state`) in `computed` signals on the
+- **Derive with `computed()`.** Put derived state (e.g. whether a part is open) in `computed` signals on the
   context instead of recomputing in each child.
 - **Keep mutations as methods** on the root (`toggle()`, `increment()`) and expose them through the
   context — children call them, the root owns the logic.

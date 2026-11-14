@@ -5,7 +5,38 @@
   "section": "components",
   "description": "Enables users to input specific dates within a designated field.",
   "doc": "radix-ng-examples/references/components/date-field.md",
-  "storybook": "https://radix-ng.com/?path=/docs/primitives-date-field--docs",
-  "anatomy": "<div rdxDateFieldRoot>\n    <div rdxDateFieldInput></div>\n    <input rdxVisuallyHiddenInput />\n</div>",
-  "dataAttributes": []
+  "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-date-field--docs",
+  "anatomy": "<div rdxDateFieldRoot>\n  <div rdxDateFieldInput></div>\n  <input rdxVisuallyHiddenInput />\n</div>",
+  "dataAttributes": [
+    {
+      "attribute": "data-disabled",
+      "parts": "Root, Input",
+      "values": "The field is disabled."
+    },
+    {
+      "attribute": "data-readonly",
+      "parts": "Root",
+      "values": "The field is read-only."
+    },
+    {
+      "attribute": "data-invalid",
+      "parts": "Root, Input",
+      "values": "The field is invalid."
+    },
+    {
+      "attribute": "data-valid",
+      "parts": "Root",
+      "values": "The field is valid."
+    },
+    {
+      "attribute": "data-touched",
+      "parts": "Root",
+      "values": "The field has been touched."
+    },
+    {
+      "attribute": "data-dirty",
+      "parts": "Root",
+      "values": "The field value has changed."
+    }
+  ]
 }

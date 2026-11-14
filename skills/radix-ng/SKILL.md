@@ -8,7 +8,7 @@ description: |
 
   Use when: "build a … with radix-ng", "use @radix-ng/primitives", "headless Angular
   component", "style radix-ng with my design system", "Angular accordion/dialog/select/…".
-compatibility: Requires @radix-ng/primitives and Angular 21+ (signals API). Stories use Tailwind CSS v4, but the primitives are styling-agnostic.
+compatibility: Requires @radix-ng/primitives in an Angular project matching the package's peer dependencies. Stories use Tailwind CSS v4, but the primitives are styling-agnostic.
 license: MIT
 metadata:
   author: radix-ng
@@ -29,28 +29,35 @@ Everything is **bundled offline** — no live site required.
   authoritative.
 - **API contract** — `references/api-contract/<slug>.json` (one shard per primitive): each part's
   selector, `exportAs`, inputs (binding name, type, default, required), outputs, and two-way bindings.
-  **Use it to write and verify bindings — anything not listed there does not exist.**
+  Use it to write and verify bindings for the recorded version.
 - **Styling contract** — `references/styling-contract/<slug>.json` (one shard per primitive): the
-  parts, anatomy, and every `data-*` attribute (with its values) you can style. **This is how you theme
+  parts, anatomy, and documented `data-*` attributes (with their values) you can style. **This is how you theme
   headless primitives with a custom design system.**
 - The whole-library `api-contract.json` / `styling-contract.json` monoliths still ship but are
   **deprecated** (removed next release) — always prefer the per-primitive shards.
 - **Full docs in one file** — `radix-ng-examples/references/llms-full.txt`.
 - **Reference rules** in this skill: `references/styling.md`, `references/composition.md`,
   `references/forms.md`.
-- **Visual browsing only** — Storybook at `https://sb-primitives.radix-ng.com`.
+- **Public Agents guide** — `https://radix-ng.com/docs/?path=/docs/agents-getting-started--docs`;
+  offline Markdown lives in `radix-ng-examples/references/agents/`.
+
+Check the installed `@radix-ng/primitives` version before using the bundle. Each contract shard has
+a `version`. If versions differ, the installed package's exports and `.d.ts` files take precedence;
+use matching examples or verify their bindings with the Angular compiler. Missing metadata is a
+reason to inspect the installed types, not to invent an API. Skills provide context, not a guarantee
+that generated code compiles or behaves correctly.
 
 ## Critical rules
 
 1. **Never invent an API.** If an input, output, selector, or part isn't in
-   `references/api-contract/<slug>.json` for that primitive, it doesn't exist — look it up, don't
-   assume. Validate generated code against the contract: selectors, input names/types,
+   `references/api-contract/<slug>.json` for that primitive, inspect the installed types before
+   proceeding. Validate generated code against the contract: selectors, input names/types,
    outputs, and two-way (`[(…)]`) bindings are all listed per part.
 2. **Headless: no styles ship with the primitive.** You provide all visuals. Drive them from
-   `data-*` state attributes (`[data-state="open"]`, `[data-disabled]`, `[data-orientation]`, …),
-   never by inspecting internal classes.
+   the specific part's documented attributes: Select Popup uses `[data-open]` / `[data-closed]`,
+   Accordion Trigger uses `[data-panel-open]`. Check each part instead of assuming a shared state enum.
 3. **Respect the compound anatomy.** Compound primitives (Accordion, Dialog, Select, Menu, …) are
-   assembled from nested parts (Root → Item → Trigger → Content). Children find their Root through
+   assembled from their documented parts (for example, Accordion Root → Item → Header / Trigger / Panel). Children find their Root through
    DI context — a Trigger must live inside its Root, or it throws. Don't flatten the hierarchy.
 4. **Import from the secondary entry point**, e.g.
    `import { RdxAccordionRootDirective } from '@radix-ng/primitives/accordion';`.
@@ -68,12 +75,13 @@ Everything is **bundled offline** — no live site required.
 1. **Identify intent** — what interaction/pattern does the UI need (disclosure, overlay, selection,
    form field, navigation)?
 2. **Pick the primitive** — find it in the catalog below and in the `radix-ng-examples` index.
-3. **Read a real example** — open the component's `.md`; start from the closest example rather
+3. **Read a real example** — open the component index and its closest source shard rather
    than writing from scratch.
 4. **Assemble the anatomy** — copy the part hierarchy from the example / styling contract exactly.
 5. **Style from the contract** — map each `data-*` state to the project's design tokens/classes.
    See `references/styling.md`.
-6. **Validate** — labels associated, keyboard works, the part hierarchy is intact.
+6. **Validate** — compile the consumer's Angular templates, then check accessible names, keyboard,
+   focus and nesting in a browser. Follow `radix-ng-examples/references/agents/verify-the-result.md`.
 
 ## Recovering after context loss
 
@@ -88,7 +96,7 @@ conversation summary — are the source of truth; treat the summary as navigatio
 2. **Reload the contracts, not your memory.** Re-read that primitive's shards —
    `references/api-contract/<slug>.json` (selectors, inputs, outputs, two-way bindings) and
    `references/styling-contract/<slug>.json` (parts + `data-*`). Anything you "remember" that isn't
-   there does not exist.
+   there needs verification against the installed types before use.
 3. **Reload the nearest example cheaply.** Open a single shard from the `radix-ng-examples` skill —
    `references/examples/<component>--<example>.md` (one example each, a few KB) — instead of
    re-reading the whole component doc.
@@ -102,8 +110,9 @@ These primitives are made for this. The recipe:
 1. Look up the primitive's parts and `data-*` attributes in `references/styling-contract/<slug>.json`.
 2. Put the project's own classes/tokens on each part.
 3. Express state visually through the data attributes, e.g.
-   `[&[data-state=open]]:bg-accent`, `[data-disabled]:opacity-50`,
-   `[data-orientation=horizontal]:flex-row` — or plain CSS selectors `[data-state="open"] { … }`.
+   `data-[open]:bg-accent` on Select Popup or `data-[panel-open]:bg-accent` on Accordion Trigger;
+   use `[rdxSelectPopup][data-open]` for the equivalent plain CSS selector. Verify orientation,
+   disabled and checked hooks separately for each part.
 
 The same primitive works with Tailwind, CSS modules, vanilla CSS, or any token system — only the
 class strings change, never the directives or the data-attribute hooks.
