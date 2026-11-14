@@ -157,7 +157,7 @@ export const RDX_SELECT_POSITIONER_TOKEN = new InjectionToken<RdxPositionerImpl>
                     }
                     return rootContext.triggerElement() ?? true;
                 },
-                // This virtual-focus listbox owns DOM focus even after an explicit inside blur.
+                // Recover lost/hidden content focus to the virtual-focus listbox; preserve explicit blur.
                 restoreFocus: () => 'popup',
                 openInteractionType: () => rootContext.openInteractionType(),
                 closeInteractionType: () => rootContext.closeInteractionType()

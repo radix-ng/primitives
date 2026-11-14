@@ -42,6 +42,9 @@ form values/callbacks, and typeahead cycling through enabled matches. Unit cover
 checks pointer activation, dynamic disabling/removal, all-disabled lists and an already selected
 disabled option. The remaining item DOM focus differences are still recorded as `dom-focus`.
 
+Canceled modal outside presses preserve the browser's blur onto body in both implementations;
+the popup remains open and the page stays locked. These checkpoints need no focus exceptions.
+
 ## Recorded differences
 
 `expected-differences.json` records exact Angular/React pairs for a specific scenario, checkpoint and

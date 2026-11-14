@@ -124,13 +124,14 @@ describe('Select popup focus manager', () => {
         expect(document.activeElement).not.toBe(trigger());
     });
 
-    it('restores focus to the popup when focus is lost inside while open', async () => {
+    it('preserves an explicit blur of the visible popup while open', async () => {
         await openSelect();
 
         popup().blur();
         popup().dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: null }));
         await flush();
 
-        expect(document.activeElement).toBe(popup());
+        expect(document.activeElement).toBe(document.body);
+        expect(host.open()).toBe(true);
     });
 });

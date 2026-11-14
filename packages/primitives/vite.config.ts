@@ -12,6 +12,7 @@ export default defineConfig(({ mode }) => ({
     plugins: [angular()],
     test: {
         globals: true,
+        reporters: ['default'],
         environment: 'jsdom',
         setupFiles: ['./test-setup.ts'],
         include: ['**/*.spec.ts', '**/*.test.ts'],

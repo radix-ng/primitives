@@ -31,6 +31,7 @@ export async function runRetained(d: MenubarDriver, name: (typeof retainedCases)
             expect(await child.evaluate((element) => element.isConnected)).toBe(true);
             await d.checkpoint('same retained child reopened', { open: ['file', 'file-sub'] });
             await d.page.keyboard.press('Escape');
+            await d.checkpoint('retained child closed again', { open: ['file'], focus: 'file-more' });
         }
     } else if (name === 'retained-cancel-close') {
         await d.page.keyboard.press('Escape');

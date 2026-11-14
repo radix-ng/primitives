@@ -1256,22 +1256,6 @@
         "category": "closed-dom-retention"
     },
     {
-        "scenario": "modal: canceled outside press",
-        "checkpoint": "canceled",
-        "field": "focus",
-        "angular": "popup",
-        "react": "body",
-        "category": "dom-focus"
-    },
-    {
-        "scenario": "modal: canceled outside press",
-        "checkpoint": "still locked",
-        "field": "focus",
-        "angular": "popup",
-        "react": "body",
-        "category": "dom-focus"
-    },
-    {
         "scenario": "modal: keyboard selection",
         "checkpoint": "opened",
         "field": "focus",

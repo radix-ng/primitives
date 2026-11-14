@@ -42,9 +42,14 @@ export const positioningScenarios: Scenario[] = [
         async run(d) {
             await d.open();
             await d.clickBackground();
-            await d.checkpoint('canceled', { open: true, backgroundActivations: 0, entries: [['choice', 'apple']] });
+            await d.checkpoint('canceled', {
+                open: true,
+                backgroundActivations: 0,
+                entries: [['choice', 'apple']],
+                focus: 'body'
+            });
             await d.wheelPage(false);
-            await d.checkpoint('still locked', { open: true, pageScrolled: false });
+            await d.checkpoint('still locked', { open: true, pageScrolled: false, focus: 'body' });
         }
     },
     {

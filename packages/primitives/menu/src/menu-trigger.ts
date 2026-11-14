@@ -20,8 +20,8 @@ import {
     useTriggerFocusGuards
 } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
-import { getFocusableMenuItems, getMenuInitialFocusItem } from './menu-focus';
 import { RdxMenuHandle } from './menu-handle';
+import { MENU_INTERNAL_BACKDROP_ATTR } from './menu-internal-backdrop';
 import { findMenuOwnerId } from './menu-owner';
 import { injectRdxMenuRootContext } from './menu-root';
 import { applyPointerTunnel, createSafePolygonHandler, hasOpenChildSubmenu } from './menu-safe-polygon';
@@ -105,7 +105,11 @@ export class RdxMenuTrigger<Payload = unknown> {
 
         // Everything else belonging to this menu chain: the positioner wrapping the popup, and a
         // submenu portaled as a DOM sibling rather than nested inside it (Base UI `findRootOwnerId`).
-        if (target && findMenuOwnerId(target) === this.rootContext()?.ownerId()) {
+        if (
+            target &&
+            !(target.nodeType === 1 && (target as Element).hasAttribute(MENU_INTERNAL_BACKDROP_ATTR)) &&
+            findMenuOwnerId(target) === this.rootContext()?.ownerId()
+        ) {
             return;
         }
 
@@ -299,8 +303,6 @@ export class RdxMenuTrigger<Payload = unknown> {
             return;
         }
 
-        const wasOpen = this.rootContext()?.isOpen();
-
         if (this.ignoreNextClick === 'mouse' && event.detail > 0) {
             this.ignoreNextClick = null;
             // Safari can blur the hovered popup onto body while applying the button's native
@@ -318,9 +320,6 @@ export class RdxMenuTrigger<Payload = unknown> {
             return;
         }
         if (this.rootContext()?.handleTriggerInteraction({ type: 'click', event })) {
-            if (event.detail === 0 && !wasOpen && this.rootContext()?.isOpen()) {
-                this.restoreKeyboardPopupFocus();
-            }
             return;
         }
 
@@ -329,18 +328,12 @@ export class RdxMenuTrigger<Payload = unknown> {
             ((this.ignoreNextClick === 'mouse' && event.detail > 0) ||
                 (this.ignoreNextClick === 'keyboard' && event.detail === 0))
         ) {
-            if (this.ignoreNextClick === 'keyboard') {
-                this.restoreKeyboardPopupFocus();
-            }
             this.ignoreNextClick = null;
             return;
         }
 
         this.openedByHover = false;
         this.rootContext()?.toggle('trigger-press', event, this.elementRef.nativeElement);
-        if (event.detail === 0 && !wasOpen && this.rootContext()?.isOpen()) {
-            this.restoreKeyboardPopupFocus();
-        }
     }
 
     protected handleArrowDown(event: Event): void {
@@ -390,7 +383,6 @@ export class RdxMenuTrigger<Payload = unknown> {
     }
 
     protected handleKeyboardToggle(event: Event): void {
-        const wasOpen = this.rootContext()?.isOpen();
         const interactionType = event instanceof KeyboardEvent && event.key === ' ' ? 'space' : 'enter';
 
         if (this.nativeButtonState() && !this.rootContext()?.hasTriggerInteractionHandler()) {
@@ -401,9 +393,6 @@ export class RdxMenuTrigger<Payload = unknown> {
             event.preventDefault();
             this.ignoreNextClick = this.nativeButtonState() ? 'keyboard' : null;
             this.openedByHover = false;
-            if (!wasOpen && this.rootContext()?.isOpen()) {
-                this.restoreKeyboardPopupFocus();
-            }
             return;
         }
 
@@ -411,9 +400,6 @@ export class RdxMenuTrigger<Payload = unknown> {
         this.ignoreNextClick = this.nativeButtonState() ? 'keyboard' : null;
         this.openedByHover = false;
         this.rootContext()?.toggle('trigger-press', event, this.elementRef.nativeElement);
-        if (!wasOpen && this.rootContext()?.isOpen()) {
-            this.restoreKeyboardPopupFocus();
-        }
     }
 
     protected handlePointerEnter(event: PointerEvent): void {
@@ -494,39 +480,5 @@ export class RdxMenuTrigger<Payload = unknown> {
         this.allowMouseUpTriggerTimer = undefined;
         this.rootContext()?.setAllowMouseUpTrigger(false);
         this.elementRef.nativeElement.ownerDocument.removeEventListener('mouseup', this.handleDocumentMouseUp);
-    }
-
-    private restoreKeyboardPopupFocus(attempt = 0): void {
-        const maxAttempts = 3;
-        const ownerDocument = this.elementRef.nativeElement.ownerDocument;
-
-        const run = () => {
-            if (!this.rootContext()?.isOpen()) {
-                return;
-            }
-
-            const popup = this.rootContext()?.popupElement();
-            const activeElement = ownerDocument.activeElement;
-
-            if (!popup || getFocusableMenuItems(popup).length === 0) {
-                if (attempt < maxAttempts) {
-                    this.restoreKeyboardPopupFocus(attempt + 1);
-                }
-                return;
-            }
-
-            if (activeElement && popup.contains(activeElement)) {
-                return;
-            }
-
-            const firstItem = getMenuInitialFocusItem(popup);
-            (firstItem ?? popup).focus({ preventScroll: true });
-        };
-
-        if (this.isBrowser) {
-            requestAnimationFrame(run);
-        } else {
-            setTimeout(run);
-        }
     }
 }

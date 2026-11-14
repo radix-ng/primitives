@@ -40,6 +40,9 @@ it('keeps same-family ancestor focus related until the completed outside click',
         (document.querySelector('#child-trigger') as HTMLButtonElement).click();
         await fixture.whenStable();
         await vi.waitFor(() => expect(document.activeElement?.id).toBe('child-close'));
+        // Dismissal installs its outside-press listener in the next task to ignore the opening click.
+        // Angular's whenStable() can finish first; start the closing gesture after that task.
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
         const parent = document.querySelector<HTMLElement>('[data-testid="parent-popup"]')!;
         parent.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }));
         document

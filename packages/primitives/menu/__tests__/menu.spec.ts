@@ -1065,6 +1065,18 @@ describe('Menu', () => {
                 expect(menu.componentInstance.root()?.open()).toBe(false);
             });
 
+            it('closes on a release on its owned internal backdrop', () => {
+                const menu = armedMenu();
+                const backdrop = document.querySelector('[data-rdx-menu-internal-backdrop]');
+                expect(backdrop).not.toBeNull();
+                expect(backdrop?.getAttribute('data-rdx-menu-owner')).toBe(menu.componentInstance.root()?.ownerId());
+
+                mouseUpOn(backdrop!);
+                menu.detectChanges();
+
+                expect(menu.componentInstance.root()?.open()).toBe(false);
+            });
+
             it('survives a release on the positioner that wraps the popup', () => {
                 const menu = armedMenu();
 

@@ -459,7 +459,17 @@ for (const layer of ['Parent', 'Child']) {
                     )
                 ).toBeVisible();
                 if (mode === 'callback-default') await expect(layer === 'Parent' ? primary : more).toBeFocused();
-                else await expect.poll(() => page.evaluate(() => document.activeElement === document.body)).toBe(true);
+                else {
+                    // A queued trigger autofocus used to run after the child had honored the veto.
+                    // Check pending frames so an early body focus cannot hide that later focus move.
+                    await page.evaluate(
+                        () =>
+                            new Promise<void>((resolve) =>
+                                requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+                            )
+                    );
+                    await expect.poll(() => page.evaluate(() => document.activeElement === document.body)).toBe(true);
+                }
                 if (layer === 'Child') await primary.click();
                 await expect(primary).toHaveAttribute('aria-expanded', 'false');
                 await expect(page.locator(`${popup}:visible`)).toHaveCount(0);
@@ -1276,6 +1286,12 @@ test('a press released far from the trigger cancels the just-opened menu', async
     await expect(page.locator('[rdxMenuPopup]')).toBeVisible();
 
     await page.mouse.move(box.x + box.width + 200, box.y + box.height / 2, { steps: 4 });
+    expect(
+        await page.evaluate(
+            ([x, y]) => document.elementFromPoint(x, y)?.hasAttribute('data-rdx-menu-internal-backdrop'),
+            [box.x + box.width + 200, box.y + box.height / 2]
+        )
+    ).toBe(true);
     await page.mouse.up();
 
     await expect(page.locator('[rdxMenuPopup][data-open]')).toHaveCount(0);
