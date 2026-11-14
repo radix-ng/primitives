@@ -1,0 +1,28 @@
+{
+    "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+    "version": 1,
+    "cli": { "analytics": false, "packageManager": "pnpm" },
+    "projects": {
+        "consumer": {
+            "projectType": "application",
+            "root": "",
+            "sourceRoot": "src",
+            "architect": {
+                "build": {
+                    "builder": "@angular/build:application",
+                    "options": {
+                        "browser": "src/main.ts",
+                        "index": "src/index.html",
+                        "tsConfig": "tsconfig.app.json",
+                        "styles": ["src/styles.css"],
+                        "outputPath": "dist/consumer"
+                    },
+                    "configurations": {
+                        "production": { "outputHashing": "all" }
+                    },
+                    "defaultConfiguration": "production"
+                }
+            }
+        }
+    }
+}

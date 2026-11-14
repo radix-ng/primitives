@@ -56,6 +56,7 @@ test('Agents Select/Dialog task: selection and Escape preserve nested focus owne
     await expect(select).toBeFocused();
     await expect(dialog).toBeVisible();
     await select.press('Enter');
+    await expect(page.locator('[rdxSelectPopup]')).toBeFocused();
     await page.keyboard.press('Escape');
     await expect(select).toBeFocused();
     await expect(dialog).toBeVisible();

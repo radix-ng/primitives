@@ -1,0 +1,149 @@
+:root {
+    font:
+        16px/1.5 system-ui,
+        sans-serif;
+    color: #17202a;
+    background: #f7f8fa;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+main {
+    max-width: 48rem;
+    margin: 2rem auto;
+    padding: 1rem;
+}
+
+section {
+    margin-block: 2rem;
+    padding: 1rem;
+    border: 1px solid #aab7b8;
+    border-radius: 0.5rem;
+    background: white;
+}
+
+button,
+input {
+    font: inherit;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #657;
+    border-radius: 0.25rem;
+    background: white;
+    color: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+:focus-visible {
+    outline: 3px solid #2255cc;
+    outline-offset: 2px;
+}
+
+.field,
+form,
+.dialog {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.field p {
+    margin: 0;
+}
+
+.error,
+input[data-invalid] {
+    color: #aa2030;
+    border-color: #aa2030;
+}
+
+input[data-touched][data-dirty] {
+    border-width: 2px;
+}
+
+output {
+    display: block;
+    margin-block: 0.5rem;
+}
+
+.backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    background: rgb(0 0 0 / 40%);
+}
+
+.dialog {
+    position: fixed;
+    z-index: 11;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(28rem, 90vw);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    background: white;
+}
+
+.dialog h2,
+.dialog p {
+    margin: 0;
+}
+
+.positioner {
+    z-index: 20;
+}
+
+.popup {
+    min-width: 12rem;
+    padding: 0.25rem;
+    border: 1px solid #657;
+    border-radius: 0.25rem;
+    background: white;
+    box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 15%);
+}
+
+.item {
+    display: block;
+    width: 100%;
+    padding: 0.5rem;
+    border: 0;
+    text-align: left;
+}
+
+.item[data-highlighted],
+.item:focus-visible {
+    background: #dce7ff;
+}
+
+[rdxMenuPopup][data-ending-style] {
+    animation: menu-exit 180ms ease-in;
+}
+@keyframes menu-exit {
+    to {
+        opacity: 0;
+    }
+}
+
+.actions,
+.tabs-list {
+    display: flex;
+    gap: 0.5rem;
+}
+
+[rdxTabsTab][data-active] {
+    background: #2255cc;
+    color: white;
+}
+
+.panel {
+    padding: 1rem;
+    border: 1px solid #aab7b8;
+}

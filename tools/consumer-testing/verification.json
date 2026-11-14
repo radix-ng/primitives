@@ -1,0 +1,132 @@
+{
+    "kind": "maintained-consumer-integration",
+    "verifiedAt": "2026-11-14T10:19:55.974Z",
+    "command": "pnpm test-consumer",
+    "source": {
+        "gitHead": "372157bebd023d1fe1335f720fae6fe7bbbba221",
+        "librarySourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "environment": {
+        "node": "v24.22.2",
+        "pnpm": "11.5.1",
+        "angular": "22.0.2",
+        "typescript": "6.0.3",
+        "playwright": "1.60.0"
+    },
+    "bundle": {
+        "source": "https://github.com/radix-ng/primitives.git",
+        "subpath": "skills",
+        "matchedRevision": "372157bebd023d1fe1335f720fae6fe7bbbba221",
+        "installer": "skills@1.8.1",
+        "skills": {
+            "radix-ng": {
+                "files": 119,
+                "sha256": "2ffe4674e069a598c3f0c25e60c372156964115df1ccfbb0ca47487a58ac3075",
+                "matchesLocalBundle": true
+            },
+            "radix-ng-examples": {
+                "files": 393,
+                "sha256": "e55fabf46028fb31e327292cddccd20318431136d21c7349fa557810d6867cf0",
+                "matchesLocalBundle": true
+            }
+        }
+    },
+    "library": {
+        "version": "1.3.0",
+        "tarballSha256": "c2755567c3772e035de004c7d5a022ba69fc05cecec9835d730bbb00743c3ca9"
+    },
+    "fixture": {
+        "files": 13,
+        "sha256": "4600e6386e94a2df6899f246a59edcc8d18d92bfa75a3c39bda06eac7804cfe0"
+    },
+    "consumerLockSha256": "7077e9a38f15b9a22a9b8a6ebf9ca2c200c41e7670239bc107ff412c60e24f7c",
+    "browserSpecSha256": "0fab977abaa4a0481cb3b4f041f198643c2e60377248a334a614f35186ea1c03",
+    "context": [
+        {
+            "slug": "field",
+            "apiVersion": "1.3.0",
+            "stylingVersion": "1.3.0",
+            "matchesLibrary": true
+        },
+        {
+            "slug": "select",
+            "apiVersion": "1.3.0",
+            "stylingVersion": "1.3.0",
+            "matchesLibrary": true
+        },
+        {
+            "slug": "dialog",
+            "apiVersion": "1.3.0",
+            "stylingVersion": "1.3.0",
+            "matchesLibrary": true
+        },
+        {
+            "slug": "menu",
+            "apiVersion": "1.3.0",
+            "stylingVersion": "1.3.0",
+            "matchesLibrary": true
+        },
+        {
+            "slug": "tabs",
+            "apiVersion": "1.3.0",
+            "stylingVersion": "1.3.0",
+            "matchesLibrary": true
+        }
+    ],
+    "examples": [
+        {
+            "file": "radix-ng-examples/references/examples/field--reactive-forms.md",
+            "sha256": "e7567c4502b40a533fd588490fd1799cb71591650ce874340c44746f63cda1a3"
+        },
+        {
+            "file": "radix-ng-examples/references/examples/select--focus-management.md",
+            "sha256": "ddc7e6e009c1e5e555e7c2dae45b34a28d7ac1fc38004ba2961819d5c1a143d4"
+        },
+        {
+            "file": "radix-ng-examples/references/examples/menu--open-dialog.md",
+            "sha256": "c61ea7d9eb4768ed12b64152fb161061cd6ae7775325f8cc0d4bbca2d673d2a5"
+        },
+        {
+            "file": "radix-ng-examples/references/examples/tabs--projected-through-a-wrapper.md",
+            "sha256": "cfbbf878180d12e40eb0f6e3b9ba6201c77cd3289e1b214f8a2ee94352de1737"
+        }
+    ],
+    "isolation": {
+        "strictTemplates": true,
+        "noWorkspaceInputs": true
+    },
+    "libraryEntryPoints": [
+        "radix-ng-primitives-core.mjs",
+        "radix-ng-primitives-form.mjs",
+        "radix-ng-primitives-field.mjs",
+        "radix-ng-primitives-focus-scope.mjs",
+        "radix-ng-primitives-presence.mjs",
+        "radix-ng-primitives-portal.mjs",
+        "radix-ng-primitives-floating-focus-manager.mjs",
+        "radix-ng-primitives-dismissable-layer.mjs",
+        "radix-ng-primitives-dialog.mjs",
+        "radix-ng-primitives-arrow.mjs",
+        "radix-ng-primitives-direction-provider.mjs",
+        "radix-ng-primitives-popper.mjs",
+        "radix-ng-primitives-composite.mjs",
+        "radix-ng-primitives-menu.mjs",
+        "radix-ng-primitives-select.mjs",
+        "radix-ng-primitives-tabs.mjs"
+    ],
+    "browser": {
+        "projects": ["chromium", "firefox", "webkit"],
+        "startTime": "2026-11-14T10:19:48.852Z",
+        "duration": 7096.796,
+        "expected": 12,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+    },
+    "status": "passed",
+    "documentedInstall": {
+        "command": "npx --yes skills add radix-ng/primitives/skills --agent codex --yes --copy",
+        "node": "v24.22.2",
+        "installedSkills": ["radix-ng", "radix-ng-examples"],
+        "matchesRecordedPublishedBundle": true
+    }
+}

@@ -60,6 +60,16 @@ generated diffs and test evidence.
 Consumer instructions give installed exports and `.d.ts` files precedence when a bundle's version
 differs. Version stamps describe generation provenance, not compatibility with every consumer install.
 
+## Packed consumer integration
+
+`pnpm test-consumer` checks skill discovery and installation from the public GitHub subpath, then
+builds the four Agents tasks in a fresh Angular application outside the workspace, using a packed
+library and public imports. It records the installed bundle's matching Git revision, versions and
+hashes, verifies build isolation, and runs the existing Playwright engines against that app.
+See [the reproducible consumer check](../../tools/consumer-testing/README.md) for commands, observed
+criteria and the recorded result. This exercises maintained integration fixtures; it does not measure
+agent generation quality. The source-backed Storybook checks above remain useful for faster iteration.
+
 ## Next experiments
 
 For version-matched npm delivery, generate after the release version is assigned and include the
