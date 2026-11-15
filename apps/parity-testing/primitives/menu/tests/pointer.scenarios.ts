@@ -19,25 +19,48 @@ export const pointerScenarios = pointerCases.map((name) => ({
             return;
         }
         if (name.startsWith('drag-')) {
-            const trigger = (await d.trigger.boundingBox())!;
-            await d.page.mouse.move(trigger.x + trigger.width / 2, trigger.y + trigger.height / 2);
-            await d.page.mouse.down();
-            await expect(d.popup).toBeVisible();
-            const target =
-                name === 'drag-disabled'
-                    ? 'blocked'
-                    : name === 'drag-stay'
-                      ? 'stay'
-                      : name === 'drag-checkbox'
-                        ? 'check'
-                        : name === 'drag-radio'
-                          ? 'radio-two'
-                          : 'alpha';
-            const item = (await d.item(target).boundingBox())!;
-            if (name !== 'drag-too-soon') await d.page.waitForTimeout(240); // The native 200ms mouse-up guard.
-            if (name === 'drag-outside') await d.page.mouse.move(700, 520);
-            else await d.page.mouse.move(item.x + item.width / 2, item.y + item.height / 2, { steps: 2 });
-            await d.page.mouse.up();
+            // Freeze before the press: protocol/layout waits must not consume the 200ms guard.
+            await pauseClockBeforeInteraction(d.page);
+            const releaseAt = name === 'drag-too-soon' ? 199 : 240;
+            try {
+                const trigger = (await d.trigger.boundingBox())!;
+                await d.page.mouse.move(trigger.x + trigger.width / 2, trigger.y + trigger.height / 2);
+                const pressedAt = await d.page.evaluate(() => performance.now());
+                await d.page.mouse.down();
+                // Let real opening/focus/positioning timers and render frames run within the guard.
+                await d.page.clock.runFor(64);
+                await expect(d.popup).toBeVisible();
+                const target =
+                    name === 'drag-disabled'
+                        ? 'blocked'
+                        : name === 'drag-stay'
+                          ? 'stay'
+                          : name === 'drag-checkbox'
+                            ? 'check'
+                            : name === 'drag-radio'
+                              ? 'radio-two'
+                              : 'alpha';
+                const item = (await d.item(target).boundingBox())!;
+                await d.page.clock.runFor(releaseAt - 64);
+                if (name === 'drag-outside') await d.page.mouse.move(700, 520);
+                else await d.page.mouse.move(item.x + item.width / 2, item.y + item.height / 2, { steps: 2 });
+                await d.page.mouse.up();
+                const timing = await d.page.evaluate(
+                    (start) => ({
+                        elapsed: performance.now() - start,
+                        gestures: window.menuParity.gestures.filter(
+                            (event) => event.type === 'mousedown' || event.type === 'mouseup'
+                        )
+                    }),
+                    pressedAt
+                );
+                d.measurements.push({ name: 'native drag guard timing', bounds: { ...timing, releaseAt } });
+                expect(timing.elapsed).toBe(releaseAt);
+                expect(timing.gestures.map((event) => event.type)).toEqual(['mousedown', 'mouseup']);
+                expect(timing.gestures.every((event) => event.trusted)).toBe(true);
+            } finally {
+                await d.page.clock.resume();
+            }
             const stays = ['drag-too-soon', 'drag-disabled', 'drag-stay', 'drag-checkbox', 'drag-radio'].includes(name);
             if (!stays) await d.closed();
             await d.checkpoint('released', {

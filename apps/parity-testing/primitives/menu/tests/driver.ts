@@ -37,7 +37,8 @@ export class MenuDriver {
         // Firefox requires the containing browser page to be active for a child document to
         // receive native focus. This activates the page, without focusing any widget element.
         if (this.portalFrame) await this.page.bringToFront();
-        if (name.startsWith('root-remove-') || name.startsWith('empty-')) await this.page.clock.install();
+        if (name.startsWith('root-remove-') || name.startsWith('empty-') || name.startsWith('drag-'))
+            await this.page.clock.install();
         await this.page.goto(`/${this.framework}.html?case=${name}`);
         if (name.startsWith('dialog-menu-')) {
             await this.item('dialog-trigger').click();

@@ -43,6 +43,12 @@ Native press-drag-release covers the 200ms guard, outside/disabled releases, sta
 checkbox/radio values. After entering a submenu, leaving its floating area alone does not close it;
 hovering a sibling parent item closes that branch, matching the pin.
 
+The drag cases install the browser clock before navigation and pause it before the native press.
+They advance the component's real timers to 199ms for `drag-too-soon` and 240ms for the other
+releases, so browser-command latency cannot cross the 200ms guard. Native mouse input and rendered
+opening still run; raw records retain trusted press/release events, their native timestamps and
+the elapsed component-clock time. The clock resumes before the settled checkpoint.
+
 Drivers own Menu's DOM snapshot and actions. `shared/run-scenario.ts` only shares the browser-page,
 reference validation and reporting lifecycle with Popover. Select retains its specialized runner
 because it also validates touch capabilities and geometry contracts. No universal control driver
