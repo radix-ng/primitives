@@ -14,6 +14,7 @@ import {
 } from '@radix-ng/primitives/menu';
 import { RdxPortal } from '@radix-ng/primitives/portal';
 import { _importsSelect, RdxSelectLabel, RdxSelectRoot, RdxSelectTrigger } from '@radix-ng/primitives/select';
+import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 import { describe, expect, it, vi } from 'vitest';
 import AccordionPage from './app/components/accordion/page';
 import AvatarPage from './app/components/avatar/page';
@@ -248,7 +249,41 @@ function renderToString(selector: string, component: Type<unknown>): Promise<str
     );
 }
 
+@Component({
+    selector: 'app-tabs-identities',
+    imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel, RdxTabsPanelPresence],
+    template: `
+        <div rdxTabsRoot defaultValue="one">
+            <div rdxTabsList>
+                <button id="server-tabs-tab" data-testid="server-tab-one" rdxTabsTab value="one">One</button>
+                <button data-testid="server-tab-two" rdxTabsTab value="two">Two</button>
+            </div>
+            <div id="server-tabs-panel" data-testid="server-panel-one" keepMounted rdxTabsPanel value="one">One</div>
+            <div data-testid="server-panel-two" rdxTabsPanel value="two">
+                <span *rdxTabsPanelPresence>Inactive content</span>
+            </div>
+        </div>
+    `
+})
+class TabsIdentitiesPage {}
+
 describe('SSR rendering', () => {
+    it('serializes actual Tabs identities and reciprocal links for retained native hosts', async () => {
+        const html = await renderToString('app-tabs-identities', TabsIdentitiesPage);
+        const tag = (name: string) => html.match(new RegExp(`<[^>]*data-testid="${name}"[^>]*>`))![0];
+        const id = (name: string) => tag(name).match(/ id="([^"]+)"/)![1];
+        expect(id('server-tab-one')).toBe('server-tabs-tab');
+        expect(id('server-panel-one')).toBe('server-tabs-panel');
+        expect(tag('server-tab-one')).toContain('aria-controls="server-tabs-panel"');
+        expect(tag('server-panel-one')).toContain('aria-labelledby="server-tabs-tab"');
+        expect(tag('server-tab-two')).toContain(`aria-controls="${id('server-panel-two')}"`);
+        expect(tag('server-panel-two')).toContain(`aria-labelledby="${id('server-tab-two')}"`);
+        expect(new Set(['server-tab-one', 'server-tab-two', 'server-panel-one', 'server-panel-two'].map(id)).size).toBe(
+            4
+        );
+        expect(html).not.toContain('Inactive content');
+        expect(html).toMatch(/ngh=/);
+    });
     it('defers pending Menu portals and serializes authored GroupLabel associations', async () => {
         const html = await renderToString('app-pending-menu', PendingMenuPage);
         expect(html).not.toContain('server-never-mounted');

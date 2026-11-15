@@ -5,14 +5,17 @@ import { RdxTabsList, RdxTabsPanel, RdxTabsRoot, RdxTabsTab, RdxTabsValueChangeE
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { classes, config, installProbe } from './contract';
 import { AngularDirection } from './direction.angular';
+import { AngularIdentity } from './identity.angular';
 import { AngularPanels } from './panels.angular';
 
 const settings = config();
 @Component({
     selector: 'parity-tabs',
-    imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel, AngularPanels, AngularDirection],
+    imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel, AngularPanels, AngularDirection, AngularIdentity],
     template: `
-        @if (settings.direction) {
+        @if (settings.identity) {
+            <parity-tabs-identity />
+        } @else if (settings.direction) {
             <parity-tabs-direction />
         } @else if (settings.panels) {
             <parity-tabs-panels />

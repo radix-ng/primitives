@@ -47,6 +47,18 @@ export interface RdxTabsRootContext {
 
     /** Register the tab composite map. */
     setTabMap(map: Map<HTMLElement, RdxCompositeMetadata<RdxTabsTabMetadata>>): void;
+
+    /** Actual mounted Panel id for a value; absent when there is no registered host. */
+    getPanelId(value: RdxTabsValue): string | undefined;
+
+    /** Register a Panel host identity. A stale cleanup cannot clear its replacement. */
+    registerPanel(value: RdxTabsValue, id: string): () => void;
+
+    /** Native Tab label identity, including before the browser Composite collection registers. */
+    getTabId(value: RdxTabsValue): string | undefined;
+
+    /** Register a native Tab identity for labels and server rendering. */
+    registerTab(value: RdxTabsValue, id: string): () => void;
 }
 
 export const [injectTabsRootContext, provideTabsRootContext] = createContext<RdxTabsRootContext>(

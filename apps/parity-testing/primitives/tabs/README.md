@@ -4,9 +4,9 @@ Compares Angular Tabs with the unmodified Base UI sources pinned in
 [reference.json](../../reference.json). Run `pnpm test-parity tabs`, or add `--project=chromium` for
 local iteration. The suite is discovered by the existing runner and CI without shared-tooling changes.
 
-Thirty-six scenarios run in Chromium, Firefox and WebKit: **108 comparisons**, with no capability skips
-or reviewed exceptions. This includes eleven initial-value cases, eight Panel lifecycle cases and
-seventeen direction cases.
+Fifty-one scenarios run in Chromium, Firefox and WebKit: **153 comparisons**, with no capability skips.
+This includes eleven initial-value cases, eight Panel lifecycle cases, seventeen direction cases and
+fifteen native-identity cases. Six exact reviewed fields cover two identity scenarios; see below.
 See the [primitive matrix](../../../../packages/primitives/tabs/PARITY.md) for the remaining work.
 
 ## Initial-value scope
@@ -51,11 +51,12 @@ while the reference kept no selection and emitted nothing. The initial failure r
 preserved locally in `dist/parity-testing/tabs/before-null-fix/`.
 
 Root now defaults only an `undefined` input to `0`, preserving explicit `null`. All 33 comparisons
-pass with an empty `expected-differences.json`. Two Angular unit regressions also verify numeric/string
-collections, no active or visible panels, no notification and preservation of the initial null choice
-after a later `defaultValue` input update. The unit suite now passes **39 tests**, including inactive
-Panel inertness, external direction/null changes on both axes, equal-coordinate activation and
-direction publication before synchronous model subscribers run.
+passed with an empty `expected-differences.json` at that increment. Two Angular unit regressions also
+verify numeric/string collections, no active or visible panels, no notification and preservation of
+the initial null choice after a later `defaultValue` input update. The unit suite now passes **46
+tests**, including seven native-identity regressions, inactive Panel inertness, external direction/null
+changes on both axes, equal-coordinate activation and direction publication before synchronous model
+subscribers run.
 
 ## Panel exits and focus
 
@@ -136,12 +137,53 @@ assertions passed. That report is retained in
 `dist/parity-testing/tabs/before-direction-fix-reference-checked/`. Three new unit cases also failed
 before the fix; their geometry is explicitly mocked because jsdom has no layout. Later native
 equal-coordinate/accepted-request checks extend the browser cases without changing that saved result.
-The final suite compares 51 direction cases across three engines.
+The final suite runs 51 direction comparisons across three engines.
 
 An Angular parent that ignores an accepted model request is not a React controlled-prop mirror;
 cancel before commit to reject it. The current fixtures accept or explicitly cancel user requests.
 Equivalence for an ignoring parent is not established. Dynamic orientation/style changes in the same
 selection update and transition-frame CSS transforms remain separate combinations.
+
+## Native identities and reciprocal relationships
+
+Fifteen `identity-*` scenarios cover retained and absent parts, authored and reactive Tab/Panel IDs,
+same-value replacement, shadowed registrations and their cleanup, insertion before an existing owner,
+Tab/Panel value edits, independent Roots, numeric `1` alongside string `'1'`, structural presence and
+Indicator lookup with a custom Tab ID. Native F2/F3 commands edit application collections/IDs; real
+Enter selects a tab in the multi-root, mixed-value and presence cases.
+
+Each checkpoint resolves actual native IDREFs through the document and compares their target parts.
+Missing, dangling and cross-root references are distinct results. Generated IDs must be present and
+unique, preserve instance identity across value edits, and avoid reusing a removed part's ID. Authored
+IDs are compared literally. The driver retains raw DOM/IDREFs, focus and errors; it does not rewrite
+IDs or repair relationships. Selection and notifications are also compared. The Indicator case checks
+that its width follows the actual active Tab before and after an authored ID change; full geometry
+and resize observation remain G6.
+
+Before the runtime change, Chromium failed **13/15** cases with all reference assertions passing;
+evidence is retained in `dist/parity-testing/tabs/before-identity-fix/`. Seven new Angular unit tests
+failed before the fix. Per-instance `injectId`, owned Panel registration and a native Tab registry now
+maintain relationships. Labels use Composite DOM order in the client and native registration during
+SSR. Four selected SSR checks include authored/generated IDs, reciprocal links, unique identities and
+an empty persistent host; actual client hydration remains outside this increment.
+
+[ADR 0074](../../../../docs/adr/0074-tabs-native-identities.md) records two intentional differences:
+
+- The pinned Panel registers a generated ID even when a forwarded authored `id` replaces its DOM ID.
+  The custom-ID case exposes dangling controls in the reference; Angular registers its actual native
+  ID. Two exact control-map fields are reviewed exceptions. React omits the `id` prop when unspecified,
+  since forwarding `id={undefined}` would itself erase the pin's default DOM ID.
+- Angular's structural presence removes contents while retaining a native Panel target. The presence
+  case therefore retains valid controls and the host's identity where React unmounts its Panel.
+  Four exact control/identity-lifetime fields are reviewed exceptions. Empty-host labels remain in
+  raw DOM; visible-content labels are compared when contents exist.
+
+Both fixtures assert their actual side's expected relationships, then the differential comparison
+applies only those six exact pairs across all three engines. No exception covers labels, selection,
+notifications or a different scenario. Latest Panel registration wins, and removing its owner does
+not resurrect a shadowed registration; a later native hidden-state change can re-register that host.
+Arbitrary object/function values, imperative DOM-ID mutation and live cross-root moves remain outside
+this scope.
 
 The runner writes the current browser/version/reference manifest, observations, raw measurements and
 HTML report to `dist/parity-testing/tabs/results/`. This local run establishes the documented scope

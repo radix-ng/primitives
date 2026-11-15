@@ -18,3 +18,10 @@ origin until registration/layout can resolve the value fallback. Null transition
 fallbacks use `none`; equal positions do not fall back to item indexes. Angular uses its native model
 ownership: reject a user request with `eventDetails.cancel()` before commit rather than relying on a
 parent to ignore a React-style controlled callback.
+
+Tab and Panel IDs belong to native part instances, independently of selection values. Root registers
+actual Panel IDs with ownership-safe cleanup; labels follow registered Tab IDs, including during SSR.
+Both parts accept an `id` input. Structural content removal keeps the persistent Panel host and its
+valid control target. [ADR 0074](../../adr/0074-tabs-native-identities.md) records the registration
+policy and the exact custom-Panel/persistent-host differences from the pin. Indicator uses the
+registered Tab element; its remaining geometry/observer work stays in the parity matrix.

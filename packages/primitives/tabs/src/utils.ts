@@ -21,11 +21,3 @@ export interface RdxTabsPanelMetadata {
     id: string;
     value: RdxTabsValue;
 }
-
-export function makeTabId(baseId: string, value: RdxTabsValue): string {
-    return `${baseId}-tab-${value}`;
-}
-
-export function makePanelId(baseId: string, value: RdxTabsValue): string {
-    return `${baseId}-panel-${value}`;
-}

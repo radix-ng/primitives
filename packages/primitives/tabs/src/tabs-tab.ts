@@ -10,10 +10,10 @@ import {
     isDevMode
 } from '@angular/core';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
-import { BooleanInput, rdxDevWarning } from '@radix-ng/primitives/core';
+import { BooleanInput, injectId, rdxDevWarning } from '@radix-ng/primitives/core';
 import { provideTabsCompositeItemOwner } from './tabs-composite-item-owner';
 import { injectTabsRootContext } from './tabs-root-context';
-import { makePanelId, makeTabId, RdxTabsValue } from './utils';
+import { RdxTabsValue } from './utils';
 
 /**
  * An individual interactive tab button that activates its corresponding panel.
@@ -48,6 +48,7 @@ export class RdxTabsTab {
     protected readonly rootContext = injectTabsRootContext();
     private readonly compositeItem = inject(RdxCompositeItem, { self: true });
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    private readonly generatedId = injectId(`${this.rootContext.baseId}-tab-`);
 
     /**
      * A unique value that associates the tab with a panel.
@@ -68,14 +69,14 @@ export class RdxTabsTab {
     readonly nativeButton = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
 
     /**
-     * Optional id for the tab element. When omitted, an id is derived from the root id and tab value.
+     * Optional native tab id. Defaults to an SSR-stable id unique to this tab instance.
      */
     readonly id = input<string | undefined>(undefined);
 
     /** @ignore */
-    protected readonly tabId = computed(() => this.id() ?? makeTabId(this.rootContext.baseId, this.value()));
+    protected readonly tabId = computed(() => this.id() ?? this.generatedId);
     /** @ignore */
-    protected readonly panelId = computed(() => makePanelId(this.rootContext.baseId, this.value()));
+    protected readonly panelId = computed(() => this.rootContext.getPanelId(this.value()));
 
     /** @ignore */
     protected readonly active = computed(() => this.rootContext.value() === this.value());
@@ -110,6 +111,7 @@ export class RdxTabsTab {
                 value: this.value()
             });
         });
+        effect((onCleanup) => onCleanup(this.rootContext.registerTab(this.value(), this.tabId())));
     }
 
     /** @ignore */

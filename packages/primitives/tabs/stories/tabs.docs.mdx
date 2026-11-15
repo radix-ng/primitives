@@ -181,6 +181,11 @@ in roving focus and implicit selection.
 
 `RdxTabsTab` — an interactive button that activates its panel.
 
+Tab and Panel each receive an SSR-stable, unique ID for their lifetime. Changing `value` keeps that
+ID; replacing the element generates a new one. Set `id` on either part to use your own native ID.
+`aria-controls` and `aria-labelledby` follow the registered parts and update when their IDs change.
+Removing a part removes the corresponding reference.
+
 <ArgTypes of={RdxTabsTab} />
 
 | Data attribute                | Value                                           |
@@ -193,6 +198,9 @@ in roving focus and implicit selection.
 ### TabsPanel
 
 `RdxTabsPanel` — content shown when its tab is active.
+
+Its `id` is the target of the matching Tab's `aria-controls`. An inactive Panel host remains a valid
+target, including when `*rdxTabsPanelPresence` has removed its contents.
 
 <ArgTypes of={RdxTabsPanel} />
 

@@ -1,4 +1,5 @@
 import { directionCases, type DirectionSettings } from './direction';
+import { identityCases, type IdentityKind } from './identity';
 import { panelCases, type PanelSettings } from './panels';
 
 export type Value = string | number | null;
@@ -14,6 +15,7 @@ export interface Settings {
     cancelAutomatic?: boolean;
     panels?: PanelSettings;
     direction?: DirectionSettings;
+    identity?: IdentityKind;
 }
 
 const numericOptions: Option[] = [
@@ -48,7 +50,7 @@ export const initialCases = {
     'default-null-string': { options: stringOptions, defaultValue: null },
     'value-null': { options: numericOptions, defaultValue: 1, value: null }
 } satisfies Record<string, Settings>;
-export const cases = { ...initialCases, ...panelCases, ...directionCases };
+export const cases = { ...initialCases, ...panelCases, ...directionCases, ...identityCases };
 export type CaseName = keyof typeof cases;
 
 export interface Change {

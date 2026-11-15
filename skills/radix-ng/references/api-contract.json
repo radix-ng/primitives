@@ -8205,6 +8205,12 @@
           ],
           "inputs": [
             {
+              "name": "id",
+              "type": "string | undefined",
+              "default": "undefined",
+              "description": "Optional native panel id. Defaults to an SSR-stable id unique to this panel instance."
+            },
+            {
               "name": "keepMounted",
               "default": "false",
               "description": "Keep the panel contents mounted in the DOM while inactive (the contents are still hidden).\nOnly relevant together with `*rdxTabsPanelPresence`, which otherwise unmounts them."
@@ -8275,7 +8281,7 @@
               "name": "id",
               "type": "string | undefined",
               "default": "undefined",
-              "description": "Optional id for the tab element. When omitted, an id is derived from the root id and tab value."
+              "description": "Optional native tab id. Defaults to an SSR-stable id unique to this tab instance."
             },
             {
               "name": "nativeButton",

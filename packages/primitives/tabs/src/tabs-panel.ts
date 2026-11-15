@@ -12,10 +12,10 @@ import {
     untracked
 } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
-import { useTransitionStatus } from '@radix-ng/primitives/core';
+import { injectId, useTransitionStatus } from '@radix-ng/primitives/core';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
 import { injectTabsRootContext } from './tabs-root-context';
-import { makePanelId, makeTabId, RdxTabsValue } from './utils';
+import { RdxTabsValue } from './utils';
 
 const panelPresenceContext = () => ({ present: inject(RdxTabsPanel).present });
 
@@ -52,11 +52,15 @@ export class RdxTabsPanel {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly listItem = inject(RdxCompositeListItem, { self: true });
     protected readonly rootContext = injectTabsRootContext();
+    private readonly generatedId = injectId(`${this.rootContext.baseId}-panel-`);
 
     /**
      * A unique value that associates the panel with a tab.
      */
     readonly value = input.required<RdxTabsValue>();
+
+    /** Optional native panel id. Defaults to an SSR-stable id unique to this panel instance. */
+    readonly id = input<string | undefined>(undefined);
 
     /**
      * Keep the panel contents mounted in the DOM while inactive (the contents are still hidden).
@@ -76,19 +80,9 @@ export class RdxTabsPanel {
     );
 
     /** @ignore */
-    protected readonly panelId = computed(() => makePanelId(this.rootContext.baseId, this.value()));
+    protected readonly panelId = computed(() => this.id() ?? this.generatedId);
     /** @ignore */
-    protected readonly tabId = computed(() => {
-        const value = this.value();
-
-        for (const tabMetadata of this.rootContext.tabMap().values()) {
-            if (tabMetadata.value === value) {
-                return tabMetadata.id;
-            }
-        }
-
-        return makeTabId(this.rootContext.baseId, value);
-    });
+    protected readonly tabId = computed(() => this.rootContext.getTabId(this.value()));
 
     /** Whether this panel's tab is currently selected. */
     readonly active = computed(() => this.rootContext.value() === this.value());
@@ -125,6 +119,12 @@ export class RdxTabsPanel {
                 id: this.panelId(),
                 value: this.value()
             });
+        });
+
+        effect((onCleanup) => {
+            // Retained hosts re-register when shown/hidden, matching their native lifecycle.
+            this.hidden();
+            onCleanup(this.rootContext.registerPanel(this.value(), this.panelId()));
         });
 
         effect(() => {

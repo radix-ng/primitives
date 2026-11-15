@@ -1,6 +1,5 @@
 import { afterNextRender, DestroyRef, Directive, effect, inject, signal, untracked } from '@angular/core';
 import { injectTabsRootContext } from './tabs-root-context';
-import { makeTabId } from './utils';
 
 interface TabGeometry {
     top: number;
@@ -45,6 +44,7 @@ export class RdxTabsIndicator {
             this.rootContext.value();
             this.rootContext.orientation();
             this.rootContext.tabListElement();
+            this.rootContext.tabMap();
             this.scheduleMeasure();
         });
 
@@ -79,7 +79,7 @@ export class RdxTabsIndicator {
             return;
         }
 
-        const tab = document.getElementById(makeTabId(this.rootContext.baseId, value));
+        const tab = [...untracked(this.rootContext.tabMap)].find(([, metadata]) => metadata.value === value)?.[0];
         if (!tab) {
             this.geometry.set(null);
             return;

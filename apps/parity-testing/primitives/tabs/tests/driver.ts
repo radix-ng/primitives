@@ -3,6 +3,8 @@ import type { Checkpoint } from '../../../shared/compare';
 import type { CaseName, Probe } from '../src/contract';
 
 export class TabsDriver {
+    private readonly initialIds = new Map<string, string>();
+    private readonly idOwners = new Map<string, string>();
     readonly checkpoints: Checkpoint[] = [];
     readonly measurements: { name: string; dom: string; focus: string | null; frames?: unknown; bounds?: unknown }[] =
         [];
@@ -21,7 +23,7 @@ export class TabsDriver {
 
     async goto(name: CaseName) {
         await this.page.goto(`/${this.framework}.html?case=${name}`);
-        await expect(this.page.getByRole('tablist')).toBeVisible();
+        await expect(this.page.getByRole('tablist').first()).toBeVisible();
         this.metadata = await this.page.evaluate(() => window.tabsParity.reference);
     }
 
@@ -221,6 +223,100 @@ export class TabsDriver {
                 ...(value !== null ? { indicatorDirection: direction } : {}),
                 changes
             })
+        );
+        expect(this.errors).toEqual([]);
+    }
+
+    async identityCheckpoint(name: string, expected: Record<string, unknown>) {
+        const snapshot = await this.page.evaluate(async () => {
+            const read = () => {
+                const controls: Record<string, string | null> = {};
+                const labels: Record<string, string | null> = {};
+                const identities: Record<string, string> = {};
+                const selected: Record<string, unknown[]> = {};
+                const authored: Record<string, string> = {};
+                let indicatorFollowsActiveTab: boolean | undefined;
+                for (const root of document.querySelectorAll<HTMLElement>('[data-identity-root]')) {
+                    const relation = (element: Element, attribute: string) => {
+                        const id = element.getAttribute(attribute);
+                        if (id === null) return null;
+                        const target = document.getElementById(id);
+                        if (!target) return 'dangling';
+                        return root.contains(target) ? target.getAttribute('data-testid') : 'outside-root';
+                    };
+                    const tabs = [...root.querySelectorAll<HTMLElement>('[role="tab"]')];
+                    selected[root.dataset.identityRoot!] = tabs
+                        .filter((tab) => tab.getAttribute('aria-selected') === 'true')
+                        .map((tab) => JSON.parse(tab.dataset.value!));
+                    for (const tab of tabs) controls[tab.dataset.testid!] = relation(tab, 'aria-controls');
+                    for (const panel of root.querySelectorAll<HTMLElement>('[role="tabpanel"]')) {
+                        if (
+                            window.tabsParity.config.identity !== 'presence' ||
+                            panel.querySelector('[data-testid*="-content-"]')
+                        )
+                            labels[panel.dataset.testid!] = relation(panel, 'aria-labelledby');
+                    }
+                    for (const part of root.querySelectorAll<HTMLElement>('[role="tab"], [role="tabpanel"]')) {
+                        identities[part.dataset.testid!] = part.id;
+                        if (/authored|renamed/.test(part.id)) authored[part.dataset.testid!] = part.id;
+                    }
+                    const indicator = root.querySelector<HTMLElement>('[data-testid$="-indicator"]');
+                    if (indicator) {
+                        const activeTab = tabs.find((tab) => tab.getAttribute('aria-selected') === 'true')!;
+                        const width = Number.parseFloat(
+                            getComputedStyle(indicator).getPropertyValue('--active-tab-width')
+                        );
+                        indicatorFollowsActiveTab =
+                            width > 0 && Math.abs(width - activeTab.getBoundingClientRect().width) < 1;
+                    }
+                }
+                const ids = Object.values(identities);
+                return {
+                    state: {
+                        controls,
+                        labels,
+                        selected,
+                        authored,
+                        uniqueIds: ids.every(Boolean) && new Set(ids).size === ids.length,
+                        ...(indicatorFollowsActiveTab !== undefined ? { indicatorFollowsActiveTab } : {}),
+                        changes: window.tabsParity.changes
+                    },
+                    identities
+                };
+            };
+            let previous = '';
+            let stable = 0;
+            for (let frame = 0; frame < 120; frame++) {
+                await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+                const snapshot = read();
+                const json = JSON.stringify(snapshot);
+                stable = json === previous ? stable + 1 : 0;
+                if (stable >= 3)
+                    return {
+                        ...snapshot,
+                        dom: document.body.innerHTML,
+                        focus:
+                            document.activeElement?.getAttribute('data-testid') ??
+                            document.activeElement?.tagName ??
+                            null
+                    };
+                previous = json;
+            }
+            throw new Error('Tabs identities did not settle');
+        });
+        const idStatus: Record<string, string> = {};
+        const reusedIds: string[] = [];
+        for (const [part, id] of Object.entries(snapshot.identities)) {
+            idStatus[part] = !this.initialIds.has(part) ? 'new' : this.initialIds.get(part) === id ? 'same' : 'changed';
+            if (this.idOwners.has(id) && this.idOwners.get(id) !== part) reusedIds.push(part);
+            if (!this.initialIds.has(part)) this.initialIds.set(part, id);
+            this.idOwners.set(id, part);
+        }
+        const state = { ...snapshot.state, idStatus, reusedIds };
+        this.checkpoints.push({ name, state });
+        this.measurements.push({ name, dom: snapshot.dom, focus: snapshot.focus });
+        expect(state, `${this.framework}: ${name}`).toEqual(
+            expect.objectContaining({ uniqueIds: true, reusedIds: [], ...expected })
         );
         expect(this.errors).toEqual([]);
     }

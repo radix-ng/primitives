@@ -66,7 +66,11 @@ const rootContext = (): RdxTabsRootContext => {
         setActivateOnFocus: (value) => root.activateOnFocus.set(value),
         registerTabList: (element, compositeRoot, compositeList) =>
             root.registerTabList(element, compositeRoot, compositeList),
-        setTabMap: (map) => root.tabMap.set(map)
+        setTabMap: (map) => root.tabMap.set(map),
+        getPanelId: (value) => root.getPanelId(value),
+        registerPanel: (value, id) => root.registerPanel(value, id),
+        getTabId: (value) => root.getTabId(value),
+        registerTab: (value, id) => root.registerTab(value, id)
     };
 };
 
@@ -171,6 +175,12 @@ export class RdxTabsRoot {
     });
 
     private readonly externallyControlled = signal(false);
+    private readonly panels = signal(new Map<RdxTabsValue, { id: string; owner: object }>(), {
+        debugName: 'RdxTabsRoot.panels'
+    });
+    private readonly tabIds = signal<readonly { value: RdxTabsValue; id: string; owner: object }[]>([], {
+        debugName: 'RdxTabsRoot.tabIds'
+    });
     private hasObservedValue = false;
     private previousObservedValue: RdxTabsValue | undefined;
     private internalValueCommit = false;
@@ -318,6 +328,43 @@ export class RdxTabsRoot {
 
         this.direction.set({ value, fromValue: previous, direction: activationDirection, waitingForTab: false });
         this.commitValue(value);
+    }
+
+    /** @ignore */
+    getTabId(value: RdxTabsValue): string | undefined {
+        const matches = this.tabIds().filter((tab) => tab.value === value);
+        if (matches.length === 0) return undefined;
+        // Use client DOM order when available. Native registration also works during SSR,
+        // where Composite's connected-element collection has not been established.
+        for (const metadata of this.tabMap().values()) {
+            if (metadata.value === value && matches.some((tab) => tab.id === metadata.id)) return metadata.id;
+        }
+        return matches[0].id;
+    }
+
+    /** @ignore */
+    registerTab(value: RdxTabsValue, id: string): () => void {
+        const owner = {};
+        this.tabIds.update((current) => [...current, { value, id, owner }]);
+        return () => this.tabIds.update((current) => current.filter((tab) => tab.owner !== owner));
+    }
+
+    /** @ignore */
+    getPanelId(value: RdxTabsValue): string | undefined {
+        return this.panels().get(value)?.id;
+    }
+
+    /** @ignore */
+    registerPanel(value: RdxTabsValue, id: string): () => void {
+        const owner = {};
+        this.panels.update((current) => new Map(current).set(value, { id, owner }));
+        return () =>
+            this.panels.update((current) => {
+                if (current.get(value)?.owner !== owner) return current;
+                const next = new Map(current);
+                next.delete(value);
+                return next;
+            });
     }
 
     /** @ignore */
