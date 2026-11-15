@@ -30,6 +30,7 @@ import {
     Direction,
     formUiStateContext,
     injectId,
+    isNode,
     isNullish,
     ItemValueComparator,
     provideFloatingRootContext,
@@ -542,7 +543,7 @@ export class RdxSelectRoot<Value = unknown, Multiple extends boolean = boolean>
     onTypeaheadFocusOut(event: FocusEvent): void {
         const next = event.relatedTarget;
         if (
-            next instanceof Node &&
+            isNode(next) &&
             ((this.triggerElement() && composedContains(this.triggerElement()!, next)) ||
                 (this.floatingContext.floatingElement && composedContains(this.floatingContext.floatingElement, next)))
         )

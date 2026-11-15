@@ -12,6 +12,7 @@
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import { compodocBindingName, composeHostDirectives } from '../../compodoc/host-directives.ts';
 
 const COMPODOC_TSCONFIG = 'apps/radix-storybook/.storybook/tsconfig.json';
 const COMPODOC_OUT_DIR = 'apps/radix-storybook/.storybook';
@@ -138,7 +139,7 @@ export const cleanDefault = (input, config = {}) => {
 };
 
 // The template binds the alias, not the class member — surface the alias as the name.
-const bindingName = (input) => /alias:\s*'([^']+)'/.exec(input.defaultValue ?? '')?.[1] ?? input.name;
+const bindingName = compodocBindingName;
 
 const description = (member) => {
     const text = (member.rawdescription ?? '').trim();
@@ -150,7 +151,7 @@ const compact = (obj) => Object.fromEntries(Object.entries(obj).filter(([, value
 export function generateApiContract({ workspaceRoot, primitivesRoot, skillsRoot, version, write }) {
     const doc = ensureCompodocJson(workspaceRoot, primitivesRoot);
 
-    const parts = [...(doc.directives ?? []), ...(doc.components ?? [])]
+    const parts = composeHostDirectives([...(doc.directives ?? []), ...(doc.components ?? [])])
         .filter((entry) => /^packages\/primitives\/(?!storybook\/)[^/]+\/src\//.test(entry.file) && entry.selector)
         .map((entry) => {
             const pkg = entry.file.match(/^packages\/primitives\/([^/]+)\//)[1];

@@ -48,6 +48,7 @@
                 "{workspaceRoot}/packages/primitives/**/*.stories.@(js|jsx|ts|tsx|mdx)",
                 "{workspaceRoot}/packages/primitives/**/*.docs.mdx",
                 "{projectRoot}/.storybook/**/*",
+                "{workspaceRoot}/tools/compodoc/**/*",
                 "{workspaceRoot}/skills/radix-ng-examples/references/**/*",
                 "{workspaceRoot}/skills/radix-ng/references/api-contract/**/*.json",
                 "{workspaceRoot}/skills/radix-ng/references/styling-contract/**/*.json"

@@ -4,7 +4,7 @@ The same Playwright actions run against Angular primitives and unmodified, pinne
 sources. These are regression checks with reviewed differences, not full parity certification.
 [Select](primitives/select/README.md), [Popover](primitives/popover/README.md) and
 [Menu](primitives/menu/README.md), [Context Menu](primitives/context-menu/README.md) and
-[Menubar](primitives/menubar/README.md) have independent suites.
+[Menubar](primitives/menubar/README.md) and [Tabs](primitives/tabs/README.md) have independent suites.
 The [coverage matrix](COVERAGE.md) distinguishes pinned comparisons from Angular regression checks.
 
 ## Structure
@@ -53,6 +53,7 @@ pnpm test-parity popover         # independent floating/focus suite
 pnpm test-parity menu            # native items, transactions and submenu suite
 pnpm test-parity context-menu    # native context gestures, point anchor and focus
 pnpm test-parity menubar         # native opening, roving and sibling ownership
+pnpm test-parity tabs            # initial selection, null/default values and notifications
 pnpm test-parity:select          # convenience alias
 pnpm test-parity select --project=webkit # one engine
 pnpm parity:build select         # type-check/build one suite without running browsers

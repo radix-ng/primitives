@@ -1919,5 +1919,149 @@
         "react": ["alpha"],
         "browser": "webkit",
         "category": "zero-delta-pointer-travel"
+    },
+    {
+        "scenario": "portal-frame-switch",
+        "checkpoint": "target changed while open",
+        "field": "focus",
+        "angular": "bravo",
+        "react": "alpha",
+        "category": "portal-view-relocation"
+    },
+    {
+        "scenario": "portal-frame-switch",
+        "checkpoint": "target changed while open",
+        "field": "highlighted",
+        "angular": ["bravo"],
+        "react": ["alpha"],
+        "category": "portal-view-relocation"
+    },
+    {
+        "scenario": "portal-frame-switch",
+        "checkpoint": "target changed while open",
+        "field": "completions",
+        "angular": {
+            "main": [true],
+            "sub": []
+        },
+        "react": {
+            "main": [true, true],
+            "sub": []
+        },
+        "category": "portal-view-relocation"
+    },
+    {
+        "scenario": "portal-frame-switch",
+        "checkpoint": "closed target",
+        "field": "completions",
+        "angular": {
+            "main": [true, false],
+            "sub": []
+        },
+        "react": {
+            "main": [true, true, false],
+            "sub": []
+        },
+        "category": "portal-view-relocation"
+    },
+    {
+        "scenario": "portal-frame-switch",
+        "checkpoint": "selected after reopening",
+        "field": "completions",
+        "angular": {
+            "main": [true, false, true, false],
+            "sub": []
+        },
+        "react": {
+            "main": [true, true, false, true, false],
+            "sub": []
+        },
+        "category": "portal-view-relocation"
+    },
+    {
+        "scenario": "portal-frame-switch",
+        "checkpoint": "owner removed",
+        "field": "completions",
+        "angular": {
+            "main": [true, false, true, false, true],
+            "sub": []
+        },
+        "react": {
+            "main": [true, true, false, true, false, true],
+            "sub": []
+        },
+        "category": "portal-view-relocation"
+    },
+    {
+        "scenario": "portal-shadow-switch",
+        "checkpoint": "target changed while open",
+        "field": "focus",
+        "angular": "bravo",
+        "react": "alpha",
+        "category": "portal-view-relocation"
+    },
+    {
+        "scenario": "portal-shadow-switch",
+        "checkpoint": "target changed while open",
+        "field": "highlighted",
+        "angular": ["bravo"],
+        "react": ["alpha"],
+        "category": "portal-view-relocation"
+    },
+    {
+        "scenario": "portal-shadow-switch",
+        "checkpoint": "target changed while open",
+        "field": "completions",
+        "angular": {
+            "main": [true],
+            "sub": []
+        },
+        "react": {
+            "main": [true, true],
+            "sub": []
+        },
+        "category": "portal-view-relocation"
+    },
+    {
+        "scenario": "portal-shadow-switch",
+        "checkpoint": "closed target",
+        "field": "completions",
+        "angular": {
+            "main": [true, false],
+            "sub": []
+        },
+        "react": {
+            "main": [true, true, false],
+            "sub": []
+        },
+        "category": "portal-view-relocation"
+    },
+    {
+        "scenario": "portal-shadow-switch",
+        "checkpoint": "selected after reopening",
+        "field": "completions",
+        "angular": {
+            "main": [true, false, true, false],
+            "sub": []
+        },
+        "react": {
+            "main": [true, true, false, true, false],
+            "sub": []
+        },
+        "category": "portal-view-relocation"
+    },
+    {
+        "scenario": "portal-shadow-switch",
+        "checkpoint": "owner removed",
+        "field": "completions",
+        "angular": {
+            "main": [true, false, true, false, true],
+            "sub": []
+        },
+        "react": {
+            "main": [true, true, false, true, false, true],
+            "sub": []
+        },
+        "category": "portal-view-relocation"
     }
 ]

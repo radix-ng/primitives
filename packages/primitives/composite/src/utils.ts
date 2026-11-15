@@ -1,4 +1,14 @@
-import { ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ARROW_UP, Direction, END, HOME } from '@radix-ng/primitives/core';
+import {
+    ARROW_DOWN,
+    ARROW_LEFT,
+    ARROW_RIGHT,
+    ARROW_UP,
+    Direction,
+    END,
+    HOME,
+    isElement,
+    isHTMLElement
+} from '@radix-ng/primitives/core';
 import { RdxCompositeModifierKey, RdxCompositeOrientation } from './types';
 
 export const ACTIVE_COMPOSITE_ITEM = 'data-composite-item-active';
@@ -100,7 +110,7 @@ export function isModifierKeySet(
 }
 
 export function isNativeTextInput(target: EventTarget | null): target is HTMLInputElement | HTMLTextAreaElement {
-    if (!(target instanceof HTMLElement)) {
+    if (!isHTMLElement(target)) {
         return false;
     }
 
@@ -239,7 +249,7 @@ export function isElementVisible(element: HTMLElement | null): boolean {
         return false;
     }
 
-    if (typeof Element !== 'undefined' && !(element instanceof Element)) {
+    if (!isElement(element)) {
         return true;
     }
 

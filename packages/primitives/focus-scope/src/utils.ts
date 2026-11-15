@@ -1,4 +1,4 @@
-import { getActiveElement } from '@radix-ng/primitives/core';
+import { getActiveElement, isHTMLElement } from '@radix-ng/primitives/core';
 
 // Tabbable / focusable detection lives in `./tabbable` (Base UI port). Re-exported here so existing
 // `./utils` imports — and the `@radix-ng/primitives/focus-scope` barrel — keep their public surface.
@@ -66,13 +66,11 @@ const TYPEABLE_SELECTOR =
  * Owner-document-safe, so an element living in an iframe is still recognized.
  */
 export function isTypeableElement(element: unknown): element is HTMLElement {
-    const view = (element as Element | null)?.ownerDocument?.defaultView;
-    const HtmlElement = view?.HTMLElement ?? HTMLElement;
-    return element instanceof HtmlElement && element.matches(TYPEABLE_SELECTOR);
+    return isHTMLElement(element) && element.matches(TYPEABLE_SELECTOR);
 }
 
 export function isSelectableInput(element: any): element is FocusableTarget & { select: () => void } {
-    return element instanceof HTMLInputElement && 'select' in element;
+    return isHTMLElement(element) && element.tagName === 'INPUT' && 'select' in element;
 }
 
 export function focus(element?: FocusableTarget | null, { select = false } = {}) {

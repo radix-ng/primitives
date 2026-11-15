@@ -11,7 +11,16 @@
       "hostDirectives": [
         "RdxPopperArrow"
       ],
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "width",
+          "default": "10"
+        },
+        {
+          "name": "height",
+          "default": "5"
+        }
+      ],
       "outputs": []
     },
     {
@@ -218,7 +227,19 @@
         "RdxFloatingNodeRegistration",
         "RdxCompositeList"
       ],
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "finalFocus",
+          "type": "RdxReturnFocus | undefined",
+          "default": "undefined",
+          "description": "Where focus returns when the popup closes (ADR 0017 §2)."
+        },
+        {
+          "name": "closeOnFocusOut",
+          "default": "undefined",
+          "description": "Whether a **non-modal** popup closes when focus leaves to an unrelated node (Base UI\n`closeOnFocusOut`, default `true`; Dialog sets it to `!disablePointerDismissal`). Modal popups\nnever close on focus-out (the trap keeps focus in)."
+        }
+      ],
       "outputs": [
         {
           "name": "escapeKeyDown",
@@ -240,7 +261,18 @@
       "hostDirectives": [
         "RdxPortalPresence"
       ],
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "container",
+          "type": "RdxPortalContainer",
+          "description": "Container to portal the content into. Can be a ShadowRoot, an HTML element from any window,\nan ElementRef of either, or a CSS\nselector. Defaults to `document.body` (or when a selector matches nothing)."
+        },
+        {
+          "name": "keepMounted",
+          "default": "false",
+          "description": "Keep the portal mounted (in the container) while the layer is closed. When `true` the content\nstays in the DOM regardless of the {@link RDX_PRESENCE_CONTEXT} `present` flag — the consumer is\nresponsible for hiding it while closed (typically via the `data-closed` / `data-open` state on the\npositioner). Any `*rdxXxxPortal` wrapper opts in by mapping this input in its `hostDirectives`."
+        }
+      ],
       "outputs": []
     },
     {

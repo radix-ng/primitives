@@ -14,7 +14,7 @@ port is 4505. Angular fixtures are AOT compiled and React imports the unmodified
 Base UI 1.9.0 pin: `cf696d6f6e08c699c5bda24d5a033430909f2285`, archive SHA-256
 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 
-438 scenarios define 1314 planned comparisons: 1254 execute, with 60 capability skips (48 touch, 12 viewport emulation). They cover native keyboard and
+448 scenarios define 1344 planned comparisons: 1284 execute, with 60 capability skips (48 touch, 12 viewport emulation). They cover native keyboard and
 pointer opening, disabled/focusable items, roving focus, edges and looping, repeated and explicit-label
 typeahead, selection and stay-open items, cancelable transactions, modal/background activation,
 forward/backward Tab, checkbox/radio values, LTR/RTL submenu ownership and custom identity links.
@@ -49,6 +49,25 @@ or framework state mirror is introduced.
 Raw records include source commit/digest, browser versions, open/change completions, native change
 event types, trusted pointer coordinates/deltas and native press/release timestamps. CSS layout and default focus are observed;
 the adapters do not synthesize state, focus, pointer deltas or lifecycle completion.
+
+## Portal destinations and native realms
+
+Ten `portal-` scenarios cover open shadow trees and same-origin iframe documents: native/ref
+containers, keyboard and pointer opening, retained close/reopen, live target changes and owner
+removal. The test app installs styles and mounts the complete widget in one tree/document for
+native ARIA. Native input events use the surface's Document; iframe assertions follow the active
+Element chain and retain Firefox's raw hasFocus value. Frames/pages are activated without forcing
+widget focus. Explicit checks include the target, accessible menu name and id associations.
+
+Angular keeps view identity, Bravo focus/highlight and completion history on retarget. The reference
+remounts, restores Alpha and repeats true completion. Twelve exact portal-view-relocation fields
+retain the all-engine witnesses; no other fields are excluded. Existing 143 exceptions are unchanged.
+The plain Portal regression also transfers edited content across actual documents without losing
+its Angular bindings, identity or focus. Separate Angular-only tests cover Popover/Dialog/Select in
+both surfaces; they do not expand those families' independent parity audits.
+
+See [ADR 0072](../../../../docs/adr/0072-portal-dom-destinations.md). Mixed-document overlays, closed
+shadow interaction and pending/null-container policy are separate verification/API work.
 
 ## Initial models and defaults
 

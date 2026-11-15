@@ -1,6 +1,7 @@
+import { DOCUMENT } from '@angular/common';
 import '@angular/compiler';
 import { Component, provideZonelessChangeDetection, signal, viewChild } from '@angular/core';
-import { bootstrapApplication } from '@angular/platform-browser';
+import { bootstrapApplication, createApplication } from '@angular/platform-browser';
 import {
     RdxMenuModule,
     RdxMenuRoot,
@@ -24,6 +25,9 @@ import { AngularItemPopover } from './item-popover.angular';
 import { AngularModels } from './models.angular';
 import { AngularPlacement } from './placement.angular';
 import { AngularPopoverMenu } from './popover.angular';
+import { AngularPortalConsumers } from './portal-consumers.angular';
+import { preparePortalSurface } from './portals';
+import { AngularPortals } from './portals.angular';
 import { AngularProjection } from './projection.angular';
 import { touchScrollEntries } from './touch';
 import { AngularMultiTriggers } from './triggers.angular';
@@ -365,33 +369,50 @@ class AngularMenu {
         this.trace.value(change.value as string, change.eventDetails.reason, change.eventDetails.isCanceled());
     }
 }
-void bootstrapApplication(
-    settings.models
-        ? AngularModels
-        : settings.boundary
-          ? AngularBoundary
-          : settings.placement
-            ? AngularPlacement
-            : settings.itemPopover
-              ? AngularItemPopover
-              : settings.popover
-                ? AngularPopoverMenu
-                : settings.itemDialog
-                  ? AngularItemDialog
-                  : settings.dialog
-                    ? AngularDialogMenu
-                    : settings.name.startsWith('handle-overlap-')
-                      ? AngularHandleOverlap
-                      : settings.multiTrigger
-                        ? AngularMultiTriggers
-                        : settings.projection
-                          ? AngularProjection
-                          : settings.focusBoundary
-                            ? AngularFocusBoundary
-                            : settings.host
-                              ? AngularHosts
-                              : AngularMenu,
-    {
-        providers: [provideZonelessChangeDetection()]
-    }
-);
+if (settings.portal) {
+    void preparePortalSurface(settings.portal.frame).then(async (surface) => {
+        const consumer = new URLSearchParams(location.search).get('consumer');
+        const crossDocument = consumer === 'portal';
+        const appRoot = crossDocument
+            ? document.body.appendChild(document.createElement('parity-menu'))
+            : surface.appRoot;
+        const application = await createApplication({
+            providers: [
+                provideZonelessChangeDetection(),
+                { provide: DOCUMENT, useValue: crossDocument ? document : surface.document }
+            ]
+        });
+        if (consumer) application.bootstrap(AngularPortalConsumers, appRoot);
+        else application.bootstrap(AngularPortals, appRoot);
+    });
+} else
+    void bootstrapApplication(
+        settings.models
+            ? AngularModels
+            : settings.boundary
+              ? AngularBoundary
+              : settings.placement
+                ? AngularPlacement
+                : settings.itemPopover
+                  ? AngularItemPopover
+                  : settings.popover
+                    ? AngularPopoverMenu
+                    : settings.itemDialog
+                      ? AngularItemDialog
+                      : settings.dialog
+                        ? AngularDialogMenu
+                        : settings.name.startsWith('handle-overlap-')
+                          ? AngularHandleOverlap
+                          : settings.multiTrigger
+                            ? AngularMultiTriggers
+                            : settings.projection
+                              ? AngularProjection
+                              : settings.focusBoundary
+                                ? AngularFocusBoundary
+                                : settings.host
+                                  ? AngularHosts
+                                  : AngularMenu,
+        {
+            providers: [provideZonelessChangeDetection()]
+        }
+    );

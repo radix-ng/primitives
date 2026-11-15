@@ -11,8 +11,57 @@
       "hostDirectives": [
         "RdxMenuRoot"
       ],
-      "inputs": [],
-      "outputs": []
+      "inputs": [
+        {
+          "name": "open",
+          "default": "false",
+          "description": "Whether the menu is currently open."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether interactions with the menu are disabled."
+        },
+        {
+          "name": "modal",
+          "type": "boolean",
+          "default": "true",
+          "description": "Whether the menu should block outside interactions and page scrolling.\nNested menus are always non-modal."
+        },
+        {
+          "name": "loopFocus",
+          "type": "boolean",
+          "default": "true",
+          "description": "Whether keyboard navigation wraps at list boundaries."
+        },
+        {
+          "name": "highlightItemOnHover",
+          "type": "boolean",
+          "default": "true",
+          "description": "Whether moving the pointer over items should highlight them."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "onOpenChange",
+          "type": "RdxMenuOpenChange",
+          "description": "Emits when the open state changes."
+        },
+        {
+          "name": "onOpenChangeComplete",
+          "type": "boolean",
+          "description": "Emits after opening or accepted close completion, including a pending external exit."
+        },
+        {
+          "name": "onItemHighlighted",
+          "type": "RdxMenuItemHighlightedEvent",
+          "description": "Emits when the highlighted item changes, including clearing and collection replacement."
+        }
+      ],
+      "twoWay": [
+        "open"
+      ]
     },
     {
       "directive": "RdxContextMenuTrigger",

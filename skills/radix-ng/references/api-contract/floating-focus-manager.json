@@ -73,6 +73,12 @@
           "type": "RdxReturnFocus | undefined",
           "default": "undefined",
           "description": "Where focus returns when the popup closes (ADR 0017 §2)."
+        },
+        {
+          "name": "loop",
+          "type": "boolean",
+          "default": "false",
+          "description": "When `true`, tabbing from last item will focus first tabbable\nand shift+tab from first item will focus last tababble."
         }
       ],
       "outputs": [

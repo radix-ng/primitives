@@ -17,7 +17,8 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import { PresenceMachine, RDX_PRESENCE_CONTEXT } from '@radix-ng/primitives/presence';
-import { RdxPortalContainer, resolvePortalContainer } from './resolve-container';
+import { movePortalNodes } from './move-nodes';
+import { RdxPortalContainer, RdxPortalTarget, resolvePortalContainer } from './resolve-container';
 
 /** @internal Logical declaration position, independent of the portal's mount/destruction lifetime. */
 export const RDX_PORTAL_ANCHOR = new InjectionToken<Node>('RdxPortalAnchor');
@@ -50,7 +51,8 @@ export class RdxPortalPresence {
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
     /**
-     * Container to portal the content into. Can be an `ElementRef`, a native element, or a CSS
+     * Container to portal the content into. Can be a ShadowRoot, an HTML element from any window,
+     * an ElementRef of either, or a CSS
      * selector. Defaults to `document.body` (or when a selector matches nothing).
      */
     readonly container = input<RdxPortalContainer>();
@@ -70,7 +72,7 @@ export class RdxPortalPresence {
 
     private readonly _computedContainer = linkedSignal(this.container);
 
-    private readonly elementContainer = computed<HTMLElement | null>(() => {
+    private readonly elementContainer = computed<RdxPortalTarget | null>(() => {
         const provided = resolvePortalContainer(this._computedContainer(), this.document);
         return provided ?? this.document?.body ?? null;
     });
@@ -103,9 +105,7 @@ export class RdxPortalPresence {
             if (!this.isBrowser || !container) {
                 return;
             }
-            for (const node of nodes) {
-                container.appendChild(node);
-            }
+            movePortalNodes(nodes, container);
         });
 
         inject(DestroyRef).onDestroy(() => {

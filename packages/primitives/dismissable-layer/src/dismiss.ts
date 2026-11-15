@@ -1,6 +1,13 @@
 import { isPlatformBrowser } from '@angular/common';
 import { DestroyRef, inject, PLATFORM_ID } from '@angular/core';
-import { RdxFloatingNode, RdxFloatingRootContext, rdxPlatform } from '@radix-ng/primitives/core';
+import {
+    isElement,
+    isHTMLElement,
+    isNode,
+    RdxFloatingNode,
+    RdxFloatingRootContext,
+    rdxPlatform
+} from '@radix-ng/primitives/core';
 import { RDX_FLOATING_MARKER } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 
@@ -71,34 +78,6 @@ export interface RdxDismissProps {
 const alwaysTrue = (): boolean => true;
 const alwaysFalse = (): boolean => false;
 const sloppy = (): 'sloppy' => 'sloppy';
-
-/** Duck-types an `EventTarget` to `Node` (cross-realm-safe; `Node.contains` throws on a non-Node). */
-function isNode(target: EventTarget | null): target is Node {
-    return target !== null && typeof (target as Node).nodeType === 'number';
-}
-
-/**
- * Owner-document-safe `HTMLElement` check. A raw `target instanceof HTMLElement` is realm-sensitive — it
- * returns `false` for an element from another document (iframe / popup window) because that realm has its
- * own `HTMLElement` constructor. Resolve the constructor from the node's own `defaultView` (Base UI
- * `isHTMLElement`).
- */
-function isHTMLElement(target: EventTarget | null): target is HTMLElement {
-    if (!isNode(target)) {
-        return false;
-    }
-    const view = target.ownerDocument?.defaultView;
-    return view ? target instanceof view.HTMLElement : target instanceof HTMLElement;
-}
-
-/** Owner-document-safe `Element` check for SVG/custom-element outside targets. */
-function isElement(target: EventTarget | null): target is Element {
-    if (!isNode(target)) {
-        return false;
-    }
-    const view = target.ownerDocument?.defaultView;
-    return view ? target instanceof view.Element : target instanceof Element;
-}
 
 function isRootElement(element: Element): boolean {
     const document = element.ownerDocument;

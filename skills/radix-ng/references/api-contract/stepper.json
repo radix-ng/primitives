@@ -80,7 +80,14 @@
       "hostDirectives": [
         "RdxSeparatorRootDirective"
       ],
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "orientation",
+          "type": "Orientation",
+          "default": "DEFAULT_ORIENTATION",
+          "description": "Orientation of the separator, can be either 'horizontal' or 'vertical'."
+        }
+      ],
       "outputs": []
     },
     {

@@ -22,7 +22,16 @@
       "hostDirectives": [
         "RdxPopperArrow"
       ],
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "width",
+          "default": "10"
+        },
+        {
+          "name": "height",
+          "default": "5"
+        }
+      ],
       "outputs": []
     },
     {

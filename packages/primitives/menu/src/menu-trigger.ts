@@ -13,7 +13,15 @@ import {
     untracked
 } from '@angular/core';
 import { getCompositeNavigationKeys } from '@radix-ng/primitives/composite';
-import { BooleanInput, injectId, isMouseWithinBounds, NumberInput, rdxDevError } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    injectId,
+    isKeyboardEvent,
+    isMouseEvent,
+    isMouseWithinBounds,
+    NumberInput,
+    rdxDevError
+} from '@radix-ng/primitives/core';
 import {
     createRdxTriggerInteraction,
     getInteractionTypeFromEvent,
@@ -164,7 +172,7 @@ export class RdxMenuTrigger<Payload = unknown> {
         effect((onCleanup) => {
             const el = this.elementRef.nativeElement;
             const interaction = (event: Event) =>
-                event instanceof MouseEvent
+                isMouseEvent(event)
                     ? this.triggerInteraction.clickInteractionType(event)
                     : getInteractionTypeFromEvent(event);
             const handle = this.handle();
@@ -383,7 +391,7 @@ export class RdxMenuTrigger<Payload = unknown> {
     }
 
     protected handleKeyboardToggle(event: Event): void {
-        const interactionType = event instanceof KeyboardEvent && event.key === ' ' ? 'space' : 'enter';
+        const interactionType = isKeyboardEvent(event) && event.key === ' ' ? 'space' : 'enter';
 
         if (this.nativeButtonState() && !this.rootContext()?.hasTriggerInteractionHandler()) {
             return;

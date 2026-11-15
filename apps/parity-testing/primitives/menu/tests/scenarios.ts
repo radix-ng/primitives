@@ -20,6 +20,7 @@ import { modelScenarios } from './models.scenarios';
 import { placementScenarios } from './placement.scenarios';
 import { pointerScenarios } from './pointer.scenarios';
 import { popoverMenuScenarios } from './popover.scenarios';
+import { portalScenarios } from './portals.scenarios';
 import { positioningScenarios } from './positioning.scenarios';
 import { projectionScenarios } from './projection.scenarios';
 import { touchScenarios } from './touch.scenarios';
@@ -28,6 +29,7 @@ import { multiTriggerScenarios } from './triggers.scenarios';
 import { viewportScenarios } from './viewport.scenarios';
 
 export const scenarios = [
+    ...portalScenarios,
     ...modelScenarios,
     ...viewportScenarios,
     ...positioningScenarios,

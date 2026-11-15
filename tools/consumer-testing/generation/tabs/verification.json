@@ -1,0 +1,621 @@
+{
+    "attemptId": "2026-11-15-tabs-first",
+    "status": "verification-failed",
+    "liveSessions": 1,
+    "model": "gpt-6.1-sol",
+    "reasoningEffort": "low",
+    "codex": {
+        "executable": "/Users/pimenovoleg/.codex/packages/standalone/releases/0.169.0-aarch64-apple-darwin/bin/codex",
+        "version": "codex-cli 0.169.0"
+    },
+    "revision": "105a5b9b49373bc7b1da7c83de09af1e68824ae1",
+    "checksVersion": "tabs-consumer/1",
+    "library": "1.3.0",
+    "tarballSha256": "bbe21d90d2e03937f8d9c7a856ac7ceb81a972a247d7f3f40ecf4e82aaeac750",
+    "angular": "22.0.2",
+    "typescript": "6.0.3",
+    "node": "v24.22.2",
+    "pnpm": "11.5.1",
+    "playwright": "1.60.0",
+    "bundleRevision": "d000174e3fb69ef5424b73492d73f34b84e3c80f",
+    "bundleHashes": {
+        "radix-ng": "2ffe4674e069a598c3f0c25e60c372156964115df1ccfbb0ca47487a58ac3075",
+        "radix-ng-examples": "f3407a6c55219ba80f889fd5923b0a986897c7c83bd32ddbb9229b8a99a6a0ee"
+    },
+    "browserStats": {
+        "startTime": "2026-11-15T13:07:10.880Z",
+        "duration": 27522.779000000002,
+        "expected": 34,
+        "skipped": 0,
+        "unexpected": 2,
+        "flaky": 0
+    },
+    "browserMatrix": {
+        "chromium": {
+            "version": "148.0.7778.96",
+            "passed": 10,
+            "failed": 2,
+            "total": 12
+        },
+        "firefox": {
+            "version": "150.0.2",
+            "passed": 12,
+            "failed": 0,
+            "total": 12
+        },
+        "webkit": {
+            "version": "26.4",
+            "passed": 12,
+            "failed": 0,
+            "total": 12
+        }
+    },
+    "cases": [
+        {
+            "host": "generated application",
+            "title": "projected DI, roles/names, panel visibility and instance-scoped ids",
+            "engine": "chromium",
+            "status": "passed",
+            "durationMs": 274,
+            "errors": [],
+            "trace": "browser-results/generation-generated-appli-ab5d6-ity-and-instance-scoped-ids-chromium/trace.zip"
+        },
+        {
+            "host": "generated application",
+            "title": "manual arrows and Home/End move focus; Enter/Space activate once with native payload",
+            "engine": "chromium",
+            "status": "passed",
+            "durationMs": 232,
+            "errors": [],
+            "trace": "browser-results/generation-generated-appli-a3fb8-te-once-with-native-payload-chromium/trace.zip"
+        },
+        {
+            "host": "generated application",
+            "title": "disabled Tabs receive arrow focus and refuse Enter/Space/pointer activation",
+            "engine": "chromium",
+            "status": "passed",
+            "durationMs": 166,
+            "errors": [],
+            "trace": "browser-results/generation-generated-appli-36107-er-Space-pointer-activation-chromium/trace.zip"
+        },
+        {
+            "host": "generated application",
+            "title": "external selected values render without callbacks and preserve ids",
+            "engine": "chromium",
+            "status": "passed",
+            "durationMs": 266,
+            "errors": [],
+            "trace": "browser-results/generation-generated-appli-cb921--callbacks-and-preserve-ids-chromium/trace.zip"
+        },
+        {
+            "host": "generated application",
+            "title": "two projected wrappers isolate selection, callbacks, associations and keyboard focus",
+            "engine": "chromium",
+            "status": "passed",
+            "durationMs": 197,
+            "errors": [],
+            "trace": "browser-results/generation-generated-appli-1709d-ciations-and-keyboard-focus-chromium/trace.zip"
+        },
+        {
+            "host": "generated application",
+            "title": "Tab leaves the list for its selected panel and Shift+Tab returns to its selected tab",
+            "engine": "chromium",
+            "status": "failed",
+            "durationMs": 5108,
+            "errors": [
+                {
+                    "location": {
+                        "file": "/Users/pimenovoleg/git/github-radix-ng/primitives/tools/consumer-testing/generation/tabs/generation.spec.ts",
+                        "column": 94,
+                        "line": 230
+                    },
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeFocused\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByTestId('primary-tabs').getByRole('tabpanel', { name: 'Security', exact: true })\nExpected: focused\nReceived: inactive\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeFocused\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('primary-tabs').getByRole('tabpanel', { name: 'Security', exact: true })\u001b[22m\n\u001b[2m    13 × locator resolved to <section tabindex=\"0\" data-index=\"2\" role=\"tabpanel\" rdxtabspanel=\"\" value=\"security\" data-orientation=\"horizontal\" id=\"rdx-tabs-0-panel-security\" data-activation-direction=\"right\" aria-labelledby=\"rdx-tabs-0-tab-security\">…</section>\u001b[22m\n\u001b[2m       - unexpected value \"inactive\"\u001b[22m\n\n\n  228 |             await page.keyboard.press('Enter');\n  229 |             await page.keyboard.press(navigationKey('Tab', browserName));\n> 230 |             await expect(p.wrapper.getByRole('tabpanel', { name: 'Security', exact: true })).toBeFocused();\n      |                                                                                              ^\n  231 |             await page.keyboard.press(navigationKey('Shift+Tab', browserName));\n  232 |             await expect(p.security).toBeFocused();\n  233 |             await callback(page, 'primary', 1, 'security');\n    at /Users/pimenovoleg/git/github-radix-ng/primitives/tools/consumer-testing/generation/tabs/generation.spec.ts:230:94"
+                }
+            ],
+            "trace": "browser-results/generation-generated-appli-c9153-returns-to-its-selected-tab-chromium/trace.zip"
+        },
+        {
+            "host": "generated application",
+            "title": "projected DI, roles/names, panel visibility and instance-scoped ids",
+            "engine": "firefox",
+            "status": "passed",
+            "durationMs": 927,
+            "errors": [],
+            "trace": "browser-results/generation-generated-appli-ab5d6-ity-and-instance-scoped-ids-firefox/trace.zip"
+        },
+        {
+            "host": "generated application",
+            "title": "manual arrows and Home/End move focus; Enter/Space activate once with native payload",
+            "engine": "firefox",
+            "status": "passed",
+            "durationMs": 401,
+            "errors": [],
+            "trace": "browser-results/generation-generated-appli-a3fb8-te-once-with-native-payload-firefox/trace.zip"
+        },
+        {
+            "host": "generated application",
+            "title": "disabled Tabs receive arrow focus and refuse Enter/Space/pointer activation",
+            "engine": "firefox",
+            "status": "passed",
+            "durationMs": 328,
+            "errors": [],
+            "trace": "browser-results/generation-generated-appli-36107-er-Space-pointer-activation-firefox/trace.zip"
+        },
+        {
+            "host": "generated application",
+            "title": "external selected values render without callbacks and preserve ids",
+            "engine": "firefox",
+            "status": "passed",
+            "durationMs": 451,
+            "errors": [],
+            "trace": "browser-results/generation-generated-appli-cb921--callbacks-and-preserve-ids-firefox/trace.zip"
+        },
+        {
+            "host": "generated application",
+            "title": "two projected wrappers isolate selection, callbacks, associations and keyboard focus",
+            "engine": "firefox",
+            "status": "passed",
+            "durationMs": 411,
+            "errors": [],
+            "trace": "browser-results/generation-generated-appli-1709d-ciations-and-keyboard-focus-firefox/trace.zip"
+        },
+        {
+            "host": "generated application",
+            "title": "Tab leaves the list for its selected panel and Shift+Tab returns to its selected tab",
+            "engine": "firefox",
+            "status": "passed",
+            "durationMs": 312,
+            "errors": [],
+            "trace": "browser-results/generation-generated-appli-c9153-returns-to-its-selected-tab-firefox/trace.zip"
+        },
+        {
+            "host": "generated application",
+            "title": "projected DI, roles/names, panel visibility and instance-scoped ids",
+            "engine": "webkit",
+            "status": "passed",
+            "durationMs": 864,
+            "errors": [],
+            "trace": "browser-results/generation-generated-appli-ab5d6-ity-and-instance-scoped-ids-webkit/trace.zip"
+        },
+        {
+            "host": "generated application",
+            "title": "manual arrows and Home/End move focus; Enter/Space activate once with native payload",
+            "engine": "webkit",
+            "status": "passed",
+            "durationMs": 498,
+            "errors": [],
+            "trace": "browser-results/generation-generated-appli-a3fb8-te-once-with-native-payload-webkit/trace.zip"
+        },
+        {
+            "host": "generated application",
+            "title": "disabled Tabs receive arrow focus and refuse Enter/Space/pointer activation",
+            "engine": "webkit",
+            "status": "passed",
+            "durationMs": 423,
+            "errors": [],
+            "trace": "browser-results/generation-generated-appli-36107-er-Space-pointer-activation-webkit/trace.zip"
+        },
+        {
+            "host": "generated application",
+            "title": "external selected values render without callbacks and preserve ids",
+            "engine": "webkit",
+            "status": "passed",
+            "durationMs": 498,
+            "errors": [],
+            "trace": "browser-results/generation-generated-appli-cb921--callbacks-and-preserve-ids-webkit/trace.zip"
+        },
+        {
+            "host": "generated application",
+            "title": "two projected wrappers isolate selection, callbacks, associations and keyboard focus",
+            "engine": "webkit",
+            "status": "passed",
+            "durationMs": 463,
+            "errors": [],
+            "trace": "browser-results/generation-generated-appli-1709d-ciations-and-keyboard-focus-webkit/trace.zip"
+        },
+        {
+            "host": "generated application",
+            "title": "Tab leaves the list for its selected panel and Shift+Tab returns to its selected tab",
+            "engine": "webkit",
+            "status": "passed",
+            "durationMs": 361,
+            "errors": [],
+            "trace": "browser-results/generation-generated-appli-c9153-returns-to-its-selected-tab-webkit/trace.zip"
+        },
+        {
+            "host": "independent parent",
+            "title": "projected DI, roles/names, panel visibility and instance-scoped ids",
+            "engine": "chromium",
+            "status": "passed",
+            "durationMs": 182,
+            "errors": [],
+            "trace": "browser-results/generation-independent-par-52161-ity-and-instance-scoped-ids-chromium/trace.zip"
+        },
+        {
+            "host": "independent parent",
+            "title": "manual arrows and Home/End move focus; Enter/Space activate once with native payload",
+            "engine": "chromium",
+            "status": "passed",
+            "durationMs": 234,
+            "errors": [],
+            "trace": "browser-results/generation-independent-par-a421f-te-once-with-native-payload-chromium/trace.zip"
+        },
+        {
+            "host": "independent parent",
+            "title": "disabled Tabs receive arrow focus and refuse Enter/Space/pointer activation",
+            "engine": "chromium",
+            "status": "passed",
+            "durationMs": 177,
+            "errors": [],
+            "trace": "browser-results/generation-independent-par-1a9bb-er-Space-pointer-activation-chromium/trace.zip"
+        },
+        {
+            "host": "independent parent",
+            "title": "external selected values render without callbacks and preserve ids",
+            "engine": "chromium",
+            "status": "passed",
+            "durationMs": 343,
+            "errors": [],
+            "trace": "browser-results/generation-independent-par-1fb2c--callbacks-and-preserve-ids-chromium/trace.zip"
+        },
+        {
+            "host": "independent parent",
+            "title": "two projected wrappers isolate selection, callbacks, associations and keyboard focus",
+            "engine": "chromium",
+            "status": "passed",
+            "durationMs": 236,
+            "errors": [],
+            "trace": "browser-results/generation-independent-par-4e656-ciations-and-keyboard-focus-chromium/trace.zip"
+        },
+        {
+            "host": "independent parent",
+            "title": "Tab leaves the list for its selected panel and Shift+Tab returns to its selected tab",
+            "engine": "chromium",
+            "status": "failed",
+            "durationMs": 5114,
+            "errors": [
+                {
+                    "location": {
+                        "file": "/Users/pimenovoleg/git/github-radix-ng/primitives/tools/consumer-testing/generation/tabs/generation.spec.ts",
+                        "column": 94,
+                        "line": 230
+                    },
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeFocused\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByTestId('primary-tabs').getByRole('tabpanel', { name: 'Security', exact: true })\nExpected: focused\nReceived: inactive\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeFocused\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('primary-tabs').getByRole('tabpanel', { name: 'Security', exact: true })\u001b[22m\n\u001b[2m    13 × locator resolved to <section tabindex=\"0\" data-index=\"2\" role=\"tabpanel\" rdxtabspanel=\"\" value=\"security\" data-orientation=\"horizontal\" id=\"rdx-tabs-0-panel-security\" data-activation-direction=\"right\" aria-labelledby=\"rdx-tabs-0-tab-security\">…</section>\u001b[22m\n\u001b[2m       - unexpected value \"inactive\"\u001b[22m\n\n\n  228 |             await page.keyboard.press('Enter');\n  229 |             await page.keyboard.press(navigationKey('Tab', browserName));\n> 230 |             await expect(p.wrapper.getByRole('tabpanel', { name: 'Security', exact: true })).toBeFocused();\n      |                                                                                              ^\n  231 |             await page.keyboard.press(navigationKey('Shift+Tab', browserName));\n  232 |             await expect(p.security).toBeFocused();\n  233 |             await callback(page, 'primary', 1, 'security');\n    at /Users/pimenovoleg/git/github-radix-ng/primitives/tools/consumer-testing/generation/tabs/generation.spec.ts:230:94"
+                }
+            ],
+            "trace": "browser-results/generation-independent-par-585a1-returns-to-its-selected-tab-chromium/trace.zip"
+        },
+        {
+            "host": "independent parent",
+            "title": "projected DI, roles/names, panel visibility and instance-scoped ids",
+            "engine": "firefox",
+            "status": "passed",
+            "durationMs": 278,
+            "errors": [],
+            "trace": "browser-results/generation-independent-par-52161-ity-and-instance-scoped-ids-firefox/trace.zip"
+        },
+        {
+            "host": "independent parent",
+            "title": "manual arrows and Home/End move focus; Enter/Space activate once with native payload",
+            "engine": "firefox",
+            "status": "passed",
+            "durationMs": 391,
+            "errors": [],
+            "trace": "browser-results/generation-independent-par-a421f-te-once-with-native-payload-firefox/trace.zip"
+        },
+        {
+            "host": "independent parent",
+            "title": "disabled Tabs receive arrow focus and refuse Enter/Space/pointer activation",
+            "engine": "firefox",
+            "status": "passed",
+            "durationMs": 373,
+            "errors": [],
+            "trace": "browser-results/generation-independent-par-1a9bb-er-Space-pointer-activation-firefox/trace.zip"
+        },
+        {
+            "host": "independent parent",
+            "title": "external selected values render without callbacks and preserve ids",
+            "engine": "firefox",
+            "status": "passed",
+            "durationMs": 648,
+            "errors": [],
+            "trace": "browser-results/generation-independent-par-1fb2c--callbacks-and-preserve-ids-firefox/trace.zip"
+        },
+        {
+            "host": "independent parent",
+            "title": "two projected wrappers isolate selection, callbacks, associations and keyboard focus",
+            "engine": "firefox",
+            "status": "passed",
+            "durationMs": 370,
+            "errors": [],
+            "trace": "browser-results/generation-independent-par-4e656-ciations-and-keyboard-focus-firefox/trace.zip"
+        },
+        {
+            "host": "independent parent",
+            "title": "Tab leaves the list for its selected panel and Shift+Tab returns to its selected tab",
+            "engine": "firefox",
+            "status": "passed",
+            "durationMs": 226,
+            "errors": [],
+            "trace": "browser-results/generation-independent-par-585a1-returns-to-its-selected-tab-firefox/trace.zip"
+        },
+        {
+            "host": "independent parent",
+            "title": "projected DI, roles/names, panel visibility and instance-scoped ids",
+            "engine": "webkit",
+            "status": "passed",
+            "durationMs": 452,
+            "errors": [],
+            "trace": "browser-results/generation-independent-par-52161-ity-and-instance-scoped-ids-webkit/trace.zip"
+        },
+        {
+            "host": "independent parent",
+            "title": "manual arrows and Home/End move focus; Enter/Space activate once with native payload",
+            "engine": "webkit",
+            "status": "passed",
+            "durationMs": 484,
+            "errors": [],
+            "trace": "browser-results/generation-independent-par-a421f-te-once-with-native-payload-webkit/trace.zip"
+        },
+        {
+            "host": "independent parent",
+            "title": "disabled Tabs receive arrow focus and refuse Enter/Space/pointer activation",
+            "engine": "webkit",
+            "status": "passed",
+            "durationMs": 403,
+            "errors": [],
+            "trace": "browser-results/generation-independent-par-1a9bb-er-Space-pointer-activation-webkit/trace.zip"
+        },
+        {
+            "host": "independent parent",
+            "title": "external selected values render without callbacks and preserve ids",
+            "engine": "webkit",
+            "status": "passed",
+            "durationMs": 511,
+            "errors": [],
+            "trace": "browser-results/generation-independent-par-1fb2c--callbacks-and-preserve-ids-webkit/trace.zip"
+        },
+        {
+            "host": "independent parent",
+            "title": "two projected wrappers isolate selection, callbacks, associations and keyboard focus",
+            "engine": "webkit",
+            "status": "passed",
+            "durationMs": 467,
+            "errors": [],
+            "trace": "browser-results/generation-independent-par-4e656-ciations-and-keyboard-focus-webkit/trace.zip"
+        },
+        {
+            "host": "independent parent",
+            "title": "Tab leaves the list for its selected panel and Shift+Tab returns to its selected tab",
+            "engine": "webkit",
+            "status": "passed",
+            "durationMs": 362,
+            "errors": [],
+            "trace": "browser-results/generation-independent-par-585a1-returns-to-its-selected-tab-webkit/trace.zip"
+        }
+    ],
+    "architectureReview": {
+        "kind": "independent-source-review",
+        "componentSha256": "35df649d9c1490243e213c92bbc1c6d5a0dff6b7862a53ee28d6ef45ac9871a5",
+        "requirements": {
+            "standalone": [
+                {
+                    "line": 7,
+                    "text": "standalone: true,"
+                }
+            ],
+            "hostDirectivesRoot": [
+                {
+                    "line": 9,
+                    "text": "hostDirectives: [{ directive: RdxTabsRoot, inputs: ['value'], outputs: ['onValueChange'] }],"
+                }
+            ],
+            "innerList": [
+                {
+                    "line": 12,
+                    "text": "<div rdxTabsList [attr.aria-label]=\"label()\" [activateOnFocus]=\"activateOnFocus()\">"
+                }
+            ],
+            "projectedTabs": [
+                {
+                    "line": 13,
+                    "text": "<ng-content select=\"[rdxTabsTab]\" />"
+                }
+            ],
+            "projectedPanels": [
+                {
+                    "line": 15,
+                    "text": "<ng-content select=\"[rdxTabsPanel]\" />"
+                }
+            ],
+            "publicImport": [
+                {
+                    "line": 2,
+                    "text": "import { RdxTabsList, RdxTabsRoot } from '@radix-ng/primitives/tabs';"
+                }
+            ]
+        },
+        "passed": true
+    },
+    "productionBuild": "passed",
+    "independentParentBuild": "passed",
+    "publicImports": [
+        {
+            "file": "src/app/app-tabs.ts",
+            "specifier": "@radix-ng/primitives/tabs"
+        },
+        {
+            "file": "src/app/app.ts",
+            "specifier": "@radix-ng/primitives/tabs"
+        }
+    ],
+    "sourceCorrectionsByEvaluator": [],
+    "generatedSource": {
+        "tree": {
+            "files": 5,
+            "sha256": "07cc99d1756b851b825e85cfecf7f0ff205bf504cba02114ab9e9c515bc717ac"
+        },
+        "files": {
+            "src/app/app-tabs.ts": "35df649d9c1490243e213c92bbc1c6d5a0dff6b7862a53ee28d6ef45ac9871a5",
+            "src/app/app.ts": "36760f438fc3d84c7eb7b92573daf2b173a2a72b9de8e686b49beeb08b38e91e",
+            "src/index.html": "ffb5a776db3eb0acaecb7ea55e7f2ed806e0ac629754310413e25c003d0a2cac",
+            "src/main.ts": "0a9d22dcff54fd8c11effc8e871f02f6720ef47ff47c5ca74eac0d918a064538",
+            "src/styles.css": "9bd4e238a61592463aab3b1a0ecdf2a8eac5e723f83c0c4215dd87c240b3ad72"
+        }
+    },
+    "generatedPatchSha256": "0d34da77b1bcdc0739b1e87338757dfb1faacd029054d3aeae5117cb2d6f3580",
+    "generatedPatchBytes": 7737,
+    "frozenChecks": {
+        "prompt.md": "02ca7eafee79fb1d7265bccf3934d8149b91ddd7834b81c272be17519341beae",
+        "criteria.json": "9ca9c4e28b48c92d5288753dfd4ac1fc2963943bc096562e2e746249af82bbda",
+        "generation.spec.ts": "c6f4f0d854b26510de584d9a15a30e4303e63b9cad63c970bb7a135dc67a88f0",
+        "playwright.config.ts": "5118a364fe2a82b5e442a958c59c54bf6478fe2bed7e1a391ec1541473b78ef9",
+        "probe-app.txt": "896dace05f55f67cc738cf513e7a23bda2d203bc88a5e72b8723a597ac6ede59",
+        "codex-config.mjs": "b6d9e2e9640fb788af4c8ecda28adf1deda09ca3c24eab39d637b208c7d1d0e4",
+        "code.mjs": "9e44f5fb23ee236151e8f305b76fda1ca8147f6d851bc4dcf64353fbc9b872e2",
+        "codex-contract.test.mjs": "246058e93e2c48f62a8e53eb399414ccc01003f174f51412f8c5a017fa0c879d",
+        "prepare-pinned.mjs": "0fd694c54e93d8d60976335a750bd37a6d6cf24aa0473765eceb4ae8fb8affdc",
+        "verify.mjs": "073b6477c786088c4845a3b139608a5ffb56ebe98ec1f83cfd397a98538186df",
+        "commands.mjs": "20569e4a4f4eda2bf286be4b4a569d3ea0d6cfad83aec807de50d2a7cd0b37a5",
+        "scaffold-app.txt": "221e1f52b4d8f16f1644976e0b17386549f4e08c414564c55aea137d77abc89f"
+    },
+    "supportFiles": {
+        "tools/consumer-testing/generation/cross-browser/keyboard.ts": "4e525d918ee880c344336ff9e7d42b05f42b006234ac6e02a0a9082312969041",
+        "tools/playwright/browser-projects.mts": "005294631dc7cc2d07373c2c13ce5e00888bce2f2ebe7c89bc170a1f0e515283"
+    },
+    "frozenBeforeLive": true,
+    "dependenciesBeforeAndAfter": {
+        "contents": {
+            "files": 92461,
+            "sha256": "c285c195f4503167b09c1bd0f6c0790d5c36db584dbf89be5b54d3d75994a995"
+        },
+        "symlinks": {
+            "count": 1125,
+            "sha256": "e8021cc5ffef103ac782a7b40e5fbe78244fc1440e4d5d1620b1bac5c7a6fe05"
+        }
+    },
+    "protectedInputsUnchanged": true,
+    "priorArchivesUnchanged": true,
+    "durationMs": 142561,
+    "commands": 10,
+    "usage": {
+        "input_tokens": 212007,
+        "cached_input_tokens": 181888,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 6039,
+        "reasoning_output_tokens": 78
+    },
+    "terminationReason": "completed",
+    "focusDiagnosis": {
+        "artifacts": "dist/consumer-generation/2026-11-15-tabs-focus-diagnosis",
+        "waitedCases": {
+            "passed": 6,
+            "failed": 0
+        },
+        "immediateChromiumCases": [
+            {
+                "host": "generated application",
+                "mode": "immediate-1",
+                "selectedPanelFocused": true,
+                "activeAfterTab": {
+                    "tag": "SECTION",
+                    "id": "rdx-tabs-0-panel-security",
+                    "role": "tabpanel",
+                    "text": "Primary security contentPrimary security action",
+                    "tabIndex": "0"
+                },
+                "activeAfterSelectionObserved": {
+                    "tag": "SECTION",
+                    "id": "rdx-tabs-0-panel-security",
+                    "role": "tabpanel",
+                    "text": "Primary security contentPrimary security action",
+                    "tabIndex": "0"
+                },
+                "trace": "chromium-0-immediate-1.zip"
+            },
+            {
+                "host": "generated application",
+                "mode": "immediate-2",
+                "selectedPanelFocused": false,
+                "activeAfterTab": {
+                    "tag": "SECTION",
+                    "id": "rdx-tabs-0-panel-account",
+                    "role": "tabpanel",
+                    "text": "Primary account contentPrimary account action",
+                    "tabIndex": "0"
+                },
+                "activeAfterSelectionObserved": {
+                    "tag": "BODY",
+                    "id": "",
+                    "role": null,
+                    "text": "Project sectionsUse arrows, Home or End to move focus. Press Enter or Space to s",
+                    "tabIndex": null
+                },
+                "trace": "chromium-0-immediate-2.zip"
+            },
+            {
+                "host": "independent parent",
+                "mode": "immediate-1",
+                "selectedPanelFocused": false,
+                "activeAfterTab": {
+                    "tag": "SECTION",
+                    "id": "rdx-tabs-0-panel-account",
+                    "role": "tabpanel",
+                    "text": "Independent primary account contentPrimary account action",
+                    "tabIndex": "0"
+                },
+                "activeAfterSelectionObserved": {
+                    "tag": "BODY",
+                    "id": "",
+                    "role": null,
+                    "text": "Independent projected Tabs consumerSet primary Security externallySet primary Ac",
+                    "tabIndex": null
+                },
+                "trace": "chromium-1-immediate-1.zip"
+            },
+            {
+                "host": "independent parent",
+                "mode": "immediate-2",
+                "selectedPanelFocused": false,
+                "activeAfterTab": {
+                    "tag": "SECTION",
+                    "id": "rdx-tabs-0-panel-account",
+                    "role": "tabpanel",
+                    "text": "Independent primary account contentPrimary account action",
+                    "tabIndex": "0"
+                },
+                "activeAfterSelectionObserved": {
+                    "tag": "BODY",
+                    "id": "",
+                    "role": null,
+                    "text": "Independent projected Tabs consumerSet primary Security externallySet primary Ac",
+                    "tabIndex": null
+                },
+                "trace": "chromium-1-immediate-2.zip"
+            }
+        ],
+        "note": "Supplemental diagnosis, not a corrected full-suite verdict. Raw 34/36 remains unchanged."
+    },
+    "classifications": {
+        "environment": [
+            "Sandbox heredoc temporary-file denial; agent recovered within the same session.",
+            "Sandbox Chromium launch could not read ICU data; independent three-engine launches/checks ran outside it.",
+            "Production builder was not attempted in the coding session because its known sandbox limitation was disclosed; both independent builds passed."
+        ],
+        "implementation": [
+            "No wrapper architecture/steady-state behavior defect confirmed. The rapid Enter-to-Tab sequence exposes a Chromium focus-timing limitation."
+        ],
+        "checks": [
+            "The final frozen case sends Tab immediately after Enter, without awaiting the new rendered selection. It can focus the old panel before Angular commits, then focus falls to body. Waiting for observable state passes both hosts in all engines."
+        ],
+        "confirmedSkillGaps": []
+    },
+    "artifacts": "dist/consumer-generation/2026-11-15-tabs-first",
+    "rawReportSha256": "c534b3fde7f28cf53f780046718a822c168c51b6c70399f1018c8983d2ba120f",
+    "limitations": [
+        "One coding session; no reliability estimate.",
+        "Original result is 34/36, not a green corrected suite.",
+        "Rapid key sequences before render completion need a separate runtime/contract investigation.",
+        "Material references are command/output evidence, not a syscall read audit."
+    ]
+}

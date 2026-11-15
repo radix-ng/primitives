@@ -49,7 +49,37 @@
       "hostDirectives": [
         "RdxVisuallyHiddenInputBubbleDirective"
       ],
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "feature",
+          "type": "VisuallyHidden",
+          "default": "'fully-hidden'"
+        },
+        {
+          "name": "name",
+          "type": "string | undefined",
+          "default": "undefined"
+        },
+        {
+          "name": "value",
+          "type": "T | string | null"
+        },
+        {
+          "name": "checked",
+          "type": "boolean | undefined",
+          "default": "undefined"
+        },
+        {
+          "name": "required",
+          "type": "boolean | undefined",
+          "default": "undefined"
+        },
+        {
+          "name": "disabled",
+          "type": "boolean | undefined",
+          "default": "undefined"
+        }
+      ],
       "outputs": []
     },
     {

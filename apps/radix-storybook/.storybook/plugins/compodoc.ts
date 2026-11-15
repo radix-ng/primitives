@@ -1,4 +1,5 @@
 import { setCompodocJson } from '@storybook/addon-docs/angular';
+import { compodocBindingName, composeHostDirectives } from '../../../../tools/compodoc/host-directives';
 import rawDocJson from '../documentation.json';
 
 // Minimal shape of the slice of compodoc's `documentation.json` this plugin touches. The file is
@@ -21,6 +22,8 @@ interface CompodocInput {
 }
 
 interface CompodocDoc {
+    name?: string;
+    hostDirectives?: { name: string; inputs?: string[]; outputs?: string[] }[];
     extends?: string[];
     sourceCode?: string;
     inputsClass?: CompodocInput[];
@@ -90,7 +93,10 @@ function parsePositionerConfig(sourceCode?: string): Record<string, string> {
 
 export default {
     init() {
-        const docToCleanup = [...docJson.components, ...docJson.directives];
+        const docs = composeHostDirectives([...docJson.components, ...docJson.directives]);
+        docJson.components = docs.slice(0, docJson.components.length);
+        docJson.directives = docs.slice(docJson.components.length);
+        const docToCleanup = docs;
 
         // Module-level constants used as input defaults (`input(DEFAULT_MIN)`) — compodoc records their
         // value and type under `miscellaneous.variables`. Map name → { value, type } so the Default
@@ -113,8 +119,7 @@ export default {
                 : {};
 
             for (const input of doc.inputsClass ?? []) {
-                const alias = /alias:\s*'([^']+)'/.exec(input.defaultValue ?? '')?.[1];
-                if (alias) input.name = alias;
+                input.name = compodocBindingName(input);
                 // compodoc captures the whole `input(<default>, { …options })` call as the default.
                 // Strip a trailing options object so the Default column shows just the value, e.g.
                 // `undefined, { alias: 'dir' }` → `undefined`.

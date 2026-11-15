@@ -22,7 +22,16 @@
       "hostDirectives": [
         "RdxPopperArrow"
       ],
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "width",
+          "default": "10"
+        },
+        {
+          "name": "height",
+          "default": "5"
+        }
+      ],
       "outputs": []
     },
     {
@@ -201,7 +210,13 @@
       "hostDirectives": [
         "RdxComboboxPortal"
       ],
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "container",
+          "type": "RdxPortalContainer",
+          "description": "Optional container to portal the content into. Defaults to `document.body`. Declared here (and\nforwarded to the composed {@link RdxPortalPresence}) so the autocomplete portal can re-expose it\nthrough its own `hostDirectives`."
+        }
+      ],
       "outputs": []
     },
     {

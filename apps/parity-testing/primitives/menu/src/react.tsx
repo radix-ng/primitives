@@ -18,6 +18,8 @@ import { ReactItemPopover } from './item-popover.react';
 import { ReactModels } from './models.react';
 import { ReactPlacement } from './placement.react';
 import { ReactPopoverMenu } from './popover.react';
+import { preparePortalSurface } from './portals';
+import { ReactPortals } from './portals.react';
 import { ReactProjection } from './projection.react';
 import { touchScrollEntries } from './touch';
 import { ReactMultiTriggers } from './triggers.react';
@@ -355,32 +357,37 @@ function ReactMenu() {
         </DirectionProvider>
     );
 }
-createRoot(document.getElementById('root')!).render(
-    settings.models ? (
-        <ReactModels />
-    ) : settings.boundary ? (
-        <ReactBoundary />
-    ) : settings.placement ? (
-        <ReactPlacement />
-    ) : settings.itemPopover ? (
-        <ReactItemPopover />
-    ) : settings.popover ? (
-        <ReactPopoverMenu />
-    ) : settings.itemDialog ? (
-        <ReactItemDialog />
-    ) : settings.dialog ? (
-        <ReactDialogMenu />
-    ) : settings.name.startsWith('handle-overlap-') ? (
-        <ReactHandleOverlap />
-    ) : settings.multiTrigger ? (
-        <ReactMultiTriggers />
-    ) : settings.projection ? (
-        <ReactProjection />
-    ) : settings.focusBoundary ? (
-        <ReactFocusBoundary />
-    ) : settings.host ? (
-        <ReactHosts />
-    ) : (
-        <ReactMenu />
-    )
-);
+if (settings.portal) {
+    void preparePortalSurface(settings.portal.frame).then((surface) =>
+        createRoot(surface.appRoot).render(<ReactPortals surface={surface} />)
+    );
+} else
+    createRoot(document.getElementById('root')!).render(
+        settings.models ? (
+            <ReactModels />
+        ) : settings.boundary ? (
+            <ReactBoundary />
+        ) : settings.placement ? (
+            <ReactPlacement />
+        ) : settings.itemPopover ? (
+            <ReactItemPopover />
+        ) : settings.popover ? (
+            <ReactPopoverMenu />
+        ) : settings.itemDialog ? (
+            <ReactItemDialog />
+        ) : settings.dialog ? (
+            <ReactDialogMenu />
+        ) : settings.name.startsWith('handle-overlap-') ? (
+            <ReactHandleOverlap />
+        ) : settings.multiTrigger ? (
+            <ReactMultiTriggers />
+        ) : settings.projection ? (
+            <ReactProjection />
+        ) : settings.focusBoundary ? (
+            <ReactFocusBoundary />
+        ) : settings.host ? (
+            <ReactHosts />
+        ) : (
+            <ReactMenu />
+        )
+    );

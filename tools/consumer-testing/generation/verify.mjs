@@ -171,7 +171,7 @@ if (build.code === 0 && hostBuild.code === 0) {
         workspace,
         { ...process.env, RADIX_GENERATION_DIR: consumer }
     );
-    await check('frozen Chromium scenarios', () => {
+    await check('frozen browser scenarios', () => {
         const result = json('browser-results.json');
         report.browserStats = result.stats;
         assert.equal(browser.code, 0);

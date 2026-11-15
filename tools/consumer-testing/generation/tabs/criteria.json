@@ -1,0 +1,47 @@
+{
+    "task": "Projected AppTabs wrapper with hostDirectives",
+    "checksVersion": "tabs-consumer/1",
+    "model": "gpt-6.1-sol",
+    "reasoningEffort": "low",
+    "attempts": 1,
+    "publicContract": {
+        "export": "AppTabs",
+        "file": "src/app/app-tabs.ts",
+        "selector": "app-tabs",
+        "standalone": true,
+        "hostDirective": "RdxTabsRoot",
+        "listInOwnView": "RdxTabsList",
+        "projection": ["[rdxTabsTab]", "[rdxTabsPanel]"],
+        "inputs": {
+            "value": "RdxTabsValue | undefined",
+            "label": "string, required; accessible name of the inner list",
+            "activateOnFocus": "boolean, defaults to false"
+        },
+        "outputs": {
+            "onValueChange": "RdxTabsValueChangeEvent, preserving value and eventDetails"
+        },
+        "parentOwns": ["selected value", "tab/panel content", "disabled inputs", "CSS tokens", "business callbacks"],
+        "disabledContract": "Disabled tabs remain focusable by arrow navigation but refuse activation; do not apply Select skip semantics."
+    },
+    "requiredPrimitiveImports": ["@radix-ng/primitives/tabs"],
+    "browserScenarios": 36,
+    "browsers": ["chromium", "firefox", "webkit"],
+    "criteria": [
+        "Blank external scaffold contains no Tabs solution; old versions, tarball and installed d000174e skills bytes are reused.",
+        "Architecture review confirms standalone AppTabs composes RdxTabsRoot on its host via hostDirectives, renders RdxTabsList in its own template before the projected panels and accepts the consumer's tab/panel parts.",
+        "Both generated consumer and independent parent compile with strictTemplates against public package imports, without workspace aliases or source inputs.",
+        "Projected parts resolve Root/List DI ownership; each list is named; tabs have unique ids and linked aria-controls, and corresponding panels have reciprocal ids/aria-labelledby. Exactly one panel is visible per instance.",
+        "Manual ArrowRight/Left and Home/End move focus without activation; Enter/Space activate the focused enabled tab with expected value/reason and no duplicate callbacks.",
+        "The middle disabled Billing tab receives arrow focus but Enter, Space and a real pointer attempt do not activate it or emit changes.",
+        "External selected-value updates render without emitting user change callbacks; ids remain stable through value changes.",
+        "Two simultaneous instances use the same account/billing/security values but retain independent selection, callback counts, ids, tab/panel associations and focus.",
+        "Tab leaves the list for the active panel; reverse navigation returns to its selected tab, using the established macOS WebKit keyboard convention.",
+        "Six scenarios per host, two hosts, three engines: 36 cases, fresh contexts, no retries, traces for every result, and pageerror/console collection before navigation."
+    ],
+    "rules": [
+        "Freeze prompt, public contract, independent parent and checks before live generation.",
+        "Agent self-corrections belong to its one session; evaluator does not repair generated code.",
+        "Do not silently replace failed attempts or weaken acceptance checks.",
+        "Classify environment, implementation, checker defects and confirmed skill gaps from evidence."
+    ]
+}

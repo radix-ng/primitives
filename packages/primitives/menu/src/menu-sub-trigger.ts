@@ -13,7 +13,7 @@ import {
     signal
 } from '@angular/core';
 import { getCompositeNavigationKeys, RdxCompositeListItem } from '@radix-ng/primitives/composite';
-import { BooleanInput, injectId, NumberInput, rdxPlatform } from '@radix-ng/primitives/core';
+import { BooleanInput, injectId, isMouseEvent, NumberInput, rdxPlatform } from '@radix-ng/primitives/core';
 import {
     createRdxInteractionTypeTracker,
     getInteractionTypeFromEvent,
@@ -152,7 +152,7 @@ export class RdxMenuSubTrigger {
                 el,
                 () => this.resolvedId(),
                 (event) =>
-                    event instanceof MouseEvent
+                    isMouseEvent(event)
                         ? this.inputType.clickInteractionType(event)
                         : getInteractionTypeFromEvent(event)
             );

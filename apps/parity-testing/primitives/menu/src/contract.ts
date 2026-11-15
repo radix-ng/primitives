@@ -19,6 +19,7 @@ import type { OverlayProbe } from './overlay-probe';
 import { placementCases, placementConfig } from './placement';
 import { pointerCases, pointerConfig } from './pointer';
 import { popoverMenuCases, popoverMenuConfig } from './popover';
+import { portalCases, portalConfig } from './portals';
 import { positioningCases } from './positioning';
 import { projectionCases, projectionConfig } from './projection';
 import { touchCases, touchConfig } from './touch';
@@ -61,6 +62,7 @@ export const basicCases = [
     'dynamic-ids'
 ] as const;
 export const cases = [
+    ...portalCases,
     ...modelCases,
     ...basicCases,
     ...positioningCases,
@@ -126,6 +128,7 @@ export function config() {
         dir: name.endsWith('-rtl') ? ('rtl' as const) : ('ltr' as const),
         indicator: indicatorConfig(name),
         models: modelConfig(name),
+        portal: portalConfig(name),
         placement: placementConfig(name),
         boundary,
         removal,
@@ -228,9 +231,9 @@ export function config() {
         pointer: pointerConfig(name)
     };
 }
-export function installProbe(framework: string) {
-    const trace = createMenuProbe(framework, __PARITY_REFERENCE__, config(), ['main', 'sub'] as const);
-    document.documentElement.dir = trace.probe.config.dir;
+export function installProbe(framework: string, eventDocument: Document = document) {
+    const trace = createMenuProbe(framework, __PARITY_REFERENCE__, config(), ['main', 'sub'] as const, eventDocument);
+    eventDocument.documentElement.dir = trace.probe.config.dir;
     window.menuParity = trace.probe;
     return { ...trace, probe: trace.probe as Probe };
 }

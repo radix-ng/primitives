@@ -1,0 +1,71 @@
+import { Component, signal } from '@angular/core';
+import { RdxTabsPanel, RdxTabsTab, type RdxTabsValue, type RdxTabsValueChangeEvent } from '@radix-ng/primitives/tabs';
+import { AppTabs } from './app-tabs';
+
+// Independent consumer only; no wrapper/Root/List implementation is supplied to the coding agent.
+@Component({
+    selector: 'app-root',
+    standalone: true,
+    imports: [AppTabs, RdxTabsTab, RdxTabsPanel],
+    template: `
+        <main>
+            <h1>Independent projected Tabs consumer</h1>
+            <button type="button" (click)="primary.set('security')">Set primary Security externally</button>
+            <button type="button" (click)="primary.set('account')">Set primary Account externally</button>
+            <app-tabs data-testid="primary-tabs" label="Billing sections" [value]="primary()"
+                [activateOnFocus]="false" (onValueChange)="change('primary', $event)">
+                <button rdxTabsTab value="account">Account</button>
+                <button rdxTabsTab value="billing" [disabled]="true">Billing</button>
+                <button rdxTabsTab value="security">Security</button>
+                <section rdxTabsPanel value="account">
+                    <p>Independent primary account content</p><button type="button">Primary account action</button>
+                </section>
+                <section rdxTabsPanel value="billing">
+                    <p>Independent primary billing content</p><button type="button">Primary billing action</button>
+                </section>
+                <section rdxTabsPanel value="security">
+                    <p>Independent primary security content</p><button type="button">Primary security action</button>
+                </section>
+            </app-tabs>
+            <button type="button">After primary tabs</button>
+            <button type="button" (click)="secondary.set('security')">Set secondary Security externally</button>
+            <app-tabs data-testid="secondary-tabs" label="Shipping sections" [value]="secondary()"
+                [activateOnFocus]="false" (onValueChange)="change('secondary', $event)">
+                <button rdxTabsTab value="account">Account</button>
+                <button rdxTabsTab value="billing" [disabled]="true">Billing</button>
+                <button rdxTabsTab value="security">Security</button>
+                <section rdxTabsPanel value="account">
+                    <p>Independent secondary account content</p><button type="button">Secondary account action</button>
+                </section>
+                <section rdxTabsPanel value="billing">
+                    <p>Independent secondary billing content</p><button type="button">Secondary billing action</button>
+                </section>
+                <section rdxTabsPanel value="security">
+                    <p>Independent secondary security content</p><button type="button">Secondary security action</button>
+                </section>
+            </app-tabs>
+            <button type="button">After secondary tabs</button>
+            <output data-testid="primary-value">{{ primary() }}</output>
+            <output data-testid="secondary-value">{{ secondary() }}</output>
+            <output data-testid="primary-event-count">{{ primaryEvents().length }}</output>
+            <output data-testid="secondary-event-count">{{ secondaryEvents().length }}</output>
+            <output data-testid="primary-event-value">{{ primaryEvents().at(-1)?.value ?? '' }}</output>
+            <output data-testid="secondary-event-value">{{ secondaryEvents().at(-1)?.value ?? '' }}</output>
+            <output data-testid="primary-event-reason">{{ primaryEvents().at(-1)?.reason ?? '' }}</output>
+            <output data-testid="secondary-event-reason">{{ secondaryEvents().at(-1)?.reason ?? '' }}</output>
+        </main>
+    `
+})
+export class App {
+    readonly primary = signal<RdxTabsValue>('account');
+    readonly secondary = signal<RdxTabsValue>('account');
+    readonly primaryEvents = signal<{ value: RdxTabsValue; reason: string }[]>([]);
+    readonly secondaryEvents = signal<{ value: RdxTabsValue; reason: string }[]>([]);
+
+    change(instance: 'primary' | 'secondary', event: RdxTabsValueChangeEvent) {
+        const events = instance === 'primary' ? this.primaryEvents : this.secondaryEvents;
+        const state = instance === 'primary' ? this.primary : this.secondary;
+        events.update((items) => [...items, { value: event.value, reason: event.eventDetails.reason }]);
+        state.set(event.value);
+    }
+}

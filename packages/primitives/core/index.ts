@@ -37,6 +37,7 @@ export * from './src/dom/document';
 export * from './src/dom/element-bounds';
 export * from './src/dom/element-size';
 export * from './src/dom/get-active-element';
+export * from './src/dom/guards';
 export * from './src/dom/platform';
 export * from './src/dom/pointer-events';
 export * from './src/dom/use-native-form-control';

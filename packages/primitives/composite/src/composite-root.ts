@@ -9,7 +9,7 @@ import {
     model,
     output
 } from '@angular/core';
-import { BooleanInput, createContext, Direction } from '@radix-ng/primitives/core';
+import { BooleanInput, createContext, Direction, isHTMLElement } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { RdxCompositeList } from './composite-list';
 import {
@@ -260,7 +260,7 @@ export class RdxCompositeRoot {
         const target = event.target;
         const rootElement = this.elementRef.nativeElement;
 
-        if (!relayed && target instanceof HTMLElement) {
+        if (!relayed && isHTMLElement(target)) {
             const closestRoot = target.closest('[rdxCompositeRoot]');
             if (closestRoot && closestRoot !== rootElement) {
                 return;

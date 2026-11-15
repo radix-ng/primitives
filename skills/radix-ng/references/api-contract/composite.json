@@ -11,7 +11,14 @@
       "hostDirectives": [
         "RdxCompositeListItem"
       ],
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "metadata",
+          "type": "RdxCompositeItemMetadata | null | undefined",
+          "default": "undefined",
+          "description": "Arbitrary metadata included in the list's ordered item map."
+        }
+      ],
       "outputs": []
     },
     {

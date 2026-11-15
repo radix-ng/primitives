@@ -1,4 +1,8 @@
 // Native observations shared by Menu, Context Menu and Menubar. No framework state adapters.
+function isMouseEvent(event: Event): event is MouseEvent {
+    return 'clientX' in event && 'clientY' in event && 'button' in event;
+}
+
 export interface MenuChange<Layer extends string> {
     layer: Layer;
     open: boolean;
@@ -53,7 +57,8 @@ export function createMenuProbe<Config, Layer extends string>(
     framework: string,
     reference: MenuProbe<Config, Layer>['reference'],
     settings: Config,
-    layers: readonly Layer[]
+    layers: readonly Layer[],
+    eventDocument: Document = document
 ) {
     const probe: MenuProbe<Config, Layer> = {
         framework,
@@ -69,7 +74,7 @@ export function createMenuProbe<Config, Layer extends string>(
         selected: [],
         activations: 0
     };
-    document.addEventListener(
+    eventDocument.addEventListener(
         'pointermove',
         (event) =>
             probe.pointerMoves.push({
@@ -84,10 +89,10 @@ export function createMenuProbe<Config, Layer extends string>(
         true
     );
     for (const type of ['mousedown', 'mouseup', 'pointerdown', 'pointerup', 'contextmenu', 'click']) {
-        document.addEventListener(
+        eventDocument.addEventListener(
             type,
             (event) => {
-                if (!(event instanceof MouseEvent)) return;
+                if (!isMouseEvent(event)) return;
                 probe.gestures.push({
                     type: event.type,
                     timeStamp: event.timeStamp,
@@ -112,7 +117,7 @@ export function createMenuProbe<Config, Layer extends string>(
         'pointerup',
         'pointercancel'
     ]) {
-        document.addEventListener(
+        eventDocument.addEventListener(
             type,
             (event) => {
                 probe.inputEvents.push({

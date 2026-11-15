@@ -20,6 +20,10 @@ import {
 import {
     BooleanInput,
     getActiveElement,
+    isElement,
+    isHTMLElement,
+    isKeyboardEvent,
+    isMouseEvent,
     RDX_FLOATING_REGISTRATION,
     RDX_FLOATING_ROOT_CONTEXT,
     RdxFloatingRootContext,
@@ -79,15 +83,14 @@ export function getInteractionTypeFromEvent(event?: Event): RdxInteractionType {
         return null;
     }
 
-    if (typeof KeyboardEvent !== 'undefined' && event instanceof KeyboardEvent) {
+    if (isKeyboardEvent(event)) {
         return 'keyboard';
     }
 
     // Native Enter/Space clicks are PointerEvents in current browsers, with an empty pointerType.
     // Preserve their keyboard intent before the generic pointer fallback below.
     if (
-        typeof MouseEvent !== 'undefined' &&
-        event instanceof MouseEvent &&
+        isMouseEvent(event) &&
         event.type === 'click' &&
         event.detail === 0 &&
         (!('pointerType' in event) || !event.pointerType)
@@ -99,7 +102,7 @@ export function getInteractionTypeFromEvent(event?: Event): RdxInteractionType {
         return (event.pointerType || 'mouse') as RdxInteractionType;
     }
 
-    if (typeof MouseEvent !== 'undefined' && event instanceof MouseEvent) {
+    if (isMouseEvent(event)) {
         return event.detail === 0 ? 'keyboard' : 'mouse';
     }
 
@@ -507,8 +510,7 @@ export class RdxFloatingFocusManager {
 
     private defaultReferenceTarget(): HTMLElement | null | undefined {
         const reference = this.rootContext?.referenceElement;
-        const view = this.host.ownerDocument.defaultView;
-        return view && reference instanceof view.HTMLElement && reference.isConnected && !reference.closest('[hidden]')
+        return isHTMLElement(reference) && reference.isConnected && !reference.closest('[hidden]')
             ? reference
             : resolveFocusTarget(this.effectivePreviousFocusableElement());
     }
@@ -574,7 +576,7 @@ export class RdxFloatingFocusManager {
                 const popup = (this.rootContext?.floatingElement ?? this.host) as HTMLElement;
                 const activeElement = getActiveElement(ownerDocument);
 
-                if (activeElement instanceof HTMLElement && popup.contains(activeElement)) {
+                if (isHTMLElement(activeElement) && popup.contains(activeElement)) {
                     return;
                 }
                 // A delayed layout retry must not undo a deliberate focus move to another control.
@@ -993,7 +995,7 @@ export class RdxFloatingFocusManager {
     private isFromOutsideFocusGuard(event: FocusEvent): boolean {
         const relatedTarget = event.relatedTarget;
         return (
-            relatedTarget instanceof Element &&
+            isElement(relatedTarget) &&
             relatedTarget.hasAttribute(FOCUS_GUARD_ATTR) &&
             relatedTarget.getAttribute('data-type') === 'outside'
         );

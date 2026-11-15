@@ -1,8 +1,10 @@
 import { expect, type Page } from '@playwright/test';
 import type { CaseName, Probe } from '../src/contract';
+import { portalConfig } from '../src/portals';
 import { readPopupIsolation } from './overlay.observations';
 
 export class MenuDriver {
+    private portalFrame = false;
     readonly checkpoints: { name: string; state: Record<string, unknown> }[] = [];
     readonly measurements: { name: string; bounds: unknown }[] = [];
     readonly errors: string[] = [];
@@ -17,18 +19,24 @@ export class MenuDriver {
         });
     }
     get trigger() {
-        return this.page.getByTestId('primary');
+        return this.item('primary');
     }
     get popup() {
-        return this.page.getByTestId('popup');
+        return this.item('popup');
     }
     get subPopup() {
-        return this.page.getByTestId('sub-popup');
+        return this.item('sub-popup');
     }
     item(id: string) {
-        return this.page.getByTestId(id);
+        return this.portalFrame
+            ? this.page.frameLocator('[data-testid="portal-frame"]').getByTestId(id)
+            : this.page.getByTestId(id);
     }
     async goto(name: CaseName) {
+        this.portalFrame = portalConfig(name)?.frame ?? false;
+        // Firefox requires the containing browser page to be active for a child document to
+        // receive native focus. This activates the page, without focusing any widget element.
+        if (this.portalFrame) await this.page.bringToFront();
         if (name.startsWith('root-remove-') || name.startsWith('empty-')) await this.page.clock.install();
         await this.page.goto(`/${this.framework}.html?case=${name}`);
         if (name.startsWith('dialog-menu-')) {
@@ -53,7 +61,9 @@ export class MenuDriver {
     }
     async closed() {
         await expect(this.trigger).toHaveAttribute('aria-expanded', 'false');
-        const retained = await this.page.evaluate(() => window.menuParity.config.lifecycle?.keepMounted ?? false);
+        const retained = await this.page.evaluate(
+            () => window.menuParity.config.lifecycle?.keepMounted ?? window.menuParity.config.portal?.retained ?? false
+        );
         if (retained) {
             await expect(this.popup).toHaveCount(1);
             await expect(this.popup).toBeHidden();
@@ -99,6 +109,45 @@ export class MenuDriver {
     async checkpoint(name: string, expected: Record<string, unknown> = {}) {
         const state = await this.page.evaluate(async () => {
             const read = () => {
+                if (window.menuParity.config.portal) {
+                    const surface = window.menuPortalSurface;
+                    const popup = surface.scope.querySelector<HTMLElement>('[data-testid="popup"]');
+                    const positioner = surface.scope.querySelector('[data-testid="positioner"]');
+                    const trigger = surface.scope.querySelector<HTMLElement>('[data-testid="primary"]');
+                    const outside = surface.scope.querySelector<HTMLElement>('[data-testid="outside"]')!;
+                    let focus = surface.document.activeElement;
+                    while (focus?.shadowRoot?.activeElement) focus = focus.shadowRoot.activeElement;
+                    return {
+                        open: trigger?.getAttribute('aria-expanded') === 'true',
+                        mounted: !!popup,
+                        visible:
+                            !!popup &&
+                            popup.getClientRects().length > 0 &&
+                            surface.document.defaultView!.getComputedStyle(popup).visibility !== 'hidden',
+                        target: !positioner
+                            ? null
+                            : surface.alternate.contains(positioner)
+                              ? 'alternate'
+                              : surface.target.contains(positioner)
+                                ? 'target'
+                                : 'fallback',
+                        focus: focus?.getAttribute('data-testid') ?? null,
+                        role: popup?.getAttribute('role') ?? null,
+                        controlsLinked: !!popup && trigger?.getAttribute('aria-controls') === popup.id,
+                        labelled:
+                            !!popup &&
+                            popup.getAttribute('aria-labelledby') === trigger?.id &&
+                            popup.getRootNode() === trigger.getRootNode(),
+                        highlighted: [...surface.scope.querySelectorAll('[data-highlighted][data-testid]')].map(
+                            (node) => node.getAttribute('data-testid')
+                        ),
+                        backgroundInert: !!outside.closest('[inert]'),
+                        backgroundHidden: !!outside.closest('[aria-hidden="true"]'),
+                        changes: window.menuParity.changes,
+                        completions: window.menuParity.completions,
+                        selected: window.menuParity.selected
+                    };
+                }
                 if (window.menuParity.handleOpen) {
                     const trigger = document.querySelector<HTMLElement>('[data-testid="primary"]')!;
                     return {

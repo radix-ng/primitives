@@ -5,7 +5,8 @@ import { Component, provideZonelessChangeDetection, Type } from '@angular/core';
 import { bootstrapApplication, BootstrapContext, provideClientHydration } from '@angular/platform-browser';
 import { provideServerRendering, renderApplication } from '@angular/platform-server';
 import { RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
-import { RdxMenuRadioGroup, RdxMenuRoot } from '@radix-ng/primitives/menu';
+import { RdxMenuPortal, RdxMenuRadioGroup, RdxMenuRoot } from '@radix-ng/primitives/menu';
+import { RdxPortal } from '@radix-ng/primitives/portal';
 import { _importsSelect, RdxSelectLabel, RdxSelectRoot, RdxSelectTrigger } from '@radix-ng/primitives/select';
 import { describe, expect, it, vi } from 'vitest';
 import AccordionPage from './app/components/accordion/page';
@@ -104,6 +105,23 @@ class NativeSelectPage {
     `
 })
 class MenuDefaultsPage {}
+
+@Component({
+    selector: 'app-portal-targets',
+    imports: [RdxPortal, RdxMenuRoot, RdxMenuPortal],
+    template: `
+        <div id="server-target" #target></div>
+        <div id="server-origin">
+            <span id="server-attribute" [container]="target" rdxPortal>Attribute</span>
+            <ng-container [defaultOpen]="true" rdxMenuRoot>
+                <ng-template [container]="target" rdxMenuPortal>
+                    <section id="server-structural">Structural</section>
+                </ng-template>
+            </ng-container>
+        </div>
+    `
+})
+class PortalTargetsPage {}
 
 @Component({
     selector: 'app-labelled-select',
@@ -206,6 +224,19 @@ function renderToString(selector: string, component: Type<unknown>): Promise<str
 }
 
 describe('SSR rendering', () => {
+    it('keeps custom Portal targets in place without the browser HTMLElement constructor', async () => {
+        vi.stubGlobal('HTMLElement', undefined);
+        try {
+            const html = await renderToString('app-portal-targets', PortalTargetsPage);
+            expect(html).toMatch(/<div[^>]*id="server-target"[^>]*><\/div>/);
+            const origin = html.slice(html.indexOf('id="server-origin"'));
+            expect(origin).toContain('id="server-attribute"');
+            expect(origin).toContain('id="server-structural"');
+            expect(html).toMatch(/ngh=/);
+        } finally {
+            vi.unstubAllGlobals();
+        }
+    });
     it('resolves Menu model/default precedence before server serialization', async () => {
         const html = await renderToString('app-menu-defaults', MenuDefaultsPage);
         for (const [id, value] of [

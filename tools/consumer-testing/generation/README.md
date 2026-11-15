@@ -8,6 +8,10 @@ The separate [AppEmailField experiment](email-field/README.md) uses the same lau
 environment for a parent-owned Reactive Forms control. Its contract, independent parent and eight
 browser cases are frozen separately; it does not reuse an AppSelect implementation or result.
 
+The [AppTabs experiment](tabs/README.md) freezes a projected `hostDirectives` wrapper contract,
+independent two-instance parent and 36 checks across three engines. It distinguishes manual focus
+from activation and tests Tabs' focusable disabled items using the installed contract.
+
 The [cross-browser reevaluation](cross-browser/REPORT.md) checks both saved implementations with
 their original dependencies. Its final 36-case matrix passes in Chromium, Firefox and WebKit; the
 initial 35/36 result and a native WebKit pointer-focus reproduction remain separate evidence. No

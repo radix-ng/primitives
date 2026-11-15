@@ -7,6 +7,7 @@ import {
 } from '@radix-ng/primitives/composite';
 import {
     findTypeaheadMatch,
+    isNode,
     RDX_FLOATING_REGISTRATION,
     RDX_FLOATING_ROOT_CONTEXT,
     rdxDevWarning,
@@ -328,7 +329,7 @@ export class RdxMenuPopup {
         // ancestor list. A key originating in this popup is consumed by its own navigation first.
         if (
             this.rootContext.parentType() === 'menubar' &&
-            event.target instanceof Node &&
+            isNode(event.target) &&
             !this.elementRef.nativeElement.contains(event.target) &&
             this.rootContext.handlePopupArrowNavigation(event)
         ) {

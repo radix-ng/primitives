@@ -5,6 +5,7 @@ import {
     RdxMenuItem,
     RdxMenuLinkItem,
     RdxMenuPopup,
+    RdxMenuPortal,
     RdxMenuPositioner,
     RdxMenuRadioGroup,
     RdxMenuRadioItem,
@@ -643,6 +644,19 @@ menubar Composite focus order, and the menubar coordinates hover-switching betwe
 | `data-popup-open` | The menu is open.                  |
 | `data-pressed`    | The trigger's menu is open.        |
 | `data-disabled`   | The trigger is disabled.           |
+
+### RdxMenuPortal
+
+Apply to an `<ng-template>` to mount the popup in `document.body` or a custom HTML element or
+ShadowRoot. Native elements from same-origin iframes and Angular ElementRef wrappers are accepted.
+Selectors resolve against the declaring document. Set `keepMounted` to retain the closed view.
+
+Changing `container` moves the existing Angular view, preserving its current item, focus and form
+state. It does not repeat an opening completion. Base UI's React Portal remounts on this change;
+the measured adaptation is documented in ADR 0072. Styles belong to the destination document/tree.
+For native ARIA associations, keep the widget's Root, trigger and popup in the same tree/document.
+
+<ArgTypes of={RdxMenuPortal} />
 
 ### RdxMenuPositioner
 

@@ -1,4 +1,4 @@
-import { getActiveElement } from '@radix-ng/primitives/core';
+import { getActiveElement, isHTMLElement, isShadowRoot } from '@radix-ng/primitives/core';
 
 /**
  * Tabbable / focusable detection ported from Base UI (`floating-ui-react/utils/tabbable.ts`). Unlike the
@@ -22,25 +22,6 @@ const CANDIDATE_SELECTOR =
     'a[href],button,input,select,textarea,summary,details,iframe,object,embed,[tabindex],[contenteditable]:not([contenteditable="false"]),audio[controls],video[controls]';
 
 const getNodeName = (node: Node): string => node.nodeName.toLowerCase();
-
-const isNode = (value: unknown): value is Node => value != null && typeof (value as Node).nodeType === 'number';
-
-/**
- * Owner-window-safe `HTMLElement` check. A raw `value instanceof HTMLElement` is realm-sensitive — it
- * returns `false` for an element from another document (iframe / popup window), whose realm has its own
- * `HTMLElement` constructor. Resolve the constructor from the node's own `defaultView` (the same pattern
- * as `dismissable-layer`'s `dismiss.ts`; Base UI `isHTMLElement`).
- */
-const isHTMLElement = (value: unknown): value is HTMLElement => {
-    if (!isNode(value)) {
-        return false;
-    }
-    const view = (value as Node).ownerDocument?.defaultView;
-    return view ? value instanceof view.HTMLElement : value instanceof HTMLElement;
-};
-
-/** A shadow root, detected structurally (`DOCUMENT_FRAGMENT_NODE` with a `host`) so it is realm- and SSR-safe. */
-const isShadowRoot = (node: Node | null): node is ShadowRoot => node !== null && node.nodeType === 11 && 'host' in node;
 
 const getComputedStyleOf = (element: Element): CSSStyleDeclaration | null => {
     const view = element.ownerDocument.defaultView;

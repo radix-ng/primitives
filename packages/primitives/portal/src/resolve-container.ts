@@ -1,30 +1,33 @@
 import { ElementRef } from '@angular/core';
+import { isHTMLElement, isShadowRoot } from '@radix-ng/primitives/core';
 
 /**
- * A target container for a portal. Accepts an `ElementRef`, a native element, or a CSS selector
- * resolved against the document.
+ * A native portal destination, including a shadow tree or an HTML element from another window.
  */
-export type RdxPortalContainer = ElementRef<HTMLElement> | HTMLElement | string;
+export type RdxPortalTarget = HTMLElement | ShadowRoot;
+
+/** A target or Angular ElementRef; selectors resolve in the declaring document. */
+export type RdxPortalContainer = ElementRef<RdxPortalTarget> | RdxPortalTarget | string;
 
 /**
- * Resolve a {@link RdxPortalContainer} to a concrete element. Returns `null` when nothing usable is
+ * Resolve a {@link RdxPortalContainer} to a concrete destination. Returns `null` when nothing usable is
  * provided (a missing container, a selector matching nothing, or a non-element value), so callers can
  * fall back to `document.body`. Shared by `RdxPortal` and `RdxPortalPresence`.
  */
 export function resolvePortalContainer(
     container: RdxPortalContainer | undefined,
     document: Document | null
-): HTMLElement | null {
+): RdxPortalTarget | null {
     if (!container) {
         return null;
     }
-    if (typeof container === 'string') {
-        return document?.querySelector<HTMLElement>(container) ?? null;
-    }
-    if (container instanceof ElementRef) {
-        return container.nativeElement ?? null;
-    }
+    const target =
+        typeof container === 'string'
+            ? document?.querySelector(container)
+            : container instanceof ElementRef
+              ? container.nativeElement
+              : container;
     // Anything that isn't a real element (e.g. a TemplateRef passed by mistake) falls back to the
     // default container so the content still leaves the flow instead of staying in place.
-    return container instanceof HTMLElement ? container : null;
+    return isHTMLElement(target) || isShadowRoot(target) ? target : null;
 }

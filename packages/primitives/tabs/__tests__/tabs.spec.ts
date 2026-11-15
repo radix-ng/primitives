@@ -709,3 +709,52 @@ describe('Tabs diagnostics', () => {
         expect(warn).not.toHaveBeenCalled();
     });
 });
+
+@Component({
+    imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel],
+    template: `
+        <div [defaultValue]="defaultValue()" (onValueChange)="changes.push($event)" rdxTabsRoot>
+            <div rdxTabsList>
+                @for (value of values(); track value) {
+                    <button [value]="value" rdxTabsTab>{{ value }}</button>
+                }
+            </div>
+            @for (value of values(); track value) {
+                <div [value]="value" rdxTabsPanel>Panel {{ value }}</div>
+            }
+        </div>
+    `
+})
+class NullDefaultHostComponent {
+    readonly defaultValue = input<RdxTabsValue>(null);
+    readonly values = input<RdxTabsValue[]>([0, 1]);
+    readonly changes: RdxTabsValueChangeEvent[] = [];
+}
+
+describe('Tabs explicit null defaultValue', () => {
+    it.each([
+        { kind: 'numeric', values: [0, 1] },
+        { kind: 'string', values: ['one', 'two'] }
+    ])('preserves no selection without notifications for $kind values and later defaults', async ({ values }) => {
+        TestBed.configureTestingModule({ imports: [NullDefaultHostComponent] });
+        const fixture = TestBed.createComponent(NullDefaultHostComponent);
+        fixture.componentRef.setInput('values', values);
+        await fixture.whenStable();
+
+        const root = fixture.debugElement.query(By.directive(RdxTabsRoot)).injector.get(RdxTabsRoot);
+        const element = fixture.nativeElement as HTMLElement;
+        const expectNoSelection = () => {
+            expect(root.value()).toBeNull();
+            expect(element.querySelectorAll('[role="tab"][aria-selected="true"]')).toHaveLength(0);
+            const panels = Array.from(element.querySelectorAll<HTMLElement>('[role="tabpanel"]'));
+            expect(panels).toHaveLength(2);
+            expect(panels.every((panel) => panel.hidden)).toBe(true);
+            expect(fixture.componentInstance.changes).toEqual([]);
+        };
+        expectNoSelection();
+
+        fixture.componentRef.setInput('defaultValue', values[1]);
+        await fixture.whenStable();
+        expectNoSelection();
+    });
+});

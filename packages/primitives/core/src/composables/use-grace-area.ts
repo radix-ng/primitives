@@ -1,4 +1,5 @@
 import { effect, signal, type Signal, type WritableSignal } from '@angular/core';
+import { isHTMLElement } from '../dom/guards';
 
 type Side = 'top' | 'right' | 'bottom' | 'left';
 
@@ -62,7 +63,7 @@ export function useGraceArea(
     }
 
     function trackPointerGrace(event: PointerEvent) {
-        if (!pointerGraceArea || !(event.target instanceof HTMLElement)) return;
+        if (!pointerGraceArea || !isHTMLElement(event.target)) return;
 
         const trigger = triggerEl();
         const container = containerEl();

@@ -20,7 +20,8 @@ import { injectRdxDialogRootContext } from './dialog-root';
 })
 export class RdxDialogPortal {
     /**
-     * Optional container to portal the content into. Defaults to `document.body`. Declared here (and
+     * Optional HTML element or ShadowRoot target, including same-origin iframe elements or ElementRef
+     * wrappers. Defaults to `document.body`. Declared here (and
      * forwarded to the composed {@link RdxPortalPresence}) so that the drawer and alert-dialog portals
      * can re-expose it through their own `hostDirectives`.
      */

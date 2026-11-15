@@ -157,7 +157,7 @@ export class RdxTabsRoot {
             const defaultValue = this.defaultValue();
             const hasExplicitDefaultValue = defaultValue !== undefined;
             this.hasAppliedDefaultValue = true;
-            this.initialDefaultValue = defaultValue ?? 0;
+            this.initialDefaultValue = hasExplicitDefaultValue ? defaultValue : 0;
             this.shouldNotifyInitialValueChange = !hasExplicitDefaultValue;
             this.shouldHonorDisabledDefaultValue = hasExplicitDefaultValue;
             untracked(() => this.commitValue(this.initialDefaultValue!));

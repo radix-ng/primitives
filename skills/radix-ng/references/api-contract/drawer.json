@@ -69,7 +69,28 @@
         "RdxDialogPopup"
       ],
       "inputs": [],
-      "outputs": []
+      "outputs": [
+        {
+          "name": "escapeKeyDown",
+          "type": "KeyboardEvent",
+          "description": "Event handler called when the escape key is down. Can be prevented."
+        },
+        {
+          "name": "pointerDownOutside",
+          "type": "RdxOutsidePressDomEvent",
+          "description": "Event handler called when a pointerdown event happens outside of the popup. Can be prevented."
+        },
+        {
+          "name": "focusOutside",
+          "type": "FocusEvent",
+          "description": "Event handler called when focus moves outside of the popup. Can be prevented."
+        },
+        {
+          "name": "interactOutside",
+          "type": "RdxOutsidePressDomEvent | FocusEvent",
+          "description": "Event handler called when an interaction (pointer / focus) happens outside of the popup."
+        }
+      ]
     },
     {
       "directive": "RdxDrawerPortal",
@@ -79,7 +100,13 @@
       "hostDirectives": [
         "RdxDialogPortal"
       ],
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "container",
+          "type": "RdxPortalContainer",
+          "description": "Optional HTML element or ShadowRoot target, including same-origin iframe elements or ElementRef\nwrappers. Defaults to `document.body`. Declared here (and\nforwarded to the composed {@link RdxPortalPresence}) so that the drawer and alert-dialog portals\ncan re-expose it through their own `hostDirectives`."
+        }
+      ],
       "outputs": []
     },
     {
@@ -133,6 +160,46 @@
           "type": "RdxDrawerSwipeDirection",
           "default": "'down'",
           "description": "Direction a swipe travels to dismiss the drawer. The visual side of the drawer is consumer\nCSS; this controls the dismiss gesture and the `data-swipe-direction` styling hook."
+        },
+        {
+          "name": "open",
+          "default": "false",
+          "description": "Whether the dialog is currently open."
+        },
+        {
+          "name": "defaultOpen",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the dialog is initially open."
+        },
+        {
+          "name": "triggerId",
+          "type": "string | null",
+          "default": "null",
+          "description": "ID of the trigger associated with a controlled dialog."
+        },
+        {
+          "name": "defaultTriggerId",
+          "type": "string | null",
+          "default": "null",
+          "description": "ID of the trigger associated with an initially open uncontrolled dialog."
+        },
+        {
+          "name": "handle",
+          "type": "RdxDialogHandle<unknown>",
+          "description": "Associates this root with detached trigger elements rendered outside of it."
+        },
+        {
+          "name": "modal",
+          "type": "RdxDialogModal",
+          "default": "true",
+          "description": "Determines if the dialog enters a modal state when open.\n- `true`: focus is trapped, page scroll is locked, outside pointer events are disabled.\n- `false`: interaction with the rest of the document is allowed.\n- `'trap-focus'`: focus is trapped, but scroll is not locked and outside pointer events remain enabled."
+        },
+        {
+          "name": "disablePointerDismissal",
+          "type": "boolean",
+          "default": "false",
+          "description": "Determines whether the dialog should close on outside clicks. For a non-modal dialog this also\nprevents the dialog from closing when focus moves outside of it."
         }
       ],
       "outputs": [
@@ -140,10 +207,22 @@
           "name": "onSnapPointChange",
           "type": "RdxDrawerSnapPoint",
           "description": "Emits when the active snap point changes through a gesture."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "RdxDialogOpenChange",
+          "description": "Event handler called when the dialog is opened or closed."
+        },
+        {
+          "name": "onOpenChangeComplete",
+          "type": "boolean",
+          "description": "Event handler called after any animations complete when the dialog is opened or closed."
         }
       ],
       "twoWay": [
-        "snapPoint"
+        "snapPoint",
+        "open",
+        "triggerId"
       ]
     },
     {
@@ -185,7 +264,28 @@
       "hostDirectives": [
         "RdxDialogTrigger"
       ],
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "handle",
+          "type": "RdxDialogHandle<unknown>",
+          "description": "Associates this trigger with a detached dialog root."
+        },
+        {
+          "name": "payload",
+          "type": "unknown",
+          "description": "Data associated with this trigger while it is active."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "description": "ID used to identify this trigger when opening a detached or controlled dialog."
+        },
+        {
+          "name": "disabled",
+          "default": "false",
+          "description": "Whether the trigger should ignore user interaction."
+        }
+      ],
       "outputs": []
     },
     {

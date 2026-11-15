@@ -1,5 +1,6 @@
 import { afterRenderEffect, Signal, untracked, WritableSignal } from '@angular/core';
 import type { RdxCompositeListContext } from '@radix-ng/primitives/composite';
+import { isKeyboardEvent, isMouseEvent } from '@radix-ng/primitives/core';
 import { getFocusableMenuItems } from './menu-focus';
 
 type HighlightInput =
@@ -16,8 +17,8 @@ export type RdxMenuItemHighlightedEvent = HighlightInput & {
 };
 
 function highlightInput(event?: Event): HighlightInput {
-    if (event instanceof KeyboardEvent) return { reason: 'keyboard', event };
-    if (event instanceof MouseEvent) return { reason: 'pointer', event };
+    if (isKeyboardEvent(event)) return { reason: 'keyboard', event };
+    if (isMouseEvent(event)) return { reason: 'pointer', event };
     return { reason: 'none', event: event ?? new Event('menu.item-highlighted') };
 }
 

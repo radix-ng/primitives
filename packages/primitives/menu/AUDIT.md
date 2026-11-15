@@ -37,7 +37,7 @@ All 28 public export symbols are accounted for below (Handle/createHandle share 
 | RadioItemIndicator    | RdxMenuRadioItemIndicator           | Same follow-up as CheckboxItemIndicator, A1.                                                                                                         |
 | Popup                 | RdxMenuPopup                        | Public id/finalFocus and documented popup state attributes mapped. initialFocus is internal in the pin.                                              |
 | Positioner            | RdxMenuPositioner / shared Popper   | Pinned positioning contracts covered; zoom evidence uses Chromium emulation, A2.                                                                     |
-| Portal                | Structural RdxMenuPortal            | keepMounted and custom element containers mapped; unsupported targets, A4.                                                                           |
+| Portal                | Structural RdxMenuPortal            | DOM destinations covered; pending-container policy remains open, A4.                                                                                 |
 | Backdrop              | RdxMenuBackdrop                     | Open/closed/transition attributes mapped; internal modal backdrop remains shared infrastructure.                                                     |
 | Arrow                 | RdxMenuArrow / RdxPopperArrow       | Open/closed, side/align and composed data-uncentered mapped.                                                                                         |
 | Viewport              | RdxMenuViewport / usePopupViewport  | Current/previous snapshots, direction, transition/instant attributes and dimensions mapped.                                                          |
@@ -205,7 +205,33 @@ Next checks: explicit model/default precedence, undefined/null policy and late a
 Root, nested Root and RadioGroup. Define the Angular model contract before changing initialization;
 do not introduce a React controlled/uncontrolled store or a second state owner merely to match names.
 
-### A4 — P2: Portal rejects valid ShadowRoot and cross-realm containers
+### A4 — DOM destinations addressed; pending-container API remains open
+
+Follow-up 2026-11-15: shared Portal now accepts ShadowRoot, foreign/adopted HTML elements and
+ElementRef wrappers through one resolver. Shared core node/event guards fix the iframe keyboard
+and focus chain across Menu, Composite, Focus Scope and floating focus; dismissal reuses the same
+guards. The common node mover retains view identity, edited values and moved focus. SSR keeps
+custom-container views at their declaration location without a global HTMLElement constructor.
+
+Ten pinned scenarios exercise keyboard/pointer input, native/ref targets, retained reopening,
+live retargeting and owner disposal in open shadow trees and same-origin iframe documents.
+Separate Angular checks cover Popover, Dialog and Select in both surfaces, plus ordinary Portal
+transfer between documents. Interactive widgets share one tree/document for native ARIA; mixed
+document overlays and closed-shadow interactions remain unverified. See
+[ADR 0072](../../../docs/adr/0072-portal-dom-destinations.md).
+
+Live target changes preserve Angular's view, current item and completion sequence. The pin remounts
+its Portal, restores its initial item and emits an additional true completion. Twelve exact fields
+in portal-view-relocation record the identical witnesses from all three engines. Initial Angular
+focus loss during relocation was fixed; it is not accepted as a difference.
+
+Source follow-up found a further Portal API policy: Base UI's explicit container=null waits for a
+target, and a React ref can retry while empty. Angular's existing container surface has no explicit
+pending-target state. This remains A4 work; it is not excused by framework differences. Native
+Angular queries/conditional mounting should guide its implementation. The destination-node
+rejection is fixed, while A4 as a whole remains open.
+
+Original audit evidence:
 
 [RdxPortalContainer / resolvePortalContainer](../portal/src/resolve-container.ts) exclude ShadowRoot
 and test native elements against the caller realm's HTMLElement constructor. A ShadowRoot resolves
@@ -216,7 +242,7 @@ cross-document layout correctness.
 The pin's MenuPortalProps accepts ShadowRoot explicitly. Supporting native DOM container identity
 does not require React refs or a React portal wrapper. This is shared Portal infrastructure.
 
-Next checks: actual browser mounting in a shadow root and another document, style/ARIA boundaries,
+Original proposed checks (now covered above): browser mounting in a shadow root and another document, style/ARIA boundaries,
 cleanup, retained reopening and affected Dialog/Popover/Select consumers.
 
 ### A5 — P2: GroupLabel replaces an authored id
@@ -262,8 +288,9 @@ all auto-highlight modes, IME, Escape/reset, clear, empty/refilled results and s
 
 ## Exact exception review
 
-Current expected-differences.json has 143 exact field entries in 10 categories across 29 scenarios.
-No entry was added, removed or loosened by this audit.
+Current expected-differences.json has 155 exact field entries in 11 categories across 31 scenarios.
+The original audit reviewed 143 fields in ten categories across 29 scenarios; none of those entries
+was changed. ADR 0072 subsequently added twelve measured live-retarget fields.
 
 | Category                               | Fields | Disposition / decision                                                                                                          |
 | -------------------------------------- | -----: | ------------------------------------------------------------------------------------------------------------------------------- |
@@ -277,8 +304,9 @@ No entry was added, removed or loosened by this audit.
 | closed-retained-child-tabindex-restore |      1 | Hidden child remains -1 in Angular rather than restoring 0. Actual visible Tab stops match; ADR 0057.                           |
 | controlled-retained-label              |      1 | Closed hidden Popup loses its active association in Angular; pin retains a controlled id. ADR 0061.                             |
 | stale-highlight-text-label             |      1 | Angular reads current label text; pin retains registration text. ADR 0060.                                                      |
+| portal-view-relocation                 |     12 | Angular preserves the existing view/item; the pin remounts and repeats open completion. ADR 0072.                               |
 
-The targeted three-engine run selected all 29 scenarios: 82 passed, four capability skips and one
+The original targeted three-engine run selected its 29 scenarios: 82 passed, four capability skips and one
 failure in the React assertion for hybrid-hover-touch-promote on WebKit. The pin closed on a native
 mousedown where the scenario expected touch promotion. Five isolated repeats then passed with the
 existing exact exceptions. This remains a reproducibility issue; the initial failure is not erased
@@ -287,6 +315,8 @@ Linux-only fields still require Linux CI; this audit ran on macOS.
 
 ## Validation and next increment
 
+Original audit-only validation:
+
 - Existing Menu unit suite: 235 tests passed.
 - Thirteen temporary contract probes reproduced the DOM/model/resolver differences described above.
   They intentionally asserted the missing contracts and failed; no failing test was left in the suite.
@@ -294,7 +324,10 @@ Linux-only fields still require Linux CI; this audit ran on macOS.
 - Public source inventory and the prepared pin were checked; no runtime/public examples were changed.
 - Exception validation is qualified by the WebKit reference assertion and platform scope above.
 
-A1 is addressed. Continue with A2/A4 through shared Popper/Portal consumers,
-A3/A5 initialization/identity, and a separate filtering increment A6. Add focused regressions against
-the missing contracts, not more permutations of already-covered plain Menu commands. Independent
-Context Menu Tab and Popover/Dialog audits remain separate work.
+A1/A2/A3 and A4's destination-node rejection are addressed in the follow-ups above. The latest
+Portal increment passed 772 unit tests, 48 Menu comparisons, 24 new Angular consumer browser
+checks, 45 existing floating-consumer checks and two SSR cases. Two production Storybook API
+checks and 30 documentation-generator tests passed. Library/Storybook builds and consumer generation passed.
+
+Continue A4 with explicit pending/null-container semantics, then A5 label identity and the separate
+filtering increment A6. Independent Context Menu Tab and Popover/Dialog audits remain separate work.

@@ -49,7 +49,20 @@
         "RdxFloatingNodeRegistration",
         "RdxFloatingFocusManager"
       ],
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "initialFocus",
+          "type": "RdxInitialFocus | undefined",
+          "default": "undefined",
+          "description": "Where focus goes when the popup opens (ADR 0017 §2)."
+        },
+        {
+          "name": "finalFocus",
+          "type": "RdxReturnFocus | undefined",
+          "default": "undefined",
+          "description": "Where focus returns when the popup closes (ADR 0017 §2)."
+        }
+      ],
       "outputs": [
         {
           "name": "escapeKeyDown",
@@ -81,7 +94,18 @@
       "hostDirectives": [
         "RdxPortalPresence"
       ],
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "container",
+          "type": "RdxPortalContainer",
+          "description": "Container to portal the content into. Can be a ShadowRoot, an HTML element from any window,\nan ElementRef of either, or a CSS\nselector. Defaults to `document.body` (or when a selector matches nothing)."
+        },
+        {
+          "name": "keepMounted",
+          "default": "false",
+          "description": "Keep the portal mounted (in the container) while the layer is closed. When `true` the content\nstays in the DOM regardless of the {@link RDX_PRESENCE_CONTEXT} `present` flag — the consumer is\nresponsible for hiding it while closed (typically via the `data-closed` / `data-open` state on the\npositioner). Any `*rdxXxxPortal` wrapper opts in by mapping this input in its `hostDirectives`."
+        }
+      ],
       "outputs": []
     },
     {

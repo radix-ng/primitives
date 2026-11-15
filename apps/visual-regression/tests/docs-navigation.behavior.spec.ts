@@ -36,6 +36,24 @@ test('Menu positioning ArgTypes show binding aliases and effective defaults', as
     await expect(args.getByText('positionStrategy', { exact: true })).toHaveCount(0);
 });
 
+test('Menu Portal ArgTypes publish shared destination inputs', async ({ page }) => {
+    await page.goto('/iframe.html?id=primitives-menu--docs&viewMode=docs', { waitUntil: 'domcontentloaded' });
+    const heading = page.getByRole('heading', { name: 'RdxMenuPortal', exact: true });
+    const table = heading.locator('xpath=following::table[1]');
+    for (const name of ['container', 'keepMounted'])
+        await expect(
+            table
+                .getByRole('row')
+                .filter({ has: page.locator('td:first-child').filter({ hasText: new RegExp(`^${name}$`) }) })
+        ).toHaveCount(1);
+    await expect(table).toContainText('ShadowRoot');
+    const popupTable = page
+        .getByRole('heading', { name: 'RdxMenuPopup', exact: true })
+        .locator('xpath=following::table[1]');
+    await expect(popupTable.getByText('finalFocus', { exact: true })).toHaveCount(1);
+    await expect(popupTable.getByText('returnFocus', { exact: true })).toHaveCount(0);
+});
+
 test('desktop TOC preserves anchors and expands only the active section', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await selectDocs(page);

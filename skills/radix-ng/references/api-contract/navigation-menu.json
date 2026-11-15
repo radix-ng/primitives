@@ -137,6 +137,11 @@
           "name": "keepMounted",
           "default": "false",
           "description": "Keep the portal mounted while the menu is closed."
+        },
+        {
+          "name": "container",
+          "type": "RdxPortalContainer",
+          "description": "Container to portal the content into. Can be a ShadowRoot, an HTML element from any window,\nan ElementRef of either, or a CSS\nselector. Defaults to `document.body` (or when a selector matches nothing)."
         }
       ],
       "outputs": []

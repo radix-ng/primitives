@@ -27,6 +27,7 @@ import {
     Direction,
     getActiveElement,
     injectId,
+    isKeyboardEvent,
     provideFloatingRootContext,
     provideFloatingTree,
     RDX_FLOATING_REGISTRATION,
@@ -1081,12 +1082,7 @@ export class RdxMenuRoot<Payload = unknown> implements OnChanges, OnDestroy {
                 // A submenu's portal guard explicitly requests closing after its native Tab
                 // handoff. Like its leading content guard, that request retains the trigger.
                 !(this.parentType() === 'menu' && event?.type === 'focus') &&
-                !(
-                    typeof KeyboardEvent !== 'undefined' &&
-                    event instanceof KeyboardEvent &&
-                    event.key === 'Tab' &&
-                    event.shiftKey
-                ) &&
+                !(isKeyboardEvent(event) && event.key === 'Tab' && event.shiftKey) &&
                 event?.target !== this.beforeContentFocusGuard()
                 ? undefined
                 : trigger

@@ -42,7 +42,7 @@ The badge is declared inside a clipping box, yet `rdxPortal` renders it under `d
 ## Features
 
 - ✅ Teleports the element it is attached to out of the normal document flow.
-- ✅ Appends to `document.body` by default, or to a custom container element.
+- ✅ Appends to `document.body` by default, or to an HTML element or ShadowRoot.
 - ✅ Reactive container — changing the target moves the element to the new container.
 - ✅ Restores the element to its original position when destroyed.
 - ✅ SSR safe — does nothing on the server.
@@ -82,9 +82,21 @@ export class ExampleComponent {}
 ## Custom Container
 
 Use the `container` input to portal into a specific element instead of `document.body`. It accepts an
-`ElementRef`, a native `HTMLElement`, or a CSS selector string (resolved against the document). When a
+`ElementRef` of an HTML element or ShadowRoot, a native `HTMLElement` or `ShadowRoot`, or a CSS selector
+string resolved against the declaring document. Elements from same-origin iframes are accepted. When a
 selector matches nothing, it falls back to `document.body`. The move is reactive: if the bound container
 changes later, the element is relocated to the new one.
+
+The element and its Angular view are moved together. Existing form values and focus within the moved
+view are preserved. Structural portals such as `rdxMenuPortal` use the same target resolver and move
+their existing view rather than recreating it. Moving an open Menu therefore keeps its current item
+and does not emit another opening completion.
+
+Install the required styles in the destination document or shadow tree; Portal does not copy stylesheets.
+CSS selectors do not traverse iframe or shadow boundaries, so pass those DOM targets directly or through
+an `ElementRef`. Cross-document transfer of ordinary content is supported. For interactive overlays,
+keep the Root, trigger and popup in the same document and tree so native labels, ARIA id references and
+keyboard ownership can resolve together; mixed-document overlays need separate verification.
 
 ```html
 <section class="flex w-full max-w-3xl gap-4 font-sans">
@@ -121,22 +133,27 @@ import { RdxPortal } from '@radix-ng/primitives/portal';
     selector: 'app-example',
     imports: [RdxPortal],
     template: `
-        <div #host class="portal-host"></div>
+        <div #portalHost class="portal-host"></div>
 
-        <!-- ElementRef -->
-        <div rdxPortal [container]="host()">Rendered inside .portal-host</div>
+        @if (host(); as target) {
+            <!-- ElementRef -->
+            <div rdxPortal [container]="target">Rendered inside .portal-host</div>
 
-        <!-- Native element -->
-        <div rdxPortal [container]="host().nativeElement">…</div>
+            <!-- Native element -->
+            <div rdxPortal [container]="target.nativeElement">…</div>
+        }
 
         <!-- CSS selector -->
         <div rdxPortal container=".portal-host">…</div>
     `
 })
 export class ExampleComponent {
-    readonly host = viewChild.required('host', { read: ElementRef });
+    readonly host = viewChild<ElementRef<HTMLElement>>('portalHost');
 }
 ```
+
+The query guard defers mounting until the target exists. Use the same approach for a queried
+ShadowRoot host or an iframe that has not finished loading.
 
 You can also change the container imperatively via the exported instance:
 

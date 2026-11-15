@@ -79,7 +79,7 @@
         {
           "name": "container",
           "type": "RdxPortalContainer",
-          "description": "Optional container to portal the content into. Defaults to `document.body`. Declared here (and\nforwarded to the composed {@link RdxPortalPresence}) so that the drawer and alert-dialog portals\ncan re-expose it through their own `hostDirectives`."
+          "description": "Optional HTML element or ShadowRoot target, including same-origin iframe elements or ElementRef\nwrappers. Defaults to `document.body`. Declared here (and\nforwarded to the composed {@link RdxPortalPresence}) so that the drawer and alert-dialog portals\ncan re-expose it through their own `hostDirectives`."
         }
       ],
       "outputs": []

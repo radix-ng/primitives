@@ -28,6 +28,12 @@
           "name": "value",
           "type": "string",
           "description": "A string value for the accordion item. All items within an accordion should use a unique value."
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "default": "false",
+          "description": "The controlled open state of the collapsible.\n`true` - expanded, `false` - collapsed."
         }
       ],
       "outputs": [
