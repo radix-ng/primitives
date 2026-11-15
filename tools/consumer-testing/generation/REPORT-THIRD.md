@@ -7,6 +7,10 @@ separate diagnosis confirms the failure is a keyboard-targeting defect in the ev
 unchanged component passes the corresponding real-navigation check. The failed raw result is
 retained; this report does not relabel the original suite as 4/4.
 
+The later [checks-v2 reevaluation](REPORT-REEVALUATION-V2.md) runs all four corrected scenarios and
+records **4/4 passed** on this unchanged generated source. It is a separate test result, with no new
+live session; the original 3/4 and supplemental 2/2 remain intact.
+
 ## Inputs and toolchain
 
 The prompt, criteria, four browser tests and independent parent have exactly the first attempt's
@@ -89,10 +93,9 @@ criteria, raw failed report and browser result were preserved.
   contracts, nearby examples and installed types. The evaluator's keyboard mistake is not evidence
   of an API or skill defect.
 
-The test follow-up is to exercise real focus navigation around a native disabled control before
-pressing activation keys. Preserve the current result when making that separate test correction;
-do not count it as another generation run. No primitive API or skill change is warranted by this
-failure alone.
+The [test follow-up is completed separately](REPORT-REEVALUATION-V2.md): both disabled cases now use
+real Tab/Shift+Tab navigation with expected enabled focus targets. Historical inputs/results remain
+unchanged. No primitive API or skill change was needed.
 
 ## Evidence and scope
 

@@ -1,11 +1,16 @@
-import { ChangeDetectionStrategy, Component, computed, Directive, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, Directive, ElementRef, input, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import type { Boundary } from '@floating-ui/dom';
 import { autoUpdate, computePosition } from '@floating-ui/dom';
 import { Direction } from '@radix-ng/primitives/core';
 import { vi } from 'vitest';
 import { popperImports } from '../index';
-import { provideRdxPopperContentWrapper, RdxPopperContentWrapper } from '../src/popper-content-wrapper';
+import {
+    provideRdxPopperContentWrapper,
+    RdxPopperContentWrapper,
+    type RdxCollisionBoundary
+} from '../src/popper-content-wrapper';
 import { provideRdxPopperContentConfig } from '../src/popper-content.config';
 import {
     Align,
@@ -240,6 +245,19 @@ class ReactiveArrowPopperHostComponent {
     readonly side = signal<'top' | 'bottom'>('bottom');
 }
 
+@Component({
+    imports: [popperImports],
+    template: `
+        <div rdxPopperRoot>
+            <button rdxPopperAnchor>Anchor</button>
+            <div [collisionBoundary]="boundary()" rdxPopperContentWrapper>Popup</div>
+        </div>
+    `
+})
+class BoundaryPopperHostComponent {
+    readonly boundary = signal<RdxCollisionBoundary | undefined>(undefined);
+}
+
 describe('RdxPopperContentWrapper', () => {
     const autoUpdateMock = vi.mocked(autoUpdate);
     const computePositionMock = vi.mocked(computePosition);
@@ -259,8 +277,93 @@ describe('RdxPopperContentWrapper', () => {
                 GatedPositionerHostComponent,
                 LogicalSidePopperHostComponent,
                 ArrowPopperHostComponent,
-                ReactiveArrowPopperHostComponent
+                ReactiveArrowPopperHostComponent,
+                BoundaryPopperHostComponent
             ]
+        });
+    });
+
+    describe('collision boundaries', () => {
+        const verify = (boundary: Boundary) => {
+            const middleware = computePositionMock.mock.lastCall![2]!.middleware!;
+            for (const name of ['flip', 'shift', 'size']) {
+                const entry = middleware.find((value) => value && value.name === name);
+                expect(entry && entry.options).toEqual(expect.objectContaining({ boundary, altBoundary: false }));
+            }
+        };
+
+        it('defaults to the positioner clipping ancestors and restores them when unset', async () => {
+            const fixture = TestBed.createComponent(BoundaryPopperHostComponent);
+            await fixture.whenStable();
+            verify('clippingAncestors');
+            fixture.componentInstance.boundary.set([]);
+            await fixture.whenStable();
+            verify([]);
+            fixture.componentInstance.boundary.set(undefined);
+            await fixture.whenStable();
+            verify('clippingAncestors');
+        });
+
+        it.each(['native', 'ref', 'mixed', 'rect', 'empty', 'explicit-ancestors'] as const)(
+            'passes the %s boundary to every collision middleware',
+            async (mode) => {
+                const fixture = TestBed.createComponent(BoundaryPopperHostComponent);
+                const first = document.createElement('div');
+                const second = document.createElement('div');
+                const expected =
+                    mode === 'mixed'
+                        ? [first, second]
+                        : mode === 'rect'
+                          ? { x: 20, y: 30, width: 300, height: 200 }
+                          : mode === 'empty'
+                            ? []
+                            : mode === 'explicit-ancestors'
+                              ? 'clippingAncestors'
+                              : first;
+                const input =
+                    mode === 'ref'
+                        ? new ElementRef(first)
+                        : mode === 'mixed'
+                          ? [new ElementRef(first), second]
+                          : mode === 'rect'
+                            ? { x: 20, y: 30, width: 300, height: 200 }
+                            : mode === 'empty'
+                              ? []
+                              : mode === 'explicit-ancestors'
+                                ? ('clipping-ancestors' as const)
+                                : first;
+                fixture.componentInstance.boundary.set(input);
+                await fixture.whenStable();
+                verify(expected);
+            }
+        );
+
+        it('accepts an element from another realm without a global HTMLElement check', async () => {
+            const fixture = TestBed.createComponent(BoundaryPopperHostComponent);
+            const iframe = document.createElement('iframe');
+            document.body.append(iframe);
+            try {
+                const element = iframe.contentDocument!.createElement('div');
+                expect(element instanceof HTMLElement).toBe(false);
+                fixture.componentInstance.boundary.set(element);
+                await fixture.whenStable();
+                verify(element);
+            } finally {
+                iframe.remove();
+            }
+        });
+
+        it('recomputes when a native DOMRect with non-enumerable coordinates is replaced', async () => {
+            const fixture = TestBed.createComponent(BoundaryPopperHostComponent);
+            const first = new DOMRect(20, 30, 300, 200);
+            fixture.componentInstance.boundary.set(first);
+            await fixture.whenStable();
+            verify(first);
+            const next = new DOMRect(20, 30, 300, 400);
+            expect(Object.keys(next)).toEqual([]);
+            fixture.componentInstance.boundary.set(next);
+            await fixture.whenStable();
+            verify(next);
         });
     });
 

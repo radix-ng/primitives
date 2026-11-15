@@ -6,6 +6,7 @@ import '../../../../radix-storybook/.storybook/tailwind.css';
 import { exitClass, heldExitClass } from '../../../shared/lifecycle';
 import { changeCollection, menuEntries, submenuEntries } from '../../../shared/menu-collection';
 import { rootRemovalFinalFocus } from '../../../shared/root-removal';
+import { ReactBoundary } from './boundary.react';
 import { config, installProbe, classes as s, type Layer } from './contract';
 import { ReactDialogMenu } from './dialog.react';
 import { ReactFocusBoundary } from './focus-boundary.react';
@@ -354,7 +355,9 @@ function ReactMenu() {
     );
 }
 createRoot(document.getElementById('root')!).render(
-    settings.placement ? (
+    settings.boundary ? (
+        <ReactBoundary />
+    ) : settings.placement ? (
         <ReactPlacement />
     ) : settings.itemPopover ? (
         <ReactItemPopover />

@@ -2,6 +2,7 @@ import { lifecycleCases, lifecycleConfig } from '../../../shared/lifecycle';
 import { menuCollectionCases } from '../../../shared/menu-collection';
 import { createMenuProbe, type MenuProbe } from '../../../shared/menu-probe';
 import { rootRemovalCases, rootRemovalConfig } from '../../../shared/root-removal';
+import { boundaryCases, boundaryConfig } from './boundary';
 import { dialogMenuCases, dialogMenuConfig, type DialogProbe } from './dialog';
 import { emptyCases, emptyConfig } from './empty';
 import { focusBoundaryCases, focusBoundaryConfig } from './focus-boundary';
@@ -59,6 +60,7 @@ export const basicCases = [
 ] as const;
 export const cases = [
     ...basicCases,
+    ...boundaryCases,
     ...placementCases,
     ...indicatorCases,
     ...highlightCases,
@@ -119,6 +121,7 @@ export function config() {
         dir: name.endsWith('-rtl') ? ('rtl' as const) : ('ltr' as const),
         indicator: indicatorConfig(name),
         placement: placementConfig(name),
+        boundary: boundaryConfig(name),
         removal,
         empty,
         touch,

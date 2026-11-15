@@ -12,6 +12,7 @@ import '../../../../radix-storybook/.storybook/tailwind.css';
 import { exitClass, heldExitClass } from '../../../shared/lifecycle';
 import { changeCollection, menuEntries, submenuEntries } from '../../../shared/menu-collection';
 import { rootRemovalFinalFocus } from '../../../shared/root-removal';
+import { AngularBoundary } from './boundary.angular';
 import { classes, config, installProbe, type Layer } from './contract';
 import { AngularDialogMenu } from './dialog.angular';
 import { AngularFocusBoundary } from './focus-boundary.angular';
@@ -364,27 +365,29 @@ class AngularMenu {
     }
 }
 void bootstrapApplication(
-    settings.placement
-        ? AngularPlacement
-        : settings.itemPopover
-          ? AngularItemPopover
-          : settings.popover
-            ? AngularPopoverMenu
-            : settings.itemDialog
-              ? AngularItemDialog
-              : settings.dialog
-                ? AngularDialogMenu
-                : settings.name.startsWith('handle-overlap-')
-                  ? AngularHandleOverlap
-                  : settings.multiTrigger
-                    ? AngularMultiTriggers
-                    : settings.projection
-                      ? AngularProjection
-                      : settings.focusBoundary
-                        ? AngularFocusBoundary
-                        : settings.host
-                          ? AngularHosts
-                          : AngularMenu,
+    settings.boundary
+        ? AngularBoundary
+        : settings.placement
+          ? AngularPlacement
+          : settings.itemPopover
+            ? AngularItemPopover
+            : settings.popover
+              ? AngularPopoverMenu
+              : settings.itemDialog
+                ? AngularItemDialog
+                : settings.dialog
+                  ? AngularDialogMenu
+                  : settings.name.startsWith('handle-overlap-')
+                    ? AngularHandleOverlap
+                    : settings.multiTrigger
+                      ? AngularMultiTriggers
+                      : settings.projection
+                        ? AngularProjection
+                        : settings.focusBoundary
+                          ? AngularFocusBoundary
+                          : settings.host
+                            ? AngularHosts
+                            : AngularMenu,
     {
         providers: [provideZonelessChangeDetection()]
     }

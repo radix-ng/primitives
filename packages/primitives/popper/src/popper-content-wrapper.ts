@@ -21,7 +21,7 @@ import {
     signal,
     Type
 } from '@angular/core';
-import type { ComputePositionReturn, ReferenceElement, VirtualElement } from '@floating-ui/dom';
+import type { Boundary, ComputePositionReturn, Rect, ReferenceElement, VirtualElement } from '@floating-ui/dom';
 import {
     autoUpdate,
     computePosition,
@@ -78,6 +78,14 @@ export type RdxPopperAnchorElement =
     | null
     | undefined;
 
+/** Base UI collision boundaries, also accepting Angular ElementRef wrappers. Rect coordinates are viewport-relative. */
+export type RdxCollisionBoundary =
+    | 'clipping-ancestors'
+    | Element
+    | ElementRef<Element>
+    | (Element | ElementRef<Element>)[]
+    | Rect;
+
 type PopperPositionParams = {
     positioningActive: boolean;
     anchor: ReferenceElement | null;
@@ -96,7 +104,7 @@ type PopperPositionParams = {
     shiftCrossAxis: boolean;
     detectOverflowOptions: {
         padding: number | Partial<Record<Side, number>>;
-        boundary: Element[];
+        boundary: Boundary;
         altBoundary: boolean;
     };
     arrow: RdxPopperArrow | undefined;
@@ -279,10 +287,11 @@ export class RdxPopperContentWrapper {
     });
 
     /**
-     * The element used as the collision boundary.
-     * By default this is the viewport, though you can provide additional element(s) to be included in this check.
+     * Limits flip, shift and available-space calculations. Defaults to the positioner's clipping ancestors.
+     * Accepts a native element, ElementRef, an array of either, or a viewport-coordinate rectangle.
+     * An empty array checks only the viewport; it does not disable the browser's native overflow clipping.
      */
-    readonly collisionBoundary = input<ElementRef<HTMLElement> | ElementRef<HTMLElement>[]>();
+    readonly collisionBoundary = input<RdxCollisionBoundary | undefined>('clipping-ancestors');
     /**
      * The distance in pixels from the boundary edges where collision detection should occur.
      * Accepts a number (same for all sides), or a partial padding object, for example: `{ top: 20, left: 20 }`.
@@ -381,27 +390,26 @@ export class RdxPopperContentWrapper {
         });
     });
 
-    private readonly boundary = computed(() => {
-        const boundary = this.collisionBoundary();
+    private readonly boundary = computed<Boundary>(() => {
+        const boundary = this.collisionBoundary() ?? 'clipping-ancestors';
+
+        if (boundary === 'clipping-ancestors') return 'clippingAncestors';
 
         if (Array.isArray(boundary)) {
-            return boundary.map((e) => e.nativeElement);
+            return boundary
+                .map((element) => (element instanceof ElementRef ? element.nativeElement : element))
+                .filter(isNotNull);
         }
 
-        if (!boundary) {
-            return [];
-        }
-
-        return [boundary.nativeElement];
+        return boundary instanceof ElementRef ? (boundary.nativeElement ?? []) : boundary;
     });
-
-    private readonly hasExplicitBoundaries = computed(() => this.boundary().length > 0);
 
     private readonly detectOverflowOptions = computed(() => ({
         padding: this.collisionPadding(),
-        boundary: this.boundary().filter(isNotNull),
-        // with `strategy: 'fixed'`, this is the only way to get it to respect boundaries
-        altBoundary: this.hasExplicitBoundaries()
+        boundary: this.boundary(),
+        // Match the pin: implicit clipping belongs to the floating element, including its actual
+        // portal container. Explicit boundaries are supplied directly, independent of reference ancestry.
+        altBoundary: false
     }));
 
     private readonly resolvedAnchor = computed<ReferenceElement | null>(() => {

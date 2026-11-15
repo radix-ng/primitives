@@ -538,8 +538,9 @@
             },
             {
               "name": "collisionBoundary",
-              "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
-              "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
+              "type": "RdxCollisionBoundary | undefined",
+              "default": "'clipping-ancestors'",
+              "description": "Limits flip, shift and available-space calculations. Defaults to the positioner's clipping ancestors.\nAccepts a native element, ElementRef, an array of either, or a viewport-coordinate rectangle.\nAn empty array checks only the viewport; it does not disable the browser's native overflow clipping."
             },
             {
               "name": "collisionPadding",
@@ -1824,8 +1825,9 @@
             },
             {
               "name": "collisionBoundary",
-              "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
-              "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
+              "type": "RdxCollisionBoundary | undefined",
+              "default": "'clipping-ancestors'",
+              "description": "Limits flip, shift and available-space calculations. Defaults to the positioner's clipping ancestors.\nAccepts a native element, ElementRef, an array of either, or a viewport-coordinate rectangle.\nAn empty array checks only the viewport; it does not disable the browser's native overflow clipping."
             },
             {
               "name": "collisionPadding",
@@ -4054,8 +4056,9 @@
             },
             {
               "name": "collisionBoundary",
-              "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
-              "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
+              "type": "RdxCollisionBoundary | undefined",
+              "default": "'clipping-ancestors'",
+              "description": "Limits flip, shift and available-space calculations. Defaults to the positioner's clipping ancestors.\nAccepts a native element, ElementRef, an array of either, or a viewport-coordinate rectangle.\nAn empty array checks only the viewport; it does not disable the browser's native overflow clipping."
             },
             {
               "name": "collisionPadding",
@@ -4779,8 +4782,9 @@
             },
             {
               "name": "collisionBoundary",
-              "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
-              "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
+              "type": "RdxCollisionBoundary | undefined",
+              "default": "'clipping-ancestors'",
+              "description": "Limits flip, shift and available-space calculations. Defaults to the positioner's clipping ancestors.\nAccepts a native element, ElementRef, an array of either, or a viewport-coordinate rectangle.\nAn empty array checks only the viewport; it does not disable the browser's native overflow clipping."
             },
             {
               "name": "collisionPadding",
@@ -5646,8 +5650,9 @@
             },
             {
               "name": "collisionBoundary",
-              "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
-              "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
+              "type": "RdxCollisionBoundary | undefined",
+              "default": "'clipping-ancestors'",
+              "description": "Limits flip, shift and available-space calculations. Defaults to the positioner's clipping ancestors.\nAccepts a native element, ElementRef, an array of either, or a viewport-coordinate rectangle.\nAn empty array checks only the viewport; it does not disable the browser's native overflow clipping."
             },
             {
               "name": "collisionPadding",
@@ -5908,8 +5913,9 @@
             },
             {
               "name": "collisionBoundary",
-              "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
-              "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
+              "type": "RdxCollisionBoundary | undefined",
+              "default": "'clipping-ancestors'",
+              "description": "Limits flip, shift and available-space calculations. Defaults to the positioner's clipping ancestors.\nAccepts a native element, ElementRef, an array of either, or a viewport-coordinate rectangle.\nAn empty array checks only the viewport; it does not disable the browser's native overflow clipping."
             },
             {
               "name": "collisionPadding",
@@ -6121,8 +6127,9 @@
             },
             {
               "name": "collisionBoundary",
-              "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
-              "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
+              "type": "RdxCollisionBoundary | undefined",
+              "default": "'clipping-ancestors'",
+              "description": "Limits flip, shift and available-space calculations. Defaults to the positioner's clipping ancestors.\nAccepts a native element, ElementRef, an array of either, or a viewport-coordinate rectangle.\nAn empty array checks only the viewport; it does not disable the browser's native overflow clipping."
             },
             {
               "name": "collisionPadding",
@@ -6700,8 +6707,9 @@
             },
             {
               "name": "collisionBoundary",
-              "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
-              "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
+              "type": "RdxCollisionBoundary | undefined",
+              "default": "'clipping-ancestors'",
+              "description": "Limits flip, shift and available-space calculations. Defaults to the positioner's clipping ancestors.\nAccepts a native element, ElementRef, an array of either, or a viewport-coordinate rectangle.\nAn empty array checks only the viewport; it does not disable the browser's native overflow clipping."
             },
             {
               "name": "collisionPadding",
@@ -6901,8 +6909,9 @@
             },
             {
               "name": "collisionBoundary",
-              "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
-              "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
+              "type": "RdxCollisionBoundary | undefined",
+              "default": "'clipping-ancestors'",
+              "description": "Limits flip, shift and available-space calculations. Defaults to the positioner's clipping ancestors.\nAccepts a native element, ElementRef, an array of either, or a viewport-coordinate rectangle.\nAn empty array checks only the viewport; it does not disable the browser's native overflow clipping."
             },
             {
               "name": "collisionPadding",
@@ -8133,8 +8142,9 @@
             },
             {
               "name": "collisionBoundary",
-              "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
-              "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
+              "type": "RdxCollisionBoundary | undefined",
+              "default": "'clipping-ancestors'",
+              "description": "Limits flip, shift and available-space calculations. Defaults to the positioner's clipping ancestors.\nAccepts a native element, ElementRef, an array of either, or a viewport-coordinate rectangle.\nAn empty array checks only the viewport; it does not disable the browser's native overflow clipping."
             },
             {
               "name": "collisionPadding",
@@ -8756,8 +8766,9 @@
             },
             {
               "name": "collisionBoundary",
-              "type": "ElementRef<HTMLElement> | ElementRef<HTMLElement>[]",
-              "description": "The element used as the collision boundary.\nBy default this is the viewport, though you can provide additional element(s) to be included in this check."
+              "type": "RdxCollisionBoundary | undefined",
+              "default": "'clipping-ancestors'",
+              "description": "Limits flip, shift and available-space calculations. Defaults to the positioner's clipping ancestors.\nAccepts a native element, ElementRef, an array of either, or a viewport-coordinate rectangle.\nAn empty array checks only the viewport; it does not disable the browser's native overflow clipping."
             },
             {
               "name": "collisionPadding",

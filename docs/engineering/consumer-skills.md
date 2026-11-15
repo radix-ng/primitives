@@ -75,6 +75,9 @@ a blank scaffold, product prompt and independent checks before a Codex coding se
 attempt is recorded as an infrastructure failure, with no generated component or skill-quality claim.
 The [third attempt](../../tools/consumer-testing/generation/REPORT-THIRD.md) retains an actual generated
 AppSelect, independent builds and browser evidence, including a separately reviewed test false negative.
+Its [checks-v2 reevaluation](../../tools/consumer-testing/generation/REPORT-REEVALUATION-V2.md) passes
+all four corrected Chromium scenarios on the unchanged output, with no new live session. Historical
+3/4 and supplemental 2/2 results remain unchanged.
 
 ## Next experiments
 

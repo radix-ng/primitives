@@ -14,7 +14,7 @@ port is 4505. Angular fixtures are AOT compiled and React imports the unmodified
 Base UI 1.9.0 pin: `cf696d6f6e08c699c5bda24d5a033430909f2285`, archive SHA-256
 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 
-394 scenarios define 1182 planned comparisons: 1134 execute, with 48 touch capability skips. They cover native keyboard and
+408 scenarios define 1224 planned comparisons: 1176 execute, with 48 touch capability skips. They cover native keyboard and
 pointer opening, disabled/focusable items, roving focus, edges and looping, repeated and explicit-label
 typeahead, selection and stay-open items, cancelable transactions, modal/background activation,
 forward/backward Tab, checkbox/radio values, LTR/RTL submenu ownership and custom identity links.
@@ -49,6 +49,19 @@ or framework state mirror is introduced.
 Raw records include source commit/digest, browser versions, open/change completions, native change
 event types, trusted pointer coordinates/deltas and native press/release timestamps. CSS layout and default focus are observed;
 the adapters do not synthesize state, focus, pointer deltas or lifecycle completion.
+
+## Collision boundaries
+
+Fourteen `boundary-` scenarios compare default clipping ancestry in body/local portals, native
+element and Angular ElementRef inputs, element/mixed arrays, viewport-only checks, Rect records and
+a scaled local container. Element/array/rectangle replacement uses a native F3 application command
+while the menu stays open. Observations retain relative geometry and available height, followed by
+native item selection. The explicit absolute-positioning case isolates a non-transformed container
+from the pending strategy-default difference; other local containers provide a containing block.
+
+Measured rectangles are ordinary x/y/width/height records in both apps. The pin's non-enumerable
+DOMRect replacement issue and Angular's additional unit coverage are recorded in
+[ADR 0068](../../../../docs/adr/0068-popper-collision-boundaries.md); no exception is added.
 
 ## Contextual placement
 

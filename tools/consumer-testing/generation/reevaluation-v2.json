@@ -1,0 +1,134 @@
+{
+    "reevaluationId": "2026-11-15-third-reevaluation-v2",
+    "originalAttemptId": "2026-11-15-third",
+    "status": "passed",
+    "checksVersion": "appselect-consumer/2",
+    "revision": "e4b31f7c02b4c84343585aa25f94949380010f1a",
+    "startedAt": "2026-11-15T10:07:49.754Z",
+    "finishedAt": "2026-11-15T10:08:00.777Z",
+    "durationMs": 11023,
+    "additionalLiveSessions": 0,
+    "originalGeneration": {
+        "model": "gpt-6.1-sol",
+        "reasoningEffort": "low",
+        "liveSessions": 1
+    },
+    "versions": {
+        "node": "v24.22.2",
+        "pnpm": "11.5.1",
+        "playwright": "1.60.0",
+        "chromium": "148.0.7778.96",
+        "angular": "22.0.2",
+        "typescript": "6.0.3",
+        "library": "1.3.0",
+        "bundleRevision": "d000174e3fb69ef5424b73492d73f34b84e3c80f"
+    },
+    "correctedBrowserSuite": {
+        "passed": 4,
+        "failed": 0,
+        "skipped": 0,
+        "flaky": 0,
+        "durationMs": 3955.4069999999997,
+        "scenarios": [
+            {
+                "title": "generated Dialog composition preserves selection, nested Escape and focus ownership",
+                "status": "passed",
+                "durationMs": 530,
+                "trace": "browser-results/generation-v2-generated-Di-1e025--Escape-and-focus-ownership-chromium/trace.zip"
+            },
+            {
+                "title": "generated application respects externally bound disabled and resumes selection",
+                "status": "passed",
+                "durationMs": 386,
+                "trace": "browser-results/generation-v2-generated-ap-9b9d8-abled-and-resumes-selection-chromium/trace.zip"
+            },
+            {
+                "title": "independent parent verifies AppSelect public bindings, callback payload/count and accessible name",
+                "status": "passed",
+                "durationMs": 280,
+                "trace": "browser-results/generation-v2-independent--c31c8-d-count-and-accessible-name-chromium/trace.zip"
+            },
+            {
+                "title": "independent parent verifies disabled blocks keyboard/pointer and accepts external values",
+                "status": "passed",
+                "durationMs": 308,
+                "trace": "browser-results/generation-v2-independent--184c0-and-accepts-external-values-chromium/trace.zip"
+            }
+        ]
+    },
+    "productionBuild": "passed",
+    "independentParentBuild": "passed",
+    "sourceCorrections": [],
+    "generatedSource": {
+        "files": 5,
+        "sha256": "a93040edc1d292a8a9fba75a6eade3b24835344fb4c368f7a244ceededaa5ffe"
+    },
+    "sourceFiles": {
+        "src/app/app-select.ts": "86de211b2f4b4b0d995b086c4f0339d11fb10061a7d8f35b12a0bd87ceb736bd",
+        "src/app/app.ts": "101e6e10dddac8a1a9cc442807eeb137d2f9a19e1f4983c19ab9c11988bd21a4",
+        "src/index.html": "ffb5a776db3eb0acaecb7ea55e7f2ed806e0ac629754310413e25c003d0a2cac",
+        "src/main.ts": "0a9d22dcff54fd8c11effc8e871f02f6720ef47ff47c5ca74eac0d918a064538",
+        "src/styles.css": "677d56a8f754453149ed5698fe9906e84e1cc6b9dafcf887558364455b5c9f66"
+    },
+    "checkHashes": {
+        "generation-v2.spec.ts": "db82038c2ba9ae8a08e5764e10e2836187379f25f6b4e9aaf921b4a4aba2fcf7",
+        "playwright.reevaluation.config.ts": "b17ac82a39c6475c65f8e59fd1fb1adcfde8a977b6413179fbaef7a90f927214",
+        "probe-app-v2.txt": "740087c84f7fe3ab219a7bf32a85ea887c88753885fa73aff215a9951c9913b9",
+        "reevaluate-browser.mjs": "00c6bde2a3b846ee5d04451a68e6680dd7a6747e73470be42d281a8a87f5f56c"
+    },
+    "library": {
+        "files": 219,
+        "sha256": "714d5d1a1898a4e80a2ddcc6adc99444330e424869b82211f4d4adb7e49d63a0"
+    },
+    "skills": {
+        "radix-ng": {
+            "files": 119,
+            "sha256": "2ffe4674e069a598c3f0c25e60c372156964115df1ccfbb0ca47487a58ac3075"
+        },
+        "radix-ng-examples": {
+            "files": 393,
+            "sha256": "f3407a6c55219ba80f889fd5923b0a986897c7c83bd32ddbb9229b8a99a6a0ee"
+        }
+    },
+    "unchangedInputs": true,
+    "historicalResults": {
+        "frozenSuite": {
+            "passed": 3,
+            "failed": 1
+        },
+        "supplementalDiagnosis": {
+            "passed": 2,
+            "failed": 0
+        },
+        "reportSha256": "187d4a3a1a6521d94d748d50ef23ed4ede538de20cf2168a552da9d9f04124ed",
+        "browserResultsSha256": "f67baf25c09ee8b455b30da0068be48cc320ea11091c73238a6c1aac132a5ed9",
+        "diagnosisSha256": "e6b7379461ef0d320d47c5df84965e3c1e10c9cae33ae95a4c5cae8b22e05315",
+        "frozenCheckHashes": {
+            "prompt.md": "2fc226a0ef420262e7c801ecedb2ff419e15a3d9445672bfc2d7ba4f8a34afb6",
+            "criteria.json": "29ef03ab93459ba37e0aa91e8aca73aeac53af821b8a7e7da03243fc0325bf77",
+            "generation.spec.ts": "3973f9c44172d2c5886d44281afef576f2548660f41c84fe2e987ecbded1f7af",
+            "playwright.config.ts": "6ef0dc7a87a57387f31e8153ca7328b0bd562d083a72334d3d520c969202bbbd",
+            "probe-app.txt": "84e188a90bbc291a804c1ef58fc8806c8ef207463f37121978c0b4e1f693c464"
+        },
+        "archiveDigestsBeforeAndAfter": {
+            "2026-11-15-first": {
+                "files": 1104,
+                "sha256": "f6491a5357f7af9614966d4f3fc455c0554c98b808856935801f18b19841a583"
+            },
+            "2026-11-15-second": {
+                "files": 544,
+                "sha256": "0a9b404ae7a0a61f238693dfa4c832c650e3e1b64c0c0a5052868f7174706d21"
+            },
+            "2026-11-15-third": {
+                "files": 1120,
+                "sha256": "7ec882fef8b4b488eeef27e0e9ec82d2069d9c64204a4f8b53ad3b150299260a"
+            }
+        }
+    },
+    "artifacts": "dist/consumer-generation/2026-11-15-third-reevaluation-v2",
+    "reportSha256": "ae191ea888e8ae5bb839e9844843279b64bfb1d008e5b271a6c5e696317aa1e5",
+    "limitations": [
+        "Checks corrected after generation; separate reevaluation, not a new live attempt.",
+        "Chromium only; no visual score or general reliability estimate."
+    ]
+}

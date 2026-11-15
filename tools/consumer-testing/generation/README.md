@@ -18,6 +18,10 @@ and independent-parent builds. Its unchanged frozen browser suite records 3/4; s
 focus/event evidence identifies an evaluator false negative in the fourth result. Raw and reviewed
 outcomes are retained separately, without edits to generated source or another live session.
 
+The separate [checks-v2 reevaluation](REPORT-REEVALUATION-V2.md) passes **4/4** on that same third
+generation. It corrects disabled keyboard targeting in both cases and retains the original 3/4,
+supplemental 2/2 and frozen inputs. No additional coding session was started.
+
 ## Inputs and isolation
 
 - [prompt.md](prompt.md) defines the product task and observable public wrapper API without supplying
@@ -112,6 +116,21 @@ writes a new report. It refuses to overwrite an existing result. Nonzero test re
 in the raw report and need review; do not infer an implementation defect from a test exit code alone.
 The separate `diagnose-disabled.mjs OUTPUT_DIRECTORY STATIC_BASE_URL` diagnoses the third attempt's
 known keyboard-targeting issue without editing the frozen tests or the generated application.
+
+For corrected checks against the retained third output, run the offline reevaluator with a fresh ID:
+
+```bash
+RADIX_GENERATION_PORT=4511 node tools/consumer-testing/generation/reevaluate-browser.mjs \
+  dist/consumer-generation/2026-11-15-third.json NEW_REEVALUATION_ID
+```
+
+This command never invokes Codex or a provider. It checks the retained source/package/skill hashes,
+builds two new external copies with the installed Angular CLI, runs `generation-v2.spec.ts`, and saves
+logs, test sources/hashes, results and traces in a separate directory. It refuses an existing ID and
+compares all three historical archives before/after. The corrected independent parent adds only an
+enabled button after AppSelect so Tab/Shift+Tab have explicit focus targets. AppSelect itself remains
+byte-identical. The original `generation.spec.ts`, config and parent remain frozen for historical runs;
+do not use their known disabled `press` mistake to evaluate new results.
 
 The two static servers serve external production builds, with no dev fallback. Chromium checks names,
 parent value, callback payload/count, disabled keyboard/pointer behavior, nested Escape, modal focus

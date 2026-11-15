@@ -69,6 +69,32 @@ The Default story exposes these values as controls.
 </div>
 ```
 
+## Collision boundaries
+
+`collisionBoundary` defaults to `'clipping-ancestors'`: collision checks follow the wrapper's actual
+DOM ancestry, including its portal container. A popup portaled to `document.body` uses that ancestry,
+even when its trigger is inside an overflow container. Pass an explicit boundary to constrain it to
+the trigger's container instead.
+
+The input accepts a native `Element`, an `ElementRef<Element>`, an array containing either, or a
+`{ x, y, width, height }` rectangle in viewport-relative CSS pixels. Multiple elements contribute their
+intersection. Set `[]` for viewport-only checks; native CSS overflow clipping still applies.
+Setting `undefined` restores the default. Flip, shift and available-space variables share this boundary.
+
+```html
+<div #boundary class="relative h-64 overflow-hidden">
+    <div rdxPopperRoot>
+        <button rdxPopperAnchor>Anchor</button>
+        <div [collisionBoundary]="boundary" rdxPopperContentWrapper>
+            <div rdxPopperContent>Floating content</div>
+        </div>
+    </div>
+</div>
+```
+
+**Migration:** earlier releases used viewport-only collision checks when this input was unset.
+An explicit `[collisionBoundary]="[]"` preserves that policy. Existing ElementRef bindings continue to work.
+
 ## Arrow
 
 Add `rdxPopperArrow` inside the wrapper to render an arrow. The default arrow is an SVG, but projected content can

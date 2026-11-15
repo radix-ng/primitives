@@ -47,8 +47,9 @@ authoritative. Consumers styling physical right/left sides can use logical inlin
 for the new defaults. Compodoc/consumer metadata publishes binding aliases and effective defaults;
 public Menu prose supplies the conditional table that a single default cell cannot express.
 
-This increment addresses contextual defaults only. A2's shared positionMethod/strategy, sticky and
-collisionBoundary contracts remain open, as do Context Menu's forced arrow-padding and layout-viewport
+This increment addresses contextual defaults only. Collision boundaries were addressed subsequently
+in [ADR 0068](0068-popper-collision-boundaries.md). A2's shared positionMethod/strategy and sticky
+contracts remain open, as do Context Menu's forced arrow-padding and layout-viewport
 policies for authored overrides/pinch zoom. They require separate consumer coverage and migration decisions.
 
 ## Validation

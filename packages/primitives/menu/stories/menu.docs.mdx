@@ -662,6 +662,15 @@ Context Menu and five pixels for other Menu owners.
 **Migration:** unconfigured submenus and coordinated menus now use these contextual defaults.
 For settled side-based styling, account for `data-side="inline-end"` / `"inline-start"` in addition to physical sides.
 
+`collisionBoundary` accepts `'clipping-ancestors'` (the default), a native element, an Angular ElementRef,
+mixed arrays of these elements/references, or a viewport-coordinate `{ x, y, width, height }` rectangle.
+Default clipping follows the Positioner's actual portal container. Set `[]` for viewport-only collision
+checks or `undefined` to restore the default. Boundary replacement is reactive; update the input value
+rather than mutating an existing rectangle or array. Available-space CSS variables use the same bounds.
+
+**Boundary migration:** earlier unset boundaries checked only the viewport; use `[collisionBoundary]="[]"`
+when that policy is required. Existing ElementRef inputs remain supported.
+
 <ArgTypes of={RdxMenuPositioner} />
 
 ### RdxMenuPopup

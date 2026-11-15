@@ -21,7 +21,8 @@ test('Menu positioning ArgTypes show binding aliases and effective defaults', as
     for (const [name, value] of [
         ['side', 'bottom'],
         ['align', 'center'],
-        ['arrowPadding', '5']
+        ['arrowPadding', '5'],
+        ['collisionBoundary', 'clipping-ancestors']
     ]) {
         const row = args
             .getByRole('row')

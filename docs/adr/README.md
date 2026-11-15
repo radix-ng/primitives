@@ -99,3 +99,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0065](0065-menu-popover-composition.md)                                     | Accepted               | Compose Menu/Popover through each layer's native outside-press policy                |
 | [0066](0066-menu-item-popover-focus-boundaries.md)                           | Accepted               | Open Popover from Menu through live anchors and native focus ownership               |
 | [0067](0067-menu-contextual-positioning.md)                                  | Accepted               | Resolve Menu placement defaults from its Angular owner                               |
+| [0068](0068-popper-collision-boundaries.md)                                  | Accepted               | Share Base UI collision boundaries through Popper                                    |
