@@ -4,11 +4,51 @@ import { heldExitClass } from '../../../shared/lifecycle';
 import { classes, config, installProbe } from './contract';
 import { multiTriggerContent } from './triggers';
 
-@Component({
-    selector: 'parity-menu',
-    imports: [RdxMenuModule],
-    host: { '(document:keydown)': 'command($event)' },
-    template: `
+// Inline both branches into the owning Root view so projected parts retain their DI context.
+const multiTriggerParts = `
+    @if (!p.detached) {
+        <div class="flex gap-2">
+            @for (id of ids; track id) {
+                <button
+                    [class]="s.trigger"
+                    [id]="id"
+                    [attr.data-testid]="id"
+                    [payload]="content()[id]"
+                    rdxMenuTrigger
+                >
+                    {{ content()[id].label }}
+                </button>
+            }
+        </div>
+    }
+    <output data-testid="active-payload">{{ root.payload()?.label ?? '' }}</output>
+    <ng-template [keepMounted]="p.retained" rdxMenuPortal>
+        <div class="z-50" data-testid="positioner" sideOffset="4" align="start" rdxMenuPositioner>
+            <div
+                [class]="s.popup + (p.lifecycle && !p.lifecycle.deferred ? exitClass : '')"
+                data-testid="popup"
+                rdxMenuPopup
+            >
+                <div [class]="p.animated ? viewportClass : ''" data-testid="viewport" rdxMenuViewport>
+                    <div [class]="p.animated ? contentClass : ''">
+                        @for (item of root.payload()?.items; track item) {
+                            <button
+                                [class]="s.item"
+                                [attr.data-testid]="'action-' + $index"
+                                (onSelect)="trace.select(item)"
+                                rdxMenuItem
+                            >
+                                {{ item }}
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+`;
+
+const template = `
         <div [class]="s.layout">
             <input data-testid="before" aria-label="Before" />
             <input data-testid="outside" aria-label="Outside" />
@@ -32,63 +72,47 @@ import { multiTriggerContent } from './triggers';
                 </div>
             }
             @if (mounted()) {
-                <ng-container
-                    #root="rdxMenuRoot"
-                    [(open)]="open"
-                    [(triggerId)]="triggerId"
-                    [handle]="handle"
-                    [defaultOpen]="p.defaultOpen"
-                    [defaultTriggerId]="p.defaultOpen ? 'secondary' : null"
-                    [modal]="false"
-                    (onOpenChange)="change($event)"
-                    (onOpenChangeComplete)="trace.complete('main', $event)"
-                    rdxMenuRoot
-                >
-                    @if (!p.detached) {
-                        <div class="flex gap-2">
-                            @for (id of ids; track id) {
-                                <button
-                                    [class]="s.trigger"
-                                    [id]="id"
-                                    [attr.data-testid]="id"
-                                    [payload]="content()[id]"
-                                    rdxMenuTrigger
-                                >
-                                    {{ content()[id].label }}
-                                </button>
-                            }
-                        </div>
-                    }
-                    <output data-testid="active-payload">{{ root.payload()?.label ?? '' }}</output>
-                    <ng-template [keepMounted]="p.retained" rdxMenuPortal>
-                        <div class="z-50" data-testid="positioner" sideOffset="4" align="start" rdxMenuPositioner>
-                            <div
-                                [class]="s.popup + (p.lifecycle && !p.lifecycle.deferred ? exitClass : '')"
-                                data-testid="popup"
-                                rdxMenuPopup
-                            >
-                                <div [class]="p.animated ? viewportClass : ''" data-testid="viewport" rdxMenuViewport>
-                                    <div [class]="p.animated ? contentClass : ''">
-                                        @for (item of root.payload()?.items; track item) {
-                                            <button
-                                                [class]="s.item"
-                                                [attr.data-testid]="'action-' + $index"
-                                                (onSelect)="trace.select(item)"
-                                                rdxMenuItem
-                                            >
-                                                {{ item }}
-                                            </button>
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </ng-template>
-                </ng-container>
+                @if (p.defaultOpen) {
+                    <ng-container
+                        #root="rdxMenuRoot"
+                        [(triggerId)]="triggerId"
+                        [handle]="handle"
+                        [defaultOpen]="p.defaultOpen"
+                        [defaultTriggerId]="p.defaultOpen ? 'secondary' : null"
+                        [modal]="false"
+                        (openChange)="open.set($event)"
+                        (onOpenChange)="change($event)"
+                        (onOpenChangeComplete)="trace.complete('main', $event)"
+                        rdxMenuRoot
+                    >
+                        ${multiTriggerParts}
+                    </ng-container>
+                } @else {
+                    <ng-container
+                        #root="rdxMenuRoot"
+                        [(open)]="open"
+                        [(triggerId)]="triggerId"
+                        [handle]="handle"
+                        [defaultOpen]="p.defaultOpen"
+                        [defaultTriggerId]="p.defaultOpen ? 'secondary' : null"
+                        [modal]="false"
+                        (onOpenChange)="change($event)"
+                        (onOpenChangeComplete)="trace.complete('main', $event)"
+                        rdxMenuRoot
+                    >
+                        ${multiTriggerParts}
+                    </ng-container>
+                }
             }
             <input data-testid="after" aria-label="After" />
         </div>
-    `
+    `;
+
+@Component({
+    selector: 'parity-menu',
+    imports: [RdxMenuModule],
+    host: { '(document:keydown)': 'command($event)' },
+    template
 })
 export class AngularMultiTriggers {
     readonly s = classes;

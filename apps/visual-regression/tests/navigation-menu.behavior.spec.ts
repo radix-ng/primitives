@@ -20,9 +20,12 @@ test('pinch zoom preserves Navigation Menu layout-viewport alignment', async ({ 
         node.style.left = '270px';
         node.style.top = '80px';
     });
-    await page.locator('[rdxNavigationMenuTrigger]').first().click();
+    // Keyboard entry keeps an incidental hover from reopening the menu after Escape/zoom reset.
+    await page.locator('[rdxNavigationMenuTrigger]').first().press('Enter');
     const popup = page.locator('[rdxNavigationMenuPopup]');
     await expect(popup).toBeVisible();
+    // Starting-style removal can begin the animation after the first visible frame.
+    await expect(popup).not.toHaveAttribute('data-starting-style', '');
     await popup.evaluate(async (node) => {
         await Promise.all(node.getAnimations({ subtree: true }).map((animation) => animation.finished.catch(() => {})));
     });

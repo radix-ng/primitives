@@ -81,7 +81,9 @@ export const viewportScenarios = viewportCases.map((name) => ({
                     y: zoomed.y + 20 - viewport.y,
                     xDistance: -60,
                     yDistance: -40,
-                    gestureSourceType: 'touch',
+                    // A native wheel gesture pans the desktop visual viewport on Linux and macOS.
+                    // Chromium's synthesized touch scroll can complete without moving it on Linux.
+                    gestureSourceType: 'mouse',
                     speed: 400
                 });
                 await expect.poll(async () => (await readViewport()).x).toBeGreaterThan(0);

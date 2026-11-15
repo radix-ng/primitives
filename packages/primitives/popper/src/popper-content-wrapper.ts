@@ -677,8 +677,10 @@ export class RdxPopperContentWrapper {
     /** Geometry modes can compose the common positioning styles without copying the engine. */
     protected getPositionerStyles(): Record<string, string | number | undefined> {
         const pos = this.resolvedPosition();
-        const x = pos?.x;
-        const y = pos?.y;
+        // Match Floating UI's rendered pixel grid, including fractional coordinates and other realms.
+        const dpr = this.elementRef.nativeElement.ownerDocument.defaultView?.devicePixelRatio || 1;
+        const x = pos && Math.round(pos.x * dpr) / dpr;
+        const y = pos && Math.round(pos.y * dpr) / dpr;
 
         const ready = Number.isFinite(x) && Number.isFinite(y);
 

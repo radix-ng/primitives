@@ -1,4 +1,5 @@
 import { expect, Page, test } from '@playwright/test';
+import { holdExitAnimations } from '../helpers/exit-animations';
 
 async function openStory(page: Page, story = 'arrow', args = ''): Promise<string[]> {
     const errors: string[] = [];
@@ -136,14 +137,15 @@ test('an item-aligned arrow stays hidden and exposes closed state throughout exi
     await page.getByRole('combobox').click();
     const arrow = page.locator('[rdxSelectArrow]');
     await expect(arrow).toHaveAttribute('data-open', '');
+    await expect(page.locator('[rdxSelectPopup]')).not.toHaveAttribute('data-starting-style', '');
+    const exit = await holdExitAnimations(page, ['[rdxSelectPopup]']);
     await page.keyboard.press('Escape');
+    await expect.poll(exit.count).toBeGreaterThan(0);
     await expect(arrow).toHaveAttribute('data-closed', '');
     await expect(arrow).not.toHaveAttribute('data-open');
     await expect(arrow).toBeHidden();
     await expect(arrow.locator('svg')).toHaveCount(0);
-    await page
-        .locator('[rdxSelectPopup]')
-        .evaluate((element) => element.getAnimations().forEach((animation) => animation.finish()));
+    await exit.finish();
     await expect(arrow).toHaveCount(0);
     expect(errors).toEqual([]);
 });

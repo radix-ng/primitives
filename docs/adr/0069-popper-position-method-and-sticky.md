@@ -63,6 +63,16 @@ Comparison state uses rendered bounds and CSS position; raw style top/left/trans
 Frameworks may encode the same coordinates with different CSS properties. Rounded CSS-pixel metrics
 canonicalize signed zero; actual subpixel bounds are retained. No reference state/exception is changed.
 
+The [Linux CI follow-up](https://github.com/radix-ng/primitives/actions/runs/43729634824) exposed
+fractional native positions that crossed those integer comparison boundaries: Angular rendered
+unrounded coordinates, while the pin's Floating UI renderer snapped them to device pixels. Shared
+Popper now rounds its rendered coordinates using the positioner's owning window `devicePixelRatio`,
+including negative positions. DPR 1/2 regressions failed before this correction. Comparison tolerances
+and exceptions remain unchanged. The Menu-to-Popover browser check also uses the current popup-box
+sideOffset contract, without adding the arrow height.
+The Select Arrow exit check waits for entry and holds actual CSS exits through the shared animation
+helper, so a fast close cannot remove the observed arrow before its closed-state assertions.
+
 Validation: 569 scoped unit tests passed; 126 pinned geometry comparisons passed across Chromium,
 Firefox and WebKit (placement, boundaries and method/sticky); 57 shared-consumer browser regressions
 and the Storybook ArgTypes check passed. Library/Storybook builds, consumer generation, focused lint

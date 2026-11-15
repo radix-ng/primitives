@@ -86,11 +86,13 @@ the pin keeps its own state implementation. See [ADR 0071](../../../../docs/adr/
 ## Layout viewport during zoom
 
 Six `placement-viewport-` scenarios compare native page-scale emulation and reset, visual-viewport
-pan through a native touch scroll, RTL, an already-open descendant, an explicit Rect boundary and
+pan through a native wheel gesture, RTL, an already-open descendant, an explicit Rect boundary and
 an ordinary Menu control. The root's shift/shift collision preset isolates shifting from flip.
 The Context Menu point root uses the layout viewport, while ordinary/descendant Menu uses the
 visual viewport. Raw DOM rectangles, Playwright boxes and actual viewport metrics are retained.
 When panning, the visual-origin Playwright box is checked together with its measured viewport offset.
+The original touch-source scroll completed without panning on Linux; the wheel gesture exercises
+the same desktop viewport movement on Linux and macOS without assigning viewport offsets.
 
 These cases use Chromium CDP; the other twelve planned comparisons explicitly skip for missing
 automation capabilities. They do not certify real devices or the mobile software keyboard.
@@ -108,6 +110,9 @@ cases verify that Context Menu forces fixed even for an authored absolute reques
 Comparison state retains rendered bounds and CSS position; raw style encoding is attached separately.
 Base UI may use transform for coordinates while Angular uses top/left. Rounded CSS-pixel metrics
 canonicalize signed zero; raw subpixel bounds are preserved. No primitive state or exceptions are normalized.
+The shared Popper renderer snaps coordinates to the owning window's device-pixel grid, matching the
+pin's Floating UI renderer. This fixes Linux fractional-position differences in the actual native
+geometry rather than rounding away differences in the comparison driver.
 See [ADR 0069](../../../../docs/adr/0069-popper-position-method-and-sticky.md).
 
 ## Collision boundaries
@@ -320,6 +325,8 @@ and detached triggers, live payloads, cancellation, controlled/default identity,
 disabled activation, trigger removal, owner recreation and retained reuse. The animated case holds
 authored CSS transitions and finishes them with WAAPI; it does not fake primitive state or focus.
 Direction attributes are compared as CSS token lists, with raw attributes attached per checkpoint.
+The default-open Angular branch omits the `open` input, matching the uncontrolled reference. It
+observes model output without binding an explicit `false` over the default (ADR 0071).
 
 Explicit native tabindex removed fourteen old Safari focus exceptions after review. There are no
 new exceptions for this block. Existing independent pointer-travel differences remain exact. See

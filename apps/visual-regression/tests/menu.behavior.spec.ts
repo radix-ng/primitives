@@ -62,13 +62,9 @@ for (const [retained, deferred] of [
                 const anchor = (await trigger.boundingBox())!;
                 const popup = (await page.locator('[rdxPopoverPopup]').boundingBox())!;
                 const side = await page.locator('[rdxPopoverPositioner]').getAttribute('data-side');
-                const arrowHeight = await page
-                    .locator('[rdxPopoverArrow]')
-                    .evaluate((el: HTMLElement) => el.offsetHeight);
+                // sideOffset measures from the popup box, including when it has an arrow (ADR 0069).
                 return Math.abs(
-                    side === 'right'
-                        ? popup.x - anchor.x - anchor.width - 8 - arrowHeight
-                        : anchor.x - popup.x - popup.width - 8 - arrowHeight
+                    side === 'right' ? popup.x - anchor.x - anchor.width - 8 : anchor.x - popup.x - popup.width - 8
                 );
             })
             .toBeLessThan(2);

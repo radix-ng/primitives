@@ -319,6 +319,29 @@ describe('RdxPopperContentWrapper', () => {
         expect(computePositionMock.mock.lastCall![2]!.strategy).toBe('absolute');
     });
 
+    it.each([
+        { dpr: 1, left: '-74px', top: '114px' },
+        { dpr: 2, left: '-73.5px', top: '114.5px' }
+    ])('snaps fractional placement to the owner window pixel grid at DPR $dpr', async ({ dpr, left, top }) => {
+        const pixelRatio = vi.spyOn(window, 'devicePixelRatio', 'get').mockReturnValue(dpr);
+        computePositionMock.mockResolvedValueOnce({
+            x: -73.5167,
+            y: 114.26,
+            placement: 'bottom',
+            strategy: 'absolute',
+            middlewareData: {}
+        });
+        try {
+            const fixture = TestBed.createComponent(DefaultPopperHostComponent);
+            await fixture.whenStable();
+            const positioner: HTMLElement = fixture.nativeElement.querySelector('[rdxPopperContentWrapper]');
+            expect(positioner.style.left).toBe(left);
+            expect(positioner.style.top).toBe(top);
+        } finally {
+            pixelRatio.mockRestore();
+        }
+    });
+
     it('defaults sticky to false', async () => {
         const fixture = TestBed.createComponent(DefaultPopperHostComponent);
         await fixture.whenStable();

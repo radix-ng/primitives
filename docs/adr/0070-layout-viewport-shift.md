@@ -36,7 +36,7 @@ A focused unit assertion failed before the policy was wired. It verifies that on
 the configured layout boundary and that the default remains the visual viewport.
 
 Six differential cases reuse the placement fixtures, import the unmodified reference and run at
-native browser scale 1/2/1 through Chromium CDP. They cover zoom/reset, a native touch scroll that
+native browser scale 1/2/1 through Chromium CDP. They cover zoom/reset, a native wheel scroll that
 pans the visual viewport, RTL, an already-open submenu, an explicit Rect collision boundary and an
 ordinary Menu control. The root uses the public shift/shift collision preset to isolate shifting
 from independent flip behavior. Raw Playwright boxes, DOM client rectangles and viewport metrics
@@ -47,6 +47,15 @@ is added. Submenu keyboard entry/exit completes before the next gesture.
 The six cases passed twice. A Storybook browser regression independently verifies Navigation Menu
 alignment during page-scale emulation. Existing positioning/boundary and shared-consumer cases
 are checked after the dependency update.
+
+The original touch-source scroll gesture completed without moving the viewport in
+[Linux CI](https://github.com/radix-ng/primitives/actions/runs/43729634824), on both Angular and the
+reference. The pan case now uses a native wheel gesture, retaining the required nonzero viewport
+offset and layout-coordinate stability assertions. It changes no primitive state or viewport offset
+directly. This case establishes desktop emulated zoom/pan, independently of the trusted touch suite.
+The Navigation Menu browser check enters by keyboard to avoid hover reopening after Escape and
+waits for starting styles and real enter animations before recording the unzoomed geometry. Its
+zoom/reset check passed ten consecutive runs on both macOS and Linux after this correction.
 
 Affected-scope validation passed 570 unit tests, 132 pinned positioning comparisons with twelve
 explicit capability skips, 60 shared-consumer checks and the separate Navigation Menu zoom check.
