@@ -1,3 +1,5 @@
+import { panelCases, type PanelSettings } from './panels';
+
 export type Value = string | number | null;
 export interface Option {
     value: string | number;
@@ -9,6 +11,7 @@ export interface Settings {
     defaultValue?: Value;
     value?: Value;
     cancelAutomatic?: boolean;
+    panels?: PanelSettings;
 }
 
 const numericOptions: Option[] = [
@@ -21,7 +24,7 @@ const stringOptions: Option[] = [
     { value: 'two', label: 'Two' },
     { value: 'three', label: 'Three' }
 ];
-export const cases = {
+export const initialCases = {
     'implicit-zero': { options: numericOptions },
     'implicit-later-zero': { options: [numericOptions[1], numericOptions[0], numericOptions[2]] },
     'implicit-missing-zero': { options: stringOptions },
@@ -43,6 +46,7 @@ export const cases = {
     'default-null-string': { options: stringOptions, defaultValue: null },
     'value-null': { options: numericOptions, defaultValue: 1, value: null }
 } satisfies Record<string, Settings>;
+export const cases = { ...initialCases, ...panelCases };
 export type CaseName = keyof typeof cases;
 
 export interface Change {
@@ -56,6 +60,7 @@ export interface Probe {
     reference: { commit: string; packageVersion: string; digest: string };
     config: Settings;
     changes: Change[];
+    activations: number[];
     nativeEvents: { type: string; trusted: boolean; trigger: string | null }[];
 }
 declare global {
@@ -77,6 +82,7 @@ export function installProbe(framework: Probe['framework'], settings: Settings) 
         reference: __PARITY_REFERENCE__,
         config: settings,
         changes: [],
+        activations: [0, 0],
         nativeEvents: []
     };
     window.tabsParity = probe;

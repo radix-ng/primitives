@@ -7,9 +7,10 @@ The prepared source digest was validated with `pnpm parity:prepare`.
 
 This is a source/API audit with incremental comparison evidence, not full parity or accessibility
 certification. The [Tabs differential suite](../../../apps/parity-testing/primitives/tabs/README.md)
-now covers initial values and notifications: **11 scenarios, 33 comparisons** across Chromium,
-Firefox and WebKit, with no skips or reviewed exceptions. G1 is resolved; remaining interaction,
-identity, lifecycle and geometry gaps below are not certified by this initial-value increment.
+now covers initial values/notifications and Panel exits/focus: **19 scenarios, 57 comparisons** across
+Chromium, Firefox and WebKit, with no skips or reviewed exceptions. G1 is resolved; G4's inert/hidden
+defects are resolved for the documented retained/structural exit cases. Remaining interaction,
+identity, lifecycle and geometry gaps below are not certified by these increments.
 **Pinned covered** means the stated subset passed direct Angular/Base UI comparison;
 **Regression covered** below means an existing Angular check exercises the stated subset;
 **source gap** means the implementations differ by inspection and need a focused comparison;
@@ -32,12 +33,12 @@ listed separately from unresolved gaps.
 | Vertical Up/Down, horizontal RTL and modifier keys                                       | Shared Composite source; orientation-attribute unit                            | Tabs-specific browser comparisons pending                                                                  |
 | Disabled tabs remain arrow-focusable without activation                                  | Unit verifies native disabled is absent, ARIA state, focus and unchanged value | Regression covered for horizontal arrows/click; native pointer/keyboard combinations pending               |
 | Disabled controlled selection preserves an enabled Tab entry                             | Selected-disabled unit; List source                                            | Regression covered with focus outside the list; dynamic focus cases pending                                |
-| Native Tab / Shift+Tab into list, panel and adjacent controls                            | Projected-wrapper browser test checks forward exit from the list               | Partial; exact panel destination, reverse order and rapid Enter/Tab pending                                |
+| Native Tab / Shift+Tab into list, panel and adjacent controls                            | Pinned held-exit cases and projected-wrapper browser test                      | Forward/reverse active-panel order covered during exits; rapid pre-render Enter/Tab remains pending        |
 | `role`, `aria-selected`, orientation and reciprocal IDs                                  | Roles/identity units; SSR ID check                                             | Regression covered for default IDs; mounted/custom identities differ, G5                                   |
 | Per-part `data-orientation`, `data-activation-direction`, Tab active/disabled attributes | Host bindings vs pinned DataAttributes files; selected-state units             | Names present; direction updates differ, G3                                                                |
-| Panel indexes and active/inactive tabindex                                               | Composite-index unit; Panel source                                             | Index regression covered; tabindex source only                                                             |
-| Panel unmount / `keepMounted`                                                            | Three presence units; documented two-directive pattern                         | Adapted: persistent panel host, opt-in content removal; G4                                                 |
-| Panel enter/exit attributes, hidden timing, inert contents and interrupted transitions   | Panel/transition source; Animated/KeyframeUnmount stories                      | Source gap for inert/hidden semantics, G4; animation lifecycle not browser-proven                          |
+| Panel indexes and active/inactive tabindex                                               | Composite-index unit; pinned Panel snapshots                                   | Index regression covered; active/inactive tabindex pinned covered in lifecycle cases                       |
+| Panel unmount / `keepMounted`                                                            | Three presence units; pinned exit/reselection cases                            | Content lifetime covered with persistent-host adaptation, G4; raw DOM retains host presence                |
+| Panel enter/exit attributes, hidden timing, inert contents and interrupted transitions   | Eight pinned cases and public keyframe browser regression                      | G4 fixed for documented retained/structural exits; deeper lifecycle follow-ups remain                      |
 | Indicator six `--active-tab-*` variables and common state attributes                     | Indicator source vs pinned CssVars/DataAttributes files; Indicator story       | Names present; geometry behavior differs, G6; no Indicator unit/browser assertions                         |
 | Indicator custom tab ID, absent/zero-size selection, resize and List replacement         | Indicator lookup/observer source vs pinned Tab/List/Indicator                  | Source gaps, G6                                                                                            |
 | Indicator scroll, borders, scale/transforms and intermediate scroll containers           | Geometry calculations vs pinned Indicator and browser tests                    | Source gaps, G6; screenshots do not prove live geometry                                                    |
@@ -60,7 +61,8 @@ listed separately from unresolved gaps.
   those contents. This existing two-directive pattern is documented in the
   [Tabs family note](../../../docs/engineering/families/tabs-follow-the-base-ui-part-set.md),
   [public MDX](stories/tabs.docs.mdx) and [ADR 0010](../../../docs/adr/0010-structural-portal-presence.md).
-  It does not establish equivalent exit focusability or ARIA registration; those remain G4/G5.
+  G4 now compares exit focusability and content lifetime; equivalent host deletion and mounted ARIA
+  registration remain outside that comparison (G5).
 - Projected tabs resolve the inner List through the Root's Composite owner bridge. The Root must be
   on the wrapper host, in the projected parts' declaring injector tree. This follows
   [ADR 0001](../../../docs/adr/0001-angular-composite-navigation-layer.md).
@@ -71,7 +73,7 @@ listed separately from unresolved gaps.
 
 ## Source gaps and required comparisons
 
-G1 was reproduced and fixed through direct comparison. The remaining findings are not reviewed
+G1 and G4 were reproduced and fixed through direct comparison. The remaining findings are not reviewed
 differential exceptions; each needs a focused reproducer before an exact exception or runtime change
 is accepted.
 
@@ -113,19 +115,27 @@ direction on every part and on change details. Also compare external selection w
 versus outside the List, and a parent ignoring a request: Angular's model commits accepted requests
 locally, while its `externallyControlled` detection is inferred from observed value writes.
 
-### G4 — Exiting Panel contents are not inert; hidden state changes earlier
+### G4 — Resolved for retained/structural exits: inert contents and hidden timing
 
-[Panel](src/tabs-panel.ts) uses `data-hidden` as `!active` and keeps its host visible while ending;
-it never binds `inert`. The
-[pinned Panel](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/tabs/panel/TabsPanel.tsx)
-makes inactive contents inert immediately and derives `data-hidden` from transition mounting, so it
-remains absent during exit. In Angular, an outgoing visible panel can retain interactive descendants.
-With presence and `keepMounted=false`, the empty inactive host also stops forcing `hidden`.
+[Panel](src/tabs-panel.ts) now binds `inert` whenever inactive, removes it on selection and applies
+`data-hidden` after actual exit completion. The empty persistent host becomes hidden after structural
+contents exit as well. [TabsPanelPresence](src/tabs-panel-presence.ts) adapts the shared
+`PresenceMachine` to watch the Panel host and descendants, rather than only its embedded template's
+roots. Panel derives its ending phase from actual mounted structural contents alongside its host
+transition; it does not maintain an independent content-removal timer.
 
-Compare actual Tab/Shift+Tab, pointer and programmatic focus during paused/natural exits, with and
-without presence/keepMounted, rapid reselection and nested animations. Observe the retained host,
-contents, inertness and all transition attributes separately; persistent hosts alone are the documented
-adaptation, not evidence for equivalent interactivity.
+Eight pinned cases cover immediate/paused/natural exits, structural presence on/off, retained
+contents, rapid reselection, actual forward/backward Tab order, rejected focus requests and trusted
+pointer activation. In the nested case, finishing the child first leaves the host exit pending.
+Before the fix, seven of eight Chromium cases failed; all 24 new comparisons now pass across three
+engines without exceptions. A unit checks inactive inertness and a separate public-story browser test
+checks nested-content-only keyframes, empty-host hiding and reuse.
+
+The [pinned Panel](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/tabs/panel/TabsPanel.tsx)
+waits on its own element's motion. Angular's pre-existing descendant-only exit support is a documented
+capability, not a claim that the pin has the same wait policy. Raw DOM retains the persistent-empty
+host versus unmounted-host distinction. Later-finishing/replaced descendant motion, whole-Root removal
+and live keepMounted/presence changes remain follow-ups; mounted ARIA identity remains G5.
 
 ### G5 — Identity follows derived values instead of mounted Panel registration
 
@@ -184,11 +194,15 @@ Checks run for this audit on Node 24.22.2:
 
 - `pnpm parity:prepare` — Base UI 1.9.0 pin and cached content digest validated.
 - `pnpm exec vitest run --config packages/primitives/vite.config.ts packages/primitives/tabs/__tests__`
-  — **34 passed**, including two null-default regressions that failed before the fix.
-- `pnpm test-parity tabs` — **33 passed** (11 initial-value scenarios × three engines), strict fixture
+  — **35 passed**, including null-default and inactive Panel inertness regressions.
+- `pnpm test-parity tabs` — **57 passed** (19 initial-value/Panel scenarios × three engines), strict fixture
   compilation/build and the shared runner's 13 infrastructure tests passed. The initial Chromium run
   before the runtime fix passed nine cases and failed both null-default cases; its reports/traces are
   retained locally in `dist/parity-testing/tabs/before-null-fix/`.
+- Panel cases before the G4 fix: **1 passed / 7 failed** in Chromium, retained in
+  `dist/parity-testing/tabs/before-panel-fix/`.
+- `PLAYWRIGHT_PORT=4411 pnpm exec playwright test -c apps/visual-regression/playwright.config.ts tabs.behavior.spec.ts agents.behavior.spec.ts --grep Tabs --project=chromium`
+  — **2 passed** against a fresh Storybook build: public keyframe lifecycle and projected wrapper.
 - `pnpm exec playwright test -c apps/visual-regression/playwright.config.ts agents.behavior.spec.ts --grep 'Agents Tabs task' --project=chromium`
   — **1 passed**, against the existing locally served Storybook build. This verifies projected
   navigation/manual Enter/Space and forward list exit, not current shared-source rebuild equivalence.
@@ -207,8 +221,8 @@ Enter/Tab failures. Its [follow-up](../../../tools/consumer-testing/generation/t
 records supplemental success after observing selection rendering. Neither result compares Base UI or
 establishes ownership of that timing issue; do not relabel it as primitive parity or as 36/36.
 
-Next increments: inert/animated-panel focus for G4, external selection/direction for G3, mounted ARIA
-identities and native activation for G5/G8, followed by Indicator geometry/observation for G6. Dynamic
+Next increments: external selection/direction for G3, mounted ARIA identities and native activation for
+G5/G8, followed by Indicator geometry/observation for G6. Dynamic
 collection and value-domain work remain G2/G7.
 Keep fixtures on actual native input and observable state; do not normalize away IDs, focus, mounting,
 event metadata or geometry differences. Whole-Root removal, nested/overlay consumers, hydration and

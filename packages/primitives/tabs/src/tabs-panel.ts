@@ -8,6 +8,7 @@ import {
     inject,
     input,
     signal,
+    Signal,
     untracked
 } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
@@ -40,7 +41,8 @@ const panelPresenceContext = () => ({ present: inject(RdxTabsPanel).present });
         '[attr.data-orientation]': 'rootContext.orientation()',
         '[attr.data-activation-direction]': 'rootContext.activationDirection()',
         '[attr.data-index]': 'index()',
-        '[attr.data-hidden]': 'active() ? undefined : ""',
+        '[attr.data-hidden]': 'hidden() ? "" : undefined',
+        '[attr.inert]': 'active() ? undefined : ""',
         '[attr.data-starting-style]': 'transitionStatus() === "starting" ? "" : undefined',
         '[attr.data-ending-style]': 'transitionStatus() === "ending" ? "" : undefined',
         '[hidden]': 'hidden()'
@@ -67,7 +69,11 @@ export class RdxTabsPanel {
     private readonly transition = useTransitionStatus(() => {});
 
     /** Reactive enter/exit transition phase (`'starting'` | `'ending'` | `undefined`). */
-    readonly transitionStatus = this.transition.status;
+    readonly transitionStatus = computed(() =>
+        !this.active() && !this.keepMounted() && this.presences().some((mounted) => mounted())
+            ? 'ending'
+            : this.transition.status()
+    );
 
     /** @ignore */
     protected readonly panelId = computed(() => makePanelId(this.rootContext.baseId, this.value()));
@@ -87,8 +93,8 @@ export class RdxTabsPanel {
     /** Whether this panel's tab is currently selected. */
     readonly active = computed(() => this.rootContext.value() === this.value());
 
-    /** `true` once a `*rdxTabsPanelPresence` child takes over mounting. */
-    private readonly hasPresence = signal(false);
+    /** The structural child owns content removal, including panel-host and descendant motion. */
+    private readonly presences = signal<readonly Signal<boolean>[]>([]);
 
     /**
      * Whether the contents should be present for `*rdxTabsPanelPresence`. Flips with `active` so the
@@ -99,12 +105,10 @@ export class RdxTabsPanel {
 
     /**
      * The `hidden` attribute value. The panel is shown while active or while its exit transition
-     * runs. When a presence child unmounts the contents we no longer force `hidden` (the empty
-     * element renders nothing), unless `keepMounted` keeps the inactive contents around.
+     * runs. A structural child keeps the panel visible until its actual contents have exited;
+     * the retained empty host is hidden after removal as well.
      */
-    protected readonly hidden = computed(
-        () => !this.active() && this.transitionStatus() !== 'ending' && (!this.hasPresence() || this.keepMounted())
-    );
+    protected readonly hidden = computed(() => !this.active() && this.transitionStatus() !== 'ending');
 
     /** @ignore Index of the panel in DOM order. */
     protected readonly index = this.listItem.index;
@@ -140,8 +144,12 @@ export class RdxTabsPanel {
         });
     }
 
-    /** @ignore Called by `RdxTabsPanelPresence` so the panel stops forcing `hidden`. */
-    markHasPresence(): void {
-        this.hasPresence.set(true);
+    /** @ignore Supplies the real motion root to the structural child's shared PresenceMachine. */
+    registerPresence(mounted: Signal<boolean>): { element: HTMLElement; unregister: () => void } {
+        this.presences.update((current) => [...current, mounted]);
+        return {
+            element: this.elementRef.nativeElement,
+            unregister: () => this.presences.update((current) => current.filter((entry) => entry !== mounted))
+        };
     }
 }

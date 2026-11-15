@@ -1,5 +1,6 @@
-import { cases, type CaseName, type Change, type Settings } from '../src/contract';
+import { initialCases, type Change, type Settings } from '../src/contract';
 import type { TabsDriver } from './driver';
+import { panelScenarios } from './panels.scenarios';
 
 const expectedValues = {
     'implicit-zero': 0,
@@ -13,12 +14,12 @@ const expectedValues = {
     'default-null-number': null,
     'default-null-string': null,
     'value-null': null
-} satisfies Record<CaseName, string | number | null>;
+} satisfies Record<keyof typeof initialCases, string | number | null>;
 
-export const scenarios = (Object.keys(cases) as CaseName[]).map((name) => ({
+const initialScenarios = (Object.keys(initialCases) as (keyof typeof initialCases)[]).map((name) => ({
     name,
     async run(driver: TabsDriver) {
-        const settings: Settings = cases[name];
+        const settings: Settings = initialCases[name];
         const value = expectedValues[name];
         const selection = value === null ? [] : [value];
         const changes: Change[] = name.startsWith('implicit-')
@@ -31,3 +32,4 @@ export const scenarios = (Object.keys(cases) as CaseName[]).map((name) => ({
         });
     }
 }));
+export const scenarios = [...initialScenarios, ...panelScenarios];

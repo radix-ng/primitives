@@ -51,7 +51,7 @@
     {
       "attribute": "data-hidden",
       "parts": "TabsPanel",
-      "values": "Present when the panel is inactive."
+      "values": "Present when the inactive panel's exit has finished."
     },
     {
       "attribute": "data-index",

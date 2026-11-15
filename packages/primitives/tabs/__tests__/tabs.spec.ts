@@ -95,6 +95,18 @@ describe('Tabs', () => {
         expect(panelTwo.getAttribute('data-hidden')).toBe('');
     });
 
+    it('[APG Tabs] makes inactive panels inert and enables the newly selected panel', () => {
+        const [one, two] = panels();
+        expect(one.hasAttribute('inert')).toBe(false);
+        expect(two.hasAttribute('inert')).toBe(true);
+
+        tabs()[1].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        fixture.detectChanges();
+
+        expect(one.hasAttribute('inert')).toBe(true);
+        expect(two.hasAttribute('inert')).toBe(false);
+    });
+
     it('exposes panel indexes from the composite list', async () => {
         await fixture.whenStable();
         fixture.detectChanges();

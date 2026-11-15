@@ -6,7 +6,9 @@
 
 Panels stay mounted by default in Angular, so you can cross-fade them with the `data-starting-style`,
 `data-ending-style` and `data-hidden` attributes — the panel keeps itself visible until the transition
-finishes.
+finishes. Inactive panels are immediately inert, including during an exit, so their contents cannot
+receive focus or pointer input. `data-hidden` is applied after the exit settles; use
+`data-ending-style` to start exit motion.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';

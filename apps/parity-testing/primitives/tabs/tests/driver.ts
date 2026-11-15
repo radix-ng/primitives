@@ -77,4 +77,60 @@ export class TabsDriver {
         expect(snapshot.state, `${this.framework}: ${name}`).toEqual(expect.objectContaining(expected));
         expect(this.errors).toEqual([]);
     }
+
+    async panelCheckpoint(name: string, expected: Record<string, unknown>) {
+        const snapshot = await this.page.evaluate(async () => {
+            const read = () => {
+                const root = document.querySelector<HTMLElement>('[data-testid="tabs-root"]')!;
+                const probe = window.tabsParity;
+                return {
+                    selected: probe.config.options
+                        .filter(
+                            (_, i) =>
+                                root.querySelector(`[data-testid="tab-${i}"]`)?.getAttribute('aria-selected') === 'true'
+                        )
+                        .map((option) => option.value),
+                    panels: probe.config.options.map((option, i) => {
+                        const panel = root.querySelector<HTMLElement>(`[data-testid="panel-${i}"]`);
+                        const content = root.querySelector<HTMLElement>(`[data-testid="content-${i}"]`);
+                        if (!content || !panel) return { value: option.value, present: false };
+                        const style = getComputedStyle(content);
+                        return {
+                            value: option.value,
+                            present: true,
+                            visible:
+                                content.getClientRects().length > 0 &&
+                                style.display !== 'none' &&
+                                style.visibility !== 'hidden',
+                            hidden: panel.hidden,
+                            dataHidden: panel.hasAttribute('data-hidden'),
+                            inert: panel.inert,
+                            tabIndex: panel.tabIndex,
+                            starting: panel.hasAttribute('data-starting-style'),
+                            ending: panel.hasAttribute('data-ending-style')
+                        };
+                    }),
+                    focus:
+                        document.activeElement?.getAttribute('data-testid') ?? document.activeElement?.tagName ?? null,
+                    activations: probe.activations,
+                    changes: probe.changes
+                };
+            };
+            let previous = '';
+            let stable = 0;
+            for (let frame = 0; frame < 120; frame++) {
+                await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+                const state = read();
+                const json = JSON.stringify(state);
+                stable = json === previous ? stable + 1 : 0;
+                if (stable >= 3) return { state, dom: document.querySelector('[data-testid="tabs-root"]')!.outerHTML };
+                previous = json;
+            }
+            throw new Error('Tabs panel state did not settle');
+        });
+        this.checkpoints.push({ name, state: snapshot.state });
+        this.measurements.push({ name, dom: snapshot.dom, focus: snapshot.state.focus });
+        expect(snapshot.state, `${this.framework}: ${name}`).toEqual(expect.objectContaining(expected));
+        expect(this.errors).toEqual([]);
+    }
 }

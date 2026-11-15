@@ -8185,10 +8185,7 @@
         {
           "directive": "RdxTabsPanelPresence",
           "selector": "ng-template[rdxTabsPanelPresence]",
-          "description": "Structural directive that mounts the tab panel contents only while the panel is active,\nunmounting them once the exit animation finishes. Apply it inside an `[rdxTabsPanel]` to get\nBase UI's default unmounting behavior; combine with `keepMounted` on the panel to keep the\ncontents mounted instead.\n\nThe presence state is read from the parent panel through {@link RdxPresenceDirective}.",
-          "hostDirectives": [
-            "RdxPresenceDirective"
-          ],
+          "description": "Structural directive that mounts the tab panel contents only while the panel is active,\nunmounting them once the exit animation finishes. Apply it inside an `[rdxTabsPanel]` to get\nBase UI's default unmounting behavior; combine with `keepMounted` on the panel to keep the\ncontents mounted instead.\n\nThe shared PresenceMachine watches the panel host, including its descendants, because the\nstructural template is inside the animated panel rather than wrapping it.",
           "inputs": [],
           "outputs": []
         },

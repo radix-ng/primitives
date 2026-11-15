@@ -110,7 +110,9 @@ follow the selected tab.
 
 Panels stay mounted by default in Angular, so you can cross-fade them with the `data-starting-style`,
 `data-ending-style` and `data-hidden` attributes — the panel keeps itself visible until the transition
-finishes.
+finishes. Inactive panels are immediately inert, including during an exit, so their contents cannot
+receive focus or pointer input. `data-hidden` is applied after the exit settles; use
+`data-ending-style` to start exit motion.
 
 <Canvas of={TabsStories.Animated} />
 
@@ -136,10 +138,10 @@ contents mounted regardless.
 
 ### Unmount with `@keyframes`
 
-With `*rdxTabsPanelPresence`, the presence directive waits for the contents' exit **animation**
-(`@keyframes`, detected via `animationend`) before removing them. Mark the panel as a `group` so the
-inner element can react to the parent's `data-hidden` and run the exit keyframes — the contents leave
-the DOM once the animation finishes.
+With `*rdxTabsPanelPresence`, the shared presence machine watches the panel and its descendants for
+exit animations or transitions before removing the contents. Mark the panel as a `group` so the
+inner element can react to the parent's `data-ending-style` and run the exit keyframes. The panel
+stays visible and inert until removal, then its persistent empty host becomes hidden.
 
 <Canvas of={TabsStories.KeyframeUnmount} />
 
@@ -196,7 +198,7 @@ in roving focus and implicit selection.
 
 | Data attribute                | Value                                           |
 | ----------------------------- | ----------------------------------------------- |
-| `[data-hidden]`               | Present when the panel is inactive.             |
+| `[data-hidden]`               | Present when the inactive panel's exit has finished. |
 | `[data-index]`                | Numeric index of the panel.                     |
 | `[data-starting-style]`       | Present while the enter transition runs.        |
 | `[data-ending-style]`         | Present while the exit transition runs.         |

@@ -7,8 +7,8 @@ import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTa
     imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel, RdxTabsPanelPresence],
     // The panel contents are mounted only while the tab is active (`*rdxTabsPanelPresence`).
     // On enter the inner element plays `tabs-panel-in`; when the tab is left, the parent panel gets
-    // `data-hidden`, so `group-data-[hidden]:animate-tabs-panel-out` runs the exit `@keyframes` and
-    // the presence directive waits for `animationend` before unmounting.
+    // `data-ending-style`, so the inner element runs the exit keyframes while the panel remains
+    // visible and inert. The presence machine waits for the panel and its descendants to finish.
     template: `
         <div
             class="border-border bg-background text-foreground w-[420px] overflow-hidden rounded-xl border shadow-sm"
@@ -34,7 +34,7 @@ import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTa
             <div class="grid">
                 <div class="group col-start-1 row-start-1" rdxTabsPanel value="account">
                     <div
-                        class="bg-background text-foreground animate-tabs-panel-in group-data-[hidden]:animate-tabs-panel-out p-6 text-sm leading-6 outline-none"
+                        class="bg-background text-foreground animate-tabs-panel-in group-data-[ending-style]:animate-tabs-panel-out p-6 text-sm leading-6 outline-none"
                         *rdxTabsPanelPresence
                     >
                         Make changes to your account here. Click save when you're done.
@@ -42,7 +42,7 @@ import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTa
                 </div>
                 <div class="group col-start-1 row-start-1" rdxTabsPanel value="password">
                     <div
-                        class="bg-background text-foreground animate-tabs-panel-in group-data-[hidden]:animate-tabs-panel-out p-6 text-sm leading-6 outline-none"
+                        class="bg-background text-foreground animate-tabs-panel-in group-data-[ending-style]:animate-tabs-panel-out p-6 text-sm leading-6 outline-none"
                         *rdxTabsPanelPresence
                     >
                         Change your password here. After saving, you'll be logged out.

@@ -4,3 +4,10 @@
 
 The [Tabs parity matrix](../../../packages/primitives/tabs/PARITY.md) records the pinned Base UI
 source/API audit, Angular regression evidence, documented adaptations and remaining comparison gaps.
+
+Inactive panels are immediately inert, including during exit. `data-ending-style` starts exit motion;
+`data-hidden` follows actual hidden state after motion finishes. `TabsPanelPresence` adapts the shared
+`PresenceMachine` to observe the panel host and its descendants because its embedded view lives inside
+that host. The panel tracks registered content lifetimes so an ending view stays visible and inert
+until removal, and the persistent empty host becomes hidden afterward. The public keyframe example
+uses `group-data-[ending-style]`; using `data-hidden` as an exit trigger is too late.
