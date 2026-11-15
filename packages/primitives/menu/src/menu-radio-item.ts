@@ -21,6 +21,7 @@ import { injectRdxMenuRootContext } from './menu-root';
 
 export interface RdxMenuRadioItemContext {
     checked: Signal<boolean>;
+    disabled: Signal<boolean>;
 }
 
 export const [injectRdxMenuRadioItemContext, provideRdxMenuRadioItemContext] = createContext<RdxMenuRadioItemContext>(
@@ -31,7 +32,8 @@ export const [injectRdxMenuRadioItemContext, provideRdxMenuRadioItemContext] = c
 const radioItemContextFactory = (): RdxMenuRadioItemContext => {
     const instance = inject(RdxMenuRadioItem);
     return {
-        checked: instance.checked
+        checked: instance.checked,
+        disabled: instance.effectiveDisabled
     };
 };
 
@@ -94,7 +96,8 @@ export class RdxMenuRadioItem<T = unknown> {
             this.rootContext?.isOpen() !== false &&
             (this.rootContext ? this.rootContext.activeIndex() === this.listItem.index() : this.isFocused())
     );
-    protected readonly effectiveDisabled = computed(
+    /** @ignore Effective state shared with the item's indicator. */
+    readonly effectiveDisabled = computed(
         () => this.disabled() || this.radioGroupContext.disabled() || (this.rootContext?.disabled() ?? false)
     );
 

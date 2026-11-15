@@ -1997,7 +1997,7 @@ describe('Menu', () => {
             const indicator: HTMLElement = f.nativeElement.querySelector('[rdxMenuCheckboxItemIndicator]');
             expect(indicator.style.display).not.toBe('none');
             expect(indicator.hasAttribute('data-unchecked')).toBe(true);
-            expect(indicator.hasAttribute('data-ending-style')).toBe(true);
+            expect(indicator.hasAttribute('data-ending-style')).toBe(false);
         });
 
         it('RadioItemIndicator stays in DOM with keepMounted', () => {

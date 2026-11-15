@@ -1,8 +1,10 @@
 # Menu — Base UI compatibility
 
-Audited 2026-11-14 against Base UI 1.9.0 commit
+Audited 2026-11-15 against Base UI 1.9.0 commit
 [`cf696d6f6e08c699c5bda24d5a033430909f2285`](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/menu).
 This is incremental behavioral evidence, not complete API or accessibility certification.
+The [final source/API audit](AUDIT.md) inventories every pinned export, reviews all exact exceptions
+and records the remaining defects, capability gaps and validation limits.
 
 | Contract                                                                                               | Evidence                                                 | Status                                                                  |
 | ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------- | ----------------------------------------------------------------------- |
@@ -41,10 +43,13 @@ This is incremental behavioral evidence, not complete API or accessibility certi
 | Dialog opened by Menu item: focus transfer, retained exits, native composition and drag release        | Pinned suite and Open Dialog example                     | Covered; shared focus-scope ownership, ADR 0064                         |
 | Menu inside Popover: layered dismissal, modalities, focus, exits and owner removal                     | Pinned suite and Inside Popover example                  | Covered with modal-backdrop limit; per-layer press timing, ADR 0065     |
 | Popover opened by Menu item: live anchors, native focus, retained/CSS/deferred exits and nested editor | Pinned suite and Open/Nested Popover examples            | Covered; family focus boundaries and separate isolation keeps, ADR 0066 |
+| Checkbox/radio indicator lifecycle, retained hosts, native names and inherited disabled state          | Pinned indicator scenarios and Angular unit tests        | Covered; consumer-owned host adaptation, audit A1 resolved              |
+| Contextual positioning, default models, portal targets and GroupLabel id                               | Source audit and focused contract probes                 | Defects/contract gaps confirmed; fixes pending, audit A2–A5             |
+| FilterProvider, Input, List, Clear and Empty                                                           | Pinned public export inventory                           | Missing capability; reuse core.useFilter, audit A6                      |
 | Real touch, devices and assistive technology                                                           | Not established by this suite                            | Pending                                                                 |
 
-The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 368 scenarios and
-1104 planned comparisons: 1056 execute, with 48 touch capability skips. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
+The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 378 scenarios and
+1134 planned comparisons: 1086 execute, with 48 touch capability skips. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
 state. Checkbox/radio change requests are observed before cancellation; original event types and
 trusted pointer coordinates are retained. No adapter forces focus, open state or completion.
 
@@ -57,6 +62,25 @@ empty/refilled root and child lists, keyed child reordering and removal/replacem
 owning branch. The root's empty-list ArrowDown request retains index zero until data returns.
 Removing a submenu and its trigger returns focus through the surviving DI owner chain. The common
 focus manager ignores a disconnected default anchor; explicit final-focus policies remain authoritative.
+
+## Final API audit
+
+The source inventory is complete for the pinned version; Menu parity is not. The
+[audit](AUDIT.md) records five defect/contract groups and the missing filtering family, distinguishes
+Angular adaptations from missing behavior, and classifies all 143 exact exception fields.
+Indicator lifecycle and accessible names (A1) are now covered. Shared Positioner/Portal contracts,
+model initialization and GroupLabel identity remain open. Filtering is a separate capability increment.
+
+Ten indicator scenarios cover fresh/retained hosts, settled entry, paused/natural CSS exits and
+reselection during exit. Both fixtures keep native item input and real CSS animations. Angular hides
+its consumer-owned host after exit instead of deleting it; comparisons observe visibility and state
+while raw measurements retain host presence/display and animations. Item glyphs are decorative, and
+disabled state comes from the actual item/group/Root through DI. No new comparison exception is needed.
+
+The audit's targeted exception run passed 82 comparisons, skipped four unsupported capabilities
+and failed one WebKit React assertion in hybrid-hover-touch-promote. Five isolated repeats passed;
+the initial failure remains a reference/harness reproducibility issue. Linux-only fields still
+require Linux CI. Existing scenario counts above describe suite scope, not an all-green audit run.
 
 ## Known differences
 
@@ -139,7 +163,7 @@ An Angular browser regression also repeats RTL diagonal travel with fractional p
 in a Linux CI failure. The safe polygon uses a one CSS-pixel buffer so integer MouseEvent coordinates
 do not fall through the fractional entry edge before native hit testing reaches the child.
 
-Next: remaining API/lifecycle combinations and deeper composition in the independent
+Next: the concrete gaps in the [final audit](AUDIT.md) and deeper composition in the independent
 [Context Menu](../context-menu/PARITY.md) and [Menubar](../menubar/PARITY.md) suites.
 Device/assistive-technology work remains open. See [ADR 0038](../../../docs/adr/0038-menu-collection-boundaries.md).
 
@@ -499,5 +523,6 @@ editor state on Menu close. A virtual Context Menu's captured return target stay
 the control keep-set, so pre-open body focus cannot exempt the page from isolation.
 
 The Open Popover and Nested Popover examples demonstrate persistent anchors, completion, layered
-Escape and optional focus trapping. Real device/AT work and remaining API/deviation review are
-separate audits. Menu integration does not certify complete independent Popover or Dialog parity.
+Escape and optional focus trapping. Real device/AT work remains separate; the remaining API gaps
+and reviewed deviations are recorded in the [final audit](AUDIT.md). Menu integration does not
+certify complete independent Popover or Dialog parity.

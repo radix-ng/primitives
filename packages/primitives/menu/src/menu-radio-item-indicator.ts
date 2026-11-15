@@ -1,28 +1,33 @@
-import { booleanAttribute, computed, Directive, input } from '@angular/core';
+import { booleanAttribute, Directive, input } from '@angular/core';
 import { BooleanInput } from '@radix-ng/primitives/core';
+import { useMenuIndicatorTransition } from './menu-indicator-transition';
 import { injectRdxMenuRadioItemContext } from './menu-radio-item';
 
 /**
  * Renders when the parent radio item is selected.
- * Set `keepMounted` to keep the element in the DOM when unselected (enables CSS animations).
+ * The consumer-owned host hides after its CSS exit finishes. `keepMounted` leaves it displayed
+ * while unselected, so the consumer can style both settled states.
  */
 @Directive({
     selector: '[rdxMenuRadioItemIndicator]',
     exportAs: 'rdxMenuRadioItemIndicator',
     host: {
+        'aria-hidden': 'true',
         '[attr.data-checked]': 'checked() ? "" : undefined',
         '[attr.data-unchecked]': 'checked() ? undefined : ""',
-        '[attr.data-starting-style]': 'isVisible() ? "" : undefined',
-        '[attr.data-ending-style]': '!isVisible() ? "" : undefined',
-        '[style.display]': '!keepMounted() && !isVisible() ? "none" : null'
+        '[attr.data-disabled]': 'disabled() ? "" : undefined',
+        '[attr.data-starting-style]': 'transition.status() === "starting" ? "" : undefined',
+        '[attr.data-ending-style]': 'transition.status() === "ending" ? "" : undefined',
+        '[style.display]': '!keepMounted() && !transition.present() ? "none" : null'
     }
 })
 export class RdxMenuRadioItemIndicator {
     private readonly itemContext = injectRdxMenuRadioItemContext();
 
-    /** Keep the indicator in the DOM when unselected so CSS exit animations can play. */
+    /** Leave the host displayed when unselected. Exit animations also finish when false. */
     readonly keepMounted = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     protected readonly checked = this.itemContext.checked;
-    protected readonly isVisible = computed(() => this.itemContext.checked() === true);
+    protected readonly disabled = this.itemContext.disabled;
+    protected readonly transition = useMenuIndicatorTransition(this.checked);
 }

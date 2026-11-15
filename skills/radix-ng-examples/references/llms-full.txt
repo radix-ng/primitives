@@ -16508,12 +16508,37 @@ Renders `role="separator"` with `aria-orientation="horizontal"`. No inputs.
 ### RdxMenuCheckboxItemIndicator
 
 Visible only when the parent `rdxMenuCheckboxItem` is checked or indeterminate. Reads state from
-the parent via context — no inputs.
+the parent via context. The decorative host has `aria-hidden="true"`, so its glyph does not become
+part of the item's accessible name. Exit animations finish before the host receives `display:none`.
+Set `[keepMounted]="true"` to leave the host displayed while unchecked and style its settled states yourself.
+
+`data-starting-style` and `data-ending-style` describe transition phases, not permanent checked state.
+Use `data-checked` / `data-unchecked` for settled-state styling. An initially checked indicator does
+not play an enter transition.
+
+| Attribute | Present when |
+| --- | --- |
+| `data-checked` | The parent item is checked. |
+| `data-unchecked` | The parent item is unchecked. |
+| `data-indeterminate` | The parent item is indeterminate. |
+| `data-disabled` | The item or Menu Root is disabled. |
+| `data-starting-style` | The indicator begins entering. |
+| `data-ending-style` | The indicator is exiting. |
 
 ### RdxMenuRadioItemIndicator
 
 Visible only when the parent `rdxMenuRadioItem` is selected. Reads state from the parent via
-context — no inputs.
+context. Like the checkbox indicator, its decorative host has `aria-hidden="true"` and remains
+displayed until its CSS exit finishes. Set `[keepMounted]="true"` to leave it displayed while unselected.
+Re-selecting during exit cancels the old completion. An initially selected indicator does not animate in.
+
+| Attribute | Present when |
+| --- | --- |
+| `data-checked` | The parent item is selected. |
+| `data-unchecked` | The parent item is unselected. |
+| `data-disabled` | The item, RadioGroup or Menu Root is disabled. |
+| `data-starting-style` | The indicator begins entering. |
+| `data-ending-style` | The indicator is exiting. |
 
 ## Accessibility
 

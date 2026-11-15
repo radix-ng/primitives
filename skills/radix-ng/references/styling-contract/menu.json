@@ -102,6 +102,61 @@
       "attribute": "data-disabled",
       "parts": "RdxMenuRadioItem",
       "values": "The item is disabled."
+    },
+    {
+      "attribute": "data-checked",
+      "parts": "RdxMenuCheckboxItemIndicator",
+      "values": "The parent item is checked."
+    },
+    {
+      "attribute": "data-unchecked",
+      "parts": "RdxMenuCheckboxItemIndicator",
+      "values": "The parent item is unchecked."
+    },
+    {
+      "attribute": "data-indeterminate",
+      "parts": "RdxMenuCheckboxItemIndicator",
+      "values": "The parent item is indeterminate."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "RdxMenuCheckboxItemIndicator",
+      "values": "The item or Menu Root is disabled."
+    },
+    {
+      "attribute": "data-starting-style",
+      "parts": "RdxMenuCheckboxItemIndicator",
+      "values": "The indicator begins entering."
+    },
+    {
+      "attribute": "data-ending-style",
+      "parts": "RdxMenuCheckboxItemIndicator",
+      "values": "The indicator is exiting."
+    },
+    {
+      "attribute": "data-checked",
+      "parts": "RdxMenuRadioItemIndicator",
+      "values": "The parent item is selected."
+    },
+    {
+      "attribute": "data-unchecked",
+      "parts": "RdxMenuRadioItemIndicator",
+      "values": "The parent item is unselected."
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "RdxMenuRadioItemIndicator",
+      "values": "The item, RadioGroup or Menu Root is disabled."
+    },
+    {
+      "attribute": "data-starting-style",
+      "parts": "RdxMenuRadioItemIndicator",
+      "values": "The indicator begins entering."
+    },
+    {
+      "attribute": "data-ending-style",
+      "parts": "RdxMenuRadioItemIndicator",
+      "values": "The indicator is exiting."
     }
   ]
 }

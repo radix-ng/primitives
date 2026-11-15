@@ -9,6 +9,7 @@ import { handleOverlapCases } from './handle-overlap';
 import { highlightCases, highlightConfig, type createHighlightRecorder } from './highlight';
 import { hostCases, hostConfig, type HostClick } from './hosts';
 import { hybridCases } from './hybrid';
+import { indicatorCases, indicatorConfig } from './indicators';
 import { initialFocusCases } from './initial-focus';
 import { itemDialogCases, itemDialogConfig } from './item-dialog';
 import { itemPopoverCases, itemPopoverConfig } from './item-popover';
@@ -57,6 +58,7 @@ export const basicCases = [
 ] as const;
 export const cases = [
     ...basicCases,
+    ...indicatorCases,
     ...highlightCases,
     ...multiTriggerCases,
     ...handleOverlapCases,
@@ -113,6 +115,7 @@ export function config() {
     return {
         name: name as CaseName,
         dir: name.endsWith('-rtl') ? ('rtl' as const) : ('ltr' as const),
+        indicator: indicatorConfig(name),
         removal,
         empty,
         touch,

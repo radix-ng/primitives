@@ -168,6 +168,29 @@ export class MenuDriver {
                     '[data-testid="host-popup"], [data-testid="item-popup"]'
                 );
                 return {
+                    ...(window.menuParity.config.indicator
+                        ? {
+                              // Angular retains the consumer-owned host when hidden; React removes it.
+                              // Compare visible state, and retain raw host presence in scenario measurements.
+                              indicators: items.map((item) => {
+                                  const node = item.querySelector<HTMLElement>('[data-testid$="-indicator"]');
+                                  return {
+                                      id: item.getAttribute('data-testid'),
+                                      ...(visible(node)
+                                          ? {
+                                                visible: true,
+                                                ariaHidden: node!.getAttribute('aria-hidden'),
+                                                checked: node!.hasAttribute('data-checked'),
+                                                unchecked: node!.hasAttribute('data-unchecked'),
+                                                disabled: node!.hasAttribute('data-disabled'),
+                                                starting: node!.hasAttribute('data-starting-style'),
+                                                ending: node!.hasAttribute('data-ending-style')
+                                            }
+                                          : { visible: false })
+                                  };
+                              })
+                          }
+                        : {}),
                     ...(window.menuParity.popover
                         ? {
                               popover: {

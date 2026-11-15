@@ -271,6 +271,15 @@ function ReactMenu() {
                                                         trace.value(value, details.reason, details.isCanceled);
                                                     }}
                                                 >
+                                                    {settings.indicator && (
+                                                        <Menu.CheckboxItemIndicator
+                                                            className={settings.indicator.className}
+                                                            keepMounted={settings.indicator.retained}
+                                                            data-testid="check-indicator"
+                                                        >
+                                                            ✓
+                                                        </Menu.CheckboxItemIndicator>
+                                                    )}
                                                     Notifications
                                                 </Menu.CheckboxItem>
                                             )}
@@ -289,6 +298,15 @@ function ReactMenu() {
                                                         value="one"
                                                         data-testid="radio-one"
                                                     >
+                                                        {settings.indicator && (
+                                                            <Menu.RadioItemIndicator
+                                                                className={settings.indicator.className}
+                                                                keepMounted={settings.indicator.retained}
+                                                                data-testid="radio-one-indicator"
+                                                            >
+                                                                ●
+                                                            </Menu.RadioItemIndicator>
+                                                        )}
                                                         Small
                                                     </Menu.RadioItem>
                                                     <Menu.RadioItem
@@ -299,6 +317,15 @@ function ReactMenu() {
                                                         disabled={settings.name === 'touch-disabled-radio'}
                                                         data-testid="radio-two"
                                                     >
+                                                        {settings.indicator && (
+                                                            <Menu.RadioItemIndicator
+                                                                className={settings.indicator.className}
+                                                                keepMounted={settings.indicator.retained}
+                                                                data-testid="radio-two-indicator"
+                                                            >
+                                                                ●
+                                                            </Menu.RadioItemIndicator>
+                                                        )}
                                                         Large
                                                     </Menu.RadioItem>
                                                 </Menu.RadioGroup>

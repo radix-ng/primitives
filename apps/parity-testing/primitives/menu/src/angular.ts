@@ -173,6 +173,16 @@ const settings = config();
                                             data-testid="check"
                                             rdxMenuCheckboxItem
                                         >
+                                            @if (settings.indicator; as indicator) {
+                                                <span
+                                                    [class]="indicator.className"
+                                                    [keepMounted]="indicator.retained"
+                                                    data-testid="check-indicator"
+                                                    rdxMenuCheckboxItemIndicator
+                                                >
+                                                    ✓
+                                                </span>
+                                            }
                                             Notifications
                                         </button>
                                     }
@@ -184,6 +194,16 @@ const settings = config();
                                                 data-testid="radio-one"
                                                 rdxMenuRadioItem
                                             >
+                                                @if (settings.indicator; as indicator) {
+                                                    <span
+                                                        [class]="indicator.className"
+                                                        [keepMounted]="indicator.retained"
+                                                        data-testid="radio-one-indicator"
+                                                        rdxMenuRadioItemIndicator
+                                                    >
+                                                        ●
+                                                    </span>
+                                                }
                                                 Small
                                             </button>
                                             <button
@@ -193,6 +213,16 @@ const settings = config();
                                                 data-testid="radio-two"
                                                 rdxMenuRadioItem
                                             >
+                                                @if (settings.indicator; as indicator) {
+                                                    <span
+                                                        [class]="indicator.className"
+                                                        [keepMounted]="indicator.retained"
+                                                        data-testid="radio-two-indicator"
+                                                        rdxMenuRadioItemIndicator
+                                                    >
+                                                        ●
+                                                    </span>
+                                                }
                                                 Large
                                             </button>
                                         </div>

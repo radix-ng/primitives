@@ -28,6 +28,7 @@ import { CheckedState, isIndeterminate } from './menu-utils';
 
 export interface RdxMenuCheckboxItemContext {
     checked: Signal<CheckedState>;
+    disabled: Signal<boolean>;
 }
 
 /** Payload of {@link RdxMenuCheckboxItem.onCheckedChange} — cancelable via `eventDetails.cancel()`. */
@@ -42,7 +43,8 @@ export const [injectRdxMenuCheckboxItemContext, provideRdxMenuCheckboxItemContex
 const checkboxItemContextFactory = (): RdxMenuCheckboxItemContext => {
     const instance = inject(RdxMenuCheckboxItem);
     return {
-        checked: instance.checked
+        checked: instance.checked,
+        disabled: instance.effectiveDisabled
     };
 };
 
@@ -103,7 +105,8 @@ export class RdxMenuCheckboxItem {
             this.rootContext?.isOpen() !== false &&
             (this.rootContext ? this.rootContext.activeIndex() === this.listItem.index() : this.isFocused())
     );
-    protected readonly effectiveDisabled = computed(() => this.disabled() || (this.rootContext?.disabled() ?? false));
+    /** @ignore Effective state shared with the item's indicator. */
+    readonly effectiveDisabled = computed(() => this.disabled() || (this.rootContext?.disabled() ?? false));
 
     // Expose helpers for host bindings
     protected readonly isIndeterminate = isIndeterminate;

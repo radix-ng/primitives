@@ -1,5 +1,9 @@
 # Menu behavioral comparisons
 
+The [final API/deviation audit](../../../../packages/primitives/menu/AUDIT.md) inventories the
+pinned public parts and outstanding contracts. These comparisons establish the scope below,
+not complete Menu parity.
+
 The `highlight-` block compares per-Root callback sequences, native source-event identity, labels,
 disabled hover, collection replacement/reorder and LTR/RTL children. Raw cross-Root order and native
 event types accompany the report. The pin's stale fallback text label has one exact exception;
@@ -10,7 +14,7 @@ port is 4505. Angular fixtures are AOT compiled and React imports the unmodified
 Base UI 1.9.0 pin: `cf696d6f6e08c699c5bda24d5a033430909f2285`, archive SHA-256
 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 
-368 scenarios define 1104 planned comparisons: 1056 execute, with 48 touch capability skips. They cover native keyboard and
+378 scenarios define 1134 planned comparisons: 1086 execute, with 48 touch capability skips. They cover native keyboard and
 pointer opening, disabled/focusable items, roving focus, edges and looping, repeated and explicit-label
 typeahead, selection and stay-open items, cancelable transactions, modal/background activation,
 forward/backward Tab, checkbox/radio values, LTR/RTL submenu ownership and custom identity links.
@@ -45,6 +49,19 @@ or framework state mirror is introduced.
 Raw records include source commit/digest, browser versions, open/change completions, native change
 event types, trusted pointer coordinates/deltas and native press/release timestamps. CSS layout and default focus are observed;
 the adapters do not synthesize state, focus, pointer deltas or lifecycle completion.
+
+## Indicators
+
+Ten `checkbox-indicator` / `radio-indicator` scenarios compare fresh/retained hosts, settled entry,
+native accessible names, natural CSS exit completion and paused exits interrupted by reselection.
+The paused cases finish real animations through WAAPI; natural cases require the native animationend.
+The item state stays uncontrolled, and selection always uses native Space input.
+
+Angular owns an attribute-directive host and hides it after exit; React removes its indicator unless
+keepMounted is set. Compare actual visibility and visible state attributes rather than requiring
+identical host creation. Raw measurements retain host presence/display and running animation states.
+No exception or synthetic completion is introduced. Disabled inheritance is covered through Angular
+unit tests for item, group and Root ownership.
 
 Nine collection cases use native F3/F4 application commands for insertion, focused removal, keyed
 reordering, disabling and label updates. They observe index-based highlight, native arrow continuation

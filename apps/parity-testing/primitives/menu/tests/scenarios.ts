@@ -10,6 +10,7 @@ import { handleOverlapScenarios } from './handle-overlap.scenarios';
 import { highlightScenarios } from './highlight.scenarios';
 import { hostScenarios } from './hosts.scenarios';
 import { hybridScenarios } from './hybrid.scenarios';
+import { indicatorScenarios } from './indicators.scenarios';
 import { initialFocusScenarios } from './initial-focus.scenarios';
 import { itemDialogScenarios } from './item-dialog.scenarios';
 import { itemPopoverScenarios } from './item-popover.scenarios';
@@ -22,6 +23,7 @@ import { multiTriggerLifecycleScenarios } from './trigger-lifecycle.scenarios';
 import { multiTriggerScenarios } from './triggers.scenarios';
 
 export const scenarios = [
+    ...indicatorScenarios,
     ...itemPopoverScenarios,
     ...popoverMenuScenarios,
     ...itemDialogScenarios,

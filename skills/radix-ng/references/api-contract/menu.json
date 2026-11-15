@@ -26,13 +26,13 @@
       "directive": "RdxMenuCheckboxItemIndicator",
       "selector": "[rdxMenuCheckboxItemIndicator]",
       "exportAs": "rdxMenuCheckboxItemIndicator",
-      "description": "Renders when the parent checkbox item is checked or indeterminate.\nSet `keepMounted` to keep the element in the DOM when unchecked (enables CSS animations).",
+      "description": "Renders when the parent checkbox item is checked or indeterminate.\nThe consumer-owned host hides after its CSS exit finishes. `keepMounted` leaves it displayed\nwhile unchecked, so the consumer can style both settled states.",
       "inputs": [
         {
           "name": "keepMounted",
           "type": "boolean",
           "default": "false",
-          "description": "Keep the indicator in the DOM when unchecked so CSS exit animations can play."
+          "description": "Leave the host displayed when unchecked. Exit animations also finish when false."
         }
       ],
       "outputs": []
@@ -376,13 +376,13 @@
       "directive": "RdxMenuRadioItemIndicator",
       "selector": "[rdxMenuRadioItemIndicator]",
       "exportAs": "rdxMenuRadioItemIndicator",
-      "description": "Renders when the parent radio item is selected.\nSet `keepMounted` to keep the element in the DOM when unselected (enables CSS animations).",
+      "description": "Renders when the parent radio item is selected.\nThe consumer-owned host hides after its CSS exit finishes. `keepMounted` leaves it displayed\nwhile unselected, so the consumer can style both settled states.",
       "inputs": [
         {
           "name": "keepMounted",
           "type": "boolean",
           "default": "false",
-          "description": "Keep the indicator in the DOM when unselected so CSS exit animations can play."
+          "description": "Leave the host displayed when unselected. Exit animations also finish when false."
         }
       ],
       "outputs": []
