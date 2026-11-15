@@ -15,6 +15,7 @@ import { changeHighlightEntries, createHighlightRecorder } from './highlight';
 import { ReactHosts } from './hosts.react';
 import { ReactItemDialog } from './item-dialog.react';
 import { ReactItemPopover } from './item-popover.react';
+import { ReactModels } from './models.react';
 import { ReactPlacement } from './placement.react';
 import { ReactPopoverMenu } from './popover.react';
 import { ReactProjection } from './projection.react';
@@ -355,7 +356,9 @@ function ReactMenu() {
     );
 }
 createRoot(document.getElementById('root')!).render(
-    settings.boundary ? (
+    settings.models ? (
+        <ReactModels />
+    ) : settings.boundary ? (
         <ReactBoundary />
     ) : settings.placement ? (
         <ReactPlacement />

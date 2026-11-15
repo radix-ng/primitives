@@ -18,6 +18,11 @@ Match each Base UI part's documented boolean attributes (`data-open`, `data-clos
 
 Use `input`, `model` and `output`; boolean inputs use Angular's `booleanAttribute` with the core `BooleanInput` type. Existing families initialize a defined `defaultValue` from an effect. Preserve the family's controlled/default semantics and verify behavior rather than mechanically forcing every root into one state template. Derive state with `computed` / `linkedSignal`; avoid unnecessary mirrors.
 
+Menu snapshots defaultOpen/defaultValue once through `watch([], ...)`, after initial inputs are set.
+Root uses ngOnChanges solely to distinguish an explicit open=false binding from an omitted model(false);
+the hook does not own state or synchronize inputs. This narrow public-hook exception preserves the
+boolean model API without inspecting Angular internals. See [ADR 0071](../adr/0071-menu-initial-model-defaults.md).
+
 ## Lifecycle and zoneless execution
 
 | Need                                   | API                                                        |

@@ -14,7 +14,7 @@ port is 4505. Angular fixtures are AOT compiled and React imports the unmodified
 Base UI 1.9.0 pin: `cf696d6f6e08c699c5bda24d5a033430909f2285`, archive SHA-256
 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 
-426 scenarios define 1278 planned comparisons: 1218 execute, with 60 capability skips (48 touch, 12 viewport emulation). They cover native keyboard and
+438 scenarios define 1314 planned comparisons: 1254 execute, with 60 capability skips (48 touch, 12 viewport emulation). They cover native keyboard and
 pointer opening, disabled/focusable items, roving focus, edges and looping, repeated and explicit-label
 typeahead, selection and stay-open items, cancelable transactions, modal/background activation,
 forward/backward Tab, checkbox/radio values, LTR/RTL submenu ownership and custom identity links.
@@ -49,6 +49,15 @@ or framework state mirror is introduced.
 Raw records include source commit/digest, browser versions, open/change completions, native change
 event types, trusted pointer coordinates/deltas and native press/release timestamps. CSS layout and default focus are observed;
 the adapters do not synthesize state, focus, pointer deltas or lifecycle completion.
+
+## Initial models and defaults
+
+Twelve `model-` scenarios cover Root's initial explicit false/true, omitted models, late defaults
+before/after close, a nested Root, and RadioGroup explicit/undefined/null/default values. Native
+F3 changes application defaults; actual input selects values, opens and closes menus. Snapshots
+retain focus, highlight, visibility, values and callback/completion sequences. Each case runs in
+all three engines without new exceptions. Angular keeps normal writable/two-way model semantics;
+the pin keeps its own state implementation. See [ADR 0071](../../../../docs/adr/0071-menu-initial-model-defaults.md).
 
 ## Layout viewport during zoom
 

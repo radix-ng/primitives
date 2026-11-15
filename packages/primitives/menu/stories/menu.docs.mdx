@@ -182,6 +182,11 @@ signal/model lifecycle; there is no separate React-style controlled state store.
 still pass through the cancelable `onOpenChange` transaction, whose `eventDetails.trigger` names
 the initiating element.
 
+`defaultOpen` is read once after initial inputs are assigned. An explicit `open` value takes
+precedence, including `[open]="false"` with `[defaultOpen]="true"`. Later `defaultOpen` changes do
+not open or reopen the menu, even if its initial default was false. Bind `open` for delayed or live
+application updates. The same initialization rule applies to nested Menu Roots.
+
 The handle's `open(id)` and `close()` work while its Root is mounted. Requests without a mounted
 owner are ignored. `isOpen()` is an Angular signal. Scope each handle to one popup owner; surviving
 detached triggers reconnect when that owner is recreated. If Roots briefly overlap during a view
@@ -391,6 +396,11 @@ defaults to `false` for radio items). Bind `[(value)]` for controlled state or u
 uncontrolled state. Values may be strings, numbers, objects, or other types and are compared by identity.
 Set `disabled` on the group to disable all of its radio items. A nested `rdxMenuGroupLabel`
 automatically labels the group through `aria-labelledby`.
+
+`defaultValue` is an initial fallback only when `value` is `undefined`. Explicit values, including
+`null`, `false` and `0`, take precedence. Later default changes are ignored even when the group
+started without a default; they do not replace a user's selection. Use `[(value)]` for asynchronous
+or live application values. Both models retain Angular's normal writable and two-way binding behavior.
 
 <Canvas of={Stories.RadioItem} />
 

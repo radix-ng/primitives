@@ -16,6 +16,7 @@ import { initialFocusScenarios } from './initial-focus.scenarios';
 import { itemDialogScenarios } from './item-dialog.scenarios';
 import { itemPopoverScenarios } from './item-popover.scenarios';
 import { lifecycleScenarios } from './lifecycle.scenarios';
+import { modelScenarios } from './models.scenarios';
 import { placementScenarios } from './placement.scenarios';
 import { pointerScenarios } from './pointer.scenarios';
 import { popoverMenuScenarios } from './popover.scenarios';
@@ -27,6 +28,7 @@ import { multiTriggerScenarios } from './triggers.scenarios';
 import { viewportScenarios } from './viewport.scenarios';
 
 export const scenarios = [
+    ...modelScenarios,
     ...viewportScenarios,
     ...positioningScenarios,
     ...boundaryScenarios,

@@ -102,3 +102,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0068](0068-popper-collision-boundaries.md)                                  | Accepted               | Share Base UI collision boundaries through Popper                                    |
 | [0069](0069-popper-position-method-and-sticky.md)                            | Accepted               | Adopt Base UI positionMethod and boolean sticky                                      |
 | [0070](0070-layout-viewport-shift.md)                                        | Accepted               | Use the layout viewport for contextual popup shifting                                |
+| [0071](0071-menu-initial-model-defaults.md)                                  | Accepted               | Preserve initial Menu models over one-time defaults                                  |

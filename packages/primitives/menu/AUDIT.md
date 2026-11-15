@@ -12,8 +12,8 @@ subsequent implementation status is recorded below.
 
 The existing suite establishes substantial plain Menu behavior, not complete Menu parity.
 The source inventory is now complete for this pin. Five defect/contract groups were found; A1 has
-since been addressed below, along with A2's pinned positioning contracts. Remaining work consists of
-A3–A5 and the unimplemented filterable Menu capability A6. Native device/AT verification remains
+since been addressed below, along with A2's pinned positioning contracts and A3's initialization rules.
+Remaining work consists of A4–A5 and the unimplemented filterable Menu capability A6. Native device/AT verification remains
 separate. The main matrix is [PARITY.md](PARITY.md); the executable comparison scope is documented
 in the [runner](../../../apps/parity-testing/primitives/menu/README.md).
 
@@ -22,35 +22,35 @@ in the [runner](../../../apps/parity-testing/primitives/menu/README.md).
 All 28 public export symbols are accounted for below (Handle/createHandle share a row).
 “Mapped” identifies the Angular counterpart; it does not certify every possible composition.
 
-| Pinned Base UI export | Angular counterpart                 | Audit result                                                                                                                                    |
-| --------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Root                  | RdxMenuRoot                         | State, disabled/modal/orientation, highlighting, cancellation, completion, trigger identity and handle mapped; default initialization issue A3. |
-| SubmenuRoot           | Nested RdxMenuRoot                  | DI-owned submenu composition; a second selector is unnecessary. Shares A2/A3.                                                                   |
-| Trigger               | RdxMenuTrigger                      | Native/custom host, disabled, hover delays, handle/payload and native id mapped.                                                                |
-| SubmenuTrigger        | RdxMenuSubTrigger                   | Native/custom host, disabled, label, hover delays and native id mapped.                                                                         |
-| Item                  | RdxMenuItem                         | Native click/keyboard activation, label, disabled, closeOnClick and highlight mapped.                                                           |
-| LinkItem              | RdxMenuLinkItem on an anchor        | Native href/router composition and stay-open default mapped; Angular also supports disabled links.                                              |
-| CheckboxItem          | RdxMenuCheckboxItem                 | Checked model and cancelable change mapped. No separate defaultChecked input; see adaptations below. Indeterminate is an Angular extension.     |
-| CheckboxItemIndicator | RdxMenuCheckboxItemIndicator        | Lifecycle, disabled state and decorative semantics addressed in follow-up A1.                                                                   |
-| RadioGroup            | RdxMenuRadioGroup                   | Value/defaultValue/disabled and cancelable change mapped; A3.                                                                                   |
-| RadioItem             | RdxMenuRadioItem                    | Required value, disabled/label, checked/highlight and closeOnClick mapped.                                                                      |
-| RadioItemIndicator    | RdxMenuRadioItemIndicator           | Same follow-up as CheckboxItemIndicator, A1.                                                                                                    |
-| Popup                 | RdxMenuPopup                        | Public id/finalFocus and documented popup state attributes mapped. initialFocus is internal in the pin.                                         |
-| Positioner            | RdxMenuPositioner / shared Popper   | Pinned positioning contracts covered; zoom evidence uses Chromium emulation, A2.                                                                |
-| Portal                | Structural RdxMenuPortal            | keepMounted and custom element containers mapped; unsupported targets, A4.                                                                      |
-| Backdrop              | RdxMenuBackdrop                     | Open/closed/transition attributes mapped; internal modal backdrop remains shared infrastructure.                                                |
-| Arrow                 | RdxMenuArrow / RdxPopperArrow       | Open/closed, side/align and composed data-uncentered mapped.                                                                                    |
-| Viewport              | RdxMenuViewport / usePopupViewport  | Current/previous snapshots, direction, transition/instant attributes and dimensions mapped.                                                     |
-| Group                 | RdxMenuGroup                        | Group role and label association mapped.                                                                                                        |
-| GroupLabel            | RdxMenuGroupLabel                   | Generated association works; authored id and decorative semantics differ, A5.                                                                   |
-| Separator             | RdxMenuSeparator                    | Orientation and semantic/data attributes mapped.                                                                                                |
-| Handle / createHandle | RdxMenuHandle / createRdxMenuHandle | Detached trigger/payload, open/close, isOpen and owner lifetime mapped.                                                                         |
-| FilterProvider        | None                                | Missing capability A6.                                                                                                                          |
-| Input                 | None in Menu                        | Missing capability A6; a native input alone does not supply its focus/filter contract.                                                          |
-| List                  | None in Menu                        | Missing capability A6; an Angular item loop alone does not supply its navigation contract.                                                      |
-| Clear                 | None in Menu                        | Missing capability A6.                                                                                                                          |
-| Empty                 | None in Menu                        | Missing capability A6.                                                                                                                          |
-| useFilter             | Existing core.useFilter             | Reusable locale-aware predicate building block; does not implement the missing Menu filtering lifecycle.                                        |
+| Pinned Base UI export | Angular counterpart                 | Audit result                                                                                                                                         |
+| --------------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Root                  | RdxMenuRoot                         | State, disabled/modal/orientation, highlighting, cancellation, completion, trigger identity and handle mapped; default initialization addressed, A3. |
+| SubmenuRoot           | Nested RdxMenuRoot                  | DI-owned submenu composition; a second selector is unnecessary. Shares A2/A3.                                                                        |
+| Trigger               | RdxMenuTrigger                      | Native/custom host, disabled, hover delays, handle/payload and native id mapped.                                                                     |
+| SubmenuTrigger        | RdxMenuSubTrigger                   | Native/custom host, disabled, label, hover delays and native id mapped.                                                                              |
+| Item                  | RdxMenuItem                         | Native click/keyboard activation, label, disabled, closeOnClick and highlight mapped.                                                                |
+| LinkItem              | RdxMenuLinkItem on an anchor        | Native href/router composition and stay-open default mapped; Angular also supports disabled links.                                                   |
+| CheckboxItem          | RdxMenuCheckboxItem                 | Checked model and cancelable change mapped. No separate defaultChecked input; see adaptations below. Indeterminate is an Angular extension.          |
+| CheckboxItemIndicator | RdxMenuCheckboxItemIndicator        | Lifecycle, disabled state and decorative semantics addressed in follow-up A1.                                                                        |
+| RadioGroup            | RdxMenuRadioGroup                   | Value/defaultValue/disabled and cancelable change mapped; initialization addressed, A3.                                                              |
+| RadioItem             | RdxMenuRadioItem                    | Required value, disabled/label, checked/highlight and closeOnClick mapped.                                                                           |
+| RadioItemIndicator    | RdxMenuRadioItemIndicator           | Same follow-up as CheckboxItemIndicator, A1.                                                                                                         |
+| Popup                 | RdxMenuPopup                        | Public id/finalFocus and documented popup state attributes mapped. initialFocus is internal in the pin.                                              |
+| Positioner            | RdxMenuPositioner / shared Popper   | Pinned positioning contracts covered; zoom evidence uses Chromium emulation, A2.                                                                     |
+| Portal                | Structural RdxMenuPortal            | keepMounted and custom element containers mapped; unsupported targets, A4.                                                                           |
+| Backdrop              | RdxMenuBackdrop                     | Open/closed/transition attributes mapped; internal modal backdrop remains shared infrastructure.                                                     |
+| Arrow                 | RdxMenuArrow / RdxPopperArrow       | Open/closed, side/align and composed data-uncentered mapped.                                                                                         |
+| Viewport              | RdxMenuViewport / usePopupViewport  | Current/previous snapshots, direction, transition/instant attributes and dimensions mapped.                                                          |
+| Group                 | RdxMenuGroup                        | Group role and label association mapped.                                                                                                             |
+| GroupLabel            | RdxMenuGroupLabel                   | Generated association works; authored id and decorative semantics differ, A5.                                                                        |
+| Separator             | RdxMenuSeparator                    | Orientation and semantic/data attributes mapped.                                                                                                     |
+| Handle / createHandle | RdxMenuHandle / createRdxMenuHandle | Detached trigger/payload, open/close, isOpen and owner lifetime mapped.                                                                              |
+| FilterProvider        | None                                | Missing capability A6.                                                                                                                               |
+| Input                 | None in Menu                        | Missing capability A6; a native input alone does not supply its focus/filter contract.                                                               |
+| List                  | None in Menu                        | Missing capability A6; an Angular item loop alone does not supply its navigation contract.                                                           |
+| Clear                 | None in Menu                        | Missing capability A6.                                                                                                                               |
+| Empty                 | None in Menu                        | Missing capability A6.                                                                                                                               |
+| useFilter             | Existing core.useFilter             | Reusable locale-aware predicate building block; does not implement the missing Menu filtering lifecycle.                                             |
 
 ## Findings and required evidence
 
@@ -164,7 +164,27 @@ Next checks: omitted placement inputs in LTR/RTL, vertical Menubar, edge fallbac
 rectangle/native boundaries and transformed custom containers. Resolve the shared API/default policy
 once in Popper/configuration and verify Select, Popover, Context Menu and Menubar consumers.
 
-### A3 — P2: defaults can overwrite an explicit or already-changed model
+### A3 — addressed: initial models take precedence over one-time defaults
+
+Follow-up 2026-11-15: Menu Root and RadioGroup now initialize through the owned watch([], ...)
+utility. A defined initial model wins; defaults are consumed once, including false/undefined defaults.
+Root retains model(false) and uses Angular's public ngOnChanges only to identify explicit initial
+open bindings. RadioGroup preserves every defined value, including null, false and zero, and only
+uses the initial default when value is undefined. No React controlled store, private signal-node
+patch, widened boolean output or second state owner was added.
+
+Seven assertions first reproduced the old behavior. Eleven unit cases now cover explicit/default
+precedence, late changes, native model writes, nested Roots and a hostDirectives wrapper. Twelve
+new pinned cases cover initial/default open, late defaults before/after close or radio selection,
+explicit null/undefined radio values and accepted nested updates in all three engines. No new
+comparison exception is needed. A server render verifies model/default precedence before hydration
+serialization. See [ADR 0071](../../../docs/adr/0071-menu-initial-model-defaults.md).
+
+Validation passed 292 scoped unit tests, 54 Menu and 27 Menubar comparisons, one SSR case and
+twelve Storybook consumer checks. Library/Storybook builds, consumer generation, focused lint,
+parity tools typecheck and agents:check passed. Full suites were not rerun locally.
+
+Original audit evidence:
 
 [Root's initialization effect](src/menu-root.ts) applies defaultOpen=true even when open=false was
 explicitly bound. [RadioGroup](src/menu-radio-group.ts) applies defaultValue over an explicit value;

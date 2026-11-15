@@ -10,6 +10,11 @@ uncontrolled state. Values may be strings, numbers, objects, or other types and 
 Set `disabled` on the group to disable all of its radio items. A nested `rdxMenuGroupLabel`
 automatically labels the group through `aria-labelledby`.
 
+`defaultValue` is an initial fallback only when `value` is `undefined`. Explicit values, including
+`null`, `false` and `0`, take precedence. Later default changes are ignored even when the group
+started without a default; they do not replace a user's selection. Use `[(value)]` for asynchronous
+or live application values. Both models retain Angular's normal writable and two-way binding behavior.
+
 ```html
 <menu-radio-items-story />
 ```

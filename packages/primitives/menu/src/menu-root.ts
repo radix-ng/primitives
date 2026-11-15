@@ -9,10 +9,12 @@ import {
     InjectionToken,
     input,
     model,
+    OnChanges,
     OnDestroy,
     output,
     signal,
     Signal,
+    SimpleChanges,
     untracked
 } from '@angular/core';
 import type { RdxCompositeListContext } from '@radix-ng/primitives/composite';
@@ -32,7 +34,8 @@ import {
     RdxFloatingNodeRegistration,
     RdxFloatingRootContext,
     RdxPopupLifecycle,
-    usePopupLifecycle
+    usePopupLifecycle,
+    watch
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
@@ -352,7 +355,7 @@ const contextFactory = () => buildContext(inject(RdxMenuRoot));
     ],
     hostDirectives: [RdxPopper, RdxFloatingNodeRegistration]
 })
-export class RdxMenuRoot<Payload = unknown> implements OnDestroy {
+export class RdxMenuRoot<Payload = unknown> implements OnChanges, OnDestroy {
     private readonly popper = inject(RdxPopper);
     private readonly parentFloatingRegistration = inject(RDX_FLOATING_REGISTRATION, { optional: true, skipSelf: true });
     readonly parentRoot: RdxMenuRoot | null = inject(RDX_MENU_ROOT_BOUNDARY, { optional: true, self: true })
@@ -398,13 +401,13 @@ export class RdxMenuRoot<Payload = unknown> implements OnDestroy {
     private popupArrowNavigationHandler: ((event: KeyboardEvent) => boolean) | undefined;
     private popupNavigationHandler: ((event: KeyboardEvent) => boolean) | undefined;
     private triggerInteractionHandler: RdxMenuTriggerInteractionHandler | undefined;
-    private hasAppliedDefaultOpen = false;
+    private hasExplicitOpenInput = false;
     private focusBeforeRetainedOpen: HTMLElement | undefined;
 
     /** Whether the menu is currently open. */
     readonly open = model(false);
 
-    /** Whether the menu is initially open. */
+    /** Initial open value when no defined open input was supplied. Later changes are ignored. */
     readonly defaultOpen = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /** Active trigger identity. Use two-way binding with an externally controlled menu. */
@@ -596,6 +599,13 @@ export class RdxMenuRoot<Payload = unknown> implements OnDestroy {
         return undefined;
     });
 
+    // Model signals cannot distinguish an omitted input from an explicit false. Observe only input
+    // presence through Angular's public hook; model() remains the sole state owner (ADR 0071).
+    // eslint-disable-next-line no-restricted-syntax -- Initial binding presence is not observable through model(false).
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['open']?.currentValue !== undefined) this.hasExplicitOpenInput = true;
+    }
+
     constructor() {
         const parent = this.parentRoot;
         if (parent) {
@@ -612,13 +622,8 @@ export class RdxMenuRoot<Payload = unknown> implements OnDestroy {
             document.addEventListener('pointermove', guard, true);
             onCleanup(() => document.removeEventListener('pointermove', guard, true));
         });
-        effect(() => {
-            const defaultOpen = this.defaultOpen();
-
-            if (!this.hasAppliedDefaultOpen && defaultOpen) {
-                this.hasAppliedDefaultOpen = true;
-                this.open.set(defaultOpen);
-            }
+        watch([], () => {
+            if (!this.hasExplicitOpenInput && !this.open()) this.open.set(this.defaultOpen());
         });
 
         effect(() => this.popper.anchorOverride.set(this.trigger()));

@@ -14,6 +14,7 @@ import { indicatorCases, indicatorConfig } from './indicators';
 import { initialFocusCases } from './initial-focus';
 import { itemDialogCases, itemDialogConfig } from './item-dialog';
 import { itemPopoverCases, itemPopoverConfig } from './item-popover';
+import { modelCases, modelConfig } from './models';
 import type { OverlayProbe } from './overlay-probe';
 import { placementCases, placementConfig } from './placement';
 import { pointerCases, pointerConfig } from './pointer';
@@ -60,6 +61,7 @@ export const basicCases = [
     'dynamic-ids'
 ] as const;
 export const cases = [
+    ...modelCases,
     ...basicCases,
     ...positioningCases,
     ...boundaryCases,
@@ -123,6 +125,7 @@ export function config() {
         name: name as CaseName,
         dir: name.endsWith('-rtl') ? ('rtl' as const) : ('ltr' as const),
         indicator: indicatorConfig(name),
+        models: modelConfig(name),
         placement: placementConfig(name),
         boundary,
         removal,

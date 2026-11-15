@@ -4133,7 +4133,7 @@
               "name": "defaultValue",
               "type": "T | undefined",
               "default": "undefined",
-              "description": "The initially selected value for uncontrolled usage."
+              "description": "Initial selection when value is undefined. Later changes are ignored."
             },
             {
               "name": "disabled",
@@ -4236,7 +4236,7 @@
               "name": "defaultOpen",
               "type": "boolean",
               "default": "false",
-              "description": "Whether the menu is initially open."
+              "description": "Initial open value when no defined open input was supplied. Later changes are ignored."
             },
             {
               "name": "defaultTriggerId",

@@ -1,0 +1,743 @@
+{
+    "evaluationId": "2026-11-15-cross-browser-v4",
+    "status": "passed",
+    "additionalLiveSessions": 0,
+    "componentRepairs": [],
+    "revision": "7743fc39590779aac048ba1bed499ef5f318a7d6",
+    "platform": "darwin",
+    "node": "v24.22.2",
+    "playwright": "1.60.0",
+    "library": "1.3.0",
+    "angular": "22.0.2",
+    "typescript": "6.0.3",
+    "skillsSnapshot": "d000174e3fb69ef5424b73492d73f34b84e3c80f",
+    "originalGeneration": {
+        "model": "gpt-6.1-sol",
+        "reasoningEffort": "low"
+    },
+    "checksVersion": "consumer-browser-matrix/2",
+    "browserStats": {
+        "startTime": "2026-11-15T11:55:10.970Z",
+        "duration": 23179.749,
+        "expected": 36,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+    },
+    "matrix": {
+        "chromium": {
+            "version": "148.0.7778.96",
+            "select": {
+                "passed": 4,
+                "failed": 0,
+                "total": 4
+            },
+            "email": {
+                "passed": 8,
+                "failed": 0,
+                "total": 8
+            }
+        },
+        "firefox": {
+            "version": "150.0.2",
+            "select": {
+                "passed": 4,
+                "failed": 0,
+                "total": 4
+            },
+            "email": {
+                "passed": 8,
+                "failed": 0,
+                "total": 8
+            }
+        },
+        "webkit": {
+            "version": "26.4",
+            "select": {
+                "passed": 4,
+                "failed": 0,
+                "total": 4
+            },
+            "email": {
+                "passed": 8,
+                "failed": 0,
+                "total": 8
+            }
+        }
+    },
+    "cases": [
+        {
+            "project": "select-chromium",
+            "host": "select.spec.ts",
+            "title": "generated Dialog composition preserves selection, nested Escape and focus ownership",
+            "status": "passed",
+            "durationMs": 523,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/select-generated-Dialog-co-60713--Escape-and-focus-ownership-select-chromium/trace.zip"
+            ]
+        },
+        {
+            "project": "select-chromium",
+            "host": "select.spec.ts",
+            "title": "generated application respects externally bound disabled and resumes selection",
+            "status": "passed",
+            "durationMs": 386,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/select-generated-applicati-987b3-abled-and-resumes-selection-select-chromium/trace.zip"
+            ]
+        },
+        {
+            "project": "select-chromium",
+            "host": "select.spec.ts",
+            "title": "independent parent verifies AppSelect public bindings, callback payload/count and accessible name",
+            "status": "passed",
+            "durationMs": 272,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/select-independent-parent--c10df-d-count-and-accessible-name-select-chromium/trace.zip"
+            ]
+        },
+        {
+            "project": "select-chromium",
+            "host": "select.spec.ts",
+            "title": "independent parent verifies disabled blocks keyboard/pointer and accepts external values",
+            "status": "passed",
+            "durationMs": 341,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/select-independent-parent--3ce5f-and-accepts-external-values-select-chromium/trace.zip"
+            ]
+        },
+        {
+            "project": "select-firefox",
+            "host": "select.spec.ts",
+            "title": "generated Dialog composition preserves selection, nested Escape and focus ownership",
+            "status": "passed",
+            "durationMs": 997,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/select-generated-Dialog-co-60713--Escape-and-focus-ownership-select-firefox/trace.zip"
+            ]
+        },
+        {
+            "project": "select-firefox",
+            "host": "select.spec.ts",
+            "title": "generated application respects externally bound disabled and resumes selection",
+            "status": "passed",
+            "durationMs": 805,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/select-generated-applicati-987b3-abled-and-resumes-selection-select-firefox/trace.zip"
+            ]
+        },
+        {
+            "project": "select-firefox",
+            "host": "select.spec.ts",
+            "title": "independent parent verifies AppSelect public bindings, callback payload/count and accessible name",
+            "status": "passed",
+            "durationMs": 390,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/select-independent-parent--c10df-d-count-and-accessible-name-select-firefox/trace.zip"
+            ]
+        },
+        {
+            "project": "select-firefox",
+            "host": "select.spec.ts",
+            "title": "independent parent verifies disabled blocks keyboard/pointer and accepts external values",
+            "status": "passed",
+            "durationMs": 482,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/select-independent-parent--3ce5f-and-accepts-external-values-select-firefox/trace.zip"
+            ]
+        },
+        {
+            "project": "select-webkit",
+            "host": "select.spec.ts",
+            "title": "generated Dialog composition preserves selection, nested Escape and focus ownership",
+            "status": "passed",
+            "durationMs": 1201,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/select-generated-Dialog-co-60713--Escape-and-focus-ownership-select-webkit/trace.zip"
+            ]
+        },
+        {
+            "project": "select-webkit",
+            "host": "select.spec.ts",
+            "title": "generated application respects externally bound disabled and resumes selection",
+            "status": "passed",
+            "durationMs": 771,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/select-generated-applicati-987b3-abled-and-resumes-selection-select-webkit/trace.zip"
+            ]
+        },
+        {
+            "project": "select-webkit",
+            "host": "select.spec.ts",
+            "title": "independent parent verifies AppSelect public bindings, callback payload/count and accessible name",
+            "status": "passed",
+            "durationMs": 472,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/select-independent-parent--c10df-d-count-and-accessible-name-select-webkit/trace.zip"
+            ]
+        },
+        {
+            "project": "select-webkit",
+            "host": "select.spec.ts",
+            "title": "independent parent verifies disabled blocks keyboard/pointer and accepts external values",
+            "status": "passed",
+            "durationMs": 546,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/select-independent-parent--3ce5f-and-accepts-external-values-select-webkit/trace.zip"
+            ]
+        },
+        {
+            "project": "email-chromium",
+            "host": "generated application",
+            "title": "label/description association, initial hidden errors and required after blur",
+            "status": "passed",
+            "durationMs": 171,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-generated-applicatio-9a0cb-ors-and-required-after-blur-email-chromium/trace.zip"
+            ]
+        },
+        {
+            "project": "email-chromium",
+            "host": "generated application",
+            "title": "email validation and bidirectional parent control updates",
+            "status": "passed",
+            "durationMs": 183,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-generated-applicatio-82ad1-onal-parent-control-updates-email-chromium/trace.zip"
+            ]
+        },
+        {
+            "project": "email-chromium",
+            "host": "generated application",
+            "title": "disabled skips Tab, blocks pointer/editing, accepts external value and enables again",
+            "status": "passed",
+            "durationMs": 256,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-generated-applicatio-672fe-nal-value-and-enables-again-email-chromium/trace.zip"
+            ]
+        },
+        {
+            "project": "email-chromium",
+            "host": "generated application",
+            "title": "reset restores flags, invalid submit exposes errors and valid submit delivers exactly once",
+            "status": "passed",
+            "durationMs": 309,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-generated-applicatio-9aee7-ubmit-delivers-exactly-once-email-chromium/trace.zip"
+            ]
+        },
+        {
+            "project": "email-firefox",
+            "host": "generated application",
+            "title": "label/description association, initial hidden errors and required after blur",
+            "status": "passed",
+            "durationMs": 800,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-generated-applicatio-9a0cb-ors-and-required-after-blur-email-firefox/trace.zip"
+            ]
+        },
+        {
+            "project": "email-firefox",
+            "host": "generated application",
+            "title": "email validation and bidirectional parent control updates",
+            "status": "passed",
+            "durationMs": 407,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-generated-applicatio-82ad1-onal-parent-control-updates-email-firefox/trace.zip"
+            ]
+        },
+        {
+            "project": "email-firefox",
+            "host": "generated application",
+            "title": "disabled skips Tab, blocks pointer/editing, accepts external value and enables again",
+            "status": "passed",
+            "durationMs": 437,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-generated-applicatio-672fe-nal-value-and-enables-again-email-firefox/trace.zip"
+            ]
+        },
+        {
+            "project": "email-firefox",
+            "host": "generated application",
+            "title": "reset restores flags, invalid submit exposes errors and valid submit delivers exactly once",
+            "status": "passed",
+            "durationMs": 534,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-generated-applicatio-9aee7-ubmit-delivers-exactly-once-email-firefox/trace.zip"
+            ]
+        },
+        {
+            "project": "email-webkit",
+            "host": "generated application",
+            "title": "label/description association, initial hidden errors and required after blur",
+            "status": "passed",
+            "durationMs": 612,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-generated-applicatio-9a0cb-ors-and-required-after-blur-email-webkit/trace.zip"
+            ]
+        },
+        {
+            "project": "email-webkit",
+            "host": "generated application",
+            "title": "email validation and bidirectional parent control updates",
+            "status": "passed",
+            "durationMs": 443,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-generated-applicatio-82ad1-onal-parent-control-updates-email-webkit/trace.zip"
+            ]
+        },
+        {
+            "project": "email-webkit",
+            "host": "generated application",
+            "title": "disabled skips Tab, blocks pointer/editing, accepts external value and enables again",
+            "status": "passed",
+            "durationMs": 505,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-generated-applicatio-672fe-nal-value-and-enables-again-email-webkit/trace.zip"
+            ]
+        },
+        {
+            "project": "email-webkit",
+            "host": "generated application",
+            "title": "reset restores flags, invalid submit exposes errors and valid submit delivers exactly once",
+            "status": "passed",
+            "durationMs": 574,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-generated-applicatio-9aee7-ubmit-delivers-exactly-once-email-webkit/trace.zip"
+            ]
+        },
+        {
+            "project": "email-chromium",
+            "host": "independent parent",
+            "title": "label/description association, initial hidden errors and required after blur",
+            "status": "passed",
+            "durationMs": 170,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-independent-parent-l-5aade-ors-and-required-after-blur-email-chromium/trace.zip"
+            ]
+        },
+        {
+            "project": "email-chromium",
+            "host": "independent parent",
+            "title": "email validation and bidirectional parent control updates",
+            "status": "passed",
+            "durationMs": 184,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-independent-parent-e-1feb5-onal-parent-control-updates-email-chromium/trace.zip"
+            ]
+        },
+        {
+            "project": "email-chromium",
+            "host": "independent parent",
+            "title": "disabled skips Tab, blocks pointer/editing, accepts external value and enables again",
+            "status": "passed",
+            "durationMs": 258,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-independent-parent-d-a83ce-nal-value-and-enables-again-email-chromium/trace.zip"
+            ]
+        },
+        {
+            "project": "email-chromium",
+            "host": "independent parent",
+            "title": "reset restores flags, invalid submit exposes errors and valid submit delivers exactly once",
+            "status": "passed",
+            "durationMs": 326,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-independent-parent-r-68cba-ubmit-delivers-exactly-once-email-chromium/trace.zip"
+            ]
+        },
+        {
+            "project": "email-firefox",
+            "host": "independent parent",
+            "title": "label/description association, initial hidden errors and required after blur",
+            "status": "passed",
+            "durationMs": 280,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-independent-parent-l-5aade-ors-and-required-after-blur-email-firefox/trace.zip"
+            ]
+        },
+        {
+            "project": "email-firefox",
+            "host": "independent parent",
+            "title": "email validation and bidirectional parent control updates",
+            "status": "passed",
+            "durationMs": 284,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-independent-parent-e-1feb5-onal-parent-control-updates-email-firefox/trace.zip"
+            ]
+        },
+        {
+            "project": "email-firefox",
+            "host": "independent parent",
+            "title": "disabled skips Tab, blocks pointer/editing, accepts external value and enables again",
+            "status": "passed",
+            "durationMs": 435,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-independent-parent-d-a83ce-nal-value-and-enables-again-email-firefox/trace.zip"
+            ]
+        },
+        {
+            "project": "email-firefox",
+            "host": "independent parent",
+            "title": "reset restores flags, invalid submit exposes errors and valid submit delivers exactly once",
+            "status": "passed",
+            "durationMs": 539,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-independent-parent-r-68cba-ubmit-delivers-exactly-once-email-firefox/trace.zip"
+            ]
+        },
+        {
+            "project": "email-webkit",
+            "host": "independent parent",
+            "title": "label/description association, initial hidden errors and required after blur",
+            "status": "passed",
+            "durationMs": 374,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-independent-parent-l-5aade-ors-and-required-after-blur-email-webkit/trace.zip"
+            ]
+        },
+        {
+            "project": "email-webkit",
+            "host": "independent parent",
+            "title": "email validation and bidirectional parent control updates",
+            "status": "passed",
+            "durationMs": 375,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-independent-parent-e-1feb5-onal-parent-control-updates-email-webkit/trace.zip"
+            ]
+        },
+        {
+            "project": "email-webkit",
+            "host": "independent parent",
+            "title": "disabled skips Tab, blocks pointer/editing, accepts external value and enables again",
+            "status": "passed",
+            "durationMs": 511,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-independent-parent-d-a83ce-nal-value-and-enables-again-email-webkit/trace.zip"
+            ]
+        },
+        {
+            "project": "email-webkit",
+            "host": "independent parent",
+            "title": "reset restores flags, invalid submit exposes errors and valid submit delivers exactly once",
+            "status": "passed",
+            "durationMs": 581,
+            "errors": [],
+            "trace": [
+                "dist/consumer-generation/2026-11-15-cross-browser-v4/browser-results/email-independent-parent-r-68cba-ubmit-delivers-exactly-once-email-webkit/trace.zip"
+            ]
+        }
+    ],
+    "fixedInputs": {
+        "select": {
+            "source": {
+                "files": 5,
+                "sha256": "a93040edc1d292a8a9fba75a6eade3b24835344fb4c368f7a244ceededaa5ffe"
+            },
+            "sourceFiles": {
+                "src/app/app-select.ts": "86de211b2f4b4b0d995b086c4f0339d11fb10061a7d8f35b12a0bd87ceb736bd",
+                "src/app/app.ts": "101e6e10dddac8a1a9cc442807eeb137d2f9a19e1f4983c19ab9c11988bd21a4",
+                "src/index.html": "ffb5a776db3eb0acaecb7ea55e7f2ed806e0ac629754310413e25c003d0a2cac",
+                "src/main.ts": "0a9d22dcff54fd8c11effc8e871f02f6720ef47ff47c5ca74eac0d918a064538",
+                "src/styles.css": "677d56a8f754453149ed5698fe9906e84e1cc6b9dafcf887558364455b5c9f66"
+            },
+            "dependencies": {
+                "contents": {
+                    "files": 92461,
+                    "sha256": "438d3cd626431bc57a0c88a29fafecba250c1a98c7205e3681202707aa08b90a"
+                },
+                "symlinks": {
+                    "count": 1125,
+                    "sha256": "e8021cc5ffef103ac782a7b40e5fbe78244fc1440e4d5d1620b1bac5c7a6fe05"
+                }
+            },
+            "library": {
+                "files": 219,
+                "sha256": "714d5d1a1898a4e80a2ddcc6adc99444330e424869b82211f4d4adb7e49d63a0"
+            },
+            "protectedFiles": {
+                "package.json": "2483ff81bdd8f3f18308be195da77d1a4e5a08bc3f697cc6510a8a1d419edd72",
+                "pnpm-lock.yaml": "b5bab30789f4dc95ec27e029b939d515a911b7142dd13182a2bfb59d1eb410f2",
+                "angular.json": "e1b9974dd91cfd8a1cabb366c45be6709650ad5c9c167a1493fd1d8ede9c1a3a",
+                "tsconfig.json": "9f766f1d769c87d294226026ccf14fcc35776aff869181cafe3761dde3b2ec92",
+                "tsconfig.app.json": "1f838b91ab7152f1404c00fccb4159b57ebe5dfa67aab561282c40b5ad4ec188",
+                "pnpm-workspace.yaml": "a25c6f63ab2e9000d439a8c1418e62e0fb62f3f666ccf3ad78b1f165b087d7db",
+                "skills-lock.json": "f3ccee67a213d49e16b1a63f8ee2d93a916f6dad0a2daf232442de9797701753",
+                ".npmrc": "922af468ed0e5282c447f400115193f00c4083298b08317939a90a7eeebafad7"
+            },
+            "skills": {
+                "radix-ng": {
+                    "files": 119,
+                    "sha256": "2ffe4674e069a598c3f0c25e60c372156964115df1ccfbb0ca47487a58ac3075"
+                },
+                "radix-ng-examples": {
+                    "files": 393,
+                    "sha256": "f3407a6c55219ba80f889fd5923b0a986897c7c83bd32ddbb9229b8a99a6a0ee"
+                }
+            }
+        },
+        "email": {
+            "source": {
+                "files": 5,
+                "sha256": "e6bf58e2a19e8a3234ce02c53629c252fefdbd96c93b03b5715e4963f2226ecb"
+            },
+            "sourceFiles": {
+                "src/app/app-email-field.ts": "825daad725fb333e956cbcbd61d8a599b3fdf1cbf686c26cb882a686837c66b5",
+                "src/app/app.ts": "c90103034c5969588072440c96cc454e353fb20f5847c6dbf98901d1db96292a",
+                "src/index.html": "ffb5a776db3eb0acaecb7ea55e7f2ed806e0ac629754310413e25c003d0a2cac",
+                "src/main.ts": "0a9d22dcff54fd8c11effc8e871f02f6720ef47ff47c5ca74eac0d918a064538",
+                "src/styles.css": "e74d3a1273ca55b41a3a34d0a7c4a06e3785e849864625e8d22479b445d7b52a"
+            },
+            "dependencies": {
+                "contents": {
+                    "files": 92461,
+                    "sha256": "fd85a1f4a6ceacaabc0a48eb3b2c7baf60a77e4bac04b342563e10eef05851a6"
+                },
+                "symlinks": {
+                    "count": 1125,
+                    "sha256": "e8021cc5ffef103ac782a7b40e5fbe78244fc1440e4d5d1620b1bac5c7a6fe05"
+                }
+            },
+            "library": {
+                "files": 219,
+                "sha256": "714d5d1a1898a4e80a2ddcc6adc99444330e424869b82211f4d4adb7e49d63a0"
+            },
+            "protectedFiles": {
+                "package.json": "2483ff81bdd8f3f18308be195da77d1a4e5a08bc3f697cc6510a8a1d419edd72",
+                "pnpm-lock.yaml": "b5bab30789f4dc95ec27e029b939d515a911b7142dd13182a2bfb59d1eb410f2",
+                "angular.json": "e1b9974dd91cfd8a1cabb366c45be6709650ad5c9c167a1493fd1d8ede9c1a3a",
+                "tsconfig.json": "9f766f1d769c87d294226026ccf14fcc35776aff869181cafe3761dde3b2ec92",
+                "tsconfig.app.json": "1f838b91ab7152f1404c00fccb4159b57ebe5dfa67aab561282c40b5ad4ec188",
+                "pnpm-workspace.yaml": "a25c6f63ab2e9000d439a8c1418e62e0fb62f3f666ccf3ad78b1f165b087d7db",
+                "skills-lock.json": "f3ccee67a213d49e16b1a63f8ee2d93a916f6dad0a2daf232442de9797701753",
+                ".npmrc": "922af468ed0e5282c447f400115193f00c4083298b08317939a90a7eeebafad7"
+            },
+            "skills": {
+                "radix-ng": {
+                    "files": 119,
+                    "sha256": "2ffe4674e069a598c3f0c25e60c372156964115df1ccfbb0ca47487a58ac3075"
+                },
+                "radix-ng-examples": {
+                    "files": 393,
+                    "sha256": "f3407a6c55219ba80f889fd5923b0a986897c7c83bd32ddbb9229b8a99a6a0ee"
+                }
+            }
+        }
+    },
+    "beforeEqualsAfter": true,
+    "initialMatrixInputsEqualFinal": true,
+    "harnessHashes": {
+        "checks.mjs": "1c796082164e948647eea0ce9be6d674179d9228f7b02cea2c604aa726896621",
+        "checks.test.mjs": "7f7ea0e19ae863274abafed7256d632eb4460e7165a68dd97565f697606f59e6",
+        "inputs.mjs": "ec3f97dae5c5477ff4c2aefab4b7392e7ab85328bd3675098cd5e25bfd1d4a27",
+        "inputs.test.mjs": "c1e4c314fa01f7ecc52c9c094893eb71053743872569e34390b4751a48bccd36",
+        "keyboard.ts": "4e525d918ee880c344336ff9e7d42b05f42b006234ac6e02a0a9082312969041",
+        "playwright.config.ts": "5a36df13dbfa7665afa5f692ada3d7097a3b66a102c57fa2dc6e91297be88968",
+        "reproduce-pointer-focus.mjs": "006f41d190950d29837eefcb0a4b821bec4d62cc4cd963d084035f1caa25985b",
+        "run.mjs": "cd5336f82c521a4fc2cacd43e4b563268cbb5a14c07a5c826d5a3cc2cf391487"
+    },
+    "copiedCheckHashes": {
+        "keyboard.ts": "4e525d918ee880c344336ff9e7d42b05f42b006234ac6e02a0a9082312969041",
+        "select.spec.ts": "37d71b872cf37488ba56f540020d350f162b45bf275e7f21b6c765fdf9a6b07a",
+        "email.spec.ts": "db50a00343bd5d1b159aae4e508821a517513aee73365006adb712072f4a2054"
+    },
+    "projectHelper": {
+        "file": "tools/playwright/browser-projects.mts",
+        "sha256": "005294631dc7cc2d07373c2c13ce5e00888bce2f2ebe7c89bc170a1f0e515283"
+    },
+    "runnerPackages": {
+        "@playwright/test": {
+            "version": "1.60.0",
+            "files": 11,
+            "sha256": "26b3c4fa37d2f09ab80fd4258e8da3f08f7351f30d2d814356b3ef6168ab7d32"
+        },
+        "playwright": {
+            "version": "1.60.0",
+            "files": 62,
+            "sha256": "b7f7e3dfae57c86f62df99fe66511a717f079a1a87ef4664a0007ac47aed7439"
+        },
+        "playwright-core": {
+            "version": "1.60.0",
+            "files": 106,
+            "sha256": "66ce4c99441c7d48503ca424c70436ff8579b89a6f73d9ec96f027a6cf25067d"
+        }
+    },
+    "runs": [
+        {
+            "id": "2026-11-15-cross-browser-v1",
+            "status": "infrastructure-failed",
+            "checksVersion": "consumer-browser-matrix/1",
+            "stats": null,
+            "error": "Error: Cannot find module 'playwright/package.json'\nRequire stack:\n- /private/var/folders/pc/bt1j4vls1b1b1_9ldnb5m92w0000gn/T/radix-generation-2026-11-15-third-Kgf4XU/consumer/package.json",
+            "report": "dist/consumer-generation/2026-11-15-cross-browser-v1/report.json",
+            "reportSha256": "d4e81725bbae5d4c65195edb6cca18231c3dc48c9678005b5c8bf49354ec6df4"
+        },
+        {
+            "id": "2026-11-15-cross-browser-v2",
+            "status": "infrastructure-failed",
+            "checksVersion": "consumer-browser-matrix/1",
+            "stats": null,
+            "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n... Skipped lines\n\n  {\n    '@playwright/test': {\n      files: 12,\n+     sha256: '7e702fdba520f73b107386d26b9acb4f9a494e012cfd8ba72bf98e2c06c2d1f3',\n-     sha256: '949f92d6d6526fce9d213885cb83b816d0300a7b428eba1e587d4d5a8776ca22',\n      version: '1.60.0'\n    },\n    'playwright-core': {\n      files: 106,\n      sha256: '66ce4c99441c7d48503ca424c70436ff8579b89a6f73d9ec96f027a6cf25067d',\n...\n      files: 63,\n+     sha256: 'b277b3db21a9cc1db05d75de429a4bc5b0dcb08cfa0b76dcfc7fe57a388242d3',\n-     sha256: 'd776357999612b51a6997a7431b838870b69499d1312033aead7bdba5ab2e84d',\n      version: '1.60.0'\n    }\n  }\n",
+            "report": "dist/consumer-generation/2026-11-15-cross-browser-v2/report.json",
+            "reportSha256": "85a6501b7c6070b9aceecc8b004223262b2d3afcb80777b5e30ea1637521add8"
+        },
+        {
+            "id": "2026-11-15-cross-browser-v3",
+            "status": "browser-checks-failed",
+            "checksVersion": "consumer-browser-matrix/1",
+            "stats": {
+                "startTime": "2026-11-15T11:51:46.307Z",
+                "duration": 27626.982,
+                "expected": 35,
+                "skipped": 0,
+                "unexpected": 1,
+                "flaky": 0
+            },
+            "error": null,
+            "report": "dist/consumer-generation/2026-11-15-cross-browser-v3/report.json",
+            "reportSha256": "9426b531ad43b87b2c6bee3359d3f0c69d73da30d38d166387512b436f406142"
+        },
+        {
+            "id": "2026-11-15-cross-browser-v4",
+            "status": "passed",
+            "checksVersion": "consumer-browser-matrix/2",
+            "stats": {
+                "startTime": "2026-11-15T11:55:10.970Z",
+                "duration": 23179.749,
+                "expected": 36,
+                "skipped": 0,
+                "unexpected": 0,
+                "flaky": 0
+            },
+            "error": null,
+            "report": "dist/consumer-generation/2026-11-15-cross-browser-v4/report.json",
+            "reportSha256": "ad90f8e3a8f3c56e6db801b70068279071ce2c9532abba20be10ed950124b103"
+        }
+    ],
+    "classifications": [
+        {
+            "run": "2026-11-15-cross-browser-v1",
+            "category": "harness-preparation",
+            "finding": "Transitive Playwright lookup used consumer root instead of its owning dependency."
+        },
+        {
+            "run": "2026-11-15-cross-browser-v2",
+            "category": "harness-preparation",
+            "finding": "Cross-installation package identity compared generated .bin shims containing absolute paths; runtime package bytes were equal."
+        },
+        {
+            "run": "2026-11-15-cross-browser-v3",
+            "category": "test-assumption",
+            "finding": "macOS WebKit pointer-checks a checkbox without focusing it. A focus-origin assertion failed before disabled Tab navigation.",
+            "failedCases": [
+                {
+                    "project": "select-webkit",
+                    "host": "select.spec.ts",
+                    "title": "independent parent verifies disabled blocks keyboard/pointer and accepts external values",
+                    "status": "failed",
+                    "durationMs": 5363,
+                    "errors": [
+                        {
+                            "location": {
+                                "file": "/private/var/folders/pc/bt1j4vls1b1b1_9ldnb5m92w0000gn/T/radix-2026-11-15-cross-browser-v3-Vor2u5/checks/select.spec.ts",
+                                "column": 28,
+                                "line": 153
+                            },
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeFocused\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByRole('checkbox', { name: 'Disable selection', exact: true })\nExpected: focused\nReceived: inactive\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeFocused\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('checkbox', { name: 'Disable selection', exact: true })\u001b[22m\n\u001b[2m    14 × locator resolved to <input type=\"checkbox\"/>\u001b[22m\n\u001b[2m       - unexpected value \"inactive\"\u001b[22m\n\n\n  151 |     await checkbox.check();\n  152 |     await expect(trigger).toBeDisabled();\n> 153 |     await expect(checkbox).toBeFocused();\n      |                            ^\n  154 |     await pressKey(page, browserName, 'Tab');\n  155 |     await expect(after).toBeFocused();\n  156 |     await expect(trigger).not.toBeFocused();\n    at /private/var/folders/pc/bt1j4vls1b1b1_9ldnb5m92w0000gn/T/radix-2026-11-15-cross-browser-v3-Vor2u5/checks/select.spec.ts:153:28"
+                        }
+                    ],
+                    "trace": [
+                        "browser-results/select-independent-parent--3ce5f-and-accepts-external-values-select-webkit/trace.zip"
+                    ]
+                }
+            ]
+        },
+        {
+            "run": "2026-11-15-cross-browser-v4",
+            "category": "confirmed-result",
+            "finding": "All 36 cases pass after explicitly focusing the navigation origin; component sources/dependencies unchanged."
+        }
+    ],
+    "nativeReproduction": {
+        "artifacts": "dist/consumer-generation/2026-11-15-native-checkbox-focus",
+        "platform": "darwin",
+        "observations": [
+            {
+                "engine": "chromium",
+                "version": "148.0.7778.96",
+                "trace": "chromium-native-focus.zip",
+                "activeAfterPointer": {
+                    "tag": "INPUT",
+                    "id": "checkbox"
+                },
+                "pointerFocusedCheckbox": true,
+                "explicitOriginAndDisabledNavigation": "passed"
+            },
+            {
+                "engine": "firefox",
+                "version": "150.0.2",
+                "trace": "firefox-native-focus.zip",
+                "activeAfterPointer": {
+                    "tag": "INPUT",
+                    "id": "checkbox"
+                },
+                "pointerFocusedCheckbox": true,
+                "explicitOriginAndDisabledNavigation": "passed"
+            },
+            {
+                "engine": "webkit",
+                "version": "26.4",
+                "trace": "webkit-native-focus.zip",
+                "activeAfterPointer": {
+                    "tag": "BODY",
+                    "id": ""
+                },
+                "pointerFocusedCheckbox": false,
+                "explicitOriginAndDisabledNavigation": "passed"
+            }
+        ]
+    },
+    "artifacts": "dist/consumer-generation/2026-11-15-cross-browser-v4",
+    "traceMatrix": "dist/consumer-generation/2026-11-15-cross-browser-v4/compact-matrix.md",
+    "limitations": [
+        "Saved implementations only; no new generation or reliability estimate.",
+        "macOS browser builds only; no complete accessibility or visual certification.",
+        "Whole dependency hashes are fresh reevaluation attestations, checked against previous protected lock/library/source identities.",
+        "Trace archives remain local, gitignored artifacts."
+    ]
+}

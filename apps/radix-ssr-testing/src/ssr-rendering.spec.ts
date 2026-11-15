@@ -5,6 +5,7 @@ import { Component, provideZonelessChangeDetection, Type } from '@angular/core';
 import { bootstrapApplication, BootstrapContext, provideClientHydration } from '@angular/platform-browser';
 import { provideServerRendering, renderApplication } from '@angular/platform-server';
 import { RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
+import { RdxMenuRadioGroup, RdxMenuRoot } from '@radix-ng/primitives/menu';
 import { _importsSelect, RdxSelectLabel, RdxSelectRoot, RdxSelectTrigger } from '@radix-ng/primitives/select';
 import { describe, expect, it, vi } from 'vitest';
 import AccordionPage from './app/components/accordion/page';
@@ -83,6 +84,26 @@ class NativeSelectPage {
         throw new Error('A native input ref must not run during server rendering.');
     };
 }
+
+@Component({
+    selector: 'app-menu-defaults',
+    imports: [RdxMenuRoot, RdxMenuRadioGroup],
+    template: `
+        <div #explicit="rdxMenuRoot" [open]="false" [defaultOpen]="true" rdxMenuRoot>
+            <output id="explicit-open">{{ explicit.open() }}</output>
+        </div>
+        <div #initial="rdxMenuRoot" [defaultOpen]="true" rdxMenuRoot>
+            <output id="default-open">{{ initial.open() }}</output>
+        </div>
+        <div #group="rdxMenuRadioGroup" value="two" defaultValue="one" rdxMenuRadioGroup>
+            <output id="explicit-radio">{{ group.value() }}</output>
+        </div>
+        <div #fallback="rdxMenuRadioGroup" defaultValue="one" rdxMenuRadioGroup>
+            <output id="default-radio">{{ fallback.value() }}</output>
+        </div>
+    `
+})
+class MenuDefaultsPage {}
 
 @Component({
     selector: 'app-labelled-select',
@@ -185,6 +206,17 @@ function renderToString(selector: string, component: Type<unknown>): Promise<str
 }
 
 describe('SSR rendering', () => {
+    it('resolves Menu model/default precedence before server serialization', async () => {
+        const html = await renderToString('app-menu-defaults', MenuDefaultsPage);
+        for (const [id, value] of [
+            ['explicit-open', 'false'],
+            ['default-open', 'true'],
+            ['explicit-radio', 'two'],
+            ['default-radio', 'one']
+        ])
+            expect(html).toMatch(new RegExp(`<output[^>]*id="${id}"[^>]*>${value}</output>`));
+        expect(html).toMatch(/ngh=/);
+    });
     it('renders arbitrary single-item labels without coercing the selection shape', async () => {
         const html = await renderToString('app-arbitrary-select', ArbitrarySelectPage);
         expect(html).toContain('false');

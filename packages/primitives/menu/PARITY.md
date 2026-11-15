@@ -48,12 +48,13 @@ and records the remaining defects, capability gaps and validation limits.
 | Collision boundaries: clipping ancestors, native/ref arrays, viewport Rect, dynamic replacement        | Pinned geometry/available-height scenarios and Popper units; ADR 0068  | Covered; native DOMRect replacement limit documented                     |
 | Absolute/fixed method, boolean sticky, scroll/arrow attachment and forced Context Menu policies        | Pinned native-wheel comparisons and units; ADR 0069                    | Covered; viewport emulation in ADR 0070                                  |
 | Layout-viewport shift during zoom/pan, RTL, explicit bounds and descendant policy                      | Chromium CDP comparisons; Navigation Menu browser regression; ADR 0070 | Covered in emulation; Firefox/WebKit capability skips, real devices open |
-| Default models, portal targets and GroupLabel id                                                       | Source audit and focused contract probes                               | Fixes pending, audit A3–A5                                               |
+| Initial/default models, late defaults and nested initialization                                        | Pinned model cases, unit/SSR checks; ADR 0071                          | Covered with native Angular model ownership, audit A3 addressed          |
+| Portal targets and GroupLabel id                                                                       | Source audit and focused contract probes                               | Fixes pending, audit A4–A5                                               |
 | FilterProvider, Input, List, Clear and Empty                                                           | Pinned public export inventory                                         | Missing capability; reuse core.useFilter, audit A6                       |
 | Real touch, devices and assistive technology                                                           | Not established by this suite                                          | Pending                                                                  |
 
-The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 426 scenarios and
-1278 planned comparisons: 1218 execute, with 60 capability skips (48 touch, 12 viewport emulation). Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
+The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 438 scenarios and
+1314 planned comparisons: 1254 execute, with 60 capability skips (48 touch, 12 viewport emulation). Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
 state. Checkbox/radio change requests are observed before cancellation; original event types and
 trusted pointer coordinates are retained. No adapter forces focus, open state or completion.
 
@@ -74,7 +75,7 @@ The source inventory is complete for the pinned version; Menu parity is not. The
 Angular adaptations from missing behavior, and classifies all 143 exact exception fields.
 Indicator lifecycle (A1), contextual placement, collision boundaries, positionMethod and sticky are
 covered. Context Menu layout-viewport shifting is covered through Chromium emulation (ADR 0070).
-Portal contracts, model initialization and GroupLabel identity remain open. Filtering is a separate capability increment.
+Model initialization is covered by ADR 0071. Portal contracts and GroupLabel identity remain open. Filtering is a separate capability increment.
 
 Ten indicator scenarios cover fresh/retained hosts, settled entry, paused/natural CSS exits and
 reselection during exit. Both fixtures keep native item input and real CSS animations. Angular hides

@@ -7,7 +7,7 @@ Updated 2026-11-15. All pinned comparisons use `reference.json` (Base UI 1.9.0).
 | ------------------------------------------------ | ---------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | Select                                           | 118 scenarios; 338 comparisons, 16 capability skips        | Forms, focus, presence, geometry, touch emulation                                | Real AT/devices; remaining lifecycle/API audit                            |
 | Popover                                          | 28 scenarios; 84 comparisons                               | Portal, Arrow, dismissal, presence, scroll lock, live anchor                     | Hover/grace areas, handles/payloads, RTL/Arrow                            |
-| Menu                                             | 426 scenarios; 1218 comparisons, 60 capability skips       | Native hosts, indicators, highlights, handles, exits, Dialog/Popover composition | Portal contracts; default models/id; filtering; real AT/devices           |
+| Menu                                             | 438 scenarios; 1254 comparisons, 60 capability skips       | Native hosts, indicators, highlights, handles, exits, Dialog/Popover composition | Portal targets; label id; filtering; real AT/devices                      |
 | Context Menu                                     | 61 scenarios; 165–166 comparisons; native capability skips | Independent Roots, keyboard/submenu ownership, dismissal, retained portals       | Modal forward Tab; further composition, real touch/AT devices             |
 | Menubar                                          | 87 scenarios; 261 comparisons                              | Popup/bar axes, mixed submenus, RTL, return focus, presence                      | Further API/lifecycle combinations, touch and real AT/devices             |
 | Combobox, Autocomplete                           | None                                                       | Input/list navigation, dismissal, projection, live anchor                        | Value/query/highlight and form contracts, then composition                |
@@ -29,11 +29,11 @@ it identified five defect/contract groups and the missing filtering family. Indi
 semantics (A1) are covered by ten pinned scenarios. Contextual placement covers eighteen geometry
 cases, collision boundaries fourteen, and method/sticky ten native-wheel cases. Forced Context Menu
 policies are covered. Six viewport cases execute in Chromium, with twelve explicit zoom capability
-skips in Firefox/WebKit. A2's positioning contract is addressed; A3–A6 remain open. The targeted exception run also exposed a
+skips in Firefox/WebKit. A2 positioning and A3 initial models are addressed; A4–A6 remain open. The targeted exception run also exposed a
 WebKit reference assertion failure that passed
 five isolated repeats; Linux-only exceptions still require Linux CI.
 
 Priorities after this increment: shared Menu portal gaps,
-model initialization and label identity, then the separate filtering capability. Popover hover/RTL
+label identity, then the separate filtering capability. Popover hover/RTL
 coverage and Combobox/Autocomplete follow. Native controls can follow independently; React event/store mechanics are
 not API requirements. Real-device/AT and saved-profile autofill remain explicit external gaps.

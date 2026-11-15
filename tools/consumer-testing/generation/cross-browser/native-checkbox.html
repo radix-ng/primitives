@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+    <meta charset="utf-8" />
+    <title>Native checkbox pointer focus reproduction</title>
+    <button id="before" type="button">Before</button>
+    <label>
+        <input id="checkbox" type="checkbox" />
+        Disable selection
+    </label>
+    <button
+        id="select"
+        aria-controls="visibility-options"
+        aria-expanded="false"
+        aria-label="Visibility"
+        disabled
+        role="combobox"
+        type="button"
+    >
+        Private
+    </button>
+    <div id="visibility-options" aria-label="Visibility options" hidden role="listbox"></div>
+    <button id="after" type="button">After select</button>
+</html>

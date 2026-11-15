@@ -1,9 +1,10 @@
-import { booleanAttribute, Directive, effect, inject, input, model, output, signal, Signal } from '@angular/core';
+import { booleanAttribute, Directive, inject, input, model, output, signal, Signal } from '@angular/core';
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
     createContext,
-    RdxCancelableChangeEventDetails
+    RdxCancelableChangeEventDetails,
+    watch
 } from '@radix-ng/primitives/core';
 import { provideRdxMenuGroupContext, RdxMenuGroupContext } from './menu-group-context';
 
@@ -53,14 +54,12 @@ const groupContextFactory = (): RdxMenuGroupContext => {
     }
 })
 export class RdxMenuRadioGroup<T = unknown> {
-    private hasAppliedDefaultValue = false;
-
     /**
      * The currently selected value.
      */
     readonly value = model<T | undefined>(undefined);
 
-    /** The initially selected value for uncontrolled usage. */
+    /** Initial selection when value is undefined. Later changes are ignored. */
     readonly defaultValue = input<T | undefined>(undefined);
 
     /** Whether all radio items in the group are disabled. */
@@ -74,12 +73,8 @@ export class RdxMenuRadioGroup<T = unknown> {
     readonly labelId = signal<string | undefined>(undefined);
 
     constructor() {
-        effect(() => {
-            const defaultValue = this.defaultValue();
-            if (!this.hasAppliedDefaultValue && defaultValue !== undefined) {
-                this.hasAppliedDefaultValue = true;
-                this.value.set(defaultValue);
-            }
+        watch([], () => {
+            if (this.value() === undefined) this.value.set(this.defaultValue());
         });
     }
 

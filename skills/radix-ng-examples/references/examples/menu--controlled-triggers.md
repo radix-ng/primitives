@@ -10,6 +10,11 @@ signal/model lifecycle; there is no separate React-style controlled state store.
 still pass through the cancelable `onOpenChange` transaction, whose `eventDetails.trigger` names
 the initiating element.
 
+`defaultOpen` is read once after initial inputs are assigned. An explicit `open` value takes
+precedence, including `[open]="false"` with `[defaultOpen]="true"`. Later `defaultOpen` changes do
+not open or reopen the menu, even if its initial default was false. Bind `open` for delayed or live
+application updates. The same initialization rule applies to nested Menu Roots.
+
 The handle's `open(id)` and `close()` work while its Root is mounted. Requests without a mounted
 owner are ignored. `isOpen()` is an Angular signal. Scope each handle to one popup owner; surviving
 detached triggers reconnect when that owner is recreated. If Roots briefly overlap during a view
