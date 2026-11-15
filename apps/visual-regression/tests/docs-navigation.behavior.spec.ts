@@ -52,6 +52,10 @@ test('Menu Portal ArgTypes publish shared destination inputs', async ({ page }) 
         .locator('xpath=following::table[1]');
     await expect(popupTable.getByText('finalFocus', { exact: true })).toHaveCount(1);
     await expect(popupTable.getByText('returnFocus', { exact: true })).toHaveCount(0);
+    const labelTable = page
+        .getByRole('heading', { name: 'RdxMenuGroupLabel', exact: true })
+        .locator('xpath=following::table[1]');
+    await expect(labelTable.getByText('id', { exact: true })).toHaveCount(1);
 });
 
 test('desktop TOC preserves anchors and expands only the active section', async ({ page }) => {

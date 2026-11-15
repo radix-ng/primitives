@@ -1,5 +1,5 @@
-import { DestroyRef, Directive, inject } from '@angular/core';
-import { injectId } from '@radix-ng/primitives/core';
+import { computed, Directive, input } from '@angular/core';
+import { injectId, watch } from '@radix-ng/primitives/core';
 import { injectRdxMenuGroupContext } from './menu-group-context';
 
 /**
@@ -9,20 +9,24 @@ import { injectRdxMenuGroupContext } from './menu-group-context';
     selector: '[rdxMenuGroupLabel]',
     exportAs: 'rdxMenuGroupLabel',
     host: {
-        '[attr.id]': 'id'
+        '[attr.id]': 'resolvedId()',
+        'aria-hidden': 'true'
     }
 })
 export class RdxMenuGroupLabel {
     private readonly groupContext = injectRdxMenuGroupContext();
 
-    readonly id = injectId('rdx-menu-group-label-');
+    private readonly generatedId = injectId('rdx-menu-group-label-');
+    /** Native label id. Defaults to a generated SSR-stable id. */
+    readonly id = input<string>();
+    protected readonly resolvedId = computed(() => this.id() || this.generatedId);
 
     constructor() {
-        this.groupContext.labelId.set(this.id);
-        inject(DestroyRef).onDestroy(() => {
-            if (this.groupContext.labelId() === this.id) {
-                this.groupContext.labelId.set(undefined);
-            }
+        watch([this.resolvedId], ([id], onCleanup) => {
+            this.groupContext.labelId.set(id);
+            onCleanup(() => {
+                if (this.groupContext.labelId() === id) this.groupContext.labelId.set(undefined);
+            });
         });
     }
 }

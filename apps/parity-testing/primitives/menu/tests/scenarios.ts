@@ -15,6 +15,7 @@ import { indicatorScenarios } from './indicators.scenarios';
 import { initialFocusScenarios } from './initial-focus.scenarios';
 import { itemDialogScenarios } from './item-dialog.scenarios';
 import { itemPopoverScenarios } from './item-popover.scenarios';
+import { labelScenarios } from './labels.scenarios';
 import { lifecycleScenarios } from './lifecycle.scenarios';
 import { modelScenarios } from './models.scenarios';
 import { placementScenarios } from './placement.scenarios';
@@ -29,6 +30,7 @@ import { multiTriggerScenarios } from './triggers.scenarios';
 import { viewportScenarios } from './viewport.scenarios';
 
 export const scenarios = [
+    ...labelScenarios,
     ...portalScenarios,
     ...modelScenarios,
     ...viewportScenarios,

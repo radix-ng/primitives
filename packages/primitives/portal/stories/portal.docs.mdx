@@ -61,6 +61,16 @@ string resolved against the declaring document. Elements from same-origin iframe
 selector matches nothing, it falls back to `document.body`. The move is reactive: if the bound container
 changes later, the element is relocated to the new one.
 
+An omitted container or `undefined` uses the default container. Explicit `null` waits for a target:
+in the browser, the attribute Portal detaches its host while retaining its Angular view and edited
+values. Structural portals such as `rdxMenuPortal` do not create their embedded view while waiting,
+even with `keepMounted`. Changing a structural Portal to `null` destroys that view immediately and
+cancels an exit wait; a later target creates a fresh view. The attribute Portal still renders in
+place on the server, while a pending structural Portal emits no content.
+
+For a signal query, bind `[container]="host()?.nativeElement ?? null"`. Query changes drive target
+availability; Portal does not poll mutable ref objects or wait for a missing CSS selector.
+
 The element and its Angular view are moved together. Existing form values and focus within the moved
 view are preserved. Structural portals such as `rdxMenuPortal` use the same target resolver and move
 their existing view rather than recreating it. Moving an open Menu therefore keeps its current item

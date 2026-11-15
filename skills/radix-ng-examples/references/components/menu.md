@@ -148,6 +148,7 @@ content multi-root.
 - [Switch during exit](../examples/menu--switch-during-exit.md)
 - [Default](../examples/menu--default.md)
 - [Initial focus](../examples/menu--initial-focus.md)
+- [Custom container](../examples/menu--custom-container.md)
 - [Return focus](../examples/menu--return-focus.md)
 - [Native elements](../examples/menu--native-elements.md)
 - [Pointer gestures](../examples/menu--pointer-gestures.md)

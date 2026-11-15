@@ -11,6 +11,34 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
     await page.waitForSelector('#storybook-root', { state: 'attached' });
 }
 
+test('Menu custom container waits for its signal query and retains authored group identity', async ({ page }) => {
+    const errors = collectRuntimeDiagnostics(page);
+    await gotoStory(page, 'primitives-menu--custom-container');
+    const trigger = page.getByRole('button', { name: 'Actions', exact: true });
+    const popup = page.locator('[rdxMenuPopup]');
+    await trigger.click();
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    await expect(popup).toHaveCount(0);
+    await page.getByRole('button', { name: 'Create container', exact: true }).click();
+    await expect(page.getByTestId('menu-portal-target').locator('[rdxMenuPopup]')).toBeVisible();
+    await expect(page.getByRole('group', { name: 'Commands', exact: true })).toHaveAttribute(
+        'aria-labelledby',
+        'custom-commands-label'
+    );
+    await expect(page.locator('#custom-commands-label')).toHaveAttribute('aria-hidden', 'true');
+    await page.getByRole('menuitem', { name: 'Edit', exact: true }).click();
+    await expect(popup).toHaveCount(0);
+    await expect(page.locator('output')).toContainText('Selected: Edit');
+    await page.getByRole('button', { name: 'Remove container', exact: true }).click();
+    await trigger.click();
+    await expect(popup).toHaveCount(0);
+    await page.getByRole('button', { name: 'Create container', exact: true }).click();
+    await expect(popup).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(popup).toHaveCount(0);
+    expect(errors).toEqual([]);
+});
+
 for (const [retained, deferred] of [
     [false, false],
     [true, false],

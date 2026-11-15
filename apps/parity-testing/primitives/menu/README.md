@@ -14,7 +14,7 @@ port is 4505. Angular fixtures are AOT compiled and React imports the unmodified
 Base UI 1.9.0 pin: `cf696d6f6e08c699c5bda24d5a033430909f2285`, archive SHA-256
 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 
-448 scenarios define 1344 planned comparisons: 1284 execute, with 60 capability skips (48 touch, 12 viewport emulation). They cover native keyboard and
+460 scenarios define 1380 planned comparisons: 1320 execute, with 60 capability skips (48 touch, 12 viewport emulation). They cover native keyboard and
 pointer opening, disabled/focusable items, roving focus, edges and looping, repeated and explicit-label
 typeahead, selection and stay-open items, cancelable transactions, modal/background activation,
 forward/backward Tab, checkbox/radio values, LTR/RTL submenu ownership and custom identity links.
@@ -33,7 +33,9 @@ the hold can be requested; callbacks still come from the primitive's real animat
 The nested CSS case also uses the shared paused exit on both popups. It verifies that neither
 completion has fired while both exits are pending, then finishes the captured animations through
 native WAAPI before checking disposal and actual callbacks. Recording the pending phase therefore
-does not depend on observing a 400 ms window under CI load. Root CSS-exit cases retain natural timing.
+does not depend on observing a 400 ms window under CI load. The root CSS-exit checkpoint uses a long natural animation and finishes it through native WAAPI
+after recording the intermediate phase, avoiding a 400ms observation window. The retained CSS-close
+case still exercises natural completion.
 
 Nineteen pointer scenarios compare root hover delays/cancellation/re-entry, click promotion before
 and after the delay, LTR/RTL diagonal submenu travel, disabled submenus and parent-item ownership.
@@ -67,7 +69,10 @@ its Angular bindings, identity or focus. Separate Angular-only tests cover Popov
 both surfaces; they do not expand those families' independent parity audits.
 
 See [ADR 0072](../../../../docs/adr/0072-portal-dom-destinations.md). Mixed-document overlays, closed
-shadow interaction and pending/null-container policy are separate verification/API work.
+shadow interaction remain separate verification work. Six additional pending-target cases and six
+Group/RadioGroup label cases cover ADR 0073: null/ready/remount, interrupted exits, callback completion,
+authored/generated/reactive ids and replacement cleanup. Application commands change only targets
+and labels; native focus and accessible names are observed without additional exceptions.
 
 ## Initial models and defaults
 

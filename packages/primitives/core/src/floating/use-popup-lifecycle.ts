@@ -5,6 +5,8 @@ import { RdxTransitionStatus, useTransitionStatus } from '../composables/use-tra
 export interface RdxPopupPresenceRegistration {
     readonly mounted: Signal<boolean>;
     readonly keepMounted: () => boolean;
+    /** A missing explicit Portal destination prevents mounting and enter completion. */
+    readonly suspended?: Signal<boolean>;
     /** Read only during owner disposal; Presence keeps the actual animation phase. */
     readonly pendingExit?: () => boolean;
 }
@@ -52,14 +54,15 @@ export function usePopupLifecycle(
 
     let previousOpen = untracked(open);
     let enteredOpen = previousOpen;
-    let pendingClose: object | undefined;
+    let pendingClose: { notify: boolean } | undefined;
     let closingTransition: object | undefined;
 
     const finalizeClose = () => {
+        const notify = pendingClose?.notify;
         pendingClose = undefined;
         closing.set(false);
         enteredOpen = false;
-        onComplete(false);
+        if (notify) onComplete(false);
     };
     const completeClose = () => {
         if (
@@ -98,7 +101,8 @@ export function usePopupLifecycle(
             pendingClose = undefined;
             closing.set(false);
         } else {
-            pendingClose = {};
+            // A close before a pending destination ever mounts has no popup transition to finish.
+            pendingClose = { notify: !presences().some((presence) => presence.suspended?.()) };
             closing.set(true);
         }
     };
@@ -131,8 +135,14 @@ export function usePopupLifecycle(
     effect(
         () => {
             const nextOpen = open();
+            const suspended = presences().some((presence) => presence.suspended?.());
             untracked(() => {
                 syncOpen();
+                if (nextOpen && suspended) {
+                    transition.cancel();
+                    enteredOpen = false;
+                    return;
+                }
                 // Native focus can close/reopen in one event before Angular renders. Keep the
                 // existing enter transition (or its completed state) when no exit was rendered.
                 if (nextOpen === enteredOpen) return;

@@ -8,8 +8,17 @@ export const portalCases = [
     'portal-frame-ref',
     'portal-frame-switch',
     'portal-shadow-pointer',
-    'portal-frame-pointer'
+    'portal-frame-pointer',
+    'portal-shadow-pending',
+    'portal-frame-pending',
+    'portal-shadow-pending-keep',
+    'portal-frame-pending-keep',
+    'portal-shadow-pending-exit',
+    'portal-frame-pending-exit'
 ] as const;
+
+// Long natural exit keeps the intermediate checkpoint observable; it is interrupted by container=null.
+export const pendingPortalExitClass = ' data-[ending-style]:animate-[pulse_30s_linear]';
 
 export function portalConfig(name: string) {
     if (!(portalCases as readonly string[]).includes(name)) return undefined;
@@ -18,7 +27,9 @@ export function portalConfig(name: string) {
         retained: name.endsWith('-keep'),
         ref: name.endsWith('-ref'),
         switchTarget: name.endsWith('-switch'),
-        pointer: name.endsWith('-pointer')
+        pointer: name.endsWith('-pointer'),
+        pending: name.includes('-pending'),
+        exit: name.endsWith('-pending-exit')
     };
 }
 

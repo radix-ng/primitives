@@ -9,6 +9,7 @@ import { classes } from './contract';
 @Component({
     selector: 'parity-menu',
     imports: [dialogImports, popoverImports, _importsSelect, RdxPortal],
+    host: { '(document:keydown)': 'pendingCommand($event)' },
     template: `
         <div [class]="s.layout">
             @switch (family) {
@@ -87,14 +88,20 @@ import { classes } from './contract';
 })
 export class AngularPortalConsumers {
     readonly family = new URLSearchParams(location.search).get('consumer');
+    readonly pending = new URLSearchParams(location.search).has('pending');
     readonly surface = window.menuPortalSurface;
     readonly s = classes;
-    readonly target = signal<RdxPortalContainer>(this.surface.target);
+    readonly target = signal<RdxPortalContainer>(this.pending ? null : this.surface.target);
     readonly shown = signal(true);
     readonly text = signal('Initial');
     readonly clicks = signal(0);
     readonly increment = (value: number) => value + 1;
     readonly returnTarget = viewChild<ElementRef<HTMLElement>>('returnTarget');
+    pendingCommand(event: KeyboardEvent) {
+        if (!this.pending || event.key !== 'F3') return;
+        event.preventDefault();
+        this.target.update((target) => (target === null ? this.surface.target : null));
+    }
     command(event: KeyboardEvent) {
         if (event.key === 'F3') {
             event.preventDefault();

@@ -34,7 +34,7 @@
         {
           "name": "container",
           "type": "RdxPortalContainer",
-          "description": "Container to portal the content into. Can be a ShadowRoot, an HTML element from any window,\nan ElementRef of either, or a CSS\nselector. Defaults to `document.body` (or when a selector matches nothing)."
+          "description": "Container to portal the content into. Can be a ShadowRoot, an HTML element from any window,\nan ElementRef of either, or a CSS\nselector. Defaults to `document.body` (or when a selector matches nothing).\nExplicit null prevents mounting until a target is provided, even with keepMounted."
         }
       ],
       "outputs": []

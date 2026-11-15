@@ -88,3 +88,7 @@ Ordinary cross-document DOM transfer is covered. Portal acceptance does not make
 references cross tree/document boundaries. Explicit null waiting and React ref retry semantics remain
 an open A4 API policy. This increment
 retains Angular's existing fallback semantics and does not certify that part of Portal parity.
+
+Follow-up: [ADR 0073](0073-portal-pending-and-menu-labels.md) implements the previously open null-target
+policy through signal inputs/queries and shared Presence/lifecycle ownership. The validation and
+remaining-policy statements above describe the original ADR 0072 increment.

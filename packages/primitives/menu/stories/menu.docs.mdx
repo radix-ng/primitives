@@ -2,6 +2,7 @@ import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as Stories from './menu.stories';
 import {
     RdxMenuCheckboxItem,
+    RdxMenuGroupLabel,
     RdxMenuItem,
     RdxMenuLinkItem,
     RdxMenuPopup,
@@ -240,6 +241,17 @@ while Shift+Tab returns to the submenu trigger and leaves the parent open. Keep 
 the same path after closing and reopening both levels.
 
 <Canvas of={Stories.InitialFocus} />
+
+### Custom container
+
+Bind a native element or `ElementRef` to the Portal's `container`. An explicit `null` waits without
+creating the popup, even with `keepMounted`; an omitted value or `undefined` uses the default body
+container. A signal query can supply the target when it appears:
+`[container]="target()?.nativeElement ?? null"`.
+
+Open Actions before creating the container. The example also supplies an authored GroupLabel id.
+
+<Canvas of={Stories.CustomContainer} />
 
 ### Return focus
 
@@ -658,6 +670,10 @@ For native ARIA associations, keep the widget's Root, trigger and popup in the s
 
 <ArgTypes of={RdxMenuPortal} />
 
+Changing `container` to `null` immediately destroys the structural view and cancels its exit wait.
+Providing a target again creates a fresh view; `onOpenChangeComplete(true)` waits for that popup's
+opening. Changing between two ready targets retains the existing view, as described above.
+
 ### RdxMenuPositioner
 
 Positions the popup against the trigger using the shared Floating UI Popper primitive. Exposes
@@ -826,7 +842,11 @@ Wraps a set of related items with `role="group"`. No inputs.
 
 ### RdxMenuGroupLabel
 
-Marks a visible label for a group. No inputs.
+Apply to the group's visible label. An authored `id` is preserved and updates the parent Group or
+RadioGroup's `aria-labelledby` reactively; omitting it uses a stable generated id. The label has
+`aria-hidden="true"` so it names the group without becoming a separate accessible menu entry.
+
+<ArgTypes of={RdxMenuGroupLabel} />
 
 ### RdxMenuSeparator
 

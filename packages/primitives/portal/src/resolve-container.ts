@@ -6,13 +6,14 @@ import { isHTMLElement, isShadowRoot } from '@radix-ng/primitives/core';
  */
 export type RdxPortalTarget = HTMLElement | ShadowRoot;
 
-/** A target or Angular ElementRef; selectors resolve in the declaring document. */
-export type RdxPortalContainer = ElementRef<RdxPortalTarget> | RdxPortalTarget | string;
+/** A target or Angular ElementRef; null waits for a target, selectors resolve in the declaring document. */
+export type RdxPortalContainer = ElementRef<RdxPortalTarget> | RdxPortalTarget | string | null;
 
 /**
  * Resolve a {@link RdxPortalContainer} to a concrete destination. Returns `null` when nothing usable is
  * provided (a missing container, a selector matching nothing, or a non-element value), so callers can
- * fall back to `document.body`. Shared by `RdxPortal` and `RdxPortalPresence`.
+ * fall back to `document.body`, except for an explicit `container=null` which suspends the portal.
+ * Shared by `RdxPortal` and `RdxPortalPresence`.
  */
 export function resolvePortalContainer(
     container: RdxPortalContainer | undefined,

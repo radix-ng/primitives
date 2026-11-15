@@ -14483,6 +14483,64 @@ export class RdxMenuInitialFocusComponent {
 }
 ```
 
+### Custom container
+
+Bind a native element or `ElementRef` to the Portal's `container`. An explicit `null` waits without
+creating the popup, even with `keepMounted`; an omitted value or `undefined` uses the default body
+container. A signal query can supply the target when it appears:
+`[container]="target()?.nativeElement ?? null"`.
+
+Open Actions before creating the container. The example also supplies an authored GroupLabel id.
+
+```typescript
+import { Component, ElementRef, signal, viewChild } from '@angular/core';
+import { menuImports } from '@radix-ng/primitives/menu';
+import { cn, demoButton, demoMenu } from '../../storybook/styles';
+
+@Component({
+    selector: 'rdx-menu-custom-container',
+    imports: [menuImports],
+    template: `
+        <div class="flex w-80 flex-col gap-4">
+            <button [class]="cn(b.base, b.outline, b.size.md)" (click)="showTarget.update(toggle)">
+                {{ showTarget() ? 'Remove container' : 'Create container' }}
+            </button>
+            <ng-container [modal]="false" rdxMenuRoot>
+                <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Actions</button>
+                <ng-template [container]="target()?.nativeElement ?? null" rdxMenuPortal>
+                    <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
+                        <div [class]="m.popup" rdxMenuPopup>
+                            <div rdxMenuGroup>
+                                <div id="custom-commands-label" [class]="m.groupLabel" rdxMenuGroupLabel>Commands</div>
+                                <button [class]="m.item" (onSelect)="selected.set('Edit')" rdxMenuItem>Edit</button>
+                                <button [class]="m.item" (onSelect)="selected.set('Duplicate')" rdxMenuItem>
+                                    Duplicate
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-container>
+            <output class="text-muted-foreground text-sm">
+                {{ target() ? 'Container ready' : 'Waiting for container' }} · Selected: {{ selected() }}
+            </output>
+            @if (showTarget()) {
+                <div #portalTarget data-testid="menu-portal-target"></div>
+            }
+        </div>
+    `
+})
+export class RdxMenuCustomContainerComponent {
+    readonly cn = cn;
+    readonly b = demoButton;
+    readonly m = demoMenu;
+    readonly showTarget = signal(false);
+    readonly target = viewChild<ElementRef<HTMLElement>>('portalTarget');
+    readonly selected = signal('none');
+    readonly toggle = (value: boolean) => !value;
+}
+```
+
 ### Return focus
 
 `finalFocus` accepts an element, `false`, or a callback receiving the closing interaction type.
@@ -16545,6 +16603,10 @@ state. It does not repeat an opening completion. Base UI's React Portal remounts
 the measured adaptation is documented in ADR 0072. Styles belong to the destination document/tree.
 For native ARIA associations, keep the widget's Root, trigger and popup in the same tree/document.
 
+Changing `container` to `null` immediately destroys the structural view and cancels its exit wait.
+Providing a target again creates a fresh view; `onOpenChangeComplete(true)` waits for that popup's
+opening. Changing between two ready targets retains the existing view, as described above.
+
 ### RdxMenuPositioner
 
 Positions the popup against the trigger using the shared Floating UI Popper primitive. Exposes
@@ -16697,7 +16759,9 @@ Wraps a set of related items with `role="group"`. No inputs.
 
 ### RdxMenuGroupLabel
 
-Marks a visible label for a group. No inputs.
+Apply to the group's visible label. An authored `id` is preserved and updates the parent Group or
+RadioGroup's `aria-labelledby` reactively; omitting it uses a stable generated id. The label has
+`aria-hidden="true"` so it names the group without becoming a separate accessible menu entry.
 
 ### RdxMenuSeparator
 
@@ -39546,6 +39610,16 @@ Use the `container` input to portal into a specific element instead of `document
 string resolved against the declaring document. Elements from same-origin iframes are accepted. When a
 selector matches nothing, it falls back to `document.body`. The move is reactive: if the bound container
 changes later, the element is relocated to the new one.
+
+An omitted container or `undefined` uses the default container. Explicit `null` waits for a target:
+in the browser, the attribute Portal detaches its host while retaining its Angular view and edited
+values. Structural portals such as `rdxMenuPortal` do not create their embedded view while waiting,
+even with `keepMounted`. Changing a structural Portal to `null` destroys that view immediately and
+cancels an exit wait; a later target creates a fresh view. The attribute Portal still renders in
+place on the server, while a pending structural Portal emits no content.
+
+For a signal query, bind `[container]="host()?.nativeElement ?? null"`. Query changes drive target
+availability; Portal does not poll mutable ref objects or wait for a missing CSS selector.
 
 The element and its Angular view are moved together. Existing form values and focus within the moved
 view are preserved. Structural portals such as `rdxMenuPortal` use the same target resolver and move

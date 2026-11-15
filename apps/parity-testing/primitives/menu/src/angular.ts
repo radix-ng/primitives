@@ -22,11 +22,12 @@ import { changeHighlightEntries, createHighlightRecorder } from './highlight';
 import { AngularHosts } from './hosts.angular';
 import { AngularItemDialog } from './item-dialog.angular';
 import { AngularItemPopover } from './item-popover.angular';
+import { AngularLabels } from './labels.angular';
 import { AngularModels } from './models.angular';
 import { AngularPlacement } from './placement.angular';
 import { AngularPopoverMenu } from './popover.angular';
 import { AngularPortalConsumers } from './portal-consumers.angular';
-import { preparePortalSurface } from './portals';
+import { pendingPortalExitClass, preparePortalSurface } from './portals';
 import { AngularPortals } from './portals.angular';
 import { AngularProjection } from './projection.angular';
 import { touchScrollEntries } from './touch';
@@ -260,7 +261,9 @@ class AngularMenu {
     readonly exitClass =
         settings.removal?.animated || settings.lifecycle?.late || settings.name === 'lifecycle-submenu-css'
             ? heldExitClass
-            : exitClass;
+            : settings.name === 'lifecycle-css-exit'
+              ? pendingPortalExitClass
+              : exitClass;
     readonly rootPresent = signal(true);
     readonly beforePresent = signal(true);
     readonly finalFocus = settings.removal?.finalFocus ? rootRemovalFinalFocus : undefined;
@@ -387,31 +390,33 @@ if (settings.portal) {
     });
 } else
     void bootstrapApplication(
-        settings.models
-            ? AngularModels
-            : settings.boundary
-              ? AngularBoundary
-              : settings.placement
-                ? AngularPlacement
-                : settings.itemPopover
-                  ? AngularItemPopover
-                  : settings.popover
-                    ? AngularPopoverMenu
-                    : settings.itemDialog
-                      ? AngularItemDialog
-                      : settings.dialog
-                        ? AngularDialogMenu
-                        : settings.name.startsWith('handle-overlap-')
-                          ? AngularHandleOverlap
-                          : settings.multiTrigger
-                            ? AngularMultiTriggers
-                            : settings.projection
-                              ? AngularProjection
-                              : settings.focusBoundary
-                                ? AngularFocusBoundary
-                                : settings.host
-                                  ? AngularHosts
-                                  : AngularMenu,
+        settings.labels
+            ? AngularLabels
+            : settings.models
+              ? AngularModels
+              : settings.boundary
+                ? AngularBoundary
+                : settings.placement
+                  ? AngularPlacement
+                  : settings.itemPopover
+                    ? AngularItemPopover
+                    : settings.popover
+                      ? AngularPopoverMenu
+                      : settings.itemDialog
+                        ? AngularItemDialog
+                        : settings.dialog
+                          ? AngularDialogMenu
+                          : settings.name.startsWith('handle-overlap-')
+                            ? AngularHandleOverlap
+                            : settings.multiTrigger
+                              ? AngularMultiTriggers
+                              : settings.projection
+                                ? AngularProjection
+                                : settings.focusBoundary
+                                  ? AngularFocusBoundary
+                                  : settings.host
+                                    ? AngularHosts
+                                    : AngularMenu,
         {
             providers: [provideZonelessChangeDetection()]
         }

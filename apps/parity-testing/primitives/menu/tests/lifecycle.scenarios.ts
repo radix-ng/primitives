@@ -70,6 +70,13 @@ const rootScenarios = lifecycleCases.map((name) => ({
             return;
         }
 
+        if (name === 'lifecycle-css-exit') {
+            await d.popup.evaluate(async (el) => {
+                const animations = el.getAnimations();
+                animations.forEach((animation) => animation.finish());
+                await Promise.all(animations.map((animation) => animation.finished));
+            });
+        }
         if (config.deferred || config.late) await d.page.keyboard.press('F9');
         await d.closed();
         await expect(d.trigger).toBeFocused();
@@ -101,7 +108,7 @@ const rootScenarios = lifecycleCases.map((name) => ({
             completions: { main: [true, false, true], sub: [] }
         });
         await d.page.keyboard.press('F8');
-        if (config.late) {
+        if (config.late || name === 'lifecycle-css-exit') {
             await expect(d.popup).toHaveAttribute('data-ending-style', '');
             await d.popup.evaluate((el) => el.getAnimations().forEach((animation) => animation.finish()));
         }

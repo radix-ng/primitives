@@ -2,6 +2,7 @@ import { Component, ElementRef, signal } from '@angular/core';
 import { menuImports, type RdxMenuOpenChange } from '@radix-ng/primitives/menu';
 import type { RdxPortalContainer } from '@radix-ng/primitives/portal';
 import { classes, config, installProbe } from './contract';
+import { pendingPortalExitClass } from './portals';
 
 @Component({
     selector: 'parity-menu',
@@ -19,7 +20,7 @@ import { classes, config, installProbe } from './contract';
                     <button [class]="s.trigger" data-testid="primary" rdxMenuTrigger>Actions</button>
                     <ng-template [container]="target()" [keepMounted]="p.retained" rdxMenuPortal>
                         <div class="z-50" data-testid="positioner" rdxMenuPositioner>
-                            <div [class]="s.popup" data-testid="popup" rdxMenuPopup>
+                            <div [class]="s.popup + (p.exit ? heldExit : '')" data-testid="popup" rdxMenuPopup>
                                 <button
                                     [class]="s.item"
                                     (click)="trace.select('alpha')"
@@ -47,16 +48,18 @@ import { classes, config, installProbe } from './contract';
 export class AngularPortals {
     readonly p = config().portal!;
     readonly s = classes;
+    readonly heldExit = pendingPortalExitClass;
     readonly surface = window.menuPortalSurface;
     readonly trace = installProbe('angular', this.surface.document);
     readonly target = signal<RdxPortalContainer>(
-        this.p.ref ? new ElementRef(this.surface.target) : this.surface.target
+        this.p.pending ? null : this.p.ref ? new ElementRef(this.surface.target) : this.surface.target
     );
     readonly exists = signal(true);
     command(event: KeyboardEvent) {
         if (event.key === 'F3') {
             event.preventDefault();
-            this.target.set(this.surface.alternate);
+            if (this.p.pending) this.target.update((target) => (target === null ? this.surface.target : null));
+            else this.target.set(this.surface.alternate);
         }
         if (event.key === 'F4') {
             event.preventDefault();

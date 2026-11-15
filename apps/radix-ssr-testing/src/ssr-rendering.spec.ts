@@ -5,7 +5,13 @@ import { Component, provideZonelessChangeDetection, Type } from '@angular/core';
 import { bootstrapApplication, BootstrapContext, provideClientHydration } from '@angular/platform-browser';
 import { provideServerRendering, renderApplication } from '@angular/platform-server';
 import { RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
-import { RdxMenuPortal, RdxMenuRadioGroup, RdxMenuRoot } from '@radix-ng/primitives/menu';
+import {
+    RdxMenuGroup,
+    RdxMenuGroupLabel,
+    RdxMenuPortal,
+    RdxMenuRadioGroup,
+    RdxMenuRoot
+} from '@radix-ng/primitives/menu';
 import { RdxPortal } from '@radix-ng/primitives/portal';
 import { _importsSelect, RdxSelectLabel, RdxSelectRoot, RdxSelectTrigger } from '@radix-ng/primitives/select';
 import { describe, expect, it, vi } from 'vitest';
@@ -124,6 +130,25 @@ class MenuDefaultsPage {}
 class PortalTargetsPage {}
 
 @Component({
+    selector: 'app-pending-menu',
+    imports: [RdxMenuRoot, RdxMenuPortal, RdxMenuGroup, RdxMenuRadioGroup, RdxMenuGroupLabel],
+    template: `
+        <div [defaultOpen]="true" rdxMenuRoot>
+            <ng-template [container]="null" [keepMounted]="true" rdxMenuPortal>
+                <span id="server-never-mounted">Pending content</span>
+            </ng-template>
+        </div>
+        <div id="server-group" rdxMenuGroup>
+            <span id="server-menu-label" rdxMenuGroupLabel>Commands</span>
+        </div>
+        <div id="server-radio-group" rdxMenuRadioGroup>
+            <span id="server-radio-label" rdxMenuGroupLabel>Planets</span>
+        </div>
+    `
+})
+class PendingMenuPage {}
+
+@Component({
     selector: 'app-labelled-select',
     imports: [RdxSelectRoot, RdxSelectTrigger, RdxSelectLabel, RdxFieldRoot, RdxFieldLabel],
     template: `
@@ -224,6 +249,19 @@ function renderToString(selector: string, component: Type<unknown>): Promise<str
 }
 
 describe('SSR rendering', () => {
+    it('defers pending Menu portals and serializes authored GroupLabel associations', async () => {
+        const html = await renderToString('app-pending-menu', PendingMenuPage);
+        expect(html).not.toContain('server-never-mounted');
+        for (const [group, label] of [
+            ['server-group', 'server-menu-label'],
+            ['server-radio-group', 'server-radio-label']
+        ]) {
+            const tag = html.match(new RegExp(`<div[^>]*id="${group}"[^>]*>`))?.[0];
+            expect(tag).toContain(`aria-labelledby="${label}"`);
+            expect(html.match(new RegExp(`<span[^>]*id="${label}"[^>]*>`))?.[0]).toContain('aria-hidden="true"');
+        }
+        expect(html).toMatch(/ngh=/);
+    });
     it('keeps custom Portal targets in place without the browser HTMLElement constructor', async () => {
         vi.stubGlobal('HTMLElement', undefined);
         try {

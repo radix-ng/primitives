@@ -2,6 +2,33 @@ import { expect, test } from '@playwright/test';
 
 for (const surface of ['shadow', 'frame']) {
     for (const family of ['popover', 'dialog', 'select']) {
+        test(`pending portal consumer ${family} in ${surface}`, async ({ page }) => {
+            const errors: string[] = [];
+            page.on('pageerror', (error) => errors.push(error.message));
+            await page.goto(`/angular.html?case=portal-${surface}&consumer=${family}&pending`);
+            const scope = surface === 'frame' ? page.frameLocator('[data-testid="portal-frame"]') : page;
+            const trigger = scope.getByTestId('primary');
+            const popup = scope.getByTestId('popup');
+            await trigger.press('Enter');
+            await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+            await expect(popup).toHaveCount(0);
+            await page.keyboard.press('F3');
+            await expect(popup).toBeVisible();
+            if (family === 'select') {
+                await scope.getByTestId('option-two').click();
+                await expect(trigger).toContainText('Two');
+            } else await scope.getByTestId('close').click();
+            await expect(popup).toHaveCount(0);
+            await page.keyboard.press('F3');
+            await trigger.press('Enter');
+            await expect(popup).toHaveCount(0);
+            await page.keyboard.press('F3');
+            await expect(popup).toBeVisible();
+            await page.keyboard.press('F3');
+            await expect(popup).toHaveCount(0);
+            expect(errors).toEqual([]);
+        });
+
         test(`portal consumer ${family} in ${surface}`, async ({ page }) => {
             const errors: string[] = [];
             page.on('pageerror', (e) => errors.push(e.message));

@@ -13,7 +13,8 @@ subsequent implementation status is recorded below.
 The existing suite establishes substantial plain Menu behavior, not complete Menu parity.
 The source inventory is now complete for this pin. Five defect/contract groups were found; A1 has
 since been addressed below, along with A2's pinned positioning contracts and A3's initialization rules.
-Remaining work consists of A4–A5 and the unimplemented filterable Menu capability A6. Native device/AT verification remains
+Pending Portal destinations (A4) and GroupLabel identity (A5) are addressed in ADR 0073 below.
+Remaining capability work is filterable Menu (A6). Native device/AT verification remains
 separate. The main matrix is [PARITY.md](PARITY.md); the executable comparison scope is documented
 in the [runner](../../../apps/parity-testing/primitives/menu/README.md).
 
@@ -37,12 +38,12 @@ All 28 public export symbols are accounted for below (Handle/createHandle share 
 | RadioItemIndicator    | RdxMenuRadioItemIndicator           | Same follow-up as CheckboxItemIndicator, A1.                                                                                                         |
 | Popup                 | RdxMenuPopup                        | Public id/finalFocus and documented popup state attributes mapped. initialFocus is internal in the pin.                                              |
 | Positioner            | RdxMenuPositioner / shared Popper   | Pinned positioning contracts covered; zoom evidence uses Chromium emulation, A2.                                                                     |
-| Portal                | Structural RdxMenuPortal            | DOM destinations covered; pending-container policy remains open, A4.                                                                                 |
+| Portal                | Structural RdxMenuPortal            | Native destinations and pending null containers covered, A4 and ADRs 0072–0073.                                                                      |
 | Backdrop              | RdxMenuBackdrop                     | Open/closed/transition attributes mapped; internal modal backdrop remains shared infrastructure.                                                     |
 | Arrow                 | RdxMenuArrow / RdxPopperArrow       | Open/closed, side/align and composed data-uncentered mapped.                                                                                         |
 | Viewport              | RdxMenuViewport / usePopupViewport  | Current/previous snapshots, direction, transition/instant attributes and dimensions mapped.                                                          |
 | Group                 | RdxMenuGroup                        | Group role and label association mapped.                                                                                                             |
-| GroupLabel            | RdxMenuGroupLabel                   | Generated association works; authored id and decorative semantics differ, A5.                                                                        |
+| GroupLabel            | RdxMenuGroupLabel                   | Authored/generated/reactive ids, naming and guarded cleanup covered, A5 and ADR 0073.                                                                |
 | Separator             | RdxMenuSeparator                    | Orientation and semantic/data attributes mapped.                                                                                                     |
 | Handle / createHandle | RdxMenuHandle / createRdxMenuHandle | Detached trigger/payload, open/close, isOpen and owner lifetime mapped.                                                                              |
 | FilterProvider        | None                                | Missing capability A6.                                                                                                                               |
@@ -205,7 +206,20 @@ Next checks: explicit model/default precedence, undefined/null policy and late a
 Root, nested Root and RadioGroup. Define the Angular model contract before changing initialization;
 do not introduce a React controlled/uncontrolled store or a second state owner merely to match names.
 
-### A4 — DOM destinations addressed; pending-container API remains open
+### A4 — addressed: native destinations and pending containers
+
+Second follow-up 2026-11-15: explicit container=null now defers structural view creation, even with
+keepMounted. Undefined retains the existing default. Signal queries supply later targets directly.
+Suspension destroys the old view and invalidates its exit; restoration creates a fresh view. Shared
+popup completion waits for an actual destination, including close/reopen before the first mount.
+Attribute Portal detaches/reconnects its existing host in the browser and preserves server in-place
+rendering. Presence uses the animated roots' document clock for iframe exits. See
+[ADR 0073](../../../docs/adr/0073-portal-pending-and-menu-labels.md).
+
+Six new pending cases cover both existing DOM surfaces, retained views and interrupted CSS exits.
+They observe actual open requests/completions, focus, isolation and owner removal without new
+exceptions. Popover/Dialog/Select have affected destination regressions; this does not certify their
+independent callback/API audits.
 
 Follow-up 2026-11-15: shared Portal now accepts ShadowRoot, foreign/adopted HTML elements and
 ElementRef wrappers through one resolver. Shared core node/event guards fix the iframe keyboard
@@ -225,11 +239,10 @@ its Portal, restores its initial item and emits an additional true completion. T
 in portal-view-relocation record the identical witnesses from all three engines. Initial Angular
 focus loss during relocation was fixed; it is not accepted as a difference.
 
-Source follow-up found a further Portal API policy: Base UI's explicit container=null waits for a
+Earlier source follow-up found a further Portal API policy: Base UI's explicit container=null waits for a
 target, and a React ref can retry while empty. Angular's existing container surface has no explicit
-pending-target state. This remains A4 work; it is not excused by framework differences. Native
-Angular queries/conditional mounting should guide its implementation. The destination-node
-rejection is fixed, while A4 as a whole remains open.
+pending-target state. That finding was implemented in the second follow-up above through native
+Angular signal queries and shared Presence/lifecycle ownership.
 
 Original audit evidence:
 
@@ -245,7 +258,21 @@ does not require React refs or a React portal wrapper. This is shared Portal inf
 Original proposed checks (now covered above): browser mounting in a shadow root and another document, style/ARIA boundaries,
 cleanup, retained reopening and affected Dialog/Popover/Select consumers.
 
-### A5 — P2: GroupLabel replaces an authored id
+### A5 — addressed: authored GroupLabel identity and semantics (originally P2)
+
+Follow-up 2026-11-15: GroupLabel now exposes the native id as a signal input, retains a stable
+generated fallback and publishes the resolved id reactively. Guarded cleanup preserves newer label
+ownership. The host is aria-hidden=true while naming Group/RadioGroup through aria-labelledby.
+Eight unit tests (including accessible names and axe), six comparison scenarios, the Custom
+Container example and server serialization cover this contract. See ADR 0073.
+
+A4–A5 validation: the focused 60-browser-check run passed in all three engines; an additional
+highlighted-item witness found a stale index on popup disposal. Guarded collection cleanup fixed it,
+and the final 36 comparisons passed without new exceptions. Unit checks passed 343 Menu/Portal/
+lifecycle tests and 50 Context Menu/Menubar tests. See ADR 0073 for the initial timeout/exit-window
+failure record and the broader affected-consumer checks.
+
+Original audit evidence:
 
 [GroupLabel](src/menu-group-label.ts) always writes its generated id and registers that value with
 Group. A focused probe authored id="custom-group-label" and observed an rdx-menu-group-label-\* id
@@ -324,10 +351,11 @@ Original audit-only validation:
 - Public source inventory and the prepared pin were checked; no runtime/public examples were changed.
 - Exception validation is qualified by the WebKit reference assertion and platform scope above.
 
-A1/A2/A3 and A4's destination-node rejection are addressed in the follow-ups above. The latest
+A1/A2/A3 and A4's destination-node rejection are addressed in the follow-ups above. The ADR 0072
 Portal increment passed 772 unit tests, 48 Menu comparisons, 24 new Angular consumer browser
 checks, 45 existing floating-consumer checks and two SSR cases. Two production Storybook API
 checks and 30 documentation-generator tests passed. Library/Storybook builds and consumer generation passed.
 
-Continue A4 with explicit pending/null-container semantics, then A5 label identity and the separate
-filtering increment A6. Independent Context Menu Tab and Popover/Dialog audits remain separate work.
+A4's pending-target policy and A5 label identity are addressed by ADR 0073, with focused validation
+recorded there. Continue with filtering A6. Independent Context Menu Tab and Popover/Dialog audits
+remain separate work.

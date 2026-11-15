@@ -14,6 +14,7 @@ import { indicatorCases, indicatorConfig } from './indicators';
 import { initialFocusCases } from './initial-focus';
 import { itemDialogCases, itemDialogConfig } from './item-dialog';
 import { itemPopoverCases, itemPopoverConfig } from './item-popover';
+import { labelCases, labelConfig } from './labels';
 import { modelCases, modelConfig } from './models';
 import type { OverlayProbe } from './overlay-probe';
 import { placementCases, placementConfig } from './placement';
@@ -62,6 +63,7 @@ export const basicCases = [
     'dynamic-ids'
 ] as const;
 export const cases = [
+    ...labelCases,
     ...portalCases,
     ...modelCases,
     ...basicCases,
@@ -128,6 +130,7 @@ export function config() {
         dir: name.endsWith('-rtl') ? ('rtl' as const) : ('ltr' as const),
         indicator: indicatorConfig(name),
         models: modelConfig(name),
+        labels: labelConfig(name),
         portal: portalConfig(name),
         placement: placementConfig(name),
         boundary,

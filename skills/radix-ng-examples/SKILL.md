@@ -43,7 +43,7 @@ and follow its links to the other Agents guides.
 addressed by the component slug and the kebab-cased example name. Cheaper than re-reading the whole
 component doc.
 
-Total: **299 examples** across **44 components**.
+Total: **300 examples** across **44 components**.
 
 ## Components
 
@@ -66,7 +66,7 @@ Total: **299 examples** across **44 components**.
 - **[Fieldset](./references/components/fieldset.md)** — Groups related form controls with a legend and shared disabled state. _(3 examples)_
 - **[Form](./references/components/form.md)** — The top of the forms layer cake: aggregates fields, maps server errors by name, and intercepts submit and reset. _(4 examples)_
 - **[Input](./references/components/input.md)** — A native text input with headless state attributes and Field integration. _(4 examples)_
-- **[Menu](./references/components/menu.md)** — A headless dropdown menu anchored to a trigger button. _(29 examples)_
+- **[Menu](./references/components/menu.md)** — A headless dropdown menu anchored to a trigger button. _(30 examples)_
 - **[Menubar](./references/components/menubar.md)** — A visually persistent menu common in desktop applications that provides quick access to a consistent set of commands. _(4 examples)_
 - **[Meter](./references/components/meter.md)** — A graphical display of a numeric value within a range. _(3 examples)_
 - **[Navigation Menu](./references/components/navigation-menu.md)** — A collection of links and menus for website navigation. _(8 examples)_

@@ -104,3 +104,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0070](0070-layout-viewport-shift.md)                                        | Accepted               | Use the layout viewport for contextual popup shifting                                |
 | [0071](0071-menu-initial-model-defaults.md)                                  | Accepted               | Preserve initial Menu models over one-time defaults                                  |
 | [0072](0072-portal-dom-destinations.md)                                      | Accepted               | Support native Portal destinations across DOM roots and realms                       |
+| [0073](0073-portal-pending-and-menu-labels.md)                               | Accepted               | Defer Portal mounting and preserve Menu group labels                                 |

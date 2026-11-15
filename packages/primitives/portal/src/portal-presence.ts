@@ -16,6 +16,7 @@ import {
     TemplateRef,
     ViewContainerRef
 } from '@angular/core';
+import { watch } from '@radix-ng/primitives/core';
 import { PresenceMachine, RDX_PRESENCE_CONTEXT } from '@radix-ng/primitives/presence';
 import { movePortalNodes } from './move-nodes';
 import { RdxPortalContainer, RdxPortalTarget, resolvePortalContainer } from './resolve-container';
@@ -54,6 +55,7 @@ export class RdxPortalPresence {
      * Container to portal the content into. Can be a ShadowRoot, an HTML element from any window,
      * an ElementRef of either, or a CSS
      * selector. Defaults to `document.body` (or when a selector matches nothing).
+     * Explicit null prevents mounting until a target is provided, even with keepMounted.
      */
     readonly container = input<RdxPortalContainer>();
 
@@ -68,12 +70,19 @@ export class RdxPortalPresence {
     /** The layer's own open/present flag, OR'd with {@link keepMounted} to gate mount/unmount. */
     private readonly presenceContext = inject(RDX_PRESENCE_CONTEXT);
     private readonly contextPresent = this.presenceContext.present;
-    private readonly present = computed(() => this.contextPresent() || this.keepMounted());
-
     private readonly _computedContainer = linkedSignal(this.container);
+    private readonly pendingContainer = computed(() => this._computedContainer() === null);
+    private readonly present = computed(
+        () => !this.pendingContainer() && (this.contextPresent() || this.keepMounted())
+    );
+    private readonly skipExitAnimation = computed(
+        () => this.pendingContainer() || (this.presenceContext.skipExitAnimation?.() ?? false)
+    );
 
     private readonly elementContainer = computed<RdxPortalTarget | null>(() => {
-        const provided = resolvePortalContainer(this._computedContainer(), this.document);
+        const container = this._computedContainer();
+        if (container === null) return null;
+        const provided = resolvePortalContainer(container, this.document);
         return provided ?? this.document?.body ?? null;
     });
 
@@ -81,20 +90,27 @@ export class RdxPortalPresence {
     private readonly mountedNodes = signal<Node[]>([]);
     private viewRef: EmbeddedViewRef<void> | null = null;
     private readonly mounted = signal(false);
+    private machine?: PresenceMachine;
 
     constructor() {
-        const machine = new PresenceMachine({
-            present: this.present,
-            skipExitAnimation: this.presenceContext.skipExitAnimation,
-            isBrowser: this.isBrowser,
-            injector: inject(Injector),
-            mountView: () => this.mountView(),
-            destroyView: () => this.destroyView()
+        const injector = inject(Injector);
+        // Initial inputs must be bound before the machine can create a view. Otherwise an
+        // already-open owner briefly instantiates children even when container=null was authored.
+        watch([], () => {
+            this.machine = new PresenceMachine({
+                present: this.present,
+                skipExitAnimation: this.skipExitAnimation,
+                isBrowser: this.isBrowser,
+                injector,
+                mountView: () => this.mountView(),
+                destroyView: () => this.destroyView()
+            });
         });
         const unregister = this.presenceContext.registerPresence?.({
             mounted: this.mounted.asReadonly(),
             keepMounted: this.keepMounted,
-            pendingExit: () => machine.isExitPending
+            suspended: this.pendingContainer,
+            pendingExit: () => this.machine?.isExitPending ?? false
         });
 
         // Relocate reactively: re-runs whenever the resolved container changes or the view is
@@ -109,13 +125,13 @@ export class RdxPortalPresence {
         });
 
         inject(DestroyRef).onDestroy(() => {
-            machine.dispose();
+            this.machine?.dispose();
             unregister?.();
         });
     }
 
     /** Imperatively override the portal container (parity with `RdxPortal.setContainer`). */
-    setContainer(container: RdxPortalContainer): void {
+    setContainer(container: RdxPortalContainer | undefined): void {
         this._computedContainer.set(container);
     }
 

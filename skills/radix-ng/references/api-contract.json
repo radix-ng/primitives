@@ -4155,7 +4155,13 @@
           "selector": "[rdxMenuGroupLabel]",
           "exportAs": "rdxMenuGroupLabel",
           "description": "A label for a menu group.",
-          "inputs": [],
+          "inputs": [
+            {
+              "name": "id",
+              "type": "string",
+              "description": "Native label id. Defaults to a generated SSR-stable id."
+            }
+          ],
           "outputs": []
         },
         {
@@ -4296,7 +4302,7 @@
             {
               "name": "container",
               "type": "RdxPortalContainer",
-              "description": "Container to portal the content into. Can be a ShadowRoot, an HTML element from any window,\nan ElementRef of either, or a CSS\nselector. Defaults to `document.body` (or when a selector matches nothing)."
+              "description": "Container to portal the content into. Can be a ShadowRoot, an HTML element from any window,\nan ElementRef of either, or a CSS\nselector. Defaults to `document.body` (or when a selector matches nothing).\nExplicit null prevents mounting until a target is provided, even with keepMounted."
             },
             {
               "name": "keepMounted",
@@ -5033,7 +5039,7 @@
             {
               "name": "container",
               "type": "RdxPortalContainer",
-              "description": "Container to portal the content into. Can be a ShadowRoot, an HTML element from any window,\nan ElementRef of either, or a CSS\nselector. Defaults to `document.body` (or when a selector matches nothing)."
+              "description": "Container to portal the content into. Can be a ShadowRoot, an HTML element from any window,\nan ElementRef of either, or a CSS\nselector. Defaults to `document.body` (or when a selector matches nothing).\nExplicit null prevents mounting until a target is provided, even with keepMounted."
             }
           ],
           "outputs": []
@@ -5920,7 +5926,7 @@
             {
               "name": "container",
               "type": "RdxPortalContainer",
-              "description": "Container to portal the content into. Can be a ShadowRoot, an HTML element from any window,\nan ElementRef of either, or a CSS\nselector. Defaults to `document.body` (or when a selector matches nothing)."
+              "description": "Container to portal the content into. Can be a ShadowRoot, an HTML element from any window,\nan ElementRef of either, or a CSS\nselector. Defaults to `document.body` (or when a selector matches nothing).\nExplicit null prevents mounting until a target is provided, even with keepMounted."
             },
             {
               "name": "keepMounted",
@@ -6336,7 +6342,7 @@
             {
               "name": "container",
               "type": "RdxPortalContainer",
-              "description": "Specify a container to portal the content into. Can be a ShadowRoot, an HTML element (including\none from another window), an ElementRef of either, or a\nCSS selector. Defaults to `document.body` when not set (or when a selector matches nothing)."
+              "description": "Specify a container to portal the content into. Can be a ShadowRoot, an HTML element (including\none from another window), an ElementRef of either, or a\nCSS selector. Defaults to `document.body` when not set (or when a selector matches nothing).\nExplicit null detaches the host until a target is provided, retaining its Angular view."
             }
           ],
           "outputs": []
@@ -6408,7 +6414,7 @@
             {
               "name": "container",
               "type": "RdxPortalContainer",
-              "description": "Container to portal the content into. Can be a ShadowRoot, an HTML element from any window,\nan ElementRef of either, or a CSS\nselector. Defaults to `document.body` (or when a selector matches nothing)."
+              "description": "Container to portal the content into. Can be a ShadowRoot, an HTML element from any window,\nan ElementRef of either, or a CSS\nselector. Defaults to `document.body` (or when a selector matches nothing).\nExplicit null prevents mounting until a target is provided, even with keepMounted."
             }
           ],
           "outputs": []
@@ -7217,7 +7223,7 @@
             {
               "name": "container",
               "type": "RdxPortalContainer",
-              "description": "Container to portal the content into. Can be a ShadowRoot, an HTML element from any window,\nan ElementRef of either, or a CSS\nselector. Defaults to `document.body` (or when a selector matches nothing)."
+              "description": "Container to portal the content into. Can be a ShadowRoot, an HTML element from any window,\nan ElementRef of either, or a CSS\nselector. Defaults to `document.body` (or when a selector matches nothing).\nExplicit null prevents mounting until a target is provided, even with keepMounted."
             },
             {
               "name": "keepMounted",
@@ -8468,7 +8474,7 @@
             {
               "name": "container",
               "type": "RdxPortalContainer",
-              "description": "Specify a container to portal the content into. Can be a ShadowRoot, an HTML element (including\none from another window), an ElementRef of either, or a\nCSS selector. Defaults to `document.body` when not set (or when a selector matches nothing)."
+              "description": "Specify a container to portal the content into. Can be a ShadowRoot, an HTML element (including\none from another window), an ElementRef of either, or a\nCSS selector. Defaults to `document.body` when not set (or when a selector matches nothing).\nExplicit null detaches the host until a target is provided, retaining its Angular view."
             }
           ],
           "outputs": []
@@ -9092,7 +9098,7 @@
             {
               "name": "container",
               "type": "RdxPortalContainer",
-              "description": "Container to portal the content into. Can be a ShadowRoot, an HTML element from any window,\nan ElementRef of either, or a CSS\nselector. Defaults to `document.body` (or when a selector matches nothing)."
+              "description": "Container to portal the content into. Can be a ShadowRoot, an HTML element from any window,\nan ElementRef of either, or a CSS\nselector. Defaults to `document.body` (or when a selector matches nothing).\nExplicit null prevents mounting until a target is provided, even with keepMounted."
             }
           ],
           "outputs": []

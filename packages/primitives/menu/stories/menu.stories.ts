@@ -13,6 +13,8 @@ import { RdxMenuBackdropExampleComponent } from './menu-backdrop';
 import backdropSource from './menu-backdrop?raw';
 import { RdxMenuCompositionComponent } from './menu-composition';
 import compositionSource from './menu-composition?raw';
+import { RdxMenuCustomContainerComponent } from './menu-custom-container';
+import customContainerSource from './menu-custom-container?raw';
 import { RdxMenuDefaultComponent } from './menu-default';
 import defaultSource from './menu-default?raw';
 import { RdxMenuEventsComponent } from './menu-events';
@@ -66,6 +68,7 @@ export default {
         moduleMetadata({
             imports: [
                 RdxMenuDefaultComponent,
+                RdxMenuCustomContainerComponent,
                 RdxMenuMultipleTriggersComponent,
                 RdxMenuCompositionComponent,
                 RdxMenuInitialFocusComponent,
@@ -122,6 +125,12 @@ export const Default: Story = {
             <rdx-menu-default />
         `
     })
+};
+
+export const CustomContainer: Story = {
+    tags: ['!visual'],
+    parameters: source(customContainerSource),
+    render: () => ({ template: '<rdx-menu-custom-container />' })
 };
 
 export const NativeElements: Story = {

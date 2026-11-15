@@ -11,7 +11,7 @@
         {
           "name": "container",
           "type": "RdxPortalContainer",
-          "description": "Specify a container to portal the content into. Can be a ShadowRoot, an HTML element (including\none from another window), an ElementRef of either, or a\nCSS selector. Defaults to `document.body` when not set (or when a selector matches nothing)."
+          "description": "Specify a container to portal the content into. Can be a ShadowRoot, an HTML element (including\none from another window), an ElementRef of either, or a\nCSS selector. Defaults to `document.body` when not set (or when a selector matches nothing).\nExplicit null detaches the host until a target is provided, retaining its Angular view."
         }
       ],
       "outputs": []

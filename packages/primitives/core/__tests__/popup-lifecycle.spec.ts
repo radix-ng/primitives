@@ -44,6 +44,39 @@ describe('shared popup lifecycle', () => {
         await settle();
     });
 
+    it('waits for a suspended Portal destination and completes each actual remount', async () => {
+        const suspended = signal(true);
+        const mounted = signal(false);
+        host.lifecycle.registerPresence({ mounted, keepMounted: () => false, suspended });
+        change(true);
+        await settle();
+        await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+        expect(host.completions).toEqual([]);
+        suspended.set(false);
+        mounted.set(true);
+        await settle();
+        await vi.waitFor(() => expect(host.completions).toEqual([true]));
+        suspended.set(true);
+        mounted.set(false);
+        await settle();
+        suspended.set(false);
+        mounted.set(true);
+        await settle();
+        await vi.waitFor(() => expect(host.completions).toEqual([true, true]));
+        expect(host.open()).toBe(true);
+    });
+
+    it('does not report a completed close when the Portal was still waiting for a destination', async () => {
+        host.lifecycle.registerPresence({ mounted: signal(false), keepMounted: () => false, suspended: signal(true) });
+        change(true);
+        await settle();
+        change(false);
+        await settle();
+        expect(host.completions).toEqual([]);
+        expect(host.lifecycle.present()).toBe(false);
+        expect(host.lifecycle.status()).toBeUndefined();
+    });
+
     it.each(['automatic', 'deferred', 'css', 'retained-css'] as const)(
         'owner destruction completes only an accepted automatic close: %s',
         async (mode) => {

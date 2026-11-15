@@ -1,5 +1,5 @@
 import { afterNextRender, effect, Injector, Signal } from '@angular/core';
-import { getMaxTransitionDuration } from '@radix-ng/primitives/core';
+import { getMaxTransitionDuration, isHTMLElement } from '@radix-ng/primitives/core';
 
 type PresenceState = 'mounted' | 'unmountSuspended' | 'unmounted';
 type PresenceEvent = 'MOUNT' | 'UNMOUNT' | 'ANIMATION_OUT' | 'ANIMATION_END';
@@ -243,7 +243,7 @@ export class PresenceMachine {
 
         for (const animation of exitAnimations) {
             const target = (animation.effect as KeyframeEffect | null)?.target;
-            if (target instanceof HTMLElement) {
+            if (isHTMLElement(target)) {
                 targets.add(target);
             }
         }
@@ -379,7 +379,7 @@ export class PresenceMachine {
 
     /** Current timeline time on the same clock as `Animation.startTime` (ms), or 0 if unavailable. */
     private now(): number {
-        const time = typeof document !== 'undefined' ? document.timeline?.currentTime : null;
+        const time = this.nodes[0]?.ownerDocument.timeline?.currentTime;
         return typeof time === 'number' ? time : Number(time ?? 0);
     }
 }

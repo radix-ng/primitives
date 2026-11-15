@@ -21,6 +21,55 @@ export const portalScenarios = portalCases.map((name) => ({
     name,
     async run(d: MenuDriver) {
         const p = portalConfig(name)!;
+        if (p.pending) {
+            await expect(d.popup).toHaveCount(0);
+            await d.trigger.click();
+            await expect(d.trigger).toHaveAttribute('aria-expanded', 'true');
+            await expect(d.popup).toHaveCount(0);
+            await d.checkpoint('open waits for target', { open: true, mounted: false, target: null });
+            await d.trigger.click();
+            await expect(d.trigger).toHaveAttribute('aria-expanded', 'false');
+            await d.checkpoint('closed while waiting', { open: false, mounted: false });
+            await d.trigger.click();
+            await expect(d.trigger).toHaveAttribute('aria-expanded', 'true');
+            await d.checkpoint('reopened while waiting', { open: true, mounted: false });
+            await d.page.keyboard.press('F3');
+            await expect(d.popup).toBeVisible();
+            await expect(d.popup).toHaveAccessibleName('Actions');
+            await d.checkpoint('target resolved', { open: true, visible: true, target: 'target', labelled: true });
+            await d.page.keyboard.press('Home');
+            await d.page.keyboard.press('ArrowDown');
+            await expectActive(d.item('bravo'));
+            await d.checkpoint('highlight before target loss', { focus: 'bravo', highlighted: ['bravo'] });
+            if (p.exit) {
+                await d.page.keyboard.press('Escape');
+                await expect(d.popup).toHaveAttribute('data-ending-style', '');
+                await expect.poll(() => d.popup.evaluate((node) => node.getAnimations().length)).toBeGreaterThan(0);
+                await d.checkpoint('exit pending', { open: false, mounted: true });
+            }
+            await d.page.keyboard.press('F3');
+            await expect(d.popup).toHaveCount(0);
+            await d.checkpoint('target suspended', { mounted: false, backgroundInert: false, backgroundHidden: false });
+            await d.page.keyboard.press('F3');
+            if (p.exit) await d.open('Enter');
+            else await expect(d.popup).toBeVisible();
+            await d.checkpoint('target restored', { open: true, visible: true, target: 'target', labelled: true });
+            await d.page.keyboard.press('Home');
+            await expectActive(d.item('alpha'));
+            // Removing an owner while waiting must not leave a deferred view, focus guard or isolation.
+            await d.page.keyboard.press('F3');
+            await expect(d.popup).toHaveCount(0);
+            await d.page.keyboard.press('F4');
+            await expect(d.trigger).toHaveCount(0);
+            await d.checkpoint('pending owner removed', {
+                open: false,
+                mounted: false,
+                backgroundInert: false,
+                backgroundHidden: false
+            });
+            expect(d.errors).toEqual([]);
+            return;
+        }
         await d.open(p.pointer ? 'mouse' : 'Enter');
         d.measurements.push({
             name: 'opening DOM',

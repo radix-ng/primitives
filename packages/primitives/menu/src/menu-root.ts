@@ -959,6 +959,9 @@ export class RdxMenuRoot<Payload = unknown> implements OnChanges, OnDestroy {
                 this.popupCompositeList.set(null);
                 this.popupElement.set(undefined);
                 this.popupPhysicalSideSource.set(undefined);
+                // A suspended Portal destroys this popup while Root can stay logically open.
+                // Its highlight belongs to the disposed collection, not a later fresh view.
+                if (this.open()) this.setActiveIndex(null);
             }
         };
     }
