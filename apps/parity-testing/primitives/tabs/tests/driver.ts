@@ -320,4 +320,65 @@ export class TabsDriver {
         );
         expect(this.errors).toEqual([]);
     }
+
+    async activationCheckpoint(name: string, expected: Record<string, unknown>) {
+        const read = () =>
+            this.page.evaluate(() => {
+                const root = document.querySelector('[data-testid="tabs-root"]')!;
+                const target = root.querySelector<HTMLElement>('[data-testid="tab-1"]')!;
+                const probe = window.tabsActivation;
+                return {
+                    selected: [...root.querySelectorAll('[role="tab"][aria-selected="true"]')].map((tab) =>
+                        tab.getAttribute('data-testid')
+                    ),
+                    focus: document.activeElement?.getAttribute('data-testid') ?? null,
+                    tabStops: [...root.querySelectorAll<HTMLElement>('[role="tab"]')].map((tab) => tab.tabIndex),
+                    host: {
+                        tag: target.tagName,
+                        type: target.getAttribute('type'),
+                        role: target.getAttribute('role'),
+                        disabled: target.hasAttribute('disabled'),
+                        ariaDisabled: target.getAttribute('aria-disabled')
+                    },
+                    callbacks: probe.callbacks,
+                    timeline: probe.timeline,
+                    clicks: probe.timeline.filter((event) => event.phase === 'bubble' && event.type === 'click').length,
+                    hash: location.hash,
+                    scrolled: scrollY > 0,
+                    submits: probe.submits
+                };
+            });
+        if (expected.scrolled === true) await expect.poll(async () => (await read()).scrolled).toBe(true);
+        let previous = '';
+        let stable = 0;
+        let state = await read();
+        for (let frame = 0; frame < 120; frame++) {
+            await this.page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => resolve())));
+            state = await read();
+            const json = JSON.stringify(state);
+            stable = json === previous ? stable + 1 : 0;
+            if (stable >= 3) break;
+            previous = json;
+            if (frame === 119) throw new Error('Tabs activation did not settle');
+        }
+        const snapshot = await this.page.evaluate(() => ({
+            dom: document.body.innerHTML,
+            triggers: window.tabsActivation.triggers,
+            nativeEvents: window.tabsParity.nativeEvents
+        }));
+        this.checkpoints.push({ name, state });
+        this.measurements.push({
+            name,
+            dom: snapshot.dom,
+            focus: state.focus,
+            frames: { triggers: snapshot.triggers, nativeEvents: snapshot.nativeEvents }
+        });
+        expect(state, `${this.framework}: ${name}`).toEqual(expect.objectContaining({ submits: 0, ...expected }));
+        // Angular keeps its optional native trigger; pinned Tabs leaves it unset. Preserve both raw.
+        expect(snapshot.triggers).toEqual(
+            Array(state.callbacks.length).fill(this.framework === 'angular' ? 'tab-1' : null)
+        );
+        expect(this.errors).toEqual([]);
+        return state;
+    }
 }

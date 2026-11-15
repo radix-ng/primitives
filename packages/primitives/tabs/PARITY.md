@@ -7,11 +7,12 @@ The prepared source digest was validated with `pnpm parity:prepare`.
 
 This is a source/API audit with incremental comparison evidence, not full parity or accessibility
 certification. The [Tabs differential suite](../../../apps/parity-testing/primitives/tabs/README.md)
-now covers initial values/notifications, Panel exits/focus, activation direction and native identities:
-**51 scenarios, 153 comparisons** across Chromium, Firefox and WebKit, with no skips. Six exact reviewed
+now covers initial values/notifications, Panel exits/focus, activation direction, identities and native activation:
+**91 scenarios, 273 comparisons** across Chromium, Firefox and WebKit, with no skips. Six exact reviewed
 fields cover the custom-Panel ID and persistent-host differences in G5. G1 and G3's direction defects
 are resolved; G4's inert/hidden defects and G5's identity defects are resolved for their documented
-scope. Remaining interaction, lifecycle and geometry gaps below are not certified by these increments.
+scope. G8's native keyboard/click/press-release subset is resolved; remaining interaction, lifecycle
+and geometry gaps below are not certified by these increments.
 **Pinned covered** means the stated subset passed direct Angular/Base UI comparison;
 **Regression covered** below means an existing Angular check exercises the stated subset;
 **source gap** means the implementations differ by inspection and need a focused comparison;
@@ -27,12 +28,12 @@ listed separately from unresolved gaps.
 | Selected uncontrolled tab becomes disabled                                               | Implicit-default unit                                                               | Regression covered; first enabled value, reason `disabled`, direction `none`                                    |
 | Missing selected tab, empty/refilled/replaced lists, all disabled                        | Pinned all-disabled initial case; Root source                                       | Initial all-disabled case covered; later collection changes pending, G2                                         |
 | Controlled initial/external values; parent ignores a request                             | Pinned direction suite; selected-disabled unit; native model source                 | External direction/focus and explicit cancellation covered, G3; ignoring-parent equivalence not established     |
-| Click selection, same-value no-op and cancel before commit                               | Click and cancellation units; Tab/Root guards                                       | Regression covered for click/cancel; duplicate native callbacks pending                                         |
-| Event reasons, native event, trigger and callback order                                  | Root source; reason/direction assertions                                            | Reasons partially covered; event metadata differs on keyboard paths, G8                                         |
+| Click selection, same-value no-op and cancel before commit                               | Forty pinned activation cases; eight activation units                               | Pinned covered for native requests, canceled retry, repeat and same-value no-op                                 |
+| Event reasons, native event, trigger and callback order                                  | Pinned capture/bubble/change timeline, native event metadata and raw trigger data   | Type/trust/target/modifiers/order covered; optional Angular trigger retained, ADR 0075                          |
 | Manual activation by default; automatic activation on focus                              | Focus and arrow-navigation units                                                    | Regression covered for horizontal navigation                                                                    |
 | Home/End, looping and `loopFocus=false`                                                  | Units; projected-wrapper browser scenario                                           | Regression covered for Home/End and one non-loop boundary; default wrap pending                                 |
 | Vertical Up/Down, horizontal RTL and modifier keys                                       | Shared Composite source; orientation-attribute unit                                 | Tabs-specific browser comparisons pending                                                                       |
-| Disabled tabs remain arrow-focusable without activation                                  | Unit verifies native disabled is absent, ARIA state, focus and unchanged value      | Regression covered for horizontal arrows/click; native pointer/keyboard combinations pending                    |
+| Disabled tabs remain arrow-focusable without activation                                  | Pinned disabled button/div/link key/click cases; state and focus units              | Covered for disabled native defaults/navigation and horizontal entry; touch/pen remain pending                  |
 | Disabled controlled selection preserves an enabled Tab entry                             | Selected-disabled unit; List source                                                 | Regression covered with focus outside the list; dynamic focus cases pending                                     |
 | Native Tab / Shift+Tab into list, panel and adjacent controls                            | Pinned held-exit cases and projected-wrapper browser test                           | Forward/reverse active-panel order covered during exits; rapid pre-render Enter/Tab remains pending             |
 | `role`, `aria-selected`, orientation and reciprocal IDs                                  | Fifteen pinned identity cases, seven identity units and native SSR relationships    | G5 covered for registered/authored identities; two documented adaptations                                       |
@@ -44,7 +45,7 @@ listed separately from unresolved gaps.
 | Indicator custom tab ID, absent/zero-size selection, resize and List replacement         | Pinned custom-ID case and Indicator lookup/observer source                          | Custom/default ID lookup fixed in G5; visibility and observation remain G6                                      |
 | Indicator scroll, borders, scale/transforms and intermediate scroll containers           | Geometry calculations vs pinned Indicator and browser tests                         | Source gaps, G6; screenshots do not prove live geometry                                                         |
 | Tab/Panel value domain and unique identity                                               | Public value types; pinned mixed numeric/string identities                          | ID collisions fixed in G5; arbitrary-value API remains G7                                                       |
-| Custom/native hosts, keyboard activation and disabled links                              | `nativeButton` and event-handler source vs pinned `useButton`                       | Source gaps, G8; no Tabs custom-host regression                                                                 |
+| Custom/native hosts, keyboard activation and disabled links                              | Forty native activation cases on button/div/link/anchor hosts                       | G8 covered for the documented keyboard/click/secondary-release subset                                           |
 | Projected parts through a host-composed Root                                             | Five wrapper units and one Chromium Storybook scenario                              | Regression covered; Root must stay in the declaring injector tree                                               |
 | List destruction/recreation and stale registration cleanup                               | Two wrapper lifecycle units                                                         | Regression covered for retained string selection; whole-Root cleanup pending                                    |
 | Nested Roots, multiple instances and use inside Dialog/Popover                           | Pinned independent-Root identities; separate consumer experiment                    | Independent identities covered; nested/overlay consumers pending                                                |
@@ -72,10 +73,13 @@ listed separately from unresolved gaps.
   React callback arity and controlled-prop mechanics are not copied, but observable state ownership
   retains the G2 collection follow-ups; G3 compares accepted and explicitly canceled requests, not an
   ignoring parent's React controlled-prop semantics.
+- Change details retain Angular's optional initiating native `trigger`; pinned Tabs leaves it unset.
+  G8 asserts each policy and retains it in raw measurements. Equal trigger availability is outside
+  the native callback equivalence. See [ADR 0075](../../../docs/adr/0075-tabs-native-activation.md).
 
 ## Source gaps and required comparisons
 
-G1, G3's direction defects, G4 and G5 were reproduced and fixed through direct comparison. G5 has
+G1, G3's direction defects, G4, G5 and G8's native-activation subset were reproduced and fixed through direct comparison. G5 has
 exact reviewed differences documented below. The remaining findings are not reviewed
 differential exceptions; each needs a focused reproducer before an exact exception or runtime change
 is accepted.
@@ -204,19 +208,27 @@ values, including object/function values. G5 removes value stringification from 
 compares distinct numeric `1`/string `'1'` selection with unique native identities. Arbitrary-value
 support remains an API capability gap, not a request to copy React state handling.
 
-### G8 — Keyboard/native-host activation does not use the pin's button contract
+### G8 — Resolved for native keyboard/click activation and secondary release
 
-[Tab](src/tabs-tab.ts) commits Enter/Space directly on `keydown`, without preventing the native
-Space default, guarding `event.target === event.currentTarget`, or preventing disabled link navigation.
-`nativeButton=false` currently changes the `type` attribute only. The pin routes activation through
-`useButton`, prevents composite Space defaults, synthesizes/native-dispatches clicks as appropriate
-and prevents disabled activation defaults. Consequently callback event type/order, native navigation
-and duplicate attempts after a canceled key request need comparison even when the final value agrees.
+[Tab](src/tabs-tab.ts) now requests selection from click or automatic focus. Native button/link Enter
+belongs to the browser; custom-host Enter and composite Space dispatch clicks through the owned core
+utility, preserving modifiers. Space prevents scrolling and its native button keyup default, so a
+canceled request cannot be retried in the same physical press. Descendant activation keys keep their
+own defaults. Disabled tabs suppress defaults without native disabling, including link navigation.
+Automatic activation uses actual focusin; pending press listeners release together on up/cancel/destroy.
 
-Test button/div/anchor hosts, native Enter/Space and repeat, modifier/link navigation, disabled links,
-bubbled descendant keys, canceled requests and original event/trigger details. Include held secondary
-pointer focus followed by pointerup/pointercancel, touch and removal during a press; source guards alone
-do not establish trusted-event behavior or listener cleanup.
+Forty cases compare button/div/link/anchor hosts, Enter/Space/repeat, canceled/accepted physical
+requests, selected-tab no-ops, modifiers, prevented Enter, disabled key/click defaults, descendant
+keys, form non-submission and held right/middle presses followed by native arrow focus. Capture/
+bubble/change order, native event type/trust/target/modifiers, selection, tabindex, focus, hash and
+scrolling are compared. Before the fix **40/40** Chromium cases failed with zero reference assertion
+failures. Eight new units failed before the fix, including paired listener disposal.
+
+[ADR 0075](../../../docs/adr/0075-tabs-native-activation.md) preserves Angular's optional initiating
+native trigger. Its actual value is retained in raw measurements and asserted independently of the
+reference's unset property; equal trigger availability is not certified. The 120 activation comparisons
+add no differential exception. Native pointer cancellation/removal mid-press, touch/pen, auxiliary
+link activation, authored submit/reset types and browser shortcuts remain follow-ups.
 
 ## Verification and limits
 
@@ -224,9 +236,9 @@ Checks run for this audit on Node 24.22.2:
 
 - `pnpm parity:prepare` — Base UI 1.9.0 pin and cached content digest validated.
 - `pnpm exec vitest run --config packages/primitives/vite.config.ts packages/primitives/tabs/__tests__`
-  — **46 passed**, including seven native-identity regressions, null-default, Panel inertness, direction
+  — **54 passed**, including eight native-activation regressions, seven native-identity regressions, null-default, Panel inertness, direction
   regressions and synchronous model/direction publication.
-- `pnpm test-parity tabs` — **153 passed** (51 initial-value/Panel/direction/identity scenarios × three engines), strict fixture
+- `pnpm test-parity tabs` — **273 passed** (91 initial-value/Panel/direction/identity/activation scenarios × three engines), strict fixture
   compilation/build and the shared runner's 13 infrastructure tests passed. The initial Chromium run
   before the runtime fix passed nine cases and failed both null-default cases; its reports/traces are
   retained locally in `dist/parity-testing/tabs/before-null-fix/`.
@@ -237,6 +249,11 @@ Checks run for this audit on Node 24.22.2:
   equal-coordinate and accepted-request assertions were added afterward; the saved verdict is unchanged.
 - Initial identity cases before G5: **2 passed / 13 failed** in Chromium, all reference assertions
   passed; preserved in `dist/parity-testing/tabs/before-identity-fix/`.
+- Activation cases before G8: **40 failed**, zero reference assertion failures in Chromium;
+  preserved in `dist/parity-testing/tabs/before-activation-fix/`.
+- Additional Linux/arm64 browser pass: **120 activation comparisons passed** against the built
+  fixtures in `mcr.microsoft.com/playwright:v1.60.0-noble`, using one worker and the original timeout.
+  Results are retained in `dist/tabs-g8-linux/results/`; the full macOS pass remains the 273-row report.
 - `PLAYWRIGHT_PORT=4411 pnpm exec playwright test -c apps/visual-regression/playwright.config.ts tabs.behavior.spec.ts agents.behavior.spec.ts --grep Tabs --project=chromium`
   — **2 passed** against a fresh Storybook build: public keyframe lifecycle and projected wrapper.
 - `pnpm exec playwright test -c apps/visual-regression/playwright.config.ts agents.behavior.spec.ts --grep 'Agents Tabs task' --project=chromium`
@@ -246,9 +263,10 @@ Checks run for this audit on Node 24.22.2:
   — **4 passed**, other SSR cases excluded. These prove server markup/metadata/native relationships, not actual
   client hydration or assistive-technology behavior.
 
-The unit named “activates on Enter / Space” dispatches only Enter. Space is exercised by the wrapper
-browser scenario, but complete native keyboard event metadata/cancellation remains G8. Direction units
-use explicitly mocked coordinates; actual geometry/direction is established by pinned browsers. Existing
+The former “activates on Enter / Space” unit now tests composite Space. Separate units check native
+Enter delegation; actual native keyboard defaults and callback order are established by G8's pinned
+browser comparisons. Direction units use explicitly mocked coordinates; actual geometry/direction
+is established by pinned browsers. Existing
 story screenshots are settled visual evidence, not animation, focus or live Indicator measurements.
 
 The separate [AppTabs consumer experiment](../../../tools/consumer-testing/generation/tabs/REPORT.md)
@@ -257,8 +275,8 @@ Enter/Tab failures. Its [follow-up](../../../tools/consumer-testing/generation/t
 records supplemental success after observing selection rendering. Neither result compares Base UI or
 establishes ownership of that timing issue; do not relabel it as primitive parity or as 36/36.
 
-Next increments: native activation for G8, followed by Indicator geometry/observation for G6. Dynamic
-collection and value-domain work remain G2/G7.
+Next increments: Indicator geometry/observation for G6, then dynamic collection/value-domain work
+for G2/G7. G8's remaining native gesture and auxiliary-host combinations stay explicit follow-ups.
 Keep fixtures on actual native input and observable state; do not normalize away IDs, focus, mounting,
 event metadata or geometry differences. Whole-Root removal, nested/overlay consumers, hydration and
 real-device/AT work remain explicit follow-ups.

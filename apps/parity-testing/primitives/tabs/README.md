@@ -4,9 +4,10 @@ Compares Angular Tabs with the unmodified Base UI sources pinned in
 [reference.json](../../reference.json). Run `pnpm test-parity tabs`, or add `--project=chromium` for
 local iteration. The suite is discovered by the existing runner and CI without shared-tooling changes.
 
-Fifty-one scenarios run in Chromium, Firefox and WebKit: **153 comparisons**, with no capability skips.
+Ninety-one scenarios run in Chromium, Firefox and WebKit: **273 comparisons**, with no capability skips.
 This includes eleven initial-value cases, eight Panel lifecycle cases, seventeen direction cases and
-fifteen native-identity cases. Six exact reviewed fields cover two identity scenarios; see below.
+fifteen native-identity cases, and forty native-activation cases. Six exact reviewed fields cover two
+identity scenarios; activation adds no exception. See below.
 See the [primitive matrix](../../../../packages/primitives/tabs/PARITY.md) for the remaining work.
 
 ## Initial-value scope
@@ -53,8 +54,8 @@ preserved locally in `dist/parity-testing/tabs/before-null-fix/`.
 Root now defaults only an `undefined` input to `0`, preserving explicit `null`. All 33 comparisons
 passed with an empty `expected-differences.json` at that increment. Two Angular unit regressions also
 verify numeric/string collections, no active or visible panels, no notification and preservation of
-the initial null choice after a later `defaultValue` input update. The unit suite now passes **46
-tests**, including seven native-identity regressions, inactive Panel inertness, external direction/null
+the initial null choice after a later `defaultValue` input update. The unit suite now passes **54
+tests**, including eight native-activation regressions, seven native-identity regressions, inactive Panel inertness, external direction/null
 changes on both axes, equal-coordinate activation and direction publication before synchronous model
 subscribers run.
 
@@ -184,6 +185,46 @@ notifications or a different scenario. Latest Panel registration wins, and remov
 not resurrect a shadowed registration; a later native hidden-state change can re-register that host.
 Arbitrary object/function values, imperative DOM-ID mutation and live cross-root moves remain outside
 this scope.
+
+## Native keyboard and host activation
+
+Forty `activation-*` cases cover native buttons, div hosts, links and anchors without href; Enter,
+Space, held/repeated keys, cancellation followed by a second physical press, modifier preservation,
+consumer-prevented Enter, disabled click/key defaults, descendant keys, form non-submission and held
+right/middle presses with automatic focus activation after release.
+
+Focus enters the list by native Tab and moves to the tested part with ArrowRight. Native keyboard
+and pointer input drives activation. A secondary-press case focuses the actual element while its
+native press is held, accommodating whether the OS itself focuses that press, then verifies native
+arrow-focus activation after release. These two fixtures prevent the OS context-menu default so it
+cannot consume the release; a native pointerup must be observed before the next focus request.
+Fixtures use real parts and cancel only through public event
+details. Document capture/bubble listeners observe native defaults, trust, targets, modifiers and
+their order relative to callbacks. They never synthesize a primitive response or repair its state.
+
+Checkpoints compare actual selection, focus, tabindex, host attributes, callback count/type/trust/
+target/modifiers/reason/direction/cancellation, event order, link hash, scrolling and form submission.
+Selected-tab repeats cannot request a new value. A canceled request must await another physical
+request; Space keyup cannot dispatch a duplicate. Native link Enter repeat remains browser-owned,
+with actual counts compared between implementations and every callback required to carry a click.
+
+Before the runtime change, all **40/40** Chromium cases failed with zero reference assertion failures;
+the baseline is retained in `dist/parity-testing/tabs/before-activation-fix/`. Eight new unit checks
+failed before the fix. The unit-only Enter test now explicitly verifies delegation to a later click;
+browser input proves native Enter. The existing focus unit uses actual focus rather than dispatching
+an isolated non-bubbling focus event. Press-listener units verify paired removal after up/cancel/destroy.
+
+[ADR 0075](../../../../docs/adr/0075-tabs-native-activation.md) records the native Angular adaptation.
+Angular keeps its optional native `eventDetails.trigger`, while pinned Tabs leaves it unset. Each
+policy is asserted independently and the raw trigger/native event data is retained in measurements;
+equal trigger availability is outside the callback equivalence above. No new differential exception
+is introduced. Touch/pen, native cancellation/removal during a press, auxiliary link activation,
+authored submit/reset types and real device/AT behavior remain follow-ups.
+
+The forty activation cases also passed all **120 comparisons** in the Playwright 1.60.0 Noble
+Linux/arm64 image against the same built fixtures. This browser-only pass ran with one worker and
+the original timeout, after an overloaded parallel attempt hit timeouts. Its observations are retained
+in `dist/tabs-g8-linux/results/`; it supplements the full macOS suite rather than replacing its build.
 
 The runner writes the current browser/version/reference manifest, observations, raw measurements and
 HTML report to `dist/parity-testing/tabs/results/`. This local run establishes the documented scope

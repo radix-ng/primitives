@@ -179,7 +179,16 @@ in roving focus and implicit selection.
 
 ### TabsTab
 
-`RdxTabsTab` — an interactive button that activates its panel.
+`RdxTabsTab` — an interactive tab that activates its panel. Apply to a native `<button>` element.
+
+Set `[nativeButton]="false"` when using another host, such as a `<div>` or `<a>`. Enter uses native
+button/link activation; other hosts receive a keyboard click. Space activates on keydown through
+one click and prevents page scrolling. Disabled tabs remain arrow-focusable and suppress activation,
+including native link navigation. Native button hosts always use `type="button"`.
+
+Reject a selection with `eventDetails.cancel()` in `onValueChange`; a canceled keyboard request does
+not get retried by the keyup default. For links, selection cancellation and native navigation are
+separate: prevent the native event default as well when you want to cancel navigation.
 
 Tab and Panel each receive an SSR-stable, unique ID for their lifetime. Changing `value` keeps that
 ID; replacing the element generates a new one. Set `id` on either part to use your own native ID.

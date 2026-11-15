@@ -2,6 +2,7 @@ import {
     afterRenderEffect,
     booleanAttribute,
     computed,
+    DestroyRef,
     Directive,
     effect,
     ElementRef,
@@ -10,7 +11,7 @@ import {
     isDevMode
 } from '@angular/core';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
-import { BooleanInput, injectId, rdxDevWarning } from '@radix-ng/primitives/core';
+import { BooleanInput, dispatchClickWithModifiers, injectId, rdxDevWarning } from '@radix-ng/primitives/core';
 import { provideTabsCompositeItemOwner } from './tabs-composite-item-owner';
 import { injectTabsRootContext } from './tabs-root-context';
 import { RdxTabsValue } from './utils';
@@ -31,8 +32,8 @@ import { RdxTabsValue } from './utils';
         '[attr.id]': 'tabId()',
         '[attr.aria-selected]': 'active()',
         '[attr.aria-controls]': 'panelId()',
-        '[attr.aria-disabled]': 'disabled() ? "true" : undefined',
-        '[attr.disabled]': 'null',
+        '[attr.aria-disabled]': 'disabled() ? "true" : nativeButton() ? "false" : undefined',
+        '[attr.disabled]': 'undefined',
         '[attr.data-composite-item-active]': 'active() ? "" : undefined',
         '[attr.data-orientation]': 'rootContext.orientation()',
         '[attr.data-activation-direction]': 'rootContext.activationDirection()',
@@ -40,8 +41,9 @@ import { RdxTabsValue } from './utils';
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
         '(click)': 'onClick($event)',
         '(keydown)': 'onKeyDown($event)',
+        '(keyup)': 'onKeyUp($event)',
         '(pointerdown)': 'onPointerDown($event)',
-        '(focus)': 'onFocus($event)'
+        '(focusin)': 'onFocus($event)'
     }
 })
 export class RdxTabsTab {
@@ -62,7 +64,8 @@ export class RdxTabsTab {
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
-     * Whether the host element is a native button. When `true`, `type="button"` is applied.
+     * Whether the host element is a native button. Native Enter activation stays with the browser.
+     * Set to `false` for other hosts; links keep native Enter navigation and other hosts receive keyboard clicks.
      *
      * @default true
      */
@@ -83,8 +86,10 @@ export class RdxTabsTab {
 
     private isPressing = false;
     private isMainButton = false;
+    private releasePress?: () => void;
 
     constructor() {
+        inject(DestroyRef).onDestroy(() => this.releasePress?.());
         if (isDevMode()) {
             // Stays silent while no list is registered — a list behind `@if`, or tabs projected into a
             // list that has not rendered yet, are both legitimate. Once a list exists, a tab outside it
@@ -116,7 +121,11 @@ export class RdxTabsTab {
 
     /** @ignore */
     protected onClick(event: MouseEvent): void {
-        if (this.active() || this.disabled()) {
+        if (this.disabled()) {
+            event.preventDefault();
+            return;
+        }
+        if (this.active()) {
             return;
         }
 
@@ -125,45 +134,66 @@ export class RdxTabsTab {
 
     /** @ignore */
     protected onKeyDown(event: KeyboardEvent): void {
-        if (!this.disabled() && (event.key === ' ' || event.key === 'Enter')) {
-            this.rootContext.setValue(this.value(), event, 'none');
+        if (this.disabled()) {
+            // Keep Tab available and let Composite process navigation keys after suppressing defaults.
+            if (event.key !== 'Tab') event.preventDefault();
+            return;
+        }
+        const element = this.elementRef.nativeElement;
+        if (event.target !== element) return;
+
+        if (event.key === ' ') {
+            // A composite activates Space on keydown; the click keeps native event/modifier semantics.
+            event.preventDefault();
+            dispatchClickWithModifiers(element, event);
+        } else if (
+            event.key === 'Enter' &&
+            !this.nativeButton() &&
+            !(element.tagName === 'A' && element.hasAttribute('href')) &&
+            !event.defaultPrevented
+        ) {
+            event.preventDefault();
+            dispatchClickWithModifiers(element, event);
         }
     }
 
     /** @ignore */
+    protected onKeyUp(event: KeyboardEvent): void {
+        if (
+            !this.disabled() &&
+            this.nativeButton() &&
+            this.elementRef.nativeElement.tagName === 'BUTTON' &&
+            event.target === this.elementRef.nativeElement &&
+            event.key === ' '
+        )
+            event.preventDefault();
+    }
+
+    /** @ignore */
     protected onPointerDown(event: PointerEvent): void {
-        if (this.active() || this.disabled()) {
+        if (this.disabled()) {
+            event.preventDefault();
+            return;
+        }
+        if (this.active()) {
             return;
         }
 
+        this.releasePress?.();
         this.isPressing = true;
         this.isMainButton = event.button === 0;
 
-        const ownerDocument = event.currentTarget instanceof HTMLElement ? event.currentTarget.ownerDocument : document;
-        ownerDocument.addEventListener(
-            'pointerup',
-            () => {
-                this.isPressing = false;
-                this.isMainButton = false;
-            },
-            { once: true }
-        );
-        ownerDocument.addEventListener(
-            'pointercancel',
-            () => {
-                this.isPressing = false;
-                this.isMainButton = false;
-            },
-            { once: true }
-        );
-        ownerDocument.addEventListener(
-            'blur',
-            () => {
-                this.isPressing = false;
-                this.isMainButton = false;
-            },
-            { once: true }
-        );
+        const ownerDocument = this.elementRef.nativeElement.ownerDocument;
+        const endPress = () => {
+            this.isPressing = false;
+            this.isMainButton = false;
+            ownerDocument.removeEventListener('pointerup', endPress);
+            ownerDocument.removeEventListener('pointercancel', endPress);
+            this.releasePress = undefined;
+        };
+        this.releasePress = endPress;
+        ownerDocument.addEventListener('pointerup', endPress);
+        ownerDocument.addEventListener('pointercancel', endPress);
     }
 
     /** @ignore */

@@ -1,6 +1,7 @@
 import { Tabs } from '@base-ui/react/tabs';
 import { createRoot } from 'react-dom/client';
 import '../../../../radix-storybook/.storybook/tailwind.css';
+import { ReactActivation } from './activation.react';
 import { config, installProbe, classes as s } from './contract';
 import { ReactDirection } from './direction.react';
 import { ReactIdentity } from './identity.react';
@@ -9,6 +10,7 @@ import { ReactPanels } from './panels.react';
 const settings = config();
 const trace = installProbe('react', settings);
 function ReactTabs() {
+    if (settings.activation) return <ReactActivation trace={trace} />;
     if (settings.identity) return <ReactIdentity trace={trace} />;
     if (settings.direction) return <ReactDirection trace={trace} />;
     if (settings.panels) return <ReactPanels trace={trace} />;

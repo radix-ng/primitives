@@ -3,6 +3,7 @@ import { Component, provideZonelessChangeDetection } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { RdxTabsList, RdxTabsPanel, RdxTabsRoot, RdxTabsTab, RdxTabsValueChangeEvent } from '@radix-ng/primitives/tabs';
 import '../../../../radix-storybook/.storybook/tailwind.css';
+import { AngularActivation } from './activation.angular';
 import { classes, config, installProbe } from './contract';
 import { AngularDirection } from './direction.angular';
 import { AngularIdentity } from './identity.angular';
@@ -11,9 +12,20 @@ import { AngularPanels } from './panels.angular';
 const settings = config();
 @Component({
     selector: 'parity-tabs',
-    imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel, AngularPanels, AngularDirection, AngularIdentity],
+    imports: [
+        RdxTabsRoot,
+        RdxTabsList,
+        RdxTabsTab,
+        RdxTabsPanel,
+        AngularPanels,
+        AngularDirection,
+        AngularIdentity,
+        AngularActivation
+    ],
     template: `
-        @if (settings.identity) {
+        @if (settings.activation) {
+            <parity-tabs-activation />
+        } @else if (settings.identity) {
             <parity-tabs-identity />
         } @else if (settings.direction) {
             <parity-tabs-direction />

@@ -25,3 +25,10 @@ Both parts accept an `id` input. Structural content removal keeps the persistent
 valid control target. [ADR 0074](../../adr/0074-tabs-native-identities.md) records the registration
 policy and the exact custom-Panel/persistent-host differences from the pin. Indicator uses the
 registered Tab element; its remaining geometry/observer work stays in the parity matrix.
+
+Tab activation uses click requests: native Enter remains with the button/link, while custom Enter
+and composite Space use the owned click dispatcher with modifiers. Space's button keyup default is
+suppressed so it cannot retry a canceled request. Disabled tabs suppress defaults without native
+disabling; automatic activation uses actual focusin. Paired pointer listeners use the owner document
+and DestroyRef cleanup. [ADR 0075](../../adr/0075-tabs-native-activation.md) records the compared scope
+and Angular's retained optional native trigger metadata.

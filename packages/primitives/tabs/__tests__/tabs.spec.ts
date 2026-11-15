@@ -159,9 +159,9 @@ describe('Tabs', () => {
         expect(host.value()).toBe('one');
     });
 
-    it('activates on Enter / Space', () => {
+    it('activates composite Space through its click path', () => {
         const [, , three] = tabs();
-        three.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+        three.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }));
         fixture.detectChanges();
         expect(host.value()).toBe('three');
     });
@@ -169,13 +169,14 @@ describe('Tabs', () => {
     it('activates on focus only when activateOnFocus is set', () => {
         const [, , three] = tabs();
 
-        three.dispatchEvent(new FocusEvent('focus'));
+        three.focus();
         fixture.detectChanges();
         expect(host.value()).toBe('one');
 
         host.activateOnFocus.set(true);
         fixture.detectChanges();
-        three.dispatchEvent(new FocusEvent('focus'));
+        tabs()[0].focus();
+        three.focus();
         fixture.detectChanges();
         expect(host.value()).toBe('three');
     });

@@ -8287,7 +8287,7 @@
               "name": "nativeButton",
               "type": "boolean",
               "default": "true",
-              "description": "Whether the host element is a native button. When `true`, `type=\"button\"` is applied."
+              "description": "Whether the host element is a native button. Native Enter activation stays with the browser.\nSet to `false` for other hosts; links keep native Enter navigation and other hosts receive keyboard clicks."
             },
             {
               "name": "value",
