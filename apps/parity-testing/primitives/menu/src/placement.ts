@@ -1,4 +1,14 @@
+export const viewportCases = [
+    'placement-viewport-context-zoom',
+    'placement-viewport-context-pan',
+    'placement-viewport-context-rtl',
+    'placement-viewport-context-submenu',
+    'placement-viewport-context-boundary',
+    'placement-viewport-menu-zoom'
+] as const;
+
 export const placementCases = [
+    ...viewportCases,
     'placement-root',
     'placement-root-rtl',
     'placement-submenu',
@@ -35,6 +45,9 @@ export function placementConfig(name: string) {
         side: name.endsWith('-explicit-side') ? ('bottom' as const) : undefined,
         align: name.endsWith('-center') ? ('center' as const) : undefined,
         offset: name.endsWith('-zero-offsets') ? 0 : undefined,
-        method: name.endsWith('-absolute') ? ('absolute' as const) : undefined
+        method: name.endsWith('-absolute') ? ('absolute' as const) : undefined,
+        viewport: name.startsWith('placement-viewport-'),
+        pan: name.endsWith('-pan'),
+        boundary: name.endsWith('-boundary')
     };
 }

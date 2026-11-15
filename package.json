@@ -75,7 +75,7 @@
         "@angular/platform-server": "22.0.2",
         "@angular/router": "22.0.2",
         "@angular/ssr": "22.0.2",
-        "@floating-ui/dom": "^1.7.6",
+        "@floating-ui/dom": "^1.8.0",
         "@internationalized/date": "^3.12.2",
         "@internationalized/number": "^3.6.7",
         "class-variance-authority": "^0.7.1",

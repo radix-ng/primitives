@@ -664,6 +664,11 @@ fixed positioning throughout its menu chain, including submenus and an authored 
 `sticky` defaults to `false`; set `[sticky]="true"` to let a popup remain in its collision boundary
 after the anchor leaves it. `hideWhenDetached` independently controls visibility.
 
+The point-anchored Context Menu root shifts against the layout viewport, so pinch zoom and visual
+viewport panning do not introduce an extra collision shift. Ordinary menus and Context Menu submenus
+retain the visual viewport for shifting. Explicit collision boundaries still constrain the popup;
+flip and available-space calculations continue to use the visual viewport.
+
 **Method migration:** rename `positionStrategy` to `positionMethod`; the ordinary default is now absolute.
 Replace `sticky="partial"` / `sticky="always"` with `[sticky]="false"` / `[sticky]="true"`.
 `sideOffset` is the popup-box gap and no longer adds arrow height automatically. Include desired arrow

@@ -18,6 +18,8 @@ function Popup({ trace }: { trace: ReturnType<typeof installProbe> }) {
                 sideOffset={p.offset}
                 alignOffset={p.offset}
                 positionMethod={p.method}
+                collisionBoundary={p.boundary ? { x: 0, y: 0, width: 500, height: 600 } : undefined}
+                collisionAvoidance={p.viewport ? { side: 'shift', align: 'shift' } : undefined}
                 data-testid="positioner"
             >
                 <Menu.Popup className={s.popup + (p.fallback ? ' w-[600px]!' : '')} data-testid="popup">
@@ -82,7 +84,7 @@ export function ReactPlacement() {
     );
     return (
         <DirectionProvider direction={settings.dir}>
-            <div className={s.layout} dir={settings.dir}>
+            <div className={s.layout + (p.viewport ? ' start-[270px]! top-20!' : '')} dir={settings.dir}>
                 {p.kind === 'context' ? (
                     <ContextMenu.Root onOpenChangeComplete={(open) => trace.complete('main', open)}>
                         <ContextMenu.Trigger render={<button />} className={s.trigger + ' w-28'} data-testid="primary">

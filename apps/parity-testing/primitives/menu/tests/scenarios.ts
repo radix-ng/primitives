@@ -24,8 +24,10 @@ import { projectionScenarios } from './projection.scenarios';
 import { touchScenarios } from './touch.scenarios';
 import { multiTriggerLifecycleScenarios } from './trigger-lifecycle.scenarios';
 import { multiTriggerScenarios } from './triggers.scenarios';
+import { viewportScenarios } from './viewport.scenarios';
 
 export const scenarios = [
+    ...viewportScenarios,
     ...positioningScenarios,
     ...boundaryScenarios,
     ...placementScenarios,

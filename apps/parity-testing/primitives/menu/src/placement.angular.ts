@@ -20,6 +20,8 @@ const p = settings.placement!;
                 [sideOffset]="p.offset"
                 [alignOffset]="p.offset"
                 [positionMethod]="p.method"
+                [collisionBoundary]="p.boundary ? boundary : undefined"
+                [collisionAvoidance]="p.viewport ? { side: 'shift', align: 'shift' } : undefined"
                 data-testid="positioner"
                 rdxMenuPositioner
             >
@@ -55,6 +57,7 @@ class PlacementPopup {
     readonly p = p;
     readonly s = classes;
     readonly trace = inject(AngularPlacement).trace;
+    readonly boundary = { x: 0, y: 0, width: 500, height: 600 };
 }
 
 @Component({
@@ -69,7 +72,12 @@ class PlacementPopup {
     ],
     host: { '(document:keydown)': 'command($event)' },
     template: `
-        <div [class]="s.layout" [dir]="dir" [attr.dir]="dir" rdxDirectionProvider>
+        <div
+            [class]="s.layout + (p.viewport ? ' start-[270px]! top-20!' : '')"
+            [dir]="dir"
+            [attr.dir]="dir"
+            rdxDirectionProvider
+        >
             @if (p.kind === 'context') {
                 <div (onOpenChangeComplete)="trace.complete('main', $event)" rdxContextMenuRoot>
                     <button [class]="s.trigger + ' w-28'" data-testid="primary" rdxContextMenuTrigger>Actions</button>

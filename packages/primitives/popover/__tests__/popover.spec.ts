@@ -735,6 +735,9 @@ describe('Popover', () => {
             const modeTrigger: HTMLButtonElement = modeFixture.nativeElement.querySelector('[rdxPopoverTrigger]');
             modeTrigger.click();
             await modeFixture.whenStable();
+            // Dismiss installs pointerdown in the next task to exclude the opening gesture.
+            // Angular render stability does not wait for that native listener timer.
+            await new Promise<void>((resolve) => setTimeout(resolve));
             document.body.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }));
             await modeFixture.whenStable();
             expect(modeTrigger.getAttribute('aria-expanded')).toBe(modal === 'trap-focus' ? 'false' : 'true');

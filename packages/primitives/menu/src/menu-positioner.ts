@@ -76,7 +76,9 @@ export class RdxMenuPositioner extends RdxPopperContentWrapper {
             alignOffset: pointOffsets ? 2 : 0,
             arrowPadding: contextMenu ? 0 : 5,
             collisionAvoidance: submenu ? POPUP_COLLISION_AVOIDANCE : DROPDOWN_COLLISION_AVOIDANCE,
-            shift: contextMenu ? { crossAxis: this.collisionAvoidance()?.side !== 'flip' } : undefined
+            shift: contextMenu
+                ? { crossAxis: this.collisionAvoidance()?.side !== 'flip', rootBoundary: 'layoutViewport' }
+                : undefined
         };
     }
 

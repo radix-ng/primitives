@@ -229,6 +229,9 @@ default; set `[closeOnClick]="true"` when selection should close the menu.
 `RdxNavigationMenuPositioner` delegates placement and collision handling to the shared Popper
 primitive and exposes anchor / `--positioner-width` / `--positioner-height` CSS variables.
 
+Shifting uses the layout viewport to preserve alignment during pinch zoom and visual viewport panning.
+Explicit collision boundaries still apply. Flip and available-space calculations use the visual viewport.
+
 <ArgTypes of={RdxNavigationMenuPositioner} />
 
 ### Viewport

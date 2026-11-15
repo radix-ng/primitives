@@ -68,8 +68,9 @@ Firefox and WebKit (placement, boundaries and method/sticky); 57 shared-consumer
 and the Storybook ArgTypes check passed. Library/Storybook builds, consumer generation, focused lint
 and agents:check passed. These are affected-scope checks; the complete Menu suite was not rerun.
 
-Context Menu's layout-viewport policy during pinch zoom remains separate A2 work. This increment does
-not certify real touch/AT behavior or complete Menu parity.
+Context Menu's layout-viewport policy during pinch zoom was separate A2 work, subsequently addressed
+by [ADR 0070](0070-layout-viewport-shift.md). This increment does not certify real touch/AT behavior
+or complete Menu parity.
 
 ## Alternatives considered
 

@@ -14,7 +14,7 @@ port is 4505. Angular fixtures are AOT compiled and React imports the unmodified
 Base UI 1.9.0 pin: `cf696d6f6e08c699c5bda24d5a033430909f2285`, archive SHA-256
 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 
-420 scenarios define 1260 planned comparisons: 1212 execute, with 48 touch capability skips. They cover native keyboard and
+426 scenarios define 1278 planned comparisons: 1218 execute, with 60 capability skips (48 touch, 12 viewport emulation). They cover native keyboard and
 pointer opening, disabled/focusable items, roving focus, edges and looping, repeated and explicit-label
 typeahead, selection and stay-open items, cancelable transactions, modal/background activation,
 forward/backward Tab, checkbox/radio values, LTR/RTL submenu ownership and custom identity links.
@@ -49,6 +49,19 @@ or framework state mirror is introduced.
 Raw records include source commit/digest, browser versions, open/change completions, native change
 event types, trusted pointer coordinates/deltas and native press/release timestamps. CSS layout and default focus are observed;
 the adapters do not synthesize state, focus, pointer deltas or lifecycle completion.
+
+## Layout viewport during zoom
+
+Six `placement-viewport-` scenarios compare native page-scale emulation and reset, visual-viewport
+pan through a native touch scroll, RTL, an already-open descendant, an explicit Rect boundary and
+an ordinary Menu control. The root's shift/shift collision preset isolates shifting from flip.
+The Context Menu point root uses the layout viewport, while ordinary/descendant Menu uses the
+visual viewport. Raw DOM rectangles, Playwright boxes and actual viewport metrics are retained.
+When panning, the visual-origin Playwright box is checked together with its measured viewport offset.
+
+These cases use Chromium CDP; the other twelve planned comparisons explicitly skip for missing
+automation capabilities. They do not certify real devices or the mobile software keyboard.
+See [ADR 0070](../../../../docs/adr/0070-layout-viewport-shift.md).
 
 ## Position method and sticky
 

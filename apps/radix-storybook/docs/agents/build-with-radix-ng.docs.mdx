@@ -11,26 +11,98 @@ Use the local bundle for focused retrieval rather than loading the complete docu
 
 ## From a request to your AppSelect
 
-> Create our AppSelect on Radix NG using the project's existing tokens.
+One recorded task asked an agent to build a reusable selection control inside a Project settings
+Dialog. The result was a standalone `AppSelect` with typed `value` / `valueChange` bindings plus
+`disabled` and `label` inputs, public Select imports and an application-owned Dialog composition.
 
-The expected result is code in your application that you can reuse as part of its UI or design
-system. Describe the interaction, styling conventions, form strategy and acceptance criteria using
-the prompt in [Getting started](./?path=/docs/agents-getting-started--docs).
+The application supplies the options, selected value, disabled state, content and CSS tokens. It
+retains the value when Dialog closes. The checks covered external updates, one change callback per
+selection, disabled navigation, keyboard selection, nested `Escape` and return to the appropriate
+Select or Dialog trigger. See [the recorded result](./?path=/docs/agents-verify-the-result--docs#recorded-generation-results),
+including the correction to its disabled tests.
 
-Ask the agent to deliver:
+Start from the maintained [Select focus-management example](./?path=/docs/primitives-select--docs)
+and its bundled source, `references/examples/select--focus-management.md`. A design system is not
+required: one wrapper and an explicit styling approach are enough to begin.
 
-- A standalone Angular `AppSelect` component using public Radix NG imports, with template imports
-  or `hostDirectives` composition appropriate to its parts.
-- A deliberate wrapper API with value/open bindings and outputs consistent with the installed
-  primitive contract, integrated with the form strategy you selected.
-- Your own styling using the project's tokens and CSS conventions, including focus and validation
-  states. Replace Storybook helpers with application-owned styles and dependencies.
-- Results from strict Angular template compilation and checks for labels, value updates, keyboard
-  selection, closing and focus return. Name the checks that ran and anything still unverified.
+### Prompt: AppSelect inside Dialog
 
-Radix NG supplies the interaction mechanisms; the wrapper's visual tokens, CSS, product API,
-content and business logic belong to your application. If you do not have a design system yet,
-start with this one component and an explicit styling approach, then add variants as needed.
+Replace bracketed values with your application's files, data and labels. This is an adaptable
+product task based on the completed experiment, not a promise that another run will pass.
+
+```text
+Use the installed radix-ng and radix-ng-examples skills. Check the installed Radix NG and
+Angular versions, then read the Select/Dialog contracts and the closest nesting example.
+When versions differ, verify the API against installed exports and types.
+
+Create a reusable standalone AppSelect inside a Dialog for [route or feature].
+Styles: [paths to our tokens/styles and CSS or utility conventions]. Use application-owned
+styles for the control, popup, Dialog, focus and disabled states; replace Storybook helpers.
+Data: [our typed options and labels; for example Private/private and Public/public].
+Dialog title: [Project settings]. Select label: [Visibility].
+
+Expose typed value/valueChange, disabled and label bindings using public Radix NG imports.
+The parent owns the selected value and disabled state; use explicit parent value bindings.
+Keep selection after closing/reopening Dialog. Add a small demo with external value updates
+and a disabled toggle. Preserve the primitives' composition and interaction behavior.
+
+Check strict Angular template compilation, public imports and accessible names.
+Verify keyboard selection and one valueChange per user selection, with no extra emission
+for external updates. Tab/Shift+Tab must skip a disabled Select; enabling restores selection.
+Escape closes Select before Dialog. Closing each overlay returns focus to its trigger,
+including after exit transitions; focus stays within the modal Dialog while it is open.
+Return the component/integration changes, commands and check results, and anything unverified.
+```
+
+## AppEmailField with a parent-owned FormControl
+
+A separate recorded task produced a standalone `AppEmailField` over Radix NG Field. Its required
+inputs are `control: FormControl<string>`, `label` and `description`. The wrapper associates a native
+email input with Field's label, description and error messages, using Angular Reactive Forms.
+
+The application creates the control, owns its value and validators, calls `disable()` / `enable()`,
+handles submission/reset and supplies CSS. The wrapper binds that control directly. Checks covered
+label/description relationships, initially hidden errors, required/email feedback after blur or
+submission, correction, two-way control updates, disabled behavior, reset and exactly-once delivery
+of the current value. See [the recorded result](./?path=/docs/agents-verify-the-result--docs#recorded-generation-results).
+
+The maintained [Field Reactive Forms example](./?path=/docs/primitives-field--docs), bundled as
+`references/examples/field--reactive-forms.md`, supplies a starting pattern; it is separate from the
+agent-generated wrapper.
+
+### Prompt: AppEmailField
+
+```text
+Use the installed radix-ng and radix-ng-examples skills. Check the installed Radix NG and
+Angular versions, then read the Field contracts and Reactive Forms example.
+When versions differ, verify the API against installed exports and types.
+
+Create a standalone AppEmailField over Radix NG Field for [route or feature].
+Styles: [paths to our tokens/styles and CSS or utility conventions]. Use application-owned
+focus, disabled and error styles; replace Storybook helpers.
+Content: label [Project email], description [where and why this address is used].
+Data/delivery: [our initial value and submit handler; use a local list for a standalone demo].
+
+Required inputs: control: FormControl<string>, label: string and description: string.
+Use Angular Reactive Forms and public Radix NG Field imports. Bind the supplied control
+directly; the parent owns its value, validators and disabled state. Do not duplicate its
+model or replace its validators. Connect the native email input to its label/description.
+
+In a demo form, the parent creates a nonNullable control with required/email validators.
+Show separate required/email errors only after blur or an attempted submission that marks
+the controls touched. Provide submit, reset, external setValue and disable/enable controls.
+Reset restores the initial value, pristine/untouched and hidden errors. Invalid submission
+shows errors without delivery; each valid submission delivers the current value once.
+
+Compile both the demo and a separate parent against this public API with strict templates.
+Verify label/description associations, error timing/correction and two-way value updates.
+Check that disabled prevents editing and is skipped by Tab/Shift+Tab, external setValue
+still renders while disabled, and enable restores keyboard editing. Verify reset and submit.
+Return the implementation, commands and check results, and anything still unverified.
+```
+
+Both prompts ask for code in your application and evidence from its checks. Recorded outcomes apply
+to the earlier skills snapshot listed in Verify the result, not to every later bundle or generated UI.
 
 ## Choose the interaction
 
@@ -78,3 +150,6 @@ state; adding attributes to your markup does not operate the component.
 Compile it in the consumer application before adding variants. Then follow
 [Verify the result](./?path=/docs/agents-verify-the-result--docs). For a compound component, read
 [Compose components](./?path=/docs/agents-compose-components--docs) before moving parts into wrappers.
+
+Agent Playground's experimental `snapshot` / `query` / `act` operates an already running UI. It does
+not generate these wrappers and is not installed with the consumer skills.

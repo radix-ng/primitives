@@ -27,8 +27,8 @@ export interface RdxPopperContentConfig {
     hideWhenDetached?: boolean;
     positionMethod?: 'fixed' | 'absolute';
     updatePositionStrategy?: 'optimized' | 'always';
-    /** Composing policy for point anchors: allow side-axis shift without the attachment limiter. */
-    shift?: { crossAxis?: boolean };
+    /** Composing shift policy. Layout viewport keeps pinch zoom from moving the popup. */
+    shift?: { crossAxis?: boolean; rootBoundary?: 'layoutViewport' };
 }
 
 /**

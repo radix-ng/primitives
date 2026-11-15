@@ -51,7 +51,7 @@ This increment addresses contextual defaults only. Collision boundaries were add
 in [ADR 0068](0068-popper-collision-boundaries.md). A2's shared positionMethod/strategy and sticky
 contracts and forced Context Menu overrides were subsequently addressed in
 [ADR 0069](0069-popper-position-method-and-sticky.md). Context Menu's layout-viewport policy during
-pinch zoom remains open.
+pinch zoom was subsequently addressed in [ADR 0070](0070-layout-viewport-shift.md).
 
 ## Validation
 

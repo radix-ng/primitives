@@ -18,12 +18,44 @@ Check public imports, standalone `imports`, input types, event payloads and expo
 Follow the relevant primitive's [accessibility documentation](../overview/accessibility.md).
 An automated check covers its assertions, not complete accessibility conformance.
 
+## Recorded generation results
+
+Two separate coding tasks produced application components in clean Angular consumers using the
+installed skills and a local library tarball. Both generated applications and their independent
+parents passed production builds with strict templates and public-import checks. Neither component
+was manually repaired by the evaluator; agent self-corrections stayed within its own coding session.
+
+| Generated component                   | Confirmed Chromium result          | Checked behavior                                                                                                                             | Engineering report                                                                                                                                                                       |
+| ------------------------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AppSelect inside Dialog               | **4/4 after correcting the tests** | External value/disabled bindings, callback payload/count, selection persistence, keyboard, nested Escape and focus return.                   | [AppSelect report and test correction](https://github.com/radix-ng/primitives/blob/1fb1ee33805cfe5f685b4b4d4e92a3b228e0b1b0/tools/consumer-testing/generation/REPORT-REEVALUATION-V2.md) |
+| AppEmailField with parent FormControl | **8/8 original frozen checks**     | Labels/descriptions, required/email errors, control synchronization, disabled navigation/editing, reset and submission. Four cases per host. | [AppEmailField report](https://github.com/radix-ng/primitives/blob/7743fc39590779aac048ba1bed499ef5f318a7d6/tools/consumer-testing/generation/email-field/REPORT.md)                     |
+
+Both used **Chromium 148.0.7778.96**, **Radix NG 1.3.0**, **Angular 22.0.2**, the earlier consumer skills
+snapshot [d000174e](https://github.com/radix-ng/primitives/tree/d000174e3fb69ef5424b73492d73f34b84e3c80f/skills),
+and **gpt-6.1-sol** with **low** reasoning effort through a Codex subscription coding session.
+These historical results do not validate the newly generated bundle containing this page.
+
+**AppSelect's test correction remains part of the result.** The original frozen suite recorded
+**3/4**. Its disabled checks were corrected to use real `Tab` / `Shift` + `Tab` navigation and expected
+focus targets instead of pressing a disabled trigger. The same unchanged component then passed
+**4/4**, without another generation session. The original failure remains in the engineering report.
+AppEmailField passed all eight checks frozen before its session, without a later test correction.
+
+These are two individual generation results, **not an overall reliability estimate**. Their test
+counts cover different tasks and are not comparable success rates. Other browsers and complete
+accessibility conformance were not evaluated. Exact inputs, hashes, logs and sandbox limitations
+belong to the linked engineering reports.
+
+For tasks you can adapt to your styles and data, use the
+[AppSelect prompt](build-with-radix-ng.md#prompt-appselect-inside-dialog) or
+[AppEmailField prompt](build-with-radix-ng.md#prompt-appemailfield).
+
 ## Reproducible coding-agent tasks
 
-The prompts below are a small evaluation set. Pair each one with the starter prompt from
+The prompts below describe maintained reference fixtures. Pair each one with the starter prompt from
 [Getting started](getting-started.md) and your application's constraints.
-The referenced examples and tests are maintained fixtures, **not evidence that an agent generated
-them successfully**. No agent-generation success rate is established by these fixture checks.
+They remain separate from the generated components reported above: passing these example checks
+does not establish an agent-generation success rate.
 
 ### Form with labels and validation
 
@@ -116,3 +148,7 @@ To evaluate generation, run the prompts in clean consumer projects with recorded
 Angular and agent/model versions. Preserve the exact prompt, generated diff, compiler output and
 browser results for each task. Report unassisted results separately from human fixes. A checked
 reference example does not count as a generation run.
+
+Agent Playground's experimental `snapshot` / `query` / `act` controls an existing application. Its
+runtime-integration tests exercise commands and state; they do not measure component generation.
+The runtime is separate from the consumer skills.

@@ -260,7 +260,13 @@ class BoundaryPopperHostComponent {
 
 @Directive({
     selector: '[testPositionPolicy]',
-    providers: [provideRdxPopperContentConfig({ positionMethod: 'fixed', sticky: true })]
+    providers: [
+        provideRdxPopperContentConfig({
+            positionMethod: 'fixed',
+            sticky: true,
+            shift: { rootBoundary: 'layoutViewport' }
+        })
+    ]
 })
 class TestPositionPolicy {}
 
@@ -320,6 +326,22 @@ describe('RdxPopperContentWrapper', () => {
             .query(By.directive(RdxPopperContentWrapper))
             .injector.get(RdxPopperContentWrapper);
         expect(wrapper.sticky()).toBe(false);
+    });
+
+    it('uses a configured layout viewport only for shift, preserving flip and size boundaries', async () => {
+        const fixture = TestBed.createComponent(PositionPolicyHost);
+        await fixture.whenStable();
+        const calls = computePositionMock.mock.calls;
+        for (const [index, expected] of [undefined, 'layoutViewport'].entries()) {
+            const element = fixture.debugElement.queryAll(By.directive(RdxPopperContentWrapper))[index].nativeElement;
+            const options = calls.findLast((call) => call[1] === element)![2]!;
+            for (const name of ['shift', 'flip', 'size']) {
+                const middleware = options.middleware!.find((entry) => entry && entry.name === name);
+                expect(middleware && middleware.options.rootBoundary, name).toBe(
+                    name === 'shift' ? expected : undefined
+                );
+            }
+        }
     });
 
     it('honors method/sticky configuration, explicit overrides and undefined resets', async () => {

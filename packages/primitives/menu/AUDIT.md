@@ -12,8 +12,8 @@ subsequent implementation status is recorded below.
 
 The existing suite establishes substantial plain Menu behavior, not complete Menu parity.
 The source inventory is now complete for this pin. Five defect/contract groups were found; A1 has
-since been addressed below. Remaining work consists of A2–A5 and the unimplemented filterable Menu
-capability A6. Native device/AT verification remains
+since been addressed below, along with A2's pinned positioning contracts. Remaining work consists of
+A3–A5 and the unimplemented filterable Menu capability A6. Native device/AT verification remains
 separate. The main matrix is [PARITY.md](PARITY.md); the executable comparison scope is documented
 in the [runner](../../../apps/parity-testing/primitives/menu/README.md).
 
@@ -36,7 +36,7 @@ All 28 public export symbols are accounted for below (Handle/createHandle share 
 | RadioItem             | RdxMenuRadioItem                    | Required value, disabled/label, checked/highlight and closeOnClick mapped.                                                                      |
 | RadioItemIndicator    | RdxMenuRadioItemIndicator           | Same follow-up as CheckboxItemIndicator, A1.                                                                                                    |
 | Popup                 | RdxMenuPopup                        | Public id/finalFocus and documented popup state attributes mapped. initialFocus is internal in the pin.                                         |
-| Positioner            | RdxMenuPositioner / shared Popper   | Contextual defaults addressed; shared parameter contracts remain open, A2.                                                                      |
+| Positioner            | RdxMenuPositioner / shared Popper   | Pinned positioning contracts covered; zoom evidence uses Chromium emulation, A2.                                                                |
 | Portal                | Structural RdxMenuPortal            | keepMounted and custom element containers mapped; unsupported targets, A4.                                                                      |
 | Backdrop              | RdxMenuBackdrop                     | Open/closed/transition attributes mapped; internal modal backdrop remains shared infrastructure.                                                |
 | Arrow                 | RdxMenuArrow / RdxPopperArrow       | Open/closed, side/align and composed data-uncentered mapped.                                                                                    |
@@ -91,7 +91,7 @@ Next checks: fresh/retained indicators, settled enter, natural/paused exit, rapi
 disabled styling and accessible item names. Reuse existing transition/presence mechanisms. Angular may
 retain its consumer-owned host; copying React element creation is unnecessary.
 
-### A2 — partially addressed: public positioning contracts covered; pinch zoom open
+### A2 — addressed: pinned positioning contracts; device zoom remains external verification
 
 Follow-up 2026-11-15: Menu now resolves contextual side/alignment/offset/collision defaults from
 existing owner signals through the shared Popper policy hook. Retained Menubar orientation changes
@@ -119,7 +119,20 @@ Validation passed 569 scoped unit tests, 126 geometry comparisons across all thr
 (placement, boundaries and method/sticky), and 57 shared-consumer browser regressions. Library and
 Storybook builds, consumer generation, the Storybook API-table check and focused lint passed.
 
-Context Menu's layout-viewport behavior during pinch zoom remains open. This is not full Menu parity.
+Follow-up 2026-11-15: Context Menu's point-anchored root now uses Floating UI's layoutViewport for
+shift only. Descendant/ordinary Menu keeps visual-viewport shifting; Navigation Menu composes the
+same layout policy as its pin. Flip, size and explicit collision boundaries retain their own rules.
+The workspace dependency and published peer minimum are both Floating UI DOM ^1.8.0. Six Chromium
+comparisons cover zoom/reset, native viewport pan, RTL, descendants, an explicit boundary and an
+ordinary Menu control; each passed twice. A separate Navigation Menu browser regression passed.
+See [ADR 0070](../../../docs/adr/0070-layout-viewport-shift.md). This addresses A2's pinned contract;
+Firefox/WebKit zoom lack a public automation API, and real-device/keyboard/AT verification remains
+external. This is not full Menu parity.
+
+Validation after the dependency update passed 570 scoped unit tests, 132 positioning comparisons
+with twelve explicit zoom capability skips, 60 shared-consumer browser checks and the additional
+Navigation Menu zoom regression. Library/Storybook builds, consumer generation, focused lint and
+agent checks passed. The complete Menu suite was not rerun locally.
 
 Original audit evidence:
 

@@ -102,6 +102,7 @@ type PopperPositionParams = {
     collisionAvoidance: ResolvedCollisionAvoidance;
     sticky: boolean;
     shiftCrossAxis: boolean;
+    shiftRootBoundary: 'layoutViewport' | undefined;
     detectOverflowOptions: {
         padding: number | Partial<Record<Side, number>>;
         boundary: Boundary;
@@ -473,6 +474,7 @@ export class RdxPopperContentWrapper {
                 ? undefined
                 : shift({
                       ...params.detectOverflowOptions,
+                      rootBoundary: params.shiftRootBoundary,
                       mainAxis: ca.align !== 'none',
                       crossAxis: crossAxisShiftEnabled,
                       limiter:
@@ -579,6 +581,7 @@ export class RdxPopperContentWrapper {
             collisionAvoidance: this.effectiveCollisionAvoidance(),
             sticky: this.sticky(),
             shiftCrossAxis: this.defaults().shift?.crossAxis ?? false,
+            shiftRootBoundary: this.defaults().shift?.rootBoundary,
             detectOverflowOptions: this.detectOverflowOptions(),
             arrow: this.arrow(),
             arrowPadding: this.arrowPadding()

@@ -10,6 +10,44 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
     await page.waitForSelector('#storybook-root', { state: 'attached' });
 }
 
+test('pinch zoom preserves Navigation Menu layout-viewport alignment', async ({ page, browserName }) => {
+    test.skip(browserName !== 'chromium', 'Page scale emulation requires Chromium CDP');
+    await page.setViewportSize({ width: 800, height: 600 });
+    await gotoStory(page, 'primitives-navigation-menu--default');
+    const root = page.locator('[rdxNavigationMenuRoot]').first();
+    await root.evaluate((node: HTMLElement) => {
+        node.style.position = 'fixed';
+        node.style.left = '270px';
+        node.style.top = '80px';
+    });
+    await page.locator('[rdxNavigationMenuTrigger]').first().click();
+    const popup = page.locator('[rdxNavigationMenuPopup]');
+    await expect(popup).toBeVisible();
+    await popup.evaluate(async (node) => {
+        await Promise.all(node.getAnimations({ subtree: true }).map((animation) => animation.finished.catch(() => {})));
+    });
+    const initial = (await popup.boundingBox())!;
+    const session = await page.context().newCDPSession(page);
+    try {
+        await session.send('Emulation.setPageScaleFactor', { pageScaleFactor: 2 });
+        await expect.poll(() => page.evaluate(() => visualViewport!.scale)).toBe(2);
+        await expect.poll(() => page.evaluate(() => visualViewport!.width)).toBe(400);
+        await page.evaluate(
+            () => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+        );
+        await expect.poll(async () => Math.abs((await popup.boundingBox())!.x - initial.x)).toBeLessThan(1);
+        // The popup remains in layout coordinates even though it now extends past the visual edge.
+        expect(initial.x + initial.width).toBeGreaterThan(400);
+        await session.send('Emulation.setPageScaleFactor', { pageScaleFactor: 1 });
+        await expect.poll(() => page.evaluate(() => visualViewport!.scale)).toBe(1);
+        await page.keyboard.press('Escape');
+        await expect(popup).toHaveCount(0);
+    } finally {
+        await session.send('Emulation.setPageScaleFactor', { pageScaleFactor: 1 });
+        await session.detach();
+    }
+});
+
 test('navigation menu teleports the positioner directly into <body> with no wrapper element', async ({ page }) => {
     await gotoStory(page, 'primitives-navigation-menu--default');
 

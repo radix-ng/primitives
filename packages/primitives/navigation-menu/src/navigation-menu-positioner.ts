@@ -26,6 +26,7 @@ import { injectNavigationMenuRootContext } from './navigation-menu-root-context'
             arrowPadding: 5,
             collisionPadding: 5,
             collisionAvoidance: DROPDOWN_COLLISION_AVOIDANCE,
+            shift: { rootBoundary: 'layoutViewport' },
             updatePositionStrategy: 'always'
         })
     ],

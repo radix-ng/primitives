@@ -1,5 +1,6 @@
 import { test } from '@playwright/test';
 import { createParityRunner } from '../../../shared/run-scenario.ts';
+import { placementConfig } from '../src/placement';
 import { touchConfig } from '../src/touch';
 import { MenuDriver } from './driver';
 import { scenarios } from './scenarios';
@@ -44,6 +45,10 @@ for (const scenario of scenarios)
     test(scenario.name, async ({ browser, baseURL }, info) => {
         const touch = touchConfig(scenario.name);
         const engine = browser.browserType().name();
+        test.skip(
+            !!placementConfig(scenario.name)?.viewport && engine !== 'chromium',
+            'Native pinch zoom and visual viewport pan use Chromium CDP; other engines have no public automation API'
+        );
         test.skip(!!touch && engine === 'firefox', 'Playwright Firefox does not support hasTouch contexts');
         test.skip(
             !!touch?.gesture && engine !== 'chromium',
