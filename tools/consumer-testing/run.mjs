@@ -8,13 +8,13 @@ import {
     mkdtempSync,
     openSync,
     readFileSync,
-    readdirSync,
     realpathSync,
     writeFileSync
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { installConsumerSkills, installPackedLibrary, treeDigest } from './environment.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const output = realpathSync(mkdtempSync(path.join(tmpdir(), 'radix-consumer-')));
@@ -23,20 +23,6 @@ const json = (file) => JSON.parse(readFileSync(file, 'utf8'));
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const report = { startedAt: new Date().toISOString(), output, node: process.version, commands: [] };
 const saveReport = () => writeFileSync(path.join(output, 'report.json'), JSON.stringify(report, null, 2) + '\n');
-
-function treeDigest(directory) {
-    const files = readdirSync(directory, { recursive: true, withFileTypes: true })
-        .filter((entry) => entry.isFile())
-        .map((entry) => path.relative(directory, path.join(entry.parentPath, entry.name)))
-        .sort();
-    const hash = createHash('sha256');
-    for (const file of files)
-        hash.update(file)
-            .update('\0')
-            .update(readFileSync(path.join(directory, file)))
-            .update('\0');
-    return { files: files.length, sha256: hash.digest('hex') };
-}
 
 async function run(label, command, args, cwd = root, extraEnv = {}) {
     console.log(`Consumer check: ${label}`);
@@ -76,50 +62,11 @@ async function main() {
     report.fixture = treeDigest(consumer);
 
     // Exercise the documented GitHub subpath with a pinned installer, in project scope only.
-    const installer = ['dlx', 'skills@1.8.1', 'add', 'radix-ng/primitives/skills'];
-    const discovery = await pnpm('skills-discovery', [...installer, '--list'], consumer);
-    assert.match(discovery, /Found 2 skills/, 'the consumer subpath must offer only two skills');
-    await pnpm('skills-install', [...installer, '--agent', 'codex', '--yes', '--copy'], consumer);
-    const lock = json(path.join(consumer, 'skills-lock.json'));
-    assert.deepEqual(Object.keys(lock.skills).sort(), ['radix-ng', 'radix-ng-examples']);
-    const source = 'https://github.com/radix-ng/primitives.git';
-    const published = path.join(output, 'published-source');
-    await run('published-source', 'git', ['clone', '--depth', '1', source, published]);
-    const revision = await run('published-revision', 'git', ['rev-parse', 'HEAD'], published);
+    report.bundle = await installConsumerSkills({ root, consumer, output, pnpm, run });
     const skillRoot = path.join(consumer, '.agents/skills');
-    const skills = {};
-    for (const name of Object.keys(lock.skills)) {
-        const installed = treeDigest(path.join(skillRoot, name));
-        assert.deepEqual(
-            installed,
-            treeDigest(path.join(published, 'skills', name)),
-            `${name}: installed bytes differ from the captured published revision; retry if HEAD moved`
-        );
-        skills[name] = {
-            ...installed,
-            matchesLocalBundle: installed.sha256 === treeDigest(path.join(root, 'skills', name)).sha256
-        };
-    }
-    report.bundle = { source, subpath: 'skills', matchedRevision: revision, installer: 'skills@1.8.1', skills };
 
     // Keep the packed library and its dependencies physically outside the workspace.
-    await pnpm('library-build', ['primitives:build']);
-    await pnpm('library-pack', ['pack', '--pack-destination', output], path.join(root, 'dist/primitives'));
-    const archive = readdirSync(output).find((file) => file.endsWith('.tgz'));
-    assert.ok(archive, 'pnpm pack did not produce a tarball');
-    const manifestPath = path.join(consumer, 'package.json');
-    const manifest = json(manifestPath);
-    manifest.dependencies['@radix-ng/primitives'] = `file:../${archive}`;
-    writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
-    await pnpm('consumer-install', ['install'], consumer);
-    const installedRoot = realpathSync(path.join(consumer, 'node_modules/@radix-ng/primitives'));
-    assert.ok(installedRoot.startsWith(consumer + path.sep), 'library resolution escaped the isolated consumer');
-    const library = json(path.join(installedRoot, 'package.json'));
-    report.library = {
-        version: library.version,
-        tarballSha256: sha(readFileSync(path.join(output, archive))),
-        resolvedPath: installedRoot
-    };
+    report.library = await installPackedLibrary({ root, consumer, output, pnpm });
     report.angular = json(path.join(consumer, 'node_modules/@angular/core/package.json')).version;
     report.typescript = json(path.join(consumer, 'node_modules/typescript/package.json')).version;
     report.consumerLockSha256 = sha(readFileSync(path.join(consumer, 'pnpm-lock.yaml')));
@@ -132,7 +79,7 @@ async function main() {
             slug,
             apiVersion: api.version,
             stylingVersion: styling.version,
-            matchesLibrary: api.version === library.version && styling.version === library.version
+            matchesLibrary: api.version === report.library.version && styling.version === report.library.version
         };
     });
     report.examples = [

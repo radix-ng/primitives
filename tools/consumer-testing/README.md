@@ -5,6 +5,12 @@ an installed Radix NG tarball, strict Angular compilation, and browser interacti
 maintained fixtures adapt the tasks in [Agents / Verify the result](../../apps/radix-storybook/docs/agents/verify-the-result.docs.mdx).
 They are consumer integration checks, not independent coding-agent generation evaluations.
 
+The separate [consumer coding experiment](generation/README.md) uses a blank external scaffold and
+one subscription-backed Codex coding session. Its [first attempt](generation/REPORT.md) ended in a
+tool-host configuration failure before implementation; it does not establish model or skill quality.
+The [third attempt](generation/REPORT-THIRD.md) produced a working consumer component, with raw browser
+results and a separately diagnosed evaluator false negative retained alongside the generated source.
+
 ## Run
 
 Use the Node version in `.nvmrc` and the repository's pnpm version. Install the repository dependencies

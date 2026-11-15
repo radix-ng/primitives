@@ -1,0 +1,32 @@
+import { Component, signal } from '@angular/core';
+import { AppSelect } from './app-select';
+
+// Independent parent, injected into a separate copy only after the coding session has ended.
+@Component({
+    selector: 'app-root',
+    standalone: true,
+    imports: [AppSelect],
+    template: `
+        <main>
+            <h1>Independent AppSelect host</h1>
+            <button (click)="value.set('public')">Set Public externally</button>
+            <button (click)="value.set('private')">Set Private externally</button>
+            <button (click)="label.set('Deployment visibility')">Change accessible name</button>
+            <label><input type="checkbox" [checked]="disabled()" (change)="disabled.set($any($event.target).checked)" />Disable selection</label>
+            <app-select [value]="value()" (valueChange)="changed($event)" [disabled]="disabled()" [label]="label()" />
+            <output data-testid="selected-value">{{ value() }}</output>
+            <output data-testid="event-count">{{ events().length }}</output>
+            <output data-testid="event-payload">{{ events().join(',') }}</output>
+        </main>
+    `
+})
+export class App {
+    readonly value = signal<'private' | 'public'>('private');
+    readonly disabled = signal(false);
+    readonly label = signal('Review visibility');
+    readonly events = signal<string[]>([]);
+    changed(value: 'private' | 'public') {
+        this.events.update((events) => [...events, value]);
+        this.value.set(value);
+    }
+}

@@ -1,0 +1,35 @@
+{
+    "task": "AppSelect inside Dialog",
+    "model": "gpt-6.1-sol",
+    "reasoningEffort": "low",
+    "attempts": 1,
+    "criteria": [
+        "Blank scaffold compiles before generation and contains no Select/Dialog solution.",
+        "Only the two consumer skills are installed through the public GitHub subpath; installed bytes match a recorded revision.",
+        "Generated AppSelect is standalone and compiles against its value/valueChange, disabled and label API in an independent host.",
+        "The generated app and independent host pass unchanged strict TypeScript/Angular template configuration and use public installed package imports without workspace inputs.",
+        "Selecting Public updates the actual parent value exactly once; external Private/Public updates render without a spurious valueChange.",
+        "Disabled prevents opening and changing; re-enabling restores operation.",
+        "Dialog and combobox expose the requested accessible names.",
+        "Value survives closing and reopening the generated Dialog.",
+        "Real keyboard selection works; first Escape closes Select, second closes Dialog.",
+        "Focus returns to the Select trigger and then the Dialog trigger after overlay removal; modality contains Tab and Shift+Tab.",
+        "Consumer CSS uses application tokens; no visual reference or aesthetic scoring is used.",
+        "Browser pageerror/console errors and leftover overlays or page locks fail the check."
+    ],
+    "evidence": [
+        "prompt",
+        "scaffold",
+        "model JSONL journal",
+        "generated diff",
+        "build logs and stats",
+        "independent browser results and traces"
+    ],
+    "rules": [
+        "Freeze criteria and checks before generation.",
+        "Retain agent self-corrections in the same session.",
+        "Do not repair generated code from the evaluator.",
+        "Separate infrastructure failures from model failures.",
+        "No live retries."
+    ]
+}

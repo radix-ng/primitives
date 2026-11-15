@@ -4,6 +4,7 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { z } from 'zod';
+import { findExecutable } from '../codex/executable.ts';
 import { toolDefinitions } from './schemas.ts';
 import { RunFailure, type ModelBackend, type ModelReply } from './types.ts';
 
@@ -101,8 +102,14 @@ export type CodexProcess = (options: {
 export function createCodexProcess(executable = 'codex'): CodexProcess {
     return async ({ args, cwd, input, signal, onLine }) => {
         signal.throwIfAborted();
+        let resolvedExecutable: string;
+        try {
+            resolvedExecutable = findExecutable(executable);
+        } catch (error) {
+            throw new RunFailure('provider-error', error instanceof Error ? error.message : 'Cannot locate Codex CLI.');
+        }
         return new Promise((resolve, reject) => {
-            const child = spawn(executable, args, {
+            const child = spawn(resolvedExecutable, args, {
                 cwd,
                 env: codexEnvironment(),
                 stdio: ['pipe', 'pipe', 'pipe'],
@@ -201,6 +208,7 @@ export async function codexBackend(
             transport: 'codex-exec-json',
             authentication: 'chatgpt',
             codexVersion: version,
+            ...(execute === codexProcess ? { codexExecutable: findExecutable() } : {}),
             model: options.model,
             ...(options.reasoningEffort ? { reasoningEffort: options.reasoningEffort } : {})
         },

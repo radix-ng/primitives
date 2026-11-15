@@ -70,6 +70,12 @@ See [the reproducible consumer check](../../tools/consumer-testing/README.md) fo
 criteria and the recorded result. This exercises maintained integration fixtures; it does not measure
 agent generation quality. The source-backed Storybook checks above remain useful for faster iteration.
 
+The separate [consumer coding experiment](../../tools/consumer-testing/generation/README.md) freezes
+a blank scaffold, product prompt and independent checks before a Codex coding session. Its first
+attempt is recorded as an infrastructure failure, with no generated component or skill-quality claim.
+The [third attempt](../../tools/consumer-testing/generation/REPORT-THIRD.md) retains an actual generated
+AppSelect, independent builds and browser evidence, including a separately reviewed test false negative.
+
 ## Next experiments
 
 For version-matched npm delivery, generate after the release version is assigned and include the
