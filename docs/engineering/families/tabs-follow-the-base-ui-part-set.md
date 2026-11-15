@@ -11,3 +11,10 @@ Inactive panels are immediately inert, including during exit. `data-ending-style
 that host. The panel tracks registered content lifetimes so an ending view stays visible and inert
 until removal, and the persistent empty host becomes hidden afterward. The public keyframe example
 uses `group-data-[ending-style]`; using `data-hidden` as an exit trigger is too late.
+
+Activation direction is linked to the Root's model, so external changes reach every part without
+emitting a user request. Geometry is read after rendering; a new destination keeps the committed
+origin until registration/layout can resolve the value fallback. Null transitions and automatic
+fallbacks use `none`; equal positions do not fall back to item indexes. Angular uses its native model
+ownership: reject a user request with `eventDetails.cancel()` before commit rather than relying on a
+parent to ignore a React-style controlled callback.

@@ -1,3 +1,4 @@
+import { directionCases, type DirectionSettings } from './direction';
 import { panelCases, type PanelSettings } from './panels';
 
 export type Value = string | number | null;
@@ -12,6 +13,7 @@ export interface Settings {
     value?: Value;
     cancelAutomatic?: boolean;
     panels?: PanelSettings;
+    direction?: DirectionSettings;
 }
 
 const numericOptions: Option[] = [
@@ -46,7 +48,7 @@ export const initialCases = {
     'default-null-string': { options: stringOptions, defaultValue: null },
     'value-null': { options: numericOptions, defaultValue: 1, value: null }
 } satisfies Record<string, Settings>;
-export const cases = { ...initialCases, ...panelCases };
+export const cases = { ...initialCases, ...panelCases, ...directionCases };
 export type CaseName = keyof typeof cases;
 
 export interface Change {
@@ -61,6 +63,7 @@ export interface Probe {
     config: Settings;
     changes: Change[];
     activations: number[];
+    directionFrames: { value: string | null; selected: string[]; directions: (string | null)[] }[];
     nativeEvents: { type: string; trusted: boolean; trigger: string | null }[];
 }
 declare global {
@@ -83,9 +86,31 @@ export function installProbe(framework: Probe['framework'], settings: Settings) 
         config: settings,
         changes: [],
         activations: [0, 0],
+        directionFrames: [],
         nativeEvents: []
     };
     window.tabsParity = probe;
+    if (settings.direction) {
+        const record = () => {
+            if (window.tabsParity !== probe) return;
+            const root = document.querySelector('[data-testid="tabs-root"]');
+            if (root) {
+                const snapshot = {
+                    value: document.querySelector('[data-testid="app-value"]')?.textContent ?? null,
+                    selected: [...root.querySelectorAll<HTMLElement>('[role="tab"][aria-selected="true"]')].map(
+                        (tab) => tab.dataset.value!
+                    ),
+                    directions: [...root.querySelectorAll('[data-direction-part]'), root].map((part) =>
+                        part.getAttribute('data-activation-direction')
+                    )
+                };
+                if (JSON.stringify(snapshot) !== JSON.stringify(probe.directionFrames.at(-1)))
+                    probe.directionFrames.push(snapshot);
+            }
+            requestAnimationFrame(record);
+        };
+        requestAnimationFrame(record);
+    }
     return {
         probe,
         change(

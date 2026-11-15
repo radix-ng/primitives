@@ -33,7 +33,7 @@ import { RdxTabsValue } from '../src/utils';
     imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel]
 })
 class TestHostComponent {
-    readonly value = signal<string | undefined>(undefined);
+    readonly value = signal<RdxTabsValue | undefined>(undefined);
     defaultValue: string | undefined = 'one';
     readonly orientation = signal<DataOrientation>('horizontal');
     readonly activateOnFocus = signal(false);
@@ -65,6 +65,12 @@ describe('Tabs', () => {
         fixture = TestBed.createComponent(TestHostComponent);
         host = fixture.componentInstance;
         fixture.detectChanges();
+        // jsdom has no layout: direction assertions use explicit geometry, while parity tests use real layout.
+        tabs().forEach((tab, index) => {
+            vi.spyOn(tab, 'getBoundingClientRect').mockReturnValue(
+                DOMRect.fromRect({ x: index * 100, y: index * 50, width: 100, height: 40 })
+            );
+        });
     });
 
     it('renders tablist / tab / tabpanel roles', () => {
@@ -291,6 +297,59 @@ describe('Tabs', () => {
         tabs()[0].dispatchEvent(new MouseEvent('click', { button: 0, bubbles: true }));
         fixture.detectChanges();
         expect(root.getAttribute('data-activation-direction')).toBe('left');
+    });
+
+    it('publishes request and fallback direction before synchronous model subscribers run', async () => {
+        const root = fixture.debugElement.query(By.directive(RdxTabsRoot)).injector.get(RdxTabsRoot);
+        const directions: string[] = [];
+        root.value.subscribe(() => directions.push(root.activationDirection()));
+
+        tabs()[1].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        expect(directions).toEqual(['right']);
+        await fixture.whenStable();
+
+        host.disabledTwo.set(true);
+        await fixture.whenStable();
+        expect(directions).toEqual(['right', 'none']);
+    });
+
+    it.each([
+        { orientation: 'horizontal' as const, forward: 'right', backward: 'left' },
+        { orientation: 'vertical' as const, forward: 'down', backward: 'up' }
+    ])(
+        'updates direction for external $orientation changes and null restoration',
+        async ({ orientation, forward, backward }) => {
+            host.orientation.set(orientation);
+            await fixture.whenStable();
+            const element = fixture.nativeElement.querySelector('[rdxTabsRoot]') as HTMLElement;
+
+            host.value.set('three');
+            await fixture.whenStable();
+            expect(element.getAttribute('data-activation-direction')).toBe(forward);
+            host.value.set('one');
+            await fixture.whenStable();
+            expect(element.getAttribute('data-activation-direction')).toBe(backward);
+            host.value.set(null);
+            await fixture.whenStable();
+            expect(element.getAttribute('data-activation-direction')).toBe('none');
+            host.value.set('two');
+            await fixture.whenStable();
+            expect(element.getAttribute('data-activation-direction')).toBe('none');
+            expect(host.changes).toEqual([]);
+        }
+    );
+
+    it('reports no direction when registered tabs have equal coordinates', () => {
+        tabs().forEach((tab) =>
+            vi.mocked(tab.getBoundingClientRect).mockReturnValue(DOMRect.fromRect({ width: 100, height: 40 }))
+        );
+        tabs()[2].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        fixture.detectChanges();
+        expect(host.changeDetails[0].activationDirection).toBe('none');
+        expect((fixture.nativeElement as HTMLElement).querySelector('[rdxTabsRoot]')).toHaveAttribute(
+            'data-activation-direction',
+            'none'
+        );
     });
 });
 

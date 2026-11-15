@@ -4,7 +4,8 @@ import type { CaseName, Probe } from '../src/contract';
 
 export class TabsDriver {
     readonly checkpoints: Checkpoint[] = [];
-    readonly measurements: { name: string; dom: string; focus: string | null }[] = [];
+    readonly measurements: { name: string; dom: string; focus: string | null; frames?: unknown; bounds?: unknown }[] =
+        [];
     readonly errors: string[] = [];
     metadata?: Probe['reference'];
 
@@ -131,6 +132,96 @@ export class TabsDriver {
         this.checkpoints.push({ name, state: snapshot.state });
         this.measurements.push({ name, dom: snapshot.dom, focus: snapshot.state.focus });
         expect(snapshot.state, `${this.framework}: ${name}`).toEqual(expect.objectContaining(expected));
+        expect(this.errors).toEqual([]);
+    }
+
+    async resetDirectionFrames() {
+        await this.page.evaluate(() => {
+            window.tabsParity.directionFrames = [];
+        });
+    }
+
+    async directionCheckpoint(name: string, direction: string, value: string | number | null, changes: unknown[]) {
+        const snapshot = await this.page.evaluate(async () => {
+            const read = () => {
+                const root = document.querySelector<HTMLElement>('[data-testid="tabs-root"]')!;
+                const tabs = [...root.querySelectorAll<HTMLElement>('[role="tab"]')];
+                const selected = tabs
+                    .filter((tab) => tab.getAttribute('aria-selected') === 'true')
+                    .map((tab) => JSON.parse(tab.dataset.value!));
+                const value = JSON.parse(document.querySelector('[data-testid="app-value"]')!.textContent!);
+                const frame = window.tabsParity.directionFrames.find(
+                    (frame) =>
+                        frame.value === JSON.stringify(value) &&
+                        JSON.stringify(frame.selected.map((value) => JSON.parse(value))) === JSON.stringify(selected)
+                );
+                return {
+                    value,
+                    selected,
+                    directions: [...root.querySelectorAll('[data-direction-part]'), root].map((part) =>
+                        part.getAttribute('data-activation-direction')
+                    ),
+                    ...(value !== null
+                        ? {
+                              indicatorDirection:
+                                  root
+                                      .querySelector('[data-testid="indicator"]')
+                                      ?.getAttribute('data-activation-direction') ?? null
+                          }
+                        : {}),
+                    firstFrameDirections: frame?.directions ?? [],
+                    tabStops: tabs.map((tab) => ({ value: JSON.parse(tab.dataset.value!), tabIndex: tab.tabIndex })),
+                    visiblePanels: [...root.querySelectorAll<HTMLElement>('[role="tabpanel"]')]
+                        .filter((panel) => !panel.hidden && panel.getClientRects().length > 0)
+                        .map((panel) => JSON.parse(panel.dataset.value!)),
+                    focus:
+                        document.activeElement?.getAttribute('data-testid') ?? document.activeElement?.tagName ?? null,
+                    changes: window.tabsParity.changes
+                };
+            };
+            let previous = '';
+            let stable = 0;
+            for (let frame = 0; frame < 120; frame++) {
+                await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+                const state = read();
+                const json = JSON.stringify(state);
+                stable = json === previous ? stable + 1 : 0;
+                if (stable >= 3) {
+                    const root = document.querySelector('[data-testid="tabs-root"]')!;
+                    return {
+                        state,
+                        dom: root.outerHTML,
+                        frames: window.tabsParity.directionFrames,
+                        bounds: [...root.querySelectorAll('[role="tab"]')].map((tab) =>
+                            tab.getBoundingClientRect().toJSON()
+                        )
+                    };
+                }
+                previous = json;
+            }
+            throw new Error('Tabs direction did not settle');
+        });
+        this.checkpoints.push({ name, state: snapshot.state });
+        this.measurements.push({
+            name,
+            dom: snapshot.dom,
+            focus: snapshot.state.focus,
+            frames: snapshot.frames,
+            bounds: snapshot.bounds
+        });
+        const count = snapshot.state.directions.length;
+        const hasTab = snapshot.state.tabStops.some((tab) => tab.value === value);
+        expect(snapshot.state, `${this.framework}: ${name}`).toEqual(
+            expect.objectContaining({
+                value,
+                selected: hasTab ? [value] : [],
+                visiblePanels: hasTab ? [value] : [],
+                directions: Array(count).fill(direction),
+                firstFrameDirections: Array(count).fill(direction),
+                ...(value !== null ? { indicatorDirection: direction } : {}),
+                changes
+            })
+        );
         expect(this.errors).toEqual([]);
     }
 }

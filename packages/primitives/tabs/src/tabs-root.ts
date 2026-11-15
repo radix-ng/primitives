@@ -1,4 +1,16 @@
-import { Directive, effect, inject, input, model, output, signal, untracked } from '@angular/core';
+import {
+    afterRenderEffect,
+    computed,
+    Directive,
+    effect,
+    inject,
+    input,
+    linkedSignal,
+    model,
+    output,
+    signal,
+    untracked
+} from '@angular/core';
 import {
     RdxCompositeList,
     RdxCompositeListContext,
@@ -24,6 +36,19 @@ export interface RdxTabsValueChangeEvent {
     eventDetails: RdxTabsValueChangeEventDetails;
 }
 
+interface TabsLayout {
+    value: RdxTabsValue | undefined;
+    orientation: DataOrientation;
+    positions: Map<RdxTabsValue, Pick<DOMRect, 'left' | 'top'>>;
+}
+
+interface TabsDirection {
+    value: RdxTabsValue | undefined;
+    fromValue: RdxTabsValue | undefined;
+    direction: RdxTabsActivationDirection;
+    waitingForTab: boolean;
+}
+
 const rootContext = (): RdxTabsRootContext => {
     const root = inject(RdxTabsRoot);
 
@@ -31,7 +56,7 @@ const rootContext = (): RdxTabsRootContext => {
         baseId: root.baseId,
         value: root.value,
         orientation: root.orientation,
-        activationDirection: root.activationDirection.asReadonly(),
+        activationDirection: root.activationDirection,
         activateOnFocus: root.activateOnFocus.asReadonly(),
         tabListElement: root.tabListElement.asReadonly(),
         tabMap: root.tabMap.asReadonly(),
@@ -110,7 +135,40 @@ export class RdxTabsRoot {
     readonly tabCompositeList = signal<RdxCompositeListContext | null>(null);
 
     /** @ignore */
-    readonly activationDirection = signal<RdxTabsActivationDirection>('none');
+    readonly activationDirection = computed(() => this.direction().direction, {
+        debugName: 'RdxTabsRoot.activationDirection'
+    });
+
+    private readonly tabLayout = signal<TabsLayout>(
+        { value: undefined, orientation: 'horizontal', positions: new Map() },
+        { debugName: 'RdxTabsRoot.tabLayout' }
+    );
+    private readonly direction = linkedSignal<
+        { value: RdxTabsValue | undefined; orientation: DataOrientation; layout: TabsLayout },
+        TabsDirection
+    >({
+        debugName: 'RdxTabsRoot.direction',
+        source: () => ({ value: this.value(), orientation: this.orientation(), layout: this.tabLayout() }),
+        computation: ({ value, orientation, layout }, previous) => {
+            if (!previous) return { value, fromValue: value, direction: 'none', waitingForTab: false };
+            const last = previous.value;
+            if (last.value === value && !last.waitingForTab) return last;
+
+            // A destination added with the selection may not have rendered/registered yet. Keep
+            // the committed origin until its geometry exists, including through missing values.
+            const fromValue = last.waitingForTab ? last.fromValue : last.value;
+            if (fromValue === value) return { ...last, value, fromValue, waitingForTab: false };
+            return {
+                value,
+                fromValue,
+                direction: computeActivationDirection(fromValue, value, orientation, layout.positions),
+                waitingForTab:
+                    fromValue != null &&
+                    value != null &&
+                    (layout.value !== value || layout.orientation !== orientation || !layout.positions.has(value))
+            };
+        }
+    });
 
     private readonly externallyControlled = signal(false);
     private hasObservedValue = false;
@@ -124,6 +182,15 @@ export class RdxTabsRoot {
     private lastKnownTabElement: HTMLElement | undefined;
 
     constructor() {
+        afterRenderEffect({
+            read: () =>
+                this.tabLayout.set({
+                    value: this.value(),
+                    orientation: this.orientation(),
+                    positions: measureTabs(this.tabMap())
+                })
+        });
+
         effect(() => {
             const currentValue = this.value();
 
@@ -236,7 +303,12 @@ export class RdxTabsRoot {
             trigger
         );
         const eventDetails = baseEventDetails as RdxTabsValueChangeEventDetails;
-        const activationDirection = computeActivationDirection(previous, value, this.orientation(), this.tabMap());
+        const activationDirection = computeActivationDirection(
+            previous,
+            value,
+            this.orientation(),
+            measureTabs(this.tabMap())
+        );
         eventDetails.activationDirection = activationDirection;
 
         this.onValueChange.emit({ value, eventDetails });
@@ -244,7 +316,7 @@ export class RdxTabsRoot {
             return;
         }
 
-        this.activationDirection.set(activationDirection);
+        this.direction.set({ value, fromValue: previous, direction: activationDirection, waitingForTab: false });
         this.commitValue(value);
     }
 
@@ -280,7 +352,7 @@ export class RdxTabsRoot {
     }
 
     private commitAutomaticValueChange(value: RdxTabsValue, reason: RdxTabsValueChangeReason): void {
-        this.activationDirection.set('none');
+        this.direction.set({ value, fromValue: value, direction: 'none', waitingForTab: false });
         this.commitValue(value);
         this.notifyAutomaticValueChange(value, reason);
         this.shouldNotifyInitialValueChange = false;
@@ -328,57 +400,33 @@ function getFirstEnabledTabValue(
 
 function computeActivationDirection(
     previous: RdxTabsValue | undefined,
-    next: RdxTabsValue,
+    next: RdxTabsValue | undefined,
     orientation: DataOrientation,
-    tabMap: Map<HTMLElement, RdxCompositeMetadata<RdxTabsTabMetadata>>
+    positions: TabsLayout['positions']
 ): RdxTabsActivationDirection {
     if (previous == null || next == null) {
         return 'none';
     }
 
-    let previousTab: HTMLElement | null = null;
-    let nextTab: HTMLElement | null = null;
-    let previousIndex = -1;
-    let nextIndex = -1;
-
-    for (const [tabElement, tabMetadata] of tabMap.entries()) {
-        if (tabMetadata.value === previous) {
-            previousTab = tabElement;
-            previousIndex = tabMetadata.index;
-        }
-        if (tabMetadata.value === next) {
-            nextTab = tabElement;
-            nextIndex = tabMetadata.index;
-        }
-        if (previousTab && nextTab) {
-            break;
-        }
+    const previousPosition = positions.get(previous);
+    const nextPosition = positions.get(next);
+    if (!previousPosition || !nextPosition) {
+        return previousPosition !== nextPosition
+            ? inferActivationDirectionFromValues(previous, next, orientation)
+            : 'none';
     }
+    const axis = orientation === 'horizontal' ? 'left' : 'top';
+    if (nextPosition[axis] < previousPosition[axis]) return orientation === 'horizontal' ? 'left' : 'up';
+    if (nextPosition[axis] > previousPosition[axis]) return orientation === 'horizontal' ? 'right' : 'down';
+    return 'none';
+}
 
-    if (!previousTab || !nextTab || previousIndex === nextIndex) {
-        return inferActivationDirectionFromValues(previous, next, orientation);
+function measureTabs(tabMap: Map<HTMLElement, RdxCompositeMetadata<RdxTabsTabMetadata>>): TabsLayout['positions'] {
+    const positions: TabsLayout['positions'] = new Map();
+    for (const [element, metadata] of tabMap) {
+        if (!positions.has(metadata.value)) positions.set(metadata.value, element.getBoundingClientRect());
     }
-
-    const previousRect = previousTab.getBoundingClientRect();
-    const nextRect = nextTab.getBoundingClientRect();
-
-    if (orientation === 'horizontal') {
-        if (nextRect.left < previousRect.left) {
-            return 'left';
-        }
-        if (nextRect.left > previousRect.left) {
-            return 'right';
-        }
-        return nextIndex > previousIndex ? 'right' : 'left';
-    }
-
-    if (nextRect.top < previousRect.top) {
-        return 'up';
-    }
-    if (nextRect.top > previousRect.top) {
-        return 'down';
-    }
-    return nextIndex > previousIndex ? 'down' : 'up';
+    return positions;
 }
 
 function inferActivationDirectionFromValues(
