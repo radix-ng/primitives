@@ -12,6 +12,10 @@ export function ReactBoundary() {
     const inner = useRef<HTMLDivElement>(null);
     const [ready, setReady] = useState(false);
     const [boundary, setBoundary] = useState<Boundary>();
+    const [method, setMethod] = useState<'absolute' | 'fixed' | undefined>(
+        settings.positioning?.method ?? (settings.absolute ? 'absolute' : undefined)
+    );
+    const [sticky, setSticky] = useState(settings.positioning?.sticky ?? false);
     const readBoundary = (changed: boolean): Boundary => {
         const first = outer.current!;
         const second = inner.current!;
@@ -41,6 +45,11 @@ export function ReactBoundary() {
     }, []);
     useEffect(() => {
         const command = (event: KeyboardEvent) => {
+            if (event.key === 'F3' && settings.positioning) {
+                event.preventDefault();
+                if (settings.positioning.switchMethod) setMethod('fixed');
+                if (settings.positioning.toggleSticky) setSticky(true);
+            }
             if (settings.dynamic && event.key === 'F3') {
                 event.preventDefault();
                 setBoundary(readBoundary(true));
@@ -50,63 +59,89 @@ export function ReactBoundary() {
         return () => document.removeEventListener('keydown', command);
     }, []);
     return (
-        <div ref={outer} className={b.outer} data-testid="boundary-outer">
+        <>
+            {settings.positioning?.documentScroll && <div className="h-[2000px]" />}
             <div
-                ref={inner}
-                className={
-                    b.inner +
-                    (settings.absolute ? '' : ' transform-gpu') +
-                    (settings.scaled ? ' origin-top-left scale-90' : '')
-                }
-                data-testid="boundary-inner"
+                ref={outer}
+                className={b.outer + (settings.positioning?.documentScroll ? ' absolute!' : '')}
+                data-testid="boundary-outer"
             >
-                {ready && (
-                    <div className={b.anchor}>
-                        <Menu.Root onOpenChangeComplete={(open) => trace.complete('main', open)}>
-                            <Menu.Trigger className={s.trigger} data-testid="primary">
-                                Actions
-                            </Menu.Trigger>
-                            <Menu.Portal container={settings.local ? inner.current : undefined}>
-                                <Menu.Positioner
-                                    className="z-50"
-                                    align="start"
-                                    sideOffset={4}
-                                    collisionBoundary={boundary}
-                                    positionMethod={settings.absolute ? 'absolute' : undefined}
-                                    data-testid="positioner"
-                                >
-                                    <Menu.Popup className={s.popup} data-testid="popup">
-                                        <Menu.Item
-                                            render={<button />}
-                                            nativeButton
-                                            className={s.item}
-                                            data-testid="alpha"
+                <div
+                    ref={inner}
+                    className={
+                        b.inner +
+                        (settings.absolute ? '' : ' transform-gpu') +
+                        (settings.scaled ? ' origin-top-left scale-90' : '') +
+                        (settings.positioning?.stickyTest ? ' overflow-auto!' : '')
+                    }
+                    data-testid="boundary-inner"
+                >
+                    {settings.positioning?.stickyTest && <div className="h-[900px] w-[1200px]" />}
+                    {ready && (
+                        <div className={b.anchor}>
+                            <Menu.Root
+                                modal={!settings.positioning}
+                                onOpenChangeComplete={(open) => trace.complete('main', open)}
+                            >
+                                <Menu.Trigger className={s.trigger} data-testid="primary">
+                                    Actions
+                                </Menu.Trigger>
+                                <Menu.Portal container={settings.local ? inner.current : undefined}>
+                                    <Menu.Positioner
+                                        className="z-50"
+                                        align="start"
+                                        sideOffset={4}
+                                        collisionBoundary={boundary}
+                                        positionMethod={method}
+                                        sticky={sticky}
+                                        data-testid="positioner"
+                                    >
+                                        <Menu.Popup
+                                            className={
+                                                s.popup +
+                                                (settings.positioning?.scaledPopup ? ' origin-top-left scale-90' : '')
+                                            }
+                                            data-testid="popup"
                                         >
-                                            Alpha
-                                        </Menu.Item>
-                                        <Menu.Item
-                                            render={<button />}
-                                            nativeButton
-                                            className={s.item}
-                                            data-testid="bravo"
-                                        >
-                                            Bravo
-                                        </Menu.Item>
-                                        <Menu.Item
-                                            render={<button />}
-                                            nativeButton
-                                            className={s.item}
-                                            data-testid="omega"
-                                        >
-                                            Omega
-                                        </Menu.Item>
-                                    </Menu.Popup>
-                                </Menu.Positioner>
-                            </Menu.Portal>
-                        </Menu.Root>
-                    </div>
-                )}
+                                            {settings.positioning?.arrow && (
+                                                <Menu.Arrow
+                                                    render={<span />}
+                                                    className="block h-[5px] w-2.5"
+                                                    data-testid="arrow"
+                                                />
+                                            )}
+                                            <Menu.Item
+                                                render={<button />}
+                                                nativeButton
+                                                className={s.item}
+                                                data-testid="alpha"
+                                            >
+                                                Alpha
+                                            </Menu.Item>
+                                            <Menu.Item
+                                                render={<button />}
+                                                nativeButton
+                                                className={s.item}
+                                                data-testid="bravo"
+                                            >
+                                                Bravo
+                                            </Menu.Item>
+                                            <Menu.Item
+                                                render={<button />}
+                                                nativeButton
+                                                className={s.item}
+                                                data-testid="omega"
+                                            >
+                                                Omega
+                                            </Menu.Item>
+                                        </Menu.Popup>
+                                    </Menu.Positioner>
+                                </Menu.Portal>
+                            </Menu.Root>
+                        </div>
+                    )}
+                </div>
             </div>
-        </div>
+        </>
     );
 }

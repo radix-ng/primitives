@@ -17,6 +17,7 @@ function Popup({ trace }: { trace: ReturnType<typeof installProbe> }) {
                 align={p.align}
                 sideOffset={p.offset}
                 alignOffset={p.offset}
+                positionMethod={p.method}
                 data-testid="positioner"
             >
                 <Menu.Popup className={s.popup + (p.fallback ? ' w-[600px]!' : '')} data-testid="popup">
@@ -35,6 +36,7 @@ function Popup({ trace }: { trace: ReturnType<typeof installProbe> }) {
                                     align={p.override ? 'end' : undefined}
                                     sideOffset={p.override ? 9 : undefined}
                                     alignOffset={p.override ? 3 : undefined}
+                                    positionMethod={p.method}
                                     data-testid="sub-positioner"
                                 >
                                     <Menu.Popup className={s.popup} data-testid="sub-popup">

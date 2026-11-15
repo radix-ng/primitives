@@ -19,12 +19,14 @@ import { lifecycleScenarios } from './lifecycle.scenarios';
 import { placementScenarios } from './placement.scenarios';
 import { pointerScenarios } from './pointer.scenarios';
 import { popoverMenuScenarios } from './popover.scenarios';
+import { positioningScenarios } from './positioning.scenarios';
 import { projectionScenarios } from './projection.scenarios';
 import { touchScenarios } from './touch.scenarios';
 import { multiTriggerLifecycleScenarios } from './trigger-lifecycle.scenarios';
 import { multiTriggerScenarios } from './triggers.scenarios';
 
 export const scenarios = [
+    ...positioningScenarios,
     ...boundaryScenarios,
     ...placementScenarios,
     ...indicatorScenarios,

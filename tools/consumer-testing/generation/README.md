@@ -4,6 +4,10 @@ This experiment asks an ordinary Codex coding session to implement a reusable Ap
 Dialog in a blank external Angular application. It is separate from the maintained consumer fixtures
 and from `tools/agent-testing`, which operates an already implemented UI through runtime commands.
 
+The separate [AppEmailField experiment](email-field/README.md) uses the same launcher and pinned
+environment for a parent-owned Reactive Forms control. Its contract, independent parent and eight
+browser cases are frozen separately; it does not reuse an AppSelect implementation or result.
+
 [REPORT.md](REPORT.md) records the first attempt: **infrastructure failure, no generated component**.
 One live session was used; it could not read skills or execute commands because its tool host had been
 disabled. That launcher fix was initially checked offline only. This attempt establishes no model/skill

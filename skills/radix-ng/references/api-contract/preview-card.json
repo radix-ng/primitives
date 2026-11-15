@@ -142,10 +142,10 @@
           "description": "Whether to hide the content when the trigger becomes fully occluded."
         },
         {
-          "name": "positionStrategy",
-          "type": "\"fixed\" | \"absolute\"",
-          "default": "'fixed'",
-          "description": "The type of CSS position property to use."
+          "name": "positionMethod",
+          "type": "'fixed' | 'absolute' | undefined",
+          "default": "'absolute'",
+          "description": "The CSS positioning method. Uses native absolute/fixed containing-block rules.\nContext Menu composes a fixed-position policy for its entire menu chain."
         },
         {
           "name": "side",
@@ -161,9 +161,9 @@
         },
         {
           "name": "sticky",
-          "type": "\"partial\" | \"always\"",
-          "default": "'partial'",
-          "description": "The sticky behavior on the align axis. `partial` will keep the\ncontent in the boundary as long as the trigger is at least partially\nin the boundary whilst \"always\" will keep the content in the boundary\nregardless."
+          "type": "boolean | undefined",
+          "default": "false",
+          "description": "Keep the popup inside its collision boundary after the anchor has scrolled out of view.\nWhen false, shifting is limited to preserve attachment to the anchor."
         },
         {
           "name": "updatePositionStrategy",

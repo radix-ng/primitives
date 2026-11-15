@@ -1,0 +1,41 @@
+{
+    "task": "AppEmailField with Angular Reactive Forms",
+    "checksVersion": "email-field-consumer/1",
+    "model": "gpt-6.1-sol",
+    "reasoningEffort": "low",
+    "attempts": 1,
+    "publicContract": {
+        "export": "AppEmailField",
+        "file": "src/app/app-email-field.ts",
+        "selector": "app-email-field",
+        "standalone": true,
+        "inputs": {
+            "control": "FormControl<string>",
+            "label": "string",
+            "description": "string"
+        },
+        "parentOwns": ["value", "validators", "disabled", "submission", "reset"],
+        "validationVisibility": "Only after the control is touched, including markAllAsTouched on submit; reset hides errors.",
+        "requiredMessage": "Email is required.",
+        "emailMessage": "Enter a valid email address."
+    },
+    "requiredPrimitiveImports": ["@radix-ng/primitives/field"],
+    "browserScenarios": 8,
+    "criteria": [
+        "Blank external scaffold has no Field/email solution; dependencies and both consumer skills are pinned to the previous experiment.",
+        "Only installed public package imports are used, including the Radix NG Field parts; no workspace sources or ready consumer fixtures.",
+        "Both generated app and independent parent compile with unchanged strict TypeScript/Angular template settings.",
+        "A native email input is named by its visible label and described by its description; clicking the label focuses the input.",
+        "Empty initial control is pristine/untouched with no visible errors; blur shows the required error.",
+        "Invalid email after blur shows the email error; correcting it removes errors. User input and external setValue synchronize with the parent's actual FormControl.",
+        "disable() prevents pointer/keyboard editing; Tab/Shift+Tab skip input with expected enabled focus targets. External setValue still renders; enable() restores keyboard focus/editing.",
+        "Reset returns to empty nonNullable default, pristine and untouched and hides errors.",
+        "Invalid submit marks controls touched and shows errors without delivery. Valid submit delivers the current value exactly once per submit.",
+        "Browser pageerror/console errors fail checks; styling uses application tokens without a visual score."
+    ],
+    "rules": [
+        "Freeze prompt, scaffold, contract, independent parent and browser checks before the single live session.",
+        "Agent self-corrections belong to that one session; no evaluator source repairs or automatic live retries.",
+        "Report environment, implementation, oracle and confirmed skill gaps separately."
+    ]
+}

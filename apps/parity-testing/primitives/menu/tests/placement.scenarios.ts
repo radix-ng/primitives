@@ -35,12 +35,13 @@ export const placementScenarios = placementCases.map((name) => ({
                 : (p.align ?? (p.kind === 'menu' ? 'center' : 'start'));
             await expect(positioner).toHaveAttribute('data-side', side);
             await expect(positioner).toHaveAttribute('data-align', align);
+            await expect(positioner).toHaveCSS('position', p.kind === 'context' ? 'fixed' : 'absolute');
             // Wait for the geometry to follow the requested policy, including a retained orientation change.
             await expect
                 .poll(async () => {
                     const box = (await surface.boundingBox())!;
                     const physical = side === 'inline-end' ? (rtl ? 'left' : 'right') : side;
-                    if (point)
+                    if (point && !nested)
                         return Math.abs(box.y - point.y - (p.side || p.align === 'center' || p.offset === 0 ? 0 : -5));
                     if (physical === 'right') return Math.abs(box.x - anchor.x - anchor.width);
                     if (physical === 'left') return Math.abs(box.x + box.width - anchor.x);
@@ -49,7 +50,7 @@ export const placementScenarios = placementCases.map((name) => ({
                 })
                 .toBeLessThan(1);
             const box = (await surface.boundingBox())!;
-            const origin = point ?? anchor;
+            const origin = (!nested && point) || anchor;
             const geometry = {
                 side,
                 align,

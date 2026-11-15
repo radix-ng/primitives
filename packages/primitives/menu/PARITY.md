@@ -46,12 +46,13 @@ and records the remaining defects, capability gaps and validation limits.
 | Checkbox/radio indicator lifecycle, retained hosts, native names and inherited disabled state          | Pinned indicator scenarios and Angular unit tests                     | Covered; consumer-owned host adaptation, audit A1 resolved              |
 | Contextual placement, LTR/RTL, retained Menubar orientation and pointer-anchor offsets                 | Pinned geometry comparisons; ADR 0067                                 | Covered for default placement; shared A2 contracts remain open          |
 | Collision boundaries: clipping ancestors, native/ref arrays, viewport Rect, dynamic replacement        | Pinned geometry/available-height scenarios and Popper units; ADR 0068 | Covered; native DOMRect replacement limit documented                    |
+| Absolute/fixed method, boolean sticky, scroll/arrow attachment and forced Context Menu policies        | Pinned native-wheel comparisons and units; ADR 0069                   | Covered; pinch-zoom layout viewport remains open                        |
 | Default models, portal targets and GroupLabel id                                                       | Source audit and focused contract probes                              | Fixes pending, audit A3–A5                                              |
 | FilterProvider, Input, List, Clear and Empty                                                           | Pinned public export inventory                                        | Missing capability; reuse core.useFilter, audit A6                      |
 | Real touch, devices and assistive technology                                                           | Not established by this suite                                         | Pending                                                                 |
 
-The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 408 scenarios and
-1224 planned comparisons: 1176 execute, with 48 touch capability skips. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
+The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 420 scenarios and
+1260 planned comparisons: 1212 execute, with 48 touch capability skips. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
 state. Checkbox/radio change requests are observed before cancellation; original event types and
 trusted pointer coordinates are retained. No adapter forces focus, open state or completion.
 
@@ -70,8 +71,9 @@ focus manager ignores a disconnected default anchor; explicit final-focus polici
 The source inventory is complete for the pinned version; Menu parity is not. The
 [audit](AUDIT.md) records five defect/contract groups and the missing filtering family, distinguishes
 Angular adaptations from missing behavior, and classifies all 143 exact exception fields.
-Indicator lifecycle (A1), contextual placement and collision boundaries (part of A2) are now covered. Shared Positioner/Portal contracts,
-model initialization and GroupLabel identity remain open. Filtering is a separate capability increment.
+Indicator lifecycle (A1), contextual placement, collision boundaries, positionMethod and sticky are
+covered. Context Menu's layout viewport during pinch zoom (A2), Portal contracts, model initialization
+and GroupLabel identity remain open. Filtering is a separate capability increment.
 
 Ten indicator scenarios cover fresh/retained hosts, settled entry, paused/natural CSS exits and
 reselection during exit. Both fixtures keep native item input and real CSS animations. Angular hides
@@ -80,10 +82,16 @@ while raw measurements retain host presence/display and animations. Item glyphs 
 disabled state comes from the actual item/group/Root through DI. No new comparison exception is needed.
 
 Fourteen boundary scenarios compare native/ref/mixed arrays, Rect records, local/body portal ancestry,
-available height, scaled containers and boundary replacement. Explicit absolute positioning isolates
-one non-transformed container from the remaining strategy-default gap. The pin's native DOMRect
+available height, scaled containers and boundary replacement. Explicit absolute positioning also
+covers a non-transformed local container. The pin's native DOMRect
 replacement limitation is documented in [ADR 0068](../../../docs/adr/0068-popper-collision-boundaries.md);
 ordinary Rect updates match, and Angular's additional native update is covered by a unit regression.
+
+Ten native-wheel scenarios cover absolute/fixed positioning during document scroll, live method
+switches, boolean sticky on both axes, scaled arrows and live sticky changes. Two further placement
+cases prove Context Menu forces fixed positioning through its descendants even with an explicit
+absolute input. Shared sideOffset measures the popup-box gap without implicit arrow height.
+See [ADR 0069](../../../docs/adr/0069-popper-position-method-and-sticky.md).
 
 The audit's targeted exception run passed 82 comparisons, skipped four unsupported capabilities
 and failed one WebKit React assertion in hybrid-hover-touch-promote. Five isolated repeats passed;

@@ -49,8 +49,9 @@ public Menu prose supplies the conditional table that a single default cell cann
 
 This increment addresses contextual defaults only. Collision boundaries were addressed subsequently
 in [ADR 0068](0068-popper-collision-boundaries.md). A2's shared positionMethod/strategy and sticky
-contracts remain open, as do Context Menu's forced arrow-padding and layout-viewport
-policies for authored overrides/pinch zoom. They require separate consumer coverage and migration decisions.
+contracts and forced Context Menu overrides were subsequently addressed in
+[ADR 0069](0069-popper-position-method-and-sticky.md). Context Menu's layout-viewport policy during
+pinch zoom remains open.
 
 ## Validation
 

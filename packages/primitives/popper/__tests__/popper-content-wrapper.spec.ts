@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import type { Boundary } from '@floating-ui/dom';
 import { autoUpdate, computePosition } from '@floating-ui/dom';
-import { Direction } from '@radix-ng/primitives/core';
+import { BooleanInput, Direction } from '@radix-ng/primitives/core';
 import { vi } from 'vitest';
 import { popperImports } from '../index';
 import {
@@ -258,6 +258,29 @@ class BoundaryPopperHostComponent {
     readonly boundary = signal<RdxCollisionBoundary | undefined>(undefined);
 }
 
+@Directive({
+    selector: '[testPositionPolicy]',
+    providers: [provideRdxPopperContentConfig({ positionMethod: 'fixed', sticky: true })]
+})
+class TestPositionPolicy {}
+
+@Component({
+    imports: [popperImports, TestPositionPolicy],
+    template: `
+        <div rdxPopperRoot>
+            <button rdxPopperAnchor>Anchor</button>
+            <div [positionMethod]="method()" [sticky]="sticky()" rdxPopperContentWrapper>Default</div>
+            <div [positionMethod]="method()" [sticky]="sticky()" testPositionPolicy rdxPopperContentWrapper>
+                Configured
+            </div>
+        </div>
+    `
+})
+class PositionPolicyHost {
+    readonly method = signal<'absolute' | 'fixed' | undefined>(undefined);
+    readonly sticky = signal<BooleanInput>(undefined);
+}
+
 describe('RdxPopperContentWrapper', () => {
     const autoUpdateMock = vi.mocked(autoUpdate);
     const computePositionMock = vi.mocked(computePosition);
@@ -278,9 +301,68 @@ describe('RdxPopperContentWrapper', () => {
                 LogicalSidePopperHostComponent,
                 ArrowPopperHostComponent,
                 ReactiveArrowPopperHostComponent,
-                BoundaryPopperHostComponent
+                BoundaryPopperHostComponent,
+                PositionPolicyHost
             ]
         });
+    });
+
+    it('uses absolute positioning by default, matching Base UI', async () => {
+        const fixture = TestBed.createComponent(DefaultPopperHostComponent);
+        await fixture.whenStable();
+        expect(computePositionMock.mock.lastCall![2]!.strategy).toBe('absolute');
+    });
+
+    it('defaults sticky to false', async () => {
+        const fixture = TestBed.createComponent(DefaultPopperHostComponent);
+        await fixture.whenStable();
+        const wrapper = fixture.debugElement
+            .query(By.directive(RdxPopperContentWrapper))
+            .injector.get(RdxPopperContentWrapper);
+        expect(wrapper.sticky()).toBe(false);
+    });
+
+    it('honors method/sticky configuration, explicit overrides and undefined resets', async () => {
+        const fixture = TestBed.createComponent(PositionPolicyHost);
+        await fixture.whenStable();
+        const wrappers = fixture.debugElement
+            .queryAll(By.directive(RdxPopperContentWrapper))
+            .map((element) => element.injector.get(RdxPopperContentWrapper));
+        expect(wrappers.map((wrapper) => [wrapper.positionMethod(), wrapper.sticky()])).toEqual([
+            ['absolute', false],
+            ['fixed', true]
+        ]);
+        fixture.componentInstance.method.set('absolute');
+        fixture.componentInstance.sticky.set(false);
+        await fixture.whenStable();
+        expect(wrappers.map((wrapper) => [wrapper.positionMethod(), wrapper.sticky()])).toEqual([
+            ['absolute', false],
+            ['absolute', false]
+        ]);
+        fixture.componentInstance.method.set(undefined);
+        fixture.componentInstance.sticky.set(undefined);
+        await fixture.whenStable();
+        expect(wrappers.map((wrapper) => [wrapper.positionMethod(), wrapper.sticky()])).toEqual([
+            ['absolute', false],
+            ['fixed', true]
+        ]);
+    });
+
+    it('coerces native sticky attributes and enables unrestricted shifting only when true', async () => {
+        const fixture = TestBed.createComponent(PositionPolicyHost);
+        for (const [value, sticky] of [
+            ['', true],
+            ['false', false],
+            [true, true],
+            [false, false]
+        ] as const) {
+            fixture.componentInstance.sticky.set(value);
+            await fixture.whenStable();
+            const middleware = computePositionMock.mock.lastCall![2]!.middleware!;
+            const shift = middleware.find((entry) => entry && entry.name === 'shift');
+            expect(shift && shift.options).toEqual(expect.objectContaining({ crossAxis: sticky }));
+            expect(Boolean(shift && shift.options.limiter)).toBe(!sticky);
+        }
     });
 
     describe('collision boundaries', () => {

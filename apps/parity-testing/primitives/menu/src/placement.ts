@@ -14,7 +14,9 @@ export const placementCases = [
     'placement-context-rtl',
     'placement-context-explicit-side',
     'placement-context-center',
-    'placement-context-zero-offsets'
+    'placement-context-zero-offsets',
+    'placement-context-absolute',
+    'placement-context-submenu-absolute'
 ] as const;
 
 export function placementConfig(name: string) {
@@ -32,6 +34,7 @@ export function placementConfig(name: string) {
         override: name.endsWith('-override'),
         side: name.endsWith('-explicit-side') ? ('bottom' as const) : undefined,
         align: name.endsWith('-center') ? ('center' as const) : undefined,
-        offset: name.endsWith('-zero-offsets') ? 0 : undefined
+        offset: name.endsWith('-zero-offsets') ? 0 : undefined,
+        method: name.endsWith('-absolute') ? ('absolute' as const) : undefined
     };
 }

@@ -6,7 +6,8 @@ import { Align, OffsetFunction, RdxCollisionAvoidance, Side, SideOrLogical } fro
  *
  * Lets a composing primitive (e.g. tooltip) provide its own Base UI-aligned defaults without
  * changing the shared popper defaults that other consumers (e.g. popover) rely on. Any value left
- * `undefined` falls back to the wrapper's built-in default. Consumer template bindings always win.
+ * `undefined` falls back to the wrapper's built-in default. Consumer bindings override these defaults;
+ * a composing primitive may enforce a separate policy, such as Context Menu's fixed positioning.
  */
 export interface RdxPopperContentConfig {
     side?: SideOrLogical;
@@ -22,9 +23,9 @@ export interface RdxPopperContentConfig {
     /** Per-primitive collision-avoidance default (Base UI parity). See {@link RdxCollisionAvoidance}. */
     collisionAvoidance?: RdxCollisionAvoidance;
     collisionPadding?: number | Partial<Record<Side, number>>;
-    sticky?: 'partial' | 'always';
+    sticky?: boolean;
     hideWhenDetached?: boolean;
-    positionStrategy?: 'fixed' | 'absolute';
+    positionMethod?: 'fixed' | 'absolute';
     updatePositionStrategy?: 'optimized' | 'always';
     /** Composing policy for point anchors: allow side-axis shift without the attachment limiter. */
     shift?: { crossAxis?: boolean };

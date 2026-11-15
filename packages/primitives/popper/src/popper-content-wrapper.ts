@@ -100,7 +100,7 @@ type PopperPositionParams = {
     arrowHeight: number;
     arrowWidth: number;
     collisionAvoidance: ResolvedCollisionAvoidance;
-    sticky: 'partial' | 'always';
+    sticky: boolean;
     shiftCrossAxis: boolean;
     detectOverflowOptions: {
         padding: number | Partial<Record<Side, number>>;
@@ -239,7 +239,12 @@ export class RdxPopperContentWrapper {
         transform: coerceOptionalNumber
     });
     /** Resolved arrow padding. */
-    readonly arrowPadding = computed(() => this.arrowPaddingInput() ?? this.defaults().arrowPadding ?? 0);
+    readonly arrowPadding = computed(() => this.getArrowPadding());
+
+    /** A composing point-anchor policy may force padding instead of only supplying a default. */
+    protected getArrowPadding(): number {
+        return this.arrowPaddingInput() ?? this.defaults().arrowPadding ?? 0;
+    }
 
     /**
      * When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges.
@@ -299,12 +304,16 @@ export class RdxPopperContentWrapper {
     readonly collisionPadding = input<number | Partial<Record<Side, number>>>(this.config.collisionPadding ?? 0);
 
     /**
-     * The sticky behavior on the align axis. `partial` will keep the
-     * content in the boundary as long as the trigger is at least partially
-     * in the boundary whilst "always" will keep the content in the boundary
-     * regardless.
+     * Keep the popup inside its collision boundary after the anchor has scrolled out of view.
+     * When false, shifting is limited to preserve attachment to the anchor.
+     * @defaultValue false
      */
-    readonly sticky = input<'partial' | 'always'>(this.config.sticky ?? 'partial');
+    readonly stickyInput = input<boolean | undefined, BooleanInput>(undefined, {
+        alias: 'sticky',
+        transform: coerceOptionalBoolean
+    });
+    /** Resolved sticky policy. */
+    readonly sticky = computed(() => this.stickyInput() ?? this.defaults().sticky ?? false);
 
     /**
      * Whether to hide the content when the trigger becomes fully occluded.
@@ -314,9 +323,17 @@ export class RdxPopperContentWrapper {
     });
 
     /**
-     *  The type of CSS position property to use.
+     * The CSS positioning method. Uses native absolute/fixed containing-block rules.
+     * Context Menu composes a fixed-position policy for its entire menu chain.
+     * @defaultValue 'absolute'
      */
-    readonly positionStrategy = input<'fixed' | 'absolute'>(this.config.positionStrategy ?? 'fixed');
+    readonly positionMethodInput = input<'fixed' | 'absolute' | undefined>(undefined, { alias: 'positionMethod' });
+    /** Effective method, including the composing primitive's policy. */
+    readonly positionMethod = computed(() => this.getPositionMethod());
+
+    protected getPositionMethod(): 'fixed' | 'absolute' {
+        return this.positionMethodInput() ?? this.defaults().positionMethod ?? 'absolute';
+    }
 
     /**
      * Strategy to update the position of the floating element on every animation frame.
@@ -440,7 +457,7 @@ export class RdxPopperContentWrapper {
             // configure the `flip()` / `shift()` middleware instead of the old boolean toggle.
             const shiftDisabled = ca.align === 'none' && ca.side !== 'shift';
             const crossAxisShiftEnabled =
-                !shiftDisabled && (params.sticky === 'always' || params.shiftCrossAxis || ca.side === 'shift');
+                !shiftDisabled && (params.sticky || params.shiftCrossAxis || ca.side === 'shift');
 
             const flipMiddleware =
                 ca.side === 'none'
@@ -458,9 +475,24 @@ export class RdxPopperContentWrapper {
                       ...params.detectOverflowOptions,
                       mainAxis: ca.align !== 'none',
                       crossAxis: crossAxisShiftEnabled,
-                      // `partial` keeps the popup attached to the anchor (limitShift); `always` keeps it
-                      // fully inside the boundary regardless (no limiter).
-                      limiter: params.sticky === 'partial' && !params.shiftCrossAxis ? limitShift() : undefined
+                      limiter:
+                          params.sticky || params.shiftCrossAxis
+                              ? undefined
+                              : limitShift(({ placement }) => {
+                                    const arrow = params.arrow?.elementRef.nativeElement;
+                                    if (!arrow) return {};
+                                    const [side] = getSideAndAlignFromPlacement(placement);
+                                    const vertical = side === 'top' || side === 'bottom';
+                                    const rect = arrow.getBoundingClientRect();
+                                    const padding = params.detectOverflowOptions.padding;
+                                    const paddingSum =
+                                        typeof padding === 'number'
+                                            ? padding * 2
+                                            : vertical
+                                              ? (padding.left ?? 0) + (padding.right ?? 0)
+                                              : (padding.top ?? 0) + (padding.bottom ?? 0);
+                                    return { offset: ((vertical ? rect.width : rect.height) + paddingSum) / 2 };
+                                })
                   });
 
             // https://floating-ui.com/docs/flip#combining-with-shift — run shift first when shifting is
@@ -471,7 +503,6 @@ export class RdxPopperContentWrapper {
                     : [flipMiddleware, shiftMiddleware];
 
             return computePosition(params.anchor, this.elementRef.nativeElement, {
-                // default to `fixed` strategy so users don't have to pick and we also avoid focus scroll issues
                 strategy: params.strategy,
                 placement: params.placement,
                 middleware: [
@@ -498,7 +529,7 @@ export class RdxPopperContentWrapper {
                             typeof params.alignOffset === 'function' ? params.alignOffset(data) : params.alignOffset;
 
                         return {
-                            mainAxis: sideAxis + params.arrowHeight || 0,
+                            mainAxis: sideAxis || 0,
                             // both axes so `alignOffset` also applies to center-aligned popups
                             // (`alignmentAxis` overrides `crossAxis` for start/end placements)
                             crossAxis: alignAxis,
@@ -536,7 +567,7 @@ export class RdxPopperContentWrapper {
         return {
             positioningActive: this.positioningActive(),
             anchor: this.resolvedAnchor(),
-            strategy: this.positionStrategy(),
+            strategy: this.positionMethod(),
             placement: this.desiredPlacement(),
             side: this.side(),
             isRtl: this.direction() === 'rtl',
@@ -649,7 +680,7 @@ export class RdxPopperContentWrapper {
         const ready = Number.isFinite(x) && Number.isFinite(y);
 
         return {
-            position: this.positionStrategy(),
+            position: this.positionMethod(),
             transform: ready ? '' : 'translate(0, -200%)', // keep off the page when measuring
             minWidth: 'max-content',
             // ADR 0012 §3: z-index belongs on the positioner (set it via a class/style on the

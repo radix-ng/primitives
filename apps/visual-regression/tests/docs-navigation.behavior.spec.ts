@@ -22,7 +22,9 @@ test('Menu positioning ArgTypes show binding aliases and effective defaults', as
         ['side', 'bottom'],
         ['align', 'center'],
         ['arrowPadding', '5'],
-        ['collisionBoundary', 'clipping-ancestors']
+        ['collisionBoundary', 'clipping-ancestors'],
+        ['positionMethod', 'absolute'],
+        ['sticky', 'false']
     ]) {
         const row = args
             .getByRole('row')
@@ -31,6 +33,7 @@ test('Menu positioning ArgTypes show binding aliases and effective defaults', as
         await expect(row.locator('td').last()).toContainText(value);
         await expect(args.getByText(`${name}Input`, { exact: true })).toHaveCount(0);
     }
+    await expect(args.getByText('positionStrategy', { exact: true })).toHaveCount(0);
 });
 
 test('desktop TOC preserves anchors and expands only the active section', async ({ page }) => {

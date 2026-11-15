@@ -100,3 +100,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0066](0066-menu-item-popover-focus-boundaries.md)                           | Accepted               | Open Popover from Menu through live anchors and native focus ownership               |
 | [0067](0067-menu-contextual-positioning.md)                                  | Accepted               | Resolve Menu placement defaults from its Angular owner                               |
 | [0068](0068-popper-collision-boundaries.md)                                  | Accepted               | Share Base UI collision boundaries through Popper                                    |
+| [0069](0069-popper-position-method-and-sticky.md)                            | Accepted               | Adopt Base UI positionMethod and boolean sticky                                      |

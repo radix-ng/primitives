@@ -15,6 +15,7 @@ const runPath = path.join(output, 'coding-run.json');
 assert.ok(!existsSync(runPath), 'One run only: this consumer already has a coding-run record.');
 const preparation = JSON.parse(readFileSync(path.join(output, 'preparation.json'), 'utf8'));
 assert.equal(preparation.status, 'prepared', 'Complete offline preparation before a live session.');
+const inputDirectory = preparation.inputDirectory ?? directory;
 const codex = resolveCodex();
 writeFileSync(path.join(output, 'codex-executable.json'), JSON.stringify(codex, null, 2) + '\n');
 // Exercise the actual coding tool router with a local fake provider before spending subscription usage.
@@ -56,19 +57,33 @@ const files = [
     'probe-app.txt',
     'codex-config.mjs',
     'code.mjs',
-    'codex-contract.test.mjs'
+    'codex-contract.test.mjs',
+    'prepare-pinned.mjs',
+    'verify.mjs',
+    'commands.mjs'
 ];
-const frozen = Object.fromEntries(files.map((file) => [file, sha(readFileSync(path.join(directory, file)))]));
+if (preparation.inputHashes?.['scaffold-app.txt']) files.push('scaffold-app.txt');
+const taskFiles = new Set([
+    'prompt.md',
+    'criteria.json',
+    'generation.spec.ts',
+    'playwright.config.ts',
+    'probe-app.txt',
+    'scaffold-app.txt'
+]);
+const inputPath = (file) => path.join(taskFiles.has(file) ? inputDirectory : directory, file);
+const frozen = Object.fromEntries(files.map((file) => [file, sha(readFileSync(inputPath(file)))]));
+for (const [file, digest] of Object.entries(preparation.inputHashes ?? {}))
+    assert.equal(frozen[file], digest, `${file}: task changed after preparation`);
 mkdirSync(path.join(output, 'frozen-inputs'), { recursive: true });
-for (const file of files)
-    writeFileSync(path.join(output, 'frozen-inputs', file), readFileSync(path.join(directory, file)));
+for (const file of files) writeFileSync(path.join(output, 'frozen-inputs', file), readFileSync(inputPath(file)));
 writeFileSync(
     path.join(output, 'codex-executable-source.ts'),
     readFileSync(path.join(directory, '../../codex/executable.ts'))
 );
-const prompt = readFileSync(path.join(directory, 'prompt.md'), 'utf8');
+const prompt = readFileSync(inputPath('prompt.md'), 'utf8');
 for (const file of ['prompt.md', 'criteria.json'])
-    writeFileSync(path.join(output, file), readFileSync(path.join(directory, file)));
+    writeFileSync(path.join(output, file), readFileSync(inputPath(file)));
 writeFileSync(path.join(output, 'frozen-checks.json'), JSON.stringify(frozen, null, 2) + '\n');
 const args = [
     'exec',

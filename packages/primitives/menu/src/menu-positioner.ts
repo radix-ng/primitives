@@ -53,6 +53,14 @@ export class RdxMenuPositioner extends RdxPopperContentWrapper {
     protected readonly rootContext = injectRdxMenuRootContext();
     protected readonly legacyVars = legacyPopperVars('menu');
 
+    protected override getPositionMethod(): 'fixed' | 'absolute' {
+        return this.rootContext.isContextMenu() ? 'fixed' : super.getPositionMethod();
+    }
+
+    protected override getArrowPadding(): number {
+        return this.rootContext.parentType() === 'context-menu' ? 0 : super.getArrowPadding();
+    }
+
     protected override getPositioningDefaults(): RdxPopperContentConfig {
         const parent = this.rootContext.parentType();
         const submenu = parent === 'menu';

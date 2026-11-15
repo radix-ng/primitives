@@ -7,7 +7,7 @@ Updated 2026-11-15. All pinned comparisons use `reference.json` (Base UI 1.9.0).
 | ------------------------------------------------ | ---------------------------------------------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
 | Select                                           | 118 scenarios; 338 comparisons, 16 capability skips        | Forms, focus, presence, geometry, touch emulation                                | Real AT/devices; remaining lifecycle/API audit                              |
 | Popover                                          | 28 scenarios; 84 comparisons                               | Portal, Arrow, dismissal, presence, scroll lock, live anchor                     | Hover/grace areas, handles/payloads, RTL/Arrow                              |
-| Menu                                             | 408 scenarios; 1176 comparisons, 48 capability skips       | Native hosts, indicators, highlights, handles, exits, Dialog/Popover composition | Positioning/portal contracts; default models/id; filtering; real AT/devices |
+| Menu                                             | 420 scenarios; 1212 comparisons, 48 capability skips       | Native hosts, indicators, highlights, handles, exits, Dialog/Popover composition | Positioning/portal contracts; default models/id; filtering; real AT/devices |
 | Context Menu                                     | 61 scenarios; 165–166 comparisons; native capability skips | Independent Roots, keyboard/submenu ownership, dismissal, retained portals       | Modal forward Tab; further composition, real touch/AT devices               |
 | Menubar                                          | 87 scenarios; 261 comparisons                              | Popup/bar axes, mixed submenus, RTL, return focus, presence                      | Further API/lifecycle combinations, touch and real AT/devices               |
 | Combobox, Autocomplete                           | None                                                       | Input/list navigation, dismissal, projection, live anchor                        | Value/query/highlight and form contracts, then composition                  |
@@ -26,9 +26,10 @@ Menu host integration is counted in Menu's suite; it does not expand the indepen
 
 The [Menu API/deviation audit](../../packages/primitives/menu/AUDIT.md) is complete for the pin;
 it identified five defect/contract groups and the missing filtering family. Indicator lifecycle and
-semantics (A1) are covered by ten pinned scenarios. Contextual placement adds sixteen geometry cases,
-and collision boundaries add fourteen. A2's strategy/sticky contracts and A3–A6 remain open. Menu parity remains
-open. The targeted exception run also exposed a WebKit reference assertion failure that passed
+semantics (A1) are covered by ten pinned scenarios. Contextual placement covers eighteen geometry
+cases, collision boundaries fourteen, and method/sticky ten native-wheel cases. Forced Context Menu
+policies are covered; A2 pinch zoom and A3–A6 remain open. The targeted exception run also exposed a
+WebKit reference assertion failure that passed
 five isolated repeats; Linux-only exceptions still require Linux CI.
 
 Priorities after this increment: shared Menu positioning/portal gaps,

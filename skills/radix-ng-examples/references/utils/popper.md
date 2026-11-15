@@ -45,6 +45,21 @@ direction-agnostic; pass a physical side and `data-side` is always physical.
 
 The Default story exposes these values as controls.
 
+`positionMethod` accepts `'absolute'` (the default) or `'fixed'`. Use absolute positioning for the
+document coordinate system or fixed positioning for viewport coordinates. Native CSS containing-block
+rules apply; a transformed container can establish the fixed containing block. Method changes are reactive.
+`sticky` is a boolean, defaulting to `false`: it limits shifting to keep the popup attached to its anchor.
+Set `[sticky]="true"` to allow the popup to remain in its collision boundary after its anchor leaves.
+This does not hide the popup; `hideWhenDetached` is a separate opt-in visibility policy.
+
+`sideOffset` measures the gap from the popup box to the anchor. Arrows do not add implicit space;
+include any space you want for an arrow in that offset.
+
+**Positioning migration:** rename `positionStrategy` to `positionMethod`. The default changes from fixed
+to absolute. Replace `sticky="partial"` with `[sticky]="false"` and `sticky="always"` with `[sticky]="true"`.
+These changes also apply to `RdxPopperContentConfig`. To preserve a previous popup-box gap with an arrow,
+add its height to your authored sideOffset; earlier versions added that height automatically.
+
 ```html
 <div
     class="border-border bg-muted flex h-48 w-80 items-center justify-center rounded-xl border border-dashed"

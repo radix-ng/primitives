@@ -640,7 +640,7 @@ Positions the popup against the trigger using the shared Floating UI Popper prim
 `data-side`, `data-align`, and CSS custom properties for anchor and available-area dimensions:
 `--anchor-width`, `--anchor-height`, `--available-width`, `--available-height`, `--transform-origin`.
 
-Defaults follow the owner; explicit inputs override them. Set an input to `undefined` to restore its default.
+Placement defaults follow the owner; explicit placement inputs override them. Set an input to `undefined` to restore its default.
 
 | Owner | Default side | Default align |
 | --- | --- | --- |
@@ -656,8 +656,18 @@ fallback when neither inline side has room; standalone menus keep the dropdown p
 
 For Context Menu, leaving `side` unset and using a non-centered alignment supplies `sideOffset=-5`
 and `alignOffset=2` to place the popup near the pointer. An explicit side or centered alignment uses
-zero offsets. Explicit offsets, including zero, always win. The default arrow padding is zero for
-Context Menu and five pixels for other Menu owners.
+zero offsets. Explicit offsets, including zero, always win. Context Menu forces zero arrow padding on
+the point-anchored root; other Menu owners default to five pixels and permit overrides.
+
+`positionMethod` accepts `'absolute'` (the default for ordinary Menu) or `'fixed'`. Context Menu forces
+fixed positioning throughout its menu chain, including submenus and an authored absolute request.
+`sticky` defaults to `false`; set `[sticky]="true"` to let a popup remain in its collision boundary
+after the anchor leaves it. `hideWhenDetached` independently controls visibility.
+
+**Method migration:** rename `positionStrategy` to `positionMethod`; the ordinary default is now absolute.
+Replace `sticky="partial"` / `sticky="always"` with `[sticky]="false"` / `[sticky]="true"`.
+`sideOffset` is the popup-box gap and no longer adds arrow height automatically. Include desired arrow
+space explicitly in the offset.
 
 **Migration:** unconfigured submenus and coordinated menus now use these contextual defaults.
 For settled side-based styling, account for `data-side="inline-end"` / `"inline-start"` in addition to physical sides.

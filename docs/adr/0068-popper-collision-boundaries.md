@@ -33,8 +33,9 @@ a notification mechanism. Available-space CSS variables use the same boundary as
 
 Positioners in clipping containers can now flip/shift where they previously used viewport bounds.
 Pass collisionBoundary=[] to retain the earlier viewport-only collision policy. Existing ElementRef
-bindings remain supported. Strategy defaults, sticky, and the remaining Context Menu override/pinch-zoom
-policies are separate A2 work; this decision does not close the whole Menu audit.
+bindings remain supported. Strategy defaults, sticky and forced Context Menu overrides were addressed
+subsequently in [ADR 0069](0069-popper-position-method-and-sticky.md). Context Menu pinch-zoom policy
+remains separate A2 work; this decision does not close the whole Menu audit.
 
 ## Validation
 

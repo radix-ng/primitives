@@ -91,7 +91,7 @@ Next checks: fresh/retained indicators, settled enter, natural/paused exit, rapi
 disabled styling and accessible item names. Reuse existing transition/presence mechanisms. Angular may
 retain its consumer-owned host; copying React element creation is unnecessary.
 
-### A2 — partially addressed: contextual defaults and boundaries covered
+### A2 — partially addressed: public positioning contracts covered; pinch zoom open
 
 Follow-up 2026-11-15: Menu now resolves contextual side/alignment/offset/collision defaults from
 existing owner signals through the shared Popper policy hook. Retained Menubar orientation changes
@@ -109,9 +109,17 @@ native DOMRect replacement limitation; canonical Rect updates are compared witho
 Validation passed 563 scoped unit tests, 42 boundary comparisons, 45 shared/family browser regressions
 and the Storybook API-table check. Library/Storybook builds, consumer generation and focused lint passed.
 
-The shared positionMethod/strategy and sticky contracts below remain open.
-Context Menu's forced arrow padding for an authored nonzero input and layout-viewport behavior
-during pinch zoom are also outside this default-placement increment.
+Follow-up 2026-11-15: shared positionMethod now defaults to absolute and sticky is boolean/false.
+Context Menu forces fixed throughout its chain and zero arrow padding on the point-anchored root.
+Arrow/attachment behavior now follows the pin, including the popup-box offset and the limiter's
+arrow/padding allowance. See [ADR 0069](../../../docs/adr/0069-popper-position-method-and-sticky.md)
+for the breaking migration and native-scroll comparison scope.
+
+Validation passed 569 scoped unit tests, 126 geometry comparisons across all three engines
+(placement, boundaries and method/sticky), and 57 shared-consumer browser regressions. Library and
+Storybook builds, consumer generation, the Storybook API-table check and focused lint passed.
+
+Context Menu's layout-viewport behavior during pinch zoom remains open. This is not full Menu parity.
 
 Original audit evidence:
 

@@ -1,0 +1,44 @@
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AppEmailField } from './app-email-field';
+
+// Independent parent, never supplied to the coding agent. It contains no Field implementation.
+@Component({
+    selector: 'app-root',
+    standalone: true,
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [AppEmailField, ReactiveFormsModule],
+    template: `
+        <main>
+            <h1>Independent email host</h1>
+            <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+                <button type="button" (click)="email.setValue('external@example.com')">Set external email</button>
+                <app-email-field [control]="email" label="Billing email" description="Used only for receipt emails." />
+                <button type="submit">Save email</button>
+                <button type="button" (click)="form.reset()">Reset form</button>
+                <label>
+                    <input #toggle type="checkbox" [checked]="email.disabled"
+                        (change)="toggle.checked ? email.disable() : email.enable()" />
+                    Disable email
+                </label>
+            </form>
+            <output data-testid="control-value">{{ email.value }}</output>
+            <output data-testid="control-touched">{{ email.touched }}</output>
+            <output data-testid="control-pristine">{{ email.pristine }}</output>
+            <output data-testid="control-disabled">{{ email.disabled }}</output>
+            <output data-testid="control-status">{{ email.status }}</output>
+            <output data-testid="submission-count">{{ submissions.length }}</output>
+            <output data-testid="submitted-value">{{ submissions.at(-1) ?? '' }}</output>
+        </main>
+    `
+})
+export class App {
+    readonly email = new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.email] });
+    readonly form = new FormGroup({ email: this.email });
+    readonly submissions: string[] = [];
+
+    save() {
+        this.form.markAllAsTouched();
+        if (this.form.valid) this.submissions.push(this.email.value);
+    }
+}

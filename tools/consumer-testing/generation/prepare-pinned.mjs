@@ -1,6 +1,15 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
+import {
+    cpSync,
+    existsSync,
+    mkdirSync,
+    mkdtempSync,
+    readFileSync,
+    readdirSync,
+    realpathSync,
+    writeFileSync
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -13,6 +22,12 @@ const directory = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(directory, '../../..');
 const first = path.join(root, 'dist/consumer-generation/2026-11-15-first');
 const id = process.argv[2] ?? '2026-11-15-third';
+const inputDirectory = process.argv[3] ? realpathSync(process.argv[3]) : directory;
+const taskFiles = ['prompt.md', 'criteria.json', 'generation.spec.ts', 'playwright.config.ts', 'probe-app.txt'];
+if (inputDirectory !== directory) taskFiles.push('scaffold-app.txt');
+const inputHashes = Object.fromEntries(
+    taskFiles.map((file) => [file, sha(readFileSync(path.join(inputDirectory, file)))])
+);
 assert.match(id, /^[a-z\d-]+$/);
 const pointer = path.join(root, `dist/consumer-generation/${id}.json`);
 assert.ok(!existsSync(pointer), 'This attempt ID has already been prepared; do not replace it.');
@@ -20,8 +35,8 @@ const previous = JSON.parse(readFileSync(path.join(first, 'preparation.json'), '
 const frozen = JSON.parse(readFileSync(path.join(first, 'frozen-checks.json'), 'utf8'));
 assert.equal(JSON.parse(readFileSync(path.join(first, 'report.json'), 'utf8')).status, 'infrastructure-failed');
 assert.equal(previous.bundle.matchedRevision, 'd000174e3fb69ef5424b73492d73f34b84e3c80f');
-for (const file of ['prompt.md', 'criteria.json', 'generation.spec.ts', 'playwright.config.ts', 'probe-app.txt'])
-    assert.equal(sha(readFileSync(path.join(directory, file))), frozen[file], `${file}: first-attempt input changed`);
+if (inputDirectory === directory)
+    for (const file of taskFiles) assert.equal(inputHashes[file], frozen[file], `${file}: first-attempt input changed`);
 assert.deepEqual(treeDigest(path.join(first, 'scaffold')), previous.scaffold);
 const output = realpathSync(mkdtempSync(path.join(tmpdir(), `radix-generation-${id}-`)));
 const consumer = path.join(output, 'consumer');
@@ -32,11 +47,12 @@ const report = {
     consumer,
     firstArchive: first,
     firstArchiveDigest: treeDigest(first),
+    inputDirectory,
+    inputHashes,
     previousArchives: Object.fromEntries(
-        ['2026-11-15-first', '2026-11-15-second'].map((name) => [
-            name,
-            treeDigest(path.join(root, 'dist/consumer-generation', name))
-        ])
+        readdirSync(path.dirname(first), { withFileTypes: true })
+            .filter((entry) => entry.isDirectory())
+            .map(({ name }) => [name, treeDigest(path.join(path.dirname(first), name))])
     ),
     commands: [],
     liveSessions: 0
@@ -60,7 +76,12 @@ try {
     report.codex = codex;
     writeFileSync(path.join(output, 'codex-executable.json'), JSON.stringify(codex, null, 2) + '\n');
     cpSync(path.join(first, 'scaffold'), consumer, { recursive: true });
-    cpSync(path.join(first, 'scaffold'), path.join(output, 'scaffold'), { recursive: true });
+    if (inputDirectory !== directory)
+        cpSync(path.join(inputDirectory, 'scaffold-app.txt'), path.join(consumer, 'src/app/app.ts'));
+    cpSync(consumer, path.join(output, 'scaffold'), { recursive: true });
+    mkdirSync(path.join(output, 'preparation-inputs'));
+    for (const file of taskFiles)
+        cpSync(path.join(inputDirectory, file), path.join(output, 'preparation-inputs', file));
     const archive = 'radix-ng-primitives-1.3.0.tgz';
     assert.equal(sha(readFileSync(path.join(first, archive))), previous.library.tarballSha256);
     cpSync(path.join(first, archive), path.join(output, archive));
@@ -92,6 +113,12 @@ try {
     assert.ok(installed.startsWith(consumer + path.sep));
     report.library = { ...previous.library, resolvedPath: installed };
     assert.equal(json('node_modules/@radix-ng/primitives/package.json').version, previous.library.version);
+    report.libraryDigest = treeDigest(installed);
+    assert.deepEqual(
+        report.libraryDigest,
+        JSON.parse(readFileSync(path.join(root, 'dist/consumer-generation/2026-11-15-third/package-integrity.json')))
+            .expected
+    );
     const contractEnv = { ...process.env, RUN_CODEX_CODING_CONTRACT: '1' };
     await run(
         'offline-coding-contract',
@@ -105,7 +132,7 @@ try {
     writeFileSync(path.join(output, 'coding-config-preflight.json'), JSON.stringify(config, null, 2) + '\n');
     const script = `const fs=require('node:fs'); const assert=require('node:assert/strict');
 for(const name of ['radix-ng','radix-ng-examples']) assert.ok(fs.readFileSync('.agents/skills/'+name+'/SKILL.md','utf8').length>0);
-for(const file of ${JSON.stringify([path.join(root, 'AGENTS.md'), path.join(directory, 'generation.spec.ts'), path.join(first, 'report.json')])}) assert.throws(()=>fs.readFileSync(file),e=>['EPERM','EACCES'].includes(e.code));
+for(const file of ${JSON.stringify([path.join(root, 'AGENTS.md'), path.join(inputDirectory, 'generation.spec.ts'), path.join(first, 'report.json')])}) assert.throws(()=>fs.readFileSync(file),e=>['EPERM','EACCES'].includes(e.code));
 console.log('Both installed skills readable; workspace and hidden checks denied.');`;
     await run('context-isolation-preflight', codex.executable, [
         'sandbox',

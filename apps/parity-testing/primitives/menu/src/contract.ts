@@ -18,6 +18,7 @@ import type { OverlayProbe } from './overlay-probe';
 import { placementCases, placementConfig } from './placement';
 import { pointerCases, pointerConfig } from './pointer';
 import { popoverMenuCases, popoverMenuConfig } from './popover';
+import { positioningCases } from './positioning';
 import { projectionCases, projectionConfig } from './projection';
 import { touchCases, touchConfig } from './touch';
 import { multiTriggerCases, multiTriggerConfig } from './triggers';
@@ -60,6 +61,7 @@ export const basicCases = [
 ] as const;
 export const cases = [
     ...basicCases,
+    ...positioningCases,
     ...boundaryCases,
     ...placementCases,
     ...indicatorCases,
@@ -116,12 +118,13 @@ export function config() {
     const activated = itemPopover ?? itemDialog;
     const popover = popoverMenuConfig(name);
     const hosted = popover ?? dialog;
+    const boundary = boundaryConfig(name);
     return {
         name: name as CaseName,
         dir: name.endsWith('-rtl') ? ('rtl' as const) : ('ltr' as const),
         indicator: indicatorConfig(name),
         placement: placementConfig(name),
-        boundary: boundaryConfig(name),
+        boundary,
         removal,
         empty,
         touch,
@@ -134,17 +137,19 @@ export function config() {
         itemDialog,
         itemPopover,
         popover,
-        modal: popover
-            ? popover.menuModal
-            : focusBoundary?.target?.key === 'outside'
-              ? false
-              : projection
-                ? !projection.cancelFocus
-                : removal
-                  ? removal.modal
-                  : name.startsWith('lifecycle-')
-                    ? name === 'lifecycle-modal-keep'
-                    : !['outside-nonmodal', 'focus-out', 'touch-outside-nonmodal'].includes(name),
+        modal: boundary?.positioning
+            ? false
+            : popover
+              ? popover.menuModal
+              : focusBoundary?.target?.key === 'outside'
+                ? false
+                : projection
+                  ? !projection.cancelFocus
+                  : removal
+                    ? removal.modal
+                    : name.startsWith('lifecycle-')
+                      ? name === 'lifecycle-modal-keep'
+                      : !['outside-nonmodal', 'focus-out', 'touch-outside-nonmodal'].includes(name),
         loop: name !== 'no-loop',
         disabled: ['disabled-trigger', 'hover-root-disabled', 'touch-disabled-trigger'].includes(name),
         checkbox:

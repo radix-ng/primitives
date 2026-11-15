@@ -1,0 +1,194 @@
+{
+    "attemptId": "2026-11-15-email-field-first",
+    "status": "passed",
+    "liveSessions": 1,
+    "model": "gpt-6.1-sol",
+    "reasoningEffort": "low",
+    "codex": {
+        "executable": "/Users/pimenovoleg/.codex/packages/standalone/releases/0.169.0-aarch64-apple-darwin/bin/codex",
+        "version": "codex-cli 0.169.0"
+    },
+    "revision": "1fb1ee33805cfe5f685b4b4d4e92a3b228e0b1b0",
+    "sourcePatchSha256": "585f69f35479f20deace1aad4ab864d364243a0d7f81974f0c16f42af33abecd",
+    "checksVersion": "email-field-consumer/1",
+    "frozenBeforeLive": true,
+    "versions": {
+        "node": "v24.22.2",
+        "pnpm": "11.5.1",
+        "angular": "22.0.2",
+        "typescript": "6.0.3",
+        "playwright": "1.60.0",
+        "chromium": "148.0.7778.96",
+        "library": "1.3.0"
+    },
+    "bundleRevision": "d000174e3fb69ef5424b73492d73f34b84e3c80f",
+    "bundleHashes": {
+        "radix-ng": "2ffe4674e069a598c3f0c25e60c372156964115df1ccfbb0ca47487a58ac3075",
+        "radix-ng-examples": "f3407a6c55219ba80f889fd5923b0a986897c7c83bd32ddbb9229b8a99a6a0ee"
+    },
+    "tarballSha256": "bbe21d90d2e03937f8d9c7a856ac7ceb81a972a247d7f3f40ecf4e82aaeac750",
+    "installedLibraryDigest": {
+        "files": 219,
+        "sha256": "714d5d1a1898a4e80a2ddcc6adc99444330e424869b82211f4d4adb7e49d63a0"
+    },
+    "scaffold": {
+        "files": 525,
+        "sha256": "313c308fa216bf1aec4107583704b15f45d3bb4826aadf769e6f42bb49775595"
+    },
+    "frozenChecks": {
+        "prompt.md": "d6c2a7b20b9a181c6e090de75ed70450ecb8a06ffae8e1178a70c47c99feb2f4",
+        "criteria.json": "fde620cdb5458bc62fa283abf98036e22702e5262baa1db786281fbb9fb145e3",
+        "generation.spec.ts": "b5a44105a77a3cad531c26746eef2aff7cb9684401649fb54cb0cd05ed32c8a6",
+        "playwright.config.ts": "1972e3b8f97c2c7a6040fc7d6b0308147f8ef4175f1804e3a75f0261a556329c",
+        "probe-app.txt": "cd7bde4b5d7f0e78ebfb6f55e4a373dbc691aaa51499fbac814d9d83cf5b8fa7",
+        "codex-config.mjs": "b6d9e2e9640fb788af4c8ecda28adf1deda09ca3c24eab39d637b208c7d1d0e4",
+        "code.mjs": "9e44f5fb23ee236151e8f305b76fda1ca8147f6d851bc4dcf64353fbc9b872e2",
+        "codex-contract.test.mjs": "246058e93e2c48f62a8e53eb399414ccc01003f174f51412f8c5a017fa0c879d",
+        "prepare-pinned.mjs": "0fd694c54e93d8d60976335a750bd37a6d6cf24aa0473765eceb4ae8fb8affdc",
+        "verify.mjs": "1ddc4ff97879f40e1b76e45f99640e9fca73a17e83a7688d334e1753f040c5bf",
+        "commands.mjs": "20569e4a4f4eda2bf286be4b4a569d3ea0d6cfad83aec807de50d2a7cd0b37a5",
+        "scaffold-app.txt": "d4f41f418b17c7d0535f968456a37c3adea5ce202fcbf460f2faa616b3351ae9"
+    },
+    "generatedSource": {
+        "tree": {
+            "files": 5,
+            "sha256": "e6bf58e2a19e8a3234ce02c53629c252fefdbd96c93b03b5715e4963f2226ecb"
+        },
+        "files": {
+            "src/app/app-email-field.ts": "825daad725fb333e956cbcbd61d8a599b3fdf1cbf686c26cb882a686837c66b5",
+            "src/app/app.ts": "c90103034c5969588072440c96cc454e353fb20f5847c6dbf98901d1db96292a",
+            "src/index.html": "ffb5a776db3eb0acaecb7ea55e7f2ed806e0ac629754310413e25c003d0a2cac",
+            "src/main.ts": "0a9d22dcff54fd8c11effc8e871f02f6720ef47ff47c5ca74eac0d918a064538",
+            "src/styles.css": "e74d3a1273ca55b41a3a34d0a7c4a06e3785e849864625e8d22479b445d7b52a"
+        }
+    },
+    "generatedPatch": {
+        "sha256": "1864f64181c4ff67f0fe60aa94aa6363466ad194f55d1101308992c75c42b2e9",
+        "bytes": 7754
+    },
+    "materialEvidence": {
+        "skills": 8,
+        "installedPackageFiles": 2,
+        "path": "read-materials.json",
+        "limitation": "Command/output evidence, not a filesystem syscall audit; directory search is not proof that every matching file was read."
+    },
+    "productionBuild": "passed",
+    "independentParentBuild": "passed",
+    "publicImports": [
+        {
+            "file": "src/app/app-email-field.ts",
+            "specifier": "@radix-ng/primitives/field"
+        }
+    ],
+    "browser": {
+        "passed": 8,
+        "failed": 0,
+        "skipped": 0,
+        "flaky": 0,
+        "durationMs": 4799.576,
+        "scenarios": [
+            {
+                "host": "generated application",
+                "title": "label/description association, initial hidden errors and required after blur",
+                "status": "passed",
+                "durationMs": 352,
+                "trace": "browser-results/generation-generated-appli-167e1-ors-and-required-after-blur-chromium/trace.zip"
+            },
+            {
+                "host": "generated application",
+                "title": "email validation and bidirectional parent control updates",
+                "status": "passed",
+                "durationMs": 187,
+                "trace": "browser-results/generation-generated-appli-c9b05-onal-parent-control-updates-chromium/trace.zip"
+            },
+            {
+                "host": "generated application",
+                "title": "disabled skips Tab, blocks pointer/editing, accepts external value and enables again",
+                "status": "passed",
+                "durationMs": 272,
+                "trace": "browser-results/generation-generated-appli-eb5aa-nal-value-and-enables-again-chromium/trace.zip"
+            },
+            {
+                "host": "generated application",
+                "title": "reset restores flags, invalid submit exposes errors and valid submit delivers exactly once",
+                "status": "passed",
+                "durationMs": 400,
+                "trace": "browser-results/generation-generated-appli-62f55-ubmit-delivers-exactly-once-chromium/trace.zip"
+            },
+            {
+                "host": "independent parent",
+                "title": "label/description association, initial hidden errors and required after blur",
+                "status": "passed",
+                "durationMs": 168,
+                "trace": "browser-results/generation-independent-par-03665-ors-and-required-after-blur-chromium/trace.zip"
+            },
+            {
+                "host": "independent parent",
+                "title": "email validation and bidirectional parent control updates",
+                "status": "passed",
+                "durationMs": 160,
+                "trace": "browser-results/generation-independent-par-16800-onal-parent-control-updates-chromium/trace.zip"
+            },
+            {
+                "host": "independent parent",
+                "title": "disabled skips Tab, blocks pointer/editing, accepts external value and enables again",
+                "status": "passed",
+                "durationMs": 283,
+                "trace": "browser-results/generation-independent-par-8e230-nal-value-and-enables-again-chromium/trace.zip"
+            },
+            {
+                "host": "independent parent",
+                "title": "reset restores flags, invalid submit exposes errors and valid submit delivers exactly once",
+                "status": "passed",
+                "durationMs": 323,
+                "trace": "browser-results/generation-independent-par-bafe7-ubmit-delivers-exactly-once-chromium/trace.zip"
+            }
+        ]
+    },
+    "commands": 10,
+    "durationMs": 128873,
+    "usage": {
+        "input_tokens": 186662,
+        "cached_input_tokens": 152832,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 4851,
+        "reasoning_output_tokens": 85
+    },
+    "terminationReason": "completed",
+    "evaluatorSourceCorrections": [],
+    "classifications": {
+        "environment": [
+            "Sandbox heredoc temporary-file denial; agent recovered via native patch in this session.",
+            "Sandbox production builder exited 134; both independent production builds passed."
+        ],
+        "implementation": [],
+        "oracle": [],
+        "confirmedSkillGaps": []
+    },
+    "previousArchivesUnchanged": {
+        "2026-11-15-first": {
+            "files": 1104,
+            "sha256": "f6491a5357f7af9614966d4f3fc455c0554c98b808856935801f18b19841a583"
+        },
+        "2026-11-15-second": {
+            "files": 544,
+            "sha256": "0a9b404ae7a0a61f238693dfa4c832c650e3e1b64c0c0a5052868f7174706d21"
+        },
+        "2026-11-15-third": {
+            "files": 1120,
+            "sha256": "7ec882fef8b4b488eeef27e0e9ec82d2069d9c64204a4f8b53ad3b150299260a"
+        },
+        "2026-11-15-third-reevaluation-v2": {
+            "files": 73,
+            "sha256": "c4b427f4db2a43fa6f7214c71548063d79a0b8a091bee9c7436a8f20bc51f96f"
+        }
+    },
+    "evidence": "dist/consumer-generation/2026-11-15-email-field-first",
+    "reportSha256": "bb265297c4c0564eba1d085ba39460a11203e9a6657aeb97947034fe8015cea6",
+    "limitations": [
+        "One task and one session; no general reliability estimate.",
+        "Chromium only; no visual score or screen-reader certification.",
+        "Material references are command/output evidence, not a filesystem syscall audit.",
+        "Pinned local tarball and stored installed skills; no new registry release or current GitHub HEAD check."
+    ]
+}

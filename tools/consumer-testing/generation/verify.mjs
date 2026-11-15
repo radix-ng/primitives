@@ -16,6 +16,13 @@ const output = path.dirname(consumer);
 const json = (file) => JSON.parse(readFileSync(path.join(output, file), 'utf8'));
 const preparation = json('preparation.json');
 const coding = json('coding-run.json');
+const inputDirectory = preparation.inputDirectory ?? directory;
+const criteria = json('frozen-inputs/criteria.json');
+const componentFile = criteria.publicContract?.file ?? 'src/app/app-select.ts';
+const requiredImports = criteria.requiredPrimitiveImports ?? [
+    '@radix-ng/primitives/select',
+    '@radix-ng/primitives/dialog'
+];
 assert.notEqual(coding.reason, 'running');
 const reportPath = path.join(output, 'report.json');
 assert.ok(!existsSync(reportPath), 'Retain each verification result; do not overwrite a finished report.');
@@ -61,19 +68,23 @@ await check('historical attempts unchanged', () => {
     for (const [id, digest] of Object.entries(preparation.previousArchives)) {
         const archive = path.join(workspace, 'dist/consumer-generation', id);
         assert.deepEqual(treeDigest(archive), digest);
-        assert.equal(
-            JSON.parse(readFileSync(path.join(archive, 'report.json'), 'utf8')).status,
-            'infrastructure-failed'
-        );
     }
 });
-await check('task, criteria and four browser tests unchanged', () => {
+await check('task, criteria and browser tests unchanged since preparation', () => {
     const first = JSON.parse(
         readFileSync(path.join(workspace, 'dist/consumer-generation/2026-11-15-first/frozen-checks.json'), 'utf8')
     );
-    for (const file of ['prompt.md', 'criteria.json', 'generation.spec.ts', 'playwright.config.ts', 'probe-app.txt']) {
-        assert.equal(sha(readFileSync(path.join(directory, file))), first[file]);
-        assert.equal(coding.frozenChecks[file], first[file]);
+    const expected =
+        preparation.inputHashes ??
+        Object.fromEntries(
+            ['prompt.md', 'criteria.json', 'generation.spec.ts', 'playwright.config.ts', 'probe-app.txt'].map(
+                (file) => [file, first[file]]
+            )
+        );
+    for (const [file, digest] of Object.entries(expected)) {
+        assert.equal(sha(readFileSync(path.join(inputDirectory, file))), digest, file);
+        assert.equal(coding.frozenChecks[file], digest, file);
+        assert.equal(sha(readFileSync(path.join(output, 'frozen-inputs', file))), digest, file);
     }
 });
 await check('protected dependencies, strict configuration and installed skills unchanged', () => {
@@ -93,8 +104,8 @@ cpSync(consumer, path.join(output, 'generated'), {
     filter: (file) =>
         !['node_modules', 'dist', '.angular', '.agent-tmp', 'out-tsc', '.git'].includes(path.basename(file))
 });
-await check('AppSelect exists and primitive imports use installed public entry points', () => {
-    assert.ok(existsSync(path.join(consumer, 'src/app/app-select.ts')));
+await check('requested component exists and primitive imports use installed public entry points', () => {
+    assert.ok(existsSync(path.join(consumer, componentFile)), componentFile);
     const manifest = JSON.parse(
         readFileSync(path.join(consumer, 'node_modules/@radix-ng/primitives/package.json'), 'utf8')
     );
@@ -113,8 +124,11 @@ await check('AppSelect exists and primitive imports use installed public entry p
             imports.push({ file: path.relative(consumer, file), specifier });
         }
     }
-    assert.ok(imports.some((entry) => entry.specifier === '@radix-ng/primitives/select'));
-    assert.ok(imports.some((entry) => entry.specifier === '@radix-ng/primitives/dialog'));
+    for (const specifier of requiredImports)
+        assert.ok(
+            imports.some((entry) => entry.specifier === specifier),
+            specifier
+        );
     report.publicImports = imports;
 });
 const build = await run('production-build', 'pnpm', ['build'], consumer, { ...process.env, NG_CLI_ANALYTICS: 'false' });
@@ -151,17 +165,17 @@ const hostBuild = await run(
 await check('independent parent compiles strict public bindings', () => assert.equal(hostBuild.code, 0));
 if (build.code === 0 && hostBuild.code === 0) {
     const browser = await run(
-        'four-browser-scenarios',
+        'browser-scenarios',
         'pnpm',
-        ['exec', 'playwright', 'test', '-c', 'tools/consumer-testing/generation/playwright.config.ts'],
+        ['exec', 'playwright', 'test', '-c', path.join(inputDirectory, 'playwright.config.ts')],
         workspace,
         { ...process.env, RADIX_GENERATION_DIR: consumer }
     );
-    await check('four frozen Chromium scenarios', () => {
+    await check('frozen Chromium scenarios', () => {
         const result = json('browser-results.json');
         report.browserStats = result.stats;
         assert.equal(browser.code, 0);
-        assert.equal(result.stats.expected, 4);
+        assert.equal(result.stats.expected, criteria.browserScenarios ?? 4);
         assert.equal(result.stats.unexpected, 0);
         assert.equal(result.stats.skipped, 0);
     });
@@ -169,6 +183,25 @@ if (build.code === 0 && hostBuild.code === 0) {
 await check('no evaluator source corrections', () =>
     assert.deepEqual(treeDigest(path.join(consumer, 'src')), sourceDigest)
 );
+await check('library and skills remain unchanged after builds/browser checks', () => {
+    if (preparation.libraryDigest)
+        assert.deepEqual(
+            treeDigest(path.join(consumer, 'node_modules/@radix-ng/primitives')),
+            preparation.libraryDigest
+        );
+    for (const [name, expected] of Object.entries(preparation.bundle.skills))
+        assert.equal(treeDigest(path.join(consumer, '.agents/skills', name)).sha256, expected.sha256);
+});
+report.generatedSource = {
+    tree: sourceDigest,
+    files: Object.fromEntries(
+        readdirSync(path.join(consumer, 'src'), { recursive: true, withFileTypes: true })
+            .filter((entry) => entry.isFile())
+            .map((entry) => path.join(entry.parentPath, entry.name))
+            .sort()
+            .map((file) => [path.relative(consumer, file), sha(readFileSync(file))])
+    )
+};
 const journal = readFileSync(path.join(output, 'journal.jsonl'), 'utf8')
     .trim()
     .split('\n')
@@ -194,21 +227,24 @@ function expandedCommands(command) {
     }
     return variants;
 }
-for (const entry of readdirSync(path.join(consumer, '.agents/skills'), { recursive: true, withFileTypes: true })) {
-    if (!entry.isFile()) continue;
-    const file = path.join(entry.parentPath, entry.name);
-    const relative = path.relative(consumer, file);
-    const references = commands.filter(
-        (item) =>
-            item.exit_code === 0 && expandedCommands(item.command ?? '').some((command) => command.includes(relative))
-    );
-    if (references.length)
-        materials.push({
-            path: relative,
-            sha256: sha(readFileSync(file)),
-            commandIds: references.map((item) => item.id),
-            evidence: 'Referenced by successful commands; recorded command outputs remain in journal.jsonl.'
-        });
+for (const root of ['.agents/skills', 'node_modules/@radix-ng/primitives']) {
+    for (const entry of readdirSync(path.join(consumer, root), { recursive: true, withFileTypes: true })) {
+        if (!entry.isFile()) continue;
+        const file = path.join(entry.parentPath, entry.name);
+        const relative = path.relative(consumer, file);
+        const references = commands.filter(
+            (item) =>
+                item.exit_code === 0 &&
+                expandedCommands(item.command ?? '').some((command) => command.includes(relative))
+        );
+        if (references.length)
+            materials.push({
+                path: relative,
+                sha256: sha(readFileSync(file)),
+                commandIds: references.map((item) => item.id),
+                evidence: 'Referenced by successful commands; recorded command outputs remain in journal.jsonl.'
+            });
+    }
 }
 writeFileSync(
     path.join(output, 'read-materials.json'),

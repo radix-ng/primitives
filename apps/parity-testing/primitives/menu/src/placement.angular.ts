@@ -19,6 +19,7 @@ const p = settings.placement!;
                 [align]="p.align"
                 [sideOffset]="p.offset"
                 [alignOffset]="p.offset"
+                [positionMethod]="p.method"
                 data-testid="positioner"
                 rdxMenuPositioner
             >
@@ -34,6 +35,7 @@ const p = settings.placement!;
                                     [align]="p.override ? 'end' : undefined"
                                     [sideOffset]="p.override ? 9 : undefined"
                                     [alignOffset]="p.override ? 3 : undefined"
+                                    [positionMethod]="p.method"
                                     data-testid="sub-positioner"
                                     rdxMenuPositioner
                                 >
