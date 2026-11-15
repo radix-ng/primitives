@@ -640,6 +640,28 @@ Positions the popup against the trigger using the shared Floating UI Popper prim
 `data-side`, `data-align`, and CSS custom properties for anchor and available-area dimensions:
 `--anchor-width`, `--anchor-height`, `--available-width`, `--available-height`, `--transform-origin`.
 
+Defaults follow the owner; explicit inputs override them. Set an input to `undefined` to restore its default.
+
+| Owner | Default side | Default align |
+| --- | --- | --- |
+| Standalone Menu | `bottom` | `center` |
+| Submenu | `inline-end` | `start` |
+| Horizontal Menubar | `bottom` | `start` |
+| Vertical Menubar | `inline-end` | `start` |
+| Context Menu | `bottom` | `start` |
+
+Logical sides follow the Menu's direction. A retained Menubar popup follows orientation changes
+without recreating the Positioner. Submenus use the popup collision preset, allowing perpendicular
+fallback when neither inline side has room; standalone menus keep the dropdown preset.
+
+For Context Menu, leaving `side` unset and using a non-centered alignment supplies `sideOffset=-5`
+and `alignOffset=2` to place the popup near the pointer. An explicit side or centered alignment uses
+zero offsets. Explicit offsets, including zero, always win. The default arrow padding is zero for
+Context Menu and five pixels for other Menu owners.
+
+**Migration:** unconfigured submenus and coordinated menus now use these contextual defaults.
+For settled side-based styling, account for `data-side="inline-end"` / `"inline-start"` in addition to physical sides.
+
 <ArgTypes of={RdxMenuPositioner} />
 
 ### RdxMenuPopup

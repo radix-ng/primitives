@@ -65,7 +65,10 @@ function jsDocDefault(input: CompodocInput): string {
         previous = comment;
         comment = comment.replace(/<[^>]+>/g, '');
     } while (comment !== previous);
-    return comment.trim();
+    return comment
+        .trim()
+        .replace(/&#39;|&#x27;|&apos;/g, "'")
+        .replace(/&quot;/g, '"');
 }
 
 // Inputs that default to an auto-generated unique id (`input(injectId('rdx-…-'))`). The raw
@@ -110,6 +113,8 @@ export default {
                 : {};
 
             for (const input of doc.inputsClass ?? []) {
+                const alias = /alias:\s*'([^']+)'/.exec(input.defaultValue ?? '')?.[1];
+                if (alias) input.name = alias;
                 // compodoc captures the whole `input(<default>, { …options })` call as the default.
                 // Strip a trailing options object so the Default column shows just the value, e.g.
                 // `undefined, { alias: 'dir' }` → `undefined`.
@@ -125,6 +130,8 @@ export default {
                     // authored `@defaultValue` JSDoc tag (e.g. avatar `delayMs` → `0`), else empty so it
                     // renders as a dash below instead of the raw expression / `NaN`.
                     cleaned = (config[bareConfig[1]] ?? jsDocDefault(input)).trim();
+                } else if (cleaned === 'undefined' && jsDocDefault(input)) {
+                    cleaned = (config[input.name ?? ''] ?? jsDocDefault(input)).trim();
                 } else if (/^\{[\s\S]*\b(?:alias|transform)\b[\s\S]*\}$/.test(cleaned)) {
                     // `input.required<T>({ alias })` / `input({ transform })` — no real default value;
                     // compodoc captured the options object. Show nothing rather than `{ alias: … }`.

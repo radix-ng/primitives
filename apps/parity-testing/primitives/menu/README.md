@@ -14,7 +14,7 @@ port is 4505. Angular fixtures are AOT compiled and React imports the unmodified
 Base UI 1.9.0 pin: `cf696d6f6e08c699c5bda24d5a033430909f2285`, archive SHA-256
 `a54f36f00fe2fbba6a754491764edd77dea627c67efaa6bab1283f57b4bb8d4c`.
 
-378 scenarios define 1134 planned comparisons: 1086 execute, with 48 touch capability skips. They cover native keyboard and
+394 scenarios define 1182 planned comparisons: 1134 execute, with 48 touch capability skips. They cover native keyboard and
 pointer opening, disabled/focusable items, roving focus, edges and looping, repeated and explicit-label
 typeahead, selection and stay-open items, cancelable transactions, modal/background activation,
 forward/backward Tab, checkbox/radio values, LTR/RTL submenu ownership and custom identity links.
@@ -49,6 +49,15 @@ or framework state mirror is introduced.
 Raw records include source commit/digest, browser versions, open/change completions, native change
 event types, trusted pointer coordinates/deltas and native press/release timestamps. CSS layout and default focus are observed;
 the adapters do not synthesize state, focus, pointer deltas or lifecycle completion.
+
+## Contextual placement
+
+Sixteen `placement-` scenarios compare actual geometry with unset placement values, standalone and
+LTR/RTL submenu defaults, perpendicular collision fallback, explicit overrides, horizontal/vertical
+Menubar, retained orientation changes, and Context Menu's pointer offsets. F3 changes only the bar's
+application-owned orientation. Relative coordinates are recorded in CSS pixels; raw bounds accompany
+the report. These are Menu positioning integration cases, not complete independent family audits.
+See [ADR 0067](../../../../docs/adr/0067-menu-contextual-positioning.md).
 
 ## Indicators
 

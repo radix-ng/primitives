@@ -14,6 +14,7 @@ import { initialFocusCases } from './initial-focus';
 import { itemDialogCases, itemDialogConfig } from './item-dialog';
 import { itemPopoverCases, itemPopoverConfig } from './item-popover';
 import type { OverlayProbe } from './overlay-probe';
+import { placementCases, placementConfig } from './placement';
 import { pointerCases, pointerConfig } from './pointer';
 import { popoverMenuCases, popoverMenuConfig } from './popover';
 import { projectionCases, projectionConfig } from './projection';
@@ -58,6 +59,7 @@ export const basicCases = [
 ] as const;
 export const cases = [
     ...basicCases,
+    ...placementCases,
     ...indicatorCases,
     ...highlightCases,
     ...multiTriggerCases,
@@ -116,6 +118,7 @@ export function config() {
         name: name as CaseName,
         dir: name.endsWith('-rtl') ? ('rtl' as const) : ('ltr' as const),
         indicator: indicatorConfig(name),
+        placement: placementConfig(name),
         removal,
         empty,
         touch,

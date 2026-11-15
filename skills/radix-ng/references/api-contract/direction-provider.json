@@ -12,7 +12,7 @@
         {
           "name": "direction",
           "type": "Direction | undefined",
-          "default": "undefined",
+          "default": "'ltr'",
           "description": "The reading direction for descendant primitives."
         },
         {

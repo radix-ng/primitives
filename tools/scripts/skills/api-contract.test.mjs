@@ -1,6 +1,17 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { cleanType } from './api-contract.mjs';
+import { cleanDefault, cleanType } from './api-contract.mjs';
+
+test('aliased positioning inputs publish the effective config default and authored fallback', () => {
+    const input = {
+        name: 'alignInput',
+        defaultValue: "undefined, { alias: 'align' }",
+        jsdoctags: [{ tagName: { escapedText: 'defaultValue' }, comment: '<p>&#39;center&#39;</p>' }]
+    };
+    assert.equal(cleanDefault(input), "'center'");
+    assert.equal(cleanDefault(input, { align: "'start'" }), "'start'");
+    assert.equal(cleanDefault({ name: 'anchor', defaultValue: 'undefined' }), 'undefined');
+});
 
 test('generic Select mode metadata exposes its read type, not the transform argument', () => {
     assert.equal(cleanType('Multiple, Multiple | Exclude<BooleanInput, boolean>'), 'Multiple');

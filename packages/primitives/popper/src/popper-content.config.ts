@@ -26,6 +26,8 @@ export interface RdxPopperContentConfig {
     hideWhenDetached?: boolean;
     positionStrategy?: 'fixed' | 'absolute';
     updatePositionStrategy?: 'optimized' | 'always';
+    /** Composing policy for point anchors: allow side-axis shift without the attachment limiter. */
+    shift?: { crossAxis?: boolean };
 }
 
 /**

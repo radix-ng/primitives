@@ -1,10 +1,13 @@
 import { afterNextRender, computed, Directive, effect, ElementRef, inject, Injector } from '@angular/core';
+import { RDX_DIRECTION } from '@radix-ng/primitives/direction-provider';
 import {
     DROPDOWN_COLLISION_AVOIDANCE,
     legacyPopperVars,
+    POPUP_COLLISION_AVOIDANCE,
     provideRdxPopperContentConfig,
     provideRdxPopperContentWrapper,
-    RdxPopperContentWrapper
+    RdxPopperContentWrapper,
+    type RdxPopperContentConfig
 } from '@radix-ng/primitives/popper';
 import { setupMenuInternalBackdrop } from './menu-internal-backdrop';
 import { injectRdxMenuRootContext } from './menu-root';
@@ -21,8 +24,7 @@ import { injectRdxMenuRootContext } from './menu-root';
     exportAs: 'rdxMenuPositioner',
     providers: [
         ...provideRdxPopperContentWrapper(RdxMenuPositioner),
-        // Base UI applies the DROPDOWN preset to a root menu (and POPUP to submenus, which we don't
-        // differentiate yet — logical-side submenu placement is a separate epic).
+        { provide: RDX_DIRECTION, useFactory: () => injectRdxMenuRootContext().dir },
         provideRdxPopperContentConfig({
             arrowPadding: 5,
             collisionPadding: 5,
@@ -50,6 +52,25 @@ import { injectRdxMenuRootContext } from './menu-root';
 export class RdxMenuPositioner extends RdxPopperContentWrapper {
     protected readonly rootContext = injectRdxMenuRootContext();
     protected readonly legacyVars = legacyPopperVars('menu');
+
+    protected override getPositioningDefaults(): RdxPopperContentConfig {
+        const parent = this.rootContext.parentType();
+        const submenu = parent === 'menu';
+        const menubar = parent === 'menubar';
+        const contextMenu = parent === 'context-menu';
+        const pointOffsets = contextMenu && this.sideInput() === undefined && this.alignInput() !== 'center';
+
+        return {
+            ...super.getPositioningDefaults(),
+            side: submenu || (menubar && this.rootContext.parentOrientation() === 'vertical') ? 'inline-end' : 'bottom',
+            align: parent ? 'start' : 'center',
+            sideOffset: pointOffsets ? -5 : 0,
+            alignOffset: pointOffsets ? 2 : 0,
+            arrowPadding: contextMenu ? 0 : 5,
+            collisionAvoidance: submenu ? POPUP_COLLISION_AVOIDANCE : DROPDOWN_COLLISION_AVOIDANCE,
+            shift: contextMenu ? { crossAxis: this.collisionAvoidance()?.side !== 'flip' } : undefined
+        };
+    }
 
     /**
      * Whether the popup is shown: open, or still running its closing transition. Drives both the native

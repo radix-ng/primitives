@@ -98,3 +98,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0064](0064-menu-item-dialog-focus-transfer.md)                              | Accepted               | Transfer Menu item focus to Dialog and return past hidden views                      |
 | [0065](0065-menu-popover-composition.md)                                     | Accepted               | Compose Menu/Popover through each layer's native outside-press policy                |
 | [0066](0066-menu-item-popover-focus-boundaries.md)                           | Accepted               | Open Popover from Menu through live anchors and native focus ownership               |
+| [0067](0067-menu-contextual-positioning.md)                                  | Accepted               | Resolve Menu placement defaults from its Angular owner                               |

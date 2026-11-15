@@ -44,12 +44,13 @@ and records the remaining defects, capability gaps and validation limits.
 | Menu inside Popover: layered dismissal, modalities, focus, exits and owner removal                     | Pinned suite and Inside Popover example                  | Covered with modal-backdrop limit; per-layer press timing, ADR 0065     |
 | Popover opened by Menu item: live anchors, native focus, retained/CSS/deferred exits and nested editor | Pinned suite and Open/Nested Popover examples            | Covered; family focus boundaries and separate isolation keeps, ADR 0066 |
 | Checkbox/radio indicator lifecycle, retained hosts, native names and inherited disabled state          | Pinned indicator scenarios and Angular unit tests        | Covered; consumer-owned host adaptation, audit A1 resolved              |
-| Contextual positioning, default models, portal targets and GroupLabel id                               | Source audit and focused contract probes                 | Defects/contract gaps confirmed; fixes pending, audit A2–A5             |
+| Contextual placement, LTR/RTL, retained Menubar orientation and pointer-anchor offsets                 | Pinned geometry comparisons; ADR 0067                    | Covered for default placement; shared A2 contracts remain open          |
+| Default models, portal targets and GroupLabel id                                                       | Source audit and focused contract probes                 | Fixes pending, audit A3–A5                                              |
 | FilterProvider, Input, List, Clear and Empty                                                           | Pinned public export inventory                           | Missing capability; reuse core.useFilter, audit A6                      |
 | Real touch, devices and assistive technology                                                           | Not established by this suite                            | Pending                                                                 |
 
-The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 378 scenarios and
-1134 planned comparisons: 1086 execute, with 48 touch capability skips. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
+The [runner](../../../apps/parity-testing/primitives/menu/README.md) defines 394 scenarios and
+1182 planned comparisons: 1134 execute, with 48 touch capability skips. Ordinary Menu and submenu fixtures use matching native buttons and uncontrolled
 state. Checkbox/radio change requests are observed before cancellation; original event types and
 trusted pointer coordinates are retained. No adapter forces focus, open state or completion.
 
@@ -68,7 +69,7 @@ focus manager ignores a disconnected default anchor; explicit final-focus polici
 The source inventory is complete for the pinned version; Menu parity is not. The
 [audit](AUDIT.md) records five defect/contract groups and the missing filtering family, distinguishes
 Angular adaptations from missing behavior, and classifies all 143 exact exception fields.
-Indicator lifecycle and accessible names (A1) are now covered. Shared Positioner/Portal contracts,
+Indicator lifecycle (A1) and contextual placement (part of A2) are now covered. Shared Positioner/Portal contracts,
 model initialization and GroupLabel identity remain open. Filtering is a separate capability increment.
 
 Ten indicator scenarios cover fresh/retained hosts, settled entry, paused/natural CSS exits and

@@ -16,7 +16,7 @@
         {
           "name": "trapped",
           "type": "boolean | undefined",
-          "default": "undefined",
+          "default": "false",
           "description": "When `true`, focus cannot escape the focus scope via keyboard,\npointer, or a programmatic focus."
         }
       ],

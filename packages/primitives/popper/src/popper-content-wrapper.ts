@@ -38,7 +38,7 @@ import { BooleanInput, createContext, Direction, elementSize, NumberInput, watch
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { RdxPopper } from './popper';
 import { RdxPopperArrow } from './popper-arrow';
-import { RdxPopperContentConfigToken } from './popper-content.config';
+import { RdxPopperContentConfig, RdxPopperContentConfigToken } from './popper-content.config';
 import {
     Align,
     getSideAndAlignFromPlacement,
@@ -58,8 +58,12 @@ import {
  * number but pass an {@link OffsetFunction} through untouched. A **named** module-level function (not
  * an inline arrow) so compodoc parses the file — see docs/engineering/consumer-skills.md's compodoc gotcha.
  */
-function coerceOffset(value: number | OffsetFunction | string | null | undefined): number | OffsetFunction {
-    return typeof value === 'function' ? value : numberAttribute(value);
+function coerceOffset(value: number | OffsetFunction | string | null | undefined): number | OffsetFunction | undefined {
+    return value == null ? undefined : typeof value === 'function' ? value : numberAttribute(value);
+}
+
+function coerceOptionalNumber(value: NumberInput): number | undefined {
+    return value == null ? undefined : numberAttribute(value);
 }
 
 function coerceOptionalBoolean(value: BooleanInput | undefined): boolean | undefined {
@@ -89,6 +93,7 @@ type PopperPositionParams = {
     arrowWidth: number;
     collisionAvoidance: ResolvedCollisionAvoidance;
     sticky: 'partial' | 'always';
+    shiftCrossAxis: boolean;
     detectOverflowOptions: {
         padding: number | Partial<Record<Side, number>>;
         boundary: Element[];
@@ -142,6 +147,12 @@ export class RdxPopperContentWrapper {
 
     /** Optional positioning defaults provided by a composing primitive (e.g. tooltip). */
     private readonly config = inject(RdxPopperContentConfigToken);
+    private readonly defaults = computed(() => this.getPositioningDefaults());
+
+    /** Context-dependent defaults; thin positioners can specialize policy without redeclaring inputs. */
+    protected getPositioningDefaults(): RdxPopperContentConfig {
+        return this.config;
+    }
 
     /**
      * An element to position the popup against. Defaults to the popper anchor.
@@ -156,8 +167,11 @@ export class RdxPopperContentWrapper {
      * resolve to `left` / `right` for the text direction (Base UI parity). The placed side reported via
      * `data-side` / `placedSide()` echoes the requested kind: logical in → logical out (even after a
      * collision flip), physical in → physical out.
+     * @defaultValue 'bottom'
      */
-    readonly side = input<SideOrLogical>(this.config.side ?? 'bottom');
+    readonly sideInput = input<SideOrLogical | undefined>(undefined, { alias: 'side' });
+    /** Resolved side, including reactive defaults from the composing primitive. */
+    readonly side = computed(() => this.sideInput() ?? this.defaults().side ?? 'bottom');
 
     /**
      * Text direction, used only to resolve a logical `side` (`inline-start` / `inline-end`) to a
@@ -172,25 +186,52 @@ export class RdxPopperContentWrapper {
     /**
      * Distance between the anchor and the popup in pixels. Also accepts an {@link OffsetFunction} that
      * reads the anchor / positioner dimensions and the resolved side / align.
+     * @defaultValue 0
      */
-    readonly sideOffset = input(this.config.sideOffset ?? 0, { transform: coerceOffset });
+    readonly sideOffsetInput = input<
+        number | OffsetFunction | undefined,
+        number | OffsetFunction | string | null | undefined
+    >(undefined, {
+        alias: 'sideOffset',
+        transform: coerceOffset
+    });
+    /** Resolved side offset; an explicit zero overrides contextual defaults. */
+    readonly sideOffset = computed(() => this.sideOffsetInput() ?? this.defaults().sideOffset ?? 0);
 
     /**
      * How to align the popup relative to the specified side. May change when collisions occur.
+     * @defaultValue 'center'
      */
-    readonly align = input<Align>(this.config.align ?? 'center');
+    readonly alignInput = input<Align | undefined>(undefined, { alias: 'align' });
+    /** Resolved alignment, including reactive defaults from the composing primitive. */
+    readonly align = computed(() => this.alignInput() ?? this.defaults().align ?? 'center');
 
     /**
      * An offset in pixels from the `start` or `end` alignment options. Also accepts an
      * {@link OffsetFunction} (same signature as `sideOffset`).
+     * @defaultValue 0
      */
-    readonly alignOffset = input(this.config.alignOffset ?? 0, { transform: coerceOffset });
+    readonly alignOffsetInput = input<
+        number | OffsetFunction | undefined,
+        number | OffsetFunction | string | null | undefined
+    >(undefined, {
+        alias: 'alignOffset',
+        transform: coerceOffset
+    });
+    /** Resolved alignment offset; an explicit zero overrides contextual defaults. */
+    readonly alignOffset = computed(() => this.alignOffsetInput() ?? this.defaults().alignOffset ?? 0);
 
     /**
      * Minimum distance to maintain between the arrow and the edges of the popup.
      * If your content has border-radius, this will prevent it from overflowing the corners.
+     * @defaultValue 0
      */
-    readonly arrowPadding = input<number, NumberInput>(this.config.arrowPadding ?? 0, { transform: numberAttribute });
+    readonly arrowPaddingInput = input<number | undefined, NumberInput>(undefined, {
+        alias: 'arrowPadding',
+        transform: coerceOptionalNumber
+    });
+    /** Resolved arrow padding. */
+    readonly arrowPadding = computed(() => this.arrowPaddingInput() ?? this.defaults().arrowPadding ?? 0);
 
     /**
      * When `true`, overrides the `side` and `align` preferences to prevent collisions with boundary edges.
@@ -228,7 +269,7 @@ export class RdxPopperContentWrapper {
         // A consumer object fully REPLACES the preset (Base UI parity — the preset is only the default
         // when the consumer passes nothing); omitted fields fall back to the global defaults, not the
         // preset. `??` (not spread-merge) is what enforces the "replaces, not merges" semantics.
-        const source = explicit ?? this.config.collisionAvoidance;
+        const source = explicit ?? this.defaults().collisionAvoidance;
 
         return {
             side: source?.side ?? 'flip',
@@ -390,7 +431,8 @@ export class RdxPopperContentWrapper {
             // Ported from Base UI `useAnchorPositioning`: `side`/`align`/`fallbackAxisSide` select and
             // configure the `flip()` / `shift()` middleware instead of the old boolean toggle.
             const shiftDisabled = ca.align === 'none' && ca.side !== 'shift';
-            const crossAxisShiftEnabled = !shiftDisabled && (params.sticky === 'always' || ca.side === 'shift');
+            const crossAxisShiftEnabled =
+                !shiftDisabled && (params.sticky === 'always' || params.shiftCrossAxis || ca.side === 'shift');
 
             const flipMiddleware =
                 ca.side === 'none'
@@ -410,7 +452,7 @@ export class RdxPopperContentWrapper {
                       crossAxis: crossAxisShiftEnabled,
                       // `partial` keeps the popup attached to the anchor (limitShift); `always` keeps it
                       // fully inside the boundary regardless (no limiter).
-                      limiter: params.sticky === 'partial' ? limitShift() : undefined
+                      limiter: params.sticky === 'partial' && !params.shiftCrossAxis ? limitShift() : undefined
                   });
 
             // https://floating-ui.com/docs/flip#combining-with-shift — run shift first when shifting is
@@ -497,6 +539,7 @@ export class RdxPopperContentWrapper {
             arrowWidth: this.arrowSize()().width,
             collisionAvoidance: this.effectiveCollisionAvoidance(),
             sticky: this.sticky(),
+            shiftCrossAxis: this.defaults().shift?.crossAxis ?? false,
             detectOverflowOptions: this.detectOverflowOptions(),
             arrow: this.arrow(),
             arrowPadding: this.arrowPadding()

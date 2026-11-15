@@ -96,7 +96,10 @@ const jsdocDefault = (member) => {
         previous = comment;
         comment = comment.replace(/<[^>]+>/g, '');
     } while (comment !== previous);
-    return comment.trim();
+    return comment
+        .trim()
+        .replace(/&#39;|&#x27;|&apos;/g, "'")
+        .replace(/&quot;/g, '"');
 };
 
 const parsePositionerConfig = (sourceCode) => {
@@ -114,7 +117,7 @@ const parsePositionerConfig = (sourceCode) => {
 // `defaultValue` is the raw `input()` argument list — drop the options object, then resolve any
 // inherited `this.config.<key> ?? <fallback>` against the positioner's config defaults, or a bare
 // `this.config.<key>` against the input's `@defaultValue` JSDoc tag.
-const cleanDefault = (input, config = {}) => {
+export const cleanDefault = (input, config = {}) => {
     if (input.defaultValue === undefined) return undefined;
 
     let cleaned = input.defaultValue.replace(/,\s*\{[\s\S]*\}\s*$/, '').trim();
@@ -126,6 +129,9 @@ const cleanDefault = (input, config = {}) => {
         cleaned = (config[key] ?? fallback).trim();
     } else if (bareConfig) {
         cleaned = (config[bareConfig[1]] ?? jsdocDefault(input)).trim();
+    } else if (cleaned === 'undefined' && jsdocDefault(input)) {
+        // Aliased raw inputs resolve their effective defaults through computed signals.
+        cleaned = (config[bindingName(input)] ?? jsdocDefault(input)).trim();
     }
 
     return cleaned || undefined;

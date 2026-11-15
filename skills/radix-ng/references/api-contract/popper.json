@@ -30,12 +30,13 @@
       "inputs": [
         {
           "name": "align",
-          "type": "Align",
+          "type": "Align | undefined",
           "default": "'center'",
           "description": "How to align the popup relative to the specified side. May change when collisions occur."
         },
         {
           "name": "alignOffset",
+          "type": "number | OffsetFunction | undefined",
           "default": "0",
           "description": "An offset in pixels from the `start` or `end` alignment options. Also accepts an\n{@link OffsetFunction} (same signature as `sideOffset`)."
         },
@@ -46,7 +47,7 @@
         },
         {
           "name": "arrowPadding",
-          "type": "number",
+          "type": "number | undefined",
           "default": "0",
           "description": "Minimum distance to maintain between the arrow and the edges of the popup.\nIf your content has border-radius, this will prevent it from overflowing the corners."
         },
@@ -100,12 +101,13 @@
         },
         {
           "name": "side",
-          "type": "SideOrLogical",
+          "type": "SideOrLogical | undefined",
           "default": "'bottom'",
           "description": "The preferred side of the anchor to render against when open.\nWill be reversed when collisions occur and avoidCollisions is enabled.\n\nAccepts the logical `'inline-start'` / `'inline-end'` in addition to the physical sides; those\nresolve to `left` / `right` for the text direction (Base UI parity). The placed side reported via\n`data-side` / `placedSide()` echoes the requested kind: logical in → logical out (even after a\ncollision flip), physical in → physical out."
         },
         {
           "name": "sideOffset",
+          "type": "number | OffsetFunction | undefined",
           "default": "0",
           "description": "Distance between the anchor and the popup in pixels. Also accepts an {@link OffsetFunction} that\nreads the anchor / positioner dimensions and the resolved side / align."
         },

@@ -11,6 +11,27 @@ async function expectNoOverflow(page: Page) {
     );
 }
 
+test('Menu positioning ArgTypes show binding aliases and effective defaults', async ({ page }) => {
+    await page.goto('/iframe.html?id=primitives-menu--docs&viewMode=docs', { waitUntil: 'domcontentloaded' });
+    const heading = page.getByRole('heading', { name: 'RdxMenuPositioner', exact: true });
+    const table = heading.locator('xpath=following::table[1]');
+    // The conditional owner table precedes ArgTypes; the latter owns the documented inputs.
+    const args = heading.locator('xpath=following::table[2]');
+    await expect(table).toContainText('Vertical Menubar');
+    for (const [name, value] of [
+        ['side', 'bottom'],
+        ['align', 'center'],
+        ['arrowPadding', '5']
+    ]) {
+        const row = args
+            .getByRole('row')
+            .filter({ has: page.locator('td:first-child').filter({ hasText: new RegExp(`^${name}$`) }) });
+        await expect(row).toHaveCount(1);
+        await expect(row.locator('td').last()).toContainText(value);
+        await expect(args.getByText(`${name}Input`, { exact: true })).toHaveCount(0);
+    }
+});
+
 test('desktop TOC preserves anchors and expands only the active section', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await selectDocs(page);
