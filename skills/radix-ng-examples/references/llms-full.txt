@@ -32843,6 +32843,52 @@ createYearRange({ start: new CalendarDate(1995, 8, 18), end: new CalendarDate(20
 
 ---
 
+# Debugging
+
+#### Diagnose incorrect part placement and inspect primitive state.
+
+Radix NG diagnostics use a stable `[rdx:<primitive>/<slug>]` code and include a link to the relevant
+documentation. Search for the code to identify the part and the markup it expects.
+
+## Development warnings
+
+Warnings report recoverable mistakes through `console.warn` in development mode. Each code is
+logged at most once per page load; warnings are silent in production mode.
+
+| Code                                  | Check                                                                                                                            |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `field/unassociated-label`            | Put `rdxFieldLabel` on a `<label>`, or associate the control another way.                                                        |
+| `preview-card/trigger-element`        | Use a native interactive trigger, or supply appropriate semantics and focusability.                                              |
+| `autocomplete/virtualized-item-label` | Supply `itemToStringValue` when virtualized Autocomplete uses object items.                                                      |
+| `tabs/tab-outside-list`               | Keep tabs inside the rendered `rdxTabsList`, including when projecting them.                                                     |
+| `toggle-group/missing-toggle-value`   | Give every `rdxToggle` inside a Toggle Group a `value`.                                                                          |
+| `menu/items-outside-composite`        | Keep the owning Menu Root in the projected parts' declaring tree and use Menu item directives so they join the popup collection. |
+
+For wrapper and projection patterns, see [Composition](guides/composition.md).
+
+## Structural errors
+
+These errors identify markup that cannot work:
+
+| Code                            | Fix                                                                                      | When thrown                       |
+| ------------------------------- | ---------------------------------------------------------------------------------------- | --------------------------------- |
+| `<primitive>/portal-on-element` | Use `*rdx…Portal` microsyntax or an explicit `<ng-template rdx…Portal>`.                 | Development mode.                 |
+| `popover/trigger-missing-root`  | Put `rdxPopoverTrigger` inside `rdxPopoverRoot`, or pass a `handle` connected to a root. | Development and production modes. |
+
+Check the documented host element as well. A selector such as `button[rdxSelectTrigger]` only
+matches a `<button>`; putting the attribute on another tag does not apply that directive.
+
+## Angular DevTools
+
+Some state signals, computeds, and effects have a `debugName`, such as `RdxPopoverRoot.state` and
+`RdxPopoverRoot.applyDefaultOpen`, to help identify them in Angular DevTools.
+
+When investigating a state or styling issue, compare the primitive's inputs with the rendered
+`data-*` attributes documented in its API Reference. See
+[State & data attributes](learn/state-data-attributes.md) for the styling contract.
+
+---
+
 # Forms
 
 How Radix NG form controls integrate with Angular's form systems.
@@ -35114,410 +35160,135 @@ works without any wiring, and how to take control when your app needs to.
 
 # Accessibility
 
-Radix NG primitives are designed against the WAI-ARIA specification, the
-WAI-ARIA Authoring Practices Guide (APG), and WCAG 2.2, and are tested for the
-keyboard and focus behaviors documented on each primitive's page.
-
-We take care of many of the difficult implementation details related to accessibility, including `aria` and `role` attributes, focus management, and keyboard navigation. That means that users should be able to use our components as-is in most contexts and rely on functionality to follow the expected accessibility design patterns.
+Radix NG primitives provide roles, ARIA attributes, keyboard navigation, and focus management for
+the behaviors documented on each primitive's page. Your application supplies the markup, labels,
+content, and visual design.
 
 ## How we decide what semantics to use
 
-We follow a strict order of sources, from most to least authoritative for a
-given decision. Each layer is consulted only when the layer above it does not
-already provide what we need.
+We start with native HTML, add ARIA where needed, and use APG and WCAG to guide behavior and checks:
 
-1. **Native HTML first.** If a native element already carries the right
-   semantics and behavior (a `<button>`, `<label>`, `<fieldset>`, `<dialog>`,
-   form controls), we use it. ARIA itself is explicit that it is a _supplement_
-   to native semantics, not a replacement for them when the host language
-   already provides equivalent meaning — see the
+1. **Native HTML first.** Prefer elements with the required semantics and behavior, such as
+   `<button>`, `<label>`, and `<fieldset>`. See the
    [first rule of ARIA use](https://www.w3.org/TR/using-aria/#firstrule).
-2. **[WAI-ARIA](https://www.w3.org/TR/wai-aria-1.2/).** For custom widgets that
-   have no native equivalent, we add roles, states, and properties to convey
-   meaning to assistive technology.
-3. **[WAI-ARIA APG](https://www.w3.org/WAI/ARIA/apg/).** We use the Authoring
-   Practices Guide as the reference for _how_ to apply those semantics —
-   keyboard interaction and focus management for each
-   [common pattern](https://www.w3.org/WAI/ARIA/apg/patterns/). The APG is W3C
-   authoring guidance, not a normative standard like WCAG or the ARIA spec.
-4. **[WCAG 2.2](https://www.w3.org/TR/WCAG22/).** We treat the WCAG success
-   criteria as the behavioral bar a primitive must clear: keyboard operability,
-   focus order, no keyboard trap, labels, error identification, and
-   name/role/value.
+2. **[WAI-ARIA](https://www.w3.org/TR/wai-aria-1.2/).** Add roles, states, and properties for custom
+   widgets where native semantics do not provide them.
+3. **[WAI-ARIA APG](https://www.w3.org/WAI/ARIA/apg/).** Follow its keyboard and focus guidance for
+   the relevant widget pattern. APG is authoring guidance rather than a normative standard.
+4. **[WCAG 2.2](https://www.w3.org/TR/WCAG22/).** Use its success criteria to guide checks for
+   keyboard operation, focus order, labels, errors, and name/role/value.
 
-Each primitive's **Accessibility** section maps these sources to its concrete
-implementation, and links the specific APG pattern and WCAG success criteria it
-is built against.
+Each primitive's **Accessibility** section maps its implementation to the applicable APG pattern
+and WCAG criteria, and documents its keyboard interactions.
 
-> We do **not** claim WCAG conformance for the library as a whole — conformance
-> depends on how you assemble and style the primitives in your application. What
-> we provide are headless building blocks _designed against_ these references and
-> _tested for_ the documented keyboard and focus behaviors.
+> WCAG conformance depends on how you assemble and style the primitives. The building blocks are
+> designed against these references and tested for documented keyboard and focus behaviors;
+> check the assembled interface in your application, including with relevant assistive technologies.
 
-## WAI-ARIA
+## Labels, keyboard, and focus in your application
 
-[WAI-ARIA](https://www.w3.org/TR/wai-aria-1.2/), published and maintained by the W3C, specifies the semantics for many common UI patterns that show up in Radix Primitives. This is designed to provide meaning for controls that aren't built using elements provided by the browser. For example, if you use a `div` instead of a `button` element to create a button, there are attributes you need to add to the `div` in order to convey that it's a button for screen readers or voice recognition tools.
+- **Provide accessible names.** Associate visible labels with their controls. Use the documented
+  [Field](components/field.md) or [Label](components/label.md) anatomy,
+  or the part's documented ARIA labeling attributes.
+- **Preserve keyboard behavior.** Follow each primitive's host-element and nesting requirements,
+  and check its Keyboard Interactions table when adding custom handlers.
+- **Check focus in context.** Opening, closing, and composing overlays can change where focus moves.
+  Verify the documented behavior with your content and any custom autofocus handlers.
+- **Style visible states.** Supply visible focus indicators and check contrast, disabled states,
+  and error messages in the finished interface.
 
-In addition to semantics, there are behaviors that are expected from different types of components. A `button` element is going to respond to certain interactions in ways that a `div` will not, so it's up to the developer to reimplement those interactions with JavaScript. The [WAI-ARIA authoring practices](https://www.w3.org/TR/wai-aria-practices-1.2/) provide additional guidance for implementing behaviors for various controls that come with Radix Primitives.
-
-## Accessible Labels
-
-With many built-in form controls, the native HTML `label` element is designed to provide semantic meaning and context for corresponding `input` elements. For non-form control elements,
-or for custom controls like those provided by Radix Primitives, [WAI-ARIA provides a specification](https://www.w3.org/TR/wai-aria-1.2/#namecalculation) for how to provide accessible names and descriptions to those controls.
-
-Where possible, Radix Primitives include abstractions to make labelling our controls simple. The `Label` primitive is designed to work with many of our controls.
-Ultimately it's up to you to provide those labels so that users have the proper context when navigating your application.
-
-## Keyboard Navigation
-
-Many complex components, like `Tabs` and `Dialog`, come with expectations from users on how to interact with their content using a keyboard or other non-mouse input modalities.
-Radix Primitives provide basic keyboard support in accordance with the [WAI-ARIA authoring practices](https://www.w3.org/TR/wai-aria-practices-1.2/).
-
-## Focus Management
-
-Proper keyboard navigation and good labelling often go hand-in-hand with managing focus. When a user interacts with an element and something changes as a result, it's often helpful to move focus with the interaction so that the next tab stop is logical depending on the new context of the app. And for screen reader users, moving focus often results in an announcement to convey this new context, which relies on proper labelling.
-
-In many Radix Primitives, we move focus based on the interactions a user normally takes in a given component.
-For example, in `AlertDialog`, when the modal is opened, focus is programmatically moved to a `Cancel` button
-element to anticipate a response to the prompt.
-
-## Dev-mode diagnostics
-
-A headless library fails quietly: a misused part doesn't render wrong, it just stops working — the
-popup never opens, the label is never announced, the state is never styled. To surface these mistakes,
-the primitives emit **development-only** diagnostics. All of them are stripped from production builds
-(`isDevMode()` is `false`), so they never reach your users and add no runtime cost in production.
-
-Every message is prefixed with a stable, greppable code in the form `[rdx:<primitive>/<slug>]` and
-links to the relevant docs page.
-
-**Warnings** (`console.warn`, deduplicated so each code logs at most once per page load) flag a
-recoverable mistake:
-
-| Code                                | Fires when                                                                                                  |
-| ----------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `field/unassociated-label`          | `rdxFieldLabel` is placed on a non-`<label>` element, so its `for` attribute can't associate the control.    |
-| `preview-card/trigger-element`      | `rdxPreviewCardTrigger` is on a non-interactive, non-focusable host (use a `<button>`/`<a>` or add `tabindex`). |
-| `autocomplete/virtualized-item-label` | `rdxAutocompleteRoot` is `virtualized` with object items but has no `itemToStringValue` to label them.       |
-| `tabs/tab-outside-list`             | `rdxTabsTab` is rendered outside its `rdxTabsList`, so it gets no roving tabindex and arrow keys can't reach it. |
-| `toggle-group/missing-toggle-value` | `rdxToggle` sits inside an `rdxToggleGroup` without a `value`, so the group can't derive its pressed state.  |
-| `menu/items-outside-composite`      | `rdxMenuPopup` holds menu items registered with another list (projected in from a wrapper), so keyboard navigation skips them. |
-
-**Errors** (thrown in dev) flag markup that cannot work at all: the structural portal guards
-(`<primitive>/portal-on-element`), thrown when a structural `*rdx…Portal` directive is used as a plain
-attribute on an element instead of an `ng-template`, and `popover/trigger-missing-root`, thrown when
-`rdxPopoverTrigger` has neither an enclosing `rdxPopoverRoot` nor a `handle` connected to one.
-
-Most parts that require a specific host element enforce it through their **selector** (e.g.
-`button[rdxSelectTrigger]`, `label[rdxLabel]`), so the mistake is caught at compile time and needs no
-runtime check.
-
-## Debugging in Angular DevTools
-
-Root state signals, computeds, and long-lived effects carry a `debugName` (e.g. `RdxPopoverRoot.state`,
-`RdxPopoverRoot.startTransition`) so they show up by name — instead of anonymous nodes — in the Angular
-DevTools signal graph and profiler.
-
-Source: [Radix UI](https://www.radix-ui.com/)
+For runtime warnings, structural errors, and Angular DevTools, see
+[Guides/Debugging](guides/debugging.md).
 
 ---
 
 # Base UI patterns for Angular
 
-#### Radix NG brings Base UI's architecture and behavior to Angular through directives, signals, and dependency injection.
+#### How Base UI concepts map to Angular directives.
 
-If you have used Base UI before, most Radix NG concepts should feel familiar. Primitives are
-assembled from individual parts, support controlled and uncontrolled state, ship without styles,
-and expose their state through `data-*` attributes.
-
-Radix NG is not an automatic port or a drop-in replacement for Base UI. It adapts Base UI patterns
-to Angular's template syntax, signals, dependency injection, forms, and directive composition API.
+Radix NG adapts Base UI's compound anatomy and behavior to Angular. Use this page when translating
+a React example; check the corresponding primitive's Anatomy and API Reference for its exact contract.
 
 ## At a glance
 
-| Concept | Base UI | Radix NG |
-| --- | --- | --- |
-| Framework | React | Angular |
-| Composition | React components | Angular directives |
-| State configuration | Props | Signal inputs and models |
-| Controlled state | `open` and `onOpenChange` | `[open]`, `(onOpenChange)`, or `[(open)]` |
-| Uncontrolled state | `defaultOpen` | `[defaultOpen]` |
-| Context between parts | React context | Angular dependency injection |
-| Custom elements | `render` prop | Apply a directive to compatible markup |
-| Styling state | `data-*` attributes | `data-*` attributes |
-| Forms | Native forms and React integrations | Native forms, Angular Forms, and Signal Forms |
-| Styling | Any CSS solution | Any CSS solution |
+| Concept               | Base UI                             | Radix NG                                                                       |
+| --------------------- | ----------------------------------- | ------------------------------------------------------------------------------ |
+| Composition           | React components                    | Angular directives on your markup                                              |
+| State configuration   | Props                               | Signal inputs and models                                                       |
+| Controlled state      | `open` and `onOpenChange`           | `[(open)]`; change notifications vary by primitive                             |
+| Uncontrolled state    | `defaultOpen`                       | `[defaultOpen]`                                                                |
+| Context between parts | React context                       | Angular dependency injection                                                   |
+| Custom elements       | `render` prop                       | Apply a directive to a compatible host; compose wrappers with `hostDirectives` |
+| Styling state         | Per-part `data-*` attributes        | Per-part `data-*` attributes                                                   |
+| Forms                 | Native forms and React integrations | Angular Forms and Signal Forms                                                 |
 
 ## One anatomy, two frameworks
 
-Both libraries describe compound primitives as a set of parts:
-
-```text
-Popover
-├── Root
-├── Trigger
-├── Portal
-├── Positioner
-├── Popup
-├── Title
-└── Description
-```
-
-In Base UI, those parts are React components:
+In Base UI, each part is a React component:
 
 ```tsx
 import { Popover } from '@base-ui/react/popover';
 
 <Popover.Root>
-    <Popover.Trigger>Notifications</Popover.Trigger>
-
-    <Popover.Portal>
-        <Popover.Positioner sideOffset={8}>
-            <Popover.Popup>
-                <Popover.Title>Notifications</Popover.Title>
-                <Popover.Description>You are all caught up.</Popover.Description>
-            </Popover.Popup>
-        </Popover.Positioner>
-    </Popover.Portal>
+  <Popover.Trigger>Notifications</Popover.Trigger>
+  <Popover.Portal>
+    <Popover.Positioner sideOffset={8}>
+      <Popover.Popup>
+        <Popover.Title>Notifications</Popover.Title>
+        <Popover.Description>You are all caught up.</Popover.Description>
+      </Popover.Popup>
+    </Popover.Positioner>
+  </Popover.Portal>
 </Popover.Root>;
 ```
 
-In Radix NG, the parts are Angular directives applied to markup you own:
+In Radix NG, directives add the behavior to elements you supply:
 
 ```typescript
 import { Component } from '@angular/core';
-import { RdxPopoverModule } from '@radix-ng/primitives/popover';
+import { popoverImports } from '@radix-ng/primitives/popover';
 
 @Component({
-    selector: 'app-notifications',
-    imports: [RdxPopoverModule],
-    template: `
-        <ng-container rdxPopoverRoot>
-            <button rdxPopoverTrigger>Notifications</button>
-
-            <div *rdxPopoverPortal sideOffset="8" rdxPopoverPositioner>
-                <div rdxPopoverPopup>
-                    <h2 rdxPopoverTitle>Notifications</h2>
-                    <p rdxPopoverDescription>You are all caught up.</p>
-                </div>
-            </div>
-        </ng-container>
-    `
+  selector: 'app-notifications',
+  imports: [...popoverImports],
+  template: `
+    <ng-container rdxPopoverRoot>
+      <button rdxPopoverTrigger>Notifications</button>
+      <div *rdxPopoverPortal sideOffset="8" rdxPopoverPositioner>
+        <div rdxPopoverPopup>
+          <h2 rdxPopoverTitle>Notifications</h2>
+          <p rdxPopoverDescription>You are all caught up.</p>
+        </div>
+      </div>
+    </ng-container>
+  `
 })
 export class NotificationsComponent {}
 ```
 
-The anatomy and behavior are similar. The main difference is the composition mechanism: Angular
-directives replace React components.
+## Differences to check when translating
 
-## Directives instead of a render prop
-
-Base UI's `render` prop lets a primitive use custom React elements or components:
-
-```tsx
-<Menu.Trigger render={<MyButton />}>Open menu</Menu.Trigger>
-```
-
-Radix NG primitives are directives, so you apply them directly to compatible native elements or
-custom components:
-
-```html
-<button rdxMenuTrigger>Open menu</button>
-
-<app-icon-button aria-label="Open menu" rdxMenuTrigger />
-```
-
-When building reusable Angular components, use `hostDirectives` to compose primitive behavior into
-the component:
-
-```typescript
-import { Component } from '@angular/core';
-import { RdxMenuTrigger } from '@radix-ng/primitives/menu';
-
-@Component({
-    selector: 'app-menu-trigger',
-    template: '<ng-content />',
-    hostDirectives: [RdxMenuTrigger]
-})
-export class MenuTriggerComponent {}
-```
-
-See [Guides/Composition](guides/composition.md) for more composition patterns.
-
-## Controlled and uncontrolled state
-
-Like Base UI, Radix NG manages state internally by default and lets the application take control
-when needed.
-
-Use a default value when the primitive should manage its own state:
-
-```html
-<ng-container [defaultOpen]="true" rdxPopoverRoot>
-    ...
-</ng-container>
-```
-
-Use Angular two-way binding when application state should control the primitive:
-
-```typescript
-import { Component, signal } from '@angular/core';
-import { RdxPopoverModule } from '@radix-ng/primitives/popover';
-
-@Component({
-    selector: 'app-controlled-popover',
-    imports: [RdxPopoverModule],
-    template: `
-        <ng-container [(open)]="open" rdxPopoverRoot>
-            ...
-        </ng-container>
-    `
-})
-export class ControlledPopoverComponent {
-    protected readonly open = signal(false);
-}
-```
-
-Many primitives also expose change outputs for reacting to user interactions. Check the API
-Reference on the primitive's page because output names and event details can vary by primitive.
-
-See [Guides/Customization](guides/customization.md) and
-[Learn/Controlled & uncontrolled](learn/controlled-and-uncontrolled.md) for the full
-state model.
-
-## Styling through state
-
-Both libraries are headless and publish state through `data-*` attributes. The primitive owns
-behavior; your application owns visual design.
-
-```html
-<button
-    class="rounded-md border border-border px-3 py-2 data-[open]:bg-muted"
-    rdxPopoverTrigger
->
-    Notifications
-</button>
-
-<div
-    class="rounded-lg border border-border bg-popover p-4 data-[open]:animate-in data-[closed]:animate-out"
-    rdxPopoverPopup
->
-    ...
-</div>
-```
-
-Each primitive page documents the attributes exposed by its parts. See
-[Learn/State & data attributes](learn/state-data-attributes.md) for the underlying
-styling model.
-
-## Intentional differences
-
-Radix NG follows Base UI anatomy and behavior where they fit Angular, but the public APIs do not
-always match literally.
-
-### Angular-native APIs
-
-Radix NG uses Angular-native tools instead of reproducing React APIs:
-
-- signal inputs with `input()`;
-- two-way state with `model()` and `[(value)]`;
-- Angular outputs for change notifications;
-- dependency injection for communication between parts;
-- `hostDirectives` for reusable composition;
-- Angular templates for portal and presence content;
-- Angular Forms and Signal Forms integrations.
-
-### Change events
-
-Base UI change callbacks commonly include a shared event details object with a reason and
-cancellation controls. Radix NG does not currently provide that shared shape across every
-primitive. Some primitives expose simple value change outputs, while others provide additional
-primitive-specific details.
-
-Use the primitive's API Reference as the source of truth.
-
-### Part names
-
-Radix NG generally uses familiar Base UI part names such as `Root`, `Trigger`, `Positioner`,
-`Popup`, `Item`, and `Indicator`.
-
-Names may differ because of Angular conventions, backwards compatibility, or implementation
-details. Check the primitive's Anatomy section before translating an example directly.
+- **Host elements.** Replace `render` with a directive on compatible markup. Some selectors require
+  a particular native element. For reusable wrappers and projected parts, follow
+  [Guides/Composition](guides/composition.md).
+- **Change events.** Base UI callbacks commonly receive event details with a reason and cancellation
+  controls. Radix NG outputs vary by primitive; inspect the event type before translating a callback.
+- **Part names.** Names and available parts can differ. Follow the Radix NG Anatomy rather than
+  copying a React component tree literally.
+- **Forms.** Use the Angular integrations described in [Guides/Forms](guides/forms.md).
 
 ### CSP nonces and inline styles
 
-Base UI ships a `CSPProvider` / `CSPContext` that threads a `nonce` and a `disableStyleElements`
-flag through React context so its components can attach the nonce to the inline `<style>` elements
-they render. Radix NG deliberately does **not** port that provider, for two reasons:
+Base UI's `CSPProvider` maps to Angular's `CSP_NONCE` token / `ngCspNonce` for the injected scrollbar
+stylesheet in Scroll Area. Scroll Area also exposes `disableStyleElements` to opt out of that
+stylesheet. No additional Radix NG CSP provider is needed; see
+[Scroll Area](components/scroll-area.md) for its API.
 
-- **Angular already plumbs the nonce framework-wide.** Angular has a built-in
-  [`CSP_NONCE`](https://angular.dev/api/core/CSP_NONCE) token (and reads an `ngCspNonce` attribute on
-  the application root element), and its renderer applies the nonce to the styles it injects.
-  Re-creating a React-style context would duplicate what the framework already provides.
-- **Headless primitives barely inject styles at all.** Directives carry no styles, so there is
-  almost nothing to attach a nonce to. The one exception is Scroll Area, which appends a tiny
-  stylesheet to `<head>` to hide the native WebKit scrollbar — something that genuinely cannot be
-  expressed with inline styles. It reads Angular's `CSP_NONCE` directly and also exposes a
-  `disableStyleElements` input to opt out of the injected stylesheet entirely.
+## Learn the shared concepts
 
-So the two values Base UI's provider carries map onto Angular-native tools instead of a bespoke
-provider:
-
-| Base UI CSP config     | Radix NG                                                                     |
-| ---------------------- | ---------------------------------------------------------------------------- |
-| `nonce`                | Angular's built-in `CSP_NONCE` token / `ngCspNonce` on the app root element   |
-| `disableStyleElements` | A `disableStyleElements` input on the primitive that injects styles (Scroll Area) |
-
-If you set a nonce with `CSP_NONCE`, Scroll Area's injected stylesheet picks it up automatically —
-no extra Radix NG provider is required.
-
-## Translating a Base UI example
-
-Base UI examples are useful architectural references even when the syntax differs:
-
-1. Find the corresponding Radix NG primitive.
-2. Recreate the same part anatomy with Angular directives.
-3. Replace React props with Angular inputs and outputs.
-4. Replace React state with Angular signals.
-5. Apply styles to the elements carrying Radix NG directives.
-6. Check the Radix NG API Reference for intentional differences.
-
-For example, this Base UI accordion root:
-
-```tsx
-<Accordion.Root defaultValue={['settings']}>...</Accordion.Root>
-```
-
-becomes:
-
-```html
-<div [defaultValue]="['settings']" rdxAccordionRoot>...</div>
-```
-
-## When to choose Radix NG
-
-Radix NG is a good fit when you need:
-
-- Base UI-like headless primitives for Angular;
-- complete control over markup and styling;
-- an accessible foundation for a design system;
-- built-in keyboard navigation, focus management, and dismissal behavior;
-- signals-first APIs;
-- Angular Forms, SSR, and hydration support.
-
-If you need ready-made visual styles and higher-level components, explore the libraries built on
-top of Radix NG:
-
-- [OriginUI for Angular](https://originui-ng.com/)
-- [shadcn/ui for Angular](https://ui.adrianub.dev/)
-
-## Next steps
-
-- Follow [Overview/Installation](overview/installation.md) to add the library.
-- Complete [Learn/Build a styled component](learn/build-a-styled-component.md).
-- Read [Guides/Composition](guides/composition.md),
-  [Guides/Customization](guides/customization.md), and
-  [Guides/Forms](guides/forms.md).
-- Open a primitive page and start with its Anatomy section.
+- [Anatomy & parts](learn/anatomy-and-parts.md) — how parts share context.
+- [Controlled & uncontrolled](learn/controlled-and-uncontrolled.md) — defaults and application-owned state.
+- [State & data attributes](learn/state-data-attributes.md) — styling each part's published state.
 
 ---
 
@@ -35710,35 +35481,18 @@ Built on the shoulders of:
 
 # Skills
 
-#### Help a coding agent build your own Angular UI on headless primitives.
+#### Give a coding agent Radix NG documentation and examples.
 
-`radix-ng` and `radix-ng-examples` give an agent documentation, API contracts and example source.
-Use them to ask for components such as your own `AppSelect`, integrated with your application's
-tokens, styles and forms while preserving the primitives' behavior. Your application owns the
-appearance, wrapper API, content and business logic; you can start with one component before
-building a design system.
-
-Installing skills supplies context. A UI task should produce component code in your application
-and a report of compilation, keyboard, focus and other requested checks. Installation alone does
-not create that code or establish its correctness.
-
-Install `radix-ng` and `radix-ng-examples` with:
+The `radix-ng` and `radix-ng-examples` skills bundle API and styling contracts plus example source
+for building your application's Angular components on the primitives.
 
 ```bash
 npx skills add radix-ng/primitives/skills
 ```
 
-Continue with [Agents — Getting started](agents/getting-started.md) for version
-checks and a starter prompt, [Build with Radix NG](agents/build-with-radix-ng.md)
-for the AppSelect deliverable, or [Reference](agents/reference.md) for exports.
-
-Use `radix-ng/references/api-contract/<slug>.json` and
-`radix-ng/references/styling-contract/<slug>.json` for the primitive you are building. The installed
-package's exports and types take precedence over a bundle from another version. Skills help retrieve
-context; compile and test the resulting UI in your own application.
-
-Agent Playground's `snapshot` / `query` / `act` runtime experiment is separate and is not installed
-with these consumer skills.
+Continue with [Agents — Getting started](agents/getting-started.md) for version checks
+and a starter prompt. [Build with Radix NG](agents/build-with-radix-ng.md) shows the
+expected implementation and checks; [Reference](agents/reference.md) lists the exports.
 
 ---
 

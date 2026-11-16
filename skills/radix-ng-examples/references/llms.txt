@@ -17,10 +17,10 @@ Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs
 ## Overview
 
 - [Accessibility](https://radix-ng.com/docs/overview/accessibility.md): Accessibility
-- [Base UI patterns for Angular](https://radix-ng.com/docs/overview/base-ui-patterns.md): Radix NG brings Base UI's architecture and behavior to Angular through directives, signals, and dependency injection.
+- [Base UI patterns for Angular](https://radix-ng.com/docs/overview/base-ui-patterns.md): How Base UI concepts map to Angular directives.
 - [Installation](https://radix-ng.com/docs/overview/installation.md): Installation
 - [Introduction](https://radix-ng.com/docs/overview/introduction.md): Introduction
-- [Skills](https://radix-ng.com/docs/overview/skills.md): Help a coding agent build your own Angular UI on headless primitives.
+- [Skills](https://radix-ng.com/docs/overview/skills.md): Give a coding agent Radix NG documentation and examples.
 - [Theming](https://radix-ng.com/docs/overview/theming.md): Theming
 
 ## Learn
@@ -100,6 +100,7 @@ Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs
 - [Composition](https://radix-ng.com/docs/guides/composition.md): A guide to composing Radix NG primitives with your own Angular components and markup.
 - [Customization](https://radix-ng.com/docs/guides/customization.md): A guide to customizing the behavior of Radix NG primitives.
 - [Dates and Times](https://radix-ng.com/docs/guides/dates.md): Dates and Times
+- [Debugging](https://radix-ng.com/docs/guides/debugging.md): Diagnose incorrect part placement and inspect primitive state.
 - [Forms](https://radix-ng.com/docs/guides/forms.md): Forms
 - [Forms migration after 1.0.10](https://radix-ng.com/docs/guides/forms-migration.md): Forms migration after 1.0.10
 - [Inject Context](https://radix-ng.com/docs/guides/inject-context.md): Inject Context
