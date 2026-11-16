@@ -64,6 +64,9 @@ it.each([false, true])(
                 });
                 fixture.componentInstance.root().close();
                 await fixture.whenStable();
+                await vi.waitFor(() =>
+                    expect(fixture.componentInstance.root().menuRoot.transitionStatus()).toBeUndefined()
+                );
                 // jsdom does not blur a retained popup when its positioner becomes hidden.
                 if (previous !== document.body || !retained)
                     await vi.waitFor(() => expect(document.activeElement).toBe(previous));

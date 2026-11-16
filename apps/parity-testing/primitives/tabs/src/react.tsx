@@ -9,12 +9,14 @@ import { ReactDirection } from './direction.react';
 import { ReactGeometry } from './geometry.react';
 import { ReactIdentity } from './identity.react';
 import { ReactIndicator } from './indicator.react';
+import { ReactKeyboard } from './keyboard.react';
 import { ReactPanels } from './panels.react';
 import { ReactValues } from './values.react';
 
 const settings = config();
 const trace = installProbe('react', settings);
 function ReactTabs() {
+    if (settings.keyboard) return <ReactKeyboard trace={trace} />;
     if (settings.controlled) return <ReactControlled trace={trace} />;
     if (settings.values) return <ReactValues trace={trace} />;
     if (settings.collection) return <ReactCollection trace={trace} />;

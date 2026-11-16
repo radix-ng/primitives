@@ -11,6 +11,7 @@ import { AngularDirection } from './direction.angular';
 import { AngularGeometry } from './geometry.angular';
 import { AngularIdentity } from './identity.angular';
 import { AngularIndicator } from './indicator.angular';
+import { AngularKeyboard } from './keyboard.angular';
 import { AngularPanels } from './panels.angular';
 import { AngularValues } from './values.angular';
 
@@ -30,10 +31,13 @@ const settings = config();
         AngularGeometry,
         AngularCollection,
         AngularValues,
-        AngularControlled
+        AngularControlled,
+        AngularKeyboard
     ],
     template: `
-        @if (settings.controlled) {
+        @if (settings.keyboard) {
+            <parity-tabs-keyboard />
+        } @else if (settings.controlled) {
             <parity-tabs-controlled />
         } @else if (settings.values) {
             <parity-tabs-values />

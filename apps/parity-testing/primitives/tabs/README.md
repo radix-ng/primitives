@@ -4,12 +4,17 @@ Compares Angular Tabs with the unmodified Base UI sources pinned in
 [reference.json](../../reference.json). Run `pnpm test-parity tabs`, or add `--project=chromium` for
 local iteration. The suite is discovered by the existing runner and CI without shared-tooling changes.
 
-The suite runs **226 scenarios / 678 comparisons** across Chromium, Firefox and WebKit, with no
+The previous complete suite passed **226 scenarios / 678 comparisons** across Chromium, Firefox and WebKit, with no
 capability skips: eleven initial-value, twelve Panel lifecycle, seventeen direction, fifteen
 native-identity, forty activation, seventeen Indicator visibility cases, twenty-eight geometry cases thirty-six collection cases thirty arbitrary-value cases and twenty controlled-owner cases. Four exact reviewed fields remain:
 two authored-Panel-ID fields and two null-Indicator host fields. Whole-Panel presence removes the
 former four persistent-Panel-host exceptions. See below.
 See the [primitive matrix](../../../../packages/primitives/tabs/PARITY.md) for the remaining work.
+
+The new 50-case keyboard matrix brings the suite to **276 scenarios / 828 planned rows**.
+Its native-input baseline passes **146/150**: all ordinary navigation passes, while four rapid
+handoffs fail in Chromium. No reference assertions fail and no new exceptions accept these failures.
+This working tree exposes the race; it does not establish a green 828-row suite.
 
 ## Initial-value scope
 
@@ -58,6 +63,58 @@ verify numeric/string collections, no active or visible panels, no notification 
 the initial null choice after a later `defaultValue` input update. The unit suite now passes **54
 tests**, including eight native-activation regressions, seven native-identity regressions, inactive Panel inertness, external direction/null
 changes on both axes, equal-coordinate activation and uncontrolled direction publication before synchronous accepted-value subscribers run.
+
+## Keyboard navigation and consecutive native input
+
+Fifty `keyboard-*` cases exercise horizontal/vertical layout, LTR/RTL through real direction
+providers, manual/automatic activation and both loop policies. Additional cases cover disabled
+middle/edge/default tabs, an all-disabled null selection, controlled acceptance/ignore/delay,
+Shift/Ctrl/Alt/Meta/combined modifiers and forward/reverse Tab through the active Panel, its input,
+action and adjacent controls. Disabled tabs stay arrow-focusable without requesting selection.
+Returning focus to an ignored controlled destination can request it again.
+
+The rapid cases send Enter, Space or an automatic-selection arrow followed immediately by native
+Tab or Shift+Tab, without a DOM assertion, animation frame, delay or focus repair between those
+commands. Retained/structural Panels, controlled ownership, disabled destinations, reverse exit and
+vertical RTL have separate cases. Three alternating selections exercise repeated entry and exit.
+The commands remain real sequential browser input; the driver does not claim that every pair lands
+before a render. Raw key timestamps and the actual selected DOM tab at each key capture show the
+observed ordering.
+
+Checkpoints independently assert selection, visible Panels, all part directions, the complete
+request trace and expected native focus. Differential state includes every Tab/Panel tab stop,
+inert/hidden state, the complete native focusin sequence, key targets/trust/modifiers/default
+prevention/propagation and actual page scroll. Raw DOM, native IDs/IDREFs, bounds and callback events
+remain measurements. The key probe reads the original event's final `defaultPrevented` flag when
+serialized: a capture-listener microtask can run before later native listeners and is too early.
+macOS WebKit uses its native Option+Tab convention on both sides, as existing Tabs focus cases do.
+
+The native-input baseline passes **146/150** comparisons: **50/50 Firefox**, **50/50 WebKit**
+and **46/50 Chromium**. All 37 ordinary-navigation cases pass in all engines. Chromium loses focus
+to BODY in four rapid cases: retained uncontrolled Enter, retained/structural controlled Enter and
+controlled automatic-arrow selection. The exact failed round varies with render scheduling. No
+reference assertions fail. Observations are retained in
+`dist/parity-testing/tabs/keyboard-native-baseline/`.
+
+The identical built fixtures pass **143/150** on Linux/arm64 in Playwright 1.60.0 Noble, with one
+worker and original timeouts: **50/50 Firefox**, **50/50 WebKit**, **43/50 Chromium**. All seven
+failures concern rapid input; none are reference assertion failures or capability skips. Space,
+vertical RTL Enter and uncontrolled automatic-arrow selection also expose stale DOM. In the latter,
+Tab can enter the old tabindex-0 Tab before it updates, triggering an extra automatic request that
+reverts the selected value. This is a selection/callback failure as well as a focus difference.
+The report is retained in `dist/tabs-keyboard-linux/results/`.
+
+The capture records show an old selected DOM tab when Tab arrives, followed by native focus entering
+the old Panel before Angular's render hides/removes it. No post-render focus repair, forced change
+detection or new reviewed exception is present. A synchronous application render before Tab is an
+explicit pending policy choice; local view checks do not generally refresh ancestor-owned controlled
+inputs. These rapid tests currently fail the default gate rather than treating the race as parity.
+
+An earlier observer experiment is retained in `before-keyboard-fix/`: it read `defaultPrevented`
+from a capture microtask and failed assertions on both frameworks, so it is not runtime regression
+evidence. The next Chromium experiment (`before-keyboard-runtime-fix/`) reproduced one native Angular
+focus failure and also exposed a wrong expected request count on controlled re-entry. Correcting that
+expectation gives the final 150-row baseline above, with zero reference assertion failures.
 
 ## Controlled selection ownership
 
@@ -439,3 +496,22 @@ actual hydration and server-visible first paint remain separate verification wor
 The runner writes the current browser/version/reference manifest, observations, raw measurements and
 HTML report to `dist/parity-testing/tabs/results/`. This local run establishes the documented scope
 on macOS; it does not establish real-device, assistive-technology or Linux-specific behavior.
+
+## CI native-scroll precondition
+
+Run [43858922362](https://github.com/radix-ng/primitives/actions/runs/43858922362) failed
+`geometry-inner-scroll-rotate` in Linux WebKit: the reference Indicator left was 192px, while the
+settled native scroll offset was 80px and the authored layout required 128px. The former coordinate
+corresponds to a partial 16px scroll. The driver had waited only for the first nonzero offset before
+requesting selection, allowing remeasurement while the native wheel scroll continued. The original
+CI artifact is retained in `dist/ci-43858922362/tabs/`.
+
+The driver now observes the authored scroller reaching its native end before F2 changes selection.
+It still uses real wheel input, native offsets and literal variable/physical-box assertions. The
+reference imports, runtime Indicator and tolerances are unchanged. This is an after-scroll selection
+measurement; continuous tracking during scrolling remains outside its certification.
+
+All **84 geometry comparisons** pass across the three macOS engines. Linux/arm64 passes **63 scroll
+comparisons** (seven cases, three engines, three repetitions), one worker and original timeouts in
+Playwright 1.60.0 Noble; observations are in `dist/ci-43858922362/linux-tabs/results/`. The separate
+rapid-keyboard failures above remain unresolved; this is not a green verdict for the whole Tabs suite.

@@ -7,6 +7,7 @@ import type { TabsDriver } from './driver';
 import { geometryScenarios } from './geometry.scenarios';
 import { identityScenarios } from './identity.scenarios';
 import { indicatorScenarios } from './indicator.scenarios';
+import { keyboardScenarios } from './keyboard.scenarios';
 import { panelScenarios } from './panels.scenarios';
 import { valueScenarios } from './values.scenarios';
 
@@ -41,6 +42,7 @@ const initialScenarios = (Object.keys(initialCases) as (keyof typeof initialCase
     }
 }));
 export const scenarios = [
+    ...keyboardScenarios,
     ...controlledScenarios,
     ...valueScenarios,
     ...collectionScenarios,

@@ -26,8 +26,11 @@ keyboard/hover paths in LTR/RTL, child cancellation and parent selection cancell
 focus/highlight pairs retain the shared coordinate guard when the pin drops trusted zero-delta travel;
 the previous two Linux right-release pairs remain. Cancellation, callback order and return focus match.
 
-Native switching is bounded to one paint frame using the shared Playwright clock, without replacing
-native events or state. Fully closed area sessions run independently. Context areas expose the shared
+Native switching pauses the shared Playwright clock, without replacing native events or state.
+The shared lifecycle also waits for a native frame before automatic close completion: rendering a
+zero-motion close between pointerdown and contextmenu must not notify an already interrupted close.
+The clock alone did not establish that completion boundary; see [ADR 0082](../../../../docs/adr/0082-popup-close-completion-frame.md).
+Fully closed area sessions run independently. Context areas expose the shared
 open/pressed state and do not register as Menu triggers. Policy retries use the native application F5
 command. The source pin and its imports stay unmodified.
 
@@ -67,3 +70,21 @@ membership by owner; native hit testing establishes interactivity instead of mat
 insertion order. Existing shared-area and other family observations retain their ordered contracts.
 
 See [ADR 0047](../../../../docs/adr/0047-independent-context-menu-roots.md).
+
+## CI close-completion regression
+
+Run [43858922362](https://github.com/radix-ng/primitives/actions/runs/43858922362) failed only
+`areas-switch-cancel-close` in Firefox: Angular recorded an extra false completion during the
+accepted retry (`[true, false, true]` versus `[true, true]`). Requests, native events and settled open
+state agreed. The raw CI artifact is retained in `dist/ci-43858922362/context-menu/`.
+
+The shared lifecycle now gates automatic completion on a frame requested at close acceptance,
+alongside the existing Presence/CSS exit. Reopening invalidates the frame and close identity.
+Explicit unmount, pending destinations and owner disposal keep their existing policies. The exact
+request/completion comparisons and native gestures remain unchanged; no exception was added.
+
+The complete macOS suite passes **165 comparisons**, with its existing 18 capability skips.
+Linux/arm64 passes **27 switching comparisons**: three cases (including independent Root switching),
+three engines and three repetitions, one worker and original timeouts in Playwright 1.60.0 Noble.
+Linux observations are in `dist/ci-43858922362/linux-context-menu/results/`. Two new unit regressions
+fail before the change; the affected lifecycle/consumer units pass **647 tests**.

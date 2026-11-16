@@ -105,11 +105,44 @@ describe('shared popup lifecycle', () => {
         await settle();
         change(false);
         await settle();
-        expect(closedCompletions()).toEqual([false]);
+        await vi.waitFor(() => expect(closedCompletions()).toEqual([false]));
         host.lifecycle.unmount();
         await settle();
-        expect(closedCompletions()).toEqual([false]);
+        await vi.waitFor(() => expect(closedCompletions()).toEqual([false]));
     });
+
+    it.each([false, true])(
+        'can reopen a rendered close before its completion frame (retained: %s)',
+        async (keepMounted) => {
+            change(true);
+            await settle();
+            await vi.waitFor(() => expect(host.completions).toEqual([true]));
+            const mounted = signal(true);
+            host.lifecycle.registerPresence({ mounted, keepMounted: () => keepMounted });
+            const frames: FrameRequestCallback[] = [];
+            const request = vi.spyOn(globalThis, 'requestAnimationFrame').mockImplementation((callback) => {
+                frames.push(callback);
+                return 100_000 + frames.length;
+            });
+            try {
+                change(false);
+                if (!keepMounted) mounted.set(false);
+                await settle();
+                expect(closedCompletions()).toEqual([]);
+                change(true);
+                mounted.set(true);
+                await settle();
+                // Even a stale callback from the interrupted close cannot complete that close.
+                for (const frame of frames.splice(0)) frame(performance.now());
+                await settle();
+                expect(closedCompletions()).toEqual([]);
+                expect(host.completions).toEqual([true, true]);
+                expect(host.open()).toBe(true);
+            } finally {
+                request.mockRestore();
+            }
+        }
+    );
 
     it('does not replay an enter completion when a close reopens before render', async () => {
         change(true);
@@ -124,7 +157,7 @@ describe('shared popup lifecycle', () => {
         expect(host.completions).toEqual([true]);
         change(false);
         await settle();
-        expect(host.completions).toEqual([true, false]);
+        await vi.waitFor(() => expect(host.completions).toEqual([true, false]));
     });
 
     it('preserves an unfinished enter when a close reopens before render', async () => {
@@ -191,9 +224,11 @@ describe('shared popup lifecycle', () => {
         change(false);
         await settle();
         expect(host.lifecycle.status()).toBe('ending');
+        await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
         expect(closedCompletions()).toEqual([]);
         mounted.set(false);
         await settle();
+        // The frame already passed while Presence was exiting; completion needs no extra frame.
         expect(closedCompletions()).toEqual([false]);
     });
 
@@ -219,7 +254,7 @@ describe('shared popup lifecycle', () => {
         change(false);
         await settle();
         expect(host.lifecycle.present()).toBe(false);
-        expect(closedCompletions()).toEqual([false]);
+        await vi.waitFor(() => expect(closedCompletions()).toEqual([false]));
     });
 
     it('accepts a late opt-out only for its still-pending close', async () => {
@@ -256,7 +291,7 @@ describe('shared popup lifecycle', () => {
         oldClose.preventUnmountOnClose();
         await settle();
         expect(host.lifecycle.present()).toBe(false);
-        expect(closedCompletions()).toEqual([false]);
+        await vi.waitFor(() => expect(closedCompletions()).toEqual([false]));
     });
 
     it('supports reopening from the completion handler and a later automatic close', async () => {
@@ -272,7 +307,7 @@ describe('shared popup lifecycle', () => {
         change(false);
         await settle();
         expect(host.lifecycle.present()).toBe(false);
-        expect(closedCompletions()).toEqual([false, false]);
+        await vi.waitFor(() => expect(closedCompletions()).toEqual([false, false]));
     });
 
     it('starts a fresh enter when immediate unmount completion reopens before render', async () => {

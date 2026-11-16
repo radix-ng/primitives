@@ -136,11 +136,20 @@ export const geometryScenarios = (Object.keys(geometryCases) as GeometryCaseName
         await checkpoint(driver, 'initial geometry', 1);
         if (settings.scroll) {
             const scroller = driver.page.getByTestId(settings.scroll === 'inner' ? 'inner' : 'tablist');
-            const initial = await scroller.evaluate((element) => ({ x: element.scrollLeft, y: element.scrollTop }));
+            const vertical = settings.orientation === 'vertical';
+            const end = await scroller.evaluate(
+                (element, { vertical, rtl }) =>
+                    vertical
+                        ? element.scrollHeight - element.clientHeight
+                        : (element.scrollWidth - element.clientWidth) * (rtl ? -1 : 1),
+                { vertical, rtl: settings.dir === 'rtl' }
+            );
+            expect(end).not.toBe(0);
             const box = (await scroller.boundingBox())!;
             await driver.page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-            const vertical = settings.orientation === 'vertical';
             await driver.page.mouse.wheel(vertical ? 0 : settings.dir === 'rtl' ? -200 : 200, vertical ? 200 : 0);
+            // Native wheel scrolling can continue after its first nonzero offset. The scenario
+            // measures selection after scrolling, not continuous Indicator tracking during scroll.
             await expect
                 .poll(() =>
                     scroller.evaluate(
@@ -148,7 +157,7 @@ export const geometryScenarios = (Object.keys(geometryCases) as GeometryCaseName
                         vertical
                     )
                 )
-                .not.toBe(vertical ? initial.y : initial.x);
+                .toBe(end);
         }
         // Selection requests remeasurement after native scroll, including an intermediate scroller.
         // Continuous inner-scroll observation without a render is a separate contract.

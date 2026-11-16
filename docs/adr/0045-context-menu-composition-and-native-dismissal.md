@@ -41,6 +41,11 @@ defines JS timer/render cadence without replacing native events, targets, trust 
 CI protocol latency cannot choose whether the old view exits between pointerdown and contextmenu.
 Fully closed sessions are compared separately.
 
+[ADR 0082](0082-popup-close-completion-frame.md) refines this completion boundary after a later
+Firefox CI failure: the paused clock alone did not prevent an early Angular completion. The shared
+lifecycle now requires a close-acceptance frame before automatic notification, independently of
+whether a zero-motion view already rendered its exit between native events.
+
 ## Consequences
 
 There are 36 cases / 108 planned comparisons: 90 execute on macOS and 91 on Linux with existing

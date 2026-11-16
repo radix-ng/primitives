@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { _importsSelect, RdxSelectOpenChangeEvent, RdxSelectRoot } from '../index';
 
 @Component({
@@ -69,7 +69,7 @@ describe('Select imperative actions', () => {
         );
         await settle();
         expect(popup()).toBeNull();
-        expect(closedCompletions()).toEqual([false]);
+        await vi.waitFor(() => expect(closedCompletions()).toEqual([false]));
         expect(root.close()).toBe(false);
         root.unmount();
         await settle();
@@ -112,7 +112,7 @@ describe('Select imperative actions', () => {
         root.close();
         await settle();
         expect(popup()).toBeNull();
-        expect(closedCompletions()).toEqual([false]);
+        await vi.waitFor(() => expect(closedCompletions()).toEqual([false]));
     });
 
     it('supports close and unmount in one batch, without leaking into the next open', async () => {

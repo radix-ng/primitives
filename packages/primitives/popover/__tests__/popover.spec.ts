@@ -817,10 +817,7 @@ describe('Popover', () => {
 
         expect(popup.hasAttribute('data-ending-style')).toBe(true);
 
-        await new Promise((resolve) => setTimeout(resolve));
-        lifecycleFixture.detectChanges();
-
-        expect(lifecycleFixture.componentInstance.complete).toEqual([true, false]);
+        await vi.waitFor(() => expect(lifecycleFixture.componentInstance.complete).toEqual([true, false]));
         lifecycleFixture.destroy();
     });
 

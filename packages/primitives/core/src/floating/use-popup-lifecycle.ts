@@ -54,17 +54,26 @@ export function usePopupLifecycle(
 
     let previousOpen = untracked(open);
     let enteredOpen = previousOpen;
-    let pendingClose: { notify: boolean } | undefined;
+    let pendingClose: { notify: boolean; framePassed: boolean; immediate?: boolean } | undefined;
     let closingTransition: object | undefined;
+    let completionFrame: number | undefined;
+
+    const cancelCompletionFrame = () => {
+        if (completionFrame !== undefined) {
+            cancelAnimationFrame(completionFrame);
+            completionFrame = undefined;
+        }
+    };
 
     const finalizeClose = () => {
+        cancelCompletionFrame();
         const notify = pendingClose?.notify;
         pendingClose = undefined;
         closing.set(false);
         enteredOpen = false;
         if (notify) onComplete(false);
     };
-    const completeClose = () => {
+    const completeClose = (immediate = false) => {
         if (
             destroyRef.destroyed ||
             open() ||
@@ -75,8 +84,11 @@ export function usePopupLifecycle(
         ) {
             return;
         }
-        // Explicit completion is a lifecycle boundary even if unmount() ran before the render effect.
-        finalizeClose();
+        // Explicit unmount is its own lifecycle boundary. Automatic completion waits for a frame,
+        // as Base UI does even without CSS motion, so a native contextmenu can interrupt a close.
+        if (immediate || pendingClose.immediate || !pendingClose.notify || pendingClose.framePassed) {
+            finalizeClose();
+        }
     };
 
     const transition = useTransitionStatus((nextOpen) => {
@@ -92,6 +104,7 @@ export function usePopupLifecycle(
     const syncOpen = () => {
         const nextOpen = open();
         if (destroyRef.destroyed || nextOpen === previousOpen) return;
+        cancelCompletionFrame();
         previousOpen = nextOpen;
         deferred.set(false);
         transitionComplete.set(false);
@@ -102,7 +115,19 @@ export function usePopupLifecycle(
             closing.set(false);
         } else {
             // A close before a pending destination ever mounts has no popup transition to finish.
-            pendingClose = { notify: !presences().some((presence) => presence.suspended?.()) };
+            pendingClose = {
+                notify: !presences().some((presence) => presence.suspended?.()),
+                framePassed: false
+            };
+            if (pendingClose.notify) {
+                const close = pendingClose;
+                completionFrame = requestAnimationFrame(() => {
+                    if (pendingClose !== close) return;
+                    completionFrame = undefined;
+                    close.framePassed = true;
+                    completeClose();
+                });
+            }
             closing.set(true);
         }
     };
@@ -164,6 +189,7 @@ export function usePopupLifecycle(
     );
 
     destroyRef.onDestroy(() => {
+        cancelCompletionFrame();
         pendingClose = undefined;
     });
 
@@ -225,7 +251,8 @@ export function usePopupLifecycle(
             deferred.set(false);
             transition.cancel();
             transitionComplete.set(true);
-            completeClose();
+            pendingClose.immediate = true;
+            completeClose(true);
         }
     };
 }

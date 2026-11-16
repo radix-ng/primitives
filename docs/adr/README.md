@@ -113,3 +113,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0079](0079-tabs-collection-consistency.md)                                  | Accepted               | Reconcile rendered Tabs collections and preserve Composite focus                     |
 | [0080](0080-tabs-arbitrary-value-identities.md)                              | Accepted               | Accept arbitrary Tabs identities with unknown public values                          |
 | [0081](0081-tabs-controlled-selection-ownership.md)                          | Accepted               | Keep controlled Tabs selection owned by its input                                    |
+| [0082](0082-popup-close-completion-frame.md)                                 | Accepted               | Complete automatic popup closes after a frame boundary                               |

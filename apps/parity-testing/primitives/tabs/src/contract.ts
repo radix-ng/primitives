@@ -5,6 +5,7 @@ import { directionCases, type DirectionSettings } from './direction';
 import { geometryCases, type GeometrySettings } from './geometry';
 import { identityCases, type IdentityKind } from './identity';
 import { indicatorCases, type IndicatorKind } from './indicator';
+import { keyboardCases, type KeyboardSettings } from './keyboard';
 import { panelCases, type PanelSettings } from './panels';
 import { valueCases, type ValueSettings } from './values';
 
@@ -28,6 +29,7 @@ export interface Settings {
     collection?: CollectionSettings;
     values?: ValueSettings;
     controlled?: ControlledSettings;
+    keyboard?: KeyboardSettings;
 }
 
 const numericOptions: Option[] = [
@@ -63,6 +65,7 @@ export const initialCases = {
     'value-null': { options: numericOptions, defaultValue: 1, value: null }
 } satisfies Record<string, Settings>;
 export const cases = {
+    ...keyboardCases,
     ...controlledCases,
     ...valueCases,
     ...collectionCases,
