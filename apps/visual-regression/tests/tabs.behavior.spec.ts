@@ -1,5 +1,26 @@
 import { expect, test } from '@playwright/test';
 
+test('Tabs two-way controlled binding accepts requests and respects cancellation', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await page.goto('/iframe.html?id=primitives-tabs--controlled&viewMode=story');
+    const account = page.getByRole('tab', { name: 'Account' });
+    const security = page.getByRole('tab', { name: 'Security' });
+    await expect(account).toHaveAttribute('aria-selected', 'true');
+    await page.getByRole('checkbox', { name: 'Block changes' }).check();
+    await security.press('Enter');
+    await expect(account).toHaveAttribute('aria-selected', 'true');
+    await expect(page.getByTestId('controlled-value')).toHaveText('Selected: account');
+    await expect(page.getByTestId('controlled-requests')).toHaveText('Requests: 1');
+    await page.getByRole('checkbox', { name: 'Block changes' }).uncheck();
+    await security.press('Enter');
+    await expect(security).toHaveAttribute('aria-selected', 'true');
+    await expect(page.getByTestId('controlled-value')).toHaveText('Selected: security');
+    await expect(page.getByTestId('controlled-requests')).toHaveText('Requests: 2');
+    await expect(page.getByRole('tabpanel')).toHaveText('Update your security preferences.');
+    expect(errors).toEqual([]);
+});
+
 test('Tabs object values preserve typed application state and whole-Panel presence', async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));

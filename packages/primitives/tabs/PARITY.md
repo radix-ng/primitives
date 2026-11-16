@@ -8,7 +8,7 @@ The prepared source digest was validated with `pnpm parity:prepare`.
 This is a source/API audit with incremental comparison evidence, not full parity or accessibility
 certification. The [Tabs differential suite](../../../apps/parity-testing/primitives/tabs/README.md)
 now covers initial values/notifications, Panel exits/focus, activation direction, identities, native activation,
-Indicator visibility/resize/coordinates, dynamic collections and arbitrary values: **206 scenarios, 618 planned comparisons** across Chromium, Firefox
+Indicator visibility/resize/coordinates, dynamic collections and arbitrary values: **226 scenarios, 678 comparisons** across Chromium, Firefox
 and WebKit, with no skips. Four exact reviewed fields remain: two for G5's authored-Panel-ID
 mismatch and two for G6's hidden Indicator host at null. Whole-Panel presence removes the former
 four persistent-Panel-host exceptions. G2's collection consistency and native focus subsets are covered; G1 and G3's direction defects
@@ -29,7 +29,7 @@ listed separately from unresolved gaps.
 | Explicit disabled default and later disable/re-enable                                    | Pinned initial-value and collection suites                                          | Pinned covered through enable/disable and initial-default honor transitions                                     |
 | Selected uncontrolled tab becomes disabled                                               | Implicit-default unit                                                               | Regression covered; first enabled value, reason `disabled`, direction `none`                                    |
 | Missing selected tab, empty/refilled/replaced lists, all disabled                        | 36 pinned collection cases; rendered registration phases                            | Pinned covered for removal, refill, List replacement/absence, disabled fallback and native focus, G2            |
-| Controlled initial/external values; parent ignores a request                             | Pinned direction suite; selected-disabled unit; native model source                 | External direction/focus and explicit cancellation covered, G3; ignoring-parent equivalence not established     |
+| Controlled initial/external values; parent ignores a request                             | Twenty pinned controlled-owner cases; direction and collection suites               | Ignored, delayed, transformed and canceled requests covered; controlled input owns selection                    |
 | Click selection, same-value no-op and cancel before commit                               | Forty pinned activation cases; eight activation units                               | Pinned covered for native requests, canceled retry, repeat and same-value no-op                                 |
 | Event reasons, native event, trigger and callback order                                  | Pinned capture/bubble/change timeline, native event metadata and raw trigger data   | Type/trust/target/modifiers/order covered; optional Angular trigger retained, ADR 0075                          |
 | Manual activation by default; automatic activation on focus                              | Focus and arrow-navigation units                                                    | Regression covered for horizontal navigation                                                                    |
@@ -68,11 +68,11 @@ listed separately from unresolved gaps.
 - Projected tabs resolve the inner List through the Root's Composite owner bridge. The Root must be
   on the wrapper host, in the projected parts' declaring injector tree. This follows
   [ADR 0001](../../../docs/adr/0001-angular-composite-navigation-layer.md).
-- `onValueChange` emits `{ value, eventDetails }`, and `value` is an Angular model with a generated
-  `valueChange` output. Consumers veto a request with `eventDetails.cancel()` before the model commits.
-  React callback arity and controlled-prop mechanics are not copied, but observable state ownership
-  uses the rendered G2 collection policy; G3 compares accepted and explicitly canceled requests, not an
-  ignoring parent's React controlled-prop semantics.
+- `onValueChange` emits `{ value, eventDetails }`. Root exposes a `value` input through `valueInput`,
+  a readonly effective `value()` signal, and explicit `valueChange` output. Defined inputs own selection;
+  accepted requests do not commit locally in controlled mode. `[(value)]` stays supported through
+  input/output binding. Consumers can reject requests with `cancel()` or retain their current input.
+  See [ADR 0081](../../../docs/adr/0081-tabs-controlled-selection-ownership.md) for migration.
 - Change details retain Angular's optional initiating native `trigger`; pinned Tabs leaves it unset.
   G8 asserts each policy and retains it in raw measurements. Equal trigger availability is outside
   the native callback equivalence. See [ADR 0075](../../../docs/adr/0075-tabs-native-activation.md).
@@ -133,13 +133,13 @@ failures, retained in `dist/parity-testing/tabs/before-collection-fix/`.
 
 ### G3 — Resolved for direction: external values, geometry and pending destinations
 
-[Root](src/tabs-root.ts) now derives activation direction from its model with `linkedSignal` and
+[Root](src/tabs-root.ts) derives activation direction from its effective selected value with `linkedSignal` and
 publishes a readonly computed direction to the parts. Render hooks collect physical layout; a new
 destination retains the committed origin until its geometry is available, then corrects the value
 fallback. Equal coordinates return `none`, and automatic consistency updates explicitly reset the
 direction. Accepted requests retain their event's live geometry; cancellation leaves the origin alone.
-Direction is published before the model commit, including fallback, so synchronous model subscribers
-observe consistent state.
+Uncontrolled requests and fallback publish actual selection/direction before `valueChange` subscribers.
+Controlled requests describe requested direction in event details; rendered direction follows the input.
 
 Seventeen pinned cases cover horizontal/vertical LTR/RTL, external changes after cancellation and
 accepted native requests, null/restore, equal positions with native Enter, same-update insertion with
@@ -153,10 +153,22 @@ The missing-value cases retain the pin's actual committed-origin policy: `Overvi
 reports `none` when both endpoints are absent. Raw frame/DOM/rect evidence is retained; no exception
 or adapter rewrites these values. See the [suite notes](../../../apps/parity-testing/primitives/tabs/README.md).
 
-Parent rejection through explicit `cancel()` is compared. An ignoring parent's controlled-prop
-semantics remain outside the Angular model contract exercised here; accepted Angular requests commit
-locally. Live axis/style changes in the same selection update, transition-frame transforms and
-Indicator lifetime/geometry are not certified by this increment. G2 collection ownership is covered for the dynamic cases above.
+Twenty additional `controlled-*` cases now cover ignored/repeated requests, delayed acceptance,
+parent replacement/null, cancellation, automatic focus requests, RTL/both axes, object/function
+identities, null/missing/disabled inputs and whole-Panel presence. Native Enter/F-keys change only
+application inputs and pending requests. Every part's direction, actual focus/tab stops, Panel state,
+Indicator visibility/variables and callbacks compare. The two-way public story verifies acceptance
+and cancel-before-output through actual `[(value)]` syntax.
+
+A defined input owns selection. Root uses a computed effective value and one private uncontrolled
+signal, replacing the writable model and internal/external-write heuristics. `valueChange` emits
+accepted requests and automatic uncontrolled changes, not external input updates or explicit default
+initialization. Ignored controlled requests preserve actual selection and committed direction;
+parent replacements use their actual destination. The rendered state of delayed acceptance updates
+only when its input arrives. Control-mode switching through undefined remains outside the certified
+scope. See [ADR 0081](../../../docs/adr/0081-tabs-controlled-selection-ownership.md).
+
+Live axis/style changes in the same update and transition-frame transforms remain follow-ups.
 
 ### G4 — Resolved for retained/structural exits: inert contents and hidden timing
 
@@ -247,7 +259,7 @@ shadow integrations, actual hydration and Indicator first paint remain unverifie
 
 ### G7 — Arbitrary identity values covered; breaking public type widening
 
-[Public types](src/utils.ts) now use `unknown` for `RdxTabsValue`, including Root inputs/models,
+[Public types](src/utils.ts) now use `unknown` for `RdxTabsValue`, including Root inputs/effective state,
 Tab/Panel values, presence and event payloads. This matches the pin's value domain while keeping
 application handlers responsible for narrowing a received value before writing narrower typed state.
 The [object-value example](stories/tabs-object-values.ts) shows that migration without casting.
@@ -307,6 +319,20 @@ link activation, authored submit/reset types and browser shortcuts remain follow
 
 Checks run for this audit on Node 24.22.2:
 
+- Controlled ownership increment: `pnpm test-parity tabs` — **678 passed**, all 226 scenarios across
+  Chromium/Firefox/WebKit, including 60 new controlled rows, strict fixture build and 13 shared
+  infrastructure checks. Current observations are also preserved in `dist/parity-testing/tabs/controlled-final/`.
+- Linux/arm64: **69 passed** (60 new controlled rows and nine existing controlled-collection
+  controls), Playwright 1.60.0 Noble, one worker and original timeouts, retained in
+  `dist/tabs-controlled-linux/results/`.
+- Controlled ownership units: **83 passed**, including eight new ownership tests. The synchronous
+  observer regression now distinguishes controlled request outputs from actual uncontrolled commits.
+- Fresh Storybook: **5 Chromium checks passed**, including two-way acceptance/cancellation, the
+  typed object consumer, Indicator, whole-Panel keyframes and projected wrapper. Five selected SSR
+  checks, library/SSR-app builds, scoped lint and consumer-skill regeneration pass.
+
+- Consumer API metadata retains `twoWay: value` for the ordinary input/output pair; seven focused
+  generator checks pass alongside consumer-bundle regeneration.
 - G7: `pnpm test-parity tabs --grep 'values-|identity-|direction-|collection-|panel-'` —
   **330 passed**, including 90 new arbitrary-value rows and 240 controls, strict fixture build and
   13 shared runner checks. The suite now has 206 scenarios / 618 planned rows; earlier full runs
@@ -339,7 +365,7 @@ Checks run for this audit on Node 24.22.2:
 - `pnpm parity:prepare` — Base UI 1.9.0 pin and cached content digest validated.
 - `pnpm exec vitest run --config packages/primitives/vite.config.ts packages/primitives/tabs/__tests__`
   — **63 passed**, including six whole-Panel lifetime/ownership tests, three Indicator observation/cleanup checks, eight native-activation regressions, seven native-identity regressions, null-default, Panel inertness, direction
-  regressions and synchronous model/direction publication.
+  regressions and synchronous selection/direction publication (the model API is superseded by ADR 0081).
 - Current geometry increment: `pnpm test-parity tabs --grep 'geometry-|indicator-|direction-'`
   — **189 passed**, including 84 new geometry rows, strict fixture build and 13 shared runner tests.
   The suite now contains 140 scenarios / 420 planned comparisons; the previous full-run count below

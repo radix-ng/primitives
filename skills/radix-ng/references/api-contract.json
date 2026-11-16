@@ -8260,14 +8260,20 @@
             {
               "name": "value",
               "type": "RdxTabsValue",
-              "description": "The value of the currently selected tab. Use together with `(onValueChange)` for controlled state."
+              "default": "undefined",
+              "description": "The controlled selected value. A defined input owns selection until the parent updates it.\nUse `(valueChange)` for two-way binding or `(onValueChange)` to decide how to handle requests."
             }
           ],
           "outputs": [
             {
               "name": "onValueChange",
               "type": "RdxTabsValueChangeEvent",
-              "description": "Event emitted when the selected tab changes.\n\n`eventDetails.reason` is `'none'` for user-initiated changes, `'initial'` for the first automatic\nuncontrolled selection, `'disabled'` when an uncontrolled selection falls back from a disabled tab,\nand `'missing'` when it falls back from a removed tab. Automatic changes are not cancelable."
+              "description": "Event emitted for selection requests and automatic uncontrolled consistency changes.\nControlled requests do not change selection until the parent updates the value input.\n\n`eventDetails.reason` is `'none'` for user-initiated changes, `'initial'` for the first automatic\nuncontrolled selection, `'disabled'` when an uncontrolled selection falls back from a disabled tab,\nand `'missing'` when it falls back from a removed tab. Automatic changes are not cancelable."
+            },
+            {
+              "name": "valueChange",
+              "type": "RdxTabsValue",
+              "description": "Accepted value requests and automatic uncontrolled changes. Supports `[(value)]`."
             }
           ],
           "twoWay": [

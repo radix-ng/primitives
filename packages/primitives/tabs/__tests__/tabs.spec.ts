@@ -33,7 +33,7 @@ import { RdxTabsValue } from '../src/utils';
     imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel]
 })
 class TestHostComponent {
-    readonly value = signal<RdxTabsValue | undefined>(undefined);
+    readonly value = signal<RdxTabsValue>('one');
     defaultValue: string | undefined = 'one';
     readonly orientation = signal<DataOrientation>('horizontal');
     readonly activateOnFocus = signal(false);
@@ -301,18 +301,21 @@ describe('Tabs', () => {
         expect(root.getAttribute('data-activation-direction')).toBe('left');
     });
 
-    it('publishes request and fallback direction before synchronous model subscribers run', async () => {
+    it('emits a controlled request while the bound input still owns the current value', async () => {
         const root = fixture.debugElement.query(By.directive(RdxTabsRoot)).injector.get(RdxTabsRoot);
-        const directions: string[] = [];
-        root.value.subscribe(() => directions.push(root.activationDirection()));
+        const requests: unknown[] = [];
+        root.valueChange.subscribe((value) => requests.push({ value, selected: root.value() }));
 
         tabs()[1].dispatchEvent(new MouseEvent('click', { bubbles: true }));
-        expect(directions).toEqual(['right']);
+        expect(requests).toEqual([{ value: 'two', selected: 'one' }]);
         await fixture.whenStable();
+        expect(root.value()).toBe('two');
+        expect(root.activationDirection()).toBe('right');
 
         host.disabledTwo.set(true);
         await fixture.whenStable();
-        expect(directions).toEqual(['right', 'none']);
+        expect(root.value()).toBe('two');
+        expect(requests).toHaveLength(1);
     });
 
     it.each([
@@ -679,7 +682,7 @@ describe('Tabs implicit defaultValue', () => {
     imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel, RdxTabsPanelPresence]
 })
 class PresenceHostComponent {
-    readonly value = signal<string | undefined>(undefined);
+    readonly value = signal<RdxTabsValue>('one');
     readonly keepMounted = signal(false);
 }
 

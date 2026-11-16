@@ -7,7 +7,7 @@
  * is run automatically (same tsconfig + flags as the Storybook targets).
  *
  * Output (per part): selector, exportAs, inputs (template binding name, unwrapped type,
- * default, required), outputs with payload type, two-way `model()` bindings, hostDirectives.
+ * default, required), outputs with payload type, two-way model/input-output bindings, hostDirectives.
  */
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -141,6 +141,21 @@ export const cleanDefault = (input, config = {}) => {
 // The template binds the alias, not the class member — surface the alias as the name.
 const bindingName = compodocBindingName;
 
+export function twoWayBindings(inputs = [], outputs = []) {
+    const names = new Set(inputs.map(bindingName).filter(Boolean));
+    return [
+        ...new Set(
+            outputs.flatMap((output) => {
+                const name = bindingName(output);
+                // Compodoc lists model outputs under the input name; ordinary pairs use nameChange.
+                if (names.has(name)) return [name];
+                const input = name?.endsWith('Change') ? name.slice(0, -'Change'.length) : undefined;
+                return input && names.has(input) ? [input] : [];
+            })
+        )
+    ];
+}
+
 const description = (member) => {
     const text = (member.rawdescription ?? '').trim();
     return text || undefined;
@@ -161,9 +176,7 @@ export function generateApiContract({ workspaceRoot, primitivesRoot, skillsRoot,
             const positionerConfig = entry.extends?.includes('RdxPopperContentWrapper')
                 ? parsePositionerConfig(entry.sourceCode)
                 : {};
-            const inputNames = new Set((entry.inputsClass ?? []).map(bindingName));
-            // A `model()` appears in both lists under the same name — that's the two-way set.
-            const twoWay = (entry.outputsClass ?? []).map((o) => o.name).filter((name) => inputNames.has(name));
+            const twoWay = twoWayBindings(entry.inputsClass, entry.outputsClass);
 
             return {
                 slug: pkg,
@@ -189,7 +202,7 @@ export function generateApiContract({ workspaceRoot, primitivesRoot, skillsRoot,
                         })
                     ),
                     outputs: (entry.outputsClass ?? [])
-                        .filter((output) => !twoWay.includes(output.name))
+                        .filter((output) => !twoWay.includes(bindingName(output)))
                         .map((output) =>
                             compact({
                                 name: output.name,

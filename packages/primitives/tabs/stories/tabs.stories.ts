@@ -10,6 +10,8 @@ import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { TabsAnimatedExample } from './tabs-animated';
 import animatedSource from './tabs-animated?raw';
+import { TabsControlledExample } from './tabs-controlled';
+import controlledSource from './tabs-controlled?raw';
 import { TabsIndicatorExample } from './tabs-indicator';
 import indicatorSource from './tabs-indicator?raw';
 import { TabsKeyframesExample } from './tabs-keyframes';
@@ -44,7 +46,8 @@ export default {
                 TabsAnimatedExample,
                 TabsKeyframesExample,
                 TabsProjectedWrapperExample,
-                TabsObjectValuesExample
+                TabsObjectValuesExample,
+                TabsControlledExample
             ]
         }),
         tailwindDemoDecorator()
@@ -178,6 +181,15 @@ export const ObjectValues: Story = {
     render: () => ({
         template: html`
             <tabs-object-values-example />
+        `
+    })
+};
+
+export const Controlled: Story = {
+    parameters: source(controlledSource),
+    render: () => ({
+        template: html`
+            <tabs-controlled-example />
         `
     })
 };

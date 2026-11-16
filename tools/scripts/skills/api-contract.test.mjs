@@ -1,6 +1,30 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { cleanDefault, cleanType } from './api-contract.mjs';
+import { cleanDefault, cleanType, twoWayBindings } from './api-contract.mjs';
+
+test('model and ordinary aliased input-output pairs publish two-way bindings', () => {
+    assert.deepEqual(twoWayBindings([{ name: 'checked' }], [{ name: 'checked' }]), ['checked']);
+    assert.deepEqual(
+        twoWayBindings(
+            [{ name: 'valueInput', bindingAlias: 'value' }],
+            [{ name: 'valueChange' }, { name: 'onValueChange' }]
+        ),
+        ['value']
+    );
+    assert.deepEqual(
+        twoWayBindings(
+            [{ name: 'valueInput', defaultValue: "undefined, { alias: 'value' }" }],
+            [{ name: 'valueChange' }]
+        ),
+        ['value']
+    );
+});
+
+test('request outputs without the matching Angular change name do not imply two-way binding', () => {
+    assert.deepEqual(twoWayBindings([{ name: 'value' }], [{ name: 'onValueChange' }]), []);
+    assert.deepEqual(twoWayBindings([], [{ name: 'valueChange' }]), []);
+    assert.deepEqual(twoWayBindings(), []);
+});
 
 test('aliased positioning inputs publish the effective config default and authored fallback', () => {
     const input = {

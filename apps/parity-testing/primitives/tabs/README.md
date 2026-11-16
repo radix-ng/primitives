@@ -4,9 +4,9 @@ Compares Angular Tabs with the unmodified Base UI sources pinned in
 [reference.json](../../reference.json). Run `pnpm test-parity tabs`, or add `--project=chromium` for
 local iteration. The suite is discovered by the existing runner and CI without shared-tooling changes.
 
-The suite runs **206 scenarios / 618 planned comparisons** across Chromium, Firefox and WebKit, with no
+The suite runs **226 scenarios / 678 comparisons** across Chromium, Firefox and WebKit, with no
 capability skips: eleven initial-value, twelve Panel lifecycle, seventeen direction, fifteen
-native-identity, forty activation, seventeen Indicator visibility cases, twenty-eight geometry cases thirty-six collection cases and thirty arbitrary-value cases. Four exact reviewed fields remain:
+native-identity, forty activation, seventeen Indicator visibility cases, twenty-eight geometry cases thirty-six collection cases thirty arbitrary-value cases and twenty controlled-owner cases. Four exact reviewed fields remain:
 two authored-Panel-ID fields and two null-Indicator host fields. Whole-Panel presence removes the
 former four persistent-Panel-host exceptions. See below.
 See the [primitive matrix](../../../../packages/primitives/tabs/PARITY.md) for the remaining work.
@@ -57,8 +57,45 @@ passed with an empty `expected-differences.json` at that increment. Two Angular 
 verify numeric/string collections, no active or visible panels, no notification and preservation of
 the initial null choice after a later `defaultValue` input update. The unit suite now passes **54
 tests**, including eight native-activation regressions, seven native-identity regressions, inactive Panel inertness, external direction/null
-changes on both axes, equal-coordinate activation and direction publication before synchronous model
-subscribers run.
+changes on both axes, equal-coordinate activation and uncontrolled direction publication before synchronous accepted-value subscribers run.
+
+## Controlled selection ownership
+
+Twenty `controlled-*` cases add 60 comparisons for ignored/repeated requests, immediate acceptance,
+delayed acceptance, replacement/null responses, cancellation and automatic focus activation. They
+include both axes/RTL, equal-field object identities, function values, null/missing/disabled inputs
+and whole-Panel presence. Each framework uses its own real parent state; fixtures never write Root
+state. F2 applies a pending parent response; F3/F4/F6 make external parent updates without moving focus.
+RTL uses actual DirectionProvider APIs for keyboard behavior plus native direction for layout.
+
+Checkpoints assert the expected parent value, actual native selection/Panel visibility, complete
+request trace, every part's direction and Indicator visibility, then compare focus/tab stops and
+literal visible Indicator variables. Raw DOM, IDs/IDREFs, bounds, native events and optional Angular
+triggers remain recorded. Original object/function identities are checked against stable local
+catalogs; functions must never execute. Angular's real `valueChange` output is independently asserted
+and kept raw; the reference does not emulate that Angular output.
+
+A defined input now owns selection through a computed readonly `root.value()`. One private signal
+owns uncontrolled state. Ignoring or postponing a request leaves selection/direction unchanged;
+repeated requests remain observable until the input actually changes. A replacement follows the
+parent's destination. `[(value)]` uses ordinary input/output binding and cancels before emitting the
+accepted-value output. Actual selection can be observed through the readonly signal; `valueChange`
+reports accepted requests, including a request the parent ignores.
+
+The initial experiment's 20 new Chromium rows had 17 Angular behavior failures, two passes and one
+invalid RTL fixture that failed focus setup on both frameworks. The missing direction providers were
+corrected; that raw report remains in `dist/parity-testing/tabs/before-controlled-fix/` and is not a
+zero-reference-failure baseline. All final controlled cases and the complete **678-row Tabs suite**
+pass across three engines, with unchanged four reviewed fields. All **69 focused Linux/arm64 comparisons** also pass (60 new rows and nine controlled-collection
+controls), in Playwright 1.60.0 Noble with one worker and original timeouts, retained in
+`dist/tabs-controlled-linux/results/`. Tabs units pass **83 tests**; five
+fresh Storybook checks include actual two-way acceptance/cancellation, and five selected SSR checks
+and library/SSR-app/consumer-skill builds pass. See [ADR 0081](../../../../docs/adr/0081-tabs-controlled-selection-ownership.md).
+
+Explicit default initialization and external input updates do not emit requests. Automatic
+uncontrolled changes commit selection/direction before notification and cannot be canceled. Moving
+between controlled/uncontrolled modes through undefined, client hydration and rapid pre-render
+Enter/Tab remain outside this increment's certification.
 
 ## Arbitrary value identities
 
@@ -210,13 +247,13 @@ It also asserts direction on the first sampled animation frame with that applica
 Raw DOM, sampled frames and actual tab rects remain in measurements. Indicator presence at null is
 retained in raw DOM and remains G6; neither host lifetime nor Indicator geometry is certified here.
 
-Root derives direction from the native model through `linkedSignal`; `afterRenderEffect` reads layout
+Root derives direction from its effective selected value through `linkedSignal`; `afterRenderEffect` reads layout
 after rendering. An insertion keeps its committed origin until the new tab registers and geometry
 can resolve the value fallback. Real positions determine direction, including RTL; equal positions
 return `none`. Automatic fallback explicitly resets direction without a directional transition.
 External changes do not emit new user change requests, and canceled requests do not replace the origin.
-Request/fallback direction is published before the model commit, so synchronous model subscribers see
-the same direction as rendered parts.
+Uncontrolled selection/direction is published before accepted-value outputs. Controlled request
+details describe the requested direction; rendered parts follow the actual input selection.
 
 The pin keeps the last registered origin while a controlled destination remains missing. For the
 `Overview` → `Missing` → `Unknown` → `Overview` case, the observed directions are `left`, `right`,
@@ -231,10 +268,9 @@ before the fix; their geometry is explicitly mocked because jsdom has no layout.
 equal-coordinate/accepted-request checks extend the browser cases without changing that saved result.
 The final suite runs 51 direction comparisons across three engines.
 
-An Angular parent that ignores an accepted model request is not a React controlled-prop mirror;
-cancel before commit to reject it. The current fixtures accept or explicitly cancel user requests.
-Equivalence for an ignoring parent is not established. Dynamic orientation/style changes in the same
-selection update and transition-frame CSS transforms remain separate combinations.
+The controlled ownership cases above now compare ignoring parents, delayed responses and
+replacements. Dynamic orientation/style changes in the same selection update and transition-frame
+CSS transforms remain separate combinations.
 
 ## Native identities and reciprocal relationships
 

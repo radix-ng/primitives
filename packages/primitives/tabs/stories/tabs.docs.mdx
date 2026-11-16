@@ -60,6 +60,11 @@ changes. Automatic uncontrolled fallbacks use `'initial'`, `'disabled'`, or `'mi
 and are not cancelable. `eventDetails.activationDirection` reports `"left"`, `"right"`, `"up"`, `"down"`, or
 `"none"`.
 
+A defined `[value]` owns the selection. A request leaves that selection unchanged until the parent
+updates its input; the parent can ignore the request, accept it later, or choose another value.
+Rendered direction, Panels and Indicator follow the parent's actual selection. Use one-way `[value]`
+with `onValueChange` when the parent decides how to handle a request:
+
 ```html
 <div [value]="value()" (onValueChange)="setValue($event)" rdxTabsRoot>
     ...
@@ -76,6 +81,22 @@ setValue(change: RdxTabsValueChangeEvent) {
     this.value.set(change.value);
 }
 ```
+
+For automatic acceptance, use `[(value)]` with a defined initial application value. It pairs the
+`value` input with `valueChange`; cancellation in `onValueChange` prevents that accepted-value output.
+
+<Canvas of={TabsStories.Controlled} />
+
+`valueChange` reports accepted requests and automatic uncontrolled changes. It does not report
+external input updates or explicit default initialization. A controlled request can emit `valueChange`
+while the input still holds the old selection. Choose one-way handling for delayed or transformed
+responses; two-way binding automatically writes the requested value back into application state.
+
+**Migration:** Root `value` is now a readonly signal, and `valueInput` supplies the native `value`
+binding. Replace imperative `root.value.set()` / `.update()` with updates to the bound application
+signal. Observe actual selection with `root.value()` in an Angular effect; `valueChange` observes
+accepted requests. Initialize controlled application state explicitly. For uncontrolled tabs, omit
+`[value]` and supply `defaultValue` when needed.
 
 ## Values
 

@@ -4,6 +4,7 @@ import '../../../../radix-storybook/.storybook/tailwind.css';
 import { ReactActivation } from './activation.react';
 import { ReactCollection } from './collection.react';
 import { config, installProbe, classes as s } from './contract';
+import { ReactControlled } from './controlled.react';
 import { ReactDirection } from './direction.react';
 import { ReactGeometry } from './geometry.react';
 import { ReactIdentity } from './identity.react';
@@ -14,6 +15,7 @@ import { ReactValues } from './values.react';
 const settings = config();
 const trace = installProbe('react', settings);
 function ReactTabs() {
+    if (settings.controlled) return <ReactControlled trace={trace} />;
     if (settings.values) return <ReactValues trace={trace} />;
     if (settings.collection) return <ReactCollection trace={trace} />;
     if (settings.geometry) return <ReactGeometry trace={trace} />;

@@ -6,7 +6,6 @@ import {
     inject,
     input,
     linkedSignal,
-    model,
     output,
     signal,
     untracked
@@ -94,9 +93,23 @@ export class RdxTabsRoot {
     readonly baseId = injectId('rdx-tabs-');
 
     /**
-     * The value of the currently selected tab. Use together with `(onValueChange)` for controlled state.
+     * The controlled selected value. A defined input owns selection until the parent updates it.
+     * Use `(valueChange)` for two-way binding or `(onValueChange)` to decide how to handle requests.
      */
-    readonly value = model<RdxTabsValue>();
+    readonly valueInput = input<RdxTabsValue>(undefined, { alias: 'value' });
+
+    private readonly uncontrolledValue = signal<RdxTabsValue>(undefined, {
+        debugName: 'RdxTabsRoot.uncontrolledValue'
+    });
+    private readonly externallyControlled = computed(() => this.valueInput() !== undefined);
+
+    /** The effective selected value. Controlled selection changes only when its input changes. */
+    readonly value = computed(() => (this.externallyControlled() ? this.valueInput() : this.uncontrolledValue()), {
+        debugName: 'RdxTabsRoot.value'
+    });
+
+    /** Accepted value requests and automatic uncontrolled changes. Supports `[(value)]`. */
+    readonly valueChange = output<RdxTabsValue>();
 
     /**
      * The value of the tab that should be initially selected when uncontrolled.
@@ -115,7 +128,8 @@ export class RdxTabsRoot {
     readonly orientation = input<DataOrientation>('horizontal');
 
     /**
-     * Event emitted when the selected tab changes.
+     * Event emitted for selection requests and automatic uncontrolled consistency changes.
+     * Controlled requests do not change selection until the parent updates the value input.
      *
      * `eventDetails.reason` is `'none'` for user-initiated changes, `'initial'` for the first automatic
      * uncontrolled selection, `'disabled'` when an uncontrolled selection falls back from a disabled tab,
@@ -174,16 +188,12 @@ export class RdxTabsRoot {
         }
     });
 
-    private readonly externallyControlled = signal(false);
     private readonly panels = signal(new Map<RdxTabsValue, { id: string; owner: object }>(), {
         debugName: 'RdxTabsRoot.panels'
     });
     private readonly tabIds = signal<readonly { value: RdxTabsValue; id: string; owner: object }[]>([], {
         debugName: 'RdxTabsRoot.tabIds'
     });
-    private hasObservedValue = false;
-    private previousObservedValue: RdxTabsValue;
-    private internalValueCommit = false;
     private hasAppliedDefaultValue = false;
     private initialDefaultValue: RdxTabsValue;
     private shouldNotifyInitialValueChange = true;
@@ -202,32 +212,7 @@ export class RdxTabsRoot {
         });
 
         effect(() => {
-            const currentValue = this.value();
-
-            if (this.internalValueCommit) {
-                this.internalValueCommit = false;
-                this.hasObservedValue = true;
-                this.previousObservedValue = currentValue;
-                return;
-            }
-
-            if (!this.hasObservedValue) {
-                this.hasObservedValue = true;
-                this.previousObservedValue = currentValue;
-                if (currentValue !== undefined) {
-                    this.externallyControlled.set(true);
-                }
-                return;
-            }
-
-            if (currentValue !== this.previousObservedValue) {
-                this.externallyControlled.set(true);
-                this.previousObservedValue = currentValue;
-            }
-        });
-
-        effect(() => {
-            if (this.hasAppliedDefaultValue || untracked(this.value) !== undefined) {
+            if (this.hasAppliedDefaultValue) {
                 return;
             }
 
@@ -237,7 +222,8 @@ export class RdxTabsRoot {
             this.initialDefaultValue = hasExplicitDefaultValue ? defaultValue : 0;
             this.shouldNotifyInitialValueChange = !hasExplicitDefaultValue;
             this.shouldHonorDisabledDefaultValue = hasExplicitDefaultValue;
-            untracked(() => this.commitValue(this.initialDefaultValue));
+            // Applying configuration is not a value request. Explicit defaults stay silent.
+            untracked(() => this.uncontrolledValue.set(this.initialDefaultValue));
         });
 
         // Registration effects can publish partial collections while Angular replaces views.
@@ -330,8 +316,11 @@ export class RdxTabsRoot {
             return;
         }
 
-        this.direction.set({ value, fromValue: previous, direction: activationDirection, waitingForTab: false });
-        this.commitValue(value);
+        if (!this.externallyControlled()) {
+            this.direction.set({ value, fromValue: previous, direction: activationDirection, waitingForTab: false });
+            this.uncontrolledValue.set(value);
+        }
+        this.valueChange.emit(value);
     }
 
     /** @ignore */
@@ -397,14 +386,9 @@ export class RdxTabsRoot {
         };
     }
 
-    private commitValue(value: RdxTabsValue): void {
-        this.internalValueCommit = true;
-        this.value.set(value);
-    }
-
     private commitAutomaticValueChange(value: RdxTabsValue, reason: RdxTabsValueChangeReason): void {
         this.direction.set({ value, fromValue: value, direction: 'none', waitingForTab: false });
-        this.commitValue(value);
+        this.uncontrolledValue.set(value);
         this.notifyAutomaticValueChange(value, reason);
         this.shouldNotifyInitialValueChange = false;
     }
@@ -421,6 +405,7 @@ export class RdxTabsRoot {
         const eventDetails = baseEventDetails as RdxTabsValueChangeEventDetails;
         eventDetails.activationDirection = 'none';
         this.onValueChange.emit({ value, eventDetails });
+        this.valueChange.emit(value);
     }
 }
 
