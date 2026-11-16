@@ -37,14 +37,14 @@ export interface RdxTabsValueChangeEvent {
 }
 
 interface TabsLayout {
-    value: RdxTabsValue | undefined;
+    value: RdxTabsValue;
     orientation: DataOrientation;
     positions: Map<RdxTabsValue, Pick<DOMRect, 'left' | 'top'>>;
 }
 
 interface TabsDirection {
-    value: RdxTabsValue | undefined;
-    fromValue: RdxTabsValue | undefined;
+    value: RdxTabsValue;
+    fromValue: RdxTabsValue;
     direction: RdxTabsActivationDirection;
     waitingForTab: boolean;
 }
@@ -96,7 +96,7 @@ export class RdxTabsRoot {
     /**
      * The value of the currently selected tab. Use together with `(onValueChange)` for controlled state.
      */
-    readonly value = model<RdxTabsValue | undefined>();
+    readonly value = model<RdxTabsValue>();
 
     /**
      * The value of the tab that should be initially selected when uncontrolled.
@@ -104,7 +104,7 @@ export class RdxTabsRoot {
      *
      * @default 0
      */
-    readonly defaultValue = input<RdxTabsValue | undefined>(undefined);
+    readonly defaultValue = input<RdxTabsValue>(undefined);
 
     /**
      * The orientation the tabs are laid out. Controls arrow-key navigation
@@ -148,7 +148,7 @@ export class RdxTabsRoot {
         { debugName: 'RdxTabsRoot.tabLayout' }
     );
     private readonly direction = linkedSignal<
-        { value: RdxTabsValue | undefined; orientation: DataOrientation; layout: TabsLayout },
+        { value: RdxTabsValue; orientation: DataOrientation; layout: TabsLayout },
         TabsDirection
     >({
         debugName: 'RdxTabsRoot.direction',
@@ -182,10 +182,10 @@ export class RdxTabsRoot {
         debugName: 'RdxTabsRoot.tabIds'
     });
     private hasObservedValue = false;
-    private previousObservedValue: RdxTabsValue | undefined;
+    private previousObservedValue: RdxTabsValue;
     private internalValueCommit = false;
     private hasAppliedDefaultValue = false;
-    private initialDefaultValue: RdxTabsValue | undefined;
+    private initialDefaultValue: RdxTabsValue;
     private shouldNotifyInitialValueChange = true;
     private shouldHonorDisabledDefaultValue = false;
     private didRegisterTabs = false;
@@ -237,7 +237,7 @@ export class RdxTabsRoot {
             this.initialDefaultValue = hasExplicitDefaultValue ? defaultValue : 0;
             this.shouldNotifyInitialValueChange = !hasExplicitDefaultValue;
             this.shouldHonorDisabledDefaultValue = hasExplicitDefaultValue;
-            untracked(() => this.commitValue(this.initialDefaultValue!));
+            untracked(() => this.commitValue(this.initialDefaultValue));
         });
 
         // Registration effects can publish partial collections while Angular replaces views.
@@ -409,7 +409,7 @@ export class RdxTabsRoot {
         this.shouldNotifyInitialValueChange = false;
     }
 
-    private notifyAutomaticValueChange(value: RdxTabsValue | undefined, reason: RdxTabsValueChangeReason): void {
+    private notifyAutomaticValueChange(value: RdxTabsValue, reason: RdxTabsValueChangeReason): void {
         if (value === undefined) {
             return;
         }
@@ -426,7 +426,7 @@ export class RdxTabsRoot {
 
 function getTabMetadataByValue(
     tabMap: Map<HTMLElement, RdxCompositeMetadata<RdxTabsTabMetadata>>,
-    value: RdxTabsValue | undefined
+    value: RdxTabsValue
 ): RdxCompositeMetadata<RdxTabsTabMetadata> | undefined {
     for (const tabMetadata of tabMap.values()) {
         if (tabMetadata.value === value) {
@@ -437,9 +437,7 @@ function getTabMetadataByValue(
     return undefined;
 }
 
-function getFirstEnabledTabValue(
-    tabMap: Map<HTMLElement, RdxCompositeMetadata<RdxTabsTabMetadata>>
-): RdxTabsValue | undefined {
+function getFirstEnabledTabValue(tabMap: Map<HTMLElement, RdxCompositeMetadata<RdxTabsTabMetadata>>): RdxTabsValue {
     for (const tabMetadata of tabMap.values()) {
         if (!tabMetadata.disabled) {
             return tabMetadata.value;
@@ -450,8 +448,8 @@ function getFirstEnabledTabValue(
 }
 
 function computeActivationDirection(
-    previous: RdxTabsValue | undefined,
-    next: RdxTabsValue | undefined,
+    previous: RdxTabsValue,
+    next: RdxTabsValue,
     orientation: DataOrientation,
     positions: TabsLayout['positions']
 ): RdxTabsActivationDirection {
@@ -475,6 +473,9 @@ function computeActivationDirection(
 function measureTabs(tabMap: Map<HTMLElement, RdxCompositeMetadata<RdxTabsTabMetadata>>): TabsLayout['positions'] {
     const positions: TabsLayout['positions'] = new Map();
     for (const [element, metadata] of tabMap) {
+        // Selection uses ===; NaN has no matching tab. Map's SameValueZero lookup would
+        // otherwise give it a position that the pinned strict-equality lookup cannot find.
+        if (typeof metadata.value === 'number' && Number.isNaN(metadata.value)) continue;
         if (!positions.has(metadata.value)) positions.set(metadata.value, element.getBoundingClientRect());
     }
     return positions;

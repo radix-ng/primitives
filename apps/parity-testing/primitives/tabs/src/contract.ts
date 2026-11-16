@@ -5,8 +5,9 @@ import { geometryCases, type GeometrySettings } from './geometry';
 import { identityCases, type IdentityKind } from './identity';
 import { indicatorCases, type IndicatorKind } from './indicator';
 import { panelCases, type PanelSettings } from './panels';
+import { valueCases, type ValueSettings } from './values';
 
-export type Value = string | number | null;
+export type Value = unknown;
 export interface Option {
     value: string | number;
     label: string;
@@ -24,6 +25,7 @@ export interface Settings {
     indicator?: IndicatorKind;
     geometry?: GeometrySettings;
     collection?: CollectionSettings;
+    values?: ValueSettings;
 }
 
 const numericOptions: Option[] = [
@@ -59,6 +61,7 @@ export const initialCases = {
     'value-null': { options: numericOptions, defaultValue: 1, value: null }
 } satisfies Record<string, Settings>;
 export const cases = {
+    ...valueCases,
     ...collectionCases,
     ...geometryCases,
     ...initialCases,

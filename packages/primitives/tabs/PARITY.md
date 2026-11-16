@@ -8,12 +8,12 @@ The prepared source digest was validated with `pnpm parity:prepare`.
 This is a source/API audit with incremental comparison evidence, not full parity or accessibility
 certification. The [Tabs differential suite](../../../apps/parity-testing/primitives/tabs/README.md)
 now covers initial values/notifications, Panel exits/focus, activation direction, identities, native activation,
-Indicator visibility/resize/coordinates and dynamic collections: **176 scenarios, 528 planned comparisons** across Chromium, Firefox
+Indicator visibility/resize/coordinates, dynamic collections and arbitrary values: **206 scenarios, 618 planned comparisons** across Chromium, Firefox
 and WebKit, with no skips. Four exact reviewed fields remain: two for G5's authored-Panel-ID
 mismatch and two for G6's hidden Indicator host at null. Whole-Panel presence removes the former
 four persistent-Panel-host exceptions. G2's collection consistency and native focus subsets are covered; G1 and G3's direction defects
 are resolved; G4's inert/hidden defects and G5's identity defects are resolved for their documented
-scope. G6's visibility/observation and measured geometry subsets and G8's native keyboard/click/press-release subset are resolved; remaining interaction, lifecycle
+scope. G6's visibility/observation and measured geometry subsets, G7's arbitrary-identity subset and G8's native keyboard/click/press-release subset are resolved; remaining interaction, lifecycle
 and geometry gaps below are not certified by these increments.
 **Pinned covered** means the stated subset passed direct Angular/Base UI comparison;
 **Regression covered** below means an existing Angular check exercises the stated subset;
@@ -46,7 +46,7 @@ listed separately from unresolved gaps.
 | Indicator six `--active-tab-*` variables and common state attributes                     | 45 pinned visibility/resize/geometry cases; direction and custom-ID controls        | Measured border/scroll/transform geometry, role/hidden and CSS precision covered                                |
 | Indicator custom tab ID, absent/zero-size selection, resize and List replacement         | Pinned visibility/resize cases; three observer lifetime units                       | G5 lookup and G6 visibility/observation covered; null retains a hidden Angular host                             |
 | Indicator scroll, borders, scale/transforms and intermediate scroll containers           | 28 pinned geometry cases; literal variables and native bounds                       | G6 covered at render/selection checkpoints; continuous motion/scroll remains pending                            |
-| Tab/Panel value domain and unique identity                                               | Public value types; pinned mixed numeric/string identities                          | ID collisions fixed in G5; arbitrary-value API remains G7                                                       |
+| Tab/Panel value domain and unique identity                                               | Public value types; pinned mixed numeric/string identities                          | G7 covered for reference identities, mixed/falsy values, callbacks and native relationships                     |
 | Custom/native hosts, keyboard activation and disabled links                              | Forty native activation cases on button/div/link/anchor hosts                       | G8 covered for the documented keyboard/click/secondary-release subset                                           |
 | Projected parts through a host-composed Root                                             | Five wrapper units and one Chromium Storybook scenario                              | Regression covered; Root must stay in the declaring injector tree                                               |
 | List destruction/recreation and stale registration cleanup                               | Wrapper lifecycle units and pinned collection cases                                 | Selection survives List absence and populated replacement; whole-Root disposal follow-ups remain                |
@@ -245,12 +245,41 @@ Continuous inner-scroll tracking without a render, animation-frame transforms, r
 shadow integrations, actual hydration and Indicator first paint remain unverified. No
 `renderBeforeHydration` capability is introduced.
 
-### G7 — Value domain remains narrower than the pin
+### G7 — Arbitrary identity values covered; breaking public type widening
 
-[Public types](src/utils.ts) accept `string | number | null`; the pin accepts arbitrary identity
-values, including object/function values. G5 removes value stringification from generated IDs and
-compares distinct numeric `1`/string `'1'` selection with unique native identities. Arbitrary-value
-support remains an API capability gap, not a request to copy React state handling.
+[Public types](src/utils.ts) now use `unknown` for `RdxTabsValue`, including Root inputs/models,
+Tab/Panel values, presence and event payloads. This matches the pin's value domain while keeping
+application handlers responsible for narrowing a received value before writing narrower typed state.
+The [object-value example](stories/tabs-object-values.ts) shows that migration without casting.
+Objects, arrays, functions and symbols preserve reference identity; equal fields or symbol descriptions
+do not make separate values equal. Functions are stored and emitted, never invoked as setters.
+
+Thirty `values-*` cases compare uncontrolled defaults, implicit function fallback, controlled native
+requests and external updates, missing object defaults, exact callback identities/cancellation,
+selected removal, refill, disabling, whole-Panel presence, native IDs/IDREFs and Indicator state.
+They cover objects/arrays with equal contents, distinct functions/same-description symbols, bigint,
+boolean, falsy/mixed values, null, explicitly bound undefined and signed zero. Opaque objects throw
+if coerced; counters and original callback-reference assertions prove no coercion/function calls.
+Each fixture builds its own catalog once; snapshots retain type/nullish markers and Object.is
+membership alongside real native relationships, focus, direction, literal variables and raw DOM.
+
+A private Panel sentinel distinguishes an omitted input from a legitimate bound undefined. Missing
+ordinary Panel inputs still produce the same diagnostic; inherited undefined works through presence.
+Direction measurements now omit NaN, which cannot match the pin's strict-equality Tab lookup;
+Map's SameValueZero lookup had incorrectly supplied its physical position for a canceled request.
+Two new unit regressions fail against the old runtime and pass after these fixes.
+
+Root still reserves initial undefined for uncontrolled/default semantics; a controlled undefined
+mode switch is not certified. Null/undefined selections hide Indicator, retaining the existing hidden
+Angular-host adaptation. An authored null Tab/Panel matches selected null by ===. Zero and negative
+zero share one identity; duplicates are not supported. NaN is covered only as a canceled request
+with its original payload and direction; it is not certified as a selected identity. See
+[ADR 0080](../../../docs/adr/0080-tabs-arbitrary-value-identities.md).
+
+The 90 new comparisons and 240 affected collection/direction/identity/Panel controls pass on all
+three engines (**330 comparisons**). Tabs units pass **75 tests**, including 12 value tests; four
+fresh Storybook checks and five SSR markup/identity checks pass. No new differential exception is
+added. Actual hydration, controlled mode switching and imperative ID mutation remain follow-ups.
 
 ### G8 — Resolved for native keyboard/click activation and secondary release
 
@@ -278,8 +307,22 @@ link activation, authored submit/reset types and browser shortcuts remain follow
 
 Checks run for this audit on Node 24.22.2:
 
+- G7: `pnpm test-parity tabs --grep 'values-|identity-|direction-|collection-|panel-'` —
+  **330 passed**, including 90 new arbitrary-value rows and 240 controls, strict fixture build and
+  13 shared runner checks. The suite now has 206 scenarios / 618 planned rows; earlier full runs
+  below retain their original scope.
+- G7 Linux/arm64: **90 passed** in Playwright 1.60.0 Noble with one worker and original timeouts,
+  retained in `dist/tabs-values-linux/results/`.
+- G7 units: **75 passed**, including 12 arbitrary-value checks. Against the previous runtime, two
+  of the new units fail (explicit undefined Panel and NaN request direction), ten pass.
+- G7 fresh Storybook: **4 Chromium checks passed** (typed object-value consumer, Indicator,
+  whole-Panel keyframes and projected wrapper). SSR: **5 selected checks passed**, including actual
+  object/function/undefined native relationships and no function calls during server rendering.
+- G7 library/SSR-app builds, scoped lint and consumer-skill regeneration pass. These server checks
+  do not establish client hydration or arbitrary-value transfer across server/client processes.
+
 - G2 increment: `pnpm test-parity tabs --grep collection-` — **108 passed** (36 scenarios,
-  Chromium/Firefox/WebKit), strict fixture build and 13 shared runner checks. The suite now has
+  Chromium/Firefox/WebKit), strict fixture build and 13 shared runner checks. At the G2 increment the suite contained
   176 scenarios / 528 planned comparisons; earlier full-run counts below retain their scope.
 - G2 Linux/arm64: **108 passed** in Playwright 1.60.0 Noble, one worker and original timeouts,
   retained in `dist/tabs-collection-linux/results/`.
@@ -356,7 +399,7 @@ Enter/Tab failures. Its [follow-up](../../../tools/consumer-testing/generation/t
 records supplemental success after observing selection rendering. Neither result compares Base UI or
 establishes ownership of that timing issue; do not relabel it as primitive parity or as 36/36.
 
-Next increment: arbitrary-value support for G7. G6's remaining continuous
+Next increments: the remaining keyboard matrix and client hydration/first paint. G6's remaining continuous
 inner-scroll/animation, realm and hydration combinations need separate evidence. G8's remaining native gesture and auxiliary-host combinations stay explicit follow-ups.
 Keep fixtures on actual native input and observable state; do not normalize away IDs, focus, mounting,
 event metadata or geometry differences. Further Root disposal cases, nested/overlay consumers, hydration and

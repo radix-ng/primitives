@@ -74,9 +74,9 @@
         },
         {
           "name": "value",
-          "type": "RdxTabsValue | undefined",
-          "default": "undefined",
-          "description": "Associates an ordinary retained Panel with a Tab. With structural presence the value is\nsupplied by *rdxTabsPanelPresence instead."
+          "type": "RdxTabsValue",
+          "default": "UNSET_VALUE",
+          "description": "Associates an ordinary retained Panel with a Tab. With structural presence the value is\nsupplied by *rdxTabsPanelPresence instead. An explicitly bound undefined is a valid identity;\nomitting both the binding and structural owner is diagnosed."
         }
       ],
       "outputs": []
@@ -92,7 +92,7 @@
       "inputs": [
         {
           "name": "defaultValue",
-          "type": "RdxTabsValue | undefined",
+          "type": "RdxTabsValue",
           "default": "undefined",
           "description": "The value of the tab that should be initially selected when uncontrolled.\nWhen omitted, Base UI parity uses `0` as the implicit default and falls back to the first enabled tab."
         },
@@ -104,7 +104,7 @@
         },
         {
           "name": "value",
-          "type": "RdxTabsValue | undefined",
+          "type": "RdxTabsValue",
           "description": "The value of the currently selected tab. Use together with `(onValueChange)` for controlled state."
         }
       ],

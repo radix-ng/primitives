@@ -9,10 +9,12 @@ import { ReactGeometry } from './geometry.react';
 import { ReactIdentity } from './identity.react';
 import { ReactIndicator } from './indicator.react';
 import { ReactPanels } from './panels.react';
+import { ReactValues } from './values.react';
 
 const settings = config();
 const trace = installProbe('react', settings);
 function ReactTabs() {
+    if (settings.values) return <ReactValues trace={trace} />;
     if (settings.collection) return <ReactCollection trace={trace} />;
     if (settings.geometry) return <ReactGeometry trace={trace} />;
     if (settings.indicator) return <ReactIndicator trace={trace} />;

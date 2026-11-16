@@ -7,6 +7,7 @@ import { geometryScenarios } from './geometry.scenarios';
 import { identityScenarios } from './identity.scenarios';
 import { indicatorScenarios } from './indicator.scenarios';
 import { panelScenarios } from './panels.scenarios';
+import { valueScenarios } from './values.scenarios';
 
 const expectedValues = {
     'implicit-zero': 0,
@@ -39,6 +40,7 @@ const initialScenarios = (Object.keys(initialCases) as (keyof typeof initialCase
     }
 }));
 export const scenarios = [
+    ...valueScenarios,
     ...collectionScenarios,
     ...geometryScenarios,
     ...initialScenarios,

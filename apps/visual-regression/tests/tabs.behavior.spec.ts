@@ -1,5 +1,24 @@
 import { expect, test } from '@playwright/test';
 
+test('Tabs object values preserve typed application state and whole-Panel presence', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await page.goto('/iframe.html?id=primitives-tabs--object-values&viewMode=story');
+    const account = page.getByRole('tab', { name: 'Account' });
+    const security = page.getByRole('tab', { name: 'Security' });
+    await expect(account).toHaveAttribute('aria-selected', 'true');
+    await account.focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(security).toBeFocused();
+    await expect(account).toHaveAttribute('aria-selected', 'true');
+    await page.keyboard.press('Enter');
+    await expect(security).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('output')).toHaveText('Selected: Security');
+    await expect(page.getByRole('tabpanel')).toHaveCount(1);
+    await expect(page.getByRole('tabpanel')).toHaveText('Update your security preferences.');
+    expect(errors).toEqual([]);
+});
+
 test('Tabs public indicator follows the selected Tab through its CSS transition', async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));

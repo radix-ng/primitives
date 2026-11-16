@@ -4,9 +4,9 @@ Compares Angular Tabs with the unmodified Base UI sources pinned in
 [reference.json](../../reference.json). Run `pnpm test-parity tabs`, or add `--project=chromium` for
 local iteration. The suite is discovered by the existing runner and CI without shared-tooling changes.
 
-The suite runs **176 scenarios / 528 planned comparisons** across Chromium, Firefox and WebKit, with no
+The suite runs **206 scenarios / 618 planned comparisons** across Chromium, Firefox and WebKit, with no
 capability skips: eleven initial-value, twelve Panel lifecycle, seventeen direction, fifteen
-native-identity, forty activation, seventeen Indicator visibility cases, twenty-eight geometry cases and thirty-six collection cases. Four exact reviewed fields remain:
+native-identity, forty activation, seventeen Indicator visibility cases, twenty-eight geometry cases thirty-six collection cases and thirty arbitrary-value cases. Four exact reviewed fields remain:
 two authored-Panel-ID fields and two null-Indicator host fields. Whole-Panel presence removes the
 former four persistent-Panel-host exceptions. See below.
 See the [primitive matrix](../../../../packages/primitives/tabs/PARITY.md) for the remaining work.
@@ -60,6 +60,45 @@ tests**, including eight native-activation regressions, seven native-identity re
 changes on both axes, equal-coordinate activation and direction publication before synchronous model
 subscribers run.
 
+## Arbitrary value identities
+
+Thirty `values-*` cases exercise objects/arrays with equal fields, functions, symbols with equal
+descriptions, bigint, boolean, mixed/falsy values, null, explicit undefined and signed zero. Catalogs
+are created once per application instance. Root receives the actual value instances, and Tab/Panel
+pairs share them. Native clicks/Enter activate values; F2/F3/F4 remove/refill/disable application
+options; F5/F6 change controlled application inputs. No callback feeds an uncontrolled Root.
+
+Assertions check the original callback reference against catalog entries with Object.is, plus its
+type/null/undefined markers. This preserves distinctions that JSON value serialization would lose;
+callbacks remain stored unchanged in the browser probe. Native selection/Panel state, complete
+callback traces, focus/tab stops, direction, resolved IDREF ownership and every non-null Indicator
+variable compare directly. Original generated IDs, literal IDREFs, bounds, DOM and event metadata
+remain raw measurements. Opaque objects throw on coercion, and function/coercion counters must stay
+zero. The driver never replaces primitive state or callback values.
+
+All **330 affected comparisons** pass across Chromium, Firefox and WebKit: 90 new value rows and
+240 collection/direction/identity/Panel controls. All **90 new rows** also pass in Playwright 1.60.0
+Noble Linux/arm64 with one worker and original timeouts, retained in `dist/tabs-values-linux/results/`.
+Twelve new units pass (two fail against the old
+runtime); Tabs has 75 passing tests. Four fresh Storybook checks, five selected SSR checks and
+library/SSR-app/consumer-skill builds pass. See [ADR 0080](../../../../docs/adr/0080-tabs-arbitrary-value-identities.md)
+for the breaking unknown type migration and the two runtime fixes.
+
+The initial local 30-case experiment had three Angular runtime failures (two undefined Panel cases
+and canceled NaN direction), plus one invalid reference fixture containing both 0 and -0. That
+fixture caused the unmodified pin to hit React error 185 and was corrected to use one zero-valued Tab
+with an initial negative-zero selection. The original raw report is preserved in
+`dist/parity-testing/tabs/before-values-runtime-fix/`; it is not a zero-reference-failure baseline.
+The corrected fixture and explicit assertions pass after the fix, with no new exception or skip.
+
+Root's initial undefined still selects uncontrolled/default behavior. A later uncontrolled native
+undefined request is covered; switching a controlled Root to undefined is not. An authored null
+Tab/Panel matches selected null, while Indicator remains hidden. Its host-presence adaptation is
+unchanged: these cases compare Indicator visibility and literal variables when visible, retaining
+both actual host policies in raw DOM. Zero and negative zero are one === identity; duplicate values
+are unsupported. NaN is tested only through canceled requests, not as a selected identity. Actual
+client hydration and cross-process preservation of arbitrary identity values are not certified.
+
 ## Dynamic collections and focus
 
 Thirty-six `collection-*` cases cover selected/final/unselected removal, empty/refilled/delayed Lists,
@@ -85,7 +124,7 @@ automatic activation request. Existing four reviewed fields are unchanged. See
 [ADR 0079](../../../../docs/adr/0079-tabs-collection-consistency.md).
 
 All **108 collection comparisons** pass across Chromium, Firefox and WebKit, with strict fixture
-build and 13 shared runner checks. The suite now contains 176 scenarios / 528 planned comparisons;
+build and 13 shared runner checks. At the G2 increment the suite contained 176 scenarios / 528 planned comparisons;
 earlier full-run counts retain their original scope. All 108 rows also pass in Playwright 1.60.0 Noble Linux/arm64 with one worker and original timeouts,
 retained in `dist/tabs-collection-linux/results/`. Shared consumer units pass **731 tests** with
 five existing skips, including 63 Tabs and 31 Composite tests. Ten focused Chromium checks against a

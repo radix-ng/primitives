@@ -111,3 +111,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0077](0077-tabs-whole-panel-presence.md)                                    | Accepted               | Own complete Tabs Panel views through structural presence                            |
 | [0078](0078-tabs-indicator-coordinates.md)                                   | Accepted               | Measure Tabs Indicator in List-local CSS coordinates                                 |
 | [0079](0079-tabs-collection-consistency.md)                                  | Accepted               | Reconcile rendered Tabs collections and preserve Composite focus                     |
+| [0080](0080-tabs-arbitrary-value-identities.md)                              | Accepted               | Accept arbitrary Tabs identities with unknown public values                          |

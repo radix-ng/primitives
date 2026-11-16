@@ -4,8 +4,8 @@
  */
 export type RdxTabsActivationDirection = 'left' | 'right' | 'up' | 'down' | 'none';
 
-/** A value that identifies a tab / panel pair. */
-export type RdxTabsValue = string | number | null;
+/** A tab / panel identity, compared with strict equality. Objects and functions retain their identity. */
+export type RdxTabsValue = unknown;
 
 /** Metadata registered for each tab in the composite list. */
 export interface RdxTabsTabMetadata {

@@ -14,6 +14,8 @@ import { TabsIndicatorExample } from './tabs-indicator';
 import indicatorSource from './tabs-indicator?raw';
 import { TabsKeyframesExample } from './tabs-keyframes';
 import keyframesSource from './tabs-keyframes?raw';
+import { TabsObjectValuesExample } from './tabs-object-values';
+import objectValuesSource from './tabs-object-values?raw';
 import { TabsProjectedWrapperExample } from './tabs-projected-wrapper';
 import projectedWrapperSource from './tabs-projected-wrapper?raw';
 
@@ -41,7 +43,8 @@ export default {
                 TabsIndicatorExample,
                 TabsAnimatedExample,
                 TabsKeyframesExample,
-                TabsProjectedWrapperExample
+                TabsProjectedWrapperExample,
+                TabsObjectValuesExample
             ]
         }),
         tailwindDemoDecorator()
@@ -166,6 +169,15 @@ export const ProjectedThroughWrapper: Story = {
     render: () => ({
         template: html`
             <tabs-projected-wrapper-example />
+        `
+    })
+};
+
+export const ObjectValues: Story = {
+    parameters: source(objectValuesSource),
+    render: () => ({
+        template: html`
+            <tabs-object-values-example />
         `
     })
 };

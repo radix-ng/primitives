@@ -77,6 +77,24 @@ setValue(change: RdxTabsValueChangeEvent) {
 }
 ```
 
+## Values
+
+Tab values accept arbitrary identities, including objects, arrays, functions, symbols, `bigint` and
+boolean. Objects and functions match by reference (`===`): keep the same value instance for a Tab,
+its Panel and the selected value. Function values are stored and emitted as data.
+
+`RdxTabsValue` and `onValueChange.value` now use `unknown`. When application state has a narrower
+type, narrow the emitted value before updating it, as in this controlled example:
+
+<Canvas of={TabsStories.ObjectValues} />
+
+Root treats an omitted or `undefined` initial `value` as uncontrolled; an omitted or `undefined`
+`defaultValue` uses `0`. A Tab and Panel can explicitly bind `undefined`, and a user request can
+select that identity in an uncontrolled Root. Controlled Roots should keep their value defined.
+An explicit `null` Tab/Panel matches a selected `null`; Indicator stays hidden for nullish values.
+Values within a List must be unique under `===`, which treats `0` and `-0` as the same identity.
+`NaN` does not match itself and should not be used as a selectable identity.
+
 ## Dynamic tabs
 
 In uncontrolled tabs, removing or disabling the selected tab chooses the first enabled tab. Emptying

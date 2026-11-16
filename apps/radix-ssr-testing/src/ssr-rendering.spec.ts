@@ -273,7 +273,62 @@ function renderToString(selector: string, component: Type<unknown>): Promise<str
 })
 class TabsIdentitiesPage {}
 
+const serverTabFunction = vi.fn(() => {
+    throw new Error('Tab function was executed during SSR');
+});
+@Component({
+    selector: 'app-tabs-values',
+    imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel],
+    template: `
+        @for (group of groups; track group.key) {
+            <div [defaultValue]="group.values[0]" rdxTabsRoot>
+                <div rdxTabsList>
+                    @for (value of group.values; track $index) {
+                        <button [value]="value" [attr.data-testid]="group.key + '-tab-' + $index" rdxTabsTab>
+                            Tab {{ $index }}
+                        </button>
+                    }
+                </div>
+                @for (value of group.values; track $index) {
+                    <div [value]="value" [attr.data-testid]="group.key + '-panel-' + $index" keepMounted rdxTabsPanel>
+                        Panel {{ $index }}
+                    </div>
+                }
+            </div>
+        }
+    `
+})
+class TabsValuesPage {
+    readonly groups = [
+        { key: 'objects', values: [{ id: 1 }, { id: 1 }] },
+        { key: 'functions', values: [serverTabFunction, () => 'other'] },
+        { key: 'undefined', values: [undefined, 'other'] }
+    ];
+}
+
 describe('SSR rendering', () => {
+    it('serializes arbitrary Tabs values with distinct native identities without invoking functions', async () => {
+        const html = await renderToString('app-tabs-values', TabsValuesPage);
+        const tag = (name: string) => html.match(new RegExp(`<[^>]*data-testid="${name}"[^>]*>`))![0];
+        const id = (name: string) => tag(name).match(/ id="([^"]+)"/)![1];
+        const ids = new Set<string>();
+        for (const group of ['objects', 'functions', 'undefined']) {
+            for (const index of [0, 1]) {
+                const tab = `${group}-tab-${index}`,
+                    panel = `${group}-panel-${index}`;
+                ids.add(id(tab));
+                ids.add(id(panel));
+                expect(tag(tab)).toContain(`aria-controls="${id(panel)}"`);
+                expect(tag(panel)).toContain(`aria-labelledby="${id(tab)}"`);
+            }
+        }
+        expect(ids.size).toBe(12);
+        expect(tag('objects-tab-0')).toContain('aria-selected="true"');
+        expect(tag('objects-tab-1')).toContain('aria-selected="false"');
+        expect(tag('functions-tab-0')).toContain('aria-selected="true"');
+        expect(serverTabFunction).not.toHaveBeenCalled();
+    });
+
     it('serializes actual Tabs identities for active, absent and kept whole-Panel views', async () => {
         const html = await renderToString('app-tabs-identities', TabsIdentitiesPage);
         const tag = (name: string) => html.match(new RegExp(`<[^>]*data-testid="${name}"[^>]*>`))![0];

@@ -16,6 +16,8 @@ import { injectTabsPanelPresenceContext } from './tabs-panel-presence-context';
 import { injectTabsRootContext } from './tabs-root-context';
 import { RdxTabsValue } from './utils';
 
+const UNSET_VALUE = Symbol('RdxTabsPanel.unsetValue');
+
 const panelPresenceContext = () => ({ present: inject(RdxTabsPanel).present });
 
 /**
@@ -59,15 +61,16 @@ export class RdxTabsPanel {
 
     /**
      * Associates an ordinary retained Panel with a Tab. With structural presence the value is
-     * supplied by *rdxTabsPanelPresence instead.
+     * supplied by *rdxTabsPanelPresence instead. An explicitly bound undefined is a valid identity;
+     * omitting both the binding and structural owner is diagnosed.
      */
-    readonly valueInput = input<RdxTabsValue | undefined>(undefined, { alias: 'value' });
+    readonly valueInput = input<RdxTabsValue>(UNSET_VALUE, { alias: 'value' });
 
     /** The value supplied by the structural owner or the native Panel's value input. */
     readonly value = computed(() => {
         if (this.presence) return this.presence.value();
         const value = this.valueInput();
-        if (value === undefined) {
+        if (value === UNSET_VALUE) {
             rdxDevError(
                 'tabs/panel-value',
                 'Supply a Panel value or wrap its host with *rdxTabsPanelPresence="value".',

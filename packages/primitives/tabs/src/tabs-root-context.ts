@@ -9,7 +9,7 @@ export interface RdxTabsRootContext {
     readonly baseId: string;
 
     /** The value of the currently selected tab. */
-    readonly value: Signal<RdxTabsValue | undefined>;
+    readonly value: Signal<RdxTabsValue>;
 
     /** The orientation of the tabs. */
     readonly orientation: Signal<DataOrientation>;

@@ -11,6 +11,7 @@ import { AngularGeometry } from './geometry.angular';
 import { AngularIdentity } from './identity.angular';
 import { AngularIndicator } from './indicator.angular';
 import { AngularPanels } from './panels.angular';
+import { AngularValues } from './values.angular';
 
 const settings = config();
 @Component({
@@ -26,10 +27,13 @@ const settings = config();
         AngularActivation,
         AngularIndicator,
         AngularGeometry,
-        AngularCollection
+        AngularCollection,
+        AngularValues
     ],
     template: `
-        @if (settings.collection) {
+        @if (settings.values) {
+            <parity-tabs-values />
+        } @else if (settings.collection) {
             <parity-tabs-collection />
         } @else if (settings.geometry) {
             <parity-tabs-geometry />

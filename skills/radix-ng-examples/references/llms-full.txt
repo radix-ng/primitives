@@ -28912,6 +28912,73 @@ setValue(change: RdxTabsValueChangeEvent) {
 }
 ```
 
+## Values
+
+Tab values accept arbitrary identities, including objects, arrays, functions, symbols, `bigint` and
+boolean. Objects and functions match by reference (`===`): keep the same value instance for a Tab,
+its Panel and the selected value. Function values are stored and emitted as data.
+
+`RdxTabsValue` and `onValueChange.value` now use `unknown`. When application state has a narrower
+type, narrow the emitted value before updating it, as in this controlled example:
+
+```typescript
+import { Component, signal } from '@angular/core';
+import {
+    RdxTabsList,
+    RdxTabsPanel,
+    RdxTabsPanelPresence,
+    RdxTabsRoot,
+    RdxTabsTab,
+    type RdxTabsValueChangeEvent
+} from '@radix-ng/primitives/tabs';
+import { cn, demoButton } from '../../storybook/styles';
+
+@Component({
+    selector: 'tabs-object-values-example',
+    imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel, RdxTabsPanelPresence],
+    template: `
+        <div class="grid w-80 gap-3" [value]="selected()" (onValueChange)="change($event)" rdxTabsRoot>
+            <div class="flex gap-2" aria-label="Workspace sections" rdxTabsList>
+                @for (section of sections; track section) {
+                    <button [class]="tabClass" [value]="section" rdxTabsTab>{{ section.label }}</button>
+                }
+            </div>
+            @for (section of sections; track section) {
+                <div class="border-border rounded border p-4" *rdxTabsPanelPresence="section" rdxTabsPanel>
+                    {{ section.description }}
+                </div>
+            }
+            <output class="text-muted-foreground text-sm">Selected: {{ selected().label }}</output>
+        </div>
+    `
+})
+export class TabsObjectValuesExample {
+    readonly sections = [
+        { label: 'Account', description: 'Manage your account.' },
+        { label: 'Security', description: 'Update your security preferences.' }
+    ];
+    readonly selected = signal(this.sections[0]);
+    readonly tabClass = cn(
+        demoButton.base,
+        demoButton.ghost,
+        demoButton.size.sm,
+        'data-active:bg-primary data-active:text-primary-foreground'
+    );
+
+    change({ value }: RdxTabsValueChangeEvent) {
+        const section = this.sections.find((section) => section === value);
+        if (section) this.selected.set(section);
+    }
+}
+```
+
+Root treats an omitted or `undefined` initial `value` as uncontrolled; an omitted or `undefined`
+`defaultValue` uses `0`. A Tab and Panel can explicitly bind `undefined`, and a user request can
+select that identity in an uncontrolled Root. Controlled Roots should keep their value defined.
+An explicit `null` Tab/Panel matches a selected `null`; Indicator stays hidden for nullish values.
+Values within a List must be unique under `===`, which treats `0` and `-0` as the same identity.
+`NaN` does not match itself and should not be used as a selectable identity.
+
 ## Dynamic tabs
 
 In uncontrolled tabs, removing or disabling the selected tab chooses the first enabled tab. Emptying
