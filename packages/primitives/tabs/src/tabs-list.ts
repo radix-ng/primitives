@@ -1,4 +1,14 @@
-import { booleanAttribute, computed, DestroyRef, Directive, effect, ElementRef, inject, input } from '@angular/core';
+import {
+    afterRenderEffect,
+    booleanAttribute,
+    computed,
+    DestroyRef,
+    Directive,
+    effect,
+    ElementRef,
+    inject,
+    input
+} from '@angular/core';
 import {
     injectRdxCompositeListContext,
     injectRdxCompositeRootContext,
@@ -91,34 +101,32 @@ export class RdxTabsList {
             this.compositeRoot.setLoopFocus(this.loopFocus());
         });
 
-        effect(() => {
-            this.rootContext.setTabMap(this.tabMap());
+        afterRenderEffect({
+            write: () => this.rootContext.setTabMap(this.tabMap())
         });
 
-        effect(() => {
-            const activeIndex = this.activeIndex();
+        afterRenderEffect({
+            write: () => {
+                const activeIndex = this.activeIndex();
 
-            if (activeIndex === -1) {
-                return;
-            }
-
-            const list = this.elementRef.nativeElement;
-            const activeElement = list.ownerDocument.activeElement;
-
-            if (activeElement && list.contains(activeElement)) {
-                return;
-            }
-
-            if (this.disabledIndices().includes(activeIndex)) {
-                const firstEnabledIndex = this.tabMetadata().find((metadata) => !metadata.disabled)?.index;
-
-                if (firstEnabledIndex !== undefined) {
-                    this.compositeRoot.setHighlightedIndex(firstEnabledIndex);
+                if (activeIndex === -1) {
+                    return;
                 }
-                return;
-            }
 
-            this.compositeRoot.setHighlightedIndex(activeIndex);
+                const list = this.elementRef.nativeElement;
+                const activeElement = list.ownerDocument.activeElement;
+
+                if (activeElement && list.contains(activeElement)) {
+                    return;
+                }
+
+                // Composite owns the existing tab stop. A disabled selection must not move it.
+                if (this.disabledIndices().includes(activeIndex)) {
+                    return;
+                }
+
+                this.compositeRoot.setHighlightedIndex(activeIndex);
+            }
         });
 
         effect(() => this.rootContext.setActivateOnFocus(this.activateOnFocus()));

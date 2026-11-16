@@ -4,6 +4,7 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { RdxTabsList, RdxTabsPanel, RdxTabsRoot, RdxTabsTab, RdxTabsValueChangeEvent } from '@radix-ng/primitives/tabs';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { AngularActivation } from './activation.angular';
+import { AngularCollection } from './collection.angular';
 import { classes, config, installProbe } from './contract';
 import { AngularDirection } from './direction.angular';
 import { AngularGeometry } from './geometry.angular';
@@ -24,10 +25,13 @@ const settings = config();
         AngularIdentity,
         AngularActivation,
         AngularIndicator,
-        AngularGeometry
+        AngularGeometry,
+        AngularCollection
     ],
     template: `
-        @if (settings.geometry) {
+        @if (settings.collection) {
+            <parity-tabs-collection />
+        } @else if (settings.geometry) {
             <parity-tabs-geometry />
         } @else if (settings.indicator) {
             <parity-tabs-indicator />

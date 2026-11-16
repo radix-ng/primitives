@@ -1,13 +1,11 @@
 import {
-    afterNextRender,
+    afterRenderEffect,
     computed,
     Directive,
-    effect,
     ElementRef,
     inject,
     input,
     linkedSignal,
-    signal,
     untracked
 } from '@angular/core';
 import { injectRdxCompositeItemOwner } from './composite-item-owner';
@@ -25,7 +23,6 @@ export class RdxCompositeListItem {
     private readonly owner = injectRdxCompositeItemOwner();
     private readonly injectedListContext = this.owner ? null : injectRdxCompositeListContext(true);
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
-    private readonly hasRendered = signal(false);
 
     private readonly listContext = computed(() => (this.owner ? this.owner.listContext() : this.injectedListContext));
 
@@ -44,22 +41,16 @@ export class RdxCompositeListItem {
     readonly inListElement = computed(() => this.isInListElement(this.listContext()));
 
     constructor() {
-        afterNextRender(() => {
-            this.hasRendered.set(true);
-        });
+        afterRenderEffect({
+            earlyRead: (onCleanup) => {
+                const listContext = this.listContext();
+                if (!listContext || !this.isInListElement(listContext)) return;
 
-        effect((onCleanup) => {
-            const listContext = this.listContext();
-            if (!listContext || !this.hasRendered() || !this.isInListElement(listContext)) {
-                return;
+                const element = this.elementRef.nativeElement;
+                onCleanup(
+                    untracked(() => listContext.registerItem({ element, metadata: this._metadata.asReadonly() }))
+                );
             }
-
-            const element = this.elementRef.nativeElement;
-            const unregister = untracked(() =>
-                listContext.registerItem({ element, metadata: this._metadata.asReadonly() })
-            );
-
-            onCleanup(unregister);
         });
     }
 

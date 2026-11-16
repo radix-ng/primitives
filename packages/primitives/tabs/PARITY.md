@@ -7,11 +7,11 @@ The prepared source digest was validated with `pnpm parity:prepare`.
 
 This is a source/API audit with incremental comparison evidence, not full parity or accessibility
 certification. The [Tabs differential suite](../../../apps/parity-testing/primitives/tabs/README.md)
-now covers initial values/notifications, Panel exits/focus, activation direction, identities, native activation
-and Indicator visibility/resize/coordinates: **140 scenarios, 420 planned comparisons** across Chromium, Firefox
+now covers initial values/notifications, Panel exits/focus, activation direction, identities, native activation,
+Indicator visibility/resize/coordinates and dynamic collections: **176 scenarios, 528 planned comparisons** across Chromium, Firefox
 and WebKit, with no skips. Four exact reviewed fields remain: two for G5's authored-Panel-ID
 mismatch and two for G6's hidden Indicator host at null. Whole-Panel presence removes the former
-four persistent-Panel-host exceptions. G1 and G3's direction defects
+four persistent-Panel-host exceptions. G2's collection consistency and native focus subsets are covered; G1 and G3's direction defects
 are resolved; G4's inert/hidden defects and G5's identity defects are resolved for their documented
 scope. G6's visibility/observation and measured geometry subsets and G8's native keyboard/click/press-release subset are resolved; remaining interaction, lifecycle
 and geometry gaps below are not certified by these increments.
@@ -26,9 +26,9 @@ listed separately from unresolved gaps.
 | Root / List / Tab / Panel / Indicator part set                                           | Public barrels and all five pinned parts                                            | Present; Angular directives and `hostDirectives` composition                                                    |
 | `value`, `defaultValue`, horizontal default orientation                                  | Pinned initial-value suite; null/default units; orientation source                  | Pinned covered for numeric/string defaults and controlled `null`; G1 resolved                                   |
 | Implicit value `0`, initial notification and disabled-first fallback                     | Pinned initial-value suite; three implicit-default units                            | Pinned covered, including a later value-0 tab, missing `0`, all disabled and uncancelable initial fallback      |
-| Explicit disabled default and later disable/re-enable                                    | Pinned initial-value suite; Root honor policy                                       | Initial disabled default pinned covered; later lifecycle combinations pending                                   |
+| Explicit disabled default and later disable/re-enable                                    | Pinned initial-value and collection suites                                          | Pinned covered through enable/disable and initial-default honor transitions                                     |
 | Selected uncontrolled tab becomes disabled                                               | Implicit-default unit                                                               | Regression covered; first enabled value, reason `disabled`, direction `none`                                    |
-| Missing selected tab, empty/refilled/replaced lists, all disabled                        | Pinned all-disabled initial case; Root source                                       | Initial all-disabled case covered; later collection changes pending, G2                                         |
+| Missing selected tab, empty/refilled/replaced lists, all disabled                        | 36 pinned collection cases; rendered registration phases                            | Pinned covered for removal, refill, List replacement/absence, disabled fallback and native focus, G2            |
 | Controlled initial/external values; parent ignores a request                             | Pinned direction suite; selected-disabled unit; native model source                 | External direction/focus and explicit cancellation covered, G3; ignoring-parent equivalence not established     |
 | Click selection, same-value no-op and cancel before commit                               | Forty pinned activation cases; eight activation units                               | Pinned covered for native requests, canceled retry, repeat and same-value no-op                                 |
 | Event reasons, native event, trigger and callback order                                  | Pinned capture/bubble/change timeline, native event metadata and raw trigger data   | Type/trust/target/modifiers/order covered; optional Angular trigger retained, ADR 0075                          |
@@ -36,7 +36,7 @@ listed separately from unresolved gaps.
 | Home/End, looping and `loopFocus=false`                                                  | Units; projected-wrapper browser scenario                                           | Regression covered for Home/End and one non-loop boundary; default wrap pending                                 |
 | Vertical Up/Down, horizontal RTL and modifier keys                                       | Shared Composite source; orientation-attribute unit                                 | Tabs-specific browser comparisons pending                                                                       |
 | Disabled tabs remain arrow-focusable without activation                                  | Pinned disabled button/div/link key/click cases; state and focus units              | Covered for disabled native defaults/navigation and horizontal entry; touch/pen remain pending                  |
-| Disabled controlled selection preserves an enabled Tab entry                             | Selected-disabled unit; List source                                                 | Regression covered with focus outside the list; dynamic focus cases pending                                     |
+| Disabled controlled selection preserves the existing Tab entry                           | Selected-disabled unit; pinned collection cases                                     | Disabled selection preserves Composite's tab stop; dynamic disabled/focus subsets covered                       |
 | Native Tab / Shift+Tab into list, panel and adjacent controls                            | Pinned held-exit cases and projected-wrapper browser test                           | Forward/reverse active-panel order covered during exits; rapid pre-render Enter/Tab remains pending             |
 | `role`, `aria-selected`, orientation and reciprocal IDs                                  | Fifteen pinned identity cases, seven identity units and native SSR relationships    | G5 covered for registered/authored identities; authored-ID adaptation only                                      |
 | Per-part `data-orientation`, `data-activation-direction`, Tab active/disabled attributes | Pinned direction suite, first sampled frame, host bindings and selected-state units | G3 direction covered on Root/List/Tab/Panel and non-null Indicator; live orientation/style combinations pending |
@@ -49,7 +49,7 @@ listed separately from unresolved gaps.
 | Tab/Panel value domain and unique identity                                               | Public value types; pinned mixed numeric/string identities                          | ID collisions fixed in G5; arbitrary-value API remains G7                                                       |
 | Custom/native hosts, keyboard activation and disabled links                              | Forty native activation cases on button/div/link/anchor hosts                       | G8 covered for the documented keyboard/click/secondary-release subset                                           |
 | Projected parts through a host-composed Root                                             | Five wrapper units and one Chromium Storybook scenario                              | Regression covered; Root must stay in the declaring injector tree                                               |
-| List destruction/recreation and stale registration cleanup                               | Two wrapper lifecycle units                                                         | Regression covered for retained string selection; whole-Root cleanup pending                                    |
+| List destruction/recreation and stale registration cleanup                               | Wrapper lifecycle units and pinned collection cases                                 | Selection survives List absence and populated replacement; whole-Root disposal follow-ups remain                |
 | Nested Roots, multiple instances and use inside Dialog/Popover                           | Pinned independent-Root identities; separate consumer experiment                    | Independent identities covered; nested/overlay consumers pending                                                |
 | SSR rendering, hydration metadata and native ID relationships                            | Four selected SSR checks                                                            | Regression covered; actual client hydration and Indicator first paint pending                                   |
 | Indicator `renderBeforeHydration` / server-visible positioning                           | Pinned Indicator prop and prehydration source; no Angular counterpart               | Missing capability; equivalent first-paint behavior not established                                             |
@@ -71,7 +71,7 @@ listed separately from unresolved gaps.
 - `onValueChange` emits `{ value, eventDetails }`, and `value` is an Angular model with a generated
   `valueChange` output. Consumers veto a request with `eventDetails.cancel()` before the model commits.
   React callback arity and controlled-prop mechanics are not copied, but observable state ownership
-  retains the G2 collection follow-ups; G3 compares accepted and explicitly canceled requests, not an
+  uses the rendered G2 collection policy; G3 compares accepted and explicitly canceled requests, not an
   ignoring parent's React controlled-prop semantics.
 - Change details retain Angular's optional initiating native `trigger`; pinned Tabs leaves it unset.
   G8 asserts each policy and retains it in raw measurements. Equal trigger availability is outside
@@ -101,15 +101,35 @@ replace the initial null choice. The complete initial-value suite passes 33 comp
 exceptions. Panels are retained on both sides with `keepMounted=true`; this result does not certify
 unmounting or exit focusability. See the [suite notes](../../../apps/parity-testing/primitives/tabs/README.md).
 
-### G2 — Empty or replaced Lists can retain stale selection metadata
+### G2 — Rendered collection consistency and native focus covered
 
-[Root registration cleanup](src/tabs-root.ts) intentionally retains `tabMap` while a List is absent.
-Its empty-map fallback checks the connection of the last tab, but requires the map itself to become
-empty. The existing unit proves selection survives destruction/recreation of the List; it does not
-prove actual empty-list fallback. The pin distinguishes disconnected removal from connected temporary
-cleanup. Compare removing the selected tab, removing the last tab, replacing a populated List with an
-empty List, delayed/refilled Lists and all-disabled collections. Observe `missing`/`null`, DOM focus,
-roving tabindex and callbacks without adapters repairing state.
+[Composite registration](../composite/src/composite-list-item.ts) now runs in `earlyRead`, after
+Angular has updated its views. List publishes the completed map in `write`; Root reconciles the
+uncontrolled selection in `read`. Previously the delayed registration exposed partial/empty maps,
+so replacing a selected Tab or populated List could commit an unwanted fallback or `null`.
+
+Removing the selected value falls back to the first enabled value with reason `missing`; disabling
+it uses `disabled`. Removing the final Tab, emptying a previously populated List, or disabling every
+Tab selects `null`. Refilling/re-enabling does not choose a value from an existing null selection.
+Whole-List absence preserves selection, as does replacing its native host with a populated List;
+replacing it with an empty List clears selection. Controlled values are not automatically corrected.
+Explicit disabled defaults remain honored until enabled, then use the normal disabled fallback.
+Automatic consistency changes keep direction `none` and cannot be vetoed with `cancel()`.
+
+Composite preserves the highlighted native element as its index changes, keeps an eligible same-index
+replacement, and chooses an eligible fallback if necessary. It also preserves existing native focus
+when Angular moves that same connected view, using observed removal/reinsertion records. Destruction,
+deliberate blur and focus moved to another control do not reclaim focus. Tabs distinguish this
+restoration from a new automatic-activation request, including a previously canceled request.
+No runtime timeout, platform branch, extra selection state or differential exception is added.
+See [ADR 0079](../../../docs/adr/0079-tabs-collection-consistency.md).
+
+The 36 `collection-*` cases compare rendered selection, Panel state, native focus, every tab's
+`tabindex`, direction and the exact callback trace through these lifecycles, including repeated
+reordering, automatic/canceled activation and vertical RTL. Raw DOM/IDs/IDREFs/native events remain
+available; resolved identity equivalence while the entire List is absent is outside this increment.
+The initial 34-case Chromium baseline had **10 failures / 24 passes**, with no reference assertion
+failures, retained in `dist/parity-testing/tabs/before-collection-fix/`.
 
 ### G3 — Resolved for direction: external values, geometry and pending destinations
 
@@ -136,7 +156,7 @@ or adapter rewrites these values. See the [suite notes](../../../apps/parity-tes
 Parent rejection through explicit `cancel()` is compared. An ignoring parent's controlled-prop
 semantics remain outside the Angular model contract exercised here; accepted Angular requests commit
 locally. Live axis/style changes in the same selection update, transition-frame transforms and
-Indicator lifetime/geometry are not certified by this increment. G2 collection ownership remains open.
+Indicator lifetime/geometry are not certified by this increment. G2 collection ownership is covered for the dynamic cases above.
 
 ### G4 — Resolved for retained/structural exits: inert contents and hidden timing
 
@@ -258,6 +278,21 @@ link activation, authored submit/reset types and browser shortcuts remain follow
 
 Checks run for this audit on Node 24.22.2:
 
+- G2 increment: `pnpm test-parity tabs --grep collection-` — **108 passed** (36 scenarios,
+  Chromium/Firefox/WebKit), strict fixture build and 13 shared runner checks. The suite now has
+  176 scenarios / 528 planned comparisons; earlier full-run counts below retain their scope.
+- G2 Linux/arm64: **108 passed** in Playwright 1.60.0 Noble, one worker and original timeouts,
+  retained in `dist/tabs-collection-linux/results/`.
+- Shared Composite consumers: **731 unit tests passed**, five pre-existing skipped cases, across
+  Composite, Tabs, Accordion, Menu/Context Menu/Menubar, Navigation Menu, Radio, Toolbar, Select,
+  Slider and Toggle/Toggle Group. The Tabs suite remains 63 tests; Composite has 31 tests.
+- Fresh Storybook: **10 Chromium browser checks passed**, covering Composite reorder, Tabs
+  Indicator/Panel/projected wrapper, Menu/async submenu keyboard ownership, Menubar and Navigation Menu.
+- Select dynamic collections: `pnpm test-parity select --grep 'dynamic|async|collection'` —
+  **33 passed** across all three engines, covering the shared registration/value-collection change.
+- G2 library build, consumer-skill generation, scoped lint and contributor-document checks pass;
+  four selected SSR markup/identity checks pass. These do not certify actual hydration.
+
 - `pnpm parity:prepare` — Base UI 1.9.0 pin and cached content digest validated.
 - `pnpm exec vitest run --config packages/primitives/vite.config.ts packages/primitives/tabs/__tests__`
   — **63 passed**, including six whole-Panel lifetime/ownership tests, three Indicator observation/cleanup checks, eight native-activation regressions, seven native-identity regressions, null-default, Panel inertness, direction
@@ -321,7 +356,7 @@ Enter/Tab failures. Its [follow-up](../../../tools/consumer-testing/generation/t
 records supplemental success after observing selection rendering. Neither result compares Base UI or
 establishes ownership of that timing issue; do not relabel it as primitive parity or as 36/36.
 
-Next increments: dynamic collection/value-domain work for G2/G7. G6's remaining continuous
+Next increment: arbitrary-value support for G7. G6's remaining continuous
 inner-scroll/animation, realm and hydration combinations need separate evidence. G8's remaining native gesture and auxiliary-host combinations stay explicit follow-ups.
 Keep fixtures on actual native input and observable state; do not normalize away IDs, focus, mounting,
 event metadata or geometry differences. Further Root disposal cases, nested/overlay consumers, hydration and

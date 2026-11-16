@@ -198,7 +198,7 @@ export class RdxTabsTab {
 
     /** @ignore */
     protected onFocus(event: FocusEvent): void {
-        if (this.active() || this.disabled()) {
+        if (this.active() || this.disabled() || this.compositeItem.isRestoringFocus()) {
             return;
         }
 

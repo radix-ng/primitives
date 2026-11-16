@@ -77,6 +77,19 @@ setValue(change: RdxTabsValueChangeEvent) {
 }
 ```
 
+## Dynamic tabs
+
+In uncontrolled tabs, removing or disabling the selected tab chooses the first enabled tab. Emptying
+a previously populated List, or disabling the selection with no enabled tabs left, selects `null`.
+Adding or enabling tabs later preserves that null selection until a user activates a tab.
+Removing the whole List temporarily preserves the
+selected value. Replacing a populated List or the selected tab's element preserves a value that still
+exists. Controlled values are not automatically corrected when the collection changes.
+
+An explicit disabled `defaultValue` stays selected until that tab has been enabled; disabling it again
+then uses the normal fallback. Reordering existing tabs preserves their native focus and keyboard
+position. Restoring focus after a view move does not request automatic activation again.
+
 ## Examples
 
 ### Activate on focus

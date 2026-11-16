@@ -52,6 +52,11 @@ export class RdxCompositeItem {
         this.listItem.setMetadata(value);
     }
 
+    /** @internal Restoring an existing focus must not request activation again. */
+    isRestoringFocus(): boolean {
+        return this.rootContext()?.isRestoringFocus?.() ?? false;
+    }
+
     protected handleFocus(): void {
         const rootContext = this.rootContext();
         const index = this.index();

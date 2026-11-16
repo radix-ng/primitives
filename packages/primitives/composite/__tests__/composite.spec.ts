@@ -392,9 +392,9 @@ describe('RdxCompositeRoot / RdxCompositeItem', () => {
             .map(([, meta]) => meta.id);
 
         expect(orderedIds).toEqual(['three', 'one', 'two']);
-        // Roving tabindex is positional: index 0 stays highlighted, now on "Three".
-        expect(three.getAttribute('tabindex')).toBe('0');
-        expect(one.getAttribute('tabindex')).toBe('-1');
+        // Preserve the highlighted element when its document-order index changes.
+        expect(three.getAttribute('tabindex')).toBe('-1');
+        expect(one.getAttribute('tabindex')).toBe('0');
         expect(two.getAttribute('tabindex')).toBe('-1');
     });
 
@@ -421,6 +421,111 @@ describe('RdxCompositeRoot / RdxCompositeItem', () => {
         forFixture.detectChanges();
 
         expect(idsByIndex()).toEqual(['three', 'two', 'one']);
+    });
+
+    it('keeps the highlighted element after items before it are removed', async () => {
+        const dynamic = TestBed.createComponent(CompositeForHostComponent);
+        dynamic.detectChanges();
+        await dynamic.whenStable();
+        const original = Array.from(dynamic.nativeElement.querySelectorAll<HTMLElement>('button'));
+        original[2].focus();
+        dynamic.componentInstance.order.set(['two', 'three']);
+        dynamic.detectChanges();
+        await dynamic.whenStable();
+        dynamic.detectChanges();
+
+        expect(document.activeElement).toBe(original[2]);
+        expect(original[2].tabIndex).toBe(0);
+        keydown(original[2], 'ArrowLeft');
+        await flushMicrotasks();
+        expect(document.activeElement).toBe(original[1]);
+    });
+
+    it('uses an eligible replacement at the removed highlighted index', async () => {
+        const dynamic = TestBed.createComponent(CompositeForHostComponent);
+        dynamic.detectChanges();
+        await dynamic.whenStable();
+        const original = Array.from(dynamic.nativeElement.querySelectorAll<HTMLElement>('button'));
+        original[1].focus();
+        dynamic.componentInstance.order.set(['one', 'replacement', 'three']);
+        dynamic.detectChanges();
+        await dynamic.whenStable();
+        dynamic.detectChanges();
+
+        const replacement = dynamic.nativeElement.querySelectorAll('button')[1] as HTMLButtonElement;
+        expect(replacement.textContent).toBe('replacement');
+        expect(replacement.tabIndex).toBe(0);
+        expect(document.activeElement).not.toBe(replacement);
+    });
+
+    it('recovers an eligible tab stop when the last highlighted item is removed', async () => {
+        const dynamic = TestBed.createComponent(CompositeForHostComponent);
+        dynamic.detectChanges();
+        await dynamic.whenStable();
+        const original = Array.from(dynamic.nativeElement.querySelectorAll<HTMLElement>('button'));
+        original[2].focus();
+        dynamic.componentInstance.order.set(['one', 'two']);
+        dynamic.detectChanges();
+        await dynamic.whenStable();
+        dynamic.detectChanges();
+
+        expect(original[0].tabIndex).toBe(0);
+        expect(original[1].tabIndex).toBe(-1);
+        expect(document.activeElement).not.toBe(original[0]);
+    });
+
+    it('preserves a focused native item when @for moves its existing view', async () => {
+        const dynamic = TestBed.createComponent(CompositeForHostComponent);
+        dynamic.detectChanges();
+        await dynamic.whenStable();
+        const original = Array.from(dynamic.nativeElement.querySelectorAll<HTMLElement>('button'));
+        original[2].focus();
+        dynamic.componentInstance.order.set(['three', 'one', 'two']);
+        dynamic.detectChanges();
+        await dynamic.whenStable();
+        dynamic.detectChanges();
+
+        expect(document.activeElement).toBe(original[2]);
+        expect(original[2].tabIndex).toBe(0);
+        dynamic.componentInstance.order.set(['one', 'two', 'three']);
+        dynamic.detectChanges();
+        await dynamic.whenStable();
+        dynamic.detectChanges();
+        expect(document.activeElement).toBe(original[2]);
+        expect(original[2].tabIndex).toBe(0);
+        keydown(original[2], 'ArrowRight');
+        await flushMicrotasks();
+        expect(document.activeElement).toBe(original[0]);
+    });
+
+    it('does not reclaim focus from another control after a reorder', async () => {
+        const dynamic = TestBed.createComponent(CompositeForHostComponent);
+        dynamic.detectChanges();
+        await dynamic.whenStable();
+        const original = dynamic.nativeElement.querySelectorAll('button')[2] as HTMLElement;
+        const outside = document.createElement('button');
+        document.body.append(outside);
+        original.focus();
+        outside.focus();
+        dynamic.componentInstance.order.set(['three', 'one', 'two']);
+        dynamic.detectChanges();
+        await dynamic.whenStable();
+        expect(document.activeElement).toBe(outside);
+        outside.remove();
+    });
+
+    it('releases focus ownership after deliberate blur', async () => {
+        const dynamic = TestBed.createComponent(CompositeForHostComponent);
+        dynamic.detectChanges();
+        await dynamic.whenStable();
+        const original = dynamic.nativeElement.querySelectorAll('button')[2] as HTMLElement;
+        original.focus();
+        original.blur();
+        await flushMicrotasks();
+        dynamic.componentInstance.order.set(['three', 'one', 'two']);
+        dynamic.detectChanges();
+        await dynamic.whenStable();
+        expect(document.activeElement).not.toBe(original);
     });
 
     it('re-sorts items when a wrapping group is moved (grouped reorder)', async () => {

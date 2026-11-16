@@ -1,5 +1,7 @@
 import {
+    afterRenderEffect,
     booleanAttribute,
+    DestroyRef,
     Directive,
     effect,
     ElementRef,
@@ -12,7 +14,9 @@ import {
 import { BooleanInput, createContext, Direction, isHTMLElement } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { RdxCompositeList } from './composite-list';
+import { preserveFocusOnMove } from './preserve-focus-on-move';
 import {
+    RdxCompositeItemRegistration,
     RdxCompositeMetadata,
     RdxCompositeModifierKey,
     RdxCompositeOrientation,
@@ -45,6 +49,7 @@ const rootContext = (): RdxCompositeRootContext => {
         orientation: root.orientation,
         dir: root.dir,
         isIndexDisabled: (index) => root.isIndexDisabled(index),
+        isRestoringFocus: () => root.isRestoringFocus,
         setHighlightedIndex: (index, shouldScrollIntoView) => root.setHighlightedIndex(index, shouldScrollIntoView),
         relayKeyboardEvent: (event) => root.relayKeyboardEvent(event)
     };
@@ -72,6 +77,10 @@ export class RdxCompositeRoot {
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly compositeList = inject(RdxCompositeList, { self: true });
     private hasSetInitialIndex = false;
+    private highlightedElement: HTMLElement | null = null;
+    private previousItems: readonly RdxCompositeItemRegistration[] | undefined;
+    /** @internal True only while restoring a moved node's existing focus. */
+    isRestoringFocus = false;
 
     /** The composite orientation. */
     readonly orientationInput = input<RdxCompositeOrientation>('both', { alias: 'orientation' });
@@ -130,11 +139,30 @@ export class RdxCompositeRoot {
     readonly itemMap = this.compositeList.itemMap;
 
     constructor() {
-        effect(() => {
+        inject(DestroyRef).onDestroy(
+            preserveFocusOnMove(
+                this.elementRef.nativeElement,
+                (element) => this.items().some((item) => item.element.contains(element)),
+                (element) => {
+                    this.isRestoringFocus = true;
+                    try {
+                        element.focus({ preventScroll: true });
+                    } finally {
+                        this.isRestoringFocus = false;
+                    }
+                }
+            )
+        );
+        afterRenderEffect(() => {
             const items = this.items();
             if (items.length === 0) {
+                this.previousItems = items;
                 return;
             }
+
+            const elements = items.map((item) => item.element);
+            const collectionChanged = items !== this.previousItems;
+            this.previousItems = items;
 
             if (!this.hasSetInitialIndex) {
                 this.hasSetInitialIndex = true;
@@ -145,11 +173,28 @@ export class RdxCompositeRoot {
                     return;
                 }
 
+                this.highlightedElement = elements[this.highlightedIndex()] ?? null;
                 // Initial pass: move the tab stop off a disabled default item. The DOM disabled /
                 // aria-disabled fallback is intentionally allowed here (Base UI init parity).
                 this.moveHighlightOffDisabledItem();
                 return;
             }
+
+            if (collectionChanged) {
+                const nextIndex = this.highlightedElement ? elements.indexOf(this.highlightedElement) : -1;
+                if (nextIndex !== -1) {
+                    if (nextIndex !== this.highlightedIndex()) this.setHighlightedIndex(nextIndex);
+                } else if (!elements[this.highlightedIndex()] || this.isIndexDisabled(this.highlightedIndex())) {
+                    // Keep an eligible replacement at the same index; otherwise prefer the active
+                    // item, then the first eligible item. Every disabled item leaves index 0.
+                    const activeIndex = elements.findIndex(
+                        (element, index) => element.hasAttribute(ACTIVE_COMPOSITE_ITEM) && !this.isIndexDisabled(index)
+                    );
+                    const firstEnabledIndex = getMinListIndex(elements, this.disabledIndices());
+                    this.setHighlightedIndex(activeIndex !== -1 ? activeIndex : Math.max(firstEnabledIndex, 0));
+                }
+            }
+            this.highlightedElement = elements[this.highlightedIndex()] ?? null;
 
             // Re-validation after the initial pass. `disabledIndices` can resolve a render late (e.g.
             // Toolbar derives it from item metadata), leaving the tab stop on a now-disabled item. Gated
@@ -218,6 +263,7 @@ export class RdxCompositeRoot {
     }
 
     setHighlightedIndex(index: number, shouldScrollIntoView = false): void {
+        this.highlightedElement = this.elements()[index] ?? null;
         if (this.highlightedIndex() !== index) {
             this.highlightedIndex.set(index);
             this.onHighlightedIndexChange.emit(index);

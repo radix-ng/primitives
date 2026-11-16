@@ -263,6 +263,7 @@ describe('Tabs', () => {
     });
 
     it('does not give tabindex 0 to a disabled selected tab', async () => {
+        await fixture.whenStable();
         host.disabledTwo.set(true);
         host.value.set('two');
         fixture.detectChanges();

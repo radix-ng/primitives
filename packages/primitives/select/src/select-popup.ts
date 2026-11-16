@@ -285,14 +285,24 @@ export class RdxSelectPopup {
 
     constructor() {
         let populated = false;
+        let previousValues: readonly unknown[] = [];
         afterRenderEffect(() => {
             const open = this.rootContext.open();
             const values = this.items().map((item) => item.metadata()?.value);
             if (!open) {
                 populated = false;
+                previousValues = [];
                 return;
             }
             if (!values.length) return;
+            // Text/element metadata can settle after registration without changing the values.
+            // That is neither a new collection nor a reason to retry a canceled reconciliation.
+            if (
+                values.length === previousValues.length &&
+                values.every((value, index) => Object.is(value, previousValues[index]))
+            )
+                return;
+            previousValues = values;
             // Angular has finished registering/removing the view's items. Don't reconcile a
             // partially constructed collection, a closed retained view, or the first async load.
             if (populated) untracked(() => this.rootContext.reconcileOptions(values));

@@ -4,9 +4,9 @@ Compares Angular Tabs with the unmodified Base UI sources pinned in
 [reference.json](../../reference.json). Run `pnpm test-parity tabs`, or add `--project=chromium` for
 local iteration. The suite is discovered by the existing runner and CI without shared-tooling changes.
 
-The suite runs **140 scenarios / 420 planned comparisons** across Chromium, Firefox and WebKit, with no
+The suite runs **176 scenarios / 528 planned comparisons** across Chromium, Firefox and WebKit, with no
 capability skips: eleven initial-value, twelve Panel lifecycle, seventeen direction, fifteen
-native-identity, forty activation, seventeen Indicator visibility cases and twenty-eight geometry cases. Four exact reviewed fields remain:
+native-identity, forty activation, seventeen Indicator visibility cases, twenty-eight geometry cases and thirty-six collection cases. Four exact reviewed fields remain:
 two authored-Panel-ID fields and two null-Indicator host fields. Whole-Panel presence removes the
 former four persistent-Panel-host exceptions. See below.
 See the [primitive matrix](../../../../packages/primitives/tabs/PARITY.md) for the remaining work.
@@ -59,6 +59,42 @@ the initial null choice after a later `defaultValue` input update. The unit suit
 tests**, including eight native-activation regressions, seven native-identity regressions, inactive Panel inertness, external direction/null
 changes on both axes, equal-coordinate activation and direction publication before synchronous model
 subscribers run.
+
+## Dynamic collections and focus
+
+Thirty-six `collection-*` cases cover selected/final/unselected removal, empty/refilled/delayed Lists,
+empty/populated native List replacement, whole-List absence/remount, new values, replaced selected
+nodes, all-disabled/re-enabled collections, disabled-default honor transitions and controlled values.
+They include focused removal, removal before focus, repeated reorder, vertical RTL, automatic focus
+activation, canceled activation before reorder, whole-Panel presence and removal after native Enter.
+
+F2/F3/F4 mutate only consumer collection/input state. Uncontrolled callbacks are never fed back into
+Root. Fixed Panels expose its selected value even while no matching Tab or List exists. Expected
+values/reasons/counts are asserted independently on each implementation. Checkpoints compare actual
+native focus, ordered `aria-selected`/disabled/`tabindex`, visible/hidden/inert Panels, Root/part direction
+and the complete callback trace. Native list re-entry starts a separate navigation phase after the
+mutation focus has been recorded; the driver does not repair mutation results. Native Enter recovers
+from null selection, then arrows verify continued keyboard navigation.
+
+Before the fix, the original 34 Chromium cases had **10 failures / 24 passes**, with no reference
+assertion failures, preserved in `dist/parity-testing/tabs/before-collection-fix/`. Partial maps caused
+premature fallbacks; positional highlighting lost the native tab stop; Angular view movement cleared
+focus. Registration/map publication/reconciliation now follow render phases, Composite retains the
+highlighted element and restores only observed native moves, and Tab restoration does not repeat an
+automatic activation request. Existing four reviewed fields are unchanged. See
+[ADR 0079](../../../../docs/adr/0079-tabs-collection-consistency.md).
+
+All **108 collection comparisons** pass across Chromium, Firefox and WebKit, with strict fixture
+build and 13 shared runner checks. The suite now contains 176 scenarios / 528 planned comparisons;
+earlier full-run counts retain their original scope. All 108 rows also pass in Playwright 1.60.0 Noble Linux/arm64 with one worker and original timeouts,
+retained in `dist/tabs-collection-linux/results/`. Shared consumer units pass **731 tests** with
+five existing skips, including 63 Tabs and 31 Composite tests. Ten focused Chromium checks against a
+fresh Storybook build pass for Tabs, Composite and affected navigation/menu consumers.
+
+Raw DOM, generated IDs, IDREFs and native events remain recorded. These collection cases do not
+certify resolved identity equivalence while a whole List is absent; they certify selection, Panel
+state, focus, tab stops, direction and callback policy. Whole-Root disposal and actual hydration remain
+separate lifecycle work.
 
 ## Panel exits and focus
 

@@ -35,9 +35,9 @@ test.describe('Composite reorder behavior', () => {
         await page.locator('[data-testid="reorder"]').click();
         await expect(root.locator('[rdxCompositeItem]')).toHaveText(['Settings', 'Reports', 'Metrics', 'Overview']);
 
-        // The tab stop must follow the new document order (index 0 is now Settings).
-        await expect(page.locator(item('settings'))).toHaveAttribute('tabindex', '0');
-        await expect(page.locator(item('overview'))).toHaveAttribute('tabindex', '-1');
+        // The highlighted native item survives; its index follows the new document order.
+        await expect(page.locator(item('overview'))).toHaveAttribute('tabindex', '0');
+        await expect(page.locator(item('settings'))).toHaveAttribute('tabindex', '-1');
 
         // Arrow navigation must step by the new order: Settings -> Reports.
         await page.locator(item('settings')).focus();

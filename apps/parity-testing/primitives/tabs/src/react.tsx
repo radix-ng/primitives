@@ -2,6 +2,7 @@ import { Tabs } from '@base-ui/react/tabs';
 import { createRoot } from 'react-dom/client';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { ReactActivation } from './activation.react';
+import { ReactCollection } from './collection.react';
 import { config, installProbe, classes as s } from './contract';
 import { ReactDirection } from './direction.react';
 import { ReactGeometry } from './geometry.react';
@@ -12,6 +13,7 @@ import { ReactPanels } from './panels.react';
 const settings = config();
 const trace = installProbe('react', settings);
 function ReactTabs() {
+    if (settings.collection) return <ReactCollection trace={trace} />;
     if (settings.geometry) return <ReactGeometry trace={trace} />;
     if (settings.indicator) return <ReactIndicator trace={trace} />;
     if (settings.activation) return <ReactActivation trace={trace} />;

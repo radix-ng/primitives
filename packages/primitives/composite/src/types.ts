@@ -32,6 +32,8 @@ export interface RdxCompositeRootContext {
     orientation: Signal<RdxCompositeOrientation>;
     dir: Signal<Direction>;
     isIndexDisabled: (index: number) => boolean;
+    /** @internal Restoring a moved node is not a new user focus request. */
+    isRestoringFocus?: () => boolean;
     setHighlightedIndex: (index: number, shouldScrollIntoView?: boolean) => void;
     relayKeyboardEvent: (event: KeyboardEvent) => void;
 }

@@ -240,61 +240,65 @@ export class RdxTabsRoot {
             untracked(() => this.commitValue(this.initialDefaultValue!));
         });
 
-        effect(() => {
-            const tabMap = this.tabMap();
-            const value = this.value();
+        // Registration effects can publish partial collections while Angular replaces views.
+        // Reconcile only after the rendered collection and its metadata have settled.
+        afterRenderEffect({
+            read: () => {
+                const tabMap = this.tabMap();
+                const value = this.value();
 
-            if (this.externallyControlled()) {
-                return;
-            }
-
-            if (tabMap.size === 0) {
-                if (this.didRegisterTabs && value !== null && !this.lastKnownTabElement?.isConnected) {
-                    untracked(() => this.commitAutomaticValueChange(null, 'missing'));
-                }
-                return;
-            }
-
-            this.didRegisterTabs = true;
-            this.lastKnownTabElement = tabMap.keys().next().value;
-
-            const selectedTabMetadata = getTabMetadataByValue(tabMap, value);
-            const firstEnabledTabValue = getFirstEnabledTabValue(tabMap);
-            const selectionIsDisabled = selectedTabMetadata?.disabled;
-            const selectionIsMissing = selectedTabMetadata == null && value !== null;
-
-            if (!selectionIsDisabled && value === this.initialDefaultValue) {
-                this.shouldHonorDisabledDefaultValue = false;
-            }
-
-            if (this.shouldHonorDisabledDefaultValue && selectionIsDisabled && value === this.initialDefaultValue) {
-                return;
-            }
-
-            const shouldNotifyInitialValueChange = this.shouldNotifyInitialValueChange;
-
-            if (selectionIsDisabled || selectionIsMissing) {
-                const fallbackValue = firstEnabledTabValue ?? null;
-
-                if (value === fallbackValue) {
-                    this.shouldNotifyInitialValueChange = false;
+                if (this.externallyControlled()) {
                     return;
                 }
 
-                let fallbackReason: RdxTabsValueChangeReason = 'missing';
-                if (shouldNotifyInitialValueChange) {
-                    fallbackReason = 'initial';
-                } else if (selectionIsDisabled) {
-                    fallbackReason = 'disabled';
+                if (tabMap.size === 0) {
+                    if (this.didRegisterTabs && value !== null && !this.lastKnownTabElement?.isConnected) {
+                        untracked(() => this.commitAutomaticValueChange(null, 'missing'));
+                    }
+                    return;
                 }
 
-                untracked(() => this.commitAutomaticValueChange(fallbackValue, fallbackReason));
-                return;
-            }
+                this.didRegisterTabs = true;
+                this.lastKnownTabElement = tabMap.keys().next().value;
 
-            if (shouldNotifyInitialValueChange && selectedTabMetadata != null) {
-                untracked(() => this.notifyAutomaticValueChange(value, 'initial'));
-                this.shouldNotifyInitialValueChange = false;
+                const selectedTabMetadata = getTabMetadataByValue(tabMap, value);
+                const firstEnabledTabValue = getFirstEnabledTabValue(tabMap);
+                const selectionIsDisabled = selectedTabMetadata?.disabled;
+                const selectionIsMissing = selectedTabMetadata == null && value !== null;
+
+                if (!selectionIsDisabled && value === this.initialDefaultValue) {
+                    this.shouldHonorDisabledDefaultValue = false;
+                }
+
+                if (this.shouldHonorDisabledDefaultValue && selectionIsDisabled && value === this.initialDefaultValue) {
+                    return;
+                }
+
+                const shouldNotifyInitialValueChange = this.shouldNotifyInitialValueChange;
+
+                if (selectionIsDisabled || selectionIsMissing) {
+                    const fallbackValue = firstEnabledTabValue ?? null;
+
+                    if (value === fallbackValue) {
+                        this.shouldNotifyInitialValueChange = false;
+                        return;
+                    }
+
+                    let fallbackReason: RdxTabsValueChangeReason = 'missing';
+                    if (shouldNotifyInitialValueChange) {
+                        fallbackReason = 'initial';
+                    } else if (selectionIsDisabled) {
+                        fallbackReason = 'disabled';
+                    }
+
+                    untracked(() => this.commitAutomaticValueChange(fallbackValue, fallbackReason));
+                    return;
+                }
+
+                if (shouldNotifyInitialValueChange && selectedTabMetadata != null) {
+                    untracked(() => this.notifyAutomaticValueChange(value, 'initial'));
+                    this.shouldNotifyInitialValueChange = false;
+                }
             }
         });
     }
