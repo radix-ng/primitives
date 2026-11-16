@@ -104,6 +104,9 @@ A disabled tab remains reachable by composite keyboard navigation, but it cannot
 `RdxTabsIndicator` exposes the active tab's geometry as CSS variables, so a single element can animate to
 follow the selected tab.
 
+Its host has `role="presentation"` and stays mounted but hidden when no selected tab has a nonzero
+size. It updates when the List or any tab resizes, including when a label changes.
+
 <Canvas of={TabsStories.Indicator} />
 
 ### Animated panels
@@ -118,30 +121,31 @@ receive focus or pointer input. `data-hidden` is applied after the exit settles;
 
 ### Mounting & unmounting
 
-By default an inactive `rdxTabsPanel` stays in the DOM and is toggled with the `hidden` attribute. To
-unmount the contents while inactive (Base UI's default `keepMounted: false`), nest a
-`*rdxTabsPanelPresence` inside the panel — it mounts the contents only while the tab is active and waits
-for any exit `@keyframes` to finish before removing them. Set `keepMounted` on the panel to keep the
-contents mounted regardless.
+An ordinary `rdxTabsPanel` stays in the DOM and is hidden while inactive. Apply
+`*rdxTabsPanelPresence="value"` to the panel host to create only the active Panel view and destroy
+the complete view after its exit finishes. Its Angular children are destroyed as well; returning
+creates new children. The structural directive supplies the value to `rdxTabsPanel`.
+Use `keepMounted: true` on the structural directive to retain the whole view and its child state.
 
 ```html
 <!-- Unmount when inactive -->
-<div rdxTabsPanel value="1">
-    <div *rdxTabsPanelPresence>Panel 1</div>
-</div>
+<div *rdxTabsPanelPresence="'one'" rdxTabsPanel>Panel one</div>
 
 <!-- Keep mounted (hidden) when inactive -->
-<div rdxTabsPanel value="2" keepMounted>
-    <div *rdxTabsPanelPresence>Panel 2</div>
-</div>
+<div *rdxTabsPanelPresence="'two'; keepMounted: true" rdxTabsPanel>Panel two</div>
 ```
 
 ### Unmount with `@keyframes`
 
 With `*rdxTabsPanelPresence`, the shared presence machine watches the panel and its descendants for
-exit animations or transitions before removing the contents. Mark the panel as a `group` so the
+exit animations or transitions before destroying the whole view. Mark the panel as a `group` so the
 inner element can react to the parent's `data-ending-style` and run the exit keyframes. The panel
-stays visible and inert until removal, then its persistent empty host becomes hidden.
+stays visible and inert until removal. Its ID belongs to the structural instance and stays stable
+when the native Panel is recreated.
+
+**Migration:** move the former inner `*rdxTabsPanelPresence` onto the Panel host, move its `value`
+into the structural expression and move structural `keepMounted` into the microsyntax above.
+The former argument-free inner presence syntax is no longer supported.
 
 <Canvas of={TabsStories.KeyframeUnmount} />
 
@@ -208,8 +212,10 @@ Removing a part removes the corresponding reference.
 
 `RdxTabsPanel` — content shown when its tab is active.
 
-Its `id` is the target of the matching Tab's `aria-controls`. An inactive Panel host remains a valid
-target, including when `*rdxTabsPanelPresence` has removed its contents.
+Apply to a container element, typically a `<div>`. Its `id` is the target of the matching Tab's
+`aria-controls` while the host exists. Whole-Panel presence unregisters that target when its view is
+destroyed and restores it on return. With structural presence, value and mounting policy come from
+the structural directive; an ordinary retained Panel takes its own `value` input.
 
 <ArgTypes of={RdxTabsPanel} />
 
@@ -224,9 +230,11 @@ target, including when `*rdxTabsPanelPresence` has removed its contents.
 
 ### TabsPanelPresence
 
-`*rdxTabsPanelPresence` — a structural directive placed inside an `rdxTabsPanel` that mounts the panel
-contents only while active and unmounts them after the exit animation. It has no inputs; mount state is
-read from the parent panel.
+`*rdxTabsPanelPresence` — apply to the same element as `rdxTabsPanel` to own the complete Panel view.
+The structural value associates it with a Tab; `keepMounted` retains its inactive view. Exit motion
+can keep an outgoing view mounted and inert until completion.
+
+<ArgTypes of={RdxTabsPanelPresence} />
 
 ### TabsIndicator
 

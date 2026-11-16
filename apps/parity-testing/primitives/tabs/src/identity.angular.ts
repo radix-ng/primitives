@@ -43,24 +43,32 @@ import { identityCommand, identityParts } from './identity';
                         }
                     </div>
                     @for (panel of panels(); track panel.key) {
-                        <div
-                            [class]="s.panel"
-                            [value]="panel.value"
-                            [id]="panel.id ? root + '-' + panel.id : undefined"
-                            [keepMounted]="kind !== 'presence'"
-                            [attr.data-part-key]="panel.key"
-                            [attr.data-value]="encode(panel.value)"
-                            [attr.data-testid]="root + '-panel-' + panel.key"
-                            rdxTabsPanel
-                        >
-                            @if (kind === 'presence') {
-                                <div *rdxTabsPanelPresence [attr.data-testid]="root + '-content-' + panel.key">
-                                    {{ panel.key }} content
-                                </div>
-                            } @else {
+                        @if (kind === 'presence') {
+                            <div
+                                *rdxTabsPanelPresence="panel.value"
+                                [class]="s.panel"
+                                [id]="panel.id ? root + '-' + panel.id : undefined"
+                                [attr.data-part-key]="panel.key"
+                                [attr.data-value]="encode(panel.value)"
+                                [attr.data-testid]="root + '-panel-' + panel.key"
+                                rdxTabsPanel
+                            >
+                                <div [attr.data-testid]="root + '-content-' + panel.key">{{ panel.key }} content</div>
+                            </div>
+                        } @else {
+                            <div
+                                [class]="s.panel"
+                                [value]="panel.value"
+                                [id]="panel.id ? root + '-' + panel.id : undefined"
+                                [keepMounted]="true"
+                                [attr.data-part-key]="panel.key"
+                                [attr.data-value]="encode(panel.value)"
+                                [attr.data-testid]="root + '-panel-' + panel.key"
+                                rdxTabsPanel
+                            >
                                 {{ panel.key }} content
-                            }
-                        </div>
+                            </div>
+                        }
                     }
                 </div>
             </div>

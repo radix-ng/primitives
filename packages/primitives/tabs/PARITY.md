@@ -1,17 +1,19 @@
 # Tabs — Base UI compatibility
 
-Audited 2026-11-15 against Base UI 1.9.0 commit
+Audited 2026-11-16 against Base UI 1.9.0 commit
 [`cf696d6f6e08c699c5bda24d5a033430909f2285`](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/tabs),
 as pinned in [reference.json](../../../apps/parity-testing/reference.json).
 The prepared source digest was validated with `pnpm parity:prepare`.
 
 This is a source/API audit with incremental comparison evidence, not full parity or accessibility
 certification. The [Tabs differential suite](../../../apps/parity-testing/primitives/tabs/README.md)
-now covers initial values/notifications, Panel exits/focus, activation direction, identities and native activation:
-**91 scenarios, 273 comparisons** across Chromium, Firefox and WebKit, with no skips. Six exact reviewed
-fields cover the custom-Panel ID and persistent-host differences in G5. G1 and G3's direction defects
+now covers initial values/notifications, Panel exits/focus, activation direction, identities, native activation
+and Indicator visibility/resize: **112 scenarios, 336 comparisons** across Chromium, Firefox
+and WebKit, with no skips. Four exact reviewed fields remain: two for G5's authored-Panel-ID
+mismatch and two for G6's hidden Indicator host at null. Whole-Panel presence removes the former
+four persistent-Panel-host exceptions. G1 and G3's direction defects
 are resolved; G4's inert/hidden defects and G5's identity defects are resolved for their documented
-scope. G8's native keyboard/click/press-release subset is resolved; remaining interaction, lifecycle
+scope. G6's visibility/observation subset and G8's native keyboard/click/press-release subset are resolved; remaining interaction, lifecycle
 and geometry gaps below are not certified by these increments.
 **Pinned covered** means the stated subset passed direct Angular/Base UI comparison;
 **Regression covered** below means an existing Angular check exercises the stated subset;
@@ -36,13 +38,13 @@ listed separately from unresolved gaps.
 | Disabled tabs remain arrow-focusable without activation                                  | Pinned disabled button/div/link key/click cases; state and focus units              | Covered for disabled native defaults/navigation and horizontal entry; touch/pen remain pending                  |
 | Disabled controlled selection preserves an enabled Tab entry                             | Selected-disabled unit; List source                                                 | Regression covered with focus outside the list; dynamic focus cases pending                                     |
 | Native Tab / Shift+Tab into list, panel and adjacent controls                            | Pinned held-exit cases and projected-wrapper browser test                           | Forward/reverse active-panel order covered during exits; rapid pre-render Enter/Tab remains pending             |
-| `role`, `aria-selected`, orientation and reciprocal IDs                                  | Fifteen pinned identity cases, seven identity units and native SSR relationships    | G5 covered for registered/authored identities; two documented adaptations                                       |
+| `role`, `aria-selected`, orientation and reciprocal IDs                                  | Fifteen pinned identity cases, seven identity units and native SSR relationships    | G5 covered for registered/authored identities; authored-ID adaptation only                                      |
 | Per-part `data-orientation`, `data-activation-direction`, Tab active/disabled attributes | Pinned direction suite, first sampled frame, host bindings and selected-state units | G3 direction covered on Root/List/Tab/Panel and non-null Indicator; live orientation/style combinations pending |
 | Panel indexes and active/inactive tabindex                                               | Composite-index unit; pinned Panel snapshots                                        | Index regression covered; active/inactive tabindex pinned covered in lifecycle cases                            |
-| Panel unmount / `keepMounted`                                                            | Three presence units; pinned exit/reselection cases                                 | Content lifetime covered with persistent-host adaptation, G4; raw DOM retains host presence                     |
-| Panel enter/exit attributes, hidden timing, inert contents and interrupted transitions   | Eight pinned cases and public keyframe browser regression                           | G4 fixed for documented retained/structural exits; deeper lifecycle follow-ups remain                           |
-| Indicator six `--active-tab-*` variables and common state attributes                     | Pinned custom-ID width case; source vs pinned CssVars/DataAttributes                | Registered lookup/width covered; remaining geometry and visibility differ, G6                                   |
-| Indicator custom tab ID, absent/zero-size selection, resize and List replacement         | Pinned custom-ID case and Indicator lookup/observer source                          | Custom/default ID lookup fixed in G5; visibility and observation remain G6                                      |
+| Panel unmount / `keepMounted`                                                            | Nine presence units; twelve pinned lifecycle cases                                  | Whole-Panel host/child lifetime covered, G4; no structural-host exception                                       |
+| Panel enter/exit attributes, hidden timing, inert contents and interrupted transitions   | Twelve pinned cases and public keyframe browser regression                          | G4 fixed for documented retained/structural exits; deeper lifecycle follow-ups remain                           |
+| Indicator six `--active-tab-*` variables and common state attributes                     | Seventeen pinned visibility/resize cases; direction and custom-ID controls          | Basic geometry, role/hidden and CSS precision covered; complex geometry remains G6                              |
+| Indicator custom tab ID, absent/zero-size selection, resize and List replacement         | Pinned visibility/resize cases; three observer lifetime units                       | G5 lookup and G6 visibility/observation covered; null retains a hidden Angular host                             |
 | Indicator scroll, borders, scale/transforms and intermediate scroll containers           | Geometry calculations vs pinned Indicator and browser tests                         | Source gaps, G6; screenshots do not prove live geometry                                                         |
 | Tab/Panel value domain and unique identity                                               | Public value types; pinned mixed numeric/string identities                          | ID collisions fixed in G5; arbitrary-value API remains G7                                                       |
 | Custom/native hosts, keyboard activation and disabled links                              | Forty native activation cases on button/div/link/anchor hosts                       | G8 covered for the documented keyboard/click/secondary-release subset                                           |
@@ -59,12 +61,10 @@ listed separately from unresolved gaps.
   `className`/`style` callbacks are replaced by Angular composition, native bindings and exported
   directives; a React store or ref implementation is not a requirement. See
   [framework adaptation](../../../docs/engineering/mechanisms/framework-adaptation-during-parity-work.md).
-- Panel hosts stay mounted. `*rdxTabsPanelPresence` removes their contents and `keepMounted` retains
-  those contents. This existing two-directive pattern is documented in the
-  [Tabs family note](../../../docs/engineering/families/tabs-follow-the-base-ui-part-set.md),
-  [public MDX](stories/tabs.docs.mdx) and [ADR 0010](../../../docs/adr/0010-structural-portal-presence.md).
-  G4 compares exit focusability and content lifetime; G5 explicitly compares native ARIA targets and
-  records the persistent-host difference in [ADR 0074](../../../docs/adr/0074-tabs-native-identities.md).
+- Ordinary Panel hosts stay mounted. `*rdxTabsPanelPresence="value"` on the Panel host owns its
+  entire Angular view and destroys it after exit; `keepMounted: true` retains the entire view and
+  child state. The structural owner supplies value and a stable generated ID. [ADR 0077](../../../docs/adr/0077-tabs-whole-panel-presence.md)
+  supersedes the former empty-host adaptation from ADR 0074 and removes its four exception fields.
 - Projected tabs resolve the inner List through the Root's Composite owner bridge. The Root must be
   on the wrapper host, in the projected parts' declaring injector tree. This follows
   [ADR 0001](../../../docs/adr/0001-angular-composite-navigation-layer.md).
@@ -76,10 +76,13 @@ listed separately from unresolved gaps.
 - Change details retain Angular's optional initiating native `trigger`; pinned Tabs leaves it unset.
   G8 asserts each policy and retains it in raw measurements. Equal trigger availability is outside
   the native callback equivalence. See [ADR 0075](../../../docs/adr/0075-tabs-native-activation.md).
+- Indicator retains its consumer-owned host at null and hides it, while the pin omits its element.
+  Two exact host fields retain this difference; actual visibility and geometry still compare.
+  See [ADR 0076](../../../docs/adr/0076-tabs-indicator-observation.md).
 
 ## Source gaps and required comparisons
 
-G1, G3's direction defects, G4, G5 and G8's native-activation subset were reproduced and fixed through direct comparison. G5 has
+G1, G3's direction defects, G4, G5, G6's visibility/observation and G8's native-activation subset were reproduced and fixed through direct comparison. G5 and G6 have
 exact reviewed differences documented below. The remaining findings are not reviewed
 differential exceptions; each needs a focused reproducer before an exact exception or runtime change
 is accepted.
@@ -137,25 +140,25 @@ Indicator lifetime/geometry are not certified by this increment. G2 collection o
 
 ### G4 — Resolved for retained/structural exits: inert contents and hidden timing
 
-[Panel](src/tabs-panel.ts) now binds `inert` whenever inactive, removes it on selection and applies
-`data-hidden` after actual exit completion. The empty persistent host becomes hidden after structural
-contents exit as well. [TabsPanelPresence](src/tabs-panel-presence.ts) adapts the shared
-`PresenceMachine` to watch the Panel host and descendants, rather than only its embedded template's
-roots. Panel derives its ending phase from actual mounted structural contents alongside its host
-transition; it does not maintain an independent content-removal timer.
+[Panel](src/tabs-panel.ts) is immediately inert whenever inactive. Retained hosts become hidden
+when their actual exit ends. [TabsPanelPresence](src/tabs-panel-presence.ts) owns the complete native
+Panel and Angular child view through `TemplateRef`/`EmbeddedViewRef` and the shared `PresenceMachine`.
+Its context supplies value, mounting policy, transition history and an ID that survive native view recreation. Root
+registration follows actual host lifetime, and the context cannot leak into a nested Tabs Root.
 
-Eight pinned cases cover immediate/paused/natural exits, structural presence on/off, retained
-contents, rapid reselection, actual forward/backward Tab order, rejected focus requests and trusted
-pointer activation. In the nested case, finishing the child first leaves the host exit pending.
-Before the fix, seven of eight Chromium cases failed; all 24 new comparisons now pass across three
-engines without exceptions. A unit checks inactive inertness and a separate public-story browser test
-checks nested-content-only keyframes, empty-host hiding and reuse.
+Twelve pinned cases cover immediate/held/natural exits, full-view unmounting/retention, interrupted
+reselection, native Tab order, rejected outgoing focus/pointer requests, fresh state on return,
+retained state with keepMounted, Root removal during exit and removing a closed retained view.
+All 36 lifecycle comparisons pass across three engines. Six new units check Angular child lifetime,
+ID stability, disposal and nested Root scope, alongside the original three presence units.
+Completed-exit cases also observe actual starting-attribute mutations on new/retained hosts;
+the structural owner preserves their enter phase across view destruction. The remount case failed
+before moving the transition ref to that owner, with all reference assertions passing.
 
-The [pinned Panel](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/tabs/panel/TabsPanel.tsx)
-waits on its own element's motion. Angular's pre-existing descendant-only exit support is a documented
-capability, not a claim that the pin has the same wait policy. Raw DOM retains the persistent-empty
-host versus unmounted-host distinction. Later-finishing/replaced descendant motion, whole-Root removal
-and live keepMounted/presence changes remain follow-ups; native ARIA identity is compared in G5.
+The public keyframe regression covers descendant-only motion before whole-Panel removal and
+recreation. Angular's descendant-aware exit wait is an existing capability; the pin waits on its
+Panel element. Later-finishing/replaced descendant motion, further live-policy combinations and
+actual hydration remain follow-ups. See [ADR 0077](../../../docs/adr/0077-tabs-whole-panel-presence.md).
 
 ### G5 — Resolved for registered native identities
 
@@ -178,28 +181,37 @@ passing. The full increment passes **45 comparisons**, alongside seven new units
 relationship regression. Actual IDs/IDREFs remain in raw DOM; comparisons resolve native targets,
 check uniqueness and track instance identity/reuse.
 
-[ADR 0074](../../../docs/adr/0074-tabs-native-identities.md) accepts six exact exception fields for
-two intentional differences: Angular registers an authored Panel's actual ID where the pin leaves a
-dangling generated-ID reference, and Angular retains a valid persistent native Panel target when
-structural contents are removed. Neither difference suppresses labels, selection, notifications or
-other scenarios. Imperative DOM-ID mutation, cross-root moves and actual hydration remain follow-ups.
+[ADR 0074](../../../docs/adr/0074-tabs-native-identities.md) retains two authored-Panel-ID exception
+fields: Angular registers the actual authored ID where the pin leaves a dangling generated-ID
+reference. [ADR 0077](../../../docs/adr/0077-tabs-whole-panel-presence.md) removes the former four
+persistent-host fields after comparisons report all four stale, with no assertion failures or
+unexpected differences. The identity presence case now also verifies return/remount with the same
+structural owner ID. Imperative DOM-ID mutation, cross-root moves and actual hydration remain follow-ups.
 
-### G6 — Indicator lookup, visibility, measurement and observation are incomplete
+### G6 — Visibility/observation resolved; complex geometry remains
 
-[Indicator](src/tabs-indicator.ts) now uses the registered Tab element and its measurement effect
-depends on `tabMap`; the G5 custom-ID case verifies width before/after an ID edit. It still publishes
-variables without the pin's `role=presentation` or hiding/omitting the indicator for an absent or
-zero-size selection. It observes only the initial List, not each tab. A tab can change size/position
-inside a fixed-size List without a new measurement; replacing the List does not reconnect its
-ResizeObserver. Owner-document/shadow-root combinations have not been compared.
+[Indicator](src/tabs-indicator.ts) measures the registered selection after rendering and observes
+the current List and every tab. Collection/List changes and destruction disconnect the old observer.
+It exposes `role=presentation` and hides missing/zero-size geometry. At null, Angular retains its
+hidden host while the pin omits its element; two exact `hosts` fields record that adaptation.
+Computed CSS dimensions retain native precision, and opposite-edge distances use content dimensions.
+
+Seventeen pinned cases compare both axes, null/missing/hidden/zero-size selections, active/sibling/
+label/List resize, tab replacement/insertion, List replacement followed by resize, multiple
+indicators and removal/recreation followed by resize. All six variables, physical alignment,
+visibility, host semantics and unchanged selection/notifications are observed. All 51 new comparisons
+pass across three engines, with 54 existing direction/identity controls. Three units verify observer
+ownership and cleanup, including a surviving Angular Indicator across List replacement. Before the
+fix all 17 new Chromium cases and two of those units failed, with no reference assertion failures.
+See [ADR 0076](../../../docs/adr/0076-tabs-indicator-observation.md).
 
 The [pinned Indicator](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/tabs/indicator/TabsIndicator.tsx)
 uses registered elements, shared List/tab resize observation, CSS dimensions and layout/rect offsets
-that account for borders, scale and transforms. Angular uses viewport rect dimensions/deltas plus the
-List scroll offsets for left/top; right/bottom remain viewport-edge relative instead of content-edge
-relative. Compare all six variables in a real browser for custom IDs, null/missing/hidden tabs, dynamic
-labels/insertion, resize, List replacement, overflow on both axes, borders, scaled/rotated/flipped
-ancestors, translated tabs and intermediate scrollers. Include multiple indicators and cleanup.
+that account for borders, scale and transforms. Angular's left/top still derive from viewport rect
+deltas plus List scroll offsets, without the pin's border/transform correction. Overflow on both
+axes, borders, scaled/rotated/flipped ancestors, translated tabs and intermediate scrollers still
+need focused comparisons. Owner-document/shadow combinations, actual hydration and Indicator first
+paint remain unverified; no `renderBeforeHydration` capability is introduced.
 
 ### G7 — Value domain remains narrower than the pin
 
@@ -236,12 +248,26 @@ Checks run for this audit on Node 24.22.2:
 
 - `pnpm parity:prepare` — Base UI 1.9.0 pin and cached content digest validated.
 - `pnpm exec vitest run --config packages/primitives/vite.config.ts packages/primitives/tabs/__tests__`
-  — **54 passed**, including eight native-activation regressions, seven native-identity regressions, null-default, Panel inertness, direction
+  — **63 passed**, including six whole-Panel lifetime/ownership tests, three Indicator observation/cleanup checks, eight native-activation regressions, seven native-identity regressions, null-default, Panel inertness, direction
   regressions and synchronous model/direction publication.
-- `pnpm test-parity tabs` — **273 passed** (91 initial-value/Panel/direction/identity/activation scenarios × three engines), strict fixture
+- Current whole-Panel run: `pnpm test-parity tabs` — **336 passed**, 112 scenarios across three
+  engines, with four exact reviewed fields. Strict fixture build and 13 infrastructure checks pass.
+- After final input metadata cleanup: **48 affected Panel/identity comparisons passed** on macOS
+  and **48 passed** in Playwright 1.60.0 Noble Linux/arm64 with one worker and the original timeout.
+  Linux observations remain in `dist/tabs-panel-owner-linux/results/`.
+- Previous G8 full run: `pnpm test-parity tabs` — **273 passed** (91 initial-value/Panel/direction/identity/activation scenarios × three engines), strict fixture
   compilation/build and the shared runner's 13 infrastructure tests passed. The initial Chromium run
   before the runtime fix passed nine cases and failed both null-default cases; its reports/traces are
   retained locally in `dist/parity-testing/tabs/before-null-fix/`.
+- `pnpm test-parity tabs --grep 'indicator-|direction-'` — **105 passed**: 51 new Indicator rows
+  and 54 affected direction/identity controls. Strict fixture compilation/build and 13 shared
+  infrastructure tests passed. The suite at that increment contained 108 scenarios / 324 planned comparisons;
+  the earlier full-run verdict above is unchanged. Initial G6 Chromium baseline: **17 new failures**
+  with no reference assertion failures, retained in `dist/parity-testing/tabs/before-indicator-fix/`.
+- Additional G6 Linux/arm64 browser pass: **54 passed** (51 Indicator comparisons plus three
+  custom-ID controls) in Playwright 1.60.0 Noble with one worker and the original timeout. Raw
+  results are retained in `dist/tabs-g6-linux/results/`. A matching three-engine macOS label check
+  passes after correcting the rendered-box assertion precision; variable comparison stays exact.
 - Panel cases before the G4 fix: **1 passed / 7 failed** in Chromium, retained in
   `dist/parity-testing/tabs/before-panel-fix/`.
 - Initial direction cases before G3: **2 passed / 15 failed** in Chromium, all reference assertions
@@ -253,9 +279,9 @@ Checks run for this audit on Node 24.22.2:
   preserved in `dist/parity-testing/tabs/before-activation-fix/`.
 - Additional Linux/arm64 browser pass: **120 activation comparisons passed** against the built
   fixtures in `mcr.microsoft.com/playwright:v1.60.0-noble`, using one worker and the original timeout.
-  Results are retained in `dist/tabs-g8-linux/results/`; the full macOS pass remains the 273-row report.
+  Results are retained in `dist/tabs-g8-linux/results/`; the G8 macOS pass was the 273-row report.
 - `PLAYWRIGHT_PORT=4411 pnpm exec playwright test -c apps/visual-regression/playwright.config.ts tabs.behavior.spec.ts agents.behavior.spec.ts --grep Tabs --project=chromium`
-  — **2 passed** against a fresh Storybook build: public keyframe lifecycle and projected wrapper.
+  — **2 passed** against a fresh Storybook build: public whole-Panel keyframe lifecycle and projected wrapper.
 - `pnpm exec playwright test -c apps/visual-regression/playwright.config.ts agents.behavior.spec.ts --grep 'Agents Tabs task' --project=chromium`
   — **1 passed**, against the existing locally served Storybook build. This verifies projected
   navigation/manual Enter/Space and forward list exit, not current shared-source rebuild equivalence.
@@ -275,8 +301,8 @@ Enter/Tab failures. Its [follow-up](../../../tools/consumer-testing/generation/t
 records supplemental success after observing selection rendering. Neither result compares Base UI or
 establishes ownership of that timing issue; do not relabel it as primitive parity or as 36/36.
 
-Next increments: Indicator geometry/observation for G6, then dynamic collection/value-domain work
+Next increments: remaining Indicator border/transform/scroll geometry for G6, then dynamic collection/value-domain work
 for G2/G7. G8's remaining native gesture and auxiliary-host combinations stay explicit follow-ups.
 Keep fixtures on actual native input and observable state; do not normalize away IDs, focus, mounting,
-event metadata or geometry differences. Whole-Root removal, nested/overlay consumers, hydration and
+event metadata or geometry differences. Further Root disposal cases, nested/overlay consumers, hydration and
 real-device/AT work remain explicit follow-ups.

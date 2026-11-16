@@ -7,6 +7,7 @@ export interface PanelSettings {
     motion: 'none' | 'held' | 'natural';
     reselect?: boolean;
     nested?: boolean;
+    lifecycle?: 'remount' | 'keep-state' | 'root-remove' | 'keep-toggle';
 }
 const options = [
     { value: 0, label: 'Account' },
@@ -21,7 +22,26 @@ export const panelCases = {
     'panel-natural-exit': fixture({ presence: true, keepMounted: false, motion: 'natural' }),
     'panel-reselect-exit': fixture({ presence: true, keepMounted: false, motion: 'held', reselect: true }),
     'panel-retained-reselect': fixture({ presence: false, keepMounted: true, motion: 'held', reselect: true }),
-    'panel-nested-exit': fixture({ presence: true, keepMounted: false, motion: 'held', nested: true })
+    'panel-nested-exit': fixture({ presence: true, keepMounted: false, motion: 'held', nested: true }),
+    'panel-presence-remount': fixture({ presence: true, keepMounted: false, motion: 'held', lifecycle: 'remount' }),
+    'panel-presence-kept-state': fixture({
+        presence: true,
+        keepMounted: true,
+        motion: 'held',
+        lifecycle: 'keep-state'
+    }),
+    'panel-root-removal-exit': fixture({
+        presence: true,
+        keepMounted: false,
+        motion: 'held',
+        lifecycle: 'root-remove'
+    }),
+    'panel-closed-keep-mounted-toggle': fixture({
+        presence: true,
+        keepMounted: true,
+        motion: 'held',
+        lifecycle: 'keep-toggle'
+    })
 };
 export type PanelCaseName = keyof typeof panelCases;
 export const panelMotionClass = (settings: PanelSettings) =>

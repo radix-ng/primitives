@@ -1,6 +1,7 @@
 import { activationCases, type ActivationSettings } from './activation';
 import { directionCases, type DirectionSettings } from './direction';
 import { identityCases, type IdentityKind } from './identity';
+import { indicatorCases, type IndicatorKind } from './indicator';
 import { panelCases, type PanelSettings } from './panels';
 
 export type Value = string | number | null;
@@ -18,6 +19,7 @@ export interface Settings {
     direction?: DirectionSettings;
     identity?: IdentityKind;
     activation?: ActivationSettings;
+    indicator?: IndicatorKind;
 }
 
 const numericOptions: Option[] = [
@@ -52,7 +54,14 @@ export const initialCases = {
     'default-null-string': { options: stringOptions, defaultValue: null },
     'value-null': { options: numericOptions, defaultValue: 1, value: null }
 } satisfies Record<string, Settings>;
-export const cases = { ...initialCases, ...panelCases, ...directionCases, ...identityCases, ...activationCases };
+export const cases = {
+    ...initialCases,
+    ...panelCases,
+    ...directionCases,
+    ...identityCases,
+    ...activationCases,
+    ...indicatorCases
+};
 export type CaseName = keyof typeof cases;
 
 export interface Change {
@@ -69,6 +78,7 @@ export interface Probe {
     activations: number[];
     directionFrames: { value: string | null; selected: string[]; directions: (string | null)[] }[];
     nativeEvents: { type: string; trusted: boolean; trigger: string | null }[];
+    panelStarts: string[];
 }
 declare global {
     const __PARITY_REFERENCE__: Probe['reference'];
@@ -91,9 +101,30 @@ export function installProbe(framework: Probe['framework'], settings: Settings) 
         changes: [],
         activations: [0, 0],
         directionFrames: [],
-        nativeEvents: []
+        nativeEvents: [],
+        panelStarts: []
     };
     window.tabsParity = probe;
+    if (settings.panels?.lifecycle === 'remount' || settings.panels?.lifecycle === 'keep-state') {
+        // Observe actual enter attributes, including on newly inserted hosts, before the next
+        // frame clears them. This never drives the primitive or changes its styles.
+        const observer = new MutationObserver(() => {
+            if (window.tabsParity !== probe) {
+                observer.disconnect();
+                return;
+            }
+            for (const panel of document.querySelectorAll<HTMLElement>('[role="tabpanel"][data-starting-style]')) {
+                const id = panel.dataset.testid!;
+                if (!probe.panelStarts.includes(id)) probe.panelStarts.push(id);
+            }
+        });
+        observer.observe(document.body, {
+            subtree: true,
+            childList: true,
+            attributes: true,
+            attributeFilter: ['data-starting-style']
+        });
+    }
     if (settings.direction) {
         const record = () => {
             if (window.tabsParity !== probe) return;

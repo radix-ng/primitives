@@ -113,6 +113,11 @@ export class TabsDriver {
                             ending: panel.hasAttribute('data-ending-style')
                         };
                     }),
+                    hosts: probe.config.options.map((_, i) => !!root.querySelector(`[data-testid="panel-${i}"]`)),
+                    entryPanels: probe.panelStarts,
+                    fields: probe.config.options.map(
+                        (_, i) => root.querySelector<HTMLInputElement>(`[data-testid="field-${i}"]`)?.value ?? null
+                    ),
                     focus:
                         document.activeElement?.getAttribute('data-testid') ?? document.activeElement?.tagName ?? null,
                     activations: probe.activations,
@@ -250,11 +255,7 @@ export class TabsDriver {
                         .map((tab) => JSON.parse(tab.dataset.value!));
                     for (const tab of tabs) controls[tab.dataset.testid!] = relation(tab, 'aria-controls');
                     for (const panel of root.querySelectorAll<HTMLElement>('[role="tabpanel"]')) {
-                        if (
-                            window.tabsParity.config.identity !== 'presence' ||
-                            panel.querySelector('[data-testid*="-content-"]')
-                        )
-                            labels[panel.dataset.testid!] = relation(panel, 'aria-labelledby');
+                        labels[panel.dataset.testid!] = relation(panel, 'aria-labelledby');
                     }
                     for (const part of root.querySelectorAll<HTMLElement>('[role="tab"], [role="tabpanel"]')) {
                         identities[part.dataset.testid!] = part.id;

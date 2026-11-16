@@ -21,7 +21,15 @@ export const panelScenarios = (Object.keys(panelCases) as PanelCaseName[]).map((
             await page.keyboard.press(macWebkit ? `Alt+${value}` : value);
         };
 
-        await driver.panelCheckpoint('initial panel state', { selected: [0], activations: [0, 0], changes: [] });
+        await driver.panelCheckpoint('initial panel state', {
+            selected: [0],
+            activations: [0, 0],
+            changes: [],
+            entryPanels: []
+        });
+        const initialPanel = await panel(0).elementHandle();
+        if (settings.lifecycle === 'remount' || settings.lifecycle === 'keep-state')
+            await page.getByTestId('field-0').fill('Edited before exit');
         await tab(1).press('Enter');
         await expect(tab(1)).toHaveAttribute('aria-selected', 'true');
 
@@ -29,6 +37,31 @@ export const panelScenarios = (Object.keys(panelCases) as PanelCaseName[]).map((
             await expect(panel(0)).toHaveAttribute('data-ending-style', '');
             await expect(content(0)).toBeVisible();
             await driver.panelCheckpoint('outgoing panel is inert during exit', { selected: [1], focus: 'tab-1' });
+
+            if (settings.lifecycle === 'root-remove') {
+                await page.keyboard.press('F2');
+                await expect(page.getByTestId('tabs-root')).toHaveCount(0);
+                const state = await page.evaluate(async () => {
+                    // Let native animation cancellation and its finished promises settle after disposal.
+                    await new Promise<void>((resolve) =>
+                        requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+                    );
+                    return {
+                        hosts: document.querySelectorAll('[role="tabpanel"]').length,
+                        changes: window.tabsParity.changes,
+                        activations: window.tabsParity.activations
+                    };
+                });
+                driver.checkpoints.push({ name: 'Root removal disposes exiting views', state });
+                driver.measurements.push({
+                    name: 'Root removal disposes exiting views',
+                    dom: await page.locator('body').innerHTML(),
+                    focus: null
+                });
+                expect(state.hosts).toBe(0);
+                expect(driver.errors).toEqual([]);
+                return;
+            }
 
             await page.getByTestId('field-0').evaluate((element) => element.focus());
             await expect(tab(1)).toBeFocused();
@@ -75,8 +108,34 @@ export const panelScenarios = (Object.keys(panelCases) as PanelCaseName[]).map((
         }
 
         if (retained) await expect(panel(0)).toBeHidden();
-        else await expect(content(0)).toHaveCount(0);
+        else {
+            await expect(content(0)).toHaveCount(0);
+            await expect(panel(0)).toHaveCount(0);
+        }
         await driver.panelCheckpoint('exit settled', { selected: [1], activations: [0, 0] });
+        if (settings.lifecycle === 'keep-toggle') {
+            await page.keyboard.press('F3');
+            await expect(panel(0)).toHaveCount(0);
+            await driver.panelCheckpoint('closed keepMounted view removed without another exit', {
+                hosts: [false, true],
+                fields: [null, '']
+            });
+        }
+        if (settings.lifecycle === 'remount' || settings.lifecycle === 'keep-state') {
+            await tab(0).press('Enter');
+            await expect(tab(0)).toHaveAttribute('aria-selected', 'true');
+            await finish(1);
+            await expect(content(1)).toBeHidden();
+            const sameHost = await panel(0).evaluate((element, initial) => element === initial, initialPanel);
+            expect(sameHost).toBe(settings.lifecycle === 'keep-state');
+            await driver.panelCheckpoint('return recreates or retains the complete view', {
+                selected: [0],
+                hosts: settings.lifecycle === 'keep-state' ? [true, true] : [true, false],
+                fields: settings.lifecycle === 'keep-state' ? ['Edited before exit', ''] : ['', null],
+                entryPanels: ['panel-1', 'panel-0']
+            });
+            return;
+        }
         await page.getByTestId('field-1').focus();
         await expect(page.getByTestId('field-1')).toBeFocused();
         await page.getByTestId('action-1').click();

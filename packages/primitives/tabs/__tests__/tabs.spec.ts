@@ -667,11 +667,11 @@ describe('Tabs implicit defaultValue', () => {
                 <button rdxTabsTab value="one">One</button>
                 <button rdxTabsTab value="two">Two</button>
             </div>
-            <div [keepMounted]="keepMounted()" rdxTabsPanel value="one">
-                <p class="content-one" *rdxTabsPanelPresence>Panel one</p>
+            <div *rdxTabsPanelPresence="'one'; keepMounted: keepMounted()" rdxTabsPanel>
+                <p class="content-one">Panel one</p>
             </div>
-            <div [keepMounted]="keepMounted()" rdxTabsPanel value="two">
-                <p class="content-two" *rdxTabsPanelPresence>Panel two</p>
+            <div *rdxTabsPanelPresence="'two'; keepMounted: keepMounted()" rdxTabsPanel>
+                <p class="content-two">Panel two</p>
             </div>
         </div>
     `,
@@ -688,14 +688,16 @@ describe('Tabs with *rdxTabsPanelPresence', () => {
 
     const content = (selector: string) => fixture.nativeElement.querySelector(selector) as HTMLElement | null;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         TestBed.configureTestingModule({ imports: [PresenceHostComponent] });
         fixture = TestBed.createComponent(PresenceHostComponent);
         host = fixture.componentInstance;
         fixture.detectChanges();
+        await fixture.whenStable();
     });
 
-    it('mounts only the active panel contents', () => {
+    it('mounts only the active panel host and contents', () => {
+        expect(fixture.nativeElement.querySelectorAll('[role="tabpanel"]')).toHaveLength(1);
         expect(content('.content-one')).toBeTruthy();
         expect(content('.content-two')).toBeNull();
     });
@@ -711,9 +713,10 @@ describe('Tabs with *rdxTabsPanelPresence', () => {
         expect(content('.content-one')).toBeNull();
     });
 
-    it('keeps inactive panel contents mounted when keepMounted is set', () => {
+    it('keeps inactive panels mounted when keepMounted is set', async () => {
         host.keepMounted.set(true);
         fixture.detectChanges();
+        await fixture.whenStable();
 
         expect(content('.content-one')).toBeTruthy();
         expect(content('.content-two')).toBeTruthy();

@@ -7,6 +7,7 @@ import { AngularActivation } from './activation.angular';
 import { classes, config, installProbe } from './contract';
 import { AngularDirection } from './direction.angular';
 import { AngularIdentity } from './identity.angular';
+import { AngularIndicator } from './indicator.angular';
 import { AngularPanels } from './panels.angular';
 
 const settings = config();
@@ -20,10 +21,13 @@ const settings = config();
         AngularPanels,
         AngularDirection,
         AngularIdentity,
-        AngularActivation
+        AngularActivation,
+        AngularIndicator
     ],
     template: `
-        @if (settings.activation) {
+        @if (settings.indicator) {
+            <parity-tabs-indicator />
+        } @else if (settings.activation) {
             <parity-tabs-activation />
         } @else if (settings.identity) {
             <parity-tabs-identity />

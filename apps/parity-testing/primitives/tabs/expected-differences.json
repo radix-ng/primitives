@@ -3,48 +3,64 @@
         "scenario": "identity-custom-panel-id",
         "checkpoint": "initial identities",
         "field": "controls",
-        "angular": { "a-tab-zero": "a-panel-zero", "a-tab-one": "a-panel-one" },
-        "react": { "a-tab-zero": "dangling", "a-tab-one": "a-panel-one" },
+        "angular": {
+            "a-tab-zero": "a-panel-zero",
+            "a-tab-one": "a-panel-one"
+        },
+        "react": {
+            "a-tab-zero": "dangling",
+            "a-tab-one": "a-panel-one"
+        },
         "category": "native-panel-id"
     },
     {
         "scenario": "identity-custom-panel-id",
         "checkpoint": "updated identities",
         "field": "controls",
-        "angular": { "a-tab-zero": "a-panel-zero", "a-tab-one": "a-panel-one" },
-        "react": { "a-tab-zero": "dangling", "a-tab-one": "a-panel-one" },
+        "angular": {
+            "a-tab-zero": "a-panel-zero",
+            "a-tab-one": "a-panel-one"
+        },
+        "react": {
+            "a-tab-zero": "dangling",
+            "a-tab-one": "a-panel-one"
+        },
         "category": "native-panel-id"
     },
     {
-        "scenario": "identity-presence",
-        "checkpoint": "initial identities",
-        "field": "controls",
-        "angular": { "a-tab-zero": "a-panel-zero", "a-tab-one": "a-panel-one" },
-        "react": { "a-tab-zero": "a-panel-zero", "a-tab-one": null },
-        "category": "persistent-panel-host"
+        "scenario": "indicator-null-restore",
+        "checkpoint": "initial indicator",
+        "field": "hosts",
+        "angular": [
+            {
+                "present": true,
+                "hidden": true,
+                "role": "presentation"
+            }
+        ],
+        "react": [
+            {
+                "present": false
+            }
+        ],
+        "category": "persistent-indicator-host"
     },
     {
-        "scenario": "identity-presence",
-        "checkpoint": "initial identities",
-        "field": "idStatus",
-        "angular": { "a-tab-zero": "new", "a-tab-one": "new", "a-panel-zero": "new", "a-panel-one": "new" },
-        "react": { "a-tab-zero": "new", "a-tab-one": "new", "a-panel-zero": "new" },
-        "category": "persistent-panel-host"
-    },
-    {
-        "scenario": "identity-presence",
-        "checkpoint": "selection preserves identity ownership",
-        "field": "controls",
-        "angular": { "a-tab-zero": "a-panel-zero", "a-tab-one": "a-panel-one" },
-        "react": { "a-tab-zero": null, "a-tab-one": "a-panel-one" },
-        "category": "persistent-panel-host"
-    },
-    {
-        "scenario": "identity-presence",
-        "checkpoint": "selection preserves identity ownership",
-        "field": "idStatus",
-        "angular": { "a-tab-zero": "same", "a-tab-one": "same", "a-panel-zero": "same", "a-panel-one": "same" },
-        "react": { "a-tab-zero": "same", "a-tab-one": "same", "a-panel-one": "new" },
-        "category": "persistent-panel-host"
+        "scenario": "indicator-null-restore",
+        "checkpoint": "restored indicator",
+        "field": "hosts",
+        "angular": [
+            {
+                "present": true,
+                "hidden": true,
+                "role": "presentation"
+            }
+        ],
+        "react": [
+            {
+                "present": false
+            }
+        ],
+        "category": "persistent-indicator-host"
     }
 ]

@@ -4,10 +4,11 @@ Compares Angular Tabs with the unmodified Base UI sources pinned in
 [reference.json](../../reference.json). Run `pnpm test-parity tabs`, or add `--project=chromium` for
 local iteration. The suite is discovered by the existing runner and CI without shared-tooling changes.
 
-Ninety-one scenarios run in Chromium, Firefox and WebKit: **273 comparisons**, with no capability skips.
-This includes eleven initial-value cases, eight Panel lifecycle cases, seventeen direction cases and
-fifteen native-identity cases, and forty native-activation cases. Six exact reviewed fields cover two
-identity scenarios; activation adds no exception. See below.
+The suite runs **112 scenarios / 336 comparisons** across Chromium, Firefox and WebKit, with no
+capability skips: eleven initial-value, twelve Panel lifecycle, seventeen direction, fifteen
+native-identity, forty activation and seventeen Indicator cases. Four exact reviewed fields remain:
+two authored-Panel-ID fields and two null-Indicator host fields. Whole-Panel presence removes the
+former four persistent-Panel-host exceptions. See below.
 See the [primitive matrix](../../../../packages/primitives/tabs/PARITY.md) for the remaining work.
 
 ## Initial-value scope
@@ -66,7 +67,7 @@ subscribers run.
 | `panel-retained-immediate` | Persistent Angular panel without structural presence; immediate hiding             |
 | `panel-retained-exit`      | Retained hosts, held CSS exit, focus/pointer exclusion and Tab order               |
 | `panel-presence-exit`      | Structural content removal after the panel-host animation completes                |
-| `panel-presence-keep-exit` | Structural contents retained with `keepMounted=true`                               |
+| `panel-presence-keep-exit` | Whole Panel view retained with `keepMounted=true`                                  |
 | `panel-natural-exit`       | Actual CSS exit completion without forced finishing                                |
 | `panel-reselect-exit`      | Reselection during structural exit; old completion cannot remove reopened contents |
 | `panel-retained-reselect`  | Reselection during retained exit, restored focus and click handling                |
@@ -79,13 +80,27 @@ control while excluding outgoing contents. Explicit focus attempts on an outgoin
 and trusted pointer coordinates over its action button must not activate it. Reselection restores
 interactivity and preserves the reopened view. No adapter repairs focus, selection or animations.
 
-Angular's existing two-directive adaptation is explicit: without structural presence, React uses
-`keepMounted=true` to match Angular's persistent contents. With structural presence, React receives
-the same `keepMounted` choice and Angular removes the contents of its persistent Panel host. The
-driver compares actual content presence/visibility, Panel `hidden`, `inert`, tabindex and transition
-attributes whenever content exists, actual focus, activation counts and all change requests. The
-retained empty Angular host versus an absent React host is preserved in raw DOM, rather than treated
-as evidence for equivalent host removal or mounted ARIA identities.
+Ordinary Angular Panels retain their hosts; React uses `keepMounted=true` for those controls.
+For structural cases, `*rdxTabsPanelPresence="value"` is on the Panel host and owns its complete
+embedded view. Both sides receive the same mounting policy. The driver compares actual host and
+content presence, native hidden/inert/tabindex/transition attributes, input values, focus,
+activations and callbacks. No empty-host distinction is normalized away.
+
+Four additional cases cover fresh child/input state and a new native host after completed exit,
+retained state and the same host with `keepMounted`, Root removal during held exit, and dropping
+`keepMounted` on an already-closed view without starting another exit. The identity presence case
+also returns to the first Panel and verifies its stable owner ID and real IDREFs. Six units verify
+Angular child destruction/retention, exactly-once disposal, owner identity and nested-Root scope.
+The completed-exit cases also observe real `data-starting-style` mutations on inserted and retained
+hosts. Moving the transition ref to the structural owner preserves enter history across native view
+destruction; initially-open markup stays settled. Before that correction the remount case failed
+with all reference assertions passing (`dist/parity-testing/tabs/panel-owner-before-enter-fix/`).
+See [ADR 0077](../../../../docs/adr/0077-tabs-whole-panel-presence.md) for the API migration.
+
+The final whole-Panel suite passes all 336 comparisons; the 48 affected Panel/identity comparisons
+also pass in the Playwright 1.60.0 Noble Linux/arm64 image with one worker and the original timeout.
+Those Linux observations are retained in `dist/tabs-panel-owner-linux/results/`. Public keyframe and
+projected-wrapper Storybook regressions both pass against a fresh build.
 
 Before the fix, Chromium failed seven of eight new cases, including native focus entering an outgoing
 input and structural contents disappearing before the host exit finished. The reports/traces are
@@ -94,11 +109,12 @@ is inactive; `data-hidden` follows actual hidden state after exit. `TabsPanelPre
 shared `PresenceMachine` with the Panel host as its motion root, so both host and descendant motion
 can delay content removal. It owns only the embedded view; no second animation state machine was added.
 
-The public keyframe story has a separate Chromium browser regression, covering an exit on nested
-contents without a host animation, subsequent empty-host hiding and reuse. This is an existing Angular
+The public keyframe story has a separate Chromium browser regression, covering descendant-only
+exit motion followed by destruction of the entire Panel and recreation on return. This is an existing Angular
 animation capability, not proof that the pin waits for descendant-only motion: the pin waits on the
-Panel element itself. Later-finishing/replaced descendant animations, root removal mid-exit and
-live presence/keepMounted changes remain separate lifecycle follow-ups.
+Panel element itself. Later-finishing/replaced descendant animations, actual hydration and further live-policy
+combinations remain separate follow-ups. Root removal mid-exit and dropping a closed keepMounted
+view are covered by the whole-Panel cases above.
 
 ## External selection and activation direction
 
@@ -166,23 +182,24 @@ evidence is retained in `dist/parity-testing/tabs/before-identity-fix/`. Seven n
 failed before the fix. Per-instance `injectId`, owned Panel registration and a native Tab registry now
 maintain relationships. Labels use Composite DOM order in the client and native registration during
 SSR. Four selected SSR checks include authored/generated IDs, reciprocal links, unique identities and
-an empty persistent host; actual client hydration remains outside this increment.
+active/absent/kept whole-Panel views; actual client hydration remains outside this increment.
 
-[ADR 0074](../../../../docs/adr/0074-tabs-native-identities.md) records two intentional differences:
+[ADR 0074](../../../../docs/adr/0074-tabs-native-identities.md) retains the authored-ID difference:
+the pinned Panel registers a generated ID even when a forwarded authored `id` replaces its DOM ID.
+The custom-ID case exposes dangling controls in the reference; Angular registers its actual native
+ID. Two exact control-map fields remain reviewed exceptions. React omits the `id` prop when unspecified,
+since forwarding `id={undefined}` would itself erase the pin's default DOM ID.
 
-- The pinned Panel registers a generated ID even when a forwarded authored `id` replaces its DOM ID.
-  The custom-ID case exposes dangling controls in the reference; Angular registers its actual native
-  ID. Two exact control-map fields are reviewed exceptions. React omits the `id` prop when unspecified,
-  since forwarding `id={undefined}` would itself erase the pin's default DOM ID.
-- Angular's structural presence removes contents while retaining a native Panel target. The presence
-  case therefore retains valid controls and the host's identity where React unmounts its Panel.
-  Four exact control/identity-lifetime fields are reviewed exceptions. Empty-host labels remain in
-  raw DOM; visible-content labels are compared when contents exist.
+Whole-Panel presence from [ADR 0077](../../../../docs/adr/0077-tabs-whole-panel-presence.md) supersedes
+the former persistent-host adaptation. The initial comparison had no assertion failures or unexpected
+differences and reported all four old `persistent-panel-host` fields stale; its report is retained
+in `dist/parity-testing/tabs/panel-owner-stale-exceptions/`. Those four exceptions are removed.
+Actual Panel presence, labels and ID lifetime now compare without a structural-host exception.
 
-Both fixtures assert their actual side's expected relationships, then the differential comparison
-applies only those six exact pairs across all three engines. No exception covers labels, selection,
-notifications or a different scenario. Latest Panel registration wins, and removing its owner does
-not resurrect a shadowed registration; a later native hidden-state change can re-register that host.
+Both fixtures assert their actual native relationships. The two remaining G5 exception fields are
+limited to the pin's authored-Panel-ID mismatch; selection, labels and callbacks stay compared.
+Latest Panel registration wins, and removing its owner does
+not resurrect a shadowed registration; a later native hidden-state change can re-register a retained host.
 Arbitrary object/function values, imperative DOM-ID mutation and live cross-root moves remain outside
 this scope.
 
@@ -225,6 +242,50 @@ The forty activation cases also passed all **120 comparisons** in the Playwright
 Linux/arm64 image against the same built fixtures. This browser-only pass ran with one worker and
 the original timeout, after an overloaded parallel attempt hit timeouts. Its observations are retained
 in `dist/tabs-g8-linux/results/`; it supplements the full macOS suite rather than replacing its build.
+
+## Indicator visibility and observation
+
+Seventeen `indicator-*` cases add 51 comparisons for both axes, null/missing/hidden/zero-size tabs,
+active and preceding-tab resizing, dynamic labels, List resize, tab insertion/replacement, List
+replacement followed by resize, multiple indicators and Indicator removal/recreation followed by
+resize. Native F2/F3/F4 application commands change consumer values, classes, labels and keyed parts.
+They never write primitive state or manually notify a ResizeObserver.
+
+Every checkpoint compares selection, notifications, actual host presence/hidden state/role,
+visibility and all six CSS variables. Native rectangles and scroll dimensions remain in raw
+measurements. Visible indicators must physically match their selected tab. Numeric variables are
+not rounded for comparison: the text-sized case exposed a 0.00025px computed-CSS/rect difference,
+fixed in the runtime by preserving computed CSS dimensions.
+Rendered box assertions allow less than 0.05 CSS px for native layout quantization after serialization;
+the variable comparison remains exact. Linux Chromium exposed an identical 0.0155px box-versus-CSS
+rounding on both implementations; its initial report is retained in
+`dist/tabs-g6-linux/before-box-assertion-fix/`.
+
+All 17 new Chromium cases failed before the change, with no reference assertion failures; the
+baseline is retained in `dist/parity-testing/tabs/before-indicator-fix/`. Adding role/hidden state
+still left nine runtime failures from stale observations, plus the intentional null-host difference;
+that intermediate report is in `dist/parity-testing/tabs/before-indicator-observation-fix/`.
+Render effects now measure the registered selection and observe the current List and every tab.
+Three units check observed elements and cleanup, including a surviving Indicator across List
+replacement; two failed before the fix. These units do not claim jsdom layout evidence.
+
+[ADR 0076](../../../../docs/adr/0076-tabs-indicator-observation.md) accepts two exact `hosts` fields:
+at initial and restored null, Angular retains a hidden presentation host while React omits it.
+Both fixtures assert that actual policy; visibility and geometry still compare independently.
+G6 adds two null-host fields; after whole-Panel presence, two G5 authored-ID fields remain.
+
+`pnpm test-parity tabs --grep 'indicator-|direction-'` passes **105 comparisons** across Chromium,
+Firefox and WebKit: all 51 new rows plus 54 affected direction/identity controls. The suite now
+at that increment contained 108 scenarios / 324 planned comparisons. The later whole-Panel run
+passes all **336 comparisons** (112 scenarios) with no skips, and all **63 unit tests**. Historical
+G6 run counts above retain their scope.
+Borders, overflow/scroll, transforms, intermediate scrollers, native realms and actual hydration/
+first paint remain separate G6 combinations.
+
+The G6 Linux/arm64 pass in Playwright 1.60.0 Noble passes **54 comparisons** (51 new rows and three
+custom-ID controls), using one worker and the original timeout. Results are retained in
+`dist/tabs-g6-linux/results/`. A supplemental three-engine macOS label run also passes after the
+physical-box assertion correction; the original 105-row macOS verdict is unchanged.
 
 The runner writes the current browser/version/reference manifest, observations, raw measurements and
 HTML report to `dist/parity-testing/tabs/results/`. This local run establishes the documented scope

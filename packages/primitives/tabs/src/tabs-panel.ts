@@ -7,13 +7,12 @@ import {
     ElementRef,
     inject,
     input,
-    signal,
-    Signal,
     untracked
 } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
-import { injectId, useTransitionStatus } from '@radix-ng/primitives/core';
+import { injectId, rdxDevError, useTransitionStatus } from '@radix-ng/primitives/core';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
+import { injectTabsPanelPresenceContext } from './tabs-panel-presence-context';
 import { injectTabsRootContext } from './tabs-root-context';
 import { RdxTabsValue } from './utils';
 
@@ -23,8 +22,8 @@ const panelPresenceContext = () => ({ present: inject(RdxTabsPanel).present });
  * A panel displayed when its corresponding tab is active.
  *
  * By default the panel stays in the DOM and is toggled with the `hidden` attribute. To unmount the
- * contents while inactive (Base UI's default `keepMounted: false`), nest a `*rdxTabsPanelPresence`
- * structural directive inside it; set `keepMounted` to keep the contents mounted regardless.
+ * entire view while inactive, apply `*rdxTabsPanelPresence="value"` to the Panel host. That
+ * structural owner supplies its value and waits for exit motion before destroying the view.
  *
  * @see https://base-ui.com/react/components/tabs
  */
@@ -52,32 +51,50 @@ export class RdxTabsPanel {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly listItem = inject(RdxCompositeListItem, { self: true });
     protected readonly rootContext = injectTabsRootContext();
-    private readonly generatedId = injectId(`${this.rootContext.baseId}-panel-`);
+    private readonly presence = (() => {
+        const presence = injectTabsPanelPresenceContext(true);
+        return presence?.root === this.rootContext ? presence : null;
+    })();
+    private readonly generatedId = this.presence?.id ?? injectId(`${this.rootContext.baseId}-panel-`);
 
     /**
-     * A unique value that associates the panel with a tab.
+     * Associates an ordinary retained Panel with a Tab. With structural presence the value is
+     * supplied by *rdxTabsPanelPresence instead.
      */
-    readonly value = input.required<RdxTabsValue>();
+    readonly valueInput = input<RdxTabsValue | undefined>(undefined, { alias: 'value' });
+
+    /** The value supplied by the structural owner or the native Panel's value input. */
+    readonly value = computed(() => {
+        if (this.presence) return this.presence.value();
+        const value = this.valueInput();
+        if (value === undefined) {
+            rdxDevError(
+                'tabs/panel-value',
+                'Supply a Panel value or wrap its host with *rdxTabsPanelPresence="value".',
+                'components/tabs'
+            );
+        }
+        return value;
+    });
 
     /** Optional native panel id. Defaults to an SSR-stable id unique to this panel instance. */
     readonly id = input<string | undefined>(undefined);
 
     /**
-     * Keep the panel contents mounted in the DOM while inactive (the contents are still hidden).
-     * Only relevant together with `*rdxTabsPanelPresence`, which otherwise unmounts them.
+     * Retained native Panel option. With structural presence, set `keepMounted` on the structural
+     * template (`*rdxTabsPanelPresence="value; keepMounted: true"`) to retain the whole view.
      *
      * @default false
      */
-    readonly keepMounted = input(false, { transform: booleanAttribute });
+    readonly keepMountedInput = input(false, { alias: 'keepMounted', transform: booleanAttribute });
 
-    private readonly transition = useTransitionStatus(() => {});
+    /** Effective mounting policy from the structural owner or native Panel. */
+    readonly keepMounted = computed(() => (this.presence ? this.presence.keepMounted() : this.keepMountedInput()));
+
+    private readonly transition = this.presence?.transition ?? useTransitionStatus(() => {});
 
     /** Reactive enter/exit transition phase (`'starting'` | `'ending'` | `undefined`). */
-    readonly transitionStatus = computed(() =>
-        !this.active() && !this.keepMounted() && this.presences().some((mounted) => mounted())
-            ? 'ending'
-            : this.transition.status()
-    );
+    readonly transitionStatus = computed(() => (this.presence?.exiting() ? 'ending' : this.transition.status()));
 
     /** @ignore */
     protected readonly panelId = computed(() => this.id() ?? this.generatedId);
@@ -87,20 +104,16 @@ export class RdxTabsPanel {
     /** Whether this panel's tab is currently selected. */
     readonly active = computed(() => this.rootContext.value() === this.value());
 
-    /** The structural child owns content removal, including panel-host and descendant motion. */
-    private readonly presences = signal<readonly Signal<boolean>[]>([]);
-
     /**
-     * Whether the contents should be present for `*rdxTabsPanelPresence`. Flips with `active` so the
-     * presence directive owns the exit-animation timing (it keeps the node mounted until its exit
-     * `@keyframes` finishes); `keepMounted` keeps them mounted regardless.
+     * Whether this panel is active or retained. The structural owner controls the entire view's
+     * presence and waits for exit motion before destroying it.
      */
     readonly present = computed(() => this.keepMounted() || this.active());
 
     /**
      * The `hidden` attribute value. The panel is shown while active or while its exit transition
-     * runs. A structural child keeps the panel visible until its actual contents have exited;
-     * the retained empty host is hidden after removal as well.
+     * runs. A structural owner keeps its inactive Panel visible and inert until the whole view
+     * is destroyed after exit completion.
      */
     protected readonly hidden = computed(() => !this.active() && this.transitionStatus() !== 'ending');
 
@@ -127,29 +140,21 @@ export class RdxTabsPanel {
             onCleanup(this.rootContext.registerPanel(this.value(), this.panelId()));
         });
 
-        effect(() => {
-            const active = this.active();
+        if (!this.presence)
+            effect(() => {
+                const active = this.active();
 
-            // Settle the initial state without playing an enter transition.
-            if (this.isFirstRun) {
-                this.isFirstRun = false;
-                this.previousActive = active;
-                return;
-            }
+                // Settle the initial state without playing an enter transition.
+                if (this.isFirstRun) {
+                    this.isFirstRun = false;
+                    this.previousActive = active;
+                    return;
+                }
 
-            if (active !== this.previousActive) {
-                this.previousActive = active;
-                untracked(() => this.transition.start(active));
-            }
-        });
-    }
-
-    /** @ignore Supplies the real motion root to the structural child's shared PresenceMachine. */
-    registerPresence(mounted: Signal<boolean>): { element: HTMLElement; unregister: () => void } {
-        this.presences.update((current) => [...current, mounted]);
-        return {
-            element: this.elementRef.nativeElement,
-            unregister: () => this.presences.update((current) => current.filter((entry) => entry !== mounted))
-        };
+                if (active !== this.previousActive) {
+                    this.previousActive = active;
+                    untracked(() => this.transition.start(active));
+                }
+            });
     }
 }

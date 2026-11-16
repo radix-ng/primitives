@@ -5,7 +5,7 @@ import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTa
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'tabs-keyframes-example',
     imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel, RdxTabsPanelPresence],
-    // The panel contents are mounted only while the tab is active (`*rdxTabsPanelPresence`).
+    // The complete panel view is mounted only while its tab is active.
     // On enter the inner element plays `tabs-panel-in`; when the tab is left, the parent panel gets
     // `data-ending-style`, so the inner element runs the exit keyframes while the panel remains
     // visible and inert. The presence machine waits for the panel and its descendants to finish.
@@ -32,18 +32,16 @@ import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTa
                 </button>
             </div>
             <div class="grid">
-                <div class="group col-start-1 row-start-1" rdxTabsPanel value="account">
+                <div class="group col-start-1 row-start-1" *rdxTabsPanelPresence="'account'" rdxTabsPanel>
                     <div
                         class="bg-background text-foreground animate-tabs-panel-in group-data-[ending-style]:animate-tabs-panel-out p-6 text-sm leading-6 outline-none"
-                        *rdxTabsPanelPresence
                     >
                         Make changes to your account here. Click save when you're done.
                     </div>
                 </div>
-                <div class="group col-start-1 row-start-1" rdxTabsPanel value="password">
+                <div class="group col-start-1 row-start-1" *rdxTabsPanelPresence="'password'" rdxTabsPanel>
                     <div
                         class="bg-background text-foreground animate-tabs-panel-in group-data-[ending-style]:animate-tabs-panel-out p-6 text-sm leading-6 outline-none"
-                        *rdxTabsPanelPresence
                     >
                         Change your password here. After saving, you'll be logged out.
                     </div>

@@ -8191,15 +8191,27 @@
         {
           "directive": "RdxTabsPanelPresence",
           "selector": "ng-template[rdxTabsPanelPresence]",
-          "description": "Structural directive that mounts the tab panel contents only while the panel is active,\nunmounting them once the exit animation finishes. Apply it inside an `[rdxTabsPanel]` to get\nBase UI's default unmounting behavior; combine with `keepMounted` on the panel to keep the\ncontents mounted instead.\n\nThe shared PresenceMachine watches the panel host, including its descendants, because the\nstructural template is inside the animated panel rather than wrapping it.",
-          "inputs": [],
+          "description": "Owns the entire Panel view, including its native host and Angular children. Use\n`<div *rdxTabsPanelPresence=\"'one'\" rdxTabsPanel>...</div>` to remove an inactive panel after\nits exit finishes. Add `keepMounted: true` to retain it. The value is inherited by rdxTabsPanel.",
+          "inputs": [
+            {
+              "name": "rdxTabsPanelPresenceKeepMounted",
+              "default": "false",
+              "description": "Keep the entire inactive Panel view mounted and hidden."
+            },
+            {
+              "name": "rdxTabsPanelPresence",
+              "type": "RdxTabsValue",
+              "required": true,
+              "description": "The value of the Panel owned by this template."
+            }
+          ],
           "outputs": []
         },
         {
           "directive": "RdxTabsPanel",
           "selector": "[rdxTabsPanel]",
           "exportAs": "rdxTabsPanel",
-          "description": "A panel displayed when its corresponding tab is active.\n\nBy default the panel stays in the DOM and is toggled with the `hidden` attribute. To unmount the\ncontents while inactive (Base UI's default `keepMounted: false`), nest a `*rdxTabsPanelPresence`\nstructural directive inside it; set `keepMounted` to keep the contents mounted regardless.\n\nSee https://base-ui.com/react/components/tabs",
+          "description": "A panel displayed when its corresponding tab is active.\n\nBy default the panel stays in the DOM and is toggled with the `hidden` attribute. To unmount the\nentire view while inactive, apply `*rdxTabsPanelPresence=\"value\"` to the Panel host. That\nstructural owner supplies its value and waits for exit motion before destroying the view.\n\nSee https://base-ui.com/react/components/tabs",
           "hostDirectives": [
             "RdxCompositeListItem"
           ],
@@ -8213,13 +8225,13 @@
             {
               "name": "keepMounted",
               "default": "false",
-              "description": "Keep the panel contents mounted in the DOM while inactive (the contents are still hidden).\nOnly relevant together with `*rdxTabsPanelPresence`, which otherwise unmounts them."
+              "description": "Retained native Panel option. With structural presence, set `keepMounted` on the structural\ntemplate (`*rdxTabsPanelPresence=\"value; keepMounted: true\"`) to retain the whole view."
             },
             {
               "name": "value",
-              "type": "RdxTabsValue",
-              "required": true,
-              "description": "A unique value that associates the panel with a tab."
+              "type": "RdxTabsValue | undefined",
+              "default": "undefined",
+              "description": "Associates an ordinary retained Panel with a Tab. With structural presence the value is\nsupplied by *rdxTabsPanelPresence instead."
             }
           ],
           "outputs": []

@@ -257,10 +257,16 @@ function renderToString(selector: string, component: Type<unknown>): Promise<str
             <div rdxTabsList>
                 <button id="server-tabs-tab" data-testid="server-tab-one" rdxTabsTab value="one">One</button>
                 <button data-testid="server-tab-two" rdxTabsTab value="two">Two</button>
+                <button data-testid="server-tab-three" rdxTabsTab value="three">Three</button>
             </div>
-            <div id="server-tabs-panel" data-testid="server-panel-one" keepMounted rdxTabsPanel value="one">One</div>
-            <div data-testid="server-panel-two" rdxTabsPanel value="two">
-                <span *rdxTabsPanelPresence>Inactive content</span>
+            <div id="server-tabs-panel" *rdxTabsPanelPresence="'one'" data-testid="server-panel-one" rdxTabsPanel>
+                One
+            </div>
+            <div *rdxTabsPanelPresence="'two'" data-testid="server-panel-two" rdxTabsPanel>
+                <span>Inactive content</span>
+            </div>
+            <div *rdxTabsPanelPresence="'three'; keepMounted: true" data-testid="server-panel-three" rdxTabsPanel>
+                Retained content
             </div>
         </div>
     `
@@ -268,7 +274,7 @@ function renderToString(selector: string, component: Type<unknown>): Promise<str
 class TabsIdentitiesPage {}
 
 describe('SSR rendering', () => {
-    it('serializes actual Tabs identities and reciprocal links for retained native hosts', async () => {
+    it('serializes actual Tabs identities for active, absent and kept whole-Panel views', async () => {
         const html = await renderToString('app-tabs-identities', TabsIdentitiesPage);
         const tag = (name: string) => html.match(new RegExp(`<[^>]*data-testid="${name}"[^>]*>`))![0];
         const id = (name: string) => tag(name).match(/ id="([^"]+)"/)![1];
@@ -276,11 +282,19 @@ describe('SSR rendering', () => {
         expect(id('server-panel-one')).toBe('server-tabs-panel');
         expect(tag('server-tab-one')).toContain('aria-controls="server-tabs-panel"');
         expect(tag('server-panel-one')).toContain('aria-labelledby="server-tabs-tab"');
-        expect(tag('server-tab-two')).toContain(`aria-controls="${id('server-panel-two')}"`);
-        expect(tag('server-panel-two')).toContain(`aria-labelledby="${id('server-tab-two')}"`);
-        expect(new Set(['server-tab-one', 'server-tab-two', 'server-panel-one', 'server-panel-two'].map(id)).size).toBe(
-            4
-        );
+        expect(tag('server-tab-two')).not.toContain('aria-controls');
+        expect(html).not.toContain('data-testid="server-panel-two"');
+        expect(tag('server-tab-three')).toContain(`aria-controls="${id('server-panel-three')}"`);
+        expect(tag('server-panel-three')).toContain(`aria-labelledby="${id('server-tab-three')}"`);
+        expect(tag('server-panel-three')).toContain(' hidden');
+        expect(html).toContain('Retained content');
+        expect(
+            new Set(
+                ['server-tab-one', 'server-tab-two', 'server-tab-three', 'server-panel-one', 'server-panel-three'].map(
+                    id
+                )
+            ).size
+        ).toBe(5);
         expect(html).not.toContain('Inactive content');
         expect(html).toMatch(/ngh=/);
     });

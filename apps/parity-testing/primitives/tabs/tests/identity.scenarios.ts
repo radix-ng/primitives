@@ -50,7 +50,7 @@ export const identityScenarios = (Object.keys(identityCases) as IdentityCaseName
                       'a-tab-one': 'a-panel-one'
                   }
                 : kind === 'presence'
-                  ? { 'a-tab-zero': 'a-panel-zero', 'a-tab-one': driver.framework === 'react' ? null : 'a-panel-one' }
+                  ? { 'a-tab-zero': 'a-panel-zero', 'a-tab-one': null }
                   : controls(c);
         await driver.identityCheckpoint('initial identities', {
             controls: initialControls,
@@ -68,13 +68,21 @@ export const identityScenarios = (Object.keys(identityCases) as IdentityCaseName
                 controls:
                     kind === 'presence'
                         ? {
-                              'a-tab-zero': driver.framework === 'react' ? null : 'a-panel-zero',
+                              'a-tab-zero': null,
                               'a-tab-one': 'a-panel-one'
                           }
                         : controls(),
                 labels: kind === 'presence' ? labels({ one: 'one' }) : labels(),
                 selected: kind === 'roots' ? { a: [0], b: [1] } : { a: [kind === 'mixed-values' ? '1' : 1] }
             });
+            if (kind === 'presence') {
+                await driver.page.getByTestId('a-tab-zero').press('Enter');
+                await driver.identityCheckpoint('remounted Panel preserves its owner identity', {
+                    controls: { 'a-tab-zero': 'a-panel-zero', 'a-tab-one': null },
+                    labels: labels({ zero: 'zero' }),
+                    idStatus: { 'a-tab-zero': 'same', 'a-tab-one': 'same', 'a-panel-zero': 'same' }
+                });
+            }
             return;
         }
         await driver.page.keyboard.press('F2');

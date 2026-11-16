@@ -5,6 +5,10 @@
 - Decision owners: Radix NG maintainers
 - Related: [ADR 0010](0010-structural-portal-presence.md), [Tabs matrix](../../packages/primitives/tabs/PARITY.md), [pinned comparisons](../../apps/parity-testing/primitives/tabs/README.md)
 
+The structural Panel-host policy and its four exception fields are superseded by
+[ADR 0077](0077-tabs-whole-panel-presence.md). The authored-ID policy remains in force; the evidence
+below records the original identity increment.
+
 ## Context
 
 Tabs derived both IDs and ARIA references from Root/value strings. This produced dangling references

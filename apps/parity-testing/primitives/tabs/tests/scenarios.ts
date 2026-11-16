@@ -3,6 +3,7 @@ import { activationScenarios } from './activation.scenarios';
 import { directionScenarios } from './direction.scenarios';
 import type { TabsDriver } from './driver';
 import { identityScenarios } from './identity.scenarios';
+import { indicatorScenarios } from './indicator.scenarios';
 import { panelScenarios } from './panels.scenarios';
 
 const expectedValues = {
@@ -40,5 +41,6 @@ export const scenarios = [
     ...panelScenarios,
     ...directionScenarios,
     ...identityScenarios,
-    ...activationScenarios
+    ...activationScenarios,
+    ...indicatorScenarios
 ];

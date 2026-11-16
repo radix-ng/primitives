@@ -1,4 +1,4 @@
-import { afterNextRender, DestroyRef, Directive, effect, inject, signal, untracked } from '@angular/core';
+import { afterRenderEffect, computed, Directive, signal, untracked } from '@angular/core';
 import { injectTabsRootContext } from './tabs-root-context';
 
 interface TabGeometry {
@@ -21,6 +21,8 @@ interface TabGeometry {
     selector: '[rdxTabsIndicator]',
     exportAs: 'rdxTabsIndicator',
     host: {
+        role: 'presentation',
+        '[hidden]': 'hidden()',
         '[attr.data-orientation]': 'rootContext.orientation()',
         '[attr.data-activation-direction]': 'rootContext.activationDirection()',
         '[style.--active-tab-top.px]': 'geometry()?.top',
@@ -33,48 +35,47 @@ interface TabGeometry {
 })
 export class RdxTabsIndicator {
     protected readonly rootContext = injectTabsRootContext();
-    private readonly destroyRef = inject(DestroyRef);
 
     /** @ignore */
-    protected readonly geometry = signal<TabGeometry | null>(null);
+    protected readonly geometry = signal<TabGeometry | null>(null, { debugName: 'RdxTabsIndicator.geometry' });
+    protected readonly hidden = computed(() => {
+        const geometry = this.geometry();
+        return !geometry || geometry.width <= 0 || geometry.height <= 0;
+    });
 
     constructor() {
-        // Re-measure whenever the selection, orientation or the list element changes.
-        effect(() => {
-            this.rootContext.value();
-            this.rootContext.orientation();
-            this.rootContext.tabListElement();
-            this.rootContext.tabMap();
-            this.scheduleMeasure();
-        });
-
-        afterNextRender(() => {
-            const list = untracked(this.rootContext.tabListElement);
-            if (!list || typeof ResizeObserver === 'undefined') {
+        afterRenderEffect({
+            read: () => {
+                this.rootContext.value();
+                this.rootContext.orientation();
+                this.rootContext.tabListElement();
+                this.rootContext.tabMap();
                 this.measure();
-                return;
             }
-
-            const observer = new ResizeObserver(() => this.measure());
-            observer.observe(list);
-            this.destroyRef.onDestroy(() => observer.disconnect());
-            this.measure();
         });
-    }
 
-    private scheduleMeasure(): void {
-        if (typeof requestAnimationFrame === 'undefined') {
-            this.measure();
-            return;
-        }
-        requestAnimationFrame(() => this.measure());
+        afterRenderEffect({
+            read: (onCleanup) => {
+                const list = this.rootContext.tabListElement();
+                const tabs = this.rootContext.tabMap();
+                const view = list?.ownerDocument.defaultView;
+                if (!list || !view?.ResizeObserver) return;
+
+                const observer = new view.ResizeObserver(() => this.measure());
+                observer.observe(list);
+                // A preceding tab can move the active tab without resizing the List.
+                for (const tab of tabs.keys()) observer.observe(tab);
+                onCleanup(() => observer.disconnect());
+            }
+        });
     }
 
     private measure(): void {
         const list = untracked(this.rootContext.tabListElement);
         const value = untracked(this.rootContext.value);
+        const view = list?.ownerDocument.defaultView;
 
-        if (!list || value == null || typeof document === 'undefined') {
+        if (!list || value == null || !view) {
             this.geometry.set(null);
             return;
         }
@@ -87,24 +88,30 @@ export class RdxTabsIndicator {
 
         const listRect = list.getBoundingClientRect();
         const tabRect = tab.getBoundingClientRect();
+        const style = view.getComputedStyle(tab);
+        let width = Number.parseFloat(style.width) || 0;
+        let height = Number.parseFloat(style.height) || 0;
+        // Preserve computed CSS precision; offset sizes cover non-border-box and hidden hosts.
+        if (Math.round(width) !== tab.offsetWidth || Math.round(height) !== tab.offsetHeight) {
+            width = tab.offsetWidth;
+            height = tab.offsetHeight;
+        }
 
         // Measure `left` / `top` relative to the list's scrollable content origin rather than its
         // visible edge. When the list is a scroll container (e.g. its tabs overflow inside a Scroll
         // Area), the indicator is an absolutely positioned child of that container and scrolls along
         // with the content, so these offsets must be content-relative to stay aligned with the tab.
-        // For non-scrolling lists `scrollLeft` / `scrollTop` are `0`, leaving the geometry unchanged.
-        // `right` / `bottom` stay visible-edge relative — there is no unambiguous content-relative
-        // meaning for them inside a scroll container, and the moving indicator uses `left`/`top`.
-        const scrollLeft = list.scrollLeft;
-        const scrollTop = list.scrollTop;
+        // Opposite-edge distances use the same scrollable content coordinates.
+        const left = tabRect.left - listRect.left + list.scrollLeft;
+        const top = tabRect.top - listRect.top + list.scrollTop;
 
         this.geometry.set({
-            top: tabRect.top - listRect.top + scrollTop,
-            right: listRect.right - tabRect.right,
-            bottom: listRect.bottom - tabRect.bottom,
-            left: tabRect.left - listRect.left + scrollLeft,
-            width: tabRect.width,
-            height: tabRect.height
+            top,
+            right: list.scrollWidth - left - width,
+            bottom: list.scrollHeight - top - height,
+            left,
+            width,
+            height
         });
     }
 }

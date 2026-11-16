@@ -7,6 +7,9 @@
 `RdxTabsIndicator` exposes the active tab's geometry as CSS variables, so a single element can animate to
 follow the selected tab.
 
+Its host has `role="presentation"` and stays mounted but hidden when no selected tab has a nonzero
+size. It updates when the List or any tab resizes, including when a label changes.
+
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTabsIndicator, RdxTabsList, RdxTabsPanel, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
