@@ -23,7 +23,9 @@ export class TabsDriver {
 
     async goto(name: CaseName) {
         await this.page.goto(`/${this.framework}.html?case=${name}`);
-        await expect(this.page.getByRole('tablist').first()).toBeVisible();
+        if (name === 'geometry-scale-zero' || name === 'geometry-scale-x-zero')
+            await expect(this.page.getByTestId('tablist')).toBeAttached();
+        else await expect(this.page.getByRole('tablist').first()).toBeVisible();
         this.metadata = await this.page.evaluate(() => window.tabsParity.reference);
     }
 

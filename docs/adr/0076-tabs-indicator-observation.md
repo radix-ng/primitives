@@ -4,6 +4,9 @@
 - Date: 2026-11-16
 - Related: [Tabs matrix](../../packages/primitives/tabs/PARITY.md), [comparison suite](../../apps/parity-testing/primitives/tabs/README.md)
 
+[ADR 0078](0078-tabs-indicator-coordinates.md) extends the geometry scope after this visibility/resize
+increment. The null-host policy below remains unchanged; its original evidence and limits are retained.
+
 ## Context
 
 Indicator published geometry without a presentation role or hidden state and observed only its

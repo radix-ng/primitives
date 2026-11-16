@@ -4,9 +4,9 @@ Compares Angular Tabs with the unmodified Base UI sources pinned in
 [reference.json](../../reference.json). Run `pnpm test-parity tabs`, or add `--project=chromium` for
 local iteration. The suite is discovered by the existing runner and CI without shared-tooling changes.
 
-The suite runs **112 scenarios / 336 comparisons** across Chromium, Firefox and WebKit, with no
+The suite runs **140 scenarios / 420 planned comparisons** across Chromium, Firefox and WebKit, with no
 capability skips: eleven initial-value, twelve Panel lifecycle, seventeen direction, fifteen
-native-identity, forty activation and seventeen Indicator cases. Four exact reviewed fields remain:
+native-identity, forty activation, seventeen Indicator visibility cases and twenty-eight geometry cases. Four exact reviewed fields remain:
 two authored-Panel-ID fields and two null-Indicator host fields. Whole-Panel presence removes the
 former four persistent-Panel-host exceptions. See below.
 See the [primitive matrix](../../../../packages/primitives/tabs/PARITY.md) for the remaining work.
@@ -174,8 +174,8 @@ Missing, dangling and cross-root references are distinct results. Generated IDs 
 unique, preserve instance identity across value edits, and avoid reusing a removed part's ID. Authored
 IDs are compared literally. The driver retains raw DOM/IDREFs, focus and errors; it does not rewrite
 IDs or repair relationships. Selection and notifications are also compared. The Indicator case checks
-that its width follows the actual active Tab before and after an authored ID change; full geometry
-and resize observation remain G6.
+that its width follows the actual active Tab before and after an authored ID change; separate G6
+increments below establish visibility, resize observation and coordinate geometry.
 
 Before the runtime change, Chromium failed **13/15** cases with all reference assertions passing;
 evidence is retained in `dist/parity-testing/tabs/before-identity-fix/`. Seven new Angular unit tests
@@ -279,13 +279,51 @@ Firefox and WebKit: all 51 new rows plus 54 affected direction/identity controls
 at that increment contained 108 scenarios / 324 planned comparisons. The later whole-Panel run
 passes all **336 comparisons** (112 scenarios) with no skips, and all **63 unit tests**. Historical
 G6 run counts above retain their scope.
-Borders, overflow/scroll, transforms, intermediate scrollers, native realms and actual hydration/
-first paint remain separate G6 combinations.
+Borders, overflow/scroll, transforms and intermediate scrollers were outside that visibility
+increment; the coordinate comparisons below extend its scope. Native realms and actual hydration/
+first paint remain separate work.
 
 The G6 Linux/arm64 pass in Playwright 1.60.0 Noble passes **54 comparisons** (51 new rows and three
 custom-ID controls), using one worker and the original timeout. Results are retained in
 `dist/tabs-g6-linux/results/`. A supplemental three-engine macOS label run also passes after the
 physical-box assertion correction; the original 105-row macOS verdict is unchanged.
+
+## Indicator coordinates, transforms and scroll
+
+Twenty-eight `geometry-*` cases add 84 comparisons for borders/padding, List/Tab content-box sizes,
+fractional layout, horizontal/vertical scroll in LTR/RTL, ancestor scale/rotation/flip/skew/
+perspective/zero scales, Tab matrix/percentage/combined translations and rotation/scale, offset
+parent chains, and intermediate scrollers with/without rotation. Native wheel input moves actual
+scroll containers; F2/F3 change only application selection. Intermediate-scroll cases compare a
+measurement after that selection change, not continuous tracking without a render.
+
+Native slots provide an independent authored layout: fixed CSS sizes/gaps establish expected local
+coordinates. Actual Tab rects check physical alignment, while Tab-local rotation/scale compares the
+passive native slot because the pin's indicator keeps its untransformed layout box. All six variables
+compare literally, with finite-value assertions; raw rects and client/scroll metrics accompany them.
+No driver rounds geometry or repairs primitive state. Rendered bounds retain the existing <0.05px
+layout quantization allowance; the 2px rect/layout agreement bound belongs to the runtime algorithm.
+
+Before the fix Chromium passed 11 controls and failed 17 cases with zero reference assertion
+failures. That report is retained in `dist/parity-testing/tabs/before-geometry-fix/`. The Tabs-local
+helper now accumulates layout offsets/borders and subtracts intermediate scroll, accepting precise
+rect candidates only when they agree with layout. It follows the pin's matrix/longhand translation
+policy and keeps layout offsets for distorted/nonfinite projections. Existing Angular render hooks,
+resize cleanup, native host semantics and the four reviewed exceptions remain unchanged.
+
+`pnpm test-parity tabs --grep 'geometry-|indicator-|direction-'` passes **189 comparisons** across
+three engines: 84 geometry rows and 105 existing visibility/direction/identity controls. All **84 new
+rows** also pass in Playwright 1.60.0 Noble Linux/arm64, one worker and the original timeout; results
+are retained in `dist/tabs-geometry-linux/results/`. The unit suite remains **63 passing tests**.
+The current suite contains 140 scenarios / 420 planned rows; earlier full-suite results above retain
+their original scope. See [ADR 0078](../../../../docs/adr/0078-tabs-indicator-coordinates.md).
+
+The public Indicator story also checks native selection and physical left/width alignment through
+its real CSS transition. All three focused Storybook checks pass against a fresh build; the four
+selected SSR checks and library/consumer-bundle builds pass.
+
+Continuous intermediate-scroll and transform-animation tracking, real native realms/shadow trees,
+actual hydration and server-visible first paint remain separate verification work.
 
 The runner writes the current browser/version/reference manifest, observations, raw measurements and
 HTML report to `dist/parity-testing/tabs/results/`. This local run establishes the documented scope

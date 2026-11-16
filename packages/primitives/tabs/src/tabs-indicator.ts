@@ -1,14 +1,6 @@
 import { afterRenderEffect, computed, Directive, signal, untracked } from '@angular/core';
+import { measureTabGeometry, type TabGeometry } from './tabs-indicator-geometry';
 import { injectTabsRootContext } from './tabs-root-context';
-
-interface TabGeometry {
-    top: number;
-    right: number;
-    bottom: number;
-    left: number;
-    width: number;
-    height: number;
-}
 
 /**
  * A visual element that tracks the position and size of the active tab. Exposes the active tab
@@ -86,32 +78,6 @@ export class RdxTabsIndicator {
             return;
         }
 
-        const listRect = list.getBoundingClientRect();
-        const tabRect = tab.getBoundingClientRect();
-        const style = view.getComputedStyle(tab);
-        let width = Number.parseFloat(style.width) || 0;
-        let height = Number.parseFloat(style.height) || 0;
-        // Preserve computed CSS precision; offset sizes cover non-border-box and hidden hosts.
-        if (Math.round(width) !== tab.offsetWidth || Math.round(height) !== tab.offsetHeight) {
-            width = tab.offsetWidth;
-            height = tab.offsetHeight;
-        }
-
-        // Measure `left` / `top` relative to the list's scrollable content origin rather than its
-        // visible edge. When the list is a scroll container (e.g. its tabs overflow inside a Scroll
-        // Area), the indicator is an absolutely positioned child of that container and scrolls along
-        // with the content, so these offsets must be content-relative to stay aligned with the tab.
-        // Opposite-edge distances use the same scrollable content coordinates.
-        const left = tabRect.left - listRect.left + list.scrollLeft;
-        const top = tabRect.top - listRect.top + list.scrollTop;
-
-        this.geometry.set({
-            top,
-            right: list.scrollWidth - left - width,
-            bottom: list.scrollHeight - top - height,
-            left,
-            width,
-            height
-        });
+        this.geometry.set(measureTabGeometry(tab, list));
     }
 }

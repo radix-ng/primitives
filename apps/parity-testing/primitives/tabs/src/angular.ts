@@ -6,6 +6,7 @@ import '../../../../radix-storybook/.storybook/tailwind.css';
 import { AngularActivation } from './activation.angular';
 import { classes, config, installProbe } from './contract';
 import { AngularDirection } from './direction.angular';
+import { AngularGeometry } from './geometry.angular';
 import { AngularIdentity } from './identity.angular';
 import { AngularIndicator } from './indicator.angular';
 import { AngularPanels } from './panels.angular';
@@ -22,10 +23,13 @@ const settings = config();
         AngularDirection,
         AngularIdentity,
         AngularActivation,
-        AngularIndicator
+        AngularIndicator,
+        AngularGeometry
     ],
     template: `
-        @if (settings.indicator) {
+        @if (settings.geometry) {
+            <parity-tabs-geometry />
+        } @else if (settings.indicator) {
             <parity-tabs-indicator />
         } @else if (settings.activation) {
             <parity-tabs-activation />

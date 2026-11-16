@@ -1,5 +1,6 @@
 import { activationCases, type ActivationSettings } from './activation';
 import { directionCases, type DirectionSettings } from './direction';
+import { geometryCases, type GeometrySettings } from './geometry';
 import { identityCases, type IdentityKind } from './identity';
 import { indicatorCases, type IndicatorKind } from './indicator';
 import { panelCases, type PanelSettings } from './panels';
@@ -20,6 +21,7 @@ export interface Settings {
     identity?: IdentityKind;
     activation?: ActivationSettings;
     indicator?: IndicatorKind;
+    geometry?: GeometrySettings;
 }
 
 const numericOptions: Option[] = [
@@ -55,6 +57,7 @@ export const initialCases = {
     'value-null': { options: numericOptions, defaultValue: 1, value: null }
 } satisfies Record<string, Settings>;
 export const cases = {
+    ...geometryCases,
     ...initialCases,
     ...panelCases,
     ...directionCases,

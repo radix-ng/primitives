@@ -28,7 +28,9 @@ policy and the authored-Panel-ID difference from the pin; ADR 0077 removes the f
 registered Tab element. Its render hooks measure selection and observe the current List and all tabs;
 observers disconnect on collection/List changes and disposal. A missing or zero-size selection hides
 the presentation host, including a persistent host at null. [ADR 0076](../../adr/0076-tabs-indicator-observation.md)
-records the compared visibility/resize scope; complex geometry remains in the parity matrix.
+records the compared visibility/resize scope. [ADR 0078](../../adr/0078-tabs-indicator-coordinates.md)
+adds List-local border/scroll/transform geometry through the pin's layout/rect agreement policy.
+Continuous motion, real realms and hydration remain in the parity matrix.
 
 Tab activation uses click requests: native Enter remains with the button/link, while custom Enter
 and composite Space use the owned click dispatcher with modifiers. Space's button keyup default is

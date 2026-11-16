@@ -249,6 +249,11 @@ can keep an outgoing view mounted and inert until completion.
 
 **CSS variables** (the active tab's geometry, so one element can animate between tabs):
 
+Positions use List-local CSS pixels, accounting for its borders, scrolling and ancestor transforms.
+A tab's own translation is followed; its own rotation or scale
+keeps the indicator at the tab's untransformed layout slot. Right/bottom distances use the List's
+scrollable content dimensions.
+
 | CSS variable           | Description                          |
 | ---------------------- | ------------------------------------ |
 | `--active-tab-top`     | Distance from the top of the list.   |

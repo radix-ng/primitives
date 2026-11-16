@@ -8,12 +8,12 @@ The prepared source digest was validated with `pnpm parity:prepare`.
 This is a source/API audit with incremental comparison evidence, not full parity or accessibility
 certification. The [Tabs differential suite](../../../apps/parity-testing/primitives/tabs/README.md)
 now covers initial values/notifications, Panel exits/focus, activation direction, identities, native activation
-and Indicator visibility/resize: **112 scenarios, 336 comparisons** across Chromium, Firefox
+and Indicator visibility/resize/coordinates: **140 scenarios, 420 planned comparisons** across Chromium, Firefox
 and WebKit, with no skips. Four exact reviewed fields remain: two for G5's authored-Panel-ID
 mismatch and two for G6's hidden Indicator host at null. Whole-Panel presence removes the former
 four persistent-Panel-host exceptions. G1 and G3's direction defects
 are resolved; G4's inert/hidden defects and G5's identity defects are resolved for their documented
-scope. G6's visibility/observation subset and G8's native keyboard/click/press-release subset are resolved; remaining interaction, lifecycle
+scope. G6's visibility/observation and measured geometry subsets and G8's native keyboard/click/press-release subset are resolved; remaining interaction, lifecycle
 and geometry gaps below are not certified by these increments.
 **Pinned covered** means the stated subset passed direct Angular/Base UI comparison;
 **Regression covered** below means an existing Angular check exercises the stated subset;
@@ -43,9 +43,9 @@ listed separately from unresolved gaps.
 | Panel indexes and active/inactive tabindex                                               | Composite-index unit; pinned Panel snapshots                                        | Index regression covered; active/inactive tabindex pinned covered in lifecycle cases                            |
 | Panel unmount / `keepMounted`                                                            | Nine presence units; twelve pinned lifecycle cases                                  | Whole-Panel host/child lifetime covered, G4; no structural-host exception                                       |
 | Panel enter/exit attributes, hidden timing, inert contents and interrupted transitions   | Twelve pinned cases and public keyframe browser regression                          | G4 fixed for documented retained/structural exits; deeper lifecycle follow-ups remain                           |
-| Indicator six `--active-tab-*` variables and common state attributes                     | Seventeen pinned visibility/resize cases; direction and custom-ID controls          | Basic geometry, role/hidden and CSS precision covered; complex geometry remains G6                              |
+| Indicator six `--active-tab-*` variables and common state attributes                     | 45 pinned visibility/resize/geometry cases; direction and custom-ID controls        | Measured border/scroll/transform geometry, role/hidden and CSS precision covered                                |
 | Indicator custom tab ID, absent/zero-size selection, resize and List replacement         | Pinned visibility/resize cases; three observer lifetime units                       | G5 lookup and G6 visibility/observation covered; null retains a hidden Angular host                             |
-| Indicator scroll, borders, scale/transforms and intermediate scroll containers           | Geometry calculations vs pinned Indicator and browser tests                         | Source gaps, G6; screenshots do not prove live geometry                                                         |
+| Indicator scroll, borders, scale/transforms and intermediate scroll containers           | 28 pinned geometry cases; literal variables and native bounds                       | G6 covered at render/selection checkpoints; continuous motion/scroll remains pending                            |
 | Tab/Panel value domain and unique identity                                               | Public value types; pinned mixed numeric/string identities                          | ID collisions fixed in G5; arbitrary-value API remains G7                                                       |
 | Custom/native hosts, keyboard activation and disabled links                              | Forty native activation cases on button/div/link/anchor hosts                       | G8 covered for the documented keyboard/click/secondary-release subset                                           |
 | Projected parts through a host-composed Root                                             | Five wrapper units and one Chromium Storybook scenario                              | Regression covered; Root must stay in the declaring injector tree                                               |
@@ -188,7 +188,7 @@ persistent-host fields after comparisons report all four stale, with no assertio
 unexpected differences. The identity presence case now also verifies return/remount with the same
 structural owner ID. Imperative DOM-ID mutation, cross-root moves and actual hydration remain follow-ups.
 
-### G6 — Visibility/observation resolved; complex geometry remains
+### G6 — Visibility, observation and measured geometry covered
 
 [Indicator](src/tabs-indicator.ts) measures the registered selection after rendering and observes
 the current List and every tab. Collection/List changes and destruction disconnect the old observer.
@@ -205,13 +205,25 @@ ownership and cleanup, including a surviving Angular Indicator across List repla
 fix all 17 new Chromium cases and two of those units failed, with no reference assertion failures.
 See [ADR 0076](../../../docs/adr/0076-tabs-indicator-observation.md).
 
-The [pinned Indicator](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/tabs/indicator/TabsIndicator.tsx)
-uses registered elements, shared List/tab resize observation, CSS dimensions and layout/rect offsets
-that account for borders, scale and transforms. Angular's left/top still derive from viewport rect
-deltas plus List scroll offsets, without the pin's border/transform correction. Overflow on both
-axes, borders, scaled/rotated/flipped ancestors, translated tabs and intermediate scrollers still
-need focused comparisons. Owner-document/shadow combinations, actual hydration and Indicator first
-paint remain unverified; no `renderBeforeHydration` capability is introduced.
+Twenty-eight additional geometry cases compare border/padding and content-box sizing, fractional
+layout, both scroll axes in LTR/RTL, nonuniform scale, rotation, flip, skew, perspective and zero
+scales, Tab-local matrix/percentage/combined translation and rotation/scale, nested offset parents
+and intermediate scrollers. Before the fix **17/28 Chromium cases failed**, with no reference
+assertion failures. [The geometry helper](src/tabs-indicator-geometry.ts) now follows the pin's
+layout/rect agreement policy, correcting borders, scale and intermediate scroll while preserving
+subpixel CSS precision. Distorted/nonfinite rect candidates retain layout offsets; Tab-local
+translations are followed. Core DOM guards support composed parent traversal without a new peer.
+
+All 84 new rows and 105 affected Indicator/direction/identity controls pass across three engines
+(**189 comparisons**). All 84 new rows also pass in Playwright 1.60.0 Noble Linux/arm64. Native wheel
+input changes actual scroll, then consumer F2/F3 selection causes a render. Expected coordinates
+use authored fixed slot sizes/gaps, while raw native rects and literal variables remain recorded.
+For Tab-local rotation/scale, a passive native slot checks the expected layout-sized indicator.
+No exception is added. See [ADR 0078](../../../docs/adr/0078-tabs-indicator-coordinates.md).
+
+Continuous inner-scroll tracking without a render, animation-frame transforms, real owner-document/
+shadow integrations, actual hydration and Indicator first paint remain unverified. No
+`renderBeforeHydration` capability is introduced.
 
 ### G7 — Value domain remains narrower than the pin
 
@@ -250,7 +262,14 @@ Checks run for this audit on Node 24.22.2:
 - `pnpm exec vitest run --config packages/primitives/vite.config.ts packages/primitives/tabs/__tests__`
   — **63 passed**, including six whole-Panel lifetime/ownership tests, three Indicator observation/cleanup checks, eight native-activation regressions, seven native-identity regressions, null-default, Panel inertness, direction
   regressions and synchronous model/direction publication.
-- Current whole-Panel run: `pnpm test-parity tabs` — **336 passed**, 112 scenarios across three
+- Current geometry increment: `pnpm test-parity tabs --grep 'geometry-|indicator-|direction-'`
+  — **189 passed**, including 84 new geometry rows, strict fixture build and 13 shared runner tests.
+  The suite now contains 140 scenarios / 420 planned comparisons; the previous full-run count below
+  retains its scope. Chromium baseline: **17 failed / 11 passed**, all reference assertions passed,
+  retained in `dist/parity-testing/tabs/before-geometry-fix/`.
+- Geometry Linux/arm64: **84 passed** in Playwright 1.60.0 Noble, one worker and original timeout,
+  retained in `dist/tabs-geometry-linux/results/`.
+- Previous whole-Panel full run: `pnpm test-parity tabs` — **336 passed**, 112 scenarios across three
   engines, with four exact reviewed fields. Strict fixture build and 13 infrastructure checks pass.
 - After final input metadata cleanup: **48 affected Panel/identity comparisons passed** on macOS
   and **48 passed** in Playwright 1.60.0 Noble Linux/arm64 with one worker and the original timeout.
@@ -281,7 +300,8 @@ Checks run for this audit on Node 24.22.2:
   fixtures in `mcr.microsoft.com/playwright:v1.60.0-noble`, using one worker and the original timeout.
   Results are retained in `dist/tabs-g8-linux/results/`; the G8 macOS pass was the 273-row report.
 - `PLAYWRIGHT_PORT=4411 pnpm exec playwright test -c apps/visual-regression/playwright.config.ts tabs.behavior.spec.ts agents.behavior.spec.ts --grep Tabs --project=chromium`
-  — **2 passed** against a fresh Storybook build: public whole-Panel keyframe lifecycle and projected wrapper.
+  — **3 passed** against a fresh Storybook build: the public Indicator's native CSS transition,
+  whole-Panel keyframe lifecycle and projected wrapper.
 - `pnpm exec playwright test -c apps/visual-regression/playwright.config.ts agents.behavior.spec.ts --grep 'Agents Tabs task' --project=chromium`
   — **1 passed**, against the existing locally served Storybook build. This verifies projected
   navigation/manual Enter/Space and forward list exit, not current shared-source rebuild equivalence.
@@ -301,8 +321,8 @@ Enter/Tab failures. Its [follow-up](../../../tools/consumer-testing/generation/t
 records supplemental success after observing selection rendering. Neither result compares Base UI or
 establishes ownership of that timing issue; do not relabel it as primitive parity or as 36/36.
 
-Next increments: remaining Indicator border/transform/scroll geometry for G6, then dynamic collection/value-domain work
-for G2/G7. G8's remaining native gesture and auxiliary-host combinations stay explicit follow-ups.
+Next increments: dynamic collection/value-domain work for G2/G7. G6's remaining continuous
+inner-scroll/animation, realm and hydration combinations need separate evidence. G8's remaining native gesture and auxiliary-host combinations stay explicit follow-ups.
 Keep fixtures on actual native input and observable state; do not normalize away IDs, focus, mounting,
 event metadata or geometry differences. Further Root disposal cases, nested/overlay consumers, hydration and
 real-device/AT work remain explicit follow-ups.

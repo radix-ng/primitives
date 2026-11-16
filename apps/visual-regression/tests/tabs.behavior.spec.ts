@@ -1,5 +1,27 @@
 import { expect, test } from '@playwright/test';
 
+test('Tabs public indicator follows the selected Tab through its CSS transition', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await page.goto('/iframe.html?id=primitives-tabs--indicator&viewMode=story');
+    const indicator = page.locator('[rdxTabsIndicator]');
+    await expect(indicator).toBeVisible();
+    await expect(indicator).toHaveAttribute('role', 'presentation');
+    for (const name of ['Overview', 'Activity', 'Settings', 'Overview']) {
+        const tab = page.getByRole('tab', { name, exact: true });
+        await tab.click();
+        await expect(tab).toHaveAttribute('aria-selected', 'true');
+        await expect
+            .poll(async () => {
+                const [active, rendered] = await Promise.all([tab.boundingBox(), indicator.boundingBox()]);
+                if (!active || !rendered) return Infinity;
+                return Math.max(Math.abs(active.x - rendered.x), Math.abs(active.width - rendered.width));
+            })
+            .toBeLessThan(0.05);
+    }
+    expect(errors).toEqual([]);
+});
+
 test('Tabs keyframe exit destroys the whole Panel view and recreates it on return', async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));

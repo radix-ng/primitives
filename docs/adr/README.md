@@ -109,3 +109,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0075](0075-tabs-native-activation.md)                                       | Accepted               | Activate Tabs through native and composite clicks                                    |
 | [0076](0076-tabs-indicator-observation.md)                                   | Accepted               | Observe Tabs Indicator geometry and retain its hidden host                           |
 | [0077](0077-tabs-whole-panel-presence.md)                                    | Accepted               | Own complete Tabs Panel views through structural presence                            |
+| [0078](0078-tabs-indicator-coordinates.md)                                   | Accepted               | Measure Tabs Indicator in List-local CSS coordinates                                 |

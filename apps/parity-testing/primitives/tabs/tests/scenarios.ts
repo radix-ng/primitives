@@ -2,6 +2,7 @@ import { initialCases, type Change, type Settings } from '../src/contract';
 import { activationScenarios } from './activation.scenarios';
 import { directionScenarios } from './direction.scenarios';
 import type { TabsDriver } from './driver';
+import { geometryScenarios } from './geometry.scenarios';
 import { identityScenarios } from './identity.scenarios';
 import { indicatorScenarios } from './indicator.scenarios';
 import { panelScenarios } from './panels.scenarios';
@@ -37,6 +38,7 @@ const initialScenarios = (Object.keys(initialCases) as (keyof typeof initialCase
     }
 }));
 export const scenarios = [
+    ...geometryScenarios,
     ...initialScenarios,
     ...panelScenarios,
     ...directionScenarios,
