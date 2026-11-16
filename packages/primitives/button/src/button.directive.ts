@@ -1,5 +1,5 @@
 import { booleanAttribute, computed, DestroyRef, Directive, ElementRef, inject, input } from '@angular/core';
-import { BooleanInput } from '@radix-ng/primitives/core';
+import { BooleanInput, dispatchClickWithModifiers } from '@radix-ng/primitives/core';
 
 export type RdxButtonType = 'button' | 'submit' | 'reset';
 
@@ -95,7 +95,8 @@ export class RdxButtonDirective {
      */
     protected readonly tabIndex = computed(() => {
         if (this.isNativeButton()) {
-            return undefined;
+            // Explicit tabindex also opts native buttons into Safari's keyboard tab order.
+            return 0;
         }
         return this.disabled() && !this.focusableWhenDisabled() ? -1 : 0;
     });
@@ -103,19 +104,25 @@ export class RdxButtonDirective {
     constructor() {
         const element = this.elementRef.nativeElement;
 
-        // Capture-phase listeners registered here run before any consumer
-        // `(click)`/`(keydown)` binding on the same element, so a disabled
-        // button reliably suppresses activation (the native `disabled`
-        // attribute can't be used when the control must stay focusable).
+        // Capture click suppression before consumer bindings, including on aria-disabled hosts.
         const onClick = (event: MouseEvent): void => this.handleClick(event);
         const onKeydown = (event: KeyboardEvent): void => this.handleKeydown(event);
+        const onKeyup = (event: KeyboardEvent): void => this.handleKeyup(event);
+        const onPointerdown = (event: PointerEvent): void => {
+            // A disabled press must not blur the previously focused element.
+            if (this.disabled()) event.preventDefault();
+        };
 
         element.addEventListener('click', onClick, true);
         element.addEventListener('keydown', onKeydown, true);
+        element.addEventListener('keyup', onKeyup, true);
+        element.addEventListener('pointerdown', onPointerdown, true);
 
         inject(DestroyRef).onDestroy(() => {
             element.removeEventListener('click', onClick, true);
             element.removeEventListener('keydown', onKeydown, true);
+            element.removeEventListener('keyup', onKeyup, true);
+            element.removeEventListener('pointerdown', onPointerdown, true);
         });
     }
 
@@ -127,26 +134,39 @@ export class RdxButtonDirective {
     }
 
     private handleKeydown(event: KeyboardEvent): void {
-        const isActivationKey = event.key === 'Enter' || event.key === ' ';
-        if (!isActivationKey) {
-            return;
-        }
-
         if (this.disabled()) {
-            // Native buttons fire a click on Enter/Space; the capture click
-            // handler stops it. Non-button hosts never do, so just block here.
-            event.preventDefault();
-            if (!this.isNativeButton()) {
-                event.stopImmediatePropagation();
-            }
+            if (this.focusableWhenDisabled() && event.key !== 'Tab') event.preventDefault();
             return;
         }
 
-        // Non-button hosts have no native activation; synthesize a click.
-        // Space must not scroll the page.
-        if (!this.isNativeButton()) {
+        if (this.isNativeButton() || event.target !== event.currentTarget) return;
+
+        const element = this.elementRef.nativeElement;
+        const isLink = element.tagName === 'A' && !!(element as HTMLAnchorElement).href;
+        if (event.key === ' ') {
+            // Standalone buttons activate Space on release. Suppress its scrolling default.
             event.preventDefault();
-            this.elementRef.nativeElement.click();
+            return;
         }
+
+        // A valid link already receives its own trusted Enter click from the browser.
+        if (event.key === 'Enter' && !isLink && !event.defaultPrevented) {
+            event.preventDefault();
+            dispatchClickWithModifiers(element, event);
+        }
+    }
+
+    private handleKeyup(event: KeyboardEvent): void {
+        if (
+            this.disabled() ||
+            this.isNativeButton() ||
+            event.target !== event.currentTarget ||
+            event.defaultPrevented ||
+            event.key !== ' '
+        )
+            return;
+
+        // Like the pin, standalone non-native hosts do not retain a keydown cancellation flag.
+        dispatchClickWithModifiers(this.elementRef.nativeElement, event);
     }
 }

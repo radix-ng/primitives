@@ -44,6 +44,22 @@ class AnchorHost {
     }
 }
 
+@Component({
+    imports: [RdxButtonDirective],
+    template: `
+        <!-- rdxButton supplies keyboard handling and focusability. -->
+        <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
+        <div (click)="clicks.push($event)" rdxButton data-testid="custom">
+            Action
+            <span tabindex="0" data-testid="child">Child</span>
+        </div>
+        <a (click)="clicks.push($event)" rdxButton href="#target">Link</a>
+    `
+})
+class KeyboardHost {
+    readonly clicks: MouseEvent[] = [];
+}
+
 describe('RdxButtonDirective', () => {
     describe('native button host', () => {
         let fixture: ComponentFixture<NativeButtonHost>;
@@ -59,6 +75,7 @@ describe('RdxButtonDirective', () => {
 
         it('defaults type to "button" and sets no disabled attributes', () => {
             expect(el.getAttribute('type')).toBe('button');
+            expect(el.getAttribute('tabindex')).toBe('0');
             expect(el.hasAttribute('data-disabled')).toBe(false);
             expect(el.hasAttribute('disabled')).toBe(false);
             expect(el.hasAttribute('aria-disabled')).toBe(false);
@@ -103,6 +120,25 @@ describe('RdxButtonDirective', () => {
             el.click();
             expect(component.clicks).toBe(1);
         });
+
+        it('prevents a disabled pointer press from moving focus', () => {
+            fixture.componentRef.setInput('disabled', true);
+            fixture.detectChanges();
+            const event = new MouseEvent('pointerdown', { bubbles: true, cancelable: true });
+            el.dispatchEvent(event);
+            expect(event.defaultPrevented).toBe(true);
+        });
+
+        it('keeps Tab defaults while suppressing other keys on a focusable disabled button', () => {
+            fixture.componentRef.setInput('disabled', true);
+            fixture.componentRef.setInput('focusableWhenDisabled', true);
+            fixture.detectChanges();
+            for (const key of ['Tab', 'ArrowDown', 'Enter', ' ']) {
+                const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true });
+                el.dispatchEvent(event);
+                expect(event.defaultPrevented).toBe(key !== 'Tab');
+            }
+        });
     });
 
     describe('non-button host', () => {
@@ -128,8 +164,10 @@ describe('RdxButtonDirective', () => {
             expect(component.clicks).toBe(1);
         });
 
-        it('activates on Space', () => {
+        it('activates on Space keyup without activating on keydown', () => {
             el.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+            expect(component.clicks).toBe(0);
+            el.dispatchEvent(new KeyboardEvent('keyup', { key: ' ', bubbles: true }));
             expect(component.clicks).toBe(1);
         });
 
@@ -148,6 +186,93 @@ describe('RdxButtonDirective', () => {
             fixture.detectChanges();
             el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
             expect(component.clicks).toBe(0);
+        });
+    });
+
+    describe('keyboard event ownership', () => {
+        let fixture: ComponentFixture<KeyboardHost>;
+        let custom: HTMLElement;
+        let link: HTMLAnchorElement;
+
+        beforeEach(() => {
+            fixture = TestBed.createComponent(KeyboardHost);
+            fixture.detectChanges();
+            custom = fixture.nativeElement.querySelector('[data-testid="custom"]');
+            link = fixture.nativeElement.querySelector('a');
+        });
+
+        it('[APG Button][WCAG 2.1.1] preserves modifiers on synthesized Enter and Space clicks', () => {
+            custom.dispatchEvent(
+                new KeyboardEvent('keydown', {
+                    key: 'Enter',
+                    bubbles: true,
+                    cancelable: true,
+                    ctrlKey: true,
+                    shiftKey: true
+                })
+            );
+            custom.dispatchEvent(
+                new KeyboardEvent('keyup', {
+                    key: ' ',
+                    bubbles: true,
+                    cancelable: true,
+                    altKey: true,
+                    metaKey: true
+                })
+            );
+            expect(fixture.componentInstance.clicks).toEqual([
+                expect.objectContaining({ ctrlKey: true, shiftKey: true, detail: 0 }),
+                expect.objectContaining({ altKey: true, metaKey: true, detail: 0 })
+            ]);
+        });
+
+        it('respects a prevented Enter keydown and Space keyup', () => {
+            for (const [type, key] of [
+                ['keydown', 'Enter'],
+                ['keyup', ' ']
+            ]) {
+                const event = new KeyboardEvent(type, { key, bubbles: true, cancelable: true });
+                event.preventDefault();
+                custom.dispatchEvent(event);
+            }
+            expect(fixture.componentInstance.clicks).toEqual([]);
+        });
+
+        it('[APG Button][WCAG 2.1.1] leaves descendant keyboard events to the descendant', () => {
+            const child = custom.querySelector('[data-testid="child"]')!;
+            for (const type of ['keydown', 'keyup']) {
+                for (const key of ['Enter', ' ']) {
+                    const event = new KeyboardEvent(type, { key, bubbles: true, cancelable: true });
+                    child.dispatchEvent(event);
+                    expect(event.defaultPrevented).toBe(false);
+                }
+            }
+            expect(fixture.componentInstance.clicks).toEqual([]);
+        });
+
+        it('leaves a valid link Enter to native activation', () => {
+            const event = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
+            link.dispatchEvent(event);
+            expect(event.defaultPrevented).toBe(false);
+            expect(fixture.componentInstance.clicks).toEqual([]);
+        });
+
+        it('prevents link Space scrolling and activates on keyup', () => {
+            const event = new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true });
+            link.dispatchEvent(event);
+            expect(event.defaultPrevented).toBe(true);
+            expect(fixture.componentInstance.clicks).toEqual([]);
+            link.dispatchEvent(new KeyboardEvent('keyup', { key: ' ', bubbles: true, cancelable: true }));
+            expect(fixture.componentInstance.clicks).toHaveLength(1);
+        });
+
+        it('removes both keyboard listeners when destroyed', () => {
+            fixture.destroy();
+            const clicks = vi.fn();
+            custom.addEventListener('click', clicks);
+            custom.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+            custom.dispatchEvent(new KeyboardEvent('keyup', { key: ' ', bubbles: true, cancelable: true }));
+            expect(clicks).not.toHaveBeenCalled();
         });
     });
 });

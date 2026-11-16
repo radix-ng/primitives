@@ -19,7 +19,7 @@ styles — visual variants in the examples come from the centralized demo style 
 - ✅ Works on a native `<button>` or any other element (`<a>`, `<span>`, …).
 - ✅ Exposes state via the `data-disabled` attribute for styling.
 - ✅ `focusableWhenDisabled` keeps the control in the tab order (uses `aria-disabled`).
-- ✅ Adds `role="button"`, `tabindex`, and Enter/Space activation on non-button hosts.
+- ✅ Adds `role="button"`, `tabindex`, and keyboard activation on non-button hosts: Enter on keydown, Space on keyup.
 
 ## Import
 
@@ -66,6 +66,9 @@ The first button uses the native `disabled` attribute (removed from the tab orde
 The directive applies button semantics to any element. Here an `<a>` renders as a button while
 keeping native link behavior.
 
+Enter uses the browser's native link activation when `href` is present. Space prevents scrolling
+and activates on keyup. Keyboard events from a focusable descendant do not activate the outer button.
+
 <Canvas of={ButtonStories.AsLink} />
 
 ### Loading
@@ -94,6 +97,6 @@ communicate the state.
 
 **Data attributes**
 
-| Attribute       | Present when             |
-| --------------- | ------------------------ |
-| `data-disabled` | The button is disabled.  |
+| Attribute       | Present when            |
+| --------------- | ----------------------- |
+| `data-disabled` | The button is disabled. |

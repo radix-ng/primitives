@@ -11,7 +11,7 @@ A button, or any element that should behave like one.
 - ✅ Works on a native `<button>` or any other element (`<a>`, `<span>`, …).
 - ✅ Exposes state via the `data-disabled` attribute for styling.
 - ✅ `focusableWhenDisabled` keeps the control in the tab order (uses `aria-disabled`).
-- ✅ Adds `role="button"`, `tabindex`, and Enter/Space activation on non-button hosts.
+- ✅ Adds `role="button"`, `tabindex`, and keyboard activation on non-button hosts: Enter on keydown, Space on keyup.
 
 ## Import
 

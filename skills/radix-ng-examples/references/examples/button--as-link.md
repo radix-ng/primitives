@@ -7,6 +7,9 @@
 The directive applies button semantics to any element. Here an `<a>` renders as a button while
 keeping native link behavior.
 
+Enter uses the browser's native link activation when `href` is present. Space prevents scrolling
+and activates on keyup. Keyboard events from a focusable descendant do not activate the outer button.
+
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { cn, demoButton } from '../../storybook/styles';
