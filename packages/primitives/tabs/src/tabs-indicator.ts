@@ -1,5 +1,16 @@
-import { afterRenderEffect, computed, Directive, signal, untracked } from '@angular/core';
+import {
+    afterNextRender,
+    afterRenderEffect,
+    booleanAttribute,
+    computed,
+    Directive,
+    inject,
+    input,
+    signal,
+    untracked
+} from '@angular/core';
 import { measureTabGeometry, type TabGeometry } from './tabs-indicator-geometry';
+import { readPrehydratedTabGeometry, TabsIndicatorPrehydration } from './tabs-indicator-prehydration';
 import { injectTabsRootContext } from './tabs-root-context';
 
 /**
@@ -15,6 +26,8 @@ import { injectTabsRootContext } from './tabs-root-context';
     host: {
         role: 'presentation',
         '[hidden]': 'hidden()',
+        '[attr.data-rdx-tabs-prehydration]':
+            'renderBeforeHydration() && prehydrationPending() && rootContext.value() != null ? "" : undefined',
         '[attr.data-orientation]': 'rootContext.orientation()',
         '[attr.data-activation-direction]': 'rootContext.activationDirection()',
         '[style.--active-tab-top.px]': 'geometry()?.top',
@@ -28,14 +41,26 @@ import { injectTabsRootContext } from './tabs-root-context';
 export class RdxTabsIndicator {
     protected readonly rootContext = injectTabsRootContext();
 
+    /**
+     * Position the server-rendered Indicator before Angular hydrates, using a CSP-aware inline script.
+     * @default false
+     */
+    readonly renderBeforeHydration = input(false, { transform: booleanAttribute });
+
     /** @ignore */
-    protected readonly geometry = signal<TabGeometry | null>(null, { debugName: 'RdxTabsIndicator.geometry' });
+    protected readonly geometry = signal<TabGeometry | null>(readPrehydratedTabGeometry(), {
+        debugName: 'RdxTabsIndicator.geometry'
+    });
     protected readonly hidden = computed(() => {
         const geometry = this.geometry();
         return !geometry || geometry.width <= 0 || geometry.height <= 0;
     });
 
+    protected readonly prehydrationPending = signal(true);
+
     constructor() {
+        inject(TabsIndicatorPrehydration);
+        afterNextRender(() => this.prehydrationPending.set(false));
         afterRenderEffect({
             read: () => {
                 this.rootContext.value();

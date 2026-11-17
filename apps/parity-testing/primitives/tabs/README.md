@@ -12,9 +12,47 @@ former four persistent-Panel-host exceptions. See below.
 See the [primitive matrix](../../../../packages/primitives/tabs/PARITY.md) for the remaining work.
 
 The keyboard matrix now has **64 scenarios / 192 planned comparisons**, bringing the suite to
-**290 scenarios / 870 comparisons**, all passing on Linux/arm64 in Playwright 1.60.0 Noble
+**290 scenarios / 870 comparisons**, all passing at that increment on Linux/arm64 in Playwright 1.60.0 Noble
 with two workers and the original timeouts (`dist/tabs-render-linux/results/`). Its original failures are documented below. The native Tab
 render boundary and outgoing-Panel frame now implement [ADR 0083](../../../../docs/adr/0083-tabs-native-tab-render-boundary.md).
+
+## SSR → browser hydration
+
+Fourteen `hydration-*` scenarios add **42 comparisons** to the existing matrix: **304 scenarios /
+912 planned rows** total. This increment passes all 42 rows on macOS and Linux/arm64, in all three
+engines, with two workers and the original timeouts. The earlier 870-row full verdict remains
+historical; it is not a fresh full 912-row result.
+
+```bash
+pnpm test-parity tabs --grep hydration-
+```
+
+The build compiles the regular client fixtures plus the optional `hydration/vite.config.mts` SSR
+bundle. Preview serves real Angular `renderApplication` with `provideClientHydration` and pinned
+React `renderToString` with `hydrateRoot`. Repeated requests exercise request isolation before a
+fresh browser starts. Native IDs changed before the application-scoped ID counter fix; saved
+traces remain in `dist/parity-testing/tabs/hydration-before-id-fix/`.
+
+The driver gates external client modules, records SSR DOM and visible geometry, and then releases
+normal bootstrap. It checks node reuse, exact ID preservation, native ARIA targets, input text and
+focus preserved across hydration, callback counts and real click/Tab activation afterward. No
+render or focus repair is supplied by the fixture. The before/after DOM and rectangles stay raw.
+
+Cases cover retained/structural Panels, controlled/null/implicit values, authored Tab IDs and
+multiple Roots. Opt-in `renderBeforeHydration` covers horizontal/vertical/RTL first paint, multiple
+Indicators, transformed/zero-size targets and a real nonce-only `script-src` policy. Mutation
+records require an initially visible Indicator to remain unhidden throughout hydration.
+
+`hydration/expected-differences.json` contains fourteen exact before-hydration `relationships`
+pairs: Angular supplies its native ARIA links on the server; the pin supplies them after hydration.
+Hydrated relationships have no exception. The four existing CSR reviewed fields stay unchanged.
+Angular retains its already-documented hidden Indicator host at null; raw DOM still records it.
+
+Final hydration reports: `dist/parity-testing/tabs/hydration-final/` and
+`dist/tabs-hydration-linux/results/`. The affected CSR rerun passes 177 comparisons (Indicator,
+native identity, rapid/composed keyboard); 124 units, 26 SSR checks, library and SSR-app builds pass.
+Incremental/deferred/streamed hydration and arbitrary
+cross-process reference values are outside this full-bootstrap scope.
 
 ## Initial-value scope
 

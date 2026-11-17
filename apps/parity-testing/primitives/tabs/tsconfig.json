@@ -1,1 +1,4 @@
-{ "extends": "../../tsconfig.base.json", "include": ["src/angular.ts", "src/contract.ts"] }
+{
+    "extends": "../../tsconfig.base.json",
+    "include": ["src/angular.ts", "src/contract.ts", "hydration/angular.ts", "hydration/server.ts"]
+}

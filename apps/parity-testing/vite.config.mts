@@ -2,6 +2,7 @@ import angular from '@analogjs/vite-plugin-angular';
 import tailwindcss from '@tailwindcss/postcss';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
+import { tabsHydrationPreview } from './primitives/tabs/hydration/preview.ts';
 import { prepareReference, workspaceRoot, writeReferencePaths } from './shared/reference.ts';
 import { suiteFromEnvironment } from './shared/suites.ts';
 
@@ -13,6 +14,7 @@ export default defineConfig({
     root: suite.directory,
     cacheDir: resolve(workspaceRoot, `node_modules/.vite/parity-testing/${suite.name}`),
     plugins: [
+        ...(suite.name === 'tabs' ? [tabsHydrationPreview(suite.fixturesDirectory)] : []),
         angular({ tsconfig: resolve(suite.directory, 'tsconfig.json') }),
         {
             name: 'parity-reference-manifest',
@@ -45,6 +47,7 @@ export default defineConfig({
             'reselect'
         ]
     },
+    html: suite.name === 'tabs' ? { cspNonce: 'tabs-hydration-fixture' } : undefined,
     css: { postcss: { plugins: [tailwindcss()] } },
     define: {
         __PARITY_REFERENCE__: JSON.stringify({
@@ -59,7 +62,16 @@ export default defineConfig({
         minify: false,
         sourcemap: true,
         rollupOptions: {
-            input: { angular: resolve(suite.directory, 'angular.html'), react: resolve(suite.directory, 'react.html') }
+            input: {
+                angular: resolve(suite.directory, 'angular.html'),
+                react: resolve(suite.directory, 'react.html'),
+                ...(suite.name === 'tabs'
+                    ? {
+                          angularHydration: resolve(suite.directory, 'angular-hydration.html'),
+                          reactHydration: resolve(suite.directory, 'react-hydration.html')
+                      }
+                    : {})
+            }
         }
     },
     preview: { host: '127.0.0.1', port: suite.port, strictPort: true }

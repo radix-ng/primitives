@@ -1,18 +1,12 @@
 import { APP_ID, inject, Injectable } from '@angular/core';
 
 /**
- * Per-prefix counters, kept module-global so generated IDs stay deterministic within a run.
- * Determinism keeps server and client renders in sync, which matters for hydration.
- */
-const counters = new Map<string, number>();
-
-/**
  * Generates unique, SSR-stable IDs for DOM nodes.
  *
- * IDs are deterministic per prefix (a monotonic counter) so the server and the client produce the
- * same sequence and hydration does not mismatch. The application's `APP_ID` is folded into the
+ * Counters belong to the application injector, so repeated SSR requests and the client start the
+ * same per-prefix sequence without sharing request state. The application's `APP_ID` is folded into the
  * prefix so multiple Angular apps on one page don't collide; the default `ng` app id is omitted to
- * keep IDs short for the common single-app case.
+ * keep IDs short for the common single-app case. Server and client must create parts in the same order.
  *
  * Prefer the {@link injectId} hook at call sites; inject this service directly only when you need to
  * generate IDs lazily outside an injection context.
@@ -20,12 +14,13 @@ const counters = new Map<string, number>();
 @Injectable({ providedIn: 'root' })
 export class RdxIdGenerator {
     private readonly appId = inject(APP_ID);
+    private readonly counters = new Map<string, number>();
 
     /** Generates a unique ID with the given prefix. */
     getId(prefix: string): string {
         const key = this.appId === 'ng' ? prefix : prefix + this.appId;
-        const next = counters.get(key) ?? 0;
-        counters.set(key, next + 1);
+        const next = this.counters.get(key) ?? 0;
+        this.counters.set(key, next + 1);
 
         return `${key}${next}`;
     }

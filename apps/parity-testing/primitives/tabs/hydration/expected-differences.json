@@ -1,0 +1,390 @@
+[
+    {
+        "scenario": "hydration-default",
+        "checkpoint": "before hydration",
+        "field": "relationships",
+        "angular": [
+            {
+                "tab-0": "panel-0",
+                "tab-1": "panel-1",
+                "tab-2": "panel-2",
+                "panel-0": "tab-0",
+                "panel-1": "tab-1",
+                "panel-2": "tab-2"
+            }
+        ],
+        "react": [
+            {
+                "tab-0": null,
+                "tab-1": null,
+                "tab-2": null,
+                "panel-0": null,
+                "panel-1": null,
+                "panel-2": null
+            }
+        ],
+        "category": "server-aria-registration"
+    },
+    {
+        "scenario": "hydration-presence",
+        "checkpoint": "before hydration",
+        "field": "relationships",
+        "angular": [
+            {
+                "tab-0": null,
+                "tab-1": "panel-1",
+                "tab-2": null,
+                "panel-1": "tab-1"
+            }
+        ],
+        "react": [
+            {
+                "tab-0": null,
+                "tab-1": null,
+                "tab-2": null,
+                "panel-1": null
+            }
+        ],
+        "category": "server-aria-registration"
+    },
+    {
+        "scenario": "hydration-controlled",
+        "checkpoint": "before hydration",
+        "field": "relationships",
+        "angular": [
+            {
+                "tab-0": "panel-0",
+                "tab-1": "panel-1",
+                "tab-2": "panel-2",
+                "panel-0": "tab-0",
+                "panel-1": "tab-1",
+                "panel-2": "tab-2"
+            }
+        ],
+        "react": [
+            {
+                "tab-0": null,
+                "tab-1": null,
+                "tab-2": null,
+                "panel-0": null,
+                "panel-1": null,
+                "panel-2": null
+            }
+        ],
+        "category": "server-aria-registration"
+    },
+    {
+        "scenario": "hydration-implicit",
+        "checkpoint": "before hydration",
+        "field": "relationships",
+        "angular": [
+            {
+                "tab-0": "panel-0",
+                "tab-1": "panel-1",
+                "tab-2": "panel-2",
+                "panel-0": "tab-0",
+                "panel-1": "tab-1",
+                "panel-2": "tab-2"
+            }
+        ],
+        "react": [
+            {
+                "tab-0": null,
+                "tab-1": null,
+                "tab-2": null,
+                "panel-0": null,
+                "panel-1": null,
+                "panel-2": null
+            }
+        ],
+        "category": "server-aria-registration"
+    },
+    {
+        "scenario": "hydration-null",
+        "checkpoint": "before hydration",
+        "field": "relationships",
+        "angular": [
+            {
+                "tab-0": "panel-0",
+                "tab-1": "panel-1",
+                "tab-2": "panel-2",
+                "panel-0": "tab-0",
+                "panel-1": "tab-1",
+                "panel-2": "tab-2"
+            }
+        ],
+        "react": [
+            {
+                "tab-0": null,
+                "tab-1": null,
+                "tab-2": null,
+                "panel-0": null,
+                "panel-1": null,
+                "panel-2": null
+            }
+        ],
+        "category": "server-aria-registration"
+    },
+    {
+        "scenario": "hydration-authored",
+        "checkpoint": "before hydration",
+        "field": "relationships",
+        "angular": [
+            {
+                "tab-0": null,
+                "tab-1": "panel-1",
+                "tab-2": null,
+                "panel-1": "tab-1"
+            }
+        ],
+        "react": [
+            {
+                "tab-0": null,
+                "tab-1": null,
+                "tab-2": null,
+                "panel-1": null
+            }
+        ],
+        "category": "server-aria-registration"
+    },
+    {
+        "scenario": "hydration-multiple",
+        "checkpoint": "before hydration",
+        "field": "relationships",
+        "angular": [
+            {
+                "tab-0": "panel-0",
+                "tab-1": "panel-1",
+                "tab-2": "panel-2",
+                "panel-0": "tab-0",
+                "panel-1": "tab-1",
+                "panel-2": "tab-2"
+            },
+            {
+                "tab-0": "panel-0",
+                "tab-1": "panel-1",
+                "tab-2": "panel-2",
+                "panel-0": "tab-0",
+                "panel-1": "tab-1",
+                "panel-2": "tab-2"
+            }
+        ],
+        "react": [
+            {
+                "tab-0": null,
+                "tab-1": null,
+                "tab-2": null,
+                "panel-0": null,
+                "panel-1": null,
+                "panel-2": null
+            },
+            {
+                "tab-0": null,
+                "tab-1": null,
+                "tab-2": null,
+                "panel-0": null,
+                "panel-1": null,
+                "panel-2": null
+            }
+        ],
+        "category": "server-aria-registration"
+    },
+    {
+        "scenario": "hydration-prepaint",
+        "checkpoint": "before hydration",
+        "field": "relationships",
+        "angular": [
+            {
+                "tab-0": "panel-0",
+                "tab-1": "panel-1",
+                "tab-2": "panel-2",
+                "panel-0": "tab-0",
+                "panel-1": "tab-1",
+                "panel-2": "tab-2"
+            }
+        ],
+        "react": [
+            {
+                "tab-0": null,
+                "tab-1": null,
+                "tab-2": null,
+                "panel-0": null,
+                "panel-1": null,
+                "panel-2": null
+            }
+        ],
+        "category": "server-aria-registration"
+    },
+    {
+        "scenario": "hydration-prepaint-vertical",
+        "checkpoint": "before hydration",
+        "field": "relationships",
+        "angular": [
+            {
+                "tab-0": "panel-0",
+                "tab-1": "panel-1",
+                "tab-2": "panel-2",
+                "panel-0": "tab-0",
+                "panel-1": "tab-1",
+                "panel-2": "tab-2"
+            }
+        ],
+        "react": [
+            {
+                "tab-0": null,
+                "tab-1": null,
+                "tab-2": null,
+                "panel-0": null,
+                "panel-1": null,
+                "panel-2": null
+            }
+        ],
+        "category": "server-aria-registration"
+    },
+    {
+        "scenario": "hydration-prepaint-rtl",
+        "checkpoint": "before hydration",
+        "field": "relationships",
+        "angular": [
+            {
+                "tab-0": "panel-0",
+                "tab-1": "panel-1",
+                "tab-2": "panel-2",
+                "panel-0": "tab-0",
+                "panel-1": "tab-1",
+                "panel-2": "tab-2"
+            }
+        ],
+        "react": [
+            {
+                "tab-0": null,
+                "tab-1": null,
+                "tab-2": null,
+                "panel-0": null,
+                "panel-1": null,
+                "panel-2": null
+            }
+        ],
+        "category": "server-aria-registration"
+    },
+    {
+        "scenario": "hydration-prepaint-csp",
+        "checkpoint": "before hydration",
+        "field": "relationships",
+        "angular": [
+            {
+                "tab-0": "panel-0",
+                "tab-1": "panel-1",
+                "tab-2": "panel-2",
+                "panel-0": "tab-0",
+                "panel-1": "tab-1",
+                "panel-2": "tab-2"
+            }
+        ],
+        "react": [
+            {
+                "tab-0": null,
+                "tab-1": null,
+                "tab-2": null,
+                "panel-0": null,
+                "panel-1": null,
+                "panel-2": null
+            }
+        ],
+        "category": "server-aria-registration"
+    },
+    {
+        "scenario": "hydration-prepaint-transformed",
+        "checkpoint": "before hydration",
+        "field": "relationships",
+        "angular": [
+            {
+                "tab-0": "panel-0",
+                "tab-1": "panel-1",
+                "tab-2": "panel-2",
+                "panel-0": "tab-0",
+                "panel-1": "tab-1",
+                "panel-2": "tab-2"
+            }
+        ],
+        "react": [
+            {
+                "tab-0": null,
+                "tab-1": null,
+                "tab-2": null,
+                "panel-0": null,
+                "panel-1": null,
+                "panel-2": null
+            }
+        ],
+        "category": "server-aria-registration"
+    },
+    {
+        "scenario": "hydration-prepaint-zero",
+        "checkpoint": "before hydration",
+        "field": "relationships",
+        "angular": [
+            {
+                "tab-0": "panel-0",
+                "tab-1": "panel-1",
+                "tab-2": "panel-2",
+                "panel-0": "tab-0",
+                "panel-1": "tab-1",
+                "panel-2": "tab-2"
+            }
+        ],
+        "react": [
+            {
+                "tab-0": null,
+                "tab-1": null,
+                "tab-2": null,
+                "panel-0": null,
+                "panel-1": null,
+                "panel-2": null
+            }
+        ],
+        "category": "server-aria-registration"
+    },
+    {
+        "scenario": "hydration-prepaint-multiple",
+        "checkpoint": "before hydration",
+        "field": "relationships",
+        "angular": [
+            {
+                "tab-0": "panel-0",
+                "tab-1": "panel-1",
+                "tab-2": "panel-2",
+                "panel-0": "tab-0",
+                "panel-1": "tab-1",
+                "panel-2": "tab-2"
+            },
+            {
+                "tab-0": "panel-0",
+                "tab-1": "panel-1",
+                "tab-2": "panel-2",
+                "panel-0": "tab-0",
+                "panel-1": "tab-1",
+                "panel-2": "tab-2"
+            }
+        ],
+        "react": [
+            {
+                "tab-0": null,
+                "tab-1": null,
+                "tab-2": null,
+                "panel-0": null,
+                "panel-1": null,
+                "panel-2": null
+            },
+            {
+                "tab-0": null,
+                "tab-1": null,
+                "tab-2": null,
+                "panel-0": null,
+                "panel-1": null,
+                "panel-2": null
+            }
+        ],
+        "category": "server-aria-registration"
+    }
+]

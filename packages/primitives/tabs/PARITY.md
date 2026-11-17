@@ -17,10 +17,14 @@ scope. G6's visibility/observation and measured geometry subsets, G7's arbitrary
 and geometry gaps below are not certified by these increments.
 The keyboard matrix now defines **64 scenarios / 192 rows**, including the native Tab render
 boundary and outgoing-Panel exit frame in [ADR 0083](../../../docs/adr/0083-tabs-native-tab-render-boundary.md).
-The complete suite passes **290 scenarios / 870 comparisons** across all three engines on
+The preceding complete suite passed **290 scenarios / 870 comparisons** across all three engines on
 Linux/arm64 in Playwright 1.60.0 Noble, with two workers and the original timeouts. All **81 rapid
 comparisons** also pass on macOS. Ordinary unhandled-arrow page scrolling remains unstable in macOS
 WebKit, including a framework-free HTML control; see the suite notes for that platform's limits.
+The hydration increment adds **14 scenarios / 42 comparisons**, all passing on macOS and Linux/arm64.
+The suite now defines **304 scenarios / 912 planned comparisons**; the 870-row verdict above is
+historical, not a fresh full 912-row run. Four CSR exception fields remain; fourteen exact
+before-hydration ARIA relationship pairs record the server-registration policy described below.
 
 **Pinned covered** means the stated subset passed direct Angular/Base UI comparison;
 **Regression covered** below means an existing Angular check exercises the stated subset;
@@ -28,39 +32,39 @@ WebKit, including a framework-free HTML control; see the suite notes for that pl
 **pending** means the evidence does not establish the behavior. Documented Angular adaptations are
 listed separately from unresolved gaps.
 
-| Contract                                                                                 | Evidence                                                                            | Status                                                                                                          |
-| ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| Root / List / Tab / Panel / Indicator part set                                           | Public barrels and all five pinned parts                                            | Present; Angular directives and `hostDirectives` composition                                                    |
-| `value`, `defaultValue`, horizontal default orientation                                  | Pinned initial-value suite; null/default units; orientation source                  | Pinned covered for numeric/string defaults and controlled `null`; G1 resolved                                   |
-| Implicit value `0`, initial notification and disabled-first fallback                     | Pinned initial-value suite; three implicit-default units                            | Pinned covered, including a later value-0 tab, missing `0`, all disabled and uncancelable initial fallback      |
-| Explicit disabled default and later disable/re-enable                                    | Pinned initial-value and collection suites                                          | Pinned covered through enable/disable and initial-default honor transitions                                     |
-| Selected uncontrolled tab becomes disabled                                               | Implicit-default unit                                                               | Regression covered; first enabled value, reason `disabled`, direction `none`                                    |
-| Missing selected tab, empty/refilled/replaced lists, all disabled                        | 36 pinned collection cases; rendered registration phases                            | Pinned covered for removal, refill, List replacement/absence, disabled fallback and native focus, G2            |
-| Controlled initial/external values; parent ignores a request                             | Twenty pinned controlled-owner cases; direction and collection suites               | Ignored, delayed, transformed and canceled requests covered; controlled input owns selection                    |
-| Click selection, same-value no-op and cancel before commit                               | Forty pinned activation cases; eight activation units                               | Pinned covered for native requests, canceled retry, repeat and same-value no-op                                 |
-| Event reasons, native event, trigger and callback order                                  | Pinned capture/bubble/change timeline, native event metadata and raw trigger data   | Type/trust/target/modifiers/order covered; optional Angular trigger retained, ADR 0075                          |
-| Manual activation by default; automatic activation on focus                              | Pinned keyboard matrix, both axes and directions                                    | Pinned covered for settled navigation and controlled acceptance/ignore/delay                                    |
-| Home/End, looping and `loopFocus=false`                                                  | Pinned keyboard matrix, 16 axis/direction/activation/loop combinations              | Pinned covered for both boundaries, wrapping and disabled destinations                                          |
-| Vertical Up/Down, horizontal RTL and modifier keys                                       | Pinned keyboard matrix and native key records                                       | Pinned covered; Shift/Ctrl/Alt/Meta/combined vertical arrows preserve native defaults                           |
-| Disabled tabs remain arrow-focusable without activation                                  | Pinned disabled button/div/link key/click cases; state and focus units              | Covered for disabled native defaults/navigation and horizontal entry; touch/pen remain pending                  |
-| Disabled controlled selection preserves the existing Tab entry                           | Selected-disabled unit; pinned collection cases                                     | Disabled selection preserves Composite's tab stop; dynamic disabled/focus subsets covered                       |
-| Native Tab / Shift+Tab into list, panel and adjacent controls                            | Pinned keyboard/held-exit cases and projected wrapper                               | Native forward/reverse order covered, including consecutive selection/Tab within one frame                      |
-| `role`, `aria-selected`, orientation and reciprocal IDs                                  | Fifteen pinned identity cases, seven identity units and native SSR relationships    | G5 covered for registered/authored identities; authored-ID adaptation only                                      |
-| Per-part `data-orientation`, `data-activation-direction`, Tab active/disabled attributes | Pinned direction suite, first sampled frame, host bindings and selected-state units | G3 direction covered on Root/List/Tab/Panel and non-null Indicator; live orientation/style combinations pending |
-| Panel indexes and active/inactive tabindex                                               | Composite-index unit; pinned Panel snapshots                                        | Index regression covered; active/inactive tabindex pinned covered in lifecycle cases                            |
-| Panel unmount / `keepMounted`                                                            | Nine presence units; twelve pinned lifecycle cases                                  | Whole-Panel host/child lifetime covered, G4; no structural-host exception                                       |
-| Panel enter/exit attributes, hidden timing, inert contents and interrupted transitions   | Twelve pinned cases and public keyframe browser regression                          | G4 fixed for documented retained/structural exits; deeper lifecycle follow-ups remain                           |
-| Indicator six `--active-tab-*` variables and common state attributes                     | 45 pinned visibility/resize/geometry cases; direction and custom-ID controls        | Measured border/scroll/transform geometry, role/hidden and CSS precision covered                                |
-| Indicator custom tab ID, absent/zero-size selection, resize and List replacement         | Pinned visibility/resize cases; three observer lifetime units                       | G5 lookup and G6 visibility/observation covered; null retains a hidden Angular host                             |
-| Indicator scroll, borders, scale/transforms and intermediate scroll containers           | 28 pinned geometry cases; literal variables and native bounds                       | G6 covered at render/selection checkpoints; continuous motion/scroll remains pending                            |
-| Tab/Panel value domain and unique identity                                               | Public value types; pinned mixed numeric/string identities                          | G7 covered for reference identities, mixed/falsy values, callbacks and native relationships                     |
-| Custom/native hosts, keyboard activation and disabled links                              | Forty native activation cases on button/div/link/anchor hosts                       | G8 covered for the documented keyboard/click/secondary-release subset                                           |
-| Projected parts through a host-composed Root                                             | Five wrapper units and one Chromium Storybook scenario                              | Regression covered; Root must stay in the declaring injector tree                                               |
-| List destruction/recreation and stale registration cleanup                               | Wrapper lifecycle units and pinned collection cases                                 | Selection survives List absence and populated replacement; whole-Root disposal follow-ups remain                |
-| Nested Roots, multiple instances and use inside Dialog/Popover                           | Pinned independent-Root identities; separate consumer experiment                    | Independent identities covered; nested/overlay consumers pending                                                |
-| SSR rendering, hydration metadata and native ID relationships                            | Four selected SSR checks                                                            | Regression covered; actual client hydration and Indicator first paint pending                                   |
-| Indicator `renderBeforeHydration` / server-visible positioning                           | Pinned Indicator prop and prehydration source; no Angular counterpart               | Missing capability; equivalent first-paint behavior not established                                             |
-| Real touch/pen, devices, assistive technology and axe                                    | Not exercised by the checks run here                                                | Pending                                                                                                         |
+| Contract                                                                                 | Evidence                                                                                                   | Status                                                                                                                 |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Root / List / Tab / Panel / Indicator part set                                           | Public barrels and all five pinned parts                                                                   | Present; Angular directives and `hostDirectives` composition                                                           |
+| `value`, `defaultValue`, horizontal default orientation                                  | Pinned initial-value suite; null/default units; orientation source                                         | Pinned covered for numeric/string defaults and controlled `null`; G1 resolved                                          |
+| Implicit value `0`, initial notification and disabled-first fallback                     | Pinned initial-value suite; three implicit-default units                                                   | Pinned covered, including a later value-0 tab, missing `0`, all disabled and uncancelable initial fallback             |
+| Explicit disabled default and later disable/re-enable                                    | Pinned initial-value and collection suites                                                                 | Pinned covered through enable/disable and initial-default honor transitions                                            |
+| Selected uncontrolled tab becomes disabled                                               | Implicit-default unit                                                                                      | Regression covered; first enabled value, reason `disabled`, direction `none`                                           |
+| Missing selected tab, empty/refilled/replaced lists, all disabled                        | 36 pinned collection cases; rendered registration phases                                                   | Pinned covered for removal, refill, List replacement/absence, disabled fallback and native focus, G2                   |
+| Controlled initial/external values; parent ignores a request                             | Twenty pinned controlled-owner cases; direction and collection suites                                      | Ignored, delayed, transformed and canceled requests covered; controlled input owns selection                           |
+| Click selection, same-value no-op and cancel before commit                               | Forty pinned activation cases; eight activation units                                                      | Pinned covered for native requests, canceled retry, repeat and same-value no-op                                        |
+| Event reasons, native event, trigger and callback order                                  | Pinned capture/bubble/change timeline, native event metadata and raw trigger data                          | Type/trust/target/modifiers/order covered; optional Angular trigger retained, ADR 0075                                 |
+| Manual activation by default; automatic activation on focus                              | Pinned keyboard matrix, both axes and directions                                                           | Pinned covered for settled navigation and controlled acceptance/ignore/delay                                           |
+| Home/End, looping and `loopFocus=false`                                                  | Pinned keyboard matrix, 16 axis/direction/activation/loop combinations                                     | Pinned covered for both boundaries, wrapping and disabled destinations                                                 |
+| Vertical Up/Down, horizontal RTL and modifier keys                                       | Pinned keyboard matrix and native key records                                                              | Pinned covered; Shift/Ctrl/Alt/Meta/combined vertical arrows preserve native defaults                                  |
+| Disabled tabs remain arrow-focusable without activation                                  | Pinned disabled button/div/link key/click cases; state and focus units                                     | Covered for disabled native defaults/navigation and horizontal entry; touch/pen remain pending                         |
+| Disabled controlled selection preserves the existing Tab entry                           | Selected-disabled unit; pinned collection cases                                                            | Disabled selection preserves Composite's tab stop; dynamic disabled/focus subsets covered                              |
+| Native Tab / Shift+Tab into list, panel and adjacent controls                            | Pinned keyboard/held-exit cases and projected wrapper                                                      | Native forward/reverse order covered, including consecutive selection/Tab within one frame                             |
+| `role`, `aria-selected`, orientation and reciprocal IDs                                  | Fifteen pinned identity cases, seven identity units and native SSR relationships                           | G5 covered for registered/authored identities; authored-ID adaptation only                                             |
+| Per-part `data-orientation`, `data-activation-direction`, Tab active/disabled attributes | Pinned direction suite, first sampled frame, host bindings and selected-state units                        | G3 direction covered on Root/List/Tab/Panel and non-null Indicator; live orientation/style combinations pending        |
+| Panel indexes and active/inactive tabindex                                               | Composite-index unit; pinned Panel snapshots                                                               | Index regression covered; active/inactive tabindex pinned covered in lifecycle cases                                   |
+| Panel unmount / `keepMounted`                                                            | Nine presence units; twelve pinned lifecycle cases                                                         | Whole-Panel host/child lifetime covered, G4; no structural-host exception                                              |
+| Panel enter/exit attributes, hidden timing, inert contents and interrupted transitions   | Twelve pinned cases and public keyframe browser regression                                                 | G4 fixed for documented retained/structural exits; deeper lifecycle follow-ups remain                                  |
+| Indicator six `--active-tab-*` variables and common state attributes                     | 45 pinned visibility/resize/geometry cases; direction and custom-ID controls                               | Measured border/scroll/transform geometry, role/hidden and CSS precision covered                                       |
+| Indicator custom tab ID, absent/zero-size selection, resize and List replacement         | Pinned visibility/resize cases; three observer lifetime units                                              | G5 lookup and G6 visibility/observation covered; null retains a hidden Angular host                                    |
+| Indicator scroll, borders, scale/transforms and intermediate scroll containers           | 28 pinned geometry cases; literal variables and native bounds                                              | G6 covered at render/selection checkpoints; continuous motion/scroll remains pending                                   |
+| Tab/Panel value domain and unique identity                                               | Public value types; pinned mixed numeric/string identities                                                 | G7 covered for reference identities, mixed/falsy values, callbacks and native relationships                            |
+| Custom/native hosts, keyboard activation and disabled links                              | Forty native activation cases on button/div/link/anchor hosts                                              | G8 covered for the documented keyboard/click/secondary-release subset                                                  |
+| Projected parts through a host-composed Root                                             | Five wrapper units and one Chromium Storybook scenario                                                     | Regression covered; Root must stay in the declaring injector tree                                                      |
+| List destruction/recreation and stale registration cleanup                               | Wrapper lifecycle units and pinned collection cases                                                        | Selection survives List absence and populated replacement; whole-Root disposal follow-ups remain                       |
+| Nested Roots, multiple instances and use inside Dialog/Popover                           | Pinned independent-Root identities; separate consumer experiment                                           | Independent identities covered; nested/overlay consumers pending                                                       |
+| SSR rendering, hydration metadata and native ID relationships                            | 26 SSR checks; 14 real SSR/hydration cases in three engines                                                | Full-bootstrap node/ID reuse, input/focus preservation, initialization callbacks and post-hydration activation covered |
+| Indicator `renderBeforeHydration` / server-visible positioning                           | Real browser pre-bootstrap snapshots, strict CSP, axes/RTL, zero-size/transform and multiple-Root controls | Opt-in first paint covered; visible Indicator is preserved through hydration                                           |
+| Real touch/pen, devices, assistive technology and axe                                    | Not exercised by the checks run here                                                                       | Pending                                                                                                                |
 
 ## Documented Angular adaptations
 
@@ -86,6 +90,11 @@ listed separately from unresolved gaps.
 - Indicator retains its consumer-owned host at null and hides it, while the pin omits its element.
   Two exact host fields retain this difference; actual visibility and geometry still compare.
   See [ADR 0076](../../../docs/adr/0076-tabs-indicator-observation.md).
+
+- SSR publishes native Tab/Panel ARIA relationships before JavaScript in Angular. The pinned Base UI
+  implementation registers these links during hydration. Fourteen exact `relationships` pairs in
+  the hydration suite retain this server behavior; all hydrated links remain compared. Raw IDs and
+  DOM are recorded, and each framework must preserve its actual IDs through hydration.
 
 ## Source gaps and required comparisons
 
@@ -261,8 +270,7 @@ For Tab-local rotation/scale, a passive native slot checks the expected layout-s
 No exception is added. See [ADR 0078](../../../docs/adr/0078-tabs-indicator-coordinates.md).
 
 Continuous inner-scroll tracking without a render, animation-frame transforms, real owner-document/
-shadow integrations, actual hydration and Indicator first paint remain unverified. No
-`renderBeforeHydration` capability is introduced.
+shadow integrations, actual hydration and Indicator first paint remain unverified. That geometry increment did not introduce `renderBeforeHydration`; the later hydration increment below adds it.
 
 ### G7 — Arbitrary identity values covered; breaking public type widening
 
@@ -348,6 +356,37 @@ state, focus or callbacks. Native page scroll remains compared. The original 146
 867/870 and 79/81 results with timing-dependent scroll differences. All 678 existing controls pass;
 the matched-frame rapid rerun passes 81/81 on both macOS and Linux/arm64. See the [suite notes](../../../apps/parity-testing/primitives/tabs/README.md#keyboard-navigation-and-consecutive-native-input)
 and ADR 0083 for the exact scope, paths and final keyboard/Linux results. No new exception is added.
+
+### SSR → hydration and first-paint Indicator
+
+The pinned browser fixture now performs actual `renderApplication`/`provideClientHydration` and
+React `renderToString`/`hydrateRoot`. Each side receives repeated HTTP requests before a fresh
+browser starts. Blocking only the external client modules exposes SSR DOM and the pre-bootstrap
+Indicator. The driver verifies native node identity, exact ID preservation, input value/focus,
+initial callbacks and a real click/Tab handoff after hydration.
+
+The negative baseline reproduced Angular IDs changing during hydration after earlier SSR requests.
+`RdxIdGenerator` now owns its counters per application injector, preserving the same creation
+sequence across requests and the client. Applications in one document use distinct `APP_ID` values.
+
+Indicator adds `renderBeforeHydration`, default `false`. Its CSP-aware server script positions
+eligible active tabs before the client bundle loads. Angular's public TransferState serialization
+hook emits the script outside the application's annotated DOM; the script leaves the application
+node structure intact. Existing inline geometry seeds the first client binding, preserving visible
+state until normal render measurement takes over. See the follow-up in
+[ADR 0076](../../../docs/adr/0076-tabs-indicator-observation.md).
+
+All **42 comparisons** pass across Chromium/Firefox/WebKit on macOS and Linux/arm64, including
+retained/structural Panels, controlled/null/implicit values, authored Tab IDs, multiple Roots,
+vertical/RTL first paint, transformed/zero-size targets and strict nonce CSP. All 26 SSR checks,
+124 focused units, library and SSR-app builds pass. Affected CSR controls pass **177 comparisons**
+(Indicator observation, native identities and rapid/composed keyboard input). The CSR reviewed
+fields remain unchanged; server relationship exceptions are exact and limited to the pre-bootstrap
+checkpoint.
+
+This covers full application hydration with matching creation order. Incremental/deferred or
+streamed hydration, arbitrary cross-process value identities and native shadow/realm combinations
+remain separate follow-ups. Continuous Indicator motion remains outside this increment.
 
 ## Verification and limits
 
@@ -475,7 +514,7 @@ Enter/Tab failures. Its [follow-up](../../../tools/consumer-testing/generation/t
 records supplemental success after observing selection rendering. Neither result compares Base UI or
 establishes ownership of that timing issue; do not relabel it as primitive parity or as 36/36.
 
-Next increments: client hydration/first paint and the remaining gesture/composition scope. G6's remaining continuous
+Next increments: remaining gesture/composition scope and incremental/deferred hydration. G6's remaining continuous
 inner-scroll/animation, realm and hydration combinations need separate evidence. G8's remaining native gesture and auxiliary-host combinations stay explicit follow-ups.
 Keep fixtures on actual native input and observable state; do not normalize away IDs, focus, mounting,
 event metadata or geometry differences. Further Root disposal cases, nested/overlay consumers, hydration and

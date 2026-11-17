@@ -4,6 +4,8 @@ import { RdxTabsRoot } from '../src/tabs-root';
 import { RdxTabsList } from '../src/tabs-list';
 import { RdxTabsTab } from '../src/tabs-tab';
 import { RdxTabsPanel } from '../src/tabs-panel';
+import { RdxTabsIndicator } from '../src/tabs-indicator';
+import { RdxTabsPanelPresence } from '../src/tabs-panel-presence';
 
 <Meta title="Primitives/Tabs" />
 
@@ -291,7 +293,19 @@ can keep an outgoing view mounted and inert until completion.
 
 ### TabsIndicator
 
-`RdxTabsIndicator` — reads everything from context; it has no inputs.
+`RdxTabsIndicator` — exposes the active tab's geometry. Apply it to a `<span>` inside the List.
+
+<ArgTypes of={RdxTabsIndicator} />
+
+With SSR, opt into `renderBeforeHydration` to position the Indicator before Angular starts:
+
+```html
+<span rdxTabsIndicator renderBeforeHydration></span>
+```
+
+The option defaults to `false`. Its server-only inline script uses Angular's `CSP_NONCE` when
+provided. It waits for nonzero dimensions; transformed tabs use normal client measurement. The
+server-positioned Indicator stays visible through hydration. CSR uses the normal render hooks.
 
 **Data attributes**
 

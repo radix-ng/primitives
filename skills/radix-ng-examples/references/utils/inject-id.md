@@ -52,10 +52,13 @@ export class InjectIdExample {}
 
 ## Features
 
-- ✅ Unique per call — a monotonic per-prefix counter guarantees no two ids collide.
-- ✅ SSR/hydration safe — deterministic sequences keep server and client renders in sync.
-- ✅ Multi-app safe — the application's `APP_ID` is folded into the prefix (omitted for the default `ng` app to keep ids short).
+- ✅ Unique within an application — a monotonic per-prefix counter keeps its IDs distinct.
+- ✅ Request isolation — each application injector owns its counters, so repeated SSR requests start the same sequence.
+- ✅ Multi-app prefixes — distinct `APP_ID` values keep applications in one document separate (the default `ng` app omits the suffix).
 - ✅ Tiny call-site API; no manual cleanup.
+
+Server and client must create parts in the same order. When bootstrapping multiple Angular
+applications in one document, give each a distinct `APP_ID`.
 
 ## Import
 

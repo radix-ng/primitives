@@ -64,3 +64,23 @@ the matching three-engine macOS label check also passes.
 Borders, scroll/overflow, scale/rotation/flip/translation and intermediate scrollers remain G6 work.
 Owner-document/shadow combinations, actual hydration and server-visible first paint remain separate
 comparisons. This increment does not establish the pin's `renderBeforeHydration` capability.
+
+## Follow-up: opt-in SSR first paint (2026-11-17)
+
+`renderBeforeHydration`, default `false`, adds the pin's early Indicator positioning capability.
+The application-scoped coordinator uses Angular's public TransferState serialization callback to
+emit a literal CSP-nonced script outside the annotated application tree. The parser script changes
+only Indicator geometry/visibility and removes its own unowned script node. The application DOM
+structure stays intact for normal hydration; no skip-hydration or extra consumer provider is needed.
+
+A serialized feature flag and the existing native geometry seed the first client host bindings.
+Normal render hooks then own measurement and marker cleanup. A visible server-positioned Indicator
+is not hidden and revealed again during hydration. The script body is emitted verbatim so consumer
+minification cannot introduce captured runtime helpers. Transformed tabs use the full client
+measurement; zero-size targets wait for measurable dimensions, as in the pin.
+
+Fourteen real hydration cases pass 42 comparisons on both macOS and Linux/arm64, including strict
+nonce-only CSP, vertical/RTL layout and multiple Roots. Raw node identity, IDs, user input/focus,
+callbacks and native activation remain checked. Exact server ARIA registration differences are
+recorded separately from the hydrated contract. Incremental/deferred hydration and native realms
+remain outside this evidence. The existing null-host adaptation is unchanged.

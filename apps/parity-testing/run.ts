@@ -1,4 +1,5 @@
 import { execFileSync, type ExecFileSyncOptions } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { relative } from 'node:path';
 import { prepareReference, workspaceRoot, writeReferencePaths } from './shared/reference.ts';
 import { getSuite, suiteNames } from './shared/suites.ts';
@@ -25,6 +26,14 @@ try {
             options
         );
         execFileSync('pnpm', ['exec', 'vite', 'build', '--config', 'apps/parity-testing/vite.config.mts'], options);
+        const hydrationBuild = `${suite.directory}/hydration/vite.config.mts`;
+        if (existsSync(hydrationBuild)) {
+            execFileSync(
+                'pnpm',
+                ['exec', 'vite', 'build', '--config', relative(workspaceRoot, hydrationBuild)],
+                options
+            );
+        }
         if (!buildOnly) {
             execFileSync(
                 'pnpm',

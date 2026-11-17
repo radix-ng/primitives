@@ -8,7 +8,13 @@
       "selector": "[rdxTabsIndicator]",
       "exportAs": "rdxTabsIndicator",
       "description": "A visual element that tracks the position and size of the active tab. Exposes the active tab\ngeometry as CSS variables (`--active-tab-{top,right,bottom,left,width,height}`) so it can be\nanimated with CSS.\n\nSee https://base-ui.com/react/components/tabs",
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "renderBeforeHydration",
+          "default": "false",
+          "description": "Position the server-rendered Indicator before Angular hydrates, using a CSP-aware inline script."
+        }
+      ],
       "outputs": []
     },
     {
