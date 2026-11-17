@@ -1,7 +1,7 @@
 import { DestroyRef, effect, Injector } from '@angular/core';
 import { RDX_FLOATING_ROOT_CONTEXT } from './provide-floating-tree';
 
-/** Default marker attribute on the imperatively-created internal backdrop element. */
+/** Shared internal hit-surface marker; primitives may add their own marker as well. */
 export const RDX_INTERNAL_BACKDROP_ATTR = 'data-rdx-internal-backdrop';
 
 /** Base UI's clip-path that cuts a rectangular hole at `rect` out of a full-viewport element. */
@@ -80,6 +80,7 @@ export function setupInternalBackdrop(
             if (render && !backdrop) {
                 backdrop = ownerDocument.createElement('div');
                 backdrop.setAttribute('role', 'presentation');
+                backdrop.setAttribute(RDX_INTERNAL_BACKDROP_ATTR, '');
                 backdrop.setAttribute(marker, '');
                 for (const [attribute, value] of Object.entries(options.attributes ?? {})) {
                     backdrop.setAttribute(attribute, value);

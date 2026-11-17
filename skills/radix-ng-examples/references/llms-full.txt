@@ -34128,7 +34128,7 @@ like Base UI's `▼ -41%` / "within noise" table) are documented in
 
 # Server-Side Rendering & Hydration
 
-Using Radix NG primitives with Angular SSR and full hydration.
+Using Radix NG primitives with Angular SSR, full hydration and incremental `@defer` hydration.
 
 Radix NG is built to render on the server with [`@angular/ssr`](https://angular.dev/guide/ssr) and
 hydrate cleanly on the client. Headless UI primitives are a classic source of hydration mismatches —
@@ -34153,14 +34153,15 @@ implication of each.
 ## Stable IDs
 
 Primitives generate their internal `id` / `aria-*` values with `injectId` (backed by `RdxIdGenerator`
-in `@radix-ng/primitives/core`). IDs are a **deterministic per-prefix counter**, so the server and the
-client produce the exact same sequence and hydration does not mismatch. The app's `APP_ID` is folded
-into the prefix so multiple Angular apps on one page never collide.
+in `@radix-ng/primitives/core`). Server allocations are stored on their Angular-owned native owner
+and recovered during hydration. Sibling `@defer` islands can hydrate in a different order from SSR.
+Transferred counters reserve every server ID before new client content is created. Use matching
+`APP_ID` values on server/client and distinct values for multiple applications in one document.
 
 ```ts
 import { injectId } from '@radix-ng/primitives/core';
 
-// Deterministic, SSR-stable — server and client both produce "rdx-dialog-content-0", "…-1", …
+// Recovers this owner's server ID, independently of other islands' hydration order.
 readonly contentId = injectId('rdx-dialog-content-');
 ```
 
@@ -34168,9 +34169,14 @@ readonly contentId = injectId('rdx-dialog-content-');
 `injectId` too — or any deterministic source. Avoid `Math.random()` / `Date.now()` / `crypto.randomUUID()`
 for render-time IDs, since those differ between server and client and will trigger a mismatch.
 
+Keep constructor allocations stable within each owner and prefix. Generated IDs are opaque;
+preserve their SSR metadata and the inert managed templates used by comment-backed owners such as
+`ng-container`. `RdxIdGenerator.getId()` and `injectId` outside a native view owner allocate fresh
+IDs; use explicit application IDs for persistent business identity.
+
 ## Browser-only work runs after render
 
-No primitive reads or writes the DOM during server render. Anything that needs a real element —
+Work which requires browser layout or interaction —
 `ResizeObserver`, event listeners, geometry — is deferred to `afterNextRender()` / `afterRenderEffect()`,
 which Angular runs **only in the browser, after the first render**. Examples: the Tabs indicator measures
 the active tab, Scroll Area sets up its `ResizeObserver`, and Select's item-aligned positioning measures
@@ -34185,14 +34191,24 @@ and only appends its visually-hidden `aria-live` region once running in the brow
 
 ## Portals render in place on the server
 
-`RdxPortal` (used by Dialog, Popover, Menu, Select, etc. to teleport content to `document.body`) is
-**SSR-safe and does nothing on the server** — the element stays in its declared position in the server
-HTML. On the client, the portal's effect runs after hydration and relocates the element to its container.
+Attribute `rdxPortal` and structural portals used by Dialog, Popover, Menu and Select render at
+their declaration on the server. Browser render hooks move the existing nodes to their destination
+in the write phase, before focus/background-isolation hooks inspect their final ancestry.
 
 In practice this is rarely visible, because portaled content (dialog/popover/menu panels) is mounted
 through [Presence](utils/presence.md) and is **closed on first paint**, so it isn't in
 the server HTML at all. If you do render an overlay open on initial load, expect its content to start in
 place and move to the body on hydration.
+
+Structural portals include still-dehydrated `@defer` roots and roots materialized later. They retain
+native nodes, edited values and IDs when a destination changes. An owning view can hydrate while
+other islands remain dehydrated; a render callback does not mean the whole application has hydrated.
+Inert Angular-managed template boundaries delimit these views and must be preserved in SSR HTML.
+
+Angular 22 can leave a hydration task pending when an already hydrating `@defer` is destroyed during
+its lazy import. An ordinary `@if` reproduces this limitation. Portal/Presence cleans up its own DOM;
+keep the view mounted until hydration finishes if application logic depends on `whenStable()`
+resolving across that cancellation.
 
 ## Positioning happens in the browser
 
@@ -34203,8 +34219,7 @@ position is computed, the floating element renders off-screen and hidden, so the
 coordinates.
 
 **Caveat:** if you force a floating element **open during the initial render**, its content is present in
-the server HTML but unpositioned until the client places it (one frame after hydration). Prefer keeping
-overlays closed on first paint; open them in response to user interaction.
+the server HTML but unpositioned until the client computes its placement.
 
 ## Consumer checklist
 
@@ -39113,10 +39128,16 @@ export class InjectIdExample {}
 - ✅ Unique within an application — a monotonic per-prefix counter keeps its IDs distinct.
 - ✅ Request isolation — each application injector owns its counters, so repeated SSR requests start the same sequence.
 - ✅ Multi-app prefixes — distinct `APP_ID` values keep applications in one document separate (the default `ng` app omits the suffix).
+- ✅ Incremental hydration — sibling `@defer` islands recover their server IDs in any hydration order.
 - ✅ Tiny call-site API; no manual cleanup.
 
-Server and client must create parts in the same order. When bootstrapping multiple Angular
-applications in one document, give each a distinct `APP_ID`.
+Use the same `APP_ID` on the server and client; give multiple applications in one document distinct
+values. Keep constructor calls in the same order within one owning element and prefix. New client
+content reserves the server's allocated IDs, including islands that have not hydrated yet.
+
+Generated IDs are opaque. Radix NG preserves their hydration metadata on the owning element; owners
+on `ng-container` or `ng-template` use an inert Angular-managed template instead. Preserve this
+metadata when serving SSR HTML.
 
 ## Import
 
@@ -39149,7 +39170,11 @@ export class FieldComponent {
 ## Generating ids outside an injection context
 
 When you need an id lazily (outside a field initializer/constructor), inject `RdxIdGenerator` and call
-`getId(prefix)` directly:
+`getId(prefix)` directly.
+
+This allocates a fresh ID. To associate existing server-rendered elements, use `injectId` on their
+directive/component owner or supply a stable application ID explicitly. Calling `injectId` from an
+environment/service context also uses fresh allocation because there is no native view owner.
 
 ```typescript
 import { Component, inject } from '@angular/core';
@@ -39618,6 +39643,22 @@ an `ElementRef`. Cross-document transfer of ordinary content is supported. For i
 keep the Root, trigger and popup in the same document and tree so native labels, ARIA id references and
 keyboard ownership can resolve together; mixed-document overlays need separate verification.
 
+### Server rendering and deferred content
+
+Portal content renders at its declaration on the server and moves after its owning view renders in
+the browser. Angular can hydrate `@defer` islands independently: a Portal does not wait for every
+island on the page. Existing server nodes, input edits and their generated IDs are retained.
+
+Structural portals also move still-dehydrated roots and roots materialized later by `@defer`, `@if`
+or `@for`. Changing a ready destination moves the current content. These views use inert
+Angular-managed template boundaries; keep those boundaries and the SSR metadata intact. Content
+elements remain direct children of the destination, with no layout wrapper.
+
+Angular 22 can retain a pending hydration task when an already hydrating `@defer` is destroyed
+during its lazy import; an ordinary `@if` reproduces this limitation. Portal removes its owned DOM,
+but cannot complete Angular's private hydration task. Keep the view mounted until hydration finishes
+if your application needs `ApplicationRef.whenStable()` to resolve through that cancellation.
+
 ```html
 <section class="flex w-full max-w-3xl gap-4 font-sans">
     <div
@@ -39951,6 +39992,11 @@ export class PresenceDynamicTargets {
 ### `RdxPresenceDirective`
 
 Compose on an `ng-template` through `hostDirectives`. It adds no wrapper and exposes no styling attributes.
+Inert Angular-managed template siblings delimit the live view, including dehydrated `@defer` roots
+and roots created later by `@if` / `@for`. Preserve these boundaries when processing server HTML.
+Standalone roots remain animation participants when they own an attribute `rdxPortal`.
+Scope styling to part attributes/classes: the inert templates count as element siblings for
+positional selectors such as `:first-child`.
 
 ### `RdxPresenceTarget`
 

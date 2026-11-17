@@ -134,3 +134,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0082](0082-popup-close-completion-frame.md)                                 | Accepted               | Complete automatic popup closes after a frame boundary                               |
 | [0083](0083-tabs-native-tab-render-boundary.md)                              | Accepted               | Synchronize Tabs before native Tab and preserve the exit frame                       |
 | [0084](0084-signal-render-lifecycle.md)                                      | Accepted               | Share a signal-owned render lifetime and explicit animation participants             |
+| [0085](0085-hydration-owned-identity-and-view-ranges.md)                     | Accepted               | Recover view-owned IDs and move managed physical ranges during hydration             |

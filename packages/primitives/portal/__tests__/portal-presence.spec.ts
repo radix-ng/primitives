@@ -83,6 +83,83 @@ class MultiRootHostComponent {
     readonly popupExit = signal<string | null>(null);
 }
 
+@Component({
+    imports: [TestPortalWrapper],
+    providers: [provideRdxPresenceContext(() => ({ present: inject(DynamicRootsHost).present }))],
+    template: `
+        <ng-template [container]="container()" testPortal>
+            <input class="retained" />
+            @if (show()) {
+                <div class="dynamic"></div>
+            }
+            @for (item of items(); track item) {
+                <span class="item" [attr.data-key]="item"></span>
+            }
+        </ng-template>
+    `
+})
+class DynamicRootsHost {
+    readonly present = signal(true);
+    readonly show = signal(false);
+    readonly items = signal([1, 2]);
+    readonly container = signal<RdxPortalContainer>(undefined);
+}
+
+describe('RdxPortalPresence — changing template roots', () => {
+    it('retargets current @if/@for roots without recreating retained content and removes the complete range', async () => {
+        const fixture = TestBed.createComponent(DynamicRootsHost);
+        const target = document.createElement('div');
+        document.body.appendChild(target);
+        try {
+            await fixture.whenStable();
+            const retained = document.body.querySelector<HTMLInputElement>(':scope > .retained')!;
+            const removed = document.body.querySelector(':scope > .item[data-key="1"]')!;
+            const reused = document.body.querySelector(':scope > .item[data-key="2"]')!;
+            retained.value = 'edited';
+            fixture.componentInstance.show.set(true);
+            fixture.componentInstance.items.set([2, 3]);
+            await fixture.whenStable();
+            fixture.componentInstance.container.set(target);
+            await fixture.whenStable();
+            expect(target.querySelector('.retained')).toBe(retained);
+            expect(retained.value).toBe('edited');
+            expect(target.querySelector('[data-key="2"]')).toBe(reused);
+            expect(removed.isConnected).toBe(false);
+            expect([...target.querySelectorAll('.dynamic, .item')].map((element) => element.className)).toEqual([
+                'dynamic',
+                'item',
+                'item'
+            ]);
+            fixture.componentInstance.present.set(false);
+            await fixture.whenStable();
+            expect(target.childNodes.length).toBe(0);
+        } finally {
+            fixture.destroy();
+            target.remove();
+        }
+    });
+
+    it('waits for an exit animation on a root materialized after the portal mounted', async () => {
+        const fixture = TestBed.createComponent(DynamicRootsHost);
+        try {
+            await fixture.whenStable();
+            fixture.componentInstance.show.set(true);
+            await fixture.whenStable();
+            const dynamic = document.body.querySelector<HTMLElement>(':scope > .dynamic')!;
+            const motion = animationDriver();
+            dynamic.getAnimations = () => [motion.animation];
+            fixture.componentInstance.present.set(false);
+            await fixture.whenStable();
+            expect(dynamic.isConnected).toBe(true);
+            await motion.finish();
+            await fixture.whenStable();
+            expect(dynamic.isConnected).toBe(false);
+        } finally {
+            fixture.destroy();
+        }
+    });
+});
+
 describe('RdxPortalPresence — portaling', () => {
     let fixture: ComponentFixture<PortalHostComponent>;
     let host: PortalHostComponent;

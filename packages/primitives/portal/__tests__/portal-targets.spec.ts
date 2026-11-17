@@ -32,7 +32,51 @@ class Targets {
     readonly show = signal(true);
 }
 
+@Component({
+    imports: [RdxPortal, TargetPortal],
+    providers: [provideRdxPresenceContext(() => ({ present: inject(NestedTargets).present }))],
+    template: `
+        @if (attribute()) {
+            <section id="outer" [container]="target" rdxPortal>
+                <ng-template [container]="target" targetPortal><div id="inner"></div></ng-template>
+            </section>
+        } @else {
+            <ng-template [container]="target" targetPortal>
+                <section id="outer">
+                    <ng-template [container]="target" targetPortal><div id="inner"></div></ng-template>
+                </section>
+            </ng-template>
+        }
+    `
+})
+class NestedTargets {
+    readonly present = signal(true);
+    readonly attribute = signal(false);
+    target?: HTMLElement;
+}
+
 describe('shared Portal destinations', () => {
+    it.each(['attribute', 'structural'])('relocates a nested portal after its %s declaring portal', async (kind) => {
+        const target = document.createElement('div');
+        document.body.appendChild(target);
+        const fixture = TestBed.createComponent(NestedTargets);
+        fixture.componentInstance.target = target;
+        fixture.componentInstance.attribute.set(kind === 'attribute');
+        try {
+            await fixture.whenStable();
+            const outer = target.querySelector('#outer')!;
+            const inner = target.querySelector('#inner')!;
+            expect(outer.parentElement).toBe(target);
+            expect(inner.parentElement).toBe(target);
+            expect(outer.compareDocumentPosition(inner) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+            fixture.destroy();
+            expect(target.childNodes.length).toBe(0);
+        } finally {
+            fixture.destroy();
+            target.remove();
+        }
+    });
+
     it.each(['shadow', 'iframe'] as const)(
         'moves both portals to %s, retargets the same nodes and cleans up',
         async (kind) => {

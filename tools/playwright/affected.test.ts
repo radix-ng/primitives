@@ -65,6 +65,27 @@ test('direct browser edits select that spec, without pinned comparisons', () => 
     assert.deepEqual(result.suites, []);
 });
 
+test('hydration fixtures and shared lifetimes select real SSR browser checks', () => {
+    for (const file of [
+        'apps/radix-ssr-testing/hydration-audit/app.ts',
+        'packages/primitives/portal/src/portal-presence.ts',
+        'packages/primitives/presence/src/use-presence.ts',
+        'packages/primitives/floating-focus-manager/src/trigger-interaction.ts',
+        'packages/primitives/popover/src/popover-root.ts',
+        'packages/primitives/core/src/id-generator.ts'
+    ]) {
+        const result = plan([file]);
+        assert.equal(result.hydration, true, file);
+        assert.equal(result.browser, true, file);
+    }
+    const fixture = plan(['apps/radix-ssr-testing/hydration-audit/app.ts']);
+    assert.equal(fixture.full, false);
+    assert.deepEqual(fixture.floating, []);
+    assert.deepEqual(fixture.suites, []);
+    assert.equal(plan(['packages/primitives/button/src/button.ts']).hydration, false);
+    assert.equal(plan([], { full: true }).hydration, true);
+});
+
 test('Presence and Tabs motion regressions participate in affected and full browser runs', () => {
     const motionSpecs = ['presence-waapi', 'tabs'].map(spec);
     for (const file of motionSpecs) assert.equal(isFloatingSpec(file), true);
@@ -169,7 +190,7 @@ test('the CLI emits separate GitHub output records and a readable summary', () =
             env: { ...process.env, GITHUB_OUTPUT: output, GITHUB_STEP_SUMMARY: summary }
         });
         const records = readFileSync(output, 'utf8').trim().split('\n');
-        assert.equal(records.length, 5);
+        assert.equal(records.length, 6);
         const values = Object.fromEntries(
             records.map((record) => {
                 const separator = record.indexOf('=');
@@ -178,6 +199,7 @@ test('the CLI emits separate GitHub output records and a readable summary', () =
         );
         assert.equal(values.full, true);
         assert.equal(values.browser, true);
+        assert.equal(values.hydration, true);
         assert.ok(values.suites.includes('menubar'));
         assert.ok(values.floating.includes(spec('menubar')));
         assert.ok(values.floating.includes(spec('presence-waapi')));

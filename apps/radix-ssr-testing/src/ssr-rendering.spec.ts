@@ -446,7 +446,7 @@ describe('SSR rendering', () => {
         expect(html).toMatch(/ngh=/);
     });
 
-    it('supports a named Select root on ng-container without emitting imperative server DOM', async () => {
+    it('supports a named Select root on ng-container without rendering a native form control on the server', async () => {
         const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
         let html: string;
 
@@ -458,14 +458,16 @@ describe('SSR rendering', () => {
         }
 
         expect(html!).not.toContain('data-rdx-native-form-control');
-        expect(html!).toContain('<form><!--ng-container--></form>');
+        const form = new DOMParser().parseFromString(html!, 'text/html').querySelector('form')!;
+        expect(form.querySelector('input, select, textarea')).toBeNull();
+        expect([...new FormData(form).entries()]).toEqual([]);
     });
 
-    it('generates SSR-stable ids (deterministic prefixed counter, not random)', async () => {
+    it('renders deterministic prefixed ids for native associations', async () => {
         const html = await renderToString('app-tabs', TabsPage);
 
-        // injectId() folds a deterministic counter into the prefix (e.g. `rdx-tabs-2-tab-one`), so
-        // server and client share the same id sequence and hydration does not mismatch.
+        // Server allocations are deterministic; client hydration recovers IDs from their native
+        // owners instead of depending on a matching global construction sequence (ADR 0085).
         expect(html).toMatch(/id="rdx-[a-z]+-\d+-/);
     });
 });

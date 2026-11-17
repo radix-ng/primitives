@@ -40,6 +40,14 @@ has a local ESLint justification and lifecycle guards; see [ADR 0065](../adr/006
 
 ## Context and composition
 
+Hydration identity belongs to an Angular native owner: call `injectId` in a directive/component
+constructor or field initializer, keeping calls stable within that owner and prefix. It recovers
+serialized server IDs independently of sibling island order; `RdxIdGenerator.getId` is a fresh
+allocator. Preserve internal ID metadata and managed inert template anchors. Presence/Portal use
+live physical ranges for dynamic and dehydrated roots rather than cached `rootNodes`. Browser
+render callbacks are local DOM boundaries, not a global "all islands hydrated" signal. See
+[ADR 0085](../adr/0085-hydration-owned-identity-and-view-ranges.md).
+
 Use `createContext<RdxFooRootContext>('FooRootContext', 'components/foo')` with the docs path (`components/<name>` or `utils/<name>`). Required injectors already throw and return a non-nullable type; no trailing `!` is needed. The optional `injectFooContext(true)` returns null.
 
 Define context signal members explicitly instead of `ReturnType<typeof factory>`; keep callbacks typed. Compose existing primitives with `hostDirectives`, except the documented thin-positioner subclassing pattern. See [composition](composition.md) for projected children, providers and floating ownership.

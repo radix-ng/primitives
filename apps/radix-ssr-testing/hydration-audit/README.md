@@ -1,0 +1,20 @@
+# Portal hydration regression
+
+Regression coverage for [ADR 0085](../../../docs/adr/0085-hydration-owned-identity-and-view-ranges.md).
+The dated [investigation](../../../docs/engineering/mechanisms/portal-hydration-audit.md) preserves
+the original findings and documents the Angular cancellation limitation.
+
+```bash
+node apps/radix-ssr-testing/hydration-audit/audit.mjs
+node apps/radix-ssr-testing/hydration-audit/audit.mjs --project=chromium --case=pending-lazy-retarget
+```
+
+Run from the workspace root. The command builds real Angular AOT client/server fixtures and records
+browser observations in Chromium, Firefox and WebKit by default. It exits with code 1 when a
+regression invariant fails. `--port=4492` selects another unused port; `--skip-build` reuses only
+fresh matching client/server builds. The target is also available as
+`pnpm exec nx run radix-ssr-testing:hydration` and participates in affected CI browser jobs.
+
+Results, SSR HTML, module hashes, checkpoints and framework-limit observations are written to
+`dist/portal-hydration-audit/results/runtime-<engine>.json`. A failed run never passes by falling
+back to client rendering: assertions check saved server node identities, values and ID relationships.

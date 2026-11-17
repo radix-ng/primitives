@@ -178,13 +178,15 @@ test('Menu inside Popover: deferred completion preserves focus in the host', asy
     await page.getByRole('button', { name: 'Workspace tools', exact: true }).click();
     await page.getByRole('button', { name: 'Actions', exact: true }).press('Enter');
     await expect(page.locator('output').last()).toHaveText('Menu completed: open');
+    const popupId = await page.getByRole('button', { name: 'Actions', exact: true }).getAttribute('aria-controls');
+    const rootPopup = page.locator(`[rdxMenuPopup][id="${popupId}"]`);
     await page.keyboard.press('Escape');
-    await expect(page.locator('[rdxMenuPopup]').first()).toHaveAttribute('data-ending-style', '');
+    await expect(rootPopup).toHaveAttribute('data-ending-style', '');
     await expect(page.getByRole('dialog')).toBeVisible();
     const finish = page.getByRole('button', { name: 'Finish menu exit', exact: true });
     await finish.press('Enter');
     await expect(page.locator('output').last()).toHaveText('Menu completed: open → closed');
-    await expect(page.locator('[rdxMenuPopup]').first()).toBeHidden();
+    await expect(rootPopup).toBeHidden();
     await expect(finish).toBeFocused();
     await page.getByRole('button', { name: 'Close workspace', exact: true }).press('Enter');
     await expect(page.getByRole('dialog')).toHaveCount(0);

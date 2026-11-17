@@ -25,4 +25,5 @@ Open only the note relevant to the change; these are implementation constraints,
 - [Select arbitrary Value (ADR 0028)](mechanisms/select-arbitrary-value-adr-0028.md)
 - [Typeahead matching](mechanisms/typeahead-matching.md)
 - [Desktop browser verification](mechanisms/desktop-browser-verification.md)
+- [Portal hydration, deferred views and managed identity (ADR 0085)](mechanisms/portal-hydration-audit.md)
 - [Pointer movement](mechanisms/pointer-movement.md)

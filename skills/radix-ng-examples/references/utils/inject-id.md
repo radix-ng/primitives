@@ -55,10 +55,16 @@ export class InjectIdExample {}
 - ✅ Unique within an application — a monotonic per-prefix counter keeps its IDs distinct.
 - ✅ Request isolation — each application injector owns its counters, so repeated SSR requests start the same sequence.
 - ✅ Multi-app prefixes — distinct `APP_ID` values keep applications in one document separate (the default `ng` app omits the suffix).
+- ✅ Incremental hydration — sibling `@defer` islands recover their server IDs in any hydration order.
 - ✅ Tiny call-site API; no manual cleanup.
 
-Server and client must create parts in the same order. When bootstrapping multiple Angular
-applications in one document, give each a distinct `APP_ID`.
+Use the same `APP_ID` on the server and client; give multiple applications in one document distinct
+values. Keep constructor calls in the same order within one owning element and prefix. New client
+content reserves the server's allocated IDs, including islands that have not hydrated yet.
+
+Generated IDs are opaque. Radix NG preserves their hydration metadata on the owning element; owners
+on `ng-container` or `ng-template` use an inert Angular-managed template instead. Preserve this
+metadata when serving SSR HTML.
 
 ## Import
 
@@ -91,7 +97,11 @@ export class FieldComponent {
 ## Generating ids outside an injection context
 
 When you need an id lazily (outside a field initializer/constructor), inject `RdxIdGenerator` and call
-`getId(prefix)` directly:
+`getId(prefix)` directly.
+
+This allocates a fresh ID. To associate existing server-rendered elements, use `injectId` on their
+directive/component owner or supply a stable application ID explicitly. Calling `injectId` from an
+environment/service context also uses fresh allocation because there is no native view owner.
 
 ```typescript
 import { Component, inject } from '@angular/core';

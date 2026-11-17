@@ -1,0 +1,8 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "noEmit": true,
+        "allowImportingTsExtensions": true
+    },
+    "include": ["run.ts", "vite.config.mts", "vite.server.config.mts"]
+}

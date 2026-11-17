@@ -1,0 +1,1035 @@
+{
+    "date": "2026-11-17",
+    "runtimeRevision": "69ba1ad923e77bdd941b9eff1690eedab6c365c9",
+    "angular": "22.0.2",
+    "runtimeHashes": {
+        "packages/primitives/core/src/id-generator.ts": "74dffadb832fc0f638336ae8b6747249661a2433946e88209c34055b0bacf5ae",
+        "packages/primitives/presence/src/use-presence.ts": "eccb1ea8758a5ae70eb3ff5e6cc0e33bd0f133159b0496a5d21f89006f90826e",
+        "packages/primitives/portal/src/portal.ts": "8de36e50ebcf3efc7183645674f5a01ac0f15b4b7e887b7bb6a04491cf0fed50",
+        "packages/primitives/portal/src/portal-presence.ts": "a63bd556f413e32c5d045f4f538d570f428e8999f3b4c89ca2e405dcb1e4c6b7",
+        "packages/primitives/portal/src/move-nodes.ts": "17a9a7841f079622b9b7f8e2d0ac2b9ab0805157b302a9ca3dd8bec14cd7aa13",
+        "packages/primitives/floating-focus-manager/src/trigger-interaction.ts": "6a45038fd1f8ab028fb96a1b856df4d33ca08363077a46ac61b8637cb362875e"
+    },
+    "fixtureHashes": {
+        "apps/radix-ssr-testing/hydration-audit/app.ts": "ee6928c002774a879ddec8d532cb9e7fd759723e40a123a902638529b852d232",
+        "apps/radix-ssr-testing/hydration-audit/lazy-view.ts": "8a54d8db1f722f987b8b533a24224d48fe10af0854e750beadbe153d0f1af73c",
+        "apps/radix-ssr-testing/hydration-audit/settings.ts": "2e31a658daa2cd89f80affd8f064d02b29651242b8ac666866c47b5f2ea90ace",
+        "apps/radix-ssr-testing/hydration-audit/client.ts": "65a81826a3aa9d2ebc8f435c54fe60cc8203b957c00e4e57b48bb4ba9dab714d",
+        "apps/radix-ssr-testing/hydration-audit/server.ts": "b22323cda05b074fefa6f22c6600c9aa6eb900dc1bc26d278ec86cdb8bf4d432",
+        "apps/radix-ssr-testing/hydration-audit/index.html": "0d6c92f2a4a9930377179e6e958ae8c39a6f82af2798e3bc25f9dad52937bce5"
+    },
+    "runs": {
+        "baseline-chromium": {
+            "browserVersion": "148.0.7778.96",
+            "phase": "baseline",
+            "cases": 32,
+            "passed": 21,
+            "failed": 11,
+            "failures": [
+                {
+                    "case": "eager-popover",
+                    "failedChecks": ["probeHydrated", "portalRelocated", "noErrors"],
+                    "errors": ["TypeError: Cannot set properties of null (setting 'nodeValue')"]
+                },
+                {
+                    "case": "outer-defer-popover",
+                    "failedChecks": ["probeHydrated", "portalRelocated", "noErrors"],
+                    "errors": ["TypeError: Cannot set properties of null (setting 'nodeValue')"]
+                },
+                {
+                    "case": "inner-defer-structural",
+                    "failedChecks": ["portalRelocated", "retargetMovesCurrentContent"],
+                    "errors": []
+                },
+                {
+                    "case": "inner-client-defer-structural",
+                    "failedChecks": ["retargetMovesCurrentContent"],
+                    "errors": []
+                },
+                {
+                    "case": "inner-interaction-structural",
+                    "failedChecks": ["portalRelocated", "retargetMovesCurrentContent"],
+                    "errors": []
+                },
+                {
+                    "case": "reverse-inline",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                },
+                {
+                    "case": "reverse-attribute",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                },
+                {
+                    "case": "reverse-structural",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                },
+                {
+                    "case": "reverse-popover",
+                    "failedChecks": ["probeHydrated", "portalRelocated", "noErrors"],
+                    "errors": [
+                        "TypeError: Cannot set properties of null (setting 'nodeValue')",
+                        "TypeError: rNode.hasAttribute is not a function"
+                    ]
+                },
+                {
+                    "case": "deferred-destination-attribute",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                },
+                {
+                    "case": "deferred-destination-structural",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                }
+            ],
+            "controls": [
+                "eager-inline",
+                "eager-attribute",
+                "eager-structural",
+                "closed-popover",
+                "outer-defer-inline",
+                "outer-defer-attribute",
+                "outer-defer-structural",
+                "lazy-outer-defer-attribute",
+                "lazy-outer-defer-structural",
+                "inner-defer-attribute",
+                "inner-defer-structural-wrapper",
+                "inner-client-defer-attribute",
+                "inner-interaction-attribute",
+                "interaction-inline",
+                "interaction-attribute",
+                "interaction-structural",
+                "client-defer-attribute",
+                "client-defer-structural",
+                "reverse-inline-authored",
+                "reverse-structural-authored",
+                "pending-destination"
+            ]
+        },
+        "baseline-firefox": {
+            "browserVersion": "150.0.2",
+            "phase": "baseline",
+            "cases": 32,
+            "passed": 21,
+            "failed": 11,
+            "failures": [
+                {
+                    "case": "eager-popover",
+                    "failedChecks": ["probeHydrated", "portalRelocated", "noErrors"],
+                    "errors": ["setValue@http://127.0.0.1:4491/assets/index-qW_IVbGx.js:18774:3"]
+                },
+                {
+                    "case": "outer-defer-popover",
+                    "failedChecks": ["probeHydrated", "portalRelocated", "noErrors"],
+                    "errors": ["setValue@http://127.0.0.1:4491/assets/index-qW_IVbGx.js:18774:3"]
+                },
+                {
+                    "case": "inner-defer-structural",
+                    "failedChecks": ["portalRelocated", "retargetMovesCurrentContent"],
+                    "errors": []
+                },
+                {
+                    "case": "inner-client-defer-structural",
+                    "failedChecks": ["retargetMovesCurrentContent"],
+                    "errors": []
+                },
+                {
+                    "case": "inner-interaction-structural",
+                    "failedChecks": ["portalRelocated", "retargetMovesCurrentContent"],
+                    "errors": []
+                },
+                {
+                    "case": "reverse-inline",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                },
+                {
+                    "case": "reverse-attribute",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                },
+                {
+                    "case": "reverse-structural",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                },
+                {
+                    "case": "reverse-popover",
+                    "failedChecks": ["probeHydrated", "portalRelocated", "noErrors"],
+                    "errors": [
+                        "setValue@http://127.0.0.1:4491/assets/index-qW_IVbGx.js:18774:3",
+                        "hasSkipHydrationAttrOnRElement@http://127.0.0.1:4491/assets/index-qW_IVbGx.js:10405:15",
+                        "setValue@http://127.0.0.1:4491/assets/index-qW_IVbGx.js:18774:3"
+                    ]
+                },
+                {
+                    "case": "deferred-destination-attribute",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                },
+                {
+                    "case": "deferred-destination-structural",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                }
+            ],
+            "controls": [
+                "eager-inline",
+                "eager-attribute",
+                "eager-structural",
+                "closed-popover",
+                "outer-defer-inline",
+                "outer-defer-attribute",
+                "outer-defer-structural",
+                "lazy-outer-defer-attribute",
+                "lazy-outer-defer-structural",
+                "inner-defer-attribute",
+                "inner-defer-structural-wrapper",
+                "inner-client-defer-attribute",
+                "inner-interaction-attribute",
+                "interaction-inline",
+                "interaction-attribute",
+                "interaction-structural",
+                "client-defer-attribute",
+                "client-defer-structural",
+                "reverse-inline-authored",
+                "reverse-structural-authored",
+                "pending-destination"
+            ]
+        },
+        "baseline-webkit": {
+            "browserVersion": "26.4",
+            "phase": "baseline",
+            "cases": 32,
+            "passed": 21,
+            "failed": 11,
+            "failures": [
+                {
+                    "case": "eager-popover",
+                    "failedChecks": ["probeHydrated", "portalRelocated", "noErrors"],
+                    "errors": ["setValue@http://127.0.0.1:4491/assets/index-qW_IVbGx.js:18774:7"]
+                },
+                {
+                    "case": "outer-defer-popover",
+                    "failedChecks": ["probeHydrated", "portalRelocated", "noErrors"],
+                    "errors": ["setValue@http://127.0.0.1:4491/assets/index-qW_IVbGx.js:18774:7"]
+                },
+                {
+                    "case": "inner-defer-structural",
+                    "failedChecks": ["portalRelocated", "retargetMovesCurrentContent"],
+                    "errors": []
+                },
+                {
+                    "case": "inner-client-defer-structural",
+                    "failedChecks": ["retargetMovesCurrentContent"],
+                    "errors": []
+                },
+                {
+                    "case": "inner-interaction-structural",
+                    "failedChecks": ["portalRelocated", "retargetMovesCurrentContent"],
+                    "errors": []
+                },
+                {
+                    "case": "reverse-inline",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                },
+                {
+                    "case": "reverse-attribute",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                },
+                {
+                    "case": "reverse-structural",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                },
+                {
+                    "case": "reverse-popover",
+                    "failedChecks": ["probeHydrated", "portalRelocated", "noErrors"],
+                    "errors": [
+                        "setValue@http://127.0.0.1:4491/assets/index-qW_IVbGx.js:18774:7",
+                        "hasSkipHydrationAttrOnRElement@http://127.0.0.1:4491/assets/index-qW_IVbGx.js:10405:27"
+                    ]
+                },
+                {
+                    "case": "deferred-destination-attribute",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                },
+                {
+                    "case": "deferred-destination-structural",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                }
+            ],
+            "controls": [
+                "eager-inline",
+                "eager-attribute",
+                "eager-structural",
+                "closed-popover",
+                "outer-defer-inline",
+                "outer-defer-attribute",
+                "outer-defer-structural",
+                "lazy-outer-defer-attribute",
+                "lazy-outer-defer-structural",
+                "inner-defer-attribute",
+                "inner-defer-structural-wrapper",
+                "inner-client-defer-attribute",
+                "inner-interaction-attribute",
+                "interaction-inline",
+                "interaction-attribute",
+                "interaction-structural",
+                "client-defer-attribute",
+                "client-defer-structural",
+                "reverse-inline-authored",
+                "reverse-structural-authored",
+                "pending-destination"
+            ]
+        },
+        "portal-after-render-chromium": {
+            "browserVersion": "148.0.7778.96",
+            "phase": "portal-after-render",
+            "cases": 32,
+            "passed": 21,
+            "failed": 11,
+            "failures": [
+                {
+                    "case": "eager-popover",
+                    "failedChecks": ["probeHydrated", "portalRelocated", "noErrors"],
+                    "errors": ["TypeError: Cannot set properties of null (setting 'nodeValue')"]
+                },
+                {
+                    "case": "outer-defer-popover",
+                    "failedChecks": ["probeHydrated", "portalRelocated", "noErrors"],
+                    "errors": ["TypeError: Cannot set properties of null (setting 'nodeValue')"]
+                },
+                {
+                    "case": "inner-defer-structural",
+                    "failedChecks": ["portalRelocated", "retargetMovesCurrentContent"],
+                    "errors": []
+                },
+                {
+                    "case": "inner-client-defer-structural",
+                    "failedChecks": ["retargetMovesCurrentContent"],
+                    "errors": []
+                },
+                {
+                    "case": "inner-interaction-structural",
+                    "failedChecks": ["portalRelocated", "retargetMovesCurrentContent"],
+                    "errors": []
+                },
+                {
+                    "case": "reverse-inline",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                },
+                {
+                    "case": "reverse-attribute",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                },
+                {
+                    "case": "reverse-structural",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                },
+                {
+                    "case": "reverse-popover",
+                    "failedChecks": ["probeHydrated", "portalRelocated", "noErrors"],
+                    "errors": [
+                        "TypeError: Cannot set properties of null (setting 'nodeValue')",
+                        "TypeError: rNode.hasAttribute is not a function"
+                    ]
+                },
+                {
+                    "case": "deferred-destination-attribute",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                },
+                {
+                    "case": "deferred-destination-structural",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                }
+            ],
+            "controls": [
+                "eager-inline",
+                "eager-attribute",
+                "eager-structural",
+                "closed-popover",
+                "outer-defer-inline",
+                "outer-defer-attribute",
+                "outer-defer-structural",
+                "lazy-outer-defer-attribute",
+                "lazy-outer-defer-structural",
+                "inner-defer-attribute",
+                "inner-defer-structural-wrapper",
+                "inner-client-defer-attribute",
+                "inner-interaction-attribute",
+                "interaction-inline",
+                "interaction-attribute",
+                "interaction-structural",
+                "client-defer-attribute",
+                "client-defer-structural",
+                "reverse-inline-authored",
+                "reverse-structural-authored",
+                "pending-destination"
+            ]
+        },
+        "focus-after-render-chromium": {
+            "browserVersion": "148.0.7778.96",
+            "phase": "focus-after-render",
+            "cases": 32,
+            "passed": 23,
+            "failed": 9,
+            "failures": [
+                {
+                    "case": "inner-defer-structural",
+                    "failedChecks": ["portalRelocated", "retargetMovesCurrentContent"],
+                    "errors": []
+                },
+                {
+                    "case": "inner-client-defer-structural",
+                    "failedChecks": ["retargetMovesCurrentContent"],
+                    "errors": []
+                },
+                {
+                    "case": "inner-interaction-structural",
+                    "failedChecks": ["portalRelocated", "retargetMovesCurrentContent"],
+                    "errors": []
+                },
+                {
+                    "case": "reverse-inline",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                },
+                {
+                    "case": "reverse-attribute",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                },
+                {
+                    "case": "reverse-structural",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                },
+                {
+                    "case": "reverse-popover",
+                    "failedChecks": [
+                        "uniqueIdsThroughout",
+                        "labelsStayAssociated",
+                        "popupRelationshipsStayAssociated",
+                        "idsStable"
+                    ],
+                    "errors": []
+                },
+                {
+                    "case": "deferred-destination-attribute",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                },
+                {
+                    "case": "deferred-destination-structural",
+                    "failedChecks": ["uniqueIdsThroughout", "labelsStayAssociated", "idsStable"],
+                    "errors": []
+                }
+            ],
+            "controls": [
+                "eager-inline",
+                "eager-attribute",
+                "eager-structural",
+                "eager-popover",
+                "closed-popover",
+                "outer-defer-inline",
+                "outer-defer-attribute",
+                "outer-defer-structural",
+                "outer-defer-popover",
+                "lazy-outer-defer-attribute",
+                "lazy-outer-defer-structural",
+                "inner-defer-attribute",
+                "inner-defer-structural-wrapper",
+                "inner-client-defer-attribute",
+                "inner-interaction-attribute",
+                "interaction-inline",
+                "interaction-attribute",
+                "interaction-structural",
+                "client-defer-attribute",
+                "client-defer-structural",
+                "reverse-inline-authored",
+                "reverse-structural-authored",
+                "pending-destination"
+            ]
+        }
+    },
+    "witnesses": {
+        "baseline-chromium:reverse-inline": [
+            {
+                "checkpoint": "server DOM before bootstrap",
+                "probes": [
+                    {
+                        "name": "first",
+                        "hydrated": false,
+                        "id": "audit-field-portal-audit0",
+                        "labelTarget": "first",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": true,
+                        "inExternalDestination": false,
+                        "parent": "AUDIT-PORTAL-VIEW"
+                    },
+                    {
+                        "name": "second",
+                        "hydrated": false,
+                        "id": "audit-field-portal-audit1",
+                        "labelTarget": "second",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": true,
+                        "inExternalDestination": false,
+                        "parent": "AUDIT-PORTAL-VIEW"
+                    }
+                ],
+                "duplicateIds": [],
+                "triggers": []
+            },
+            {
+                "checkpoint": "after application bootstrap",
+                "probes": [
+                    {
+                        "name": "first",
+                        "hydrated": false,
+                        "id": "audit-field-portal-audit0",
+                        "labelTarget": "first",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": true,
+                        "inExternalDestination": false,
+                        "parent": "AUDIT-PORTAL-VIEW"
+                    },
+                    {
+                        "name": "second",
+                        "hydrated": false,
+                        "id": "audit-field-portal-audit1",
+                        "labelTarget": "second",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": true,
+                        "inExternalDestination": false,
+                        "parent": "AUDIT-PORTAL-VIEW"
+                    }
+                ],
+                "duplicateIds": [],
+                "triggers": []
+            },
+            {
+                "checkpoint": "second island hydrated before first",
+                "probes": [
+                    {
+                        "name": "first",
+                        "hydrated": false,
+                        "id": "audit-field-portal-audit0",
+                        "labelTarget": "first",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": true,
+                        "inExternalDestination": false,
+                        "parent": "AUDIT-PORTAL-VIEW"
+                    },
+                    {
+                        "name": "second",
+                        "hydrated": true,
+                        "id": "audit-field-portal-audit0",
+                        "labelTarget": "first",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": true,
+                        "inExternalDestination": false,
+                        "parent": "AUDIT-PORTAL-VIEW"
+                    }
+                ],
+                "duplicateIds": ["audit-field-portal-audit0"],
+                "triggers": []
+            },
+            {
+                "checkpoint": "first island hydrated last",
+                "probes": [
+                    {
+                        "name": "first",
+                        "hydrated": true,
+                        "id": "audit-field-portal-audit1",
+                        "labelTarget": "first",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": true,
+                        "inExternalDestination": false,
+                        "parent": "AUDIT-PORTAL-VIEW"
+                    },
+                    {
+                        "name": "second",
+                        "hydrated": true,
+                        "id": "audit-field-portal-audit0",
+                        "labelTarget": "second",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": true,
+                        "inExternalDestination": false,
+                        "parent": "AUDIT-PORTAL-VIEW"
+                    }
+                ],
+                "duplicateIds": [],
+                "triggers": []
+            },
+            {
+                "checkpoint": "final",
+                "probes": [
+                    {
+                        "name": "first",
+                        "hydrated": true,
+                        "id": "audit-field-portal-audit1",
+                        "labelTarget": "first",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": true,
+                        "inExternalDestination": false,
+                        "parent": "AUDIT-PORTAL-VIEW"
+                    },
+                    {
+                        "name": "second",
+                        "hydrated": true,
+                        "id": "audit-field-portal-audit0",
+                        "labelTarget": "second",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": true,
+                        "inExternalDestination": false,
+                        "parent": "AUDIT-PORTAL-VIEW"
+                    }
+                ],
+                "duplicateIds": [],
+                "triggers": []
+            }
+        ],
+        "baseline-chromium:inner-defer-structural": [
+            {
+                "checkpoint": "server DOM before bootstrap",
+                "probes": [
+                    {
+                        "name": "first",
+                        "hydrated": false,
+                        "id": "audit-field-portal-audit0",
+                        "labelTarget": "first",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": true,
+                        "inExternalDestination": false,
+                        "parent": "PORTAL-HYDRATION-AUDIT"
+                    }
+                ],
+                "duplicateIds": [],
+                "triggers": []
+            },
+            {
+                "checkpoint": "after application bootstrap",
+                "probes": [
+                    {
+                        "name": "first",
+                        "hydrated": false,
+                        "id": "audit-field-portal-audit0",
+                        "labelTarget": "first",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": true,
+                        "inExternalDestination": false,
+                        "parent": "PORTAL-HYDRATION-AUDIT"
+                    }
+                ],
+                "duplicateIds": [],
+                "triggers": []
+            },
+            {
+                "checkpoint": "requested island hydration",
+                "probes": [
+                    {
+                        "name": "first",
+                        "hydrated": true,
+                        "id": "audit-field-portal-audit0",
+                        "labelTarget": "first",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": true,
+                        "inExternalDestination": false,
+                        "parent": "PORTAL-HYDRATION-AUDIT"
+                    }
+                ],
+                "duplicateIds": [],
+                "triggers": []
+            },
+            {
+                "checkpoint": "final",
+                "probes": [
+                    {
+                        "name": "first",
+                        "hydrated": true,
+                        "id": "audit-field-portal-audit0",
+                        "labelTarget": "first",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": true,
+                        "inExternalDestination": false,
+                        "parent": "PORTAL-HYDRATION-AUDIT"
+                    }
+                ],
+                "duplicateIds": [],
+                "triggers": []
+            },
+            {
+                "checkpoint": "destination changed after hydration",
+                "probes": [
+                    {
+                        "name": "first",
+                        "hydrated": true,
+                        "id": "audit-field-portal-audit0",
+                        "labelTarget": "first",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": true,
+                        "inExternalDestination": false,
+                        "parent": "PORTAL-HYDRATION-AUDIT"
+                    }
+                ],
+                "duplicateIds": [],
+                "triggers": []
+            }
+        ],
+        "baseline-chromium:inner-client-defer-structural": [
+            {
+                "checkpoint": "server DOM before bootstrap",
+                "probes": [],
+                "duplicateIds": [],
+                "triggers": []
+            },
+            {
+                "checkpoint": "after application bootstrap",
+                "probes": [],
+                "duplicateIds": [],
+                "triggers": []
+            },
+            {
+                "checkpoint": "requested island hydration",
+                "probes": [
+                    {
+                        "name": "first",
+                        "hydrated": true,
+                        "id": "audit-field-portal-audit0",
+                        "labelTarget": "first",
+                        "reusedHost": false,
+                        "reusedInput": false,
+                        "inApplication": false,
+                        "inExternalDestination": false,
+                        "parent": "BODY"
+                    }
+                ],
+                "duplicateIds": [],
+                "triggers": []
+            },
+            {
+                "checkpoint": "final",
+                "probes": [
+                    {
+                        "name": "first",
+                        "hydrated": true,
+                        "id": "audit-field-portal-audit0",
+                        "labelTarget": "first",
+                        "reusedHost": false,
+                        "reusedInput": false,
+                        "inApplication": false,
+                        "inExternalDestination": false,
+                        "parent": "BODY"
+                    }
+                ],
+                "duplicateIds": [],
+                "triggers": []
+            },
+            {
+                "checkpoint": "destination changed after hydration",
+                "probes": [
+                    {
+                        "name": "first",
+                        "hydrated": true,
+                        "id": "audit-field-portal-audit0",
+                        "labelTarget": "first",
+                        "reusedHost": false,
+                        "reusedInput": false,
+                        "inApplication": false,
+                        "inExternalDestination": false,
+                        "parent": "BODY"
+                    }
+                ],
+                "duplicateIds": [],
+                "triggers": []
+            }
+        ],
+        "focus-after-render-chromium:reverse-popover": [
+            {
+                "checkpoint": "server DOM before bootstrap",
+                "probes": [
+                    {
+                        "name": "first",
+                        "hydrated": false,
+                        "id": "audit-field-portal-audit0",
+                        "labelTarget": "first",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": true,
+                        "inExternalDestination": false,
+                        "parent": "DIV"
+                    },
+                    {
+                        "name": "second",
+                        "hydrated": false,
+                        "id": "audit-field-portal-audit1",
+                        "labelTarget": "second",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": true,
+                        "inExternalDestination": false,
+                        "parent": "DIV"
+                    }
+                ],
+                "duplicateIds": [],
+                "triggers": [
+                    {
+                        "owner": "first",
+                        "controls": "rdx-popover-content-portal-audit0",
+                        "expanded": "true",
+                        "target": "first"
+                    },
+                    {
+                        "owner": "second",
+                        "controls": "rdx-popover-content-portal-audit1",
+                        "expanded": "true",
+                        "target": "second"
+                    }
+                ]
+            },
+            {
+                "checkpoint": "after application bootstrap",
+                "probes": [
+                    {
+                        "name": "first",
+                        "hydrated": false,
+                        "id": "audit-field-portal-audit0",
+                        "labelTarget": "first",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": true,
+                        "inExternalDestination": false,
+                        "parent": "DIV"
+                    },
+                    {
+                        "name": "second",
+                        "hydrated": false,
+                        "id": "audit-field-portal-audit1",
+                        "labelTarget": "second",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": true,
+                        "inExternalDestination": false,
+                        "parent": "DIV"
+                    }
+                ],
+                "duplicateIds": [],
+                "triggers": [
+                    {
+                        "owner": "first",
+                        "controls": "rdx-popover-content-portal-audit0",
+                        "expanded": "true",
+                        "target": "first"
+                    },
+                    {
+                        "owner": "second",
+                        "controls": "rdx-popover-content-portal-audit1",
+                        "expanded": "true",
+                        "target": "second"
+                    }
+                ]
+            },
+            {
+                "checkpoint": "second island hydrated before first",
+                "probes": [
+                    {
+                        "name": "first",
+                        "hydrated": false,
+                        "id": "audit-field-portal-audit0",
+                        "labelTarget": "first",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": true,
+                        "inExternalDestination": false,
+                        "parent": "DIV"
+                    },
+                    {
+                        "name": "second",
+                        "hydrated": true,
+                        "id": "audit-field-portal-audit0",
+                        "labelTarget": "first",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": false,
+                        "inExternalDestination": false,
+                        "parent": "DIV"
+                    }
+                ],
+                "duplicateIds": [
+                    "rdx-popover-trigger-portal-audit0",
+                    "rdx-popover-content-portal-audit0",
+                    "audit-field-portal-audit0"
+                ],
+                "triggers": [
+                    {
+                        "owner": "first",
+                        "controls": "rdx-popover-content-portal-audit0",
+                        "expanded": "true",
+                        "target": "first"
+                    },
+                    {
+                        "owner": "second",
+                        "controls": "rdx-popover-content-portal-audit0",
+                        "expanded": "true",
+                        "target": "first"
+                    }
+                ]
+            },
+            {
+                "checkpoint": "first island hydrated last",
+                "probes": [
+                    {
+                        "name": "second",
+                        "hydrated": true,
+                        "id": "audit-field-portal-audit0",
+                        "labelTarget": "second",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": false,
+                        "inExternalDestination": false,
+                        "parent": "DIV"
+                    },
+                    {
+                        "name": "first",
+                        "hydrated": true,
+                        "id": "audit-field-portal-audit1",
+                        "labelTarget": "first",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": false,
+                        "inExternalDestination": false,
+                        "parent": "DIV"
+                    }
+                ],
+                "duplicateIds": [],
+                "triggers": [
+                    {
+                        "owner": "first",
+                        "controls": "rdx-popover-content-portal-audit1",
+                        "expanded": "true",
+                        "target": "first"
+                    },
+                    {
+                        "owner": "second",
+                        "controls": "rdx-popover-content-portal-audit0",
+                        "expanded": "true",
+                        "target": "second"
+                    }
+                ]
+            },
+            {
+                "checkpoint": "final",
+                "probes": [
+                    {
+                        "name": "second",
+                        "hydrated": true,
+                        "id": "audit-field-portal-audit0",
+                        "labelTarget": "second",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": false,
+                        "inExternalDestination": false,
+                        "parent": "DIV"
+                    },
+                    {
+                        "name": "first",
+                        "hydrated": true,
+                        "id": "audit-field-portal-audit1",
+                        "labelTarget": "first",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": false,
+                        "inExternalDestination": false,
+                        "parent": "DIV"
+                    }
+                ],
+                "duplicateIds": [],
+                "triggers": [
+                    {
+                        "owner": "first",
+                        "controls": "rdx-popover-content-portal-audit1",
+                        "expanded": "true",
+                        "target": "first"
+                    },
+                    {
+                        "owner": "second",
+                        "controls": "rdx-popover-content-portal-audit0",
+                        "expanded": "true",
+                        "target": "second"
+                    }
+                ]
+            },
+            {
+                "checkpoint": "destination changed after hydration",
+                "probes": [
+                    {
+                        "name": "first",
+                        "hydrated": true,
+                        "id": "audit-field-portal-audit1",
+                        "labelTarget": "first",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": false,
+                        "inExternalDestination": true,
+                        "parent": "DIV"
+                    },
+                    {
+                        "name": "second",
+                        "hydrated": true,
+                        "id": "audit-field-portal-audit0",
+                        "labelTarget": "second",
+                        "reusedHost": true,
+                        "reusedInput": true,
+                        "inApplication": false,
+                        "inExternalDestination": true,
+                        "parent": "DIV"
+                    }
+                ],
+                "duplicateIds": [],
+                "triggers": [
+                    {
+                        "owner": "first",
+                        "controls": "rdx-popover-content-portal-audit1",
+                        "expanded": "true",
+                        "target": "first"
+                    },
+                    {
+                        "owner": "second",
+                        "controls": "rdx-popover-content-portal-audit0",
+                        "expanded": "true",
+                        "target": "second"
+                    }
+                ]
+            }
+        ]
+    }
+}

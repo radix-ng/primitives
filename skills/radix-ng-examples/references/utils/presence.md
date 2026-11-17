@@ -251,6 +251,11 @@ export class PresenceDynamicTargets {
 ### `RdxPresenceDirective`
 
 Compose on an `ng-template` through `hostDirectives`. It adds no wrapper and exposes no styling attributes.
+Inert Angular-managed template siblings delimit the live view, including dehydrated `@defer` roots
+and roots created later by `@if` / `@for`. Preserve these boundaries when processing server HTML.
+Standalone roots remain animation participants when they own an attribute `rdxPortal`.
+Scope styling to part attributes/classes: the inert templates count as element siblings for
+positional selectors such as `:first-child`.
 
 ### `RdxPresenceTarget`
 

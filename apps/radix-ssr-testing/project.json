@@ -6,6 +6,14 @@
     "sourceRoot": "apps/radix-ssr-testing/src",
     "tags": [],
     "targets": {
+        "hydration": {
+            "executor": "nx:run-commands",
+            "cache": false,
+            "outputs": ["{workspaceRoot}/dist/portal-hydration-audit/results"],
+            "options": {
+                "command": "node apps/radix-ssr-testing/hydration-audit/audit.mjs"
+            }
+        },
         "build": {
             "executor": "@angular/build:application",
             "outputs": ["{options.outputPath}"],

@@ -17,6 +17,7 @@ export * from './src/signal-forms/form-control';
 export * from './src/signal-forms/form-ui-state';
 export * from './src/signal-forms/validation-mode';
 export * from './src/types';
+export { createViewAnchor } from './src/view-anchor';
 
 export * from './src/floating/cancelable-change-event-details';
 export * from './src/floating/floating-events';

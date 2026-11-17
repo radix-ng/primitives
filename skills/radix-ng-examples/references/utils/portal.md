@@ -108,6 +108,22 @@ an `ElementRef`. Cross-document transfer of ordinary content is supported. For i
 keep the Root, trigger and popup in the same document and tree so native labels, ARIA id references and
 keyboard ownership can resolve together; mixed-document overlays need separate verification.
 
+### Server rendering and deferred content
+
+Portal content renders at its declaration on the server and moves after its owning view renders in
+the browser. Angular can hydrate `@defer` islands independently: a Portal does not wait for every
+island on the page. Existing server nodes, input edits and their generated IDs are retained.
+
+Structural portals also move still-dehydrated roots and roots materialized later by `@defer`, `@if`
+or `@for`. Changing a ready destination moves the current content. These views use inert
+Angular-managed template boundaries; keep those boundaries and the SSR metadata intact. Content
+elements remain direct children of the destination, with no layout wrapper.
+
+Angular 22 can retain a pending hydration task when an already hydrating `@defer` is destroyed
+during its lazy import; an ordinary `@if` reproduces this limitation. Portal removes its owned DOM,
+but cannot complete Angular's private hydration task. Keep the view mounted until hydration finishes
+if your application needs `ApplicationRef.whenStable()` to resolve through that cancellation.
+
 ```html
 <section class="flex w-full max-w-3xl gap-4 font-sans">
     <div

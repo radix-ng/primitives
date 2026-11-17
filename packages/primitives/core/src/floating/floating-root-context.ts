@@ -71,8 +71,8 @@ export class RdxFloatingRootContext {
     /**
      * **All** of this layer's own root elements — the popup plus any extra roots a primitive owns (e.g.
      * a Dialog backdrop relocated as a separate body sibling). This is DOM-footprint bookkeeping for
-     * primitive-specific checks; `markOthers` keep-sets are intentionally narrower and do not include
-     * sibling roots such as backdrops. Distinct from {@link floatingElement} (the single popup, used for
+     * primitive-specific checks. Neutral marking keeps remain narrower than this footprint; pointer
+     * isolation additionally keeps registered internal backdrops interactive. Distinct from {@link floatingElement} (the single popup, used for
      * this layer's own press / focus containment). Ancestor dismissal recognizes owned roots during
      * press-start capture and third-party filtering; outside-press timing still belongs to each layer.
      */

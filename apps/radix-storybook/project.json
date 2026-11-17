@@ -40,7 +40,17 @@
                 "outputDir": "dist/radix-storybook",
                 "configDir": "apps/radix-storybook/.storybook",
                 "compodoc": true,
-                "compodocArgs": ["-e", "json", "-d", "apps/radix-storybook/.storybook"],
+                "compodocArgs": [
+                    "-e",
+                    "json",
+                    "--disablePrivate",
+                    "--disableProtected",
+                    "--disableLifeCycleHooks",
+                    "--disableInternal",
+                    "--disableDependencies",
+                    "-d",
+                    "apps/radix-storybook/.storybook"
+                ],
                 "styles": ["apps/radix-storybook/.storybook/main.css"],
                 "experimentalZoneless": true,
                 "stylePreprocessorOptions": {

@@ -369,6 +369,11 @@ The negative baseline reproduced Angular IDs changing during hydration after ear
 `RdxIdGenerator` now owns its counters per application injector, preserving the same creation
 sequence across requests and the client. Applications in one document use distinct `APP_ID` values.
 
+[ADR 0085](../../../docs/adr/0085-hydration-owned-identity-and-view-ranges.md) extends this correction:
+native owners recover their serialized IDs when sibling `@defer` islands hydrate in reverse order.
+Transferred high-water counters reserve IDs for server islands before new client content is created.
+The SSR browser regression also covers structural Panel Presence and preserves its label/Tab targets.
+
 Indicator adds `renderBeforeHydration`, default `false`. Its CSP-aware server script positions
 eligible active tabs before the client bundle loads. Angular's public TransferState serialization
 hook emits the script outside the application's annotated DOM; the script leaves the application

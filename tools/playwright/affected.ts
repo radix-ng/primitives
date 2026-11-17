@@ -74,6 +74,7 @@ export function selectChecks(input: {
     const reasons: string[] = [];
     let full = !!input.full;
     let docs = full;
+    let hydration = full;
     for (const file of input.changed) {
         if (
             file.startsWith('skills/') ||
@@ -83,6 +84,10 @@ export function selectChecks(input: {
             file.includes('-snapshots/')
         )
             continue;
+        if (file.startsWith('apps/radix-ssr-testing/hydration-audit/')) {
+            hydration = true;
+            continue;
+        }
         if (file.startsWith('apps/parity-testing/primitives/')) {
             const suite = file.split('/')[3];
             if (input.suites.includes(suite)) suites.add(suite);
@@ -122,6 +127,9 @@ export function selectChecks(input: {
         reasons.push(file);
     }
     const affected = dependents(seeds, input.families);
+    hydration ||= ['portal', 'presence', 'floating-focus-manager', 'popover', 'menu', 'select', 'dialog', 'tabs'].some(
+        (family) => affected.has(family)
+    );
     // Public Agents reference fixtures cover these four families (tsconfig.agents.json).
     docs ||= ['field', 'select', 'menu', 'tabs'].some((family) => affected.has(family));
     for (const suite of input.suites) if (affected.has(suite)) suites.add(suite);
@@ -136,6 +144,7 @@ export function selectChecks(input: {
         input.suites.forEach((name) => suites.add(name));
         input.specs.forEach((name) => specs.add(name));
         docs = true;
+        hydration = true;
     }
     return {
         full,
@@ -143,7 +152,8 @@ export function selectChecks(input: {
         suites: [...suites].sort(),
         floating: [...specs].sort(),
         docs,
-        browser: docs || specs.size > 0,
+        hydration,
+        browser: hydration || docs || specs.size > 0,
         reasons
     };
 }
@@ -188,12 +198,12 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     const plan = planFromGit();
     console.log(JSON.stringify(plan, null, 2));
     if (process.env.GITHUB_OUTPUT) {
-        for (const key of ['suites', 'floating', 'docs', 'browser', 'full'] as const)
+        for (const key of ['suites', 'floating', 'docs', 'hydration', 'browser', 'full'] as const)
             appendFileSync(process.env.GITHUB_OUTPUT, `${key}=${JSON.stringify(plan[key])}\n`);
     }
     if (process.env.GITHUB_STEP_SUMMARY)
         appendFileSync(
             process.env.GITHUB_STEP_SUMMARY,
-            `### Browser check scope\n\nMode: ${plan.full ? 'full' : 'affected'}.\n\nPinned suites: ${plan.suites.join(', ') || 'none'}.\n\nFloating specs: ${plan.floating.length}. Docs: ${plan.docs}.\n`
+            `### Browser check scope\n\nMode: ${plan.full ? 'full' : 'affected'}.\n\nPinned suites: ${plan.suites.join(', ') || 'none'}.\n\nFloating specs: ${plan.floating.length}. Docs: ${plan.docs}. Hydration: ${plan.hydration}.\n`
         );
 }

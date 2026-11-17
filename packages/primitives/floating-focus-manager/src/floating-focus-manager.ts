@@ -26,6 +26,7 @@ import {
     isMouseEvent,
     RDX_FLOATING_REGISTRATION,
     RDX_FLOATING_ROOT_CONTEXT,
+    RDX_INTERNAL_BACKDROP_ATTR,
     RdxFloatingRootContext,
     RdxFloatingTree,
     rdxPlatform
@@ -379,13 +380,14 @@ export class RdxFloatingFocusManager {
         }
 
         // Marker pass (ADR 0017 §3) — applied to outside elements while the manager is active **and the
-        // popup is open**, independent of `modal`. Read by ADR 0015's outside-press guard.
+        // popup is open**, independent of `modal`. Read by ADR 0015's outside-press guard. Render
+        // after Portal's write phase so isolation uses the popup's final ancestor chain (ADR 0085).
         let releaseMarker: (() => void) | undefined;
         const clearMarker = () => {
             releaseMarker?.();
             releaseMarker = undefined;
         };
-        effect((onCleanup) => {
+        afterRenderEffect((onCleanup) => {
             if (!this.effectiveEnabled() || !this.isFloatingOpen()) {
                 return;
             }
@@ -402,7 +404,7 @@ export class RdxFloatingFocusManager {
             releaseIsolation?.();
             releaseIsolation = undefined;
         };
-        effect((onCleanup) => {
+        afterRenderEffect((onCleanup) => {
             if (!this.effectiveEnabled() || !this.isFloatingOpen() || !this.effectiveInert()) {
                 return;
             }
@@ -862,23 +864,37 @@ export class RdxFloatingFocusManager {
      * plus descendant popup ancestry and primitive-declared inside elements (e.g. a combobox input).
      * Sibling roots such as backdrops are DOM-footprint bookkeeping, not keep-set members.
      *
-     * Marker keeps exclude previous/next focus targets. Isolation keeps include them, matching Base
-     * UI's separate aria-hidden pass: a modal Popover trigger remains usable. markOthers walks its
-     * ancestor chain and isolates unrelated siblings; the application root itself need not be inert.
+     * Isolation also keeps registered internal backdrops and owned content guards interactive after render.
+     * Marker keeps remain narrow. Focus targets join only isolation, matching Base UI's separate pass:
+     * a modal Popover trigger remains usable without exempting unrelated application content.
      */
-    private avoidElements(includeFocusTargets = false): Element[] {
+    private avoidElements(forIsolation = false): Element[] {
         // Retained descendant portals already exist when a parent opens. Keep their popup ancestry
         // interactive so a later open does not leave them trapped under this parent's inert pass.
         const node = this.currentFloatingNode();
         const descendants =
-            node?.tree.children(node, { onlyOpen: false }).map((child) => child.context?.floatingElement) ?? [];
-        const controls = includeFocusTargets
+            node?.tree.children(node, { onlyOpen: false }).flatMap((child) => (child.context ? [child.context] : [])) ??
+            [];
+        const popups = [this.host, ...descendants.map((context) => context.floatingElement)];
+        const controls = forIsolation
             ? [
+                  ...[
+                      ...(this.rootContext?.floatingElements ?? []),
+                      ...descendants.flatMap((context) => [...context.floatingElements])
+                  ].filter((element) => element.hasAttribute(RDX_INTERNAL_BACKDROP_ATTR)),
+                  ...popups.flatMap((popup) =>
+                      popup
+                          ? [popup.previousElementSibling, popup.nextElementSibling].filter(
+                                (guard) =>
+                                    guard?.hasAttribute(FOCUS_GUARD_ATTR) && resolveFocusGuardOwner(guard) === popup
+                            )
+                          : []
+                  ),
                   resolveFocusTarget(this.effectivePreviousFocusableElement()),
                   resolveFocusTarget(this.effectiveNextFocusableElement())
               ]
             : [];
-        return [this.host, ...this.insideElements(), ...descendants, ...controls].filter(
+        return [...popups, ...this.insideElements(), ...controls].filter(
             (element): element is Element => element != null
         );
     }

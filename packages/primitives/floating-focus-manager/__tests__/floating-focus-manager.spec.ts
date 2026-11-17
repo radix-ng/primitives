@@ -553,6 +553,10 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
         // `inert` replaces both the body pointer-lock and the separate `aria-hidden` pass.
         expect(sibling.hasAttribute('inert')).toBe(true);
         expect(sibling.hasAttribute(RDX_FLOATING_MARKER)).toBe(true); // marker still applied (active)
+        const scope = fixture.componentInstance.scope().nativeElement as HTMLElement;
+        const guards = [...scope.parentElement!.querySelectorAll<HTMLElement>(`[${FOCUS_GUARD_ATTR}]`)];
+        expect(guards).toHaveLength(2);
+        expect(guards.every((guard) => !guard.closest('[inert]'))).toBe(true);
     });
 
     it('keeps a modal focus target usable while isolating unrelated siblings and marking its ancestry', async () => {
@@ -573,11 +577,13 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
         expect(app.hasAttribute(RDX_FLOATING_MARKER)).toBe(true);
     });
 
-    it('does not keep additional owned sibling roots from the marker pass', async () => {
+    it('keeps registered internal backdrops interactive while marking them as outside', async () => {
         const backdrop = document.createElement('div');
+        backdrop.setAttribute('data-rdx-internal-backdrop', '');
         document.body.appendChild(backdrop);
         appended.push(backdrop);
         const unrelated = document.createElement('div');
+        unrelated.setAttribute('data-rdx-internal-backdrop', '');
         document.body.appendChild(unrelated);
         appended.push(unrelated);
 
@@ -589,7 +595,7 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
             imports: [RdxFloatingFocusManager],
             providers: [provideFloatingRootContext(() => context)],
             template: `
-                <div #scope rdxFloatingFocusManager></div>
+                <div #scope [modal]="true" rdxFloatingFocusManager></div>
             `
         })
         class BackdropHost {
@@ -600,9 +606,11 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
         fixture.autoDetectChanges();
         await flush();
 
-        // Backdrop/extra roots are DOM-footprint bookkeeping only, not marker keep-set members.
+        // A backdrop must still receive outside presses after the render-phase isolation pass.
         expect(backdrop.hasAttribute(RDX_FLOATING_MARKER)).toBe(true);
+        expect(backdrop.closest('[inert]')).toBeNull();
         expect(unrelated.hasAttribute(RDX_FLOATING_MARKER)).toBe(true);
+        expect(unrelated.closest('[inert]')).not.toBeNull();
     });
 
     it('tears down marker and inert when the floating context closes, even if enabled stays true', async () => {

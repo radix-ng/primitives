@@ -4,7 +4,7 @@
 
 Own replacements for what CDK used to provide:
 
-- `_IdGenerator` (`cdk/a11y`) → `RdxIdGenerator` + the `injectId(prefix)` hook in `core/src/id-generator.ts` (re-exported from `@radix-ng/primitives/core`). `injectId('rdx-…-')` is the call-site API (Angular counterpart of React's `useId`); it generates deterministic, SSR/hydration-stable IDs via a per-prefix counter folded with `APP_ID`. Inject `RdxIdGenerator` directly only when generating IDs lazily outside an injection context.
+- `_IdGenerator` (`cdk/a11y`) → `RdxIdGenerator` + the `injectId(prefix)` hook in `core/src/id-generator.ts` (re-exported from `@radix-ng/primitives/core`). `injectId('rdx-…-')` recovers native-owner IDs independently of island hydration order; application-scoped per-prefix counters folded with `APP_ID` allocate fresh IDs, with server allocations reserved through TransferState ([ADR 0085](../adr/0085-hydration-owned-identity-and-view-ranges.md)). Inject `RdxIdGenerator` directly only for fresh lazy IDs outside a native view owner.
 - `LiveAnnouncer` (`cdk/a11y`) → `RdxLiveAnnouncer` in `core/src/live-announcer.ts`: lazily appends a visually-hidden `aria-live` region to `document.body`, no-op on the server. Only consumer: stepper.
 - `Platform` (`cdk/platform`) → `core/is-client` now uses `isPlatformBrowser(inject(PLATFORM_ID))` from `@angular/common`.
 - `Direction` (`cdk/bidi`) → `core/src/types.ts` `export type Direction = 'ltr' | 'rtl'` (re-exported from `@radix-ng/primitives/core`).

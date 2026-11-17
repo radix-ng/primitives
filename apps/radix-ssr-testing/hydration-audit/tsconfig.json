@@ -1,0 +1,15 @@
+{
+    "extends": "../../../tsconfig.base.json",
+    "compilerOptions": {
+        "strict": true,
+        "noEmit": false,
+        "module": "preserve",
+        "moduleResolution": "bundler",
+        "types": ["node", "vite/client"]
+    },
+    "angularCompilerOptions": {
+        "strictTemplates": true,
+        "strictInjectionParameters": true
+    },
+    "include": ["app.ts", "lazy-view.ts", "settings.ts", "client.ts", "server.ts"]
+}

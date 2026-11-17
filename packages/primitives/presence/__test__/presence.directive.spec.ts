@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Directive, inject, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RdxPortal } from '@radix-ng/primitives/portal';
 import { animationDriver } from '../../core/__tests__/animation-driver';
 import { RdxPresenceTarget } from '../src/presence-target';
 import { provideRdxPresenceContext, RdxPresenceDirective } from '../src/presence.directive';
@@ -64,6 +65,33 @@ class PresenceAnimHostComponent {
 class PresenceMultiRootHostComponent {
     readonly present = signal(true);
 }
+
+@Component({
+    imports: [TestPresenceWrapper, RdxPortal],
+    providers: [provideRdxPresenceContext(() => ({ present: inject(PortaledPresenceHost).present }))],
+    template: '<div *testPresence rdxPortal class="portaled-presence">Portaled root</div>'
+})
+class PortaledPresenceHost {
+    readonly present = signal(true);
+}
+
+it('retains an animated Presence root relocated by its own attribute Portal', async () => {
+    const fixture = TestBed.createComponent(PortaledPresenceHost);
+    try {
+        await fixture.whenStable();
+        const element = document.body.querySelector<HTMLElement>(':scope > .portaled-presence')!;
+        const motion = animationDriver();
+        element.getAnimations = () => [motion.animation];
+        fixture.componentInstance.present.set(false);
+        await fixture.whenStable();
+        expect(element.isConnected).toBe(true);
+        await motion.finish();
+        await fixture.whenStable();
+        expect(element.isConnected).toBe(false);
+    } finally {
+        fixture.destroy();
+    }
+});
 
 describe('RdxPresenceDirective', () => {
     let fixture: ComponentFixture<PresenceHostComponent>;

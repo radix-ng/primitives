@@ -1,4 +1,4 @@
-import { computed, effect, Signal, signal } from '@angular/core';
+import { afterRenderEffect, computed, Signal, signal } from '@angular/core';
 import { rdxPlatform } from '@radix-ng/primitives/core';
 import {
     composedContains,
@@ -113,7 +113,7 @@ export function createRdxTriggerInteraction(options: RdxTriggerInteractionOption
 export function useTriggerFocusGuards(options: RdxTriggerFocusGuardOptions): void {
     const enabled = options.enabled ?? (() => true);
 
-    effect((onCleanup) => {
+    afterRenderEffect((onCleanup) => {
         if (!enabled()) {
             return;
         }
@@ -194,7 +194,7 @@ export function useTriggerFocusGuards(options: RdxTriggerFocusGuardOptions): voi
 export function useTriggerFocusGuardAnchor(options: RdxTriggerFocusGuardAnchorOptions): void {
     const enabled = options.enabled ?? (() => true);
 
-    effect((onCleanup) => {
+    afterRenderEffect((onCleanup) => {
         const contentId = options.contentId();
         if (!enabled() || !contentId) {
             return;

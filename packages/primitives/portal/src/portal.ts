@@ -1,25 +1,30 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import {
+    afterRenderEffect,
     computed,
     DestroyRef,
     Directive,
-    effect,
     ElementRef,
     inject,
     input,
     linkedSignal,
-    PLATFORM_ID
+    PLATFORM_ID,
+    untracked
 } from '@angular/core';
 import { movePortalNodes } from './move-nodes';
+import { RDX_PORTAL_RELOCATION } from './portal-context';
 import { RdxPortalContainer, RdxPortalTarget, resolvePortalContainer } from './resolve-container';
 
 @Directive({
     selector: '[rdxPortal]',
-    exportAs: 'rdxPortal'
+    exportAs: 'rdxPortal',
+    providers: [{ provide: RDX_PORTAL_RELOCATION, useFactory: () => inject(RdxPortal) }]
 })
 export class RdxPortal {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly platformId = inject(PLATFORM_ID);
+    private readonly isBrowser = isPlatformBrowser(this.platformId);
+    private readonly parentPortal = inject(RDX_PORTAL_RELOCATION, { skipSelf: true, optional: true });
     private readonly document = inject(DOCUMENT, { optional: true });
     private readonly destroyRef = inject(DestroyRef);
 
@@ -43,29 +48,38 @@ export class RdxPortal {
     });
 
     constructor() {
-        const isBrowser = isPlatformBrowser(this.platformId);
-        if (!isBrowser || !this.document) {
+        if (!this.isBrowser || !this.document) {
             return;
         }
 
         const element = this.elementRef.nativeElement;
-        // Anchor the original DOM position with a comment node, so the element can be restored
-        // exactly where it was when the directive is destroyed.
+        // Record the declaration before any relocation, so Angular can remove the restored element
+        // while destroying its view. Creating a late anchor can place it after Angular's removal pass.
         const anchor = this.document.createComment('rdx-portal');
         element.parentNode?.insertBefore(anchor, element);
 
         // Move reactively: the effect runs after inputs are bound (so `container` is respected on
         // first render) and re-runs whenever the target container changes. `appendChild` relocates
         // the element, it does not clone it.
-        effect(() => {
-            const container = this.elementContainer();
-            if (container) movePortalNodes([element], container);
-            else element.remove();
+        afterRenderEffect({
+            write: () => this.relocate()
         });
 
         this.destroyRef.onDestroy(() => {
-            anchor.parentNode?.replaceChild(element, anchor);
+            if (anchor.parentNode) anchor.parentNode.replaceChild(element, anchor);
+            // A CSR @if root may have no declaration parent while its constructors run.
+            else element.remove();
         });
+    }
+
+    /** @internal Keep declaring portals before their nested destinations in DOM stacking order. */
+    relocate(): void {
+        if (!this.isBrowser) return;
+        untracked(() => this.parentPortal?.relocate());
+        const container = this.elementContainer();
+        const element = this.elementRef.nativeElement;
+        if (container) movePortalNodes([element], container);
+        else element.remove();
     }
 
     setContainer(container: RdxPortalContainer | undefined) {

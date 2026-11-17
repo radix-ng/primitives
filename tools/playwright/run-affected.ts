@@ -18,8 +18,8 @@ if (
 )
     throw new Error('Invalid selected browser spec paths');
 const docs = process.env.RUN_DOCS === 'true';
-function run(args: string[]) {
-    const result = spawnSync('pnpm', args, { stdio: 'inherit', shell: false });
+function run(args: string[], executable = 'pnpm') {
+    const result = spawnSync(executable, args, { stdio: 'inherit', shell: false });
     if (result.error) throw result.error;
     if (result.status !== 0) process.exit(result.status ?? 1);
 }
@@ -43,3 +43,5 @@ if (docs)
         'apps/visual-regression/playwright.docs.config.ts',
         `--project=${project}`
     ]);
+if (process.env.RUN_HYDRATION === 'true')
+    run(['apps/radix-ssr-testing/hydration-audit/audit.mjs', `--project=${project}`], process.execPath);

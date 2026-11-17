@@ -113,6 +113,7 @@ jobs:
       suites: ${{ steps.scope.outputs.suites }}
       floating: ${{ steps.scope.outputs.floating }}
       docs: ${{ steps.scope.outputs.docs }}
+      hydration: ${{ steps.scope.outputs.hydration }}
       browser: ${{ steps.scope.outputs.browser }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -178,11 +179,12 @@ jobs:
       - uses: ./.github/actions/setup
       - name: Install browser
         run: pnpm exec playwright install --with-deps ${{ matrix.project }}
-      - name: Check affected floating primitives and docs
+      - name: Check affected primitives, docs and hydration
         env:
           BROWSER_PROJECT: ${{ matrix.project }}
           BROWSER_FILES: ${{ needs.scope.outputs.floating }}
           RUN_DOCS: ${{ needs.scope.outputs.docs }}
+          RUN_HYDRATION: ${{ needs.scope.outputs.hydration }}
         run: node tools/playwright/run-affected.ts
       - name: Upload browser evidence
         if: always()
@@ -192,6 +194,7 @@ jobs:
           path: |
             apps/visual-regression/test-results
             apps/visual-regression/playwright-report
+            dist/portal-hydration-audit/results
           retention-days: 14
 
   # Preserve a single required gate even when no browser contracts were affected.

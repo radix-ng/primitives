@@ -1,18 +1,20 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import {
+    afterRenderEffect,
     booleanAttribute,
     computed,
     Directive,
-    effect,
     inject,
     InjectionToken,
     input,
     linkedSignal,
     PLATFORM_ID,
+    untracked,
     ViewContainerRef
 } from '@angular/core';
 import { providePresenceTargetContext, RDX_PRESENCE_CONTEXT, usePresence } from '@radix-ng/primitives/presence';
 import { movePortalNodes } from './move-nodes';
+import { RDX_PORTAL_RELOCATION } from './portal-context';
 import { RdxPortalContainer, RdxPortalTarget, resolvePortalContainer } from './resolve-container';
 
 /** @internal Logical declaration position, independent of the portal's mount/destruction lifetime. */
@@ -29,12 +31,14 @@ export const RDX_PORTAL_ANCHOR = new InjectionToken<Node>('RdxPortalAnchor');
  * (`<div *rdxXxxPortal rdxXxxPositioner>`) or the explicit `<ng-template rdxXxxPortal>` form for a
  * custom container or multiple root nodes (e.g. a dialog backdrop + popup).
  *
- * SSR: on the server the view renders in place and is never relocated; after hydration the relocation
- * effect moves the nodes into the container (same browser-guarded split `RdxPortal` uses).
+ * SSR: the view renders in place. Browser render hooks move its managed physical range, including
+ * still-dehydrated @defer roots and roots materialized later. Inert template boundaries participate
+ * in Angular hydration; authored content remains a direct child of the destination.
  */
 @Directive({
     standalone: true,
     providers: [
+        { provide: RDX_PORTAL_RELOCATION, useFactory: () => inject(RdxPortalPresence) },
         { provide: RDX_PORTAL_ANCHOR, useFactory: () => inject(ViewContainerRef).element.nativeElement as Node },
         providePresenceTargetContext(() => inject(RdxPortalPresence).presence.lifecycle)
     ]
@@ -42,6 +46,7 @@ export const RDX_PORTAL_ANCHOR = new InjectionToken<Node>('RdxPortalAnchor');
 export class RdxPortalPresence {
     private readonly document = inject(DOCUMENT, { optional: true });
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+    private readonly parentPortal = inject(RDX_PORTAL_RELOCATION, { skipSelf: true, optional: true });
 
     /**
      * Container to portal the content into. Can be a ShadowRoot, an HTML element from any window,
@@ -79,14 +84,19 @@ export class RdxPortalPresence {
     constructor() {
         // Relocate reactively: re-runs whenever the resolved container changes or the view is
         // (re)mounted. On the server we never relocate — the nodes render in place.
-        effect(() => {
-            const container = this.elementContainer();
-            const nodes = this.presence.nodes();
-            if (!this.isBrowser || !container) {
-                return;
-            }
-            movePortalNodes(nodes, container);
+        afterRenderEffect({
+            // Finish relocation before mixedReadWrite focus/isolation hooks inspect ancestry.
+            write: () => this.relocate()
         });
+    }
+
+    /** @internal Keep declaring portals before their nested destinations in DOM stacking order. */
+    relocate(): void {
+        if (!this.isBrowser) return;
+        untracked(() => this.parentPortal?.relocate());
+        const container = this.elementContainer();
+        this.presence.nodes();
+        if (container) movePortalNodes(this.presence.currentNodes(), container);
     }
 
     /** Imperatively override the portal container (parity with `RdxPortal.setContainer`). */
