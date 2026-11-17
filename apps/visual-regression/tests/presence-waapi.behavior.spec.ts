@@ -1,13 +1,10 @@
 import { expect, Locator, Page, test } from '@playwright/test';
 
 /**
- * ADR 0011 — WAAPI-based exit detection for `PresenceMachine`. These need a real browser: jsdom runs
- * no CSS, so it cannot exercise transitions, descendant keyframes, or the freshness filter. Each
+ * Signal-owned render lifetimes need browser coverage: jsdom cannot discover CSS transitions or
+ * keyframes. Explicit descendants, finite timing and replacement animations are covered here. Each
  * fixture lives in `Utilities/Presence` (tagged `!visual`) and is driven through the built Storybook.
  *
- * The headline cases (transition-only exit, popup-level keyframe with no positioner decoy) **fail on
- * `main`** — there the machine watched only the root's computed `animationName` and unmounted
- * instantly.
  */
 async function gotoStory(page: Page, storyId: string): Promise<void> {
     await page.goto(`/iframe.html?id=${storyId}&viewMode=story`);
@@ -16,7 +13,23 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
 
 const mountButton = (page: Page): Locator => page.getByRole('button');
 
-test.describe('Presence WAAPI exit detection', () => {
+test.describe('Presence render lifetime', () => {
+    test('the public default example animates entry and exit with Tailwind', async ({ page }) => {
+        await gotoStory(page, 'utilities-presence--default');
+        // Extend real CSS timing so discovery is independent of test-machine scheduling.
+        await page.addStyleTag({ content: '.presence-box { transition-duration: 2s; }' });
+        const box = page.locator('.presence-box');
+        await mountButton(page).click();
+        await expect(box).toBeAttached();
+        await expect.poll(() => box.evaluate((element) => element.getAnimations().length)).toBeGreaterThan(0);
+        await box.evaluate((element) => element.getAnimations().forEach((animation) => animation.finish()));
+        await mountButton(page).click();
+        await expect(box).toHaveAttribute('data-state', 'closed');
+        await expect.poll(() => box.evaluate((element) => element.getAnimations().length)).toBeGreaterThan(0);
+        await box.evaluate((element) => element.getAnimations().forEach((animation) => animation.finish()));
+        await expect(box).toHaveCount(0);
+    });
+
     test('transition-only exit keeps the content mounted until the transition finishes', async ({ page }) => {
         await gotoStory(page, 'utilities-presence--waapi-transition-exit');
 
@@ -35,7 +48,7 @@ test.describe('Presence WAAPI exit detection', () => {
         await expect(box).toHaveCount(0);
     });
 
-    test('keyframe exit on a descendant (no positioner decoy) keeps the content mounted', async ({ page }) => {
+    test('an explicitly registered descendant keyframe retains the view', async ({ page }) => {
         await gotoStory(page, 'utilities-presence--waapi-subtree-keyframe-exit');
 
         const root = page.locator('.waapi-root');
@@ -44,14 +57,14 @@ test.describe('Presence WAAPI exit detection', () => {
 
         await mountButton(page).click();
 
-        // The exit @keyframes run on a child, not the watched root — subtree detection keeps it up.
+        // Only the child carries an animation; rdxPresenceTarget registers it with the lifetime.
         await expect(root).toHaveAttribute('data-state', 'closed');
         await expect(root).toBeAttached();
 
         await expect(root).toHaveCount(0);
     });
 
-    test('a pre-existing infinite animation does not delay the unmount (freshness filter)', async ({ page }) => {
+    test('an explicitly registered infinite animation never delays unmount', async ({ page }) => {
         await gotoStory(page, 'utilities-presence--waapi-infinite-spinner-no-delay');
 
         const root = page.locator('.waapi-root');
@@ -61,8 +74,7 @@ test.describe('Presence WAAPI exit detection', () => {
         // The spinner inside has been running since mount; closing has no exit animation of its own.
         await mountButton(page).click();
 
-        // Must unmount promptly — the infinite spinner's startTime predates the close, so it is not
-        // mistaken for an exit animation. A short timeout guards against "held open forever".
+        // Infinite animations are excluded by timing, independently of their start time.
         await expect(root).toHaveCount(0, { timeout: 1000 });
     });
 
@@ -72,6 +84,7 @@ test.describe('Presence WAAPI exit detection', () => {
         const box = page.locator('.waapi-box');
         await mountButton(page).click();
         await expect(box).toBeVisible();
+        const original = await box.elementHandle();
 
         // Start the exit transition, then immediately re-open before it finishes.
         await mountButton(page).click();
@@ -82,10 +95,85 @@ test.describe('Presence WAAPI exit detection', () => {
         // the same element stays mounted and open — no flicker/unmount.
         await expect(box).toHaveAttribute('data-state', 'open');
         await expect(box).toBeAttached();
+        expect(await box.evaluate((element, previous) => element === previous, original)).toBe(true);
 
         // Give the stale transition time to (wrongly) resolve; it must not tear the view down.
         await page.waitForTimeout(400);
         await expect(box).toHaveCount(1);
         await expect(box).toHaveAttribute('data-state', 'open');
+    });
+
+    test('a canceled transition waits for its paused replacement', async ({ page }) => {
+        await gotoStory(page, 'utilities-presence--waapi-transition-exit');
+        await mountButton(page).click();
+        const box = page.locator('.waapi-box');
+        await expect(box).toBeVisible();
+        await mountButton(page).click();
+        await expect(box).toHaveAttribute('data-state', 'closed');
+        await box.evaluate(async (element) => {
+            const previous = element.getAnimations();
+            const replacement = element.animate([{ opacity: 0.7 }, { opacity: 0 }], { duration: 2000 });
+            replacement.pause();
+            previous.forEach((animation) => animation.cancel());
+            await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+        });
+        await expect(box).toBeAttached();
+        await box.evaluate((element) => element.getAnimations().forEach((animation) => animation.finish()));
+        await expect(box).toHaveCount(0);
+    });
+
+    test('finite WAAPI timing includes iterations and playback rate', async ({ page }) => {
+        await gotoStory(page, 'utilities-presence--waapi-transition-exit');
+        await mountButton(page).click();
+        const box = page.locator('.waapi-box');
+        await expect(box).toBeVisible();
+        await box.evaluate((element) => {
+            element.style.transition = 'none';
+            const animation = element.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, iterations: 4 });
+            animation.playbackRate = 0.5;
+        });
+        await mountButton(page).click();
+        await expect(box).toHaveAttribute('data-state', 'closed');
+        const retained = await box.evaluate(async (element) => {
+            await new Promise((resolve) => setTimeout(resolve, 250));
+            return element.isConnected;
+        });
+        expect(retained).toBe(true);
+        await box.evaluate((element) => element.getAnimations().forEach((animation) => animation.finish()));
+        await expect(box).toHaveCount(0);
+    });
+
+    test('pausing discovered motion keeps the view beyond its original safety timer', async ({ page }) => {
+        await gotoStory(page, 'utilities-presence--waapi-transition-exit');
+        await mountButton(page).click();
+        const box = page.locator('.waapi-box');
+        await expect(box).toBeVisible();
+        await box.evaluate((element) => {
+            element.style.transitionDuration = '100ms';
+        });
+        await mountButton(page).click();
+        await expect(box).toHaveAttribute('data-state', 'closed');
+        await box.evaluate(async (element) => {
+            element.getAnimations().forEach((animation) => animation.pause());
+            await new Promise((resolve) => setTimeout(resolve, 250));
+        });
+        await expect(box).toBeAttached();
+        await box.evaluate((element) => element.getAnimations().forEach((animation) => animation.finish()));
+        await expect(box).toHaveCount(0);
+    });
+
+    test('an unregistered finite descendant does not acquire the parent lifetime', async ({ page }) => {
+        await gotoStory(page, 'utilities-presence--waapi-transition-exit');
+        await mountButton(page).click();
+        const box = page.locator('.waapi-box');
+        await expect(box).toBeVisible();
+        await box.evaluate((element) => {
+            element.style.transition = 'none';
+            const child = document.createElement('i');
+            element.appendChild(child);
+            child.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 10_000 });
+        });
+        await mountButton(page).click();
+        await expect(box).toHaveCount(0, { timeout: 1000 });
     });
 });

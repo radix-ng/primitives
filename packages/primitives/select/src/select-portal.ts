@@ -22,7 +22,7 @@ import { injectSelectRootContext } from './select-root';
             const root = injectSelectRootContext();
             return {
                 present: root.present,
-                skipExitAnimation: root.skipExitAnimation,
+                renderLifecycle: root.renderLifecycle,
                 registerPresence: root.registerPresence
             };
         })

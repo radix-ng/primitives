@@ -20,7 +20,7 @@ import {
     injectId,
     RdxCancelableChangeEventDetails,
     RdxTransitionStatus,
-    useTransitionStatus
+    useRenderLifecycle
 } from '@radix-ng/primitives/core';
 
 export type RdxCollapsibleState = 'open' | 'closed';
@@ -99,7 +99,9 @@ const rootContext = (): CollapsibleRootContext => {
     }
 })
 export class RdxCollapsibleRootDirective {
-    private readonly transition = useTransitionStatus((open) => this.onOpenChangeComplete.emit(open));
+    private readonly transition = useRenderLifecycle((open) => this.onOpenChangeComplete.emit(open), {
+        open: () => this.open()
+    });
 
     private readonly generatedPanelId = injectId('rdx-collapsible-panel-');
     private readonly panelIdState = signal<string | undefined>(undefined);

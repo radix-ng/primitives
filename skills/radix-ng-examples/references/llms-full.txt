@@ -16369,8 +16369,9 @@ return to a surviving control outside that conditional block.
 
 ### CSS animations
 
-Animate the popup itself so its transition status and the portal observe the same exit. Presence
-watches real animations in the portal subtree. Keep the popup displayed during the exit;
+Animate the popup itself so its transition status and the portal share the same render lifetime.
+Popup and Backdrop register their animation elements automatically; add `rdxPresenceTarget` for
+another animated element inside the portal. Keep the popup displayed during the exit;
 a closed-state `display: none` would cancel the animation immediately. The parent Positioner hides
 once the transition finishes, including when the portal stays mounted.
 
@@ -24158,12 +24159,13 @@ The shared lifecycle is documented in
 import { afterNextRender, Component, DestroyRef, effect, inject, Injector, signal, viewChild } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { RdxFloatingInsideElement } from '@radix-ng/primitives/dismissable-layer';
+import { RdxPresenceTarget } from '@radix-ng/primitives/presence';
 import { cn, demoButton, demoSelect } from '../../storybook/styles';
 import { _importsSelect, RdxSelectOpenChangeEvent, RdxSelectPopup, RdxSelectRoot } from '../index';
 
 @Component({
     selector: 'select-deferred-unmount',
-    imports: [_importsSelect, LucideCheck, LucideChevronDown, RdxFloatingInsideElement],
+    imports: [_importsSelect, LucideCheck, LucideChevronDown, RdxFloatingInsideElement, RdxPresenceTarget],
     template: `
         <div
             class="grid gap-8 sm:grid-cols-2"
@@ -24184,7 +24186,7 @@ import { _importsSelect, RdxSelectOpenChangeEvent, RdxSelectPopup, RdxSelectRoot
                 <ng-template [keepMounted]="keepMounted()" rdxSelectPortal>
                     <div [class]="s.positioner" sideOffset="5" rdxSelectPositioner>
                         <div [class]="s.popup" rdxSelectPopup>
-                            <div [class]="s.list" rdxSelectList>
+                            <div [class]="s.list" rdxSelectList rdxPresenceTarget>
                                 @for (fruit of fruits; track fruit) {
                                     <div [class]="s.item" [value]="fruit" rdxSelectItem>
                                         <span [class]="s.itemIndicator" rdxSelectItemIndicator>
@@ -29302,8 +29304,9 @@ Use `keepMounted: true` on the structural directive to retain the whole view and
 
 ### Unmount with `@keyframes`
 
-With `*rdxTabsPanelPresence`, the shared presence machine watches the panel and its descendants for
-exit animations or transitions before destroying the whole view. Mark the panel as a `group` so the
+With `*rdxTabsPanelPresence`, the shared render lifetime observes the Panel and explicit
+`rdxPresenceTarget` descendants before destroying the whole view. Import `RdxPresenceTarget` for an
+animated inner element. Mark the panel as a `group` so the
 inner element can react to the parent's `data-ending-style` and run the exit keyframes. The panel
 stays visible and inert until removal. Its ID belongs to the structural instance and stays stable
 when the native Panel is recreated.
@@ -29314,16 +29317,17 @@ The former argument-free inner presence syntax is no longer supported.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RdxPresenceTarget } from '@radix-ng/primitives/presence';
 import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'tabs-keyframes-example',
-    imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel, RdxTabsPanelPresence],
+    imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel, RdxTabsPanelPresence, RdxPresenceTarget],
     // The complete panel view is mounted only while its tab is active.
     // On enter the inner element plays `tabs-panel-in`; when the tab is left, the parent panel gets
     // `data-ending-style`, so the inner element runs the exit keyframes while the panel remains
-    // visible and inert. The presence machine waits for the panel and its descendants to finish.
+    // visible and inert. Explicit targets share the Panel's render lifetime.
     template: `
         <div
             class="border-border bg-background text-foreground w-[420px] overflow-hidden rounded-xl border shadow-sm"
@@ -29350,6 +29354,7 @@ import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTa
                 <div class="group col-start-1 row-start-1" *rdxTabsPanelPresence="'account'" rdxTabsPanel>
                     <div
                         class="bg-background text-foreground animate-tabs-panel-in group-data-[ending-style]:animate-tabs-panel-out p-6 text-sm leading-6 outline-none"
+                        rdxPresenceTarget
                     >
                         Make changes to your account here. Click save when you're done.
                     </div>
@@ -29357,6 +29362,7 @@ import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTa
                 <div class="group col-start-1 row-start-1" *rdxTabsPanelPresence="'password'" rdxTabsPanel>
                     <div
                         class="bg-background text-foreground animate-tabs-panel-in group-data-[ending-style]:animate-tabs-panel-out p-6 text-sm leading-6 outline-none"
+                        rdxPresenceTarget
                     >
                         Change your password here. After saving, you'll be logged out.
                     </div>
@@ -32169,8 +32175,8 @@ its exit transition before hiding (`data-ending-style` is present while it runs)
 
 Use `@keyframes` when a primitive part is conditionally mounted through a Radix NG presence directive
 or through a structural portal such as `*rdxPopoverPortal` / `*rdxTooltipPortal` (which merge portal +
-presence). The exit animation can go on the portal's root element (the positioner) **or any element
-inside it** (the popup) — see [Exit animations](guides/animation.md#exit-animations-keyframes-or-transitions) below.
+presence). Style the registered Popup or Backdrop, or add `rdxPresenceTarget` to an additional
+animation element — see [Exit animations](guides/animation.md#exit-animations-keyframes-or-transitions) below.
 
 ```html
 <div *rdxPopoverPortal rdxPopoverPositioner>
@@ -32212,24 +32218,22 @@ inside it** (the popup) — see [Exit animations](guides/animation.md#exit-anima
 
 ### Exit animations: keyframes or transitions
 
-After the closed state is applied, the presence machine inspects the running animations
-([Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Element/getAnimations)) on the
-template's root element **and its whole subtree**. It keeps the element mounted until every exit
-animation _started by the close_ has finished, then unmounts. If nothing animates, it unmounts
-immediately.
+After the closed state is applied, the shared render lifetime inspects finite animations through
+the [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Element/getAnimations).
+Popup, Backdrop and Panel parts register their own elements. A standalone Presence observes its
+template roots. Add `rdxPresenceTarget` to include an additional element inside a structural template.
 
-This means:
+- **Keyframes and transitions both work.** Style the part's documented open/closed or transition hooks.
+- **Participants are explicit.** Unregistered descendants do not delay removal. A popup nested inside
+  a positioner already registers itself; it needs no positioner animation to retain the portal.
+- **Infinite animations are ignored.** Finite animations on a registered target participate even if
+  they started before closing. Canceled animations are re-read so replacements finish before removal.
+- **Reopening retains the live Angular view.** DOM identity, child instances and local state survive
+  when the exit is interrupted.
 
-- **Keyframes or transitions both work.** A `@keyframes` exit (`data-closed`) and a transition
-  (a property change under `data-ending-style`) are detected the same way.
-- **Any element in the template carries the exit.** With a structural portal you can put the exit on
-  the positioner (the root) or on the popup nested inside it — you do **not** need a separate
-  "decoy" keyframe on the positioner just to keep the popup mounted.
-- **Pre-existing animations are ignored.** A spinner or other animation that was already running
-  before the close does not delay the unmount; only animations that start with the close count.
-
-A duration-based safety net (the longest declared transition/animation duration plus a small buffer)
-guarantees the element still unmounts if an animation is interrupted or never reports completion.
+A safety timer uses WAAPI timing, including iterations and playback rate. Paused animations wait
+for their owner to finish or cancel them. Where WAAPI is unavailable, declared CSS durations provide
+a bounded fallback. Root-level animation-name heuristics and automatic subtree scanning are removed.
 
 ## Angular `animate.enter` and `animate.leave`
 
@@ -32277,7 +32281,8 @@ work with native CSS and do not require `@angular/animations`.
 ```
 
 Use this for application content around primitives. Do not add `animate.leave` to a part already
-managed by `RdxPresenceDirective`; both APIs would try to control the same unmount lifecycle.
+managed by structural Presence or Portal. Angular leave animations delay physical DOM removal after
+the Angular view starts destruction; Presence keeps the live view available through an interruptible exit.
 
 ## Animating with Tailwind
 
@@ -39676,34 +39681,74 @@ portal.setContainer(someElementRef);
 
 # Presence
 
-`RdxPresenceDirective` is a headless structural directive that conditionally mounts and
-unmounts its template content based on a reactive `present` signal supplied through the
-presence context.
+`RdxPresenceDirective` conditionally creates an Angular template and keeps its live view through
+finite exit animations. Reopening during exit preserves the same DOM, components and local state.
 
-When `present` becomes `false`, the directive keeps the content in the DOM while a CSS exit
-animation (`@keyframes` applied for the `data-state="closed"` state) is running, and removes it
-only once that animation ends. If the content has no exit animation, it unmounts immediately.
+Compose it into an `ng-template` directive using `hostDirectives`, and provide a reactive `present`
+signal through `provideRdxPresenceContext`.
 
-It is not used directly — it is composed into a part directive via `hostDirectives`, and the
-host provides the `present` signal with `provideRdxPresenceContext`.
+### Conditional content
 
-```html
-<presence-example />
+The template roots participate automatically. CSS transitions and keyframes both work.
+
+```typescript
+import { ChangeDetectionStrategy, Component, Directive, inject, signal } from '@angular/core';
+import { provideRdxPresenceContext, RdxPresenceDirective } from '@radix-ng/primitives/presence';
+
+/**
+ * Demo wrapper that mirrors how real consumers apply the presence directive:
+ * a selectored `ng-template` directive that composes `RdxPresenceDirective` via
+ * `hostDirectives` and feeds it a `present` signal through the presence context.
+ */
+@Directive({
+    selector: 'ng-template[presenceDemo]',
+    hostDirectives: [RdxPresenceDirective]
+})
+export class PresenceDemo {}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'presence-example',
+    imports: [PresenceDemo],
+    providers: [provideRdxPresenceContext(() => ({ present: inject(PresenceExample).open }))],
+    template: `
+        <div class="flex flex-col items-center gap-4">
+            <button
+                class="border-border bg-background text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-9 items-center rounded-md border px-4 text-sm font-medium shadow-sm outline-none focus-visible:ring-2"
+                (click)="open.set(!open())"
+                type="button"
+            >
+                {{ open() ? 'Unmount' : 'Mount' }}
+            </button>
+
+            <div class="flex h-28 items-center">
+                <ng-template presenceDemo>
+                    <div
+                        class="presence-box border-border bg-card text-card-foreground flex h-24 w-48 items-center justify-center rounded-md border text-sm shadow-sm transition-[opacity,transform] duration-200 data-[state=closed]:scale-95 data-[state=closed]:opacity-0 starting:scale-95 starting:opacity-0"
+                        [attr.data-state]="open() ? 'open' : 'closed'"
+                    >
+                        I'm present
+                    </div>
+                </ng-template>
+            </div>
+
+            <p class="text-muted-foreground text-sm">present: {{ open() }}</p>
+        </div>
+    `
+})
+export class PresenceExample {
+    readonly open = signal(false);
+}
 ```
 
 ## Usage
-
-Provide the context and compose the directive on an `ng-template`:
 
 ```ts
 @Directive({
     selector: 'ng-template[myContentPresence]',
     hostDirectives: [RdxPresenceDirective],
     providers: [
-        provideRdxPresenceContext(() => {
-            const rootContext = injectMyRootContext()!;
-            return { present: rootContext.open };
-        })
+        provideRdxPresenceContext(() => ({ present: injectMyRootContext().open }))
     ]
 })
 export class MyContentPresence {}
@@ -39711,38 +39756,156 @@ export class MyContentPresence {}
 
 ```html
 <ng-template myContentPresence>
-    <div [attr.data-state]="open() ? 'open' : 'closed'">Content</div>
+    <div class="transition-opacity duration-200 data-[closed]:opacity-0"
+         [attr.data-closed]="open() ? undefined : ''">Content</div>
 </ng-template>
 ```
 
-Expose state with a `data-state` attribute on the content element and define the exit
-animation for `[data-state='closed']`. The directive keeps the element mounted until that
-animation finishes:
+### Animated descendants
 
-```css
-.content[data-state='open'] {
-    animation: fade-in 150ms ease-out;
-}
-.content[data-state='closed'] {
-    animation: fade-out 150ms ease-in;
+Import `RdxPresenceTarget` and apply `rdxPresenceTarget` to an animated descendant. Its finite
+animations then participate in the same view lifetime. Unregistered descendants do not delay
+removal. Infinite animations are ignored, including on registered targets. If a transition is
+canceled and replaced, Presence waits for the replacement.
+
+```html
+<ng-template myContentPresence>
+    <section>
+        <div rdxPresenceTarget class="transition-opacity duration-200 data-[closed]:opacity-0"
+             [attr.data-closed]="open() ? undefined : ''">Animated content</div>
+    </section>
+</ng-template>
+```
+
+Popup, Backdrop and Tabs Panel parts register their own animation elements. Structural portals
+consume their owner's lifetime; styling a Popup requires no additional Presence directive.
+For an additional animated element, place `rdxPresenceTarget` inside the structural template.
+
+### Explicit descendant animation
+
+Only the marked descendant runs exit keyframes; the containing view stays mounted until it finishes.
+
+```typescript
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { provideRdxPresenceContext, RdxPresenceTarget } from '@radix-ng/primitives/presence';
+import { PresenceDemo } from './presence';
+
+/** A nested animation participates only through an explicit rdxPresenceTarget. */
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'presence-waapi-subtree',
+    imports: [PresenceDemo, RdxPresenceTarget],
+    providers: [provideRdxPresenceContext(() => ({ present: inject(PresenceWaapiSubtree).open }))],
+    template: `
+        <div class="flex flex-col items-center gap-4">
+            <button
+                class="border-border bg-background text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-9 items-center rounded-md border px-4 text-sm font-medium shadow-sm outline-none focus-visible:ring-2"
+                (click)="open.set(!open())"
+                type="button"
+            >
+                {{ open() ? 'Unmount' : 'Mount' }}
+            </button>
+
+            <div class="flex h-28 items-center">
+                <ng-template presenceDemo>
+                    <div
+                        class="waapi-root group border-border bg-card flex h-24 w-48 items-center justify-center rounded-md border p-2 shadow-sm"
+                        [attr.data-state]="open() ? 'open' : 'closed'"
+                    >
+                        <div
+                            class="waapi-child text-card-foreground text-sm group-data-[state=closed]:animate-ping group-data-[state=closed]:[animation-duration:300ms] group-data-[state=closed]:[animation-iteration-count:1]"
+                            rdxPresenceTarget
+                        >
+                            explicit descendant exit
+                        </div>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    `
+})
+export class PresenceWaapiSubtree {
+    readonly open = signal(false);
 }
 ```
 
-## API
+### Infinite animation
+
+The marked spinner runs continuously. Infinite motion does not delay removal when the view closes.
+
+```typescript
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { provideRdxPresenceContext, RdxPresenceTarget } from '@radix-ng/primitives/presence';
+import { PresenceDemo } from './presence';
+
+/** An explicitly registered infinite spinner never holds a finite render lifetime open. */
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'presence-waapi-spinner',
+    imports: [PresenceDemo, RdxPresenceTarget],
+    providers: [provideRdxPresenceContext(() => ({ present: inject(PresenceWaapiSpinner).open }))],
+    template: `
+        <div class="flex flex-col items-center gap-4">
+            <button
+                class="border-border bg-background text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-9 items-center rounded-md border px-4 text-sm font-medium shadow-sm outline-none focus-visible:ring-2"
+                (click)="open.set(!open())"
+                type="button"
+            >
+                {{ open() ? 'Unmount' : 'Mount' }}
+            </button>
+
+            <div class="flex h-28 items-center">
+                <ng-template presenceDemo>
+                    <div
+                        class="waapi-root border-border bg-card flex h-24 w-48 items-center justify-center rounded-md border shadow-sm"
+                        [attr.data-state]="open() ? 'open' : 'closed'"
+                    >
+                        <div
+                            class="waapi-spinner border-muted-foreground size-6 animate-spin rounded-full border-2 border-t-transparent"
+                            rdxPresenceTarget
+                        ></div>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    `
+})
+export class PresenceWaapiSpinner {
+    readonly open = signal(false);
+}
+```
+
+## API Reference
+
+### `RdxPresenceDirective`
+
+Compose on an `ng-template` through `hostDirectives`. It adds no wrapper and exposes no styling attributes.
+
+### `RdxPresenceTarget`
+
+Apply `rdxPresenceTarget` to the element whose animations should retain the containing Presence
+view. It has no inputs, outputs or styling attributes.
 
 ### `RdxPresenceContext`
 
-```ts
-type RdxPresenceContext = {
-    present: Signal<boolean>;
-};
-```
+- `present: Signal<boolean>` supplies logical presence.
+- `renderLifecycle?: RdxRenderLifecycle` shares an existing semantic owner's lifetime.
+- `skipExitAnimation?: Signal<boolean>` ends a standalone utility's exit immediately.
+- `registerPresence?` reports the physical view to a popup's completion coordinator.
 
 ### `provideRdxPresenceContext(factory)`
 
-DI helper that registers the `RdxPresenceContext` consumed by `RdxPresenceDirective`. The
-factory runs in an injection context, so it can `inject()` ancestor contexts to derive the
-`present` signal.
+Registers the context consumed by structural Presence. The factory runs in an injection context.
+
+## Migration
+
+`PresenceMachine` and `PresenceMachineHost` have been removed. Core's `useRenderLifecycle` owns
+render state and shares `waitForAnimations` with other animated parts. `useTransitionStatus` and
+`RdxTransitionStatusRef` are replaced by `useRenderLifecycle` and `RdxRenderLifecycle`.
+
+Automatic subtree discovery has been removed. Add `rdxPresenceTarget` to animated descendants
+that are not already registered primitive parts. `animate.leave` remains appropriate when an
+application template owns removal; Presence retains the Angular view itself until exit completes.
 
 ---
 

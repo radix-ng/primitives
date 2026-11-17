@@ -67,8 +67,8 @@ its exit transition before hiding (`data-ending-style` is present while it runs)
 
 Use `@keyframes` when a primitive part is conditionally mounted through a Radix NG presence directive
 or through a structural portal such as `*rdxPopoverPortal` / `*rdxTooltipPortal` (which merge portal +
-presence). The exit animation can go on the portal's root element (the positioner) **or any element
-inside it** (the popup) — see [Exit animations](#exit-animations-keyframes-or-transitions) below.
+presence). Style the registered Popup or Backdrop, or add `rdxPresenceTarget` to an additional
+animation element — see [Exit animations](#exit-animations-keyframes-or-transitions) below.
 
 ```html
 <div *rdxPopoverPortal rdxPopoverPositioner>
@@ -110,24 +110,22 @@ inside it** (the popup) — see [Exit animations](#exit-animations-keyframes-or-
 
 ### Exit animations: keyframes or transitions
 
-After the closed state is applied, the presence machine inspects the running animations
-([Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Element/getAnimations)) on the
-template's root element **and its whole subtree**. It keeps the element mounted until every exit
-animation _started by the close_ has finished, then unmounts. If nothing animates, it unmounts
-immediately.
+After the closed state is applied, the shared render lifetime inspects finite animations through
+the [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Element/getAnimations).
+Popup, Backdrop and Panel parts register their own elements. A standalone Presence observes its
+template roots. Add `rdxPresenceTarget` to include an additional element inside a structural template.
 
-This means:
+- **Keyframes and transitions both work.** Style the part's documented open/closed or transition hooks.
+- **Participants are explicit.** Unregistered descendants do not delay removal. A popup nested inside
+  a positioner already registers itself; it needs no positioner animation to retain the portal.
+- **Infinite animations are ignored.** Finite animations on a registered target participate even if
+  they started before closing. Canceled animations are re-read so replacements finish before removal.
+- **Reopening retains the live Angular view.** DOM identity, child instances and local state survive
+  when the exit is interrupted.
 
-- **Keyframes or transitions both work.** A `@keyframes` exit (`data-closed`) and a transition
-  (a property change under `data-ending-style`) are detected the same way.
-- **Any element in the template carries the exit.** With a structural portal you can put the exit on
-  the positioner (the root) or on the popup nested inside it — you do **not** need a separate
-  "decoy" keyframe on the positioner just to keep the popup mounted.
-- **Pre-existing animations are ignored.** A spinner or other animation that was already running
-  before the close does not delay the unmount; only animations that start with the close count.
-
-A duration-based safety net (the longest declared transition/animation duration plus a small buffer)
-guarantees the element still unmounts if an animation is interrupted or never reports completion.
+A safety timer uses WAAPI timing, including iterations and playback rate. Paused animations wait
+for their owner to finish or cancel them. Where WAAPI is unavailable, declared CSS durations provide
+a bounded fallback. Root-level animation-name heuristics and automatic subtree scanning are removed.
 
 ## Angular `animate.enter` and `animate.leave`
 
@@ -175,7 +173,8 @@ work with native CSS and do not require `@angular/animations`.
 ```
 
 Use this for application content around primitives. Do not add `animate.leave` to a part already
-managed by `RdxPresenceDirective`; both APIs would try to control the same unmount lifecycle.
+managed by structural Presence or Portal. Angular leave animations delay physical DOM removal after
+the Angular view starts destruction; Presence keeps the live view available through an interruptible exit.
 
 ## Animating with Tailwind
 

@@ -1,12 +1,13 @@
 import { afterNextRender, Component, DestroyRef, effect, inject, Injector, signal, viewChild } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { RdxFloatingInsideElement } from '@radix-ng/primitives/dismissable-layer';
+import { RdxPresenceTarget } from '@radix-ng/primitives/presence';
 import { cn, demoButton, demoSelect } from '../../storybook/styles';
 import { _importsSelect, RdxSelectOpenChangeEvent, RdxSelectPopup, RdxSelectRoot } from '../index';
 
 @Component({
     selector: 'select-deferred-unmount',
-    imports: [_importsSelect, LucideCheck, LucideChevronDown, RdxFloatingInsideElement],
+    imports: [_importsSelect, LucideCheck, LucideChevronDown, RdxFloatingInsideElement, RdxPresenceTarget],
     template: `
         <div
             class="grid gap-8 sm:grid-cols-2"
@@ -27,7 +28,7 @@ import { _importsSelect, RdxSelectOpenChangeEvent, RdxSelectPopup, RdxSelectRoot
                 <ng-template [keepMounted]="keepMounted()" rdxSelectPortal>
                     <div [class]="s.positioner" sideOffset="5" rdxSelectPositioner>
                         <div [class]="s.popup" rdxSelectPopup>
-                            <div [class]="s.list" rdxSelectList>
+                            <div [class]="s.list" rdxSelectList rdxPresenceTarget>
                                 @for (fruit of fruits; track fruit) {
                                     <div [class]="s.item" [value]="fruit" rdxSelectItem>
                                         <span [class]="s.itemIndicator" rdxSelectItemIndicator>

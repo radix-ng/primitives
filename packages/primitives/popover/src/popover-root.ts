@@ -13,6 +13,7 @@ import {
     signal,
     untracked
 } from '@angular/core';
+import type { RdxRenderLifecycle } from '@radix-ng/primitives/core';
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
@@ -76,6 +77,7 @@ export interface RdxPopoverRootContext {
     descriptionId: Signal<string | undefined>;
     isOpen: Signal<boolean>;
     present: Signal<boolean>;
+    renderLifecycle: RdxRenderLifecycle;
     modal: Signal<RdxPopoverModal>;
     titleId: Signal<string | undefined>;
     trigger: Signal<HTMLElement | undefined>;
@@ -114,7 +116,6 @@ export interface RdxPopoverRootContext {
     registerTransitionElement: (element: HTMLElement) => () => void;
     transitionStatus: Signal<RdxPopoverTransitionStatus>;
     registerPresence: RdxPopupLifecycle['registerPresence'];
-    skipExitAnimation: Signal<boolean>;
     beforeContentFocusGuard: Signal<HTMLElement | null>;
     registerViewport: (onTriggerChange: (previous: HTMLElement, next: HTMLElement) => void) => () => void;
     setBeforeContentFocusGuard: (element: HTMLElement | null) => void;
@@ -224,7 +225,8 @@ export class RdxPopoverRoot {
     );
     readonly transitionStatus = this.lifecycle.status;
     readonly registerPresence = this.lifecycle.registerPresence;
-    readonly skipExitAnimation = this.lifecycle.skipExitAnimation;
+    /** @internal Shared render owner for structural Portal/Presence. */
+    readonly renderLifecycle = this.lifecycle.renderLifecycle;
     private readonly registeredTriggers = new Map<string, RdxPopoverRegisteredTrigger>();
     private readonly viewportTriggerChange = new Set<(previous: HTMLElement, next: HTMLElement) => void>();
 
@@ -608,6 +610,7 @@ function contextFor(root: RdxPopoverRoot): RdxPopoverRootContext {
         descriptionId: root.descriptionId.asReadonly(),
         isOpen: root.open,
         present: root.present,
+        renderLifecycle: root.renderLifecycle,
         modal: root.modal,
         titleId: root.titleId.asReadonly(),
         trigger: root.trigger.asReadonly(),
@@ -642,7 +645,6 @@ function contextFor(root: RdxPopoverRoot): RdxPopoverRootContext {
         registerTransitionElement: (element) => root.registerTransitionElement(element),
         transitionStatus: root.transitionStatus,
         registerPresence: root.registerPresence,
-        skipExitAnimation: root.skipExitAnimation,
         beforeContentFocusGuard: root.beforeContentFocusGuard.asReadonly(),
         registerViewport: (onTriggerChange) => root.registerViewport(onTriggerChange),
         setBeforeContentFocusGuard: (element) => root.setBeforeContentFocusGuard(element),

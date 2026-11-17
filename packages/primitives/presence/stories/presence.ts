@@ -17,42 +17,6 @@ export class PresenceDemo {}
     selector: 'presence-example',
     imports: [PresenceDemo],
     providers: [provideRdxPresenceContext(() => ({ present: inject(PresenceExample).open }))],
-    // Exception to the no-story-CSS rule: this fixture exists to drive a real enter/exit `@keyframes`
-    // pair through the presence machine. Named `@keyframes` cannot be expressed with headless Tailwind
-    // utilities story-locally (they'd have to live in the global theme), so the styles stay here.
-    // eslint-disable-next-line no-restricted-syntax -- Named WAAPI keyframes are the behavior under test (ADR 0011).
-    styles: `
-        @keyframes presence-enter {
-            from {
-                opacity: 0;
-                transform: scale(0.96);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        @keyframes presence-exit {
-            from {
-                opacity: 1;
-                transform: scale(1);
-            }
-            to {
-                opacity: 0;
-                transform: scale(0.96);
-            }
-        }
-
-        .presence-box[data-state='open'] {
-            animation: presence-enter 200ms ease-out;
-        }
-
-        /* The directive keeps the element mounted while this exit animation runs. */
-        .presence-box[data-state='closed'] {
-            animation: presence-exit 200ms ease-in;
-        }
-    `,
     template: `
         <div class="flex flex-col items-center gap-4">
             <button
@@ -66,7 +30,7 @@ export class PresenceDemo {}
             <div class="flex h-28 items-center">
                 <ng-template presenceDemo>
                     <div
-                        class="presence-box border-border bg-card text-card-foreground flex h-24 w-48 items-center justify-center rounded-md border text-sm shadow-sm"
+                        class="presence-box border-border bg-card text-card-foreground flex h-24 w-48 items-center justify-center rounded-md border text-sm shadow-sm transition-[opacity,transform] duration-200 data-[state=closed]:scale-95 data-[state=closed]:opacity-0 starting:scale-95 starting:opacity-0"
                         [attr.data-state]="open() ? 'open' : 'closed'"
                     >
                         I'm present

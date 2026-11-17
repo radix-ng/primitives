@@ -1,5 +1,6 @@
 import { Signal, TemplateRef } from '@angular/core';
 import { RdxCompositeListContext, RdxCompositeRootContext } from '@radix-ng/primitives/composite';
+import type { RdxRenderLifecycle } from '@radix-ng/primitives/core';
 import { createContext, RdxCancelableChangeEventDetails, RdxTransitionStatus } from '@radix-ng/primitives/core';
 
 export type NavigationMenuOrientation = 'horizontal' | 'vertical';
@@ -54,6 +55,7 @@ export interface RdxNavigationMenuRootContext {
     readonly previousValue: Signal<string | null>;
     readonly isOpen: Signal<boolean>;
     readonly present: Signal<boolean>;
+    readonly renderLifecycle: RdxRenderLifecycle;
     readonly instant: Signal<boolean>;
     readonly transitionStatus: Signal<RdxTransitionStatus>;
 

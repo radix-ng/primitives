@@ -1,33 +1,73 @@
 # Presence
 
-`RdxPresenceDirective` is a headless structural directive that conditionally mounts and
-unmounts its template content based on a reactive `present` signal supplied through the
-presence context.
+`RdxPresenceDirective` conditionally creates an Angular template and keeps its live view through
+finite exit animations. Reopening during exit preserves the same DOM, components and local state.
 
-When `present` becomes `false`, the directive keeps the content in the DOM while a CSS exit
-animation (`@keyframes` applied for the `data-state="closed"` state) is running, and removes it
-only once that animation ends. If the content has no exit animation, it unmounts immediately.
+Compose it into an `ng-template` directive using `hostDirectives`, and provide a reactive `present`
+signal through `provideRdxPresenceContext`.
 
-It is not used directly — it is composed into a part directive via `hostDirectives`, and the
-host provides the `present` signal with `provideRdxPresenceContext`.
+### Conditional content
 
-```html
-<presence-example />
+The template roots participate automatically. CSS transitions and keyframes both work.
+
+```typescript
+import { ChangeDetectionStrategy, Component, Directive, inject, signal } from '@angular/core';
+import { provideRdxPresenceContext, RdxPresenceDirective } from '@radix-ng/primitives/presence';
+
+/**
+ * Demo wrapper that mirrors how real consumers apply the presence directive:
+ * a selectored `ng-template` directive that composes `RdxPresenceDirective` via
+ * `hostDirectives` and feeds it a `present` signal through the presence context.
+ */
+@Directive({
+    selector: 'ng-template[presenceDemo]',
+    hostDirectives: [RdxPresenceDirective]
+})
+export class PresenceDemo {}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'presence-example',
+    imports: [PresenceDemo],
+    providers: [provideRdxPresenceContext(() => ({ present: inject(PresenceExample).open }))],
+    template: `
+        <div class="flex flex-col items-center gap-4">
+            <button
+                class="border-border bg-background text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-9 items-center rounded-md border px-4 text-sm font-medium shadow-sm outline-none focus-visible:ring-2"
+                (click)="open.set(!open())"
+                type="button"
+            >
+                {{ open() ? 'Unmount' : 'Mount' }}
+            </button>
+
+            <div class="flex h-28 items-center">
+                <ng-template presenceDemo>
+                    <div
+                        class="presence-box border-border bg-card text-card-foreground flex h-24 w-48 items-center justify-center rounded-md border text-sm shadow-sm transition-[opacity,transform] duration-200 data-[state=closed]:scale-95 data-[state=closed]:opacity-0 starting:scale-95 starting:opacity-0"
+                        [attr.data-state]="open() ? 'open' : 'closed'"
+                    >
+                        I'm present
+                    </div>
+                </ng-template>
+            </div>
+
+            <p class="text-muted-foreground text-sm">present: {{ open() }}</p>
+        </div>
+    `
+})
+export class PresenceExample {
+    readonly open = signal(false);
+}
 ```
 
 ## Usage
-
-Provide the context and compose the directive on an `ng-template`:
 
 ```ts
 @Directive({
     selector: 'ng-template[myContentPresence]',
     hostDirectives: [RdxPresenceDirective],
     providers: [
-        provideRdxPresenceContext(() => {
-            const rootContext = injectMyRootContext()!;
-            return { present: rootContext.open };
-        })
+        provideRdxPresenceContext(() => ({ present: injectMyRootContext().open }))
     ]
 })
 export class MyContentPresence {}
@@ -35,35 +75,153 @@ export class MyContentPresence {}
 
 ```html
 <ng-template myContentPresence>
-    <div [attr.data-state]="open() ? 'open' : 'closed'">Content</div>
+    <div class="transition-opacity duration-200 data-[closed]:opacity-0"
+         [attr.data-closed]="open() ? undefined : ''">Content</div>
 </ng-template>
 ```
 
-Expose state with a `data-state` attribute on the content element and define the exit
-animation for `[data-state='closed']`. The directive keeps the element mounted until that
-animation finishes:
+### Animated descendants
 
-```css
-.content[data-state='open'] {
-    animation: fade-in 150ms ease-out;
-}
-.content[data-state='closed'] {
-    animation: fade-out 150ms ease-in;
+Import `RdxPresenceTarget` and apply `rdxPresenceTarget` to an animated descendant. Its finite
+animations then participate in the same view lifetime. Unregistered descendants do not delay
+removal. Infinite animations are ignored, including on registered targets. If a transition is
+canceled and replaced, Presence waits for the replacement.
+
+```html
+<ng-template myContentPresence>
+    <section>
+        <div rdxPresenceTarget class="transition-opacity duration-200 data-[closed]:opacity-0"
+             [attr.data-closed]="open() ? undefined : ''">Animated content</div>
+    </section>
+</ng-template>
+```
+
+Popup, Backdrop and Tabs Panel parts register their own animation elements. Structural portals
+consume their owner's lifetime; styling a Popup requires no additional Presence directive.
+For an additional animated element, place `rdxPresenceTarget` inside the structural template.
+
+### Explicit descendant animation
+
+Only the marked descendant runs exit keyframes; the containing view stays mounted until it finishes.
+
+```typescript
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { provideRdxPresenceContext, RdxPresenceTarget } from '@radix-ng/primitives/presence';
+import { PresenceDemo } from './presence';
+
+/** A nested animation participates only through an explicit rdxPresenceTarget. */
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'presence-waapi-subtree',
+    imports: [PresenceDemo, RdxPresenceTarget],
+    providers: [provideRdxPresenceContext(() => ({ present: inject(PresenceWaapiSubtree).open }))],
+    template: `
+        <div class="flex flex-col items-center gap-4">
+            <button
+                class="border-border bg-background text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-9 items-center rounded-md border px-4 text-sm font-medium shadow-sm outline-none focus-visible:ring-2"
+                (click)="open.set(!open())"
+                type="button"
+            >
+                {{ open() ? 'Unmount' : 'Mount' }}
+            </button>
+
+            <div class="flex h-28 items-center">
+                <ng-template presenceDemo>
+                    <div
+                        class="waapi-root group border-border bg-card flex h-24 w-48 items-center justify-center rounded-md border p-2 shadow-sm"
+                        [attr.data-state]="open() ? 'open' : 'closed'"
+                    >
+                        <div
+                            class="waapi-child text-card-foreground text-sm group-data-[state=closed]:animate-ping group-data-[state=closed]:[animation-duration:300ms] group-data-[state=closed]:[animation-iteration-count:1]"
+                            rdxPresenceTarget
+                        >
+                            explicit descendant exit
+                        </div>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    `
+})
+export class PresenceWaapiSubtree {
+    readonly open = signal(false);
 }
 ```
 
-## API
+### Infinite animation
+
+The marked spinner runs continuously. Infinite motion does not delay removal when the view closes.
+
+```typescript
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { provideRdxPresenceContext, RdxPresenceTarget } from '@radix-ng/primitives/presence';
+import { PresenceDemo } from './presence';
+
+/** An explicitly registered infinite spinner never holds a finite render lifetime open. */
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'presence-waapi-spinner',
+    imports: [PresenceDemo, RdxPresenceTarget],
+    providers: [provideRdxPresenceContext(() => ({ present: inject(PresenceWaapiSpinner).open }))],
+    template: `
+        <div class="flex flex-col items-center gap-4">
+            <button
+                class="border-border bg-background text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-9 items-center rounded-md border px-4 text-sm font-medium shadow-sm outline-none focus-visible:ring-2"
+                (click)="open.set(!open())"
+                type="button"
+            >
+                {{ open() ? 'Unmount' : 'Mount' }}
+            </button>
+
+            <div class="flex h-28 items-center">
+                <ng-template presenceDemo>
+                    <div
+                        class="waapi-root border-border bg-card flex h-24 w-48 items-center justify-center rounded-md border shadow-sm"
+                        [attr.data-state]="open() ? 'open' : 'closed'"
+                    >
+                        <div
+                            class="waapi-spinner border-muted-foreground size-6 animate-spin rounded-full border-2 border-t-transparent"
+                            rdxPresenceTarget
+                        ></div>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    `
+})
+export class PresenceWaapiSpinner {
+    readonly open = signal(false);
+}
+```
+
+## API Reference
+
+### `RdxPresenceDirective`
+
+Compose on an `ng-template` through `hostDirectives`. It adds no wrapper and exposes no styling attributes.
+
+### `RdxPresenceTarget`
+
+Apply `rdxPresenceTarget` to the element whose animations should retain the containing Presence
+view. It has no inputs, outputs or styling attributes.
 
 ### `RdxPresenceContext`
 
-```ts
-type RdxPresenceContext = {
-    present: Signal<boolean>;
-};
-```
+- `present: Signal<boolean>` supplies logical presence.
+- `renderLifecycle?: RdxRenderLifecycle` shares an existing semantic owner's lifetime.
+- `skipExitAnimation?: Signal<boolean>` ends a standalone utility's exit immediately.
+- `registerPresence?` reports the physical view to a popup's completion coordinator.
 
 ### `provideRdxPresenceContext(factory)`
 
-DI helper that registers the `RdxPresenceContext` consumed by `RdxPresenceDirective`. The
-factory runs in an injection context, so it can `inject()` ancestor contexts to derive the
-`present` signal.
+Registers the context consumed by structural Presence. The factory runs in an injection context.
+
+## Migration
+
+`PresenceMachine` and `PresenceMachineHost` have been removed. Core's `useRenderLifecycle` owns
+render state and shares `waitForAnimations` with other animated parts. `useTransitionStatus` and
+`RdxTransitionStatusRef` are replaced by `useRenderLifecycle` and `RdxRenderLifecycle`.
+
+Automatic subtree discovery has been removed. Add `rdxPresenceTarget` to animated descendants
+that are not already registered primitive parts. `animate.leave` remains appropriate when an
+application template owns removal; Presence retains the Angular view itself until exit completes.

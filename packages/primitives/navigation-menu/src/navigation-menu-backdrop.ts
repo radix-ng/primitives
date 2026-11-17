@@ -1,4 +1,5 @@
-import { Directive, ElementRef, inject } from '@angular/core';
+import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
+
 import { injectNavigationMenuRootContext } from './navigation-menu-root-context';
 
 /**
@@ -21,6 +22,11 @@ export class RdxNavigationMenuBackdrop {
     protected readonly rootContext = injectNavigationMenuRootContext();
 
     constructor() {
+        const unregisterAnimation = this.rootContext.renderLifecycle.registerElement(
+            inject<ElementRef<HTMLElement>>(ElementRef).nativeElement
+        );
+        inject(DestroyRef).onDestroy(unregisterAnimation);
+
         const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
         host.style.setProperty('-webkit-user-select', 'none');
         host.style.webkitUserSelect = 'none';

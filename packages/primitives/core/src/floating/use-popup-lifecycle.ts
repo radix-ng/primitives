@@ -1,12 +1,12 @@
 import { computed, DestroyRef, effect, inject, signal, Signal, untracked } from '@angular/core';
-import { RdxTransitionStatus, useTransitionStatus } from '../composables/use-transition-status';
+import { RdxRenderLifecycle, RdxTransitionStatus, useRenderLifecycle } from '../composables/use-render-lifecycle';
 
 /** A presence host reports its live view separately from the popup's logical open state. */
 export interface RdxPopupPresenceRegistration {
     readonly mounted: Signal<boolean>;
     readonly keepMounted: () => boolean;
     /** A missing explicit Portal destination prevents mounting and enter completion. */
-    readonly suspended?: Signal<boolean>;
+    readonly suspended?: () => boolean;
     /** Read only during owner disposal; Presence keeps the actual animation phase. */
     readonly pendingExit?: () => boolean;
 }
@@ -19,9 +19,9 @@ export interface RdxPopupOpenChangeTransaction {
 }
 
 export interface RdxPopupLifecycle {
+    readonly renderLifecycle: RdxRenderLifecycle;
     readonly present: Signal<boolean>;
     readonly status: Signal<RdxTransitionStatus>;
-    readonly skipExitAnimation: Signal<boolean>;
     registerElement: (element: HTMLElement) => () => void;
     registerPresence: (presence: RdxPopupPresenceRegistration) => () => void;
     prepareOpenChange: (open: boolean) => RdxPopupOpenChangeTransaction;
@@ -45,12 +45,11 @@ export function usePopupLifecycle(
     const closing = signal(false, { debugName: `${debugName}.closing` });
     const deferred = signal(false, { debugName: `${debugName}.deferredUnmount` });
     const transitionComplete = signal(false);
-    const skipExitAnimation = signal(false);
+    const forcedUnmount = signal(false);
     const presences = signal<readonly RdxPopupPresenceRegistration[]>([]);
     const exitingPresence = computed(() =>
         presences().some((presence) => presence.mounted() && !presence.keepMounted())
     );
-    const disposablePresence = computed(() => presences().some((presence) => !presence.keepMounted()));
 
     let previousOpen = untracked(open);
     let enteredOpen = previousOpen;
@@ -91,15 +90,18 @@ export function usePopupLifecycle(
         }
     };
 
-    const transition = useTransitionStatus((nextOpen) => {
-        syncOpen();
-        if (nextOpen) {
-            if (open() && !destroyRef.destroyed) onComplete(true);
-        } else if (pendingClose && !open()) {
-            transitionComplete.set(true);
-            completeClose();
-        }
-    });
+    const transition = useRenderLifecycle(
+        (nextOpen) => {
+            syncOpen();
+            if (nextOpen) {
+                if (open() && !destroyRef.destroyed) onComplete(true);
+            } else if (pendingClose && !open()) {
+                transitionComplete.set(true);
+                completeClose();
+            }
+        },
+        { open, debugName }
+    );
 
     const syncOpen = () => {
         const nextOpen = open();
@@ -108,7 +110,7 @@ export function usePopupLifecycle(
         previousOpen = nextOpen;
         deferred.set(false);
         transitionComplete.set(false);
-        skipExitAnimation.set(false);
+        forcedUnmount.set(false);
         closingTransition = undefined;
         if (nextOpen) {
             pendingClose = undefined;
@@ -136,17 +138,14 @@ export function usePopupLifecycle(
         () => {
             const isClosing = closing();
             const held = deferred();
-            const disposedByPresence = disposablePresence();
-            const forced = skipExitAnimation();
+            const forced = forcedUnmount();
             untracked(() => {
                 if (!isClosing || !pendingClose || open()) return;
                 if (held) {
                     transition.cancel();
                     closingTransition = undefined;
                     transitionComplete.set(false);
-                } else if (disposedByPresence || forced) {
-                    // Presence alone waits for a disposable Angular view's CSS exit. A retained
-                    // view has no removal lifecycle, so only that case needs a separate CSS wait.
+                } else if (forced) {
                     transition.cancel();
                     transitionComplete.set(true);
                 } else if (closingTransition !== pendingClose) {
@@ -194,9 +193,9 @@ export function usePopupLifecycle(
     });
 
     return {
+        renderLifecycle: transition,
         present: computed(() => open() || deferred()),
         status: computed(() => (closing() ? 'ending' : transition.status())),
-        skipExitAnimation: skipExitAnimation.asReadonly(),
         finishPendingCloseOnDestroy: () => {
             // Angular marks the view destroyed before directive hooks, then disconnects outputs.
             // Only this hook window can notify an accepted close; a DestroyRef callback is too late.
@@ -222,7 +221,7 @@ export function usePopupLifecycle(
             let committedClose: object | undefined;
             const preventUnmountOnClose = () => {
                 requested = true;
-                if (committedClose && committedClose === pendingClose && !open() && !skipExitAnimation()) {
+                if (committedClose && committedClose === pendingClose && !open() && !forcedUnmount()) {
                     deferred.set(true);
                 }
             };
@@ -247,9 +246,9 @@ export function usePopupLifecycle(
         unmount: () => {
             syncOpen();
             if (open() || !pendingClose || destroyRef.destroyed) return;
-            skipExitAnimation.set(true);
+            forcedUnmount.set(true);
             deferred.set(false);
-            transition.cancel();
+            transition.unmount();
             transitionComplete.set(true);
             pendingClose.immediate = true;
             completeClose(true);

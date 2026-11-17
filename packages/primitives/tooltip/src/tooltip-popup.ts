@@ -1,4 +1,4 @@
-import { computed, Directive, inject } from '@angular/core';
+import { computed, DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 import { RdxPopperContent, RdxPopperContentWrapper } from '@radix-ng/primitives/popper';
 import { injectRdxTooltipContext } from './tooltip';
 
@@ -21,6 +21,13 @@ import { injectRdxTooltipContext } from './tooltip';
 export class RdxTooltipPopup {
     protected readonly rootContext = injectRdxTooltipContext();
     private readonly wrapper = inject(RdxPopperContentWrapper, { optional: true });
+
+    constructor() {
+        const unregister = this.rootContext.renderLifecycle.registerElement(
+            inject<ElementRef<HTMLElement>>(ElementRef).nativeElement
+        );
+        inject(DestroyRef).onDestroy(unregister);
+    }
 
     protected readonly side = computed(() => this.wrapper?.placedSide());
     protected readonly align = computed(() => this.wrapper?.placedAlign());

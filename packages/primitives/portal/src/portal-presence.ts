@@ -2,22 +2,16 @@ import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import {
     booleanAttribute,
     computed,
-    DestroyRef,
     Directive,
     effect,
-    EmbeddedViewRef,
     inject,
     InjectionToken,
-    Injector,
     input,
     linkedSignal,
     PLATFORM_ID,
-    signal,
-    TemplateRef,
     ViewContainerRef
 } from '@angular/core';
-import { watch } from '@radix-ng/primitives/core';
-import { PresenceMachine, RDX_PRESENCE_CONTEXT } from '@radix-ng/primitives/presence';
+import { providePresenceTargetContext, RDX_PRESENCE_CONTEXT, usePresence } from '@radix-ng/primitives/presence';
 import { movePortalNodes } from './move-nodes';
 import { RdxPortalContainer, RdxPortalTarget, resolvePortalContainer } from './resolve-container';
 
@@ -27,9 +21,8 @@ export const RDX_PORTAL_ANCHOR = new InjectionToken<Node>('RdxPortalAnchor');
 /**
  * Structural directive merging what `RdxPortal` + `RdxPresenceDirective` did as a pair: it mounts its
  * template while `present()` (from {@link RDX_PRESENCE_CONTEXT}) is `true`, **relocates every root
- * node into a portal container** (default `document.body`), and on close runs the presence exit state
- * machine — keeping the content mounted until every running CSS exit `@keyframes` on any root node
- * finishes.
+ * node into a portal container** (default `document.body`), and retains the live view until its signal-owned render lifetime ends. Popup Roots supply their
+ * existing lifetime; standalone portals observe finite animations on their roots and explicit targets.
  *
  * Unlike `RdxPortal`, it adds **no wrapper element**: the template's root nodes become direct children
  * of the container. Use the `*` microsyntax for the common single-root case
@@ -42,12 +35,11 @@ export const RDX_PORTAL_ANCHOR = new InjectionToken<Node>('RdxPortalAnchor');
 @Directive({
     standalone: true,
     providers: [
-        { provide: RDX_PORTAL_ANCHOR, useFactory: () => inject(ViewContainerRef).element.nativeElement as Node }
+        { provide: RDX_PORTAL_ANCHOR, useFactory: () => inject(ViewContainerRef).element.nativeElement as Node },
+        providePresenceTargetContext(() => inject(RdxPortalPresence).presence.lifecycle)
     ]
 })
 export class RdxPortalPresence {
-    private readonly viewContainerRef = inject(ViewContainerRef);
-    private readonly templateRef = inject(TemplateRef<void>);
     private readonly document = inject(DOCUMENT, { optional: true });
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
@@ -69,16 +61,8 @@ export class RdxPortalPresence {
 
     /** The layer's own open/present flag, OR'd with {@link keepMounted} to gate mount/unmount. */
     private readonly presenceContext = inject(RDX_PRESENCE_CONTEXT);
-    private readonly contextPresent = this.presenceContext.present;
     private readonly _computedContainer = linkedSignal(this.container);
     private readonly pendingContainer = computed(() => this._computedContainer() === null);
-    private readonly present = computed(
-        () => !this.pendingContainer() && (this.contextPresent() || this.keepMounted())
-    );
-    private readonly skipExitAnimation = computed(
-        () => this.pendingContainer() || (this.presenceContext.skipExitAnimation?.() ?? false)
-    );
-
     private readonly elementContainer = computed<RdxPortalTarget | null>(() => {
         const container = this._computedContainer();
         if (container === null) return null;
@@ -86,70 +70,27 @@ export class RdxPortalPresence {
         return provided ?? this.document?.body ?? null;
     });
 
-    /** The live view's root nodes, exposed as a signal so the relocation effect re-runs on (re)mount. */
-    private readonly mountedNodes = signal<Node[]>([]);
-    private viewRef: EmbeddedViewRef<void> | null = null;
-    private readonly mounted = signal(false);
-    private machine?: PresenceMachine;
+    /** @internal Shared with explicit Presence animation targets. */
+    readonly presence = usePresence(this.presenceContext, {
+        keepMounted: this.keepMounted,
+        suspended: this.pendingContainer
+    });
 
     constructor() {
-        const injector = inject(Injector);
-        // Initial inputs must be bound before the machine can create a view. Otherwise an
-        // already-open owner briefly instantiates children even when container=null was authored.
-        watch([], () => {
-            this.machine = new PresenceMachine({
-                present: this.present,
-                skipExitAnimation: this.skipExitAnimation,
-                isBrowser: this.isBrowser,
-                injector,
-                mountView: () => this.mountView(),
-                destroyView: () => this.destroyView()
-            });
-        });
-        const unregister = this.presenceContext.registerPresence?.({
-            mounted: this.mounted.asReadonly(),
-            keepMounted: this.keepMounted,
-            suspended: this.pendingContainer,
-            pendingExit: () => this.machine?.isExitPending ?? false
-        });
-
         // Relocate reactively: re-runs whenever the resolved container changes or the view is
         // (re)mounted. On the server we never relocate — the nodes render in place.
         effect(() => {
             const container = this.elementContainer();
-            const nodes = this.mountedNodes();
+            const nodes = this.presence.nodes();
             if (!this.isBrowser || !container) {
                 return;
             }
             movePortalNodes(nodes, container);
-        });
-
-        inject(DestroyRef).onDestroy(() => {
-            this.machine?.dispose();
-            unregister?.();
         });
     }
 
     /** Imperatively override the portal container (parity with `RdxPortal.setContainer`). */
     setContainer(container: RdxPortalContainer | undefined): void {
         this._computedContainer.set(container);
-    }
-
-    private mountView(): HTMLElement[] {
-        this.viewRef = this.viewContainerRef.createEmbeddedView(this.templateRef);
-        this.mounted.set(true);
-        const rootNodes = this.viewRef.rootNodes as Node[];
-        this.mountedNodes.set(rootNodes);
-        // Watch every element root for exit animations (dialog returns backdrop + popup).
-        return rootNodes.filter((node): node is HTMLElement => node.nodeType === 1);
-    }
-
-    private destroyView(): void {
-        // Destroying the view removes the nodes from wherever they currently live (the container) —
-        // no anchor-comment juggling, unlike `RdxPortal` which restores its host element.
-        this.viewRef?.destroy();
-        this.viewRef = null;
-        this.mounted.set(false);
-        this.mountedNodes.set([]);
     }
 }

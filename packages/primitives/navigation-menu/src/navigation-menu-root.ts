@@ -23,7 +23,7 @@ import {
     RDX_FLOATING_REGISTRATION,
     RdxFloatingNodeRegistration,
     RdxFloatingRootContext,
-    useTransitionStatus
+    useRenderLifecycle
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { RdxPopper } from '@radix-ng/primitives/popper';
@@ -134,13 +134,18 @@ export class RdxNavigationMenuRoot {
     private closeTimer: ReturnType<typeof setTimeout> | undefined;
     private instantFrame: number | undefined;
 
-    private readonly transition = useTransitionStatus((open) => {
-        this.instant.set(false);
-        this.onOpenChangeComplete.emit(open);
-    });
+    private readonly transition = useRenderLifecycle(
+        (open) => {
+            this.instant.set(false);
+            this.onOpenChangeComplete.emit(open);
+        },
+        { open: () => this.isOpen() }
+    );
 
     readonly instant = signal(false);
     readonly transitionStatus = this.transition.status;
+    /** @internal Shared with structural Portal. */
+    readonly renderLifecycle = this.transition;
     readonly previousValue = signal<string | null>(null);
     readonly isOpen = computed(() => this.value() !== null);
     private readonly preventUnmountOnClose = signal(false);
@@ -495,6 +500,7 @@ function contextFor(root: RdxNavigationMenuRoot): RdxNavigationMenuRootContext {
         previousValue: root.previousValue.asReadonly(),
         isOpen: root.isOpen,
         present: root.present,
+        renderLifecycle: root.renderLifecycle,
         instant: root.instant.asReadonly(),
         transitionStatus: root.transitionStatus,
         trigger: root.trigger.asReadonly(),

@@ -63,7 +63,7 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0008](0008-cropper-pointer-events-unification.md)                           | Proposed               | Unify Cropper Drag on Pointer Events                                                 |
 | [0009](0009-performance-benchmarks-vitest-browser-mode.md)                   | Accepted               | Performance Benchmarks via Vitest Browser Mode                                       |
 | [0010](0010-structural-portal-presence.md)                                   | Accepted               | Structural `*rdxXxxPortal` (portal + presence merged) — anatomy flattening           |
-| [0011](0011-waapi-presence-exit-detection.md)                                | Accepted               | WAAPI-based exit detection for presence                                              |
+| [0011](0011-waapi-presence-exit-detection.md)                                | Superseded by ADR-0084 | WAAPI-based exit detection for presence                                              |
 | [0012](0012-thin-positioners.md)                                             | Accepted               | Thin positioners — single-source popper inputs, unified CSS variables                |
 | [0013](0013-dev-mode-diagnostics.md)                                         | Accepted               | Dev-mode diagnostics & debuggability                                                 |
 | [0014](0014-unify-combobox-autocomplete-engine.md)                           | Accepted               | Unify Combobox & Autocomplete on one engine                                          |
@@ -133,3 +133,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0081](0081-tabs-controlled-selection-ownership.md)                          | Accepted               | Keep controlled Tabs selection owned by its input                                    |
 | [0082](0082-popup-close-completion-frame.md)                                 | Accepted               | Complete automatic popup closes after a frame boundary                               |
 | [0083](0083-tabs-native-tab-render-boundary.md)                              | Accepted               | Synchronize Tabs before native Tab and preserve the exit frame                       |
+| [0084](0084-signal-render-lifecycle.md)                                      | Accepted               | Share a signal-owned render lifetime and explicit animation participants             |

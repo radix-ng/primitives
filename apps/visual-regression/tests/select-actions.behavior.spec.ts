@@ -209,7 +209,7 @@ test('a retained item-aligned view resolves the current selection on every open'
     expect(errors).toEqual([]);
 });
 
-test('automatic completion waits for a descendant CSS exit', async ({ page }) => {
+test('automatic completion waits for an explicitly registered descendant CSS exit', async ({ page }) => {
     const errors = await openExample(page);
     await page.getByLabel('Defer unmount').uncheck();
     await page.addStyleTag({

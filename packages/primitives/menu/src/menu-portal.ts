@@ -26,8 +26,8 @@ import { injectRdxMenuRootContext } from './menu-root';
             const root = injectRdxMenuRootContext();
             return {
                 present: root.present,
-                registerPresence: root.registerPresence,
-                skipExitAnimation: root.skipExitAnimation
+                renderLifecycle: root.renderLifecycle,
+                registerPresence: root.registerPresence
             };
         })
     ]

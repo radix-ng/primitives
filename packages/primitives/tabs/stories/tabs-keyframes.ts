@@ -1,14 +1,15 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RdxPresenceTarget } from '@radix-ng/primitives/presence';
 import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'tabs-keyframes-example',
-    imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel, RdxTabsPanelPresence],
+    imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel, RdxTabsPanelPresence, RdxPresenceTarget],
     // The complete panel view is mounted only while its tab is active.
     // On enter the inner element plays `tabs-panel-in`; when the tab is left, the parent panel gets
     // `data-ending-style`, so the inner element runs the exit keyframes while the panel remains
-    // visible and inert. The presence machine waits for the panel and its descendants to finish.
+    // visible and inert. Explicit targets share the Panel's render lifetime.
     template: `
         <div
             class="border-border bg-background text-foreground w-[420px] overflow-hidden rounded-xl border shadow-sm"
@@ -35,6 +36,7 @@ import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTa
                 <div class="group col-start-1 row-start-1" *rdxTabsPanelPresence="'account'" rdxTabsPanel>
                     <div
                         class="bg-background text-foreground animate-tabs-panel-in group-data-[ending-style]:animate-tabs-panel-out p-6 text-sm leading-6 outline-none"
+                        rdxPresenceTarget
                     >
                         Make changes to your account here. Click save when you're done.
                     </div>
@@ -42,6 +44,7 @@ import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTa
                 <div class="group col-start-1 row-start-1" *rdxTabsPanelPresence="'password'" rdxTabsPanel>
                     <div
                         class="bg-background text-foreground animate-tabs-panel-in group-data-[ending-style]:animate-tabs-panel-out p-6 text-sm leading-6 outline-none"
+                        rdxPresenceTarget
                     >
                         Change your password here. After saving, you'll be logged out.
                     </div>

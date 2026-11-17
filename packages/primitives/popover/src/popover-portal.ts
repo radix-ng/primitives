@@ -21,8 +21,8 @@ import { injectRdxPopoverRootContext } from './popover-root';
             const root = injectRdxPopoverRootContext();
             return {
                 present: root.present,
-                registerPresence: root.registerPresence,
-                skipExitAnimation: root.skipExitAnimation
+                renderLifecycle: root.renderLifecycle,
+                registerPresence: root.registerPresence
             };
         })
     ]

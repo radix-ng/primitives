@@ -9,6 +9,7 @@ import {
     RdxDialogTitle,
     RdxDialogTrigger
 } from '@radix-ng/primitives/dialog';
+import { RdxPresenceTarget } from '@radix-ng/primitives/presence';
 import {
     RdxSelectItem,
     RdxSelectItemText,
@@ -42,6 +43,7 @@ import {
         RdxSelectPositioner,
         RdxSelectPopup,
         RdxSelectList,
+        RdxPresenceTarget,
         RdxSelectItem,
         RdxSelectItemText
     ],
@@ -61,7 +63,7 @@ import {
                         <ng-template rdxSelectPortal>
                             <div class="positioner" sideOffset="4" rdxSelectPositioner>
                                 <div class="popup" rdxSelectPopup>
-                                    <div rdxSelectList>
+                                    <div rdxSelectList rdxPresenceTarget>
                                         @for (item of fruits; track item) {
                                             <div class="item" [value]="item" rdxSelectItem>
                                                 <span rdxSelectItemText>{{ item }}</span>

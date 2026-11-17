@@ -44,6 +44,7 @@ export * from './src/dom/tab-index';
 export * from './src/dom/use-native-form-control';
 export * from './src/dom/use-resize-observer';
 export * from './src/dom/use-scroll-lock';
+export * from './src/dom/wait-for-animations';
 
 export * from './src/composables/typeahead';
 export * from './src/composables/use-arrow-navigation';
@@ -52,7 +53,7 @@ export * from './src/composables/use-grace-area';
 export * from './src/composables/use-list-highlight';
 export * from './src/composables/use-live-region-text';
 export * from './src/composables/use-pointer-drag';
-export * from './src/composables/use-transition-status';
+export * from './src/composables/use-render-lifecycle';
 export * from './src/composables/watch';
 
 export * from './src/positioning/types';

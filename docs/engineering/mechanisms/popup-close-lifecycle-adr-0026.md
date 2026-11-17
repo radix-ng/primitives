@@ -7,7 +7,9 @@ Presence and transition helpers supply their actual pending CSS phase so interru
 `core/floating/use-popup-lifecycle.ts` coordinates an accepted
 close transaction, an external-animation hold, transition completion and registered Presence views.
 Select, Popover and Menu compose this helper: Root exposes `close()` / `unmount()`, and Portal forwards `keepMounted`.
-Presence optionally registers its live view and can bypass exit waiting after explicit completion.
+Root owns the shared `useRenderLifecycle`; Portal consumes its `mounted` signal and registers the
+physical view so completion follows actual destruction. CSS is observed once for retained and
+disposable views. Explicit unmount ends the shared render lifetime immediately. See [ADR 0084](../../adr/0084-signal-render-lifecycle.md).
 Reopening invalidates the prior close; canceled/open requests cannot retain the next close.
 See the Popover and Menu migrations in ADRs 0033 and 0035. Keep these lifetime mechanics shared when
 extending parity instead of adding another per-primitive retained-mount flag.

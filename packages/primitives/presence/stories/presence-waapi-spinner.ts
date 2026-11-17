@@ -1,35 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
+import { provideRdxPresenceContext, RdxPresenceTarget } from '@radix-ng/primitives/presence';
 import { PresenceDemo } from './presence';
 
-/**
- * ADR 0011 fixture for the **freshness filter**: a never-ending spinner runs inside the content the
- * whole time it is open, but there is no exit animation. The spinner's `startTime` predates the
- * close, so `startTime >= closeTimestamp` excludes it and the content unmounts immediately — a
- * subtree-aware machine must not be held open forever by a pre-existing infinite animation. Driven
- * by `presence-waapi.behavior.spec.ts`.
- */
+/** An explicitly registered infinite spinner never holds a finite render lifetime open. */
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'presence-waapi-spinner',
-    imports: [PresenceDemo],
+    imports: [PresenceDemo, RdxPresenceTarget],
     providers: [provideRdxPresenceContext(() => ({ present: inject(PresenceWaapiSpinner).open }))],
-    // Exception to the no-story-CSS rule: this fixture needs a pre-existing infinite `@keyframes`
-    // spinner to exercise the freshness filter. A named, infinite `@keyframes` can't be expressed with
-    // headless Tailwind utilities story-locally, so the styles stay here.
-    // eslint-disable-next-line no-restricted-syntax -- The infinite keyframe fixture exercises the freshness filter (ADR 0011).
-    styles: `
-        @keyframes waapi-spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Pre-existing infinite animation — running before *and* during the close, never an exit. */
-        .waapi-spinner {
-            animation: waapi-spin 1s linear infinite;
-        }
-    `,
     template: `
         <div class="flex flex-col items-center gap-4">
             <button
@@ -47,7 +25,8 @@ import { PresenceDemo } from './presence';
                         [attr.data-state]="open() ? 'open' : 'closed'"
                     >
                         <div
-                            class="waapi-spinner border-muted-foreground size-6 rounded-full border-2 border-t-transparent"
+                            class="waapi-spinner border-muted-foreground size-6 animate-spin rounded-full border-2 border-t-transparent"
+                            rdxPresenceTarget
                         ></div>
                     </div>
                 </ng-template>

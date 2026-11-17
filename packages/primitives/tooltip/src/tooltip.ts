@@ -26,6 +26,8 @@ import {
     provideFloatingTree,
     RdxCancelableChangeEventDetails,
     RdxFloatingRootContext,
+    RdxRenderLifecycle,
+    useRenderLifecycle,
     watch
 } from '@radix-ng/primitives/core';
 import { RdxPopper } from '@radix-ng/primitives/popper';
@@ -38,6 +40,7 @@ export interface RdxTooltipContext {
     contentId: string;
     isOpen: Signal<boolean>;
     present: Signal<boolean>;
+    renderLifecycle: RdxRenderLifecycle;
     /** Whether the tooltip opened/closed without waiting for the delay. */
     instant: Signal<boolean>;
     /** Why the open/close was instant (Base UI `data-instant`), or `undefined` when it was animated. */
@@ -220,6 +223,8 @@ export class RdxTooltip {
     readonly instantType = computed<RdxTooltipInstantType | undefined>(() =>
         this.open() && this.trackCursorAxis() !== 'none' ? 'tracking-cursor' : this.openedInstantType()
     );
+    /** @internal Shared with structural Portal. */
+    readonly renderLifecycle = useRenderLifecycle(undefined, { open: () => this.open() });
     readonly present = computed(() => this.open() || this.preventUnmountOnClose());
 
     private readonly virtualAnchor = computed<ReferenceElement | undefined>(() => {
@@ -267,6 +272,14 @@ export class RdxTooltip {
     );
 
     constructor() {
+        let previousOpen = false;
+        effect(() => {
+            const open = this.open();
+            if (open !== previousOpen) {
+                previousOpen = open;
+                untracked(() => this.renderLifecycle.start(open));
+            }
+        });
         effect(() => {
             const defaultOpen = this.defaultOpen();
 
@@ -495,6 +508,7 @@ function contextFor(root: RdxTooltip): RdxTooltipContext {
         contentId: root.contentId,
         isOpen: root.open,
         present: root.present,
+        renderLifecycle: root.renderLifecycle,
         instant: root.instant,
         instantType: root.instantType,
         disabled: root.disabled,

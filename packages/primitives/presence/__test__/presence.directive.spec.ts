@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Directive, inject, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { vi, type MockInstance } from 'vitest';
+import { animationDriver } from '../../core/__tests__/animation-driver';
+import { RdxPresenceTarget } from '../src/presence-target';
 import { provideRdxPresenceContext, RdxPresenceDirective } from '../src/presence.directive';
 
 // Wrapper that mirrors how real consumers apply the presence directive:
@@ -134,144 +135,104 @@ describe('RdxPresenceDirective', () => {
     });
 });
 
-describe('RdxPresenceDirective — exit animation', () => {
-    let fixture: ComponentFixture<PresenceAnimHostComponent>;
-    let host: PresenceAnimHostComponent;
-    let gcsSpy: MockInstance;
-
-    const content = () => fixture.nativeElement.querySelector('.content') as HTMLElement | null;
-
-    const endAnimation = (node: HTMLElement, animationName = 'exit') => {
-        const event = new Event('animationend') as AnimationEvent & { animationName: string };
-        event.animationName = animationName;
-        node.dispatchEvent(event);
-    };
-
-    beforeEach(() => {
-        // jsdom does not run CSS, so emulate `[data-state='closed'] { animation: exit ... }`.
-        gcsSpy = vi.spyOn(window, 'getComputedStyle').mockImplementation(
-            (el: Element) =>
-                ({
-                    animationName: el.getAttribute?.('data-state') === 'closed' ? 'exit' : 'none',
-                    display: 'block'
-                }) as unknown as CSSStyleDeclaration
-        );
-
-        fixture = TestBed.createComponent(PresenceAnimHostComponent);
-        host = fixture.componentInstance;
-        fixture.detectChanges();
+describe('RdxPresenceDirective — live view ownership', () => {
+    it('retains the same view through an interrupted exit and ignores stale completion', async () => {
+        const fixture = TestBed.createComponent(PresenceAnimHostComponent);
+        await fixture.whenStable();
+        const initial = fixture.nativeElement.querySelector('.content') as HTMLElement;
+        const motion = animationDriver();
+        initial.getAnimations = () => [motion.animation];
+        fixture.componentInstance.present.set(false);
+        await fixture.whenStable();
+        expect(initial.isConnected).toBe(true);
+        fixture.componentInstance.present.set(true);
+        await motion.finish();
+        await fixture.whenStable();
+        expect(fixture.nativeElement.querySelector('.content')).toBe(initial);
     });
 
-    afterEach(() => gcsSpy.mockRestore());
-
-    it('keeps the content mounted while the exit animation is running', () => {
-        expect(content()).not.toBeNull();
-
-        host.present.set(false);
-        fixture.detectChanges();
-
-        // suspended — still in the DOM until the animation ends
-        expect(content()).not.toBeNull();
-        expect(content()!.getAttribute('data-state')).toBe('closed');
-    });
-
-    it('unmounts once the exit animation ends', () => {
-        host.present.set(false);
-        fixture.detectChanges();
-        const node = content();
-        expect(node).not.toBeNull();
-
-        endAnimation(node!);
-        fixture.detectChanges();
-
-        expect(content()).toBeNull();
-    });
-
-    it('does not unmount on an unrelated animationend', () => {
-        host.present.set(false);
-        fixture.detectChanges();
-        const node = content()!;
-
-        endAnimation(node, 'something-else');
-        fixture.detectChanges();
-
-        expect(content()).not.toBeNull();
-    });
-
-    it('cancels the pending unmount when re-opened before the animation ends', () => {
-        const opened = content();
-
-        host.present.set(false);
-        fixture.detectChanges();
-        expect(content()).not.toBeNull();
-
-        // re-open mid-animation
-        host.present.set(true);
-        fixture.detectChanges();
-
-        // a late animationend must not tear down the re-opened content
-        endAnimation(content()!);
-        fixture.detectChanges();
-
-        expect(content()).not.toBeNull();
-        // same view was kept, not re-created
-        expect(content()).toBe(opened);
+    it('destroys every root only after the last participating animation completes', async () => {
+        const fixture = TestBed.createComponent(PresenceMultiRootHostComponent);
+        await fixture.whenStable();
+        const content = fixture.nativeElement.querySelector('.content') as HTMLElement;
+        const backdrop = fixture.nativeElement.querySelector('.backdrop') as HTMLElement;
+        const first = animationDriver();
+        const second = animationDriver();
+        content.getAnimations = () => [first.animation];
+        backdrop.getAnimations = () => [second.animation];
+        fixture.componentInstance.present.set(false);
+        await fixture.whenStable();
+        await first.finish();
+        await fixture.whenStable();
+        expect(content.isConnected).toBe(true);
+        await second.finish();
+        await fixture.whenStable();
+        expect(content.isConnected).toBe(false);
+        expect(backdrop.isConnected).toBe(false);
     });
 });
 
-describe('RdxPresenceDirective — multi-root exit animation', () => {
-    let fixture: ComponentFixture<PresenceMultiRootHostComponent>;
-    let host: PresenceMultiRootHostComponent;
-    let gcsSpy: MockInstance;
+@Component({
+    imports: [TestPresenceWrapper, RdxPresenceTarget],
+    providers: [provideRdxPresenceContext(() => ({ present: inject(ExplicitTargetHost).present }))],
+    template: `
+        <ng-template testPresence>
+            <div>
+                <span rdxPresenceTarget>Animated</span>
+                <i>Unrelated</i>
+            </div>
+        </ng-template>
+    `
+})
+class ExplicitTargetHost {
+    readonly present = signal(true);
+}
 
-    const content = () => fixture.nativeElement.querySelector('.content') as HTMLElement | null;
-    const backdrop = () => fixture.nativeElement.querySelector('.backdrop') as HTMLElement | null;
+@Component({
+    selector: 'presence-target-child',
+    imports: [RdxPresenceTarget],
+    template: '<span rdxPresenceTarget>Child</span>'
+})
+class TargetChild {}
 
-    const endAnimation = (node: HTMLElement, animationName = 'exit') => {
-        const event = new Event('animationend') as AnimationEvent & { animationName: string };
-        event.animationName = animationName;
-        node.dispatchEvent(event);
-    };
+@Component({
+    imports: [TestPresenceWrapper, TargetChild],
+    providers: [provideRdxPresenceContext(() => ({ present: inject(ChildTargetHost).present }))],
+    template: '<ng-template testPresence><presence-target-child /></ng-template>'
+})
+class ChildTargetHost {
+    readonly present = signal(true);
+}
 
-    beforeEach(() => {
-        // Only the element with `data-state='closed'` (the content root) animates; the backdrop never does.
-        gcsSpy = vi.spyOn(window, 'getComputedStyle').mockImplementation(
-            (el: Element) =>
-                ({
-                    animationName: el.getAttribute?.('data-state') === 'closed' ? 'exit' : 'none',
-                    display: 'block'
-                }) as unknown as CSSStyleDeclaration
-        );
-
-        fixture = TestBed.createComponent(PresenceMultiRootHostComponent);
-        host = fixture.componentInstance;
-        fixture.detectChanges();
+describe('RdxPresenceTarget', () => {
+    it('registers an element declared inside a child component template', async () => {
+        const fixture = TestBed.createComponent(ChildTargetHost);
+        await fixture.whenStable();
+        const target = fixture.nativeElement.querySelector('span') as HTMLElement;
+        const motion = animationDriver();
+        target.getAnimations = () => [motion.animation];
+        fixture.componentInstance.present.set(false);
+        await fixture.whenStable();
+        expect(target.isConnected).toBe(true);
+        await motion.finish();
+        await fixture.whenStable();
+        expect(target.isConnected).toBe(false);
     });
 
-    afterEach(() => gcsSpy.mockRestore());
-
-    it('stays mounted while an exit animation on a non-first root is running', () => {
-        expect(content()).not.toBeNull();
-        expect(backdrop()).not.toBeNull();
-
-        host.present.set(false);
-        fixture.detectChanges();
-
-        // The exit animation lives on the second root (content); the view must stay mounted.
-        expect(content()).not.toBeNull();
-        expect(content()!.getAttribute('data-state')).toBe('closed');
-    });
-
-    it('unmounts once the second-root exit animation ends', () => {
-        host.present.set(false);
-        fixture.detectChanges();
-        const node = content();
-        expect(node).not.toBeNull();
-
-        endAnimation(node!);
-        fixture.detectChanges();
-
-        expect(content()).toBeNull();
-        expect(backdrop()).toBeNull();
+    it('observes an explicit descendant and excludes arbitrary siblings', async () => {
+        const fixture = TestBed.createComponent(ExplicitTargetHost);
+        await fixture.whenStable();
+        const target = fixture.nativeElement.querySelector('span') as HTMLElement;
+        const sibling = fixture.nativeElement.querySelector('i') as HTMLElement;
+        const exit = animationDriver();
+        const unrelated = animationDriver();
+        target.getAnimations = () => [exit.animation];
+        sibling.getAnimations = () => [unrelated.animation];
+        fixture.componentInstance.present.set(false);
+        await fixture.whenStable();
+        expect(target.isConnected).toBe(true);
+        await exit.finish();
+        await fixture.whenStable();
+        expect(target.isConnected).toBe(false);
     });
 });

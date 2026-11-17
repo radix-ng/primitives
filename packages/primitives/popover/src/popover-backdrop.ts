@@ -1,4 +1,5 @@
 import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
+
 import { RDX_FLOATING_ROOT_CONTEXT } from '@radix-ng/primitives/core';
 import { injectRdxPopoverRootContext } from './popover-root';
 
@@ -27,6 +28,11 @@ export class RdxPopoverBackdrop {
     protected readonly rootContext = injectRdxPopoverRootContext();
 
     constructor() {
+        const unregisterAnimation = this.rootContext.renderLifecycle.registerElement(
+            inject<ElementRef<HTMLElement>>(ElementRef).nativeElement
+        );
+        inject(DestroyRef).onDestroy(unregisterAnimation);
+
         const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
         host.style.setProperty('-webkit-user-select', 'none');
 

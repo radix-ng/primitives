@@ -189,8 +189,9 @@ Use `keepMounted: true` on the structural directive to retain the whole view and
 
 ### Unmount with `@keyframes`
 
-With `*rdxTabsPanelPresence`, the shared presence machine watches the panel and its descendants for
-exit animations or transitions before destroying the whole view. Mark the panel as a `group` so the
+With `*rdxTabsPanelPresence`, the shared render lifetime observes the Panel and explicit
+`rdxPresenceTarget` descendants before destroying the whole view. Import `RdxPresenceTarget` for an
+animated inner element. Mark the panel as a `group` so the
 inner element can react to the parent's `data-ending-style` and run the exit keyframes. The panel
 stays visible and inert until removal. Its ID belongs to the structural instance and stays stable
 when the native Panel is recreated.

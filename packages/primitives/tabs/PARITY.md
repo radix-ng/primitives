@@ -181,7 +181,7 @@ Live axis/style changes in the same update and transition-frame transforms remai
 
 [Panel](src/tabs-panel.ts) is immediately inert whenever inactive. Retained hosts become hidden
 when their actual exit ends. [TabsPanelPresence](src/tabs-panel-presence.ts) owns the complete native
-Panel and Angular child view through `TemplateRef`/`EmbeddedViewRef` and the shared `PresenceMachine`.
+Panel and Angular child view through `TemplateRef`/`EmbeddedViewRef` and the shared `useRenderLifecycle`.
 Its context supplies value, mounting policy, transition history and an ID that survive native view recreation. Root
 registration follows actual host lifetime, and the context cannot leak into a nested Tabs Root.
 

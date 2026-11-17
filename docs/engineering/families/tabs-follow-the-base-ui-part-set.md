@@ -7,7 +7,7 @@ source/API audit, Angular regression evidence, documented adaptations and remain
 
 Inactive panels are immediately inert, including during exit. `data-ending-style` starts exit motion;
 `data-hidden` follows actual hidden state for retained hosts. Structural presence owns the entire
-Panel template: it supplies value and mounting policy, waits through the shared `PresenceMachine`,
+Panel template: it supplies value and mounting policy, waits through the shared core `useRenderLifecycle`,
 and destroys the native host and Angular children after exit. Its generated ID belongs to the
 structural instance and survives view recreation. A selection-driven exit hold keeps the outgoing
 Panel visible until disposal; dropping `keepMounted` on an already-closed view starts no new exit.

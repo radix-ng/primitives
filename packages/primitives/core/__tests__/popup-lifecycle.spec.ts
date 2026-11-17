@@ -1,7 +1,7 @@
 import { Component, OnDestroy, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { useTransitionStatus } from '../src/composables/use-transition-status';
+import { useRenderLifecycle } from '../src/composables/use-render-lifecycle';
 import { usePopupLifecycle } from '../src/floating/use-popup-lifecycle';
 
 @Component({ template: '' })
@@ -341,7 +341,7 @@ describe('shared popup lifecycle', () => {
         element.style.transitionDuration = '1s';
         Object.defineProperty(element, 'getAnimations', { value: () => [{ finished }] });
         const completions: boolean[] = [];
-        const transition = TestBed.runInInjectionContext(() => useTransitionStatus((open) => completions.push(open)));
+        const transition = TestBed.runInInjectionContext(() => useRenderLifecycle((open) => completions.push(open)));
         transition.registerElement(element);
         transition.start(false);
         await settle();

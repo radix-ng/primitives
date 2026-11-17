@@ -6368,6 +6368,19 @@
       ]
     },
     {
+      "slug": "presence",
+      "section": "utils",
+      "parts": [
+        {
+          "directive": "RdxPresenceTarget",
+          "selector": "[rdxPresenceTarget]",
+          "description": "Explicitly includes this element's finite exit animations in its structural Presence lifetime.",
+          "inputs": [],
+          "outputs": []
+        }
+      ]
+    },
+    {
       "slug": "preview-card",
       "section": "components",
       "parts": [

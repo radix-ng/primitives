@@ -18,6 +18,7 @@ import {
     untracked
 } from '@angular/core';
 import type { RdxCompositeListContext } from '@radix-ng/primitives/composite';
+import type { RdxRenderLifecycle } from '@radix-ng/primitives/core';
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
@@ -118,6 +119,7 @@ export interface RdxMenuCoordinator {
 export interface RdxMenuRootContext {
     isOpen: Signal<boolean>;
     present: Signal<boolean>;
+    renderLifecycle: RdxRenderLifecycle;
     activeIndex: Signal<number | null>;
     disabled: Signal<boolean>;
     modal: Signal<boolean>;
@@ -184,7 +186,6 @@ export interface RdxMenuRootContext {
     setAfterTriggerFocusGuard: (element: HTMLElement | null) => void;
     transitionStatus: Signal<RdxMenuTransitionStatus>;
     registerPresence: RdxPopupLifecycle['registerPresence'];
-    skipExitAnimation: Signal<boolean>;
     close: (reason?: RdxMenuOpenChangeReason, event?: Event) => void;
     setActiveIndex: (index: number | null, event?: Event) => void;
     /** Close this menu and every ancestor — used by item selection (the whole menu dismisses). */
@@ -266,6 +267,7 @@ function buildContext<Payload>(instance: RdxMenuRoot<Payload>): RdxMenuRootConte
     return {
         isOpen: instance.open,
         present: instance.present,
+        renderLifecycle: instance.renderLifecycle,
         activeIndex: instance.activeIndex.asReadonly(),
         disabled: instance.effectiveDisabled,
         modal: instance.effectiveModal,
@@ -309,7 +311,6 @@ function buildContext<Payload>(instance: RdxMenuRoot<Payload>): RdxMenuRootConte
         setAfterTriggerFocusGuard: (element) => instance.afterTriggerFocusGuard.set(element),
         transitionStatus: instance.transitionStatus,
         registerPresence: instance.registerPresence,
-        skipExitAnimation: instance.skipExitAnimation,
         close: (reason, event) => instance.close(reason, event),
         setActiveIndex: (index, event) => instance.setActiveIndex(index, event),
         closeEntireMenu: (reason, event) => instance.closeEntireMenu(reason, event),
@@ -464,7 +465,8 @@ export class RdxMenuRoot<Payload = unknown> implements OnChanges, OnDestroy {
         'RdxMenuRoot'
     );
     readonly registerPresence = this.lifecycle.registerPresence;
-    readonly skipExitAnimation = this.lifecycle.skipExitAnimation;
+    /** @internal Shared render owner for structural Portal/Presence. */
+    readonly renderLifecycle = this.lifecycle.renderLifecycle;
 
     readonly trigger = signal<HTMLElement | undefined>(undefined);
     /** Context areas are not Menu triggers; preserve native pre-open focus separately. */

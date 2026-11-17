@@ -3,10 +3,8 @@ import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
 import { PresenceDemo } from './presence';
 
 /**
- * ADR 0011 fixture: the exit is a **CSS transition** (no `@keyframes` anywhere). Before the WAAPI
- * upgrade the presence machine only watched the root's computed `animationName`, so a transition
- * unmounted instantly; now `getAnimations()` sees the running transition and keeps the element
- * mounted until it finishes. Driven by `presence-waapi.behavior.spec.ts`.
+ * A root CSS transition retains the live view without keyframes or animation-name heuristics.
+ * Driven by presence-waapi.behavior.spec.ts in real browsers.
  */
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,

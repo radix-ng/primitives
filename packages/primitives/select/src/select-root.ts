@@ -21,6 +21,7 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 import { compareNodeDocumentPosition } from '@radix-ng/primitives/composite';
+import type { RdxRenderLifecycle } from '@radix-ng/primitives/core';
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
@@ -115,7 +116,7 @@ export interface RdxSelectValueChangeEvent<Value = unknown, Multiple extends boo
 
 export interface RdxSelectRootContext<Value = unknown> extends RdxFormUiStateContext, RdxLabelRegistry {
     present: Signal<boolean>;
-    skipExitAnimation: Signal<boolean>;
+    renderLifecycle: RdxRenderLifecycle;
     registerPresence: (presence: RdxPopupPresenceRegistration) => () => void;
     autofillProbe: Signal<boolean>;
     id: Signal<string>;
@@ -165,7 +166,7 @@ const context = (): RdxSelectRootContext => {
 
     return {
         present: context.present,
-        skipExitAnimation: context.skipExitAnimation,
+        renderLifecycle: context.renderLifecycle,
         registerPresence: context.registerPresence,
         autofillProbe: context.autofillProbe,
         ...context.labelRegistry,
@@ -379,8 +380,8 @@ export class RdxSelectRoot<Value = unknown, Multiple extends boolean = boolean>
     readonly registerTransitionElement = this.lifecycle.registerElement;
     /** @internal Presence reports when the live popup view has actually finished exiting. */
     readonly registerPresence = this.lifecycle.registerPresence;
-    /** @internal An imperative completion bypasses a second CSS exit wait in Presence. */
-    readonly skipExitAnimation = this.lifecycle.skipExitAnimation;
+    /** @internal Shared render owner for structural Portal/Presence. */
+    readonly renderLifecycle = this.lifecycle.renderLifecycle;
 
     readonly isEmptyModelValue = computed(() => {
         const value = this.value();

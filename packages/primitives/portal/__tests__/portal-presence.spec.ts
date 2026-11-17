@@ -1,17 +1,8 @@
-import {
-    ChangeDetectionStrategy,
-    Component,
-    Directive,
-    ElementRef,
-    inject,
-    Injector,
-    PLATFORM_ID,
-    signal
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Directive, ElementRef, inject, PLATFORM_ID, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
 import { type MockInstance, vi } from 'vitest';
-import { PresenceMachine } from '../../presence/src/presence-machine';
+import { animationDriver } from '../../core/__tests__/animation-driver';
 import { RdxPortalPresence } from '../src/portal-presence';
 import { RdxPortalContainer } from '../src/resolve-container';
 
@@ -92,37 +83,14 @@ class MultiRootHostComponent {
     readonly popupExit = signal<string | null>(null);
 }
 
-/**
- * Mock `getComputedStyle` so jsdom (which runs no CSS) reports an exit `@keyframes` only when an
- * element is in its closed state. `data-exit` overrides the animation name; `data-anim-always` makes
- * a node animate identically open and closed (used to assert the "different animation" heuristic).
- */
-function mockComputedStyle(): MockInstance {
-    return vi.spyOn(window, 'getComputedStyle').mockImplementation((el: Element) => {
-        const always = el.getAttribute?.('data-anim-always');
-        const closed = el.getAttribute?.('data-state') === 'closed';
-        const exitName = el.getAttribute?.('data-exit') || 'exit';
-        const animationName = always ?? (closed ? exitName : 'none');
-        return { animationName, display: 'block' } as unknown as CSSStyleDeclaration;
-    });
-}
-
-function endAnimation(node: HTMLElement, animationName = 'exit'): void {
-    const event = new Event('animationend') as AnimationEvent & { animationName: string };
-    event.animationName = animationName;
-    node.dispatchEvent(event);
-}
-
 describe('RdxPortalPresence — portaling', () => {
     let fixture: ComponentFixture<PortalHostComponent>;
     let host: PortalHostComponent;
-    let gcsSpy: MockInstance;
 
     const bodyContent = () => document.body.querySelector(':scope > .content') as HTMLElement | null;
     const originContent = () => fixture.nativeElement.querySelector('#origin .content') as HTMLElement | null;
 
     beforeEach(() => {
-        gcsSpy = mockComputedStyle();
         fixture = TestBed.createComponent(PortalHostComponent);
         host = fixture.componentInstance;
         fixture.detectChanges();
@@ -130,7 +98,6 @@ describe('RdxPortalPresence — portaling', () => {
 
     afterEach(() => {
         fixture.destroy();
-        gcsSpy.mockRestore();
     });
 
     it('does not render while present() is false', () => {
@@ -220,201 +187,58 @@ describe('RdxPortalPresence — portaling', () => {
     });
 });
 
-describe('RdxPortalPresence — exit animation', () => {
-    let fixture: ComponentFixture<PortalHostComponent>;
-    let host: PortalHostComponent;
-    let gcsSpy: MockInstance;
-
-    const bodyContent = () => document.body.querySelector(':scope > .content') as HTMLElement | null;
-
-    beforeEach(() => {
-        gcsSpy = mockComputedStyle();
-        fixture = TestBed.createComponent(PortalHostComponent);
-        host = fixture.componentInstance;
-        host.present.set(true);
-        fixture.detectChanges();
-    });
-
-    afterEach(() => {
-        fixture.destroy();
-        gcsSpy.mockRestore();
-    });
-
-    it('unmounts immediately when the closed state has no exit animation', () => {
-        gcsSpy.mockImplementation(
-            () => ({ animationName: 'none', display: 'block' }) as unknown as CSSStyleDeclaration
+describe('RdxPortalPresence — render lifetime', () => {
+    it('retains portaled Angular views until every explicit root finishes', async () => {
+        const fixture = TestBed.createComponent(MultiRootHostComponent);
+        await fixture.whenStable();
+        const roots = ['backdrop', 'popup'].map(
+            (name) => document.body.querySelector(`:scope > .${name}`) as HTMLElement
         );
-
-        host.present.set(false);
-        fixture.detectChanges();
-
-        expect(bodyContent()).toBeNull();
-    });
-
-    it('suspends the unmount while a different exit animation runs', () => {
-        host.present.set(false);
-        fixture.detectChanges();
-
-        expect(bodyContent()).not.toBeNull();
-        expect(bodyContent()!.getAttribute('data-state')).toBe('closed');
-    });
-
-    it('unmounts once the exit animation ends', () => {
-        host.present.set(false);
-        fixture.detectChanges();
-        const node = bodyContent()!;
-
-        endAnimation(node);
-        fixture.detectChanges();
-
-        expect(bodyContent()).toBeNull();
-    });
-
-    it('keeps the view when re-opened during the exit animation', () => {
-        const opened = bodyContent();
-
-        host.present.set(false);
-        fixture.detectChanges();
-        expect(bodyContent()).not.toBeNull();
-
-        host.present.set(true);
-        fixture.detectChanges();
-
-        // a late animationend must not tear down the re-opened content
-        endAnimation(bodyContent()!);
-        fixture.detectChanges();
-
-        expect(bodyContent()).toBe(opened);
-    });
-
-    it('keeps the same view when presence returns before the render effect observes it', () => {
-        const opened = bodyContent();
-        host.present.set(false);
-        fixture.detectChanges();
-
-        // A late close hold/reopen can win before Angular's next render. Native animationend
-        // must read that current signal instead of destroying and then remounting the view.
-        host.present.set(true);
-        endAnimation(opened!);
-        fixture.detectChanges();
-
-        expect(bodyContent()).toBe(opened);
-    });
-
-    it('ignores an animation promise settled after its owner was disposed', async () => {
-        const present = signal(true);
-        const node = document.createElement('div');
-        node.setAttribute('data-state', 'open');
-        let finish!: () => void;
-        const finished = new Promise<void>((resolve) => {
-            finish = resolve;
+        const motions = roots.map((root) => {
+            const motion = animationDriver();
+            root.getAnimations = () => [motion.animation];
+            return motion;
         });
-        node.getAnimations = () => [
-            { playState: 'running', pending: true, startTime: null, finished } as unknown as Animation
-        ];
-        const destroy = vi.fn();
-        const machine = new PresenceMachine({
-            present,
-            isBrowser: true,
-            injector: TestBed.inject(Injector),
-            mountView: () => [node],
-            destroyView: destroy
-        });
-        present.set(false);
-        node.setAttribute('data-state', 'closed');
-        fixture.detectChanges();
-        expect(destroy).not.toHaveBeenCalled();
-
-        machine.dispose();
-        expect(destroy).toHaveBeenCalledTimes(1);
-        finish();
-        await Promise.resolve();
-        await Promise.resolve();
-        expect(destroy).toHaveBeenCalledTimes(1);
+        fixture.componentInstance.present.set(false);
+        await fixture.whenStable();
+        await motions[0].finish();
+        await fixture.whenStable();
+        expect(roots.every((root) => root.isConnected)).toBe(true);
+        await motions[1].finish();
+        await fixture.whenStable();
+        expect(roots.some((root) => root.isConnected)).toBe(false);
     });
 
-    it('does not suspend when the animation name is unchanged between open and closed', () => {
-        // node animates identically in both states (e.g. a spinner) → not a *fresh* exit animation
-        const node = bodyContent()!;
-        node.setAttribute('data-anim-always', 'spin');
-        // the machine tracks the running animation via animationstart
-        const startEvent = new Event('animationstart') as AnimationEvent & { animationName: string };
-        startEvent.animationName = 'spin';
-        node.dispatchEvent(startEvent);
-
-        host.present.set(false);
-        fixture.detectChanges();
-
-        expect(bodyContent()).toBeNull();
-    });
-});
-
-describe('RdxPortalPresence — multi-root (dialog-shaped) exit', () => {
-    let fixture: ComponentFixture<MultiRootHostComponent>;
-    let host: MultiRootHostComponent;
-    let gcsSpy: MockInstance;
-
-    const backdrop = () => document.body.querySelector(':scope > .backdrop') as HTMLElement | null;
-    const popup = () => document.body.querySelector(':scope > .popup') as HTMLElement | null;
-
-    beforeEach(() => {
-        gcsSpy = mockComputedStyle();
-        fixture = TestBed.createComponent(MultiRootHostComponent);
-        host = fixture.componentInstance;
-        fixture.detectChanges();
+    it('preserves a reopened portal and ignores a completion from its old close', async () => {
+        const fixture = TestBed.createComponent(PortalHostComponent);
+        fixture.componentInstance.present.set(true);
+        await fixture.whenStable();
+        const initial = document.body.querySelector(':scope > .content') as HTMLElement;
+        const motion = animationDriver();
+        initial.getAnimations = () => [motion.animation];
+        fixture.componentInstance.present.set(false);
+        await fixture.whenStable();
+        expect(initial.isConnected).toBe(true);
+        fixture.componentInstance.present.set(true);
+        await motion.finish();
+        await fixture.whenStable();
+        expect(document.body.querySelector(':scope > .content')).toBe(initial);
     });
 
-    afterEach(() => {
+    it('removes a pending exit on disposal and ignores its late promise', async () => {
+        const fixture = TestBed.createComponent(PortalHostComponent);
+        fixture.componentInstance.present.set(true);
+        await fixture.whenStable();
+        const initial = document.body.querySelector(':scope > .content') as HTMLElement;
+        const motion = animationDriver();
+        initial.getAnimations = () => [motion.animation];
+        fixture.componentInstance.present.set(false);
+        await fixture.whenStable();
         fixture.destroy();
-        gcsSpy.mockRestore();
-    });
-
-    it('relocates every root node into the container', () => {
-        expect(backdrop()).not.toBeNull();
-        expect(popup()).not.toBeNull();
-        expect(backdrop()!.parentElement).toBe(document.body);
-        expect(popup()!.parentElement).toBe(document.body);
-    });
-
-    it('stays mounted until the only animated root (popup) finishes', () => {
-        // backdrop has no exit keyframe; only the popup animates out
-        host.backdropExit.set(null);
-        host.popupExit.set('exit');
-        // make backdrop report no animation even when closed
-        host.present.set(false);
-        backdrop()!.setAttribute('data-anim-always', 'none');
-        fixture.detectChanges();
-
-        // suspended by the popup's animation
-        expect(backdrop()).not.toBeNull();
-        expect(popup()).not.toBeNull();
-
-        endAnimation(popup()!, 'exit');
-        fixture.detectChanges();
-
-        expect(backdrop()).toBeNull();
-        expect(popup()).toBeNull();
-    });
-
-    it('unmounts only after the longer of two different exit animations ends', () => {
-        host.backdropExit.set('fade');
-        host.popupExit.set('zoom');
-        host.present.set(false);
-        fixture.detectChanges();
-
-        expect(backdrop()).not.toBeNull();
-        expect(popup()).not.toBeNull();
-
-        // the shorter (backdrop) finishes first — view must stay until the popup also ends
-        endAnimation(backdrop()!, 'fade');
-        fixture.detectChanges();
-        expect(backdrop()).not.toBeNull();
-        expect(popup()).not.toBeNull();
-
-        endAnimation(popup()!, 'zoom');
-        fixture.detectChanges();
-        expect(backdrop()).toBeNull();
-        expect(popup()).toBeNull();
+        await motion.finish();
+        await Promise.resolve();
+        await Promise.resolve();
+        expect(initial.isConnected).toBe(false);
     });
 });
 

@@ -1,5 +1,5 @@
 import { afterNextRender, DestroyRef, effect, ElementRef, inject, signal, Signal } from '@angular/core';
-import { getMaxTransitionDuration } from '../composables/use-transition-status';
+import { getMaxTransitionDuration } from '../dom/wait-for-animations';
 
 export interface RdxPopupViewportConfig {
     popup: () => HTMLElement | undefined;

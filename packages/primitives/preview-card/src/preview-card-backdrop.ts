@@ -1,4 +1,5 @@
-import { Directive } from '@angular/core';
+import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
+
 import { injectRdxPreviewCardRootContext } from './preview-card-root';
 
 /**
@@ -16,4 +17,10 @@ import { injectRdxPreviewCardRootContext } from './preview-card-root';
 })
 export class RdxPreviewCardBackdrop {
     protected readonly rootContext = injectRdxPreviewCardRootContext();
+    constructor() {
+        const unregisterAnimation = this.rootContext.renderLifecycle.registerElement(
+            inject<ElementRef<HTMLElement>>(ElementRef).nativeElement
+        );
+        inject(DestroyRef).onDestroy(unregisterAnimation);
+    }
 }

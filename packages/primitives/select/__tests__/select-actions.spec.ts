@@ -131,7 +131,7 @@ describe('Select imperative actions', () => {
         root.close();
         await settle();
         expect(popup()).toBeNull();
-        expect(closedCompletions()).toEqual([false, false]);
+        await vi.waitFor(() => expect(closedCompletions()).toEqual([false, false]));
     });
 
     it('finishes a keep-mounted closing phase while preserving the portal view', async () => {

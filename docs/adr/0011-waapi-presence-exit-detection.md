@@ -1,6 +1,6 @@
 # ADR 0011: WAAPI-based exit detection for presence — transitions-first styling, subtree-aware
 
-- Status: Accepted
+- Status: Superseded by ADR-0084
 - Date: 2026-06-13
 - Decision owners: Radix NG maintainers
 - Related: ADR 0010 (structural portal+presence; flagged this as explicit follow-up in its §4),

@@ -1,5 +1,5 @@
 import { Signal } from '@angular/core';
-import { createContext, RdxTransitionStatusRef } from '@radix-ng/primitives/core';
+import { createContext, RdxRenderLifecycle } from '@radix-ng/primitives/core';
 import { RdxTabsRootContext } from './tabs-root-context';
 import { RdxTabsValue } from './utils';
 
@@ -9,7 +9,7 @@ export interface RdxTabsPanelPresenceContext {
     readonly value: Signal<RdxTabsValue>;
     readonly keepMounted: Signal<boolean>;
     readonly exiting: Signal<boolean>;
-    readonly transition: RdxTransitionStatusRef;
+    readonly transition: RdxRenderLifecycle;
     readonly id: string;
 }
 

@@ -16,7 +16,12 @@ import { injectRdxDialogRootContext } from './dialog-root';
     selector: 'ng-template[rdxDialogPortal]',
     exportAs: 'rdxDialogPortal',
     hostDirectives: [{ directive: RdxPortalPresence, inputs: ['container'] }],
-    providers: [provideRdxPresenceContext(() => ({ present: injectRdxDialogRootContext().present }))]
+    providers: [
+        provideRdxPresenceContext(() => {
+            const root = injectRdxDialogRootContext();
+            return { present: root.present, renderLifecycle: root.renderLifecycle };
+        })
+    ]
 })
 export class RdxDialogPortal {
     /**

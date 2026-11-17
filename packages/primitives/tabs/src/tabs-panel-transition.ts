@@ -1,14 +1,14 @@
 import { afterNextRender, computed, effect, inject, Injector, Signal, signal, untracked } from '@angular/core';
-import { RdxTransitionStatusRef, useTransitionStatus } from '@radix-ng/primitives/core';
+import { RdxRenderLifecycle, useRenderLifecycle } from '@radix-ng/primitives/core';
 
 /** Keep an outgoing Panel inert but visible through its first rendered exit frame, as Base UI does. */
 export function useTabsPanelTransition(active: () => boolean): {
-    transition: RdxTransitionStatusRef;
+    transition: RdxRenderLifecycle;
     exitFramePending: Signal<boolean>;
 } {
     const injector = inject(Injector);
-    const base = useTransitionStatus(() => {});
     const exitFramePending = signal(false);
+    const base = useRenderLifecycle(undefined, { open: active, holdUnmount: exitFramePending });
     let previousActive = false;
     let first = true;
 

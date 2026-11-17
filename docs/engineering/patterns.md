@@ -67,7 +67,7 @@ dev-mode misuse feedback. **New checks go through it, not a new ad-hoc `console.
 - **`debugName` convention.** Root state signals/computeds and long-lived `effect`s get
   `debugName: 'Rdx<Name>Root.<signal>'` so Angular DevTools shows named nodes instead of anonymous
   ones. `model()` / `input()` don't accept `debugName` (skip them). Applied to shared machinery
-  (`PresenceMachine`) and `RdxPopoverRoot` as the worked example; roll it into other roots as they're
+  (`useRenderLifecycle`) and `RdxPopoverRoot` as the worked example; roll it into other roots as they're
   touched.
 
 ## Git workflow

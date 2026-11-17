@@ -1,9 +1,9 @@
 import { computed, DestroyRef, effect, ElementRef, inject, Signal, untracked } from '@angular/core';
-import { useTransitionStatus } from '@radix-ng/primitives/core';
+import { useRenderLifecycle } from '@radix-ng/primitives/core';
 
 /** Keep a consumer-owned indicator visible until its actual CSS exit finishes. */
 export function useMenuIndicatorTransition(visible: Signal<boolean>) {
-    const transition = useTransitionStatus(() => {});
+    const transition = useRenderLifecycle(undefined, { open: visible });
     const unregister = transition.registerElement(inject<ElementRef<HTMLElement>>(ElementRef).nativeElement);
     inject(DestroyRef).onDestroy(unregister);
     let previous: boolean | undefined;

@@ -53,15 +53,16 @@ Controlled from the Storybook toolbar (not OS `prefers-color-scheme`). The previ
 
 ## Animation patterns
 
-| Scenario                                 | API to use                                                                                                   |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Always-mounted parts                     | CSS transitions driven by the boolean state attributes (`data-open`/`data-closed`, `data-checked`, …)        |
-| App-owned `@if` DOM                      | Angular 21+ `animate.enter` / `animate.leave`                                                                |
-| Presence / `*rdxXxxPortal`-mounted parts | Exit `@keyframes` (`data-closed`) **or** transition (`data-ending-style`), on the root **or any descendant** |
+| Scenario                                 | API to use                                                                                                          |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Always-mounted parts                     | CSS transitions driven by the boolean state attributes (`data-open`/`data-closed`, `data-checked`, …)               |
+| App-owned `@if` DOM                      | Angular 21+ `animate.enter` / `animate.leave`                                                                       |
+| Presence / `*rdxXxxPortal`-mounted parts | Exit keyframes or transitions on registered Popup/Backdrop/Panel elements and explicit `rdxPresenceTarget` elements |
 
-Since ADR 0011 the presence machine detects the exit via the Web Animations API across the watched
-root **and its subtree**, so the exit can be a `@keyframes` or a transition and can live on the
-positioner or the popup nested inside it — no positioner "decoy" keyframe is needed. Do not use
+Since [ADR 0084](../adr/0084-signal-render-lifecycle.md), a shared signal-owned lifetime waits for finite
+WAAPI animations on explicit participants. Popup, Backdrop and Panel register automatically; standalone
+Presence observes its roots. Add `rdxPresenceTarget` to include another animated element. Reopening
+keeps the same Angular view; unrelated descendant animations do not delay removal. Do not use
 `@angular/animations` (legacy).
 
 ## Accessibility in demos

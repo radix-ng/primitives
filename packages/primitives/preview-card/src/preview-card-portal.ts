@@ -17,7 +17,12 @@ import { injectRdxPreviewCardRootContext } from './preview-card-root';
     selector: 'ng-template[rdxPreviewCardPortal]',
     exportAs: 'rdxPreviewCardPortal',
     hostDirectives: [{ directive: RdxPortalPresence, inputs: ['container'] }],
-    providers: [provideRdxPresenceContext(() => ({ present: injectRdxPreviewCardRootContext().present }))]
+    providers: [
+        provideRdxPresenceContext(() => {
+            const root = injectRdxPreviewCardRootContext();
+            return { present: root.present, renderLifecycle: root.renderLifecycle };
+        })
+    ]
 })
 export class RdxPreviewCardPortal {}
 

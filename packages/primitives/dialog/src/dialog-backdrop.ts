@@ -1,4 +1,5 @@
 import { booleanAttribute, DestroyRef, Directive, ElementRef, inject, input } from '@angular/core';
+
 import { BooleanInput, RDX_FLOATING_ROOT_CONTEXT } from '@radix-ng/primitives/core';
 import { injectRdxDialogRootContext } from './dialog-root';
 
@@ -30,6 +31,11 @@ export class RdxDialogBackdrop {
     readonly forceRender = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     constructor() {
+        const unregisterAnimation = this.rootContext.renderLifecycle.registerElement(
+            inject<ElementRef<HTMLElement>>(ElementRef).nativeElement
+        );
+        inject(DestroyRef).onDestroy(unregisterAnimation);
+
         // The backdrop is a second portal root (a body sibling of the popup). It is registered as owned DOM
         // footprint for primitive-specific checks, but it is not a marker/aria keep-set member.
         const floatingContext = inject(RDX_FLOATING_ROOT_CONTEXT, { optional: true });

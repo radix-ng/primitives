@@ -13,6 +13,7 @@ import {
     signal,
     untracked
 } from '@angular/core';
+import type { RdxRenderLifecycle } from '@radix-ng/primitives/core';
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
@@ -24,7 +25,7 @@ import {
     RdxCancelableChangeEventDetails,
     RdxFloatingRootContext,
     RdxTransitionStatus,
-    useTransitionStatus
+    useRenderLifecycle
 } from '@radix-ng/primitives/core';
 import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxDialogHandle } from './dialog-handle';
@@ -70,6 +71,7 @@ export interface RdxDialogRootContext {
     descriptionId: Signal<string | undefined>;
     isOpen: Signal<boolean>;
     present: Signal<boolean>;
+    renderLifecycle: RdxRenderLifecycle;
     /** Effective modality (the variant can pin this to `true`). */
     modal: Signal<RdxDialogModal>;
     /** Effective outside-press / focus-out dismissal flag (the variant can force it on). */
@@ -130,8 +132,12 @@ export class RdxDialogRoot {
     private hasAppliedDefaultTriggerId = false;
     private readonly registeredTriggers = new Map<string, RdxDialogRegisteredTrigger>();
 
-    private readonly transition = useTransitionStatus((open) => this.emitOpenChangeComplete(open));
+    private readonly transition = useRenderLifecycle((open) => this.emitOpenChangeComplete(open), {
+        open: () => this.open()
+    });
     readonly transitionStatus = this.transition.status;
+    /** @internal Shared render owner for structural Portal/Presence. */
+    readonly renderLifecycle = this.transition;
     readonly registerTransitionElement = this.transition.registerElement;
 
     /**
@@ -471,6 +477,7 @@ function contextFor(root: RdxDialogRoot): RdxDialogRootContext {
         descriptionId: root.descriptionId.asReadonly(),
         isOpen: root.open,
         present: root.present,
+        renderLifecycle: root.renderLifecycle,
         modal: root.effectiveModal,
         disablePointerDismissal: root.effectiveDisablePointerDismissal,
         role: root.role,

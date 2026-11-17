@@ -1,4 +1,5 @@
-import { Directive } from '@angular/core';
+import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
+
 import { injectSelectRootContext } from './select-root';
 
 /**
@@ -21,4 +22,10 @@ import { injectSelectRootContext } from './select-root';
 })
 export class RdxSelectBackdrop {
     protected readonly rootContext = injectSelectRootContext();
+    constructor() {
+        const unregisterAnimation = this.rootContext.renderLifecycle.registerElement(
+            inject<ElementRef<HTMLElement>>(ElementRef).nativeElement
+        );
+        inject(DestroyRef).onDestroy(unregisterAnimation);
+    }
 }

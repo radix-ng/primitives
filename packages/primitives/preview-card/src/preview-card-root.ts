@@ -13,6 +13,7 @@ import {
     signal,
     untracked
 } from '@angular/core';
+import type { RdxRenderLifecycle } from '@radix-ng/primitives/core';
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
@@ -23,7 +24,7 @@ import {
     provideFloatingTree,
     RdxCancelableChangeEventDetails,
     RdxFloatingRootContext,
-    useTransitionStatus
+    useRenderLifecycle
 } from '@radix-ng/primitives/core';
 import { RdxPopper } from '@radix-ng/primitives/popper';
 import { RdxPreviewCardHandle } from './preview-card-handle';
@@ -66,6 +67,7 @@ export interface RdxPreviewCardRootContext {
     contentId: string;
     isOpen: Signal<boolean>;
     present: Signal<boolean>;
+    renderLifecycle: RdxRenderLifecycle;
     trigger: Signal<HTMLElement | undefined>;
     triggers: Signal<HTMLElement[]>;
     isHoverActive: Signal<boolean>;
@@ -134,11 +136,14 @@ export class RdxPreviewCardRoot {
         open: () => this.open()
     });
 
-    /** Shared open/close transition state machine (completes on the real animationend). */
-    private readonly transition = useTransitionStatus((open) => {
-        this.instant.set(false);
-        this.onOpenChangeComplete.emit(open);
-    });
+    /** Shared signal render lifetime and finite animation completion. */
+    private readonly transition = useRenderLifecycle(
+        (open) => {
+            this.instant.set(false);
+            this.onOpenChangeComplete.emit(open);
+        },
+        { open: () => this.open() }
+    );
 
     private hasAppliedDefaultOpen = false;
     private hasAppliedDefaultTriggerId = false;
@@ -151,6 +156,8 @@ export class RdxPreviewCardRoot {
     readonly instant = signal(false);
     readonly openChangeReason = signal<RdxPreviewCardOpenChangeReason>('none');
     readonly transitionStatus = this.transition.status;
+    /** @internal Shared render owner for structural Portal/Presence. */
+    readonly renderLifecycle = this.transition;
 
     /**
      * Whether the preview-card is currently open.
@@ -545,6 +552,7 @@ function contextFor(root: RdxPreviewCardRoot): RdxPreviewCardRootContext {
         contentId: root.contentId,
         isOpen: root.open.asReadonly(),
         present: root.present,
+        renderLifecycle: root.renderLifecycle,
         trigger: root.trigger.asReadonly(),
         triggers: root.triggers.asReadonly(),
         payload: root.payload.asReadonly(),

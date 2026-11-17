@@ -1,20 +1,7 @@
-import { isPlatformBrowser } from '@angular/common';
-import {
-    DestroyRef,
-    Directive,
-    EmbeddedViewRef,
-    inject,
-    InjectionToken,
-    Injector,
-    PLATFORM_ID,
-    Provider,
-    signal,
-    Signal,
-    TemplateRef,
-    ViewContainerRef
-} from '@angular/core';
-import type { RdxPopupPresenceRegistration } from '@radix-ng/primitives/core';
-import { PresenceMachine } from './presence-machine';
+import { Directive, inject, InjectionToken, Provider, Signal } from '@angular/core';
+import type { RdxPopupPresenceRegistration, RdxRenderLifecycle } from '@radix-ng/primitives/core';
+import { providePresenceTargetContext } from './presence-target';
+import { usePresence } from './use-presence';
 
 /**
  * Context interface for RdxPresence directive
@@ -22,6 +9,8 @@ import { PresenceMachine } from './presence-machine';
  */
 export type RdxPresenceContext = {
     present: Signal<boolean>;
+    /** A semantic owner supplies the lifetime; the structural directive only renders its view. */
+    renderLifecycle?: RdxRenderLifecycle;
     skipExitAnimation?: Signal<boolean>;
     registerPresence?: (presence: RdxPopupPresenceRegistration) => () => void;
 };
@@ -44,58 +33,15 @@ export function provideRdxPresenceContext(contextFactory: () => RdxPresenceConte
  * Headless structural directive that conditionally renders its template based on a reactive
  * `present` signal supplied through {@link RDX_PRESENCE_CONTEXT}.
  *
- * Unlike a plain `*ngIf`, it keeps the content mounted while a CSS exit animation
- * (`@keyframes` applied for the closed state) is running, and unmounts it only once that
- * animation finishes. If the content has no exit animation, it unmounts immediately.
- *
- * The mount/unmount-with-exit logic lives in the shared {@link PresenceMachine}; this directive just
- * creates the embedded view in place (`RdxPortalPresence` reuses the same machine and additionally
- * relocates the view into a portal container).
+ * Its signal-owned lifetime retains the live Angular view through finite root exit animations.
+ * Add rdxPresenceTarget to include an animated descendant explicitly. A semantic owner may supply
+ * its existing renderLifecycle, in which case this directive only creates/destroys the view.
  */
 @Directive({
-    standalone: true
+    standalone: true,
+    providers: [providePresenceTargetContext(() => inject(RdxPresenceDirective).presence.lifecycle)]
 })
 export class RdxPresenceDirective {
-    private readonly viewContainerRef = inject(ViewContainerRef);
-    private readonly templateRef = inject(TemplateRef<void>);
-
-    private viewRef: EmbeddedViewRef<void> | null = null;
-    private readonly mounted = signal(false);
-
-    constructor() {
-        const context = inject(RDX_PRESENCE_CONTEXT);
-        const machine = new PresenceMachine({
-            present: context.present,
-            skipExitAnimation: context.skipExitAnimation,
-            isBrowser: isPlatformBrowser(inject(PLATFORM_ID)),
-            injector: inject(Injector),
-            mountView: () => this.mountView(),
-            destroyView: () => this.destroyView()
-        });
-        const unregister = context.registerPresence?.({
-            mounted: this.mounted.asReadonly(),
-            keepMounted: () => false,
-            pendingExit: () => machine.isExitPending
-        });
-
-        inject(DestroyRef).onDestroy(() => {
-            machine.dispose();
-            unregister?.();
-        });
-    }
-
-    private mountView(): HTMLElement[] {
-        this.viewRef = this.viewContainerRef.createEmbeddedView(this.templateRef);
-        this.mounted.set(true);
-        // Return *all* root elements (not just the first) so a multi-root template — e.g. a backdrop
-        // plus content — has the exit animation on any root suspend the unmount. Mirrors
-        // `RdxPortalPresence.mountView`, which already watches every relocated root node.
-        return (this.viewRef.rootNodes as Node[]).filter((node): node is HTMLElement => node.nodeType === 1);
-    }
-
-    private destroyView(): void {
-        this.viewRef?.destroy();
-        this.viewRef = null;
-        this.mounted.set(false);
-    }
+    /** @internal Shared with an explicitly registered rdxPresenceTarget. */
+    readonly presence = usePresence(inject(RDX_PRESENCE_CONTEXT));
 }

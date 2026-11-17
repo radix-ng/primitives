@@ -1,4 +1,5 @@
-import { Directive } from '@angular/core';
+import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
+
 import { injectComboboxRootContext } from './combobox-root';
 
 /**
@@ -20,4 +21,10 @@ import { injectComboboxRootContext } from './combobox-root';
 })
 export class RdxComboboxBackdrop {
     protected readonly rootContext = injectComboboxRootContext();
+    constructor() {
+        const unregisterAnimation = this.rootContext.renderLifecycle.registerElement(
+            inject<ElementRef<HTMLElement>>(ElementRef).nativeElement
+        );
+        inject(DestroyRef).onDestroy(unregisterAnimation);
+    }
 }

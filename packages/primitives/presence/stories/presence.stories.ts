@@ -7,6 +7,7 @@ import { PresenceWaapiSubtree } from './presence-waapi-subtree';
 import subtreeSource from './presence-waapi-subtree?raw';
 import { PresenceWaapiTransition } from './presence-waapi-transition';
 import transitionSource from './presence-waapi-transition?raw';
+import presenceSource from './presence?raw';
 
 const source = (code: string) => ({ docs: { source: { code, language: 'typescript' } } });
 
@@ -23,13 +24,14 @@ export default {
 type Story = StoryObj;
 
 export const Default: Story = {
+    parameters: source(presenceSource),
     render: () => ({
         template: `<presence-example />`
     })
 };
 
 /**
- * ADR 0011 behavior fixtures — exercised by
+ * Render lifetime examples — exercised by
  * `apps/visual-regression/tests/presence-waapi.behavior.spec.ts` in a real browser (jsdom runs no
  * CSS). Tagged `!visual` so they are skipped by the per-story screenshot sweep; their value is the
  * interaction, not a static frame.

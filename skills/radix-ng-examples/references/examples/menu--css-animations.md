@@ -4,8 +4,9 @@
 
 > Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
-Animate the popup itself so its transition status and the portal observe the same exit. Presence
-watches real animations in the portal subtree. Keep the popup displayed during the exit;
+Animate the popup itself so its transition status and the portal share the same render lifetime.
+Popup and Backdrop register their animation elements automatically; add `rdxPresenceTarget` for
+another animated element inside the portal. Keep the popup displayed during the exit;
 a closed-state `display: none` would cancel the animation immediately. The parent Positioner hides
 once the transition finishes, including when the portal stays mounted.
 

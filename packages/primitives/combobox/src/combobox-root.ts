@@ -151,6 +151,7 @@ const context = () => {
         itemId: (index: number) => engine.itemId(index),
         isKeyboardActive: () => engine.isKeyboardActive(),
         setKeyboardActive: (value: boolean) => engine.setKeyboardActive(value),
+        renderLifecycle: engine.renderLifecycle,
         transitionStatus: engine.transitionStatus,
         registerTransitionElement: engine.registerTransitionElement,
         visibleCount: engine.visibleCount,

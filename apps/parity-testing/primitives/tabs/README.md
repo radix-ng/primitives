@@ -308,7 +308,7 @@ Before the fix, Chromium failed seven of eight new cases, including native focus
 input and structural contents disappearing before the host exit finished. The reports/traces are
 retained locally in `dist/parity-testing/tabs/before-panel-fix/`. Panel now becomes inert as soon as it
 is inactive; `data-hidden` follows actual hidden state after exit. `TabsPanelPresence` uses the existing
-shared `PresenceMachine` with the Panel host as its motion root, so both host and descendant motion
+shared `useRenderLifecycle` with the Panel host and explicit `rdxPresenceTarget` descendants as participants, so registered motion
 can delay content removal. It owns only the embedded view; no second animation state machine was added.
 
 The public keyframe story has a separate Chromium browser regression, covering descendant-only

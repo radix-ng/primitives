@@ -5,7 +5,7 @@ import {
     injectId,
     useFilter,
     useListHighlight,
-    useTransitionStatus
+    useRenderLifecycle
 } from '@radix-ng/primitives/core';
 
 /**
@@ -351,7 +351,7 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
         inlinePreview.set(null);
     };
 
-    const transition = useTransitionStatus(config.onOpenChangeComplete);
+    const transition = useRenderLifecycle(config.onOpenChangeComplete, { open: config.open });
 
     // --- effects ---
 
@@ -712,6 +712,7 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
             keyboardActive = value;
         },
 
+        renderLifecycle: transition,
         transitionStatus: transition.status,
         registerTransitionElement: transition.registerElement,
 
