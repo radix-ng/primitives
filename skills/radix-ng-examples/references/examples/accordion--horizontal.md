@@ -43,7 +43,9 @@ import { cn, demoAccordion } from '../../storybook/styles';
                     </button>
                 </div>
                 <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
-                    <div [class]="a.contentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
+                    <div [class]="cn(a.contentText, a.contentTextH)">
+                        Yes. It adheres to the WAI-ARIA design pattern.
+                    </div>
                 </div>
             </div>
 
@@ -54,7 +56,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
                     </button>
                 </div>
                 <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
-                    <div [class]="a.contentText">
+                    <div [class]="cn(a.contentText, a.contentTextH)">
                         Yes. It's unstyled by default, giving you freedom over the look and feel.
                     </div>
                 </div>
@@ -67,7 +69,9 @@ import { cn, demoAccordion } from '../../storybook/styles';
                     </button>
                 </div>
                 <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
-                    <div [class]="a.contentText">Yes! You can animate the Accordion with CSS or JavaScript.</div>
+                    <div [class]="cn(a.contentText, a.contentTextH)">
+                        Yes! You can animate the Accordion with CSS or JavaScript.
+                    </div>
                 </div>
             </div>
         </div>

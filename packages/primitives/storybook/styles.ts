@@ -412,6 +412,7 @@ export const demoAvatar = {
  *
  * Vertical root: add `w-[300px]`. Horizontal root: add `flex flex-row h-[300px]`.
  * Horizontal items: compose `item` + `itemH`. Horizontal trigger: compose `trigger` + `triggerH`.
+ * Horizontal panel children: compose `contentText` + `contentTextH` to keep the expanded width measurable.
  * Animations require `--animate-accordion-*` defined in `tailwind.css`.
  */
 export const demoAccordion = {
@@ -446,7 +447,10 @@ export const demoAccordion = {
         '[&:not([data-open])[data-orientation=vertical]]:h-0',
         '[&:not([data-open])[data-orientation=horizontal]]:w-0'
     ),
-    contentText: 'px-5 py-4'
+    contentText: 'px-5 py-4',
+    // The child keeps its expanded width while the Panel clips it. Otherwise scrollWidth can
+    // collapse to just the padding during opening, then jump to the text's intrinsic width.
+    contentTextH: 'w-80'
 } as const;
 
 /**
