@@ -52,7 +52,17 @@ export class ButtonDriver {
                     resets: probe.resets,
                     field: document.querySelector<HTMLInputElement>('[data-testid="field"]')!.value,
                     hash: location.hash,
-                    scrolled: scrollY > 0
+                    scrolled: scrollY > 0,
+                    ...(probe.settings.interaction?.scope === 'standalone' || probe.settings.interaction?.cancel
+                        ? { handlers: probe.handlers }
+                        : {}),
+                    ...(probe.settings.interaction && probe.settings.interaction.scope !== 'standalone'
+                        ? {
+                              tabStops: [...document.querySelectorAll<HTMLElement>('[data-item]')].map(
+                                  (item) => item.tabIndex
+                              )
+                          }
+                        : {})
                 };
             });
         if (expected.scrolled === true) await expect.poll(async () => (await read()).scrolled).toBe(true);

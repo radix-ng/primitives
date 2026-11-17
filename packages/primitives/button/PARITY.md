@@ -23,18 +23,37 @@ framework mechanisms.
 
 - **Non-native Space activation moves from keydown to keyup.** Code that needs the completed action
   should listen for click. Holding Space no longer invokes the action for each repeat keydown, and
-  releasing Space after focus leaves the host does not invoke it.
+  releasing Space after focus leaves the host does not invoke it. Inside a Composite, Space activates
+  on keydown and keyup does not add another activation.
 - **Enter on `<a href>` uses native link activation.** The click is browser-generated and trusted.
   Anchors without an href and other non-native hosts synthesize Enter clicks with modifier keys.
 - **Descendant keys belong to the descendant.** Enter/Space on a nested focusable element do not
   activate its enclosing Button.
 - **Prevented activation defaults are respected.** A prevented Enter keydown or Space keyup blocks
-  non-native synthesis when the event is already prevented when the primitive handles it.
+  standalone non-native synthesis. Template and later-installed native host listeners run before
+  Button's keyboard handling, keeping activation synchronous and allowing cancellation. Composite
+  Space retains the pin's keydown policy even when a button-role consumer prevents its default.
 - **Disabled presses preserve the existing focus.** Pointerdown default is prevented; a focusable
   disabled Button preserves Tab defaults while suppressing other keydown defaults.
 - **Native buttons explicitly set `tabindex=0`.** This preserves the reference's keyboard tab order
-  and pointer focus in WebKit on macOS.
+  and pointer focus in WebKit on macOS. Composite items keep their own roving tabindex instead.
+
+## Composition ownership
+
+Button uses the same host's `RdxCompositeItem.tabIndex` and the existing Composite context for keyboard
+policy. Stacking `rdxToolbarButton` and `rdxButton` retains one roving tab stop, focusable disabled
+items, group/root disabled state and native host semantics.
+
+Toolbar supplies `RdxButtonConfig` through `provideRdxButtonConfig`. This signal-based configuration
+is injected only from the same element; it shares effective disabled and focusable-when-disabled
+state with Button without synchronizing either primitive's inputs. Other primitive authors can use
+the same provider when combining their own state with Button on one host.
+
+The capture listener moves Button's keyboard bubble listener after existing host listeners for each
+event. This lets later application listeners prevent activation before native defaults run, without
+timers, microtask activation or a React event wrapper. DestroyRef removes both phases.
 
 There are no reviewed differential exceptions in this increment. Semantic snapshots normalize
 redundant false ARIA attributes and observe effective tabindex; complete DOM/event observations are
-retained. This does not establish complete API, native propagation, composite, device or AT parity.
+retained. Coverage does not establish all composite families, complete API, native ancestor
+propagation, device or AT parity; remaining cases are listed in the suite guide.

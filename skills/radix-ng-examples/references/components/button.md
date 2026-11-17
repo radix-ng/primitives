@@ -11,7 +11,7 @@ A button, or any element that should behave like one.
 - ✅ Works on a native `<button>` or any other element (`<a>`, `<span>`, …).
 - ✅ Exposes state via the `data-disabled` attribute for styling.
 - ✅ `focusableWhenDisabled` keeps the control in the tab order (uses `aria-disabled`).
-- ✅ Adds `role="button"`, `tabindex`, and keyboard activation on non-button hosts: Enter on keydown, Space on keyup.
+- ✅ Adds button semantics and keyboard activation to non-button hosts.
 
 ## Import
 
@@ -30,6 +30,13 @@ to behave like a button.
 <!-- or on any other host -->
 <a rdxButton href="...">...</a>
 ```
+
+Standalone Button activates Space on keyup. With `rdxCompositeItem` or `rdxToolbarButton`, it uses
+the item's roving tabindex and activates Space on keydown. Toolbar group/root disabled state is
+inherited when both `rdxToolbarButton` and `rdxButton` are applied to the same element.
+
+Consumer `keydown` / `keyup` handlers run before Button's keyboard behavior. Preventing Enter
+keydown or standalone Space keyup cancels activation; composite Space follows its keydown policy.
 
 ## Examples
 

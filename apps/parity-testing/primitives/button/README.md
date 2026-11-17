@@ -7,7 +7,7 @@ that committed object. The runner verifies the archived source digest before eac
 
 ## Scope
 
-58 scenarios run in Chromium, Firefox and WebKit (174 comparisons):
+126 scenarios run in Chromium, Firefox and WebKit (378 comparisons):
 
 - native `<button>`, `<div>`, `<span>`, `<a href>` and `<a>` without an href;
 - DOM semantics, `data-disabled`, native disabled state, effective tabindex and ARIA disabled state;
@@ -18,6 +18,19 @@ that committed object. The runner verifies the archived source digest before eac
 - disabled/focusableWhenDisabled tab order, pointer focus retention and activation suppression;
 - live disabled/focusable/type updates, including becoming disabled while focused;
 - native submit/reset pointer and keyboard activation, submitter identity and actual field reset.
+
+68 `consumer-`, `composite-` and `toolbar-` cases extend the initial 58:
+
+- consumer-before-click order, template cancellation, native host listeners installed after bootstrap,
+  and stopPropagation without canceling activation;
+- Button rendered through a CompositeItem or Toolbar.Button on native button, span and link hosts;
+- one roving tab stop, arrow focus, forward Tab exit, repeated and modified composite Space;
+- focusable/unfocusable disabled items and Toolbar group/root disabled ownership;
+- consumer-prevented Enter and composite Space defaults, with separate down/up checkpoints.
+
+React uses the pin's actual `render={<Button />}` composition; Angular applies the corresponding
+directives to one element. Toolbar forwards disabled state into its rendered Button: the fixture
+leaves that prop unspecified unless the application explicitly disables the target.
 
 The driver uses real browser input. F6/F7/F8 are application commands that update each fixture's own
 state; subsequent actions wait for the relevant rendered state. The recorder does not synthesize
@@ -51,11 +64,18 @@ retain and assert that browser value. See the
 
 `expected-differences.json` is empty: this increment introduces no differential exceptions.
 
+The composition/consumer baseline in `dist/parity-testing/button/before-interaction-fix/` retains
+the first 46 new scenarios: 34 Angular comparisons failed while all reference assertions passed.
+Six consumer-handler unit witnesses also failed before the correction. The later cases add composite
+cancellation and modifiers. The dynamic F6 re-enable command now waits for the rendered disabled
+attribute to disappear before requesting the next activation, as F8 already did for native type.
+
 ## Limits
 
-This is standalone Button evidence. Composite-widget ownership, authored role/tabindex overrides,
-consumer key handlers registered later on the same host, auxiliary/modifier link navigation, real
-touch/pen, iframe/shadow realms, SSR/hydration and assistive technologies remain separate checks.
+Authored role/tabindex overrides, bare Toolbar.Button without Button composition, other compound
+families, auxiliary/modifier link navigation, real touch/pen, iframe/shadow realms, SSR/hydration and
+assistive technologies remain separate checks. Ancestor propagation and stopImmediatePropagation
+are outside the consumer-handler contract checked here.
 The pin does not retain a Space keydown cancellation flag for non-native hosts: a prevented keydown
 can still be followed by keyup activation. That behavior is tested explicitly. Programmatically
 focusing an unfocusable disabled non-native host also preserves Space's native scroll; normal Tab

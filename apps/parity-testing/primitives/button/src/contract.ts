@@ -1,8 +1,11 @@
+import { interactionCases, type ConsumerKey, type Interaction } from './interaction';
+
 export type Host = 'button' | 'div' | 'span' | 'link' | 'anchor';
 export type ButtonType = 'button' | 'submit' | 'reset';
 export interface Settings {
     host: Host;
-    action: 'keyboard' | 'pointer' | 'disabled' | 'dynamic' | 'descendant' | 'repeat' | 'blur';
+    action: 'keyboard' | 'pointer' | 'disabled' | 'dynamic' | 'descendant' | 'repeat' | 'blur' | 'interaction';
+    interaction?: Interaction;
     key?: 'Enter' | 'Space';
     disabled?: boolean;
     focusableWhenDisabled?: boolean;
@@ -44,6 +47,7 @@ for (const host of ['button', 'span', 'link'] as const)
 cases['span-prevent-space-keydown'] = { host: 'span', action: 'keyboard', key: 'Space', cancel: 'keydown' };
 for (const host of ['button', 'span'] as const)
     cases[`${host}-space-focus-leaves`] = { host, action: 'blur', key: 'Space' };
+Object.assign(cases, interactionCases);
 
 export interface Click {
     target: string | null;
@@ -63,6 +67,7 @@ export interface Probe {
     submits: (string | null)[];
     resets: number;
     nativeEvents: Record<string, unknown>[];
+    handlers: string[];
 }
 declare global {
     const __PARITY_REFERENCE__: Probe['reference'];
@@ -83,7 +88,8 @@ export function installProbe(framework: Probe['framework'], settings: Settings) 
         clicks: [],
         submits: [],
         resets: 0,
-        nativeEvents: []
+        nativeEvents: [],
+        handlers: []
     };
     window.buttonParity = probe;
     for (const type of ['keydown', 'keyup', 'click', 'pointerdown', 'pointerup', 'focusin']) {
@@ -111,6 +117,7 @@ export function installProbe(framework: Probe['framework'], settings: Settings) 
     return {
         probe,
         click(event: MouseEvent) {
+            if (settings.interaction?.scope === 'standalone') probe.handlers.push('click');
             probe.clicks.push({
                 target: (event.target as Element).getAttribute('data-testid'),
                 trusted: event.isTrusted,
@@ -128,6 +135,12 @@ export function installProbe(framework: Probe['framework'], settings: Settings) 
         },
         reset() {
             probe.resets++;
+        },
+        consume(event: ConsumerKey) {
+            if (!['Enter', ' '].includes(event.key)) return;
+            probe.handlers.push(`${event.type}:${event.key === ' ' ? 'Space' : event.key}`);
+            if (settings.interaction?.cancel === event.type) event.preventDefault();
+            if (settings.interaction?.stop) event.stopPropagation();
         }
     };
 }

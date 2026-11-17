@@ -7,6 +7,7 @@ Base UI is the primary API/behavior reference; Radix UI is secondary.
 
 - Versions, commands and CI behavior come from `package.json`, `.nvmrc`, Nx project files and `.github/workflows/`.
 - Public API comes from primitive source/barrels; documented examples come from Storybook. Accepted decisions and intentional deviations live in [ADRs](docs/adr/README.md).
+- Reserve ADRs for significant, lasting decisions. Routine fixes, tests and parity increments do not require a new ADR; follow the [creation and update criteria](docs/adr/README.md#when-to-write-or-update-an-adr).
 - Contributor skills live in `.agents/skills/`; `.claude/skills/` contains relative symlinks to them. These project rules take precedence over general framework guidance, including the vendored Angular skill's CLI/build defaults. Use Nx/package scripts here.
 - Skills listed in `skills-lock.json` are upstream-managed: keep their files and the lock unchanged unless the task explicitly requests an upstream skill update. Put project overrides here or in project-owned skills.
 - `skills/` is the separately distributed **consumer** bundle. See [its pipeline](docs/engineering/consumer-skills.md) before changing generated files.

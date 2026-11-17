@@ -4,6 +4,7 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { RdxButtonDirective } from '@radix-ng/primitives/button';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { classes, config, installProbe, type ButtonType } from './contract';
+import { AngularInteraction } from './interaction.angular';
 
 @Component({
     selector: 'parity-button',
@@ -116,4 +117,6 @@ class AngularButton {
         inject(DestroyRef).onDestroy(() => document.removeEventListener('keydown', listener));
     }
 }
-void bootstrapApplication(AngularButton, { providers: [provideZonelessChangeDetection()] });
+if (config().interaction)
+    void bootstrapApplication(AngularInteraction, { providers: [provideZonelessChangeDetection()] });
+else void bootstrapApplication(AngularButton, { providers: [provideZonelessChangeDetection()] });

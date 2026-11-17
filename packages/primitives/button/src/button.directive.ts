@@ -1,5 +1,7 @@
 import { booleanAttribute, computed, DestroyRef, Directive, ElementRef, inject, input } from '@angular/core';
+import { injectRdxCompositeRootContext, RdxCompositeItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, dispatchClickWithModifiers } from '@radix-ng/primitives/core';
+import { RDX_BUTTON_CONFIG } from './button-config';
 
 export type RdxButtonType = 'button' | 'submit' | 'reset';
 
@@ -39,11 +41,11 @@ export interface RdxButtonProps {
     selector: '[rdxButton]',
     exportAs: 'rdxButton',
     host: {
-        '[attr.data-disabled]': 'disabled() ? "" : undefined',
+        '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
 
         // Native disabled only when we do NOT need it focusable; otherwise we
         // keep it focusable and express the state via aria-disabled below.
-        '[attr.disabled]': 'isNativeButton() && disabled() && !focusableWhenDisabled() ? "" : undefined',
+        '[attr.disabled]': 'isNativeButton() && isDisabled() && !isFocusableWhenDisabled() ? "" : undefined',
         '[attr.aria-disabled]': 'ariaDisabled()',
 
         // Native buttons get their type; non-button hosts get button semantics.
@@ -54,6 +56,10 @@ export interface RdxButtonProps {
 })
 export class RdxButtonDirective {
     private readonly elementRef = inject(ElementRef<HTMLElement>);
+    private readonly config = inject(RDX_BUTTON_CONFIG, { self: true, optional: true });
+    private readonly compositeItem = inject(RdxCompositeItem, { self: true, optional: true });
+    private readonly compositeRoot = injectRdxCompositeRootContext(true);
+    private readonly isComposite = !!this.compositeItem || !!this.compositeRoot;
 
     /**
      * Whether the button is disabled.
@@ -73,6 +79,14 @@ export class RdxButtonDirective {
      */
     readonly type = input<RdxButtonType>('button');
 
+    /** @ignore */
+    protected readonly isDisabled = computed(() => this.disabled() || (this.config?.disabled() ?? false));
+
+    /** @ignore */
+    protected readonly isFocusableWhenDisabled = computed(
+        () => this.config?.focusableWhenDisabled() ?? this.focusableWhenDisabled()
+    );
+
     /**
      * @ignore
      */
@@ -84,21 +98,23 @@ export class RdxButtonDirective {
      * control must stay focusable.
      */
     protected readonly ariaDisabled = computed(() => {
-        if (!this.disabled()) {
+        if (!this.isDisabled()) {
             return undefined;
         }
-        return !this.isNativeButton() || this.focusableWhenDisabled() ? 'true' : undefined;
+        return !this.isNativeButton() || this.isFocusableWhenDisabled() ? 'true' : undefined;
     });
 
     /**
      * @ignore
      */
     protected readonly tabIndex = computed(() => {
+        if (this.compositeItem) return this.compositeItem.tabIndex();
+        if (this.isComposite) return undefined;
         if (this.isNativeButton()) {
             // Explicit tabindex also opts native buttons into Safari's keyboard tab order.
             return 0;
         }
-        return this.disabled() && !this.focusableWhenDisabled() ? -1 : 0;
+        return this.isDisabled() && !this.isFocusableWhenDisabled() ? -1 : 0;
     });
 
     constructor() {
@@ -108,38 +124,61 @@ export class RdxButtonDirective {
         const onClick = (event: MouseEvent): void => this.handleClick(event);
         const onKeydown = (event: KeyboardEvent): void => this.handleKeydown(event);
         const onKeyup = (event: KeyboardEvent): void => this.handleKeyup(event);
+        // At capture time, move our bubble listener after the host's current consumer listeners.
+        // This keeps activation synchronous while allowing later template/DOM handlers to cancel it.
+        const prepareKeydown = (): void => {
+            element.removeEventListener('keydown', onKeydown);
+            element.addEventListener('keydown', onKeydown);
+        };
+        const prepareKeyup = (): void => {
+            element.removeEventListener('keyup', onKeyup);
+            element.addEventListener('keyup', onKeyup);
+        };
         const onPointerdown = (event: PointerEvent): void => {
             // A disabled press must not blur the previously focused element.
-            if (this.disabled()) event.preventDefault();
+            if (this.isDisabled()) event.preventDefault();
         };
 
         element.addEventListener('click', onClick, true);
-        element.addEventListener('keydown', onKeydown, true);
-        element.addEventListener('keyup', onKeyup, true);
+        element.addEventListener('keydown', prepareKeydown, true);
+        element.addEventListener('keyup', prepareKeyup, true);
         element.addEventListener('pointerdown', onPointerdown, true);
 
         inject(DestroyRef).onDestroy(() => {
             element.removeEventListener('click', onClick, true);
-            element.removeEventListener('keydown', onKeydown, true);
-            element.removeEventListener('keyup', onKeyup, true);
+            element.removeEventListener('keydown', prepareKeydown, true);
+            element.removeEventListener('keyup', prepareKeyup, true);
+            element.removeEventListener('keydown', onKeydown);
+            element.removeEventListener('keyup', onKeyup);
             element.removeEventListener('pointerdown', onPointerdown, true);
         });
     }
 
     private handleClick(event: MouseEvent): void {
-        if (this.disabled()) {
+        if (this.isDisabled()) {
             event.preventDefault();
             event.stopImmediatePropagation();
         }
     }
 
     private handleKeydown(event: KeyboardEvent): void {
-        if (this.disabled()) {
-            if (this.focusableWhenDisabled() && event.key !== 'Tab') event.preventDefault();
+        if (this.isDisabled()) {
+            if (this.isFocusableWhenDisabled() && event.key !== 'Tab') event.preventDefault();
             return;
         }
 
-        if (this.isNativeButton() || event.target !== event.currentTarget) return;
+        if (event.target !== event.currentTarget) return;
+
+        if (this.isComposite && event.key === ' ') {
+            const role = this.elementRef.nativeElement.getAttribute('role');
+            const textNavigation = role?.startsWith('menuitem') || role === 'option' || role === 'gridcell';
+            if (event.defaultPrevented && textNavigation) return;
+            event.preventDefault();
+            dispatchClickWithModifiers(this.elementRef.nativeElement, event);
+            return;
+        }
+
+        if (this.isNativeButton()) return;
 
         const element = this.elementRef.nativeElement;
         const isLink = element.tagName === 'A' && !!(element as HTMLAnchorElement).href;
@@ -157,14 +196,15 @@ export class RdxButtonDirective {
     }
 
     private handleKeyup(event: KeyboardEvent): void {
-        if (
-            this.disabled() ||
-            this.isNativeButton() ||
-            event.target !== event.currentTarget ||
-            event.defaultPrevented ||
-            event.key !== ' '
-        )
+        if (this.isDisabled() || event.target !== event.currentTarget) return;
+
+        if (this.isComposite) {
+            // Composite Space already dispatched on keydown; cancel the native button's keyup click.
+            if (this.isNativeButton() && event.key === ' ') event.preventDefault();
             return;
+        }
+
+        if (this.isNativeButton() || event.defaultPrevented || event.key !== ' ') return;
 
         // Like the pin, standalone non-native hosts do not retain a keydown cancellation flag.
         dispatchClickWithModifiers(this.elementRef.nativeElement, event);

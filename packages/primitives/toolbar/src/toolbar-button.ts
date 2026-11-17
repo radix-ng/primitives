@@ -1,7 +1,13 @@
 import { booleanAttribute, computed, Directive, effect, inject, input } from '@angular/core';
+import { provideRdxButtonConfig, RdxButtonConfig } from '@radix-ng/primitives/button';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import { BooleanInput } from '@radix-ng/primitives/core';
 import { injectToolbarGroupContext, injectToolbarRootContext } from './toolbar-context';
+
+const buttonConfig = (): RdxButtonConfig => {
+    const button = inject(RdxToolbarButton);
+    return { disabled: button.isDisabled, focusableWhenDisabled: button.focusableWhenDisabled };
+};
 
 /**
  * A button within a toolbar.
@@ -12,14 +18,15 @@ import { injectToolbarGroupContext, injectToolbarRootContext } from './toolbar-c
     selector: '[rdxToolbarButton]',
     exportAs: 'rdxToolbarButton',
     hostDirectives: [RdxCompositeItem],
+    providers: [provideRdxButtonConfig(buttonConfig)],
     host: {
         '[attr.type]': 'nativeButton() ? "button" : undefined',
         '[attr.role]': 'nativeButton() ? undefined : "button"',
         '[attr.data-orientation]': 'rootContext.orientation()',
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
         '[attr.data-focusable]': 'focusableWhenDisabled() ? "" : undefined',
-        '[attr.aria-disabled]': 'isDisabled() ? "true" : undefined',
-        '[attr.disabled]': 'isDisabled() && !focusableWhenDisabled() ? "" : undefined',
+        '[attr.aria-disabled]': 'isDisabled() && (!nativeButton() || focusableWhenDisabled()) ? "true" : undefined',
+        '[attr.disabled]': 'nativeButton() && isDisabled() && !focusableWhenDisabled() ? "" : undefined',
         '(click)': 'onClick($event)'
     }
 })

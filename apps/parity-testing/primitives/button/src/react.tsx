@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { config, installProbe, classes as s, type ButtonType } from './contract';
+import { ReactInteraction } from './interaction.react';
 
 const settings = config();
 const trace = installProbe('react', settings);
@@ -76,4 +77,6 @@ function ReactButton() {
         </>
     );
 }
-createRoot(document.getElementById('root')!).render(<ReactButton />);
+createRoot(document.getElementById('root')!).render(
+    settings.interaction ? <ReactInteraction settings={settings} trace={trace} /> : <ReactButton />
+);

@@ -33,7 +33,8 @@ export class RdxCompositeItem {
     private readonly rootContext = computed(() => (this.owner ? this.owner.rootContext() : this.injectedRootContext));
 
     readonly index = this.listItem.index;
-    protected readonly tabIndex = computed(() => {
+    /** @internal Shared with behavior directives on this same composite item. */
+    readonly tabIndex = computed(() => {
         if (this.owner?.tabIndex) {
             return this.owner.tabIndex();
         }

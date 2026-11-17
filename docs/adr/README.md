@@ -4,6 +4,24 @@ This directory holds the project's ADRs — one Markdown file per significant de
 [`template.md`](template.md) to `NNNN-kebab-title.md` (next free number, zero-padded to 4 digits), fill it
 in, and run `npx prettier --check "docs/adr/*.md"` before committing.
 
+## When to write or update an ADR
+
+Write an ADR for a significant, lasting choice whose rationale future contributors need to understand:
+
+- State ownership or public contract decisions.
+- Shared mechanisms or architectural boundaries.
+- Intentional deviations from Base UI.
+- Approaches with consequential tradeoffs, constraints or rejected alternatives.
+
+Routine bug fixes, regression tests and parity increments that implement an established contract do
+not require a new ADR. Record current behavior, parity coverage and verification results in the
+primitive's `PARITY.md`, supported by code and tests. Link relevant evidence from the ADR when it
+explains the decision.
+
+Update an existing ADR when related changes clarify or extend the same decision. If a new decision
+replaces an accepted one, create a new ADR and mark the earlier record as superseded, preserving its
+original rationale. Keep ADRs focused on context, the decision and its consequences.
+
 ## Header convention
 
 Every ADR starts with `# ADR NNNN: Title` followed by exactly this metadata block, in this order:
