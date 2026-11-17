@@ -457,13 +457,13 @@ describe('Tabs projected through a hostDirectives wrapper', () => {
         expect(document.activeElement).toBe(tabElements[2]);
     });
 
-    it('selects a projected tab on click', () => {
+    it('selects a projected tab on click', async () => {
         tabs()[1].click();
         fixture.detectChanges();
 
         expect(root().value()).toBe('two');
         expect(tabs().map((tab) => tab.getAttribute('aria-selected'))).toEqual(['false', 'true', 'false']);
-        expect(panels().map((panel) => panel.hidden)).toEqual([true, false, true]);
+        await vi.waitFor(() => expect(panels().map((panel) => panel.hidden)).toEqual([true, false, true]));
         expect(host.changes.at(-1)?.eventDetails.reason).toBe('none');
     });
 
@@ -477,7 +477,7 @@ describe('Tabs projected through a hostDirectives wrapper', () => {
 
         expect(document.activeElement).toBe(tabs()[2]);
         expect(root().value()).toBe('three');
-        expect(panels().map((panel) => panel.hidden)).toEqual([true, true, false]);
+        await vi.waitFor(() => expect(panels().map((panel) => panel.hidden)).toEqual([true, true, false]));
     });
 
     it('keeps the selected tab when the projected list is destroyed and recreated', async () => {
@@ -521,7 +521,7 @@ describe('Tabs projected through a hostDirectives wrapper', () => {
         expect(tabsRoot.activateOnFocus()).toBe(true);
         expect(tabsRoot.value()).toBe('two');
         expect(tabs().map((tab) => tab.getAttribute('aria-selected'))).toEqual(['false', 'true', 'false']);
-        expect(panels().map((panel) => panel.hidden)).toEqual([true, false, true]);
+        await vi.waitFor(() => expect(panels().map((panel) => panel.hidden)).toEqual([true, false, true]));
         expect(host.changes).toHaveLength(changesBeforeUnmount);
     });
 
@@ -714,7 +714,7 @@ describe('Tabs with *rdxTabsPanelPresence', () => {
         fixture.detectChanges();
 
         expect(content('.content-two')).toBeTruthy();
-        expect(content('.content-one')).toBeNull();
+        await vi.waitFor(() => expect(content('.content-one')).toBeNull());
     });
 
     it('keeps inactive panels mounted when keepMounted is set', async () => {

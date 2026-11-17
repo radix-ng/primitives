@@ -1,18 +1,9 @@
-import {
-    booleanAttribute,
-    computed,
-    DestroyRef,
-    Directive,
-    effect,
-    ElementRef,
-    inject,
-    input,
-    untracked
-} from '@angular/core';
+import { booleanAttribute, computed, DestroyRef, Directive, effect, ElementRef, inject, input } from '@angular/core';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
-import { injectId, rdxDevError, useTransitionStatus } from '@radix-ng/primitives/core';
+import { injectId, rdxDevError } from '@radix-ng/primitives/core';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
 import { injectTabsPanelPresenceContext } from './tabs-panel-presence-context';
+import { useTabsPanelTransition } from './tabs-panel-transition';
 import { injectTabsRootContext } from './tabs-root-context';
 import { RdxTabsValue } from './utils';
 
@@ -94,7 +85,7 @@ export class RdxTabsPanel {
     /** Effective mounting policy from the structural owner or native Panel. */
     readonly keepMounted = computed(() => (this.presence ? this.presence.keepMounted() : this.keepMountedInput()));
 
-    private readonly transition = this.presence?.transition ?? useTransitionStatus(() => {});
+    private readonly transition = this.presence?.transition ?? useTabsPanelTransition(() => this.active()).transition;
 
     /** Reactive enter/exit transition phase (`'starting'` | `'ending'` | `undefined`). */
     readonly transitionStatus = computed(() => (this.presence?.exiting() ? 'ending' : this.transition.status()));
@@ -123,9 +114,6 @@ export class RdxTabsPanel {
     /** @ignore Index of the panel in DOM order. */
     protected readonly index = this.listItem.index;
 
-    private previousActive = false;
-    private isFirstRun = true;
-
     constructor() {
         const unregister = this.transition.registerElement(this.elementRef.nativeElement);
         inject(DestroyRef).onDestroy(unregister);
@@ -142,22 +130,5 @@ export class RdxTabsPanel {
             this.hidden();
             onCleanup(this.rootContext.registerPanel(this.value(), this.panelId()));
         });
-
-        if (!this.presence)
-            effect(() => {
-                const active = this.active();
-
-                // Settle the initial state without playing an enter transition.
-                if (this.isFirstRun) {
-                    this.isFirstRun = false;
-                    this.previousActive = active;
-                    return;
-                }
-
-                if (active !== this.previousActive) {
-                    this.previousActive = active;
-                    untracked(() => this.transition.start(active));
-                }
-            });
     }
 }

@@ -15,6 +15,8 @@ import {
     RdxCompositeMetadata,
     RdxCompositeRoot
 } from '@radix-ng/primitives/composite';
+import { isElement } from '@radix-ng/primitives/core';
+import { TabsInteractionRender } from './tabs-interaction-render';
 import { injectTabsRootContext } from './tabs-root-context';
 import { RdxTabsTabMetadata } from './utils';
 
@@ -29,6 +31,9 @@ import { RdxTabsTabMetadata } from './utils';
     hostDirectives: [RdxCompositeRoot],
     host: {
         role: 'tablist',
+        '(focusin)': 'onInteraction($event)',
+        '(click)': 'onInteraction($event)',
+        '(keydown)': 'onKeyDown($event)',
         '[attr.aria-orientation]': 'rootContext.orientation() === "vertical" ? "vertical" : undefined',
         '[attr.data-orientation]': 'rootContext.orientation()',
         '[attr.data-activation-direction]': 'rootContext.activationDirection()'
@@ -40,6 +45,7 @@ export class RdxTabsList {
     private readonly compositeRoot = inject(RdxCompositeRoot, { self: true });
     private readonly compositeRootContext = injectRdxCompositeRootContext();
     private readonly compositeListContext = injectRdxCompositeListContext();
+    private readonly interactionRender = inject(TabsInteractionRender);
 
     /**
      * Whether a tab is activated when it receives focus (automatic activation).
@@ -90,6 +96,7 @@ export class RdxTabsList {
             this.compositeListContext
         );
         inject(DestroyRef).onDestroy(unregister);
+        inject(DestroyRef).onDestroy(() => this.interactionRender.forget(this));
 
         // Constants — set once (not reactive). Disabled tabs stay in the roving sequence (APG: arrow
         // keys can focus a disabled tab), so the composite has no disabled indices and Home/End are on.
@@ -130,6 +137,21 @@ export class RdxTabsList {
         });
 
         effect(() => this.rootContext.setActivateOnFocus(this.activateOnFocus()));
+    }
+
+    protected onInteraction(event: Event): void {
+        if (this.ownsTabEvent(event)) this.interactionRender.mark(this);
+    }
+
+    protected onKeyDown(event: KeyboardEvent): void {
+        if (event.key === 'Tab' && !event.defaultPrevented && this.ownsTabEvent(event)) {
+            this.interactionRender.flush(this);
+        }
+    }
+
+    private ownsTabEvent(event: Event): boolean {
+        const tab = isElement(event.target) ? event.target.closest<HTMLElement>('[role="tab"]') : null;
+        return tab !== null && this.tabMap().has(tab);
     }
 }
 

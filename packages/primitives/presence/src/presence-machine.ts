@@ -37,6 +37,8 @@ export interface PresenceMachineHost {
     readonly present: Signal<boolean>;
     /** An imperative completion already finished the exit; remove the view without another wait. */
     readonly skipExitAnimation?: Signal<boolean>;
+    /** Keep the view after CSS completion until an owner-managed boundary has passed. */
+    readonly holdUnmount?: Signal<boolean>;
     /** Whether we are running in a browser (animation/computed-style logic is skipped on the server). */
     readonly isBrowser: boolean;
     /** Injection context for the internal `effect` / `afterNextRender`. */
@@ -70,6 +72,7 @@ export interface PresenceMachineHost {
 export class PresenceMachine {
     private state: PresenceState;
     private prevPresent: boolean;
+    private unmountRequested = false;
 
     /** Root nodes currently watched for exit animations (set on mount). */
     private nodes: HTMLElement[] = [];
@@ -110,9 +113,17 @@ export class PresenceMachine {
         effect(
             () => {
                 const present = host.present();
+                const held = host.holdUnmount?.() ?? false;
 
                 if (host.skipExitAnimation?.() && !present) {
                     this.prevPresent = false;
+                    this.send('UNMOUNT');
+                    return;
+                }
+
+                if (present) this.unmountRequested = false;
+                if (!present && !held && this.unmountRequested) {
+                    this.unmountRequested = false;
                     this.send('UNMOUNT');
                     return;
                 }
@@ -287,6 +298,16 @@ export class PresenceMachine {
             return;
         }
 
+        if (
+            next === 'unmounted' &&
+            this.host.isBrowser &&
+            this.host.holdUnmount?.() &&
+            !this.host.skipExitAnimation?.()
+        ) {
+            this.unmountRequested = true;
+            return;
+        }
+
         this.state = next;
 
         if (next === 'mounted') {
@@ -324,6 +345,7 @@ export class PresenceMachine {
     }
 
     private unmount(): void {
+        this.unmountRequested = false;
         this.removeListeners?.();
         this.removeListeners = null;
         this.clearSafetyNet();

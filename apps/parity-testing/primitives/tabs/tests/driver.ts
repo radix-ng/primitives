@@ -22,6 +22,8 @@ export class TabsDriver {
     }
 
     async goto(name: CaseName) {
+        if (name.startsWith('keyboard-rapid-') || name.startsWith('keyboard-composed-'))
+            await this.page.clock.install();
         await this.page.goto(`/${this.framework}.html?case=${name}`);
         if (name === 'geometry-scale-zero' || name === 'geometry-scale-x-zero')
             await expect(this.page.getByTestId('tablist')).toBeAttached();

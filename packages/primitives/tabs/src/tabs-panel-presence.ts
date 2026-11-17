@@ -14,9 +14,10 @@ import {
     untracked,
     ViewContainerRef
 } from '@angular/core';
-import { injectId, useTransitionStatus } from '@radix-ng/primitives/core';
+import { injectId } from '@radix-ng/primitives/core';
 import { PresenceMachine } from '@radix-ng/primitives/presence';
 import { provideTabsPanelPresenceContext, RdxTabsPanelPresenceContext } from './tabs-panel-presence-context';
+import { useTabsPanelTransition } from './tabs-panel-transition';
 import { injectTabsRootContext } from './tabs-root-context';
 import { RdxTabsValue } from './utils';
 
@@ -34,9 +35,8 @@ export class RdxTabsPanelPresence {
     private readonly viewContainerRef = inject(ViewContainerRef);
     private readonly root = injectTabsRootContext();
     private view: EmbeddedViewRef<void> | null = null;
-    private readonly transition = useTransitionStatus(() => {});
-    private previousActive = false;
-    private isFirstRun = true;
+    private readonly motion = useTabsPanelTransition(() => this.active());
+    private readonly transition = this.motion.transition;
 
     /** The value of the Panel owned by this template. */
     readonly rdxTabsPanelPresence = input.required<RdxTabsValue>();
@@ -68,23 +68,6 @@ export class RdxTabsPanelPresence {
     constructor() {
         const injector = inject(Injector);
         const isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
-        // The logical Panel survives native view destruction, so its transition must survive too.
-        // Initially-open markup stays settled; a later activation enters even on a fresh host.
-        effect(
-            () => {
-                const active = this.active();
-                if (this.isFirstRun) {
-                    this.isFirstRun = false;
-                    this.previousActive = active;
-                    return;
-                }
-                if (active !== this.previousActive) {
-                    this.previousActive = active;
-                    untracked(() => this.transition.start(active));
-                }
-            },
-            { debugName: 'RdxTabsPanelPresence.active' }
-        );
         // Required inputs are bound before this initial effect. PresenceMachine owns later
         // selection changes; this effect only creates and disposes its one view owner.
         effect(
@@ -93,6 +76,7 @@ export class RdxTabsPanelPresence {
                     () =>
                         new PresenceMachine({
                             present: this.present,
+                            holdUnmount: this.motion.exitFramePending,
                             isBrowser,
                             injector,
                             mountView: () => {

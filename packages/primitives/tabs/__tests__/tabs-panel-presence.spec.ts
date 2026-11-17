@@ -1,5 +1,6 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
 import { RdxTabsList } from '../src/tabs-list';
 import { RdxTabsPanel } from '../src/tabs-panel';
 import { RdxTabsPanelPresence } from '../src/tabs-panel-presence';
@@ -78,12 +79,13 @@ describe('Tabs whole-Panel presence', () => {
         expect(PresenceChild.created).toBe(1);
         fixture.componentInstance.value.set('two');
         await fixture.whenStable();
-        expect(panel('one')).toBeNull();
+        await vi.waitFor(() => expect(panel('one')).toBeNull());
         expect(initial.isConnected).toBe(false);
         expect(panel('two')).not.toBeNull();
         expect(PresenceChild.destroyed).toEqual([1]);
         fixture.componentInstance.value.set('one');
         await fixture.whenStable();
+        await vi.waitFor(() => expect(panel('two')).toBeNull());
         expect(panel('one')).not.toBe(initial);
         expect(PresenceChild.created).toBe(3);
         expect(PresenceChild.destroyed).toEqual([1, 2]);
@@ -96,7 +98,7 @@ describe('Tabs whole-Panel presence', () => {
         expect(tabs[1].hasAttribute('aria-controls')).toBe(false);
         fixture.componentInstance.value.set('two');
         await fixture.whenStable();
-        expect(tabs[0].hasAttribute('aria-controls')).toBe(false);
+        await vi.waitFor(() => expect(tabs[0].hasAttribute('aria-controls')).toBe(false));
         expect(tabs[1].getAttribute('aria-controls')).toBe(panel('two')!.id);
         fixture.componentInstance.value.set('one');
         await fixture.whenStable();
@@ -117,7 +119,7 @@ describe('Tabs whole-Panel presence', () => {
         expect(PresenceChild.destroyed).toEqual([]);
         fixture.componentInstance.keepMounted.set(false);
         await fixture.whenStable();
-        expect(panel('one')).toBeNull();
+        await vi.waitFor(() => expect(panel('one')).toBeNull());
         expect(PresenceChild.destroyed).toEqual([1]);
         expect(panel('two')).not.toBeNull();
     });
@@ -140,6 +142,21 @@ describe('Tabs whole-Panel presence', () => {
         expect(PresenceChild.destroyed).toEqual([1]);
         fixture.destroy();
         expect(PresenceChild.destroyed).toEqual([1]);
+    });
+
+    it('reuses a structural Panel reopened before its exit frame and ignores its old removal', async () => {
+        const initial = panel('one')!;
+        fixture.componentInstance.value.set('two');
+        await fixture.whenStable();
+        expect(panel('one')).toBe(initial);
+        expect(initial.hasAttribute('inert')).toBe(true);
+        fixture.componentInstance.value.set('one');
+        await fixture.whenStable();
+        await vi.waitFor(() => expect(panel('two')).toBeNull());
+        expect(panel('one')).toBe(initial);
+        expect(initial.hidden).toBe(false);
+        expect(PresenceChild.created).toBe(2);
+        expect(PresenceChild.destroyed).toEqual([2]);
     });
 
     it('does not inherit an outer Panel owner through a nested Tabs Root', async () => {

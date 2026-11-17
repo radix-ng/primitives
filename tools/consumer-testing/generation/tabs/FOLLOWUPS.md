@@ -22,7 +22,7 @@ than primitive ownership or a skill defect.
 
 ## Direct primitive comparison, 2026-11-16
 
-The [Tabs keyboard matrix](../../../../packages/primitives/tabs/PARITY.md#keyboard-matrix--settled-navigation-covered-rapid-handoff-unresolved)
+The [Tabs keyboard matrix](../../../../packages/primitives/tabs/PARITY.md#keyboard-matrix--native-tab-boundary-and-exit-frames)
 now exercises real Angular and pinned Base UI parts, without generated wrappers. Native Enter/Space
 or an automatic-selection arrow is followed by Tab without a selection-render wait. Raw key records
 retain the actual selected DOM tab at each key capture; the complete native focusin sequence is
@@ -34,8 +34,8 @@ fails. Controlled/uncontrolled and retained/structural cases reproduce the old-P
 Angular renders the new selection. This establishes the race in direct primitive composition;
 it does not change the frozen consumer result or attribute a defect to consumer-skill generation.
 
-A synchronous-render policy remains undecided. The primitive runtime has not been changed, the new
-rapid comparisons currently fail, and no reviewed differential exception accepts that behavior.
+That baseline preceded the runtime correction in ADR 0083; it remains evidence of the original
+primitive race and has no reviewed exception accepting that behavior.
 See the linked matrix and `dist/parity-testing/tabs/keyboard-native-baseline/` for the exact scope.
 
 The same fixtures pass 143/150 on Linux/arm64, with all seven failures in rapid Chromium cases
@@ -43,3 +43,13 @@ and no reference assertion failures. Automatic selection can also revert: native
 tabindex-0 Tab and triggers an additional focus request before rendering. The direct primitive issue
 therefore includes selection/callback parity, not only focus loss. Linux observations remain in
 `dist/tabs-keyboard-linux/results/`.
+
+## Runtime correction, ADR 0083
+
+The Tabs-owned native Tab render boundary now flushes a pending List interaction through public
+Angular APIs before the browser default. Outgoing Panels also retain their first exit frame,
+matching the pin's layout when the next Panel receives focus. Rapid differential keys use an equal
+paint-frame boundary and preserve native events, defaults, focus history and page scroll. See
+[ADR 0083](../../../../docs/adr/0083-tabs-native-tab-render-boundary.md) and the linked matrix for
+verification. The frozen consumer matrix remains 34/36; this primitive correction does not rerun
+or rewrite that historical consumer result.

@@ -11,10 +11,10 @@ two authored-Panel-ID fields and two null-Indicator host fields. Whole-Panel pre
 former four persistent-Panel-host exceptions. See below.
 See the [primitive matrix](../../../../packages/primitives/tabs/PARITY.md) for the remaining work.
 
-The new 50-case keyboard matrix brings the suite to **276 scenarios / 828 planned rows**.
-Its native-input baseline passes **146/150**: all ordinary navigation passes, while four rapid
-handoffs fail in Chromium. No reference assertions fail and no new exceptions accept these failures.
-This working tree exposes the race; it does not establish a green 828-row suite.
+The keyboard matrix now has **64 scenarios / 192 planned comparisons**, bringing the suite to
+**290 scenarios / 870 comparisons**, all passing on Linux/arm64 in Playwright 1.60.0 Noble
+with two workers and the original timeouts (`dist/tabs-render-linux/results/`). Its original failures are documented below. The native Tab
+render boundary and outgoing-Panel frame now implement [ADR 0083](../../../../docs/adr/0083-tabs-native-tab-render-boundary.md).
 
 ## Initial-value scope
 
@@ -66,7 +66,7 @@ changes on both axes, equal-coordinate activation and uncontrolled direction pub
 
 ## Keyboard navigation and consecutive native input
 
-Fifty `keyboard-*` cases exercise horizontal/vertical layout, LTR/RTL through real direction
+Sixty-four `keyboard-*` cases exercise horizontal/vertical layout, LTR/RTL through real direction
 providers, manual/automatic activation and both loop policies. Additional cases cover disabled
 middle/edge/default tabs, an all-disabled null selection, controlled acceptance/ignore/delay,
 Shift/Ctrl/Alt/Meta/combined modifiers and forward/reverse Tab through the active Panel, its input,
@@ -77,9 +77,12 @@ The rapid cases send Enter, Space or an automatic-selection arrow followed immed
 Tab or Shift+Tab, without a DOM assertion, animation frame, delay or focus repair between those
 commands. Retained/structural Panels, controlled ownership, disabled destinations, reverse exit and
 vertical RTL have separate cases. Three alternating selections exercise repeated entry and exit.
-The commands remain real sequential browser input; the driver does not claim that every pair lands
-before a render. Raw key timestamps and the actual selected DOM tab at each key capture show the
-observed ordering.
+Rapid pairs use the shared Playwright clock, installed before navigation and paused before the
+interaction. Real activation and Tab are delivered within the same fixed JavaScript paint-frame
+boundary on both sides. The clock advances only after both native keys, then resumes before the
+settled checkpoint. No primitive state or focus is supplied by the driver. This makes the outgoing
+Panel's layout phase comparable rather than letting protocol latency finish one side's exit first.
+Raw key timestamps use that controlled clock, and the actual selected DOM tab at each capture is retained.
 
 Checkpoints independently assert selection, visible Panels, all part directions, the complete
 request trace and expected native focus. Differential state includes every Tab/Panel tab stop,
@@ -89,14 +92,14 @@ remain measurements. The key probe reads the original event's final `defaultPrev
 serialized: a capture-listener microtask can run before later native listeners and is too early.
 macOS WebKit uses its native Option+Tab convention on both sides, as existing Tabs focus cases do.
 
-The native-input baseline passes **146/150** comparisons: **50/50 Firefox**, **50/50 WebKit**
+The historical pre-fix native-input baseline recorded **146/150** comparisons: **50/50 Firefox**, **50/50 WebKit**
 and **46/50 Chromium**. All 37 ordinary-navigation cases pass in all engines. Chromium loses focus
 to BODY in four rapid cases: retained uncontrolled Enter, retained/structural controlled Enter and
 controlled automatic-arrow selection. The exact failed round varies with render scheduling. No
 reference assertions fail. Observations are retained in
 `dist/parity-testing/tabs/keyboard-native-baseline/`.
 
-The identical built fixtures pass **143/150** on Linux/arm64 in Playwright 1.60.0 Noble, with one
+The same pre-fix built fixtures recorded **143/150** on Linux/arm64 in Playwright 1.60.0 Noble, with one
 worker and original timeouts: **50/50 Firefox**, **50/50 WebKit**, **43/50 Chromium**. All seven
 failures concern rapid input; none are reference assertion failures or capability skips. Space,
 vertical RTL Enter and uncontrolled automatic-arrow selection also expose stale DOM. In the latter,
@@ -104,11 +107,41 @@ Tab can enter the old tabindex-0 Tab before it updates, triggering an extra auto
 reverts the selected value. This is a selection/callback failure as well as a focus difference.
 The report is retained in `dist/tabs-keyboard-linux/results/`.
 
-The capture records show an old selected DOM tab when Tab arrives, followed by native focus entering
-the old Panel before Angular's render hides/removes it. No post-render focus repair, forced change
-detection or new reviewed exception is present. A synchronous application render before Tab is an
-explicit pending policy choice; local view checks do not generally refresh ancestor-owned controlled
-inputs. These rapid tests currently fail the default gate rather than treating the race as parity.
+The original capture records show an old selected DOM tab when Tab arrives, followed by native
+focus entering the old Panel before Angular hides/removes it. ADR 0083 resolves that interaction
+through a Tabs-owned pending-render coordinator: click/focusin marks its List; an unprevented native
+Tab flushes current Angular work before the browser default. It never accepts a requested value on
+behalf of a controlled parent. Normal render, destruction and a shared reentrancy guard bound the
+work. Consumers need no providers or application options.
+
+The first synchronous run corrected focus/selection but exposed the pin's minimum outgoing-Panel
+frame. Angular now retains the inert, tabindex=-1 Panel through that frame, with CSS exits still
+observed. Structural Presence uses an owner hold to defer removal without postponing CSS discovery.
+The small vertical viewport still compares actual page scroll; no tolerance or scroll normalization
+is added. Eight new Angular facade cases place Root on a component host, with List/Panel sibling
+children and the value binding in the parent. React uses its real ordinary parts.
+
+An initial full run with unconstrained frame timing passed **867/870**, with three rapid scroll
+mismatches; all **678 older controls** passed. Linux passed **79/81**, with two scroll mismatches.
+Those reports are preserved in `keyboard-native-frame-timing/` and
+`dist/tabs-render-linux/before-clock-boundary/`. All **81 rapid rows** then pass across the three
+macOS engines and **81/81** on Linux/arm64 with the matched frame boundary. The final complete
+Linux/arm64 run then passes **870/870**, with two workers and the original timeouts in Playwright
+1.60.0 Noble (`dist/tabs-render-linux/results/`). Eleven boundary units, a structural-reopen unit
+and five Presence hold units pass;
+the affected consumer suites pass **704 tests**, and seven selected SSR checks pass.
+
+A later macOS keyboard run exposed unrelated raw page-scroll variation on unhandled arrows in
+WebKit: 0 versus 40 px, occasionally a -1 px overscroll. Longer settling, held keys and serial
+execution did not eliminate it. An independent native-button-only HTML control also records 0/40 px
+without either framework (`dist/parity-testing/tabs/native-scroll-control/`). The 186/192 run is
+preserved in `keyboard-browser-scroll-settling/`. These observations are not normalized or accepted
+as expected differences; the 81/81 rapid rerun is the stated macOS scope.
+
+The [CI run 43896511979](https://github.com/radix-ng/primitives/actions/runs/43896511979), before
+this fix, failed eight Chromium rapid handoffs and one WebKit rapid vertical-scroll comparison.
+All nine belong to the rapid matrix above. Its separate Menubar completion failures are outside this
+Tabs change.
 
 An earlier observer experiment is retained in `before-keyboard-fix/`: it read `defaultPrevented`
 from a capture microtask and failed assertions on both frameworks, so it is not runtime regression
@@ -151,8 +184,8 @@ and library/SSR-app/consumer-skill builds pass. See [ADR 0081](../../../../docs/
 
 Explicit default initialization and external input updates do not emit requests. Automatic
 uncontrolled changes commit selection/direction before notification and cannot be canceled. Moving
-between controlled/uncontrolled modes through undefined, client hydration and rapid pre-render
-Enter/Tab remain outside this increment's certification.
+between controlled/uncontrolled modes through undefined and client hydration remain outside that
+ownership increment's certification. The later keyboard increment above covers its stated rapid-input scope.
 
 ## Arbitrary value identities
 
@@ -514,4 +547,5 @@ measurement; continuous tracking during scrolling remains outside its certificat
 All **84 geometry comparisons** pass across the three macOS engines. Linux/arm64 passes **63 scroll
 comparisons** (seven cases, three engines, three repetitions), one worker and original timeouts in
 Playwright 1.60.0 Noble; observations are in `dist/ci-43858922362/linux-tabs/results/`. The separate
-rapid-keyboard failures above remain unresolved; this is not a green verdict for the whole Tabs suite.
+rapid-keyboard failures were unresolved at that increment; ADR 0083 above records their later fix
+and verification. The geometry run alone is not a verdict for the whole Tabs suite.

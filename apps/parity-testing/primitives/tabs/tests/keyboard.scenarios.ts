@@ -1,4 +1,5 @@
 import { expect } from '@playwright/test';
+import { pauseClockBeforeInteraction } from '../../../../../tools/playwright/clock';
 import { keyboardCases, type KeyboardCaseName } from '../src/keyboard';
 import type { TabsDriver } from './driver';
 
@@ -215,16 +216,25 @@ export const keyboardScenarios = (Object.keys(keyboardCases) as KeyboardCaseName
                 const arrow = to > focused ? next : previous;
                 if (!automatic) await move(arrow, to);
                 else await check(`before rapid arrow ${round}`, `tab-${focused}`);
-                // No DOM assertion, frame wait or focus repair between activation and native Tab.
-                if (automatic) {
-                    await driver.page.keyboard.press(arrow);
-                    focused = to;
-                    activate(to, 'focusin');
-                } else {
-                    await driver.page.keyboard.press(key);
-                    activate(to, 'click', key !== ' ');
+                // Fix the paint-frame boundary on both implementations; native key delivery,
+                // focus, default actions and original events are unchanged. In particular, an
+                // outgoing Panel must not finish its exit between one side's two key commands.
+                await pauseClockBeforeInteraction(driver.page);
+                try {
+                    // No DOM assertion, frame wait or focus repair between activation and Tab.
+                    if (automatic) {
+                        await driver.page.keyboard.press(arrow);
+                        focused = to;
+                        if (settings.automatic) activate(to, 'focusin');
+                    } else {
+                        await driver.page.keyboard.press(key);
+                        activate(to, 'click', key !== ' ');
+                    }
+                    await driver.page.keyboard.press(settings.backward ? backTab : tabKey);
+                    await driver.page.clock.runFor(100);
+                } finally {
+                    await driver.page.clock.resume();
                 }
-                await driver.page.keyboard.press(settings.backward ? backTab : tabKey);
                 await check(`rapid activation and Tab ${round}`, settings.backward ? 'outside' : `panel-${current}`);
                 if (settings.controlled === 'delay') {
                     await driver.page.keyboard.press('F2');

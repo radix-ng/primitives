@@ -15,11 +15,12 @@ four persistent-Panel-host exceptions. G2's collection consistency and native fo
 are resolved; G4's inert/hidden defects and G5's identity defects are resolved for their documented
 scope. G6's visibility/observation and measured geometry subsets, G7's arbitrary-identity subset and G8's native keyboard/click/press-release subset are resolved; remaining interaction, lifecycle
 and geometry gaps below are not certified by these increments.
-The added keyboard matrix defines **50 more scenarios / 150 comparisons**. Its native-input
-baseline passes **146/150** on macOS: all 37 ordinary-navigation cases pass in every engine;
-four rapid-selection cases fail only in Chromium, with no reference assertion failures. The
-suite now defines **276 scenarios / 828 planned comparisons**; that is not an 828-pass verdict.
-The rapid failure remains unresolved and is not a reviewed exception.
+The keyboard matrix now defines **64 scenarios / 192 rows**, including the native Tab render
+boundary and outgoing-Panel exit frame in [ADR 0083](../../../docs/adr/0083-tabs-native-tab-render-boundary.md).
+The complete suite passes **290 scenarios / 870 comparisons** across all three engines on
+Linux/arm64 in Playwright 1.60.0 Noble, with two workers and the original timeouts. All **81 rapid
+comparisons** also pass on macOS. Ordinary unhandled-arrow page scrolling remains unstable in macOS
+WebKit, including a framework-free HTML control; see the suite notes for that platform's limits.
 
 **Pinned covered** means the stated subset passed direct Angular/Base UI comparison;
 **Regression covered** below means an existing Angular check exercises the stated subset;
@@ -43,7 +44,7 @@ listed separately from unresolved gaps.
 | Vertical Up/Down, horizontal RTL and modifier keys                                       | Pinned keyboard matrix and native key records                                       | Pinned covered; Shift/Ctrl/Alt/Meta/combined vertical arrows preserve native defaults                           |
 | Disabled tabs remain arrow-focusable without activation                                  | Pinned disabled button/div/link key/click cases; state and focus units              | Covered for disabled native defaults/navigation and horizontal entry; touch/pen remain pending                  |
 | Disabled controlled selection preserves the existing Tab entry                           | Selected-disabled unit; pinned collection cases                                     | Disabled selection preserves Composite's tab stop; dynamic disabled/focus subsets covered                       |
-| Native Tab / Shift+Tab into list, panel and adjacent controls                            | Pinned keyboard/held-exit cases and projected wrapper                               | Settled forward/reverse order covered; rapid selection/Tab loses focus in Chromium                              |
+| Native Tab / Shift+Tab into list, panel and adjacent controls                            | Pinned keyboard/held-exit cases and projected wrapper                               | Native forward/reverse order covered, including consecutive selection/Tab within one frame                      |
 | `role`, `aria-selected`, orientation and reciprocal IDs                                  | Fifteen pinned identity cases, seven identity units and native SSR relationships    | G5 covered for registered/authored identities; authored-ID adaptation only                                      |
 | Per-part `data-orientation`, `data-activation-direction`, Tab active/disabled attributes | Pinned direction suite, first sampled frame, host bindings and selected-state units | G3 direction covered on Root/List/Tab/Panel and non-null Indicator; live orientation/style combinations pending |
 | Panel indexes and active/inactive tabindex                                               | Composite-index unit; pinned Panel snapshots                                        | Index regression covered; active/inactive tabindex pinned covered in lifecycle cases                            |
@@ -321,51 +322,50 @@ reference's unset property; equal trigger availability is not certified. The 120
 add no differential exception. Native pointer cancellation/removal mid-press, touch/pen, auxiliary
 link activation, authored submit/reset types and browser shortcuts remain follow-ups.
 
-### Keyboard matrix — settled navigation covered; rapid handoff unresolved
+### Keyboard matrix — native Tab boundary and exit frames
 
-Fifty cases use native key input on real Tabs parts. Sixteen combinations cover both axes,
-directions, activation policies and loop policies. The remaining cases add disabled positions,
-all-disabled/null selection, controlled owners, modifiers, forward/reverse Panel input/action order
-and consecutive Enter/Space/automatic-arrow followed by Tab without waiting for selection rendering.
-Every key target/default/modifier/propagation record and focusin event remains observable; no driver
-intercepts Tab or repairs focus. See the [suite methodology](../../../apps/parity-testing/primitives/tabs/README.md#keyboard-navigation-and-consecutive-native-input).
+The 64-case matrix compares both axes/directions, activation/loop policies, disabled positions,
+controlled policies, modifiers and native forward/reverse order through Panels and their controls.
+Eight facade cases declare List and Panels in separate components while the parent owns the input.
+Immediate manual arrow/Tab and vertical retained/structural cases extend the original fifty cases.
 
-The final native-input baseline passes all **111 ordinary-navigation comparisons**. Among the 39
-rapid comparisons, four Chromium cases fail: uncontrolled retained Enter, controlled Enter with
-retained or structural Panels, and controlled automatic-arrow selection. Firefox/WebKit pass all
-50 cases in this run. The failure depends on browser render timing; a single passing rapid run
-does not certify its absence.
+A private Tabs coordinator marks an owned click/focusin until Angular renders. If an unprevented
+Tab arrives in that window, it invokes the application's public tick before the browser computes
+its destination. It leaves original input, default prevention and focus navigation unchanged.
+Root retains parent-owned controlled selection. Ordinary rendered interactions and another List's
+pending work do not trigger a tick; a shared guard prevents recursive application synchronization.
+Consumers need no configuration. The application pass can process other dirty views.
 
-The original event and DOM trace shows Tab arriving while the old Panel is still active in DOM.
-Native focus enters that old Panel; Angular's later render hides/removes it and focus becomes BODY.
-Selection and callbacks then agree with Base UI, but actual focus and focusin history do not.
-The raw **146-pass / 4-fail** report is retained in
-`dist/parity-testing/tabs/keyboard-native-baseline/`, with zero reference assertion failures.
-No expected-difference entry accepts this race, and these new tests currently expose a failing gate.
+Outgoing Panels also retain the pin's first exit frame: inactive contents are inert and removed
+from Tab order immediately, while visibility/removal awaits that frame and any CSS exit. Structural
+Presence observes CSS at its original boundary and delays only physical removal through an optional
+owner hold. Reopening, explicit completion and disposal retain their defined lifetimes.
 
-The same built fixtures pass **143/150** on Linux/arm64 (Playwright 1.60.0 Noble, one worker,
-original timeouts): Firefox/WebKit each pass 50/50, Chromium passes 43/50. All 111 ordinary-navigation
-comparisons pass; all seven failures are rapid input, with zero reference assertion failures.
-Space, vertical RTL Enter and uncontrolled automatic-arrow handoff additionally reproduce the race.
-In automatic mode, native Tab can visit the old tabindex-0 Tab and request that old value again,
-reversing the selection rather than losing focus to BODY. Thus eventual selection/callback parity
-also fails in this variant. The Linux report is in `dist/tabs-keyboard-linux/results/`.
-
-A local `ChangeDetectorRef.detectChanges()` cannot generally refresh a controlled input declared
-in an ancestor's view. An application-level `ApplicationRef.tick()` before native Tab could commit
-those bindings synchronously, at the cost of checking the application. That runtime policy remains
-a maintainer decision. This increment does not force change detection, rewrite DOM state or add
-post-render focus restoration.
+Rapid comparisons pause the shared clock before the real key pair, advance it only after both keys
+and resume before checking settled state. This compares equivalent paint phases without supplying
+state, focus or callbacks. Native page scroll remains compared. The original 146/150 macOS and
+143/150 Linux reports preserve the pre-fix race; early synchronization/phase experiments preserve
+867/870 and 79/81 results with timing-dependent scroll differences. All 678 existing controls pass;
+the matched-frame rapid rerun passes 81/81 on both macOS and Linux/arm64. See the [suite notes](../../../apps/parity-testing/primitives/tabs/README.md#keyboard-navigation-and-consecutive-native-input)
+and ADR 0083 for the exact scope, paths and final keyboard/Linux results. No new exception is added.
 
 ## Verification and limits
 
 Checks run for this audit on Node 24.22.2:
 
-- Keyboard native-input baseline: `pnpm test-parity tabs --grep keyboard-` — **146 passed,
+- Native Tab render-boundary increment: **870/870 passed** in Linux/arm64 Playwright 1.60.0
+  Noble, all 290 scenarios across Chromium/Firefox/WebKit, two workers and original timeouts.
+  Report: `dist/tabs-render-linux/results/`. macOS: **81/81 rapid comparisons passed**;
+  ordinary WebKit scroll variation and its framework-free control are documented in the suite.
+- Affected Tabs/Presence/Portal/Menu/Context Menu/Menubar/Popover/Select units: **704 passed**,
+  including **95 Tabs tests**. Seven selected SSR checks, library build, consumer-skill generation,
+  parity typecheck, scoped lint, formatting and contributor checks pass.
+
+- Historical pre-fix keyboard native-input baseline: `pnpm test-parity tabs --grep keyboard-` — **146 passed,
   four failed**, strict Angular/React fixture build and shared runner checks passed. All failures
   are Angular rapid handoff in Chromium; no reference assertion failures. The existing Tabs unit
   suite remains **83 passed**. This result does not certify rapid handoff.
-- Keyboard Linux/arm64 baseline: **143 passed, seven failed**, original timeouts and one worker
+- Historical pre-fix keyboard Linux/arm64 baseline: **143 passed, seven failed**, original timeouts and one worker
   against the same built fixtures; all failures are Angular rapid handoff in Chromium. No reference
   assertion failures or capability skips. Scoped lint, formatting and contributor checks pass.
 
@@ -475,7 +475,7 @@ Enter/Tab failures. Its [follow-up](../../../tools/consumer-testing/generation/t
 records supplemental success after observing selection rendering. Neither result compares Base UI or
 establishes ownership of that timing issue; do not relabel it as primitive parity or as 36/36.
 
-Next increments: resolve the rapid selection/Tab rendering policy, then client hydration/first paint. G6's remaining continuous
+Next increments: client hydration/first paint and the remaining gesture/composition scope. G6's remaining continuous
 inner-scroll/animation, realm and hydration combinations need separate evidence. G8's remaining native gesture and auxiliary-host combinations stay explicit follow-ups.
 Keep fixtures on actual native input and observable state; do not normalize away IDs, focus, mounting,
 event metadata or geometry differences. Further Root disposal cases, nested/overlay consumers, hydration and

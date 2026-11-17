@@ -11,6 +11,7 @@ export interface KeyboardSettings {
     controlled?: 'accept' | 'ignore' | 'delay';
     modifier?: 'Shift' | 'Control' | 'Alt' | 'Meta' | 'Control+Shift';
     presence?: boolean;
+    composed?: boolean;
     activation?: 'Enter' | 'Space' | 'Arrow';
     backward?: boolean;
     endFocus?: boolean;
@@ -79,6 +80,37 @@ export const keyboardCases = {
         automatic: true,
         endFocus: true
     }),
+    'keyboard-composed-enter-controlled': fixture({ kind: 'rapid', controlled: 'accept', composed: true }),
+    'keyboard-composed-enter-presence': fixture({
+        kind: 'rapid',
+        controlled: 'accept',
+        presence: true,
+        composed: true
+    }),
+    'keyboard-composed-space-controlled': fixture({
+        kind: 'rapid',
+        activation: 'Space',
+        controlled: 'accept',
+        composed: true
+    }),
+    'keyboard-composed-auto-controlled': fixture({
+        kind: 'rapid',
+        activation: 'Arrow',
+        automatic: true,
+        controlled: 'accept',
+        composed: true
+    }),
+    'keyboard-composed-enter-ignore': fixture({ kind: 'rapid', controlled: 'ignore', composed: true }),
+    'keyboard-composed-enter-delay': fixture({ kind: 'rapid', controlled: 'delay', composed: true }),
+    'keyboard-composed-enter-uncontrolled': fixture({ kind: 'rapid', composed: true }),
+    'keyboard-composed-enter-backward': fixture({
+        kind: 'rapid',
+        controlled: 'accept',
+        backward: true,
+        composed: true
+    }),
+    'keyboard-rapid-manual-arrow-forward': fixture({ kind: 'rapid', activation: 'Arrow' }),
+    'keyboard-rapid-manual-arrow-backward': fixture({ kind: 'rapid', activation: 'Arrow', backward: true }),
     'keyboard-rapid-enter-retained': fixture({ kind: 'rapid' }),
     'keyboard-rapid-enter-presence': fixture({ kind: 'rapid', presence: true }),
     'keyboard-rapid-enter-controlled': fixture({ kind: 'rapid', controlled: 'accept' }),
@@ -96,7 +128,29 @@ export const keyboardCases = {
     }),
     'keyboard-rapid-enter-backward': fixture({ kind: 'rapid', backward: true }),
     'keyboard-rapid-enter-disabled': fixture({ kind: 'rapid', disabled: [2] }),
-    'keyboard-rapid-enter-vertical-rtl': fixture({ kind: 'rapid', orientation: 'vertical', dir: 'rtl' })
+    'keyboard-rapid-enter-vertical-rtl': fixture({ kind: 'rapid', orientation: 'vertical', dir: 'rtl' }),
+    'keyboard-rapid-enter-vertical-presence': fixture({ kind: 'rapid', orientation: 'vertical', presence: true }),
+    'keyboard-composed-enter-vertical-rtl': fixture({
+        kind: 'rapid',
+        orientation: 'vertical',
+        dir: 'rtl',
+        composed: true,
+        controlled: 'accept'
+    }),
+    'keyboard-composed-enter-vertical-presence': fixture({
+        kind: 'rapid',
+        orientation: 'vertical',
+        composed: true,
+        controlled: 'accept',
+        presence: true
+    }),
+    'keyboard-rapid-auto-vertical-rtl': fixture({
+        kind: 'rapid',
+        orientation: 'vertical',
+        dir: 'rtl',
+        activation: 'Arrow',
+        automatic: true
+    })
 };
 export type KeyboardCaseName = keyof typeof keyboardCases;
 export const keyboardValues = [0, 1, 2, 3];
