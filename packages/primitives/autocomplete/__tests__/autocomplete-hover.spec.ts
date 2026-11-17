@@ -67,6 +67,15 @@ describe('Autocomplete hover highlight', () => {
             expect(highlighted()).toBe(items()[1]);
         });
 
+        it('takes pointer ownership on the first move after keyboard navigation', async () => {
+            inputEl().dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+            await settle();
+            expect(highlighted()).toBe(items()[0]);
+            pointerMove(items()[1]);
+            await settle();
+            expect(highlighted()).toBe(items()[1]);
+        });
+
         it('does not highlight on pointer move when disabled', async () => {
             host.hover.set(false);
             await settle();

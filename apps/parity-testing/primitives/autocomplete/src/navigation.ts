@@ -1,6 +1,11 @@
 import type { Settings } from './contract';
 export interface NavigationSettings {
-    kind: 'list' | 'grid' | 'space' | 'caret' | 'disabled' | 'grid-closed' | 'modifiers';
+    kind: 'list' | 'grid' | 'space' | 'caret' | 'disabled' | 'grid-closed' | 'modifiers' | 'read-only';
+    readOnly?: boolean;
+    readOnlyCase?: 'browse' | 'preview' | 'enter' | 'grid' | 'caret';
+    opener?: 'arrow' | 'input' | 'trigger' | 'trigger-key';
+    previewOrigin?: 'typing' | 'keyboard';
+    mode?: 'none' | 'list' | 'both' | 'inline';
     autoHighlight: boolean | 'always';
     loop: boolean;
     direction?: 'ArrowDown' | 'ArrowUp';

@@ -77,16 +77,16 @@ export class RdxComboboxTrigger {
     }
 
     onKeydown(event: KeyboardEvent): void {
-        if (this.rootContext.disabledState() || this.rootContext.readonly()) {
+        if (this.rootContext.disabledState()) {
             return;
         }
-        // ArrowDown/ArrowUp open the popup and seed the first/last highlight; the popup's own
+        // ArrowDown/ArrowUp use the root's opening/highlight policy; the popup's own
         // auto-focus then moves focus to the input (whether it lives inside or outside the popup).
         if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
             event.preventDefault();
             // A keyboard open must focus the input, not the popup — clear any prior touch flag.
             this.rootContext.setOpenedByTouch(false);
-            this.rootContext.openAndHighlight(event.key === 'ArrowUp' ? 'last' : 'first', 'list-navigation', event);
+            this.rootContext.navigateByKeyboard(event.key === 'ArrowUp' ? -1 : 1, event);
         }
     }
 }

@@ -59,7 +59,11 @@ export class AutocompleteDriver {
         );
         expect(this.errors).toEqual([]);
     }
-    async navigationCheckpoint(name: string, expected: Record<string, unknown> = {}) {
+    async navigationCheckpoint(
+        name: string,
+        expected: Record<string, unknown> = {},
+        profile: 'navigation' | 'read-only-preview' | 'read-only-setup' = 'navigation'
+    ) {
         const read = () =>
             this.page.evaluate(() => {
                 const input = document.querySelector<HTMLInputElement>('[data-testid="input"]')!;
@@ -69,7 +73,20 @@ export class AutocompleteDriver {
                 const highlighted = [
                     ...document.querySelectorAll<HTMLElement>('[data-testid^="item-"][data-highlighted]')
                 ].map((item) => item.dataset.testid);
+                const committed = document.querySelector('[data-testid="committed-value"]');
+                const readOnlyState = committed
+                    ? {
+                          committed: committed.textContent,
+                          readOnly: input.readOnly,
+                          ariaReadOnly: input.getAttribute('aria-readonly'),
+                          ariaAutocomplete: input.getAttribute('aria-autocomplete'),
+                          listReadOnly:
+                              document.querySelector('[data-testid="list"]')?.getAttribute('aria-readonly') ?? null,
+                          submits: window.autocompleteParity.submits
+                      }
+                    : {};
                 return {
+                    ...readOnlyState,
                     value: input.value,
                     open: input.getAttribute('aria-expanded') === 'true',
                     active: id ? (active?.getAttribute('data-testid') ?? 'dangling') : null,
@@ -94,7 +111,31 @@ export class AutocompleteDriver {
             previous = json;
             if (frame === 59) throw new Error('Autocomplete navigation did not settle');
         }
-        this.checkpoints.push({ name, state });
+        // G3 compares read-only transitions. G4 owns completion caret/selection; G5 owns callback order.
+        // Keep the unprojected snapshot, DOM and complete event trace for every observation.
+        const comparisonState =
+            profile === 'read-only-preview'
+                ? {
+                      committed: state.committed,
+                      readOnly: state.readOnly,
+                      ariaReadOnly: state.ariaReadOnly,
+                      ariaAutocomplete: state.ariaAutocomplete,
+                      listReadOnly: state.listReadOnly,
+                      submits: state.submits,
+                      value: state.value,
+                      open: state.open,
+                      active: state.active,
+                      highlighted: state.highlighted,
+                      focus: state.focus,
+                      popupVisible: state.popupVisible,
+                      highlightIndices: state.highlightIndices,
+                      keys: state.keys,
+                      valueRequests: state.requests.filter((change) => change.kind === 'value').length,
+                      openRequests: state.requests.filter((change) => change.kind === 'open').length
+                  }
+                : state;
+        if (profile !== 'read-only-setup') this.checkpoints.push({ name, state: comparisonState });
+        this.measurements.push({ name, compared: profile !== 'read-only-setup', observed: state });
         this.measurements.push(
             await this.page.evaluate(
                 (name) => ({
@@ -103,6 +144,7 @@ export class AutocompleteDriver {
                     details: window.autocompleteParity.details,
                     highlights: window.autocompleteParity.highlights,
                     nativeKeys: window.autocompleteParity.keys,
+                    formData: [...new FormData(document.querySelector('form')!).entries()],
                     input: document.querySelector('[data-testid="input"]')?.outerHTML
                 }),
                 name
@@ -110,7 +152,9 @@ export class AutocompleteDriver {
         );
         expect(state.active).not.toBe('dangling');
         expect(state.highlighted).toEqual(state.active === null ? [] : [state.active]);
-        expect(state).toEqual(expect.objectContaining({ focus: 'input', popupVisible: state.open, ...expected }));
+        expect(comparisonState).toEqual(
+            expect.objectContaining({ focus: 'input', popupVisible: state.open, ...expected })
+        );
         expect(this.errors).toEqual([]);
     }
 }

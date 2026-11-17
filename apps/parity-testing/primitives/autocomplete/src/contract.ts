@@ -1,4 +1,5 @@
 import { navigationCases, type NavigationSettings } from './navigation';
+import { readOnlyCases } from './read-only';
 export interface Settings {
     navigation?: NavigationSettings;
     value?: string;
@@ -22,8 +23,8 @@ export const initialCases = {
     'initial-external-updates': { value: '', open: false, defaultValue: 'Seed', defaultOpen: true },
     'initial-remount-defaults': { defaultValue: 'Seed' }
 } satisfies Record<string, Settings>;
-export type CaseName = keyof typeof initialCases | keyof typeof navigationCases;
-export const cases: Record<CaseName, Settings> = { ...initialCases, ...navigationCases };
+export type CaseName = keyof typeof initialCases | keyof typeof navigationCases | keyof typeof readOnlyCases;
+export const cases: Record<CaseName, Settings> = { ...initialCases, ...navigationCases, ...readOnlyCases };
 export function config(): { name: CaseName; settings: Settings } {
     const name = new URLSearchParams(location.search).get('case') ?? 'initial-omitted';
     if (!Object.hasOwn(cases, name)) throw new Error(`Unknown Autocomplete case: ${name}`);
@@ -33,6 +34,7 @@ export interface Probe {
     reference: { commit: string; packageVersion: string; digest: string };
     requests: { kind: 'value' | 'open'; value: string | boolean; canceled: boolean }[];
     details: unknown[];
+    submits: number;
     highlights: { value: unknown; index: number; reason: string }[];
     keys: Record<string, unknown>[];
     modelOutputs: { kind: 'value' | 'open'; value: string | boolean }[];
@@ -48,6 +50,7 @@ export function installProbe() {
         reference: __PARITY_REFERENCE__,
         requests: [],
         details: [],
+        submits: 0,
         highlights: [],
         keys: [],
         modelOutputs: []

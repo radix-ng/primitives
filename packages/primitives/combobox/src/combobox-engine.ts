@@ -1,4 +1,4 @@
-import { computed, effect, Injector, Signal, signal, untracked } from '@angular/core';
+import { computed, effect, Injector, linkedSignal, Signal, signal, untracked } from '@angular/core';
 import {
     AcceptableValue,
     createLabelRegistry,
@@ -107,6 +107,8 @@ export interface ComboboxEngineConfig {
      * the input. Always `false` for combobox (it never inline-completes).
      */
     inlineMode: Signal<boolean>;
+    /** Read-only invalidates a pending completion until the next editable input/keyboard interaction. */
+    readOnly?: Signal<boolean>;
     /**
      * Resolves a raw item value to its display/match text — the `itemToString` Base UI passes to the
      * filter. DOM-aware (finds a mounted item by value and returns its text) so it works for both
@@ -281,6 +283,24 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
     // label mirrored into the input. `null` when off. `suppressInline` skips it for a deleting edit.
     const inlinePreview = signal<string | null>(null);
     let suppressInline = false;
+    // Editing being restored must not revive a discarded completion, including after browsing while
+    // read-only. This history resets only on a fresh editable input or keyboard navigation attempt.
+    const readOnlyCompletionSuppressed = linkedSignal<boolean, boolean>({
+        source: () => config.readOnly?.() ?? false,
+        computation: (readOnly, previous) => readOnly || (previous?.value ?? false)
+    });
+    const resumeInlineCompletion = (): void => {
+        if (!config.readOnly?.()) {
+            readOnlyCompletionSuppressed.set(false);
+        }
+    };
+
+    const setHighlightReason = (reason: ComboboxHighlightReason): void => {
+        if (reason === 'keyboard') {
+            resumeInlineCompletion();
+        }
+        highlightReason.set(reason);
+    };
 
     /** The first visible, navigable item whose label starts with the query (for inline completion). */
     const firstMatchItem = (): ComboboxItemRef | null => {
@@ -445,7 +465,8 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
     // effect to the typing hot path. A `both → list` switch still clears the previous preview.
     effect(
         () => {
-            if (!config.inlineMode()) {
+            const suppressed = readOnlyCompletionSuppressed();
+            if (!config.inlineMode() || suppressed) {
                 untracked(() => inlinePreview.set(null));
                 return;
             }
@@ -617,9 +638,7 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
         highlightedIndex: highlightedIndex.asReadonly(),
         activeId,
         itemId,
-        setHighlightReason(reason: ComboboxHighlightReason): void {
-            highlightReason.set(reason);
-        },
+        setHighlightReason,
         setPendingHighlightEdge(edge: 'first' | 'last' | 'first-match' | null): void {
             pendingHighlightEdge.set(edge);
         },
@@ -628,6 +647,7 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
         inlinePreview: inlinePreview.asReadonly(),
         /** Suppress inline completion for the current edit (e.g. while a delete key is held). */
         setSuppressInline(value: boolean): void {
+            resumeInlineCompletion();
             suppressInline = value;
         },
         /** Clear the inline preview synchronously (on select / clear / close, before the effect runs). */
@@ -636,7 +656,7 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
         },
 
         highlightNext(reason: ComboboxHighlightReason = 'keyboard'): void {
-            highlightReason.set(reason);
+            setHighlightReason(reason);
             if (config.notifyOnUnchangedHighlight && !config.grid()) {
                 highlightNavigation.update((version) => version + 1);
             }
@@ -649,7 +669,7 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
             }
         },
         highlightPrevious(reason: ComboboxHighlightReason = 'keyboard'): void {
-            highlightReason.set(reason);
+            setHighlightReason(reason);
             if (config.notifyOnUnchangedHighlight && !config.grid()) {
                 highlightNavigation.update((version) => version + 1);
             }
@@ -666,7 +686,7 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
             if (!config.grid() || config.virtualized()) {
                 return;
             }
-            highlightReason.set(reason);
+            setHighlightReason(reason);
             if (config.notifyOnUnchangedHighlight) {
                 highlightNavigation.update((version) => version + 1);
             }
@@ -680,7 +700,7 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
             if (!config.grid() || config.virtualized()) {
                 return;
             }
-            highlightReason.set(reason);
+            setHighlightReason(reason);
             if (config.notifyOnUnchangedHighlight) {
                 highlightNavigation.update((version) => version + 1);
             }
@@ -691,7 +711,7 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
             }
         },
         highlightFirst(reason: ComboboxHighlightReason = 'keyboard'): void {
-            highlightReason.set(reason);
+            setHighlightReason(reason);
             if (config.virtualized()) {
                 highlightedIndex.set(filteredItems().length > 0 ? 0 : -1);
             } else {
@@ -699,7 +719,7 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
             }
         },
         highlightLast(reason: ComboboxHighlightReason = 'keyboard'): void {
-            highlightReason.set(reason);
+            setHighlightReason(reason);
             if (config.virtualized()) {
                 const length = filteredItems().length;
                 highlightedIndex.set(length > 0 ? length - 1 : -1);
@@ -711,11 +731,11 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
             if (index < 0 || index >= filteredItems().length) {
                 return;
             }
-            highlightReason.set(reason);
+            setHighlightReason(reason);
             highlightedIndex.set(index);
         },
         setHighlight(item: ComboboxItemRef, reason: ComboboxHighlightReason): void {
-            highlightReason.set(reason);
+            setHighlightReason(reason);
             highlight.set(item);
         },
         clearHighlightState(): void {

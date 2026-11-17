@@ -5,9 +5,10 @@ import { classes, config, installProbe } from './contract';
 import { installKeyProbe, isGrid, navigationItems } from './navigation';
 @Component({
     selector: 'parity-autocomplete',
+    host: { '(document:keydown)': 'command($event)' },
     imports: [_importsAutocomplete],
     template: `
-        <form [attr.dir]="p.dir ?? 'ltr'" (submit)="$event.preventDefault()">
+        <form [attr.dir]="p.dir ?? 'ltr'" (submit)="submit($event)">
             <div
                 [(value)]="value"
                 [(open)]="open"
@@ -17,17 +18,23 @@ import { installKeyProbe, isGrid, navigationItems } from './navigation';
                 [virtualized]="!!p.virtualized"
                 [autoHighlight]="p.autoHighlight"
                 [loopFocus]="p.loop"
+                [readOnly]="readOnly()"
+                [filter]="p.readOnlyCase === 'preview' ? null : undefined"
+                [mode]="p.mode ?? 'none'"
+                [openOnInputClick]="p.opener === 'input'"
                 (onValueChange)="change($event)"
                 (onOpenChange)="openChange($event)"
                 (onItemHighlighted)="highlight($event)"
                 rdxAutocompleteRoot
-                mode="none"
                 name="query"
             >
                 <input [class]="s.input" data-testid="input" aria-label="Query" rdxAutocompleteInput />
+                @if (p.opener === 'trigger' || p.opener === 'trigger-key') {
+                    <button type="button" data-testid="trigger" rdxAutocompleteTrigger>Toggle</button>
+                }
                 <div *rdxAutocompletePortal rdxAutocompletePositioner>
                     <div [class]="s.popup" data-testid="popup" rdxAutocompletePopup>
-                        <div rdxAutocompleteList aria-label="Suggestions">
+                        <div rdxAutocompleteList aria-label="Suggestions" data-testid="list">
                             @if (grid) {
                                 @for (row of rows; track $index; let r = $index) {
                                     <div class="flex gap-2" rdxAutocompleteRow>
@@ -61,6 +68,10 @@ import { installKeyProbe, isGrid, navigationItems } from './navigation';
                     </div>
                 </div>
             </div>
+            @if (p.kind === 'read-only') {
+                <output data-testid="committed-value">{{ value() }}</output>
+                <button type="submit" data-testid="submit">Submit</button>
+            }
         </form>
     `
 })
@@ -71,10 +82,18 @@ export class AngularNavigation {
     readonly items = navigationItems(this.p);
     readonly rows = [this.items.slice(0, 3), this.items.slice(3)];
     readonly value = signal(this.p.value ?? '');
+    readonly readOnly = signal(this.p.readOnly ?? false);
     readonly open = signal(this.p.initialOpen ?? false);
     readonly trace = installProbe();
     constructor() {
         installKeyProbe();
+    }
+    command(event: KeyboardEvent): void {
+        if (this.p.kind === 'read-only' && event.key === 'F2') this.readOnly.update((value) => !value);
+    }
+    submit(event: Event): void {
+        event.preventDefault();
+        this.trace.probe.submits++;
     }
     highlight({ value, index, reason }: ComboboxItemHighlightedDetails) {
         this.trace.probe.highlights.push({ value, index, reason });

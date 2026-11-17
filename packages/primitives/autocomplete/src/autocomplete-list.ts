@@ -16,6 +16,7 @@ import { RdxAutocompleteRoot } from './autocomplete-root';
         tabindex: '-1',
         '[attr.role]': 'root.grid() ? "grid" : "listbox"',
         '[attr.id]': 'root.listId',
+        '[attr.aria-readonly]': '!root.grid() && root.readOnly() ? "true" : undefined',
         '(keydown)': 'onKeydown($event)'
     }
 })

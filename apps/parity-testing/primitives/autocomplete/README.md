@@ -1,10 +1,10 @@
 # Autocomplete state and navigation comparisons
 
 Compares Radix NG with unmodified Base UI **1.9.0**, pinned by
-[reference.json](../../reference.json). The suite covers G1 and G2 from the
-[Autocomplete matrix](../../../../packages/primitives/autocomplete/PARITY.md): **93 scenarios / 279
+[reference.json](../../reference.json). The suite covers G1, G2 and G3 from the
+[Autocomplete matrix](../../../../packages/primitives/autocomplete/PARITY.md): **137 scenarios / 411
 comparisons**, without skips or reviewed exceptions. G1 contributes 14 initial-state cases; G2 adds
-79 navigation cases.
+79 navigation cases; G3 adds 44 read-only cases.
 
 ```bash
 pnpm test-parity autocomplete
@@ -82,3 +82,38 @@ contributor checks pass.
 An additional standalone strict TypeScript check including the pinned React implementation reports
 68 diagnostics, all inside the prepared upstream source (none in the Autocomplete fixtures).
 That optional check is not a passing gate; it does not alter the pinned sources or browser results.
+
+## G3 read-only scope
+
+44 cases cover all four modes, native arrow/input/Trigger opening, pointer takeover after keyboard,
+blocked edits/activation, Enter without a highlight and actual native form submission, DOM/flat
+virtualized lists, listbox/grid read-only ARIA, native LTR/RTL caret behavior and completion toggles.
+Read-only blocks mutations while browsing remains available. Discarded completion stays absent when
+editing is restored; fresh editable input/keyboard navigation releases suppression.
+
+Preview cases use public `filter=null` and preserve the complete typing setup as a measurement.
+G4's suffix timing differs before the toggle, so setup establishes the native query/highlight before
+paired G3 checkpoints start. Those checkpoints compare displayed/committed text, read-only/ARIA,
+focus/popup, active IDREF, highlight indices/counts, value/open request counts and native key behavior.
+Completion caret selection belongs to G4; exact callback ordering belongs to G5. Every complete
+snapshot/DOM/callback remains recorded. Other read-only cases compare all navigation fields.
+
+The corrected negative baseline has 44 Angular failures and passing reference assertions:
+38 assertion failures and six differential-only failures. Seven unit regressions also failed before
+implementation. Report: `dist/parity-testing/autocomplete/g3-before-final/`. Earlier diagnostic
+fixtures included incorrect typing-preview expectations and a List focus precondition rejected by the
+reference focus manager; those are not clean negative baselines. The final fixture records G4 setup
+separately and leaves inside-popup/List focus to G11. No exceptions or fixture state repairs are added.
+
+The final G3 verification passes **411 G1–G3 comparisons on macOS** and **132 new G3 comparisons
+on Linux/arm64**, Chromium/Firefox/WebKit, Playwright 1.60.0 Noble, two workers, original timeouts,
+zero retries/skips/exceptions. **279 units** pass across Autocomplete, Combobox and core highlight,
+including the read-only axe checks. Library build, Angular fixture compilation, test-fixture types,
+scoped lint, consumer generation and contributor checks pass. Reports:
+`dist/parity-testing/autocomplete/g3-final/` and `dist/autocomplete-g3-linux/results/`.
+
+In the first broad macOS run, WebKit Backspace navigated back from a read-only input on both sides,
+so 26 scenarios lost their pages before reporting. The final edit-guard test uses native Delete;
+native browser Backspace/history remains unmodified. The original traces are retained in
+`dist/parity-testing/autocomplete/g3-platform-before/`. Axe scans the host and portaled popup as
+primitive subtrees; application landmarks belong to the host application.

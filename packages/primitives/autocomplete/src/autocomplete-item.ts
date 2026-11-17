@@ -227,7 +227,6 @@ export class RdxAutocompleteItem implements ComboboxItemRef {
         }
         if (this.rootContext.isKeyboardActive()) {
             this.rootContext.setKeyboardActive(false);
-            return;
         }
         if (this.disabled()) {
             return;

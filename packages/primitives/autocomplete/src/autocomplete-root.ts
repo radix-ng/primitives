@@ -409,7 +409,7 @@ export class RdxAutocompleteRoot
     private readonly filteringMode = computed(() => this.mode() === 'list' || this.mode() === 'both');
 
     /** Whether inline completion applies in the current mode (`both` / `inline`). */
-    readonly inlineMode = computed(() => this.mode() === 'both' || this.mode() === 'inline');
+    readonly inlineMode = computed(() => !this.readOnly() && (this.mode() === 'both' || this.mode() === 'inline'));
 
     /**
      * Whether the input text is a fresh user query rather than a committed selection's label. While
@@ -443,6 +443,7 @@ export class RdxAutocompleteRoot
         grid: this.grid,
         rowOf: (element) => element.closest('[rdxAutocompleteRow]'),
         inlineMode: this.inlineMode,
+        readOnly: this.readOnly,
         itemToString: (value) => this.labelFor(value),
         onItemHighlighted: (details) => this.onItemHighlighted.emit(details),
         onOpenChange: () => {},
@@ -609,7 +610,7 @@ export class RdxAutocompleteRoot
             return true;
         }
 
-        if (open && (this.disabledState() || this.readOnly())) {
+        if (open && this.disabledState()) {
             return false;
         }
 

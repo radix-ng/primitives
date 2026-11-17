@@ -44,6 +44,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
         '[attr.aria-required]': 'requiredState() ? "true" : undefined',
         '[attr.aria-disabled]': 'disabledState() ? "true" : undefined',
         '[attr.disabled]': 'disabledState() ? "" : undefined',
+        '[attr.aria-readonly]': 'root.readOnly() ? "true" : undefined',
         '[attr.readonly]': 'root.readOnly() ? "" : undefined',
         '[attr.required]': 'requiredState() ? "" : undefined',
         '[attr.name]': 'root.inputOwnsFormValue() ? root.name() : undefined',
@@ -82,7 +83,7 @@ export class RdxAutocompleteInput {
 
     // Mirrors the configured mode (matches Base UI): 'list' | 'both' | 'inline' | 'none' — all valid
     // `aria-autocomplete` tokens. Must reflect the static mechanism, not the transient inline preview.
-    protected readonly ariaAutocomplete = computed(() => this.root.mode());
+    protected readonly ariaAutocomplete = computed(() => (this.root.readOnly() ? 'none' : this.root.mode()));
 
     /**
      * Tri-state *displayed* validity: the enclosing Field's gated `validState` when inside a `rdxFieldRoot`
@@ -187,6 +188,9 @@ export class RdxAutocompleteInput {
     }
 
     private commitInput(value: string, event: Event): void {
+        if (this.root.readOnly() || this.root.disabledState()) {
+            return;
+        }
         // The edit itself is authoritative. Mobile keyboards, context-menu cut/paste, drag edits and
         // IME commits may have no useful keydown, so carrying suppression from the previous key makes
         // inline completion stale in either direction.
@@ -257,6 +261,9 @@ export class RdxAutocompleteInput {
                 break;
             case 'Home':
             case 'End': {
+                if (this.root.readOnly()) {
+                    break;
+                }
                 event.preventDefault();
                 event.stopPropagation();
                 const rtl = this.root.dir() === 'rtl';
@@ -269,7 +276,7 @@ export class RdxAutocompleteInput {
                 break;
             }
             case ' ':
-                if (open && this.element.value === '') {
+                if (open && !this.root.readOnly() && this.element.value === '') {
                     event.preventDefault();
                     event.stopPropagation();
                     this.clickHighlighted(event);
@@ -280,6 +287,13 @@ export class RdxAutocompleteInput {
                     const hasHighlight = this.root.virtualized()
                         ? this.root.highlightedIndex() >= 0
                         : this.root.highlightedItem() !== null;
+                    if (this.root.readOnly()) {
+                        if (hasHighlight) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        break;
+                    }
                     if (hasHighlight) {
                         event.preventDefault();
                         this.clickHighlighted(event);

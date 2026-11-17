@@ -3616,6 +3616,13 @@ export class AutocompleteDisabled {
 Implements the WAI-ARIA [combobox](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) pattern. DOM
 focus stays on the input; the active option is referenced with `aria-activedescendant`.
 
+With `readOnly`, the popup can still be opened and browsed using the list/grid rules below, while
+typing and item activation preserve the value. The input exposes native `readonly`,
+`aria-readonly="true"` and `aria-autocomplete="none"`; the listbox also exposes `aria-readonly`, while
+a grid leaves editability on the input. Enabling read-only discards a pending inline completion.
+Restoring editability keeps it discarded until a new input or keyboard navigation interaction.
+Enter with a highlighted item is consumed; without a highlight it retains native form submission.
+
 ### Keyboard interactions
 
 | Key | Behavior |
