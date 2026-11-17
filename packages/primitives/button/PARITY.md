@@ -54,6 +54,9 @@ Composite/Toolbar roving values, so the application then owns the resulting tab 
 - **Toolbar.Button includes button behavior on its own.** Enter/Space activation, consumer
   cancellation, modifiers and disabled guards work without an extra `rdxButton`. Stacking both
   directives retains one activation per press.
+- **Toolbar Toggle uses the shared click path.** A custom host with `rdxToolbarButton` and
+  `rdxToggle` changes pressed once on keydown, with no extra change on keyup. Change details carry
+  the click event and its modifiers. Prevented Enter and canceled pressed changes are respected.
 
 ## Composition ownership
 
@@ -65,6 +68,8 @@ Button and Toolbar.Button provide the same element-scoped `RdxButtonBehavior` se
 set of DOM handlers; when stacked, Button supplies the effective behavior configuration. A composed
 Menu trigger marks keyboard activation it already handled so the shared behavior does not toggle it
 again. Those coordination helpers are internal exports between secondary entry points.
+Toggle on the same host defers its fallback keyboard handlers to this behavior, preserving one
+click path when Toolbar.Button, Toggle and an optional Button are composed together.
 
 Bare Toolbar.Button on a non-native render host also retains the pin's forwarded `disabled` DOM
 attribute. It does not give a span or link native disabled semantics; the shared guards enforce it.

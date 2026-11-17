@@ -61,8 +61,17 @@ export class ButtonDriver {
                     ...(probe.settings.interaction?.menu
                         ? { menuOpen: document.querySelector('[data-testid="menu-open"]')?.textContent === 'true' }
                         : {}),
+                    ...(probe.settings.toggle
+                        ? {
+                              pressed: element.getAttribute('aria-pressed') === 'true',
+                              toggleChanges: JSON.parse(
+                                  document.querySelector('[data-testid="toggle-changes"]')!.textContent!
+                              )
+                          }
+                        : {}),
                     ...(probe.settings.authored ? { tabIndexAttribute: element.getAttribute('tabindex') } : {}),
-                    ...((probe.settings.interaction && probe.settings.interaction.scope !== 'standalone') ||
+                    ...(probe.settings.toggle ||
+                    (probe.settings.interaction && probe.settings.interaction.scope !== 'standalone') ||
                     (probe.settings.authored && probe.settings.authored.scope !== 'standalone')
                         ? {
                               tabStops: [...document.querySelectorAll<HTMLElement>('[data-item]')].map(

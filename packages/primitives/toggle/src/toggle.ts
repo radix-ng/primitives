@@ -9,6 +9,7 @@ import {
     model,
     output
 } from '@angular/core';
+import { RdxButtonBehavior } from '@radix-ng/primitives/button';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import {
     BooleanInput,
@@ -55,6 +56,8 @@ export interface RdxTogglePressedChangeEvent {
 export class RdxToggle {
     private readonly group = injectToggleGroupContext(true);
     private readonly compositeItem = inject(RdxCompositeItem, { self: true });
+    // A Button/Toolbar.Button on this host already owns keyboard activation and click synthesis.
+    private readonly buttonBehavior = inject(RdxButtonBehavior, { self: true, optional: true });
 
     /**
      * A value identifying this toggle inside a `[rdxToggleGroup]`. Required when used in a group.
@@ -168,11 +171,11 @@ export class RdxToggle {
 
     /**
      * @ignore
-     * Non-native hosts emulate a native `<button>` (Base UI `useButton`): Enter activates on keydown,
+     * Fallback when no same-host Button behavior is present: Enter activates on keydown,
      * Space is `preventDefault`-ed on keydown (to suppress page scroll) and activates on keyup.
      */
     protected onKeyDown(event: KeyboardEvent): void {
-        if (this.nativeButton()) {
+        if (this.nativeButton() || this.buttonBehavior) {
             return;
         }
         if (event.key === 'Enter' && !event.repeat) {
@@ -185,7 +188,7 @@ export class RdxToggle {
 
     /** @ignore Space activates on keyup for non-native hosts (native-button semantics). */
     protected onKeyUp(event: KeyboardEvent): void {
-        if (this.nativeButton()) {
+        if (this.nativeButton() || this.buttonBehavior) {
             return;
         }
         if (event.key === ' ') {

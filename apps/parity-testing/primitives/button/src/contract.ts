@@ -1,5 +1,6 @@
 import { authoredCases, type Authored } from './authored';
 import { interactionCases, type ConsumerKey, type Interaction } from './interaction';
+import { toggleCases, type ToggleSettings } from './toggle';
 
 export type Host = 'button' | 'div' | 'span' | 'link' | 'anchor';
 export type ButtonType = 'button' | 'submit' | 'reset';
@@ -14,7 +15,9 @@ export interface Settings {
         | 'repeat'
         | 'blur'
         | 'interaction'
-        | 'authored';
+        | 'authored'
+        | 'toggle';
+    toggle?: ToggleSettings;
     authored?: Authored;
     interaction?: Interaction;
     key?: 'Enter' | 'Space';
@@ -60,6 +63,7 @@ for (const host of ['button', 'span'] as const)
     cases[`${host}-space-focus-leaves`] = { host, action: 'blur', key: 'Space' };
 Object.assign(cases, interactionCases);
 Object.assign(cases, authoredCases);
+Object.assign(cases, toggleCases);
 
 export interface Click {
     target: string | null;

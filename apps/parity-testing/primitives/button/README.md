@@ -7,7 +7,7 @@ that committed object. The runner verifies the archived source digest before eac
 
 ## Scope
 
-237 scenarios run in Chromium, Firefox and WebKit (711 comparisons):
+259 scenarios run in Chromium, Firefox and WebKit (777 comparisons):
 
 - native `<button>`, `<div>`, `<span>`, `<a href>` and `<a>` without an href;
 - DOM semantics, `data-disabled`, native disabled state, effective tabindex and ARIA disabled state;
@@ -45,6 +45,12 @@ that committed object. The runner verifies the archived source digest before eac
 - those handler cases also check that disabled focusable items retain Tab/arrow navigation;
 - four `bare-toolbar-menu-` cases check native/custom Menu trigger open state across Enter/Space
   keydown and keyup. They establish state behavior, not complete Menu callback parity.
+
+22 `toggle-toolbar-` cases compare enabled Toggle rendered through Toolbar.Button on button/span
+hosts, including an additional Button layer. They check Enter/Space down/up phases, repeated keys,
+modifiers, pointer clicks, consumer-prevented keys, cancelable pressed changes and roving navigation.
+Both consumer clicks and actual `onPressedChange` emissions are recorded, including the change
+event's type, reason, trust and modifiers. ToggleGroup and disabled compositions remain separate.
 
 React uses the pin's actual `render={<Button />}` composition; Angular applies the corresponding
 directives to one element. Toolbar forwards disabled state into its rendered Button: the fixture
@@ -108,9 +114,15 @@ hosts also preserve the pin's forwarded disabled attribute. A custom Menu trigge
 exposed a double toggle after composing the behavior; an internal handled-event marker prevents
 the second activation, and four additional pinned state comparisons cover that integration.
 
+The first 20 Toggle comparisons failed nine custom-host Angular scenarios while every reference
+assertion passed. A unit witness also confirmed the extra Space keyup change. Evidence is in
+`dist/parity-testing/button/before-toolbar-toggle-fix/`. Toggle now defers its fallback keyboard
+handling when the same host supplies Button/Toolbar.Button behavior. Enter uses one click path,
+and Space no longer toggles again on keyup. Two later cases also cover repeated Enter keydown.
+
 ## Limits
 
-Other compound families and complete trigger callback ordering, auxiliary/modifier link
+Other compound families, ToggleGroup/disabled compositions, complete trigger callback ordering, auxiliary/modifier link
 navigation, real touch/pen, iframe/shadow realms, SSR/hydration and
 assistive technologies remain separate checks. Ancestor propagation and stopImmediatePropagation
 are outside the consumer-handler contract checked here.

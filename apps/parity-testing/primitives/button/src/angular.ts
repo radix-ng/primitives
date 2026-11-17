@@ -6,6 +6,7 @@ import '../../../../radix-storybook/.storybook/tailwind.css';
 import { AngularAuthored } from './authored.angular';
 import { classes, config, installProbe, type ButtonType } from './contract';
 import { AngularInteraction } from './interaction.angular';
+import { AngularToggle } from './toggle.angular';
 
 @Component({
     selector: 'parity-button',
@@ -118,7 +119,9 @@ class AngularButton {
         inject(DestroyRef).onDestroy(() => document.removeEventListener('keydown', listener, true));
     }
 }
-if (config().authored) void bootstrapApplication(AngularAuthored, { providers: [provideZonelessChangeDetection()] });
+if (config().toggle) void bootstrapApplication(AngularToggle, { providers: [provideZonelessChangeDetection()] });
+else if (config().authored)
+    void bootstrapApplication(AngularAuthored, { providers: [provideZonelessChangeDetection()] });
 else if (config().interaction)
     void bootstrapApplication(AngularInteraction, { providers: [provideZonelessChangeDetection()] });
 else void bootstrapApplication(AngularButton, { providers: [provideZonelessChangeDetection()] });

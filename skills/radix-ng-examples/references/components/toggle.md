@@ -33,6 +33,9 @@ When placed inside a `[rdxToggleGroup]`, give each toggle a stable `value` — i
 derived from the group's value and it joins the group's composite focus. In dev mode, a grouped toggle
 without `value` emits a warning because it cannot participate in group value changes.
 
+With `rdxToolbarButton` on the same element, Enter and Space activate on keydown; keyup does not
+toggle again. On a custom host such as `<span>`, set `[nativeButton]="false"`.
+
 ## Examples
 
 - [Pressed by default](../examples/toggle--pressed-by-default.md)

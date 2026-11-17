@@ -5,6 +5,7 @@ import '../../../../radix-storybook/.storybook/tailwind.css';
 import { ReactAuthored } from './authored.react';
 import { config, installProbe, classes as s, type ButtonType } from './contract';
 import { ReactInteraction } from './interaction.react';
+import { ReactToggle } from './toggle.react';
 
 const settings = config();
 const trace = installProbe('react', settings);
@@ -79,7 +80,9 @@ function ReactButton() {
     );
 }
 createRoot(document.getElementById('root')!).render(
-    settings.authored ? (
+    settings.toggle ? (
+        <ReactToggle trace={trace} />
+    ) : settings.authored ? (
         <ReactAuthored trace={trace} />
     ) : settings.interaction ? (
         <ReactInteraction settings={settings} trace={trace} />

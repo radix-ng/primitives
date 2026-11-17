@@ -4,9 +4,10 @@ import { authoredScenarios } from './authored.scenarios';
 import { disabledHandlerScenarios } from './disabled-handlers.scenarios';
 import type { ButtonDriver } from './driver';
 import { interactionScenarios } from './interaction.scenarios';
+import { toggleScenarios } from './toggle.scenarios';
 
 const standaloneScenarios = Object.entries(cases)
-    .filter(([, settings]) => !settings.interaction && !settings.authored)
+    .filter(([, settings]) => !settings.interaction && !settings.authored && !settings.toggle)
     .map(([name, settings]) => ({
         name,
         async run(d: ButtonDriver) {
@@ -153,5 +154,6 @@ export const scenarios = [
     ...standaloneScenarios,
     ...interactionScenarios,
     ...authoredScenarios,
-    ...disabledHandlerScenarios
+    ...disabledHandlerScenarios,
+    ...toggleScenarios
 ];
