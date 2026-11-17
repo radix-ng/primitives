@@ -22,6 +22,12 @@ request completes an already-finished exit before opening again; unfinished exit
 interruptible. Menu supplies its original event to `prepareOpenChange`. Explicit `unmount()` and
 owner disposal keep their own boundaries. See [ADR 0082](../../adr/0082-popup-close-completion-frame.md).
 
+Changing animation participants aborts the old observation before a post-render rescan. That abort
+does not complete an unfinished CSS exit: retain its pending phase until the new scan, explicit
+cancellation or unmount. Angular can unregister a Popup child before its Root's destruction hook;
+clearing the phase in that gap incorrectly lets `finishPendingCloseOnDestroy()` notify an interrupted
+close. The observer's AbortSignal distinguishes this cleanup from an actual completed scan.
+
 Menu and Popover's shared viewport follows this presence/closing lifetime for its outgoing visual
 snapshot. A logical close can still be in a CSS or deferred exit; do not discard the snapshot at
 close-start. See [ADR 0061](../../adr/0061-menu-interrupted-trigger-exits.md) for interrupted trigger sessions.

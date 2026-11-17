@@ -164,13 +164,16 @@ export function useRenderLifecycle(
             const wait = () => {
                 if (!active || destroyRef.destroyed || currentVersion !== version) return;
                 observe = wait;
-                controller = new AbortController();
+                const observation = new AbortController();
+                controller = observation;
                 waitForAnimations(
                     [...elements.keys()],
                     () => finish(open, currentVersion),
-                    controller.signal,
+                    observation.signal,
                     (pending) => {
-                        pendingMotion = pending;
+                        // Unregistering a child aborts observation before the next render can
+                        // rescan. That gap must not turn an interrupted owner exit into completion.
+                        if (!observation.signal.aborted) pendingMotion = pending;
                     }
                 );
             };

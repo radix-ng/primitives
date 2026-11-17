@@ -207,6 +207,15 @@ attributes/guard counts are recorded as measurements. See [ADR 0046](../../../do
 
 Ten whole-root removal scenarios are included in this family.
 
+CI [44070176929](https://github.com/radix-ng/primitives/actions/runs/44070176929) exposed a shared
+regression in `root-remove-nested-exit` across all three engines: unregistering the Popup aborted
+animation observation before Root disposal, producing an extra submenu close completion. The shared
+render lifecycle now retains unfinished motion through that rescan gap. The existing callback and
+resource comparisons remain unchanged; no reviewed difference is added. Focused Menu lifecycle,
+Root-removal and Popover composition checks pass **207 comparisons** on macOS. The Root-removal
+subset also passes **33 comparisons** on Linux/arm64 in Playwright 1.60.0 Noble with two workers and
+original timeouts. See the [lifecycle mechanism](../../../docs/engineering/mechanisms/popup-close-lifecycle-adr-0026.md).
+
 The late-hold regression exposed a shared Presence animation callback racing its render effect.
 Completion now adopts the actual presence before unmounting, preserving checkbox state and native
 focus. Disposal invalidates queued animation promises. The test holds real CSS before F10 and

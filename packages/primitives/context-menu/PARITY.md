@@ -81,6 +81,14 @@ attributes/guard counts are recorded as measurements. See [ADR 0046](../../../do
 Nine scenarios apply to Context Menu. The two other families each add a non-modal case; Base UI
 Context Menu exposes no non-modal Root prop.
 
+CI [44070176929](https://github.com/radix-ng/primitives/actions/runs/44070176929) reproduced an extra
+submenu close completion on whole-Root removal during a CSS exit in all three engines. The shared
+[render-lifecycle correction](../../../docs/engineering/mechanisms/popup-close-lifecycle-adr-0026.md)
+preserves unfinished motion while Popup registration is removed, before Root disposal. Existing
+Root-removal/composition controls pass **51 comparisons** on macOS; Root removal passes **27** on
+Linux/arm64 in Playwright 1.60.0 Noble, with two workers and original timeouts. No exception or
+observation is changed.
+
 ## Independent nested Roots
 
 Sixteen new cases cover independent areas and a Context Menu Root inside an already-open popup.

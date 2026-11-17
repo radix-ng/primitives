@@ -155,6 +155,14 @@ attributes/guard counts are recorded as measurements. See [ADR 0046](../../../do
 
 Ten whole-root removal scenarios are included in this family.
 
+CI [44070176929](https://github.com/radix-ng/primitives/actions/runs/44070176929) reproduced an extra
+submenu close completion on whole-Root removal during a CSS exit in all three engines. The shared
+[render-lifecycle correction](../../../docs/engineering/mechanisms/popup-close-lifecycle-adr-0026.md)
+retains unfinished motion between Popup unregistration and Root disposal. Root-removal and controlled
+state controls pass **48 comparisons** on macOS; Root removal passes **30** on Linux/arm64 in
+Playwright 1.60.0 Noble, with two workers and original timeouts. The existing completion observations
+and reviewed differences remain unchanged.
+
 ## Completed-exit focus regression, 2026-11-17
 
 The three controlled cases failing across all engines in

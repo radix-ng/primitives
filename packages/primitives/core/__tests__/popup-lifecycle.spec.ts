@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useRenderLifecycle } from '../src/composables/use-render-lifecycle';
 import { usePopupLifecycle } from '../src/floating/use-popup-lifecycle';
+import { animationDriver } from './animation-driver';
 
 @Component({ template: '' })
 class Host implements OnDestroy {
@@ -109,6 +110,25 @@ describe('shared popup lifecycle', () => {
         host.lifecycle.unmount();
         await settle();
         await vi.waitFor(() => expect(closedCompletions()).toEqual([false]));
+    });
+
+    it('does not complete an interrupted CSS exit when its popup unregisters before owner destruction', async () => {
+        change(true);
+        await settle();
+        await vi.waitFor(() => expect(host.completions).toEqual([true]));
+        const motion = animationDriver();
+        const element = document.createElement('div');
+        element.getAnimations = () => [motion.animation];
+        const unregister = host.lifecycle.registerElement(element);
+        change(false);
+        await settle();
+        expect(host.lifecycle.renderLifecycle.isExitPending).toBe(true);
+        // Angular destroys the Popup child before invoking its Root's final live output hook.
+        unregister();
+        fixture.destroy();
+        expect(host.completions).toEqual([true]);
+        await motion.finish();
+        expect(host.completions).toEqual([true]);
     });
 
     it.each([false, true])(

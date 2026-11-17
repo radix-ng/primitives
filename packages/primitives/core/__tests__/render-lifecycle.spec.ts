@@ -159,7 +159,9 @@ describe('signal render lifetime', () => {
         await fixture.whenStable();
         expect(host.lifecycle.isExitPending).toBe(true);
         unregister();
+        expect(host.lifecycle.isExitPending).toBe(true);
         await fixture.whenStable();
+        expect(host.lifecycle.isExitPending).toBe(false);
         expect(host.lifecycle.mounted()).toBe(false);
         expect(host.completions.filter((open) => !open)).toEqual([false]);
         await motion.finish();
