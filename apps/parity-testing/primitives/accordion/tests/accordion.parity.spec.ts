@@ -4,9 +4,11 @@ import { cases } from '../src/contract';
 import { AccordionDriver } from './driver';
 import { lifecycleScenarios } from './lifecycle.scenarios';
 import { motionScenarios } from './motion.scenarios';
+import { searchCapability } from './search-capability';
+import { searchScenarios } from './search.scenarios';
 
 const scenarios = Object.entries(cases)
-    .filter(([, settings]) => !settings.lifetime && !settings.motion)
+    .filter(([, settings]) => !settings.lifetime && !settings.motion && !settings.search)
     .map(([name, settings]) => ({
         name,
         async run(driver: AccordionDriver) {
@@ -55,7 +57,7 @@ const scenarios = Object.entries(cases)
             }
         }
     }));
-const allScenarios = [...scenarios, ...lifecycleScenarios, ...motionScenarios];
+const allScenarios = [...scenarios, ...lifecycleScenarios, ...motionScenarios, ...searchScenarios];
 const run = createParityRunner({
     differences: new URL('../expected-differences.json', import.meta.url),
     scenarios: allScenarios,
@@ -63,4 +65,17 @@ const run = createParityRunner({
     readNativeEvents: (driver) => driver.page.evaluate(() => window.accordionParity?.nativeEvents)
 });
 for (const scenario of allScenarios)
-    test(scenario.name, async ({ browser, baseURL }, info) => run(scenario, { browser, baseURL }, info));
+    test(scenario.name, async ({ browser, baseURL }, info) => {
+        if (cases[scenario.name].search?.source === 'find') {
+            const capability = await searchCapability(browser);
+            await info.attach('native-search-capability', {
+                contentType: 'application/json',
+                body: JSON.stringify(capability)
+            });
+            test.skip(
+                !capability.supported,
+                'This engine window.find does not emit trusted beforematch on plain hidden=until-found HTML'
+            );
+        }
+        await run(scenario, { browser, baseURL }, info);
+    });

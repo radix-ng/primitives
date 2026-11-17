@@ -167,6 +167,20 @@ export class RdxCollapsiblePanelDirective {
                     this.forceIdle.set(true);
                     // The browser measures its match in this same task, before Angular commits.
                     this.renderer.removeAttribute(node, 'data-starting-style');
+                    this.restoreRevealStyle?.();
+                    // Keyframes can begin as soon as the browser removes hidden, before the
+                    // render hook can suppress them. Neutralize both motion types now, including
+                    // animations selected by :not([hidden]), and retain authored inline priority.
+                    const restore = ['transition-duration', 'animation-duration'].map((property) => {
+                        const value = node.style.getPropertyValue(property);
+                        const priority = node.style.getPropertyPriority(property);
+                        node.style.setProperty(property, '0s');
+                        return () =>
+                            value
+                                ? node.style.setProperty(property, value, priority)
+                                : node.style.removeProperty(property);
+                    });
+                    this.restoreRevealStyle = () => restore.forEach((restoreStyle) => restoreStyle());
                 }
                 clearTimeout(this.revealDecision);
                 if (this.revealFrame !== undefined) cancelAnimationFrame(this.revealFrame);
@@ -174,9 +188,12 @@ export class RdxCollapsiblePanelDirective {
                     if (this.rootContext.open()) return;
                     this.revealFrame = requestAnimationFrame(() => {
                         this.revealFrame = undefined;
-                        if (this.rootContext.open() || !this.effectiveHiddenUntilFound()) return;
+                        if (this.rootContext.open()) return;
                         this.skipNextOpen = false;
+                        this.restoreRevealStyle?.();
+                        this.restoreRevealStyle = undefined;
                         this.forceIdle.set(false);
+                        if (!this.effectiveHiddenUntilFound()) return;
                         if (hadStartingStyle) this.renderer.setAttribute(node, 'data-starting-style', '');
                         this.renderer.setAttribute(node, 'hidden', 'until-found');
                     });
@@ -212,7 +229,7 @@ export class RdxCollapsiblePanelDirective {
             untracked(() => {
                 const changed = this.previousMeasuredOpen !== open;
                 this.previousMeasuredOpen = open;
-                if (!open) {
+                if (!open && !this.skipNextOpen) {
                     this.restoreRevealStyle?.();
                     this.restoreRevealStyle = undefined;
                     this.forceIdle.set(false);
@@ -240,13 +257,6 @@ export class RdxCollapsiblePanelDirective {
                 if (open && this.skipNextOpen) {
                     this.skipNextOpen = false;
                     this.updateDimensions();
-                    const property = this.motionType() === 'transition' ? 'transition-duration' : 'animation-duration';
-                    const style = this.elementRef.nativeElement.style;
-                    const value = style.getPropertyValue(property);
-                    const priority = style.getPropertyPriority(property);
-                    style.setProperty(property, '0s');
-                    this.restoreRevealStyle = () =>
-                        value ? style.setProperty(property, value, priority) : style.removeProperty(property);
                     return;
                 }
                 if (

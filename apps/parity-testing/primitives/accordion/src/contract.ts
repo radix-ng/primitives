@@ -1,4 +1,6 @@
 export interface Settings {
+    search?: { motion: 'transition' | 'keyframe'; source: 'event' | 'find' | 'fragment' };
+    acceptControlled?: boolean;
     motion?:
         | 'plain'
         | 'decorated'
@@ -70,6 +72,20 @@ export const cases: Record<string, Settings> = {
     'authored-ids': { authored: true },
     'authored-submit': { submit: true }
 };
+for (const motion of ['transition', 'keyframe'] as const) {
+    for (const source of ['event', 'find'] as const) {
+        for (const [decision, settings] of Object.entries<Settings>({
+            accepted: {},
+            'item-veto': { veto: 'item' },
+            'root-veto': { veto: 'root' },
+            'controlled-refused': { controlled: true },
+            'controlled-accepted': { controlled: true, acceptControlled: true }
+        })) {
+            cases[`search-${source}-${motion}-${decision}`] = { ...settings, search: { motion, source } };
+        }
+    }
+    cases[`search-fragment-${motion}`] = { search: { motion, source: 'fragment' } };
+}
 export function settings(): Settings {
     const name = new URLSearchParams(location.search).get('case') ?? 'single';
     if (!cases[name]) throw new Error(`Unknown Accordion case: ${name}`);
@@ -124,8 +140,11 @@ export function installProbe(config: Settings) {
                 shared: part === 'root' ? lastItemDetails === details : true
             });
             if (part !== 'root') lastItemDetails = details;
-            if ((config.veto === 'item' && part !== 'root') || (config.veto === 'root' && part === 'root'))
+            if ((config.veto === 'item' && part !== 'root') || (config.veto === 'root' && part === 'root')) {
                 details.cancel();
+                return false;
+            }
+            return true;
         },
         click(event: Event) {
             if (config.preventClick) event.preventDefault();

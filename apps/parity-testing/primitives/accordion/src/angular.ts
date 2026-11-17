@@ -13,6 +13,7 @@ import '../../../../radix-storybook/.storybook/tailwind.css';
 import { installProbe, settings } from './contract';
 import { AngularLifecycleAccordion } from './lifecycle.angular';
 import { AngularMotionAccordion } from './motion.angular';
+import { AngularSearchAccordion } from './search.angular';
 
 @Component({
     selector: 'parity-accordion',
@@ -91,7 +92,13 @@ class AngularAccordion {
     readonly probe = installProbe(this.s);
 }
 void bootstrapApplication(
-    settings().motion ? AngularMotionAccordion : settings().lifetime ? AngularLifecycleAccordion : AngularAccordion,
+    settings().search
+        ? AngularSearchAccordion
+        : settings().motion
+          ? AngularMotionAccordion
+          : settings().lifetime
+            ? AngularLifecycleAccordion
+            : AngularAccordion,
     {
         providers: [provideZonelessChangeDetection()]
     }

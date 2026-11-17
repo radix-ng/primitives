@@ -59,6 +59,61 @@ describe('Accordion Panel policy and reveal', () => {
         expect(host.trace[0].request.eventDetails.reason).toBe('none');
         expect(host.trace[0].request.eventDetails).toBe(host.trace[1].request.eventDetails);
     });
+    it.each([false, true])(
+        'suppresses motion in the beforematch task and restores authored styles (inline: %s)',
+        (inline) => {
+            const { fixture, panels, click } = setup((host) => host.findable.set(true));
+            const panel = panels()[0];
+            if (inline) {
+                panel.style.setProperty('animation-duration', '2s', 'important');
+                panel.style.setProperty('transition-duration', '3s', 'important');
+            }
+            panel.dispatchEvent(new Event('beforematch'));
+            // This precedes Angular rendering and the browser's own hidden removal/measurement.
+            expect(panel.style.animationDuration).toBe('0s');
+            expect(panel.style.transitionDuration).toBe('0s');
+            expect(panel.hasAttribute('data-starting-style')).toBe(false);
+            panel.removeAttribute('hidden');
+            fixture.detectChanges();
+            click();
+            expect(panel.style.animationDuration).toBe(inline ? '2s' : '');
+            expect(panel.style.transitionDuration).toBe(inline ? '3s' : '');
+            expect(panel.style.getPropertyPriority('animation-duration')).toBe(inline ? 'important' : '');
+            expect(panel.style.getPropertyPriority('transition-duration')).toBe(inline ? 'important' : '');
+        }
+    );
+    it('restores both temporary motion styles when destroyed before a controlled reveal commits', () => {
+        const { fixture, panels } = setup((host) => {
+            host.findable.set(true);
+            host.controlled.set([]);
+        });
+        const panel = panels()[0];
+        panel.style.setProperty('animation-duration', '2s', 'important');
+        panel.dispatchEvent(new Event('beforematch'));
+        expect(panel.style.animationDuration).toBe('0s');
+        fixture.destroy();
+        expect(panel.style.animationDuration).toBe('2s');
+        expect(panel.style.getPropertyPriority('animation-duration')).toBe('important');
+        expect(panel.style.transitionDuration).toBe('');
+    });
+    it('restores pending reveal styles when search is disabled before a controlled request commits', async () => {
+        const { host, fixture, panels } = setup((host) => {
+            host.findable.set(true);
+            host.controlled.set([]);
+        });
+        const panel = panels()[0];
+        panel.style.setProperty('animation-duration', '2s', 'important');
+        panel.dispatchEvent(new Event('beforematch'));
+        host.findable.set(false);
+        fixture.detectChanges();
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+        fixture.detectChanges();
+        expect(panel.getAttribute('hidden')).toBe('');
+        expect(panel.style.animationDuration).toBe('2s');
+        expect(panel.style.getPropertyPriority('animation-duration')).toBe('important');
+        expect(panel.style.transitionDuration).toBe('');
+    });
     it.each(['item', 'root', 'controlled'])('restores browser reveal after %s refusal', async (refusal) => {
         const { host, fixture, root, panels } = setup((host) => {
             host.findable.set(true);
@@ -67,6 +122,8 @@ describe('Accordion Panel policy and reveal', () => {
         host.cancelItem = refusal === 'item';
         host.cancelRoot = refusal === 'root';
         const panel = panels()[0];
+        panel.style.setProperty('animation-duration', '2s', 'important');
+        panel.style.setProperty('transition-duration', '3s', 'important');
         panel.dispatchEvent(new Event('beforematch'));
         panel.removeAttribute('hidden'); // browser removes this after dispatch
         fixture.detectChanges();
@@ -75,6 +132,10 @@ describe('Accordion Panel policy and reveal', () => {
         fixture.detectChanges();
         expect(root.value()).toEqual([]);
         expect(panel.getAttribute('hidden')).toBe('until-found');
+        expect(panel.style.animationDuration).toBe('2s');
+        expect(panel.style.transitionDuration).toBe('3s');
+        expect(panel.style.getPropertyPriority('animation-duration')).toBe('important');
+        expect(panel.style.getPropertyPriority('transition-duration')).toBe('important');
         expect(host.trace).toHaveLength(refusal === 'item' ? 1 : 2);
     });
 });

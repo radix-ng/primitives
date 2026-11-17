@@ -4,11 +4,14 @@ import '../../../../radix-storybook/.storybook/tailwind.css';
 import { installProbe, settings } from './contract';
 import { ReactLifecycleAccordion } from './lifecycle.react';
 import { ReactMotionAccordion } from './motion.react';
+import { ReactSearchAccordion } from './search.react';
 
 const s = settings();
 const probe = installProbe(s);
 createRoot(document.getElementById('root')!).render(
-    s.motion ? (
+    s.search ? (
+        <ReactSearchAccordion s={s} probe={probe} />
+    ) : s.motion ? (
         <ReactMotionAccordion s={s} probe={probe} />
     ) : s.lifetime ? (
         <ReactLifecycleAccordion s={s} probe={probe} />
