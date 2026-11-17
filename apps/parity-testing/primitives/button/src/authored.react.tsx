@@ -33,8 +33,8 @@ export function ReactAuthored({ trace }: { trace: ReturnType<typeof installProbe
             }
             setEpoch((value) => value + 1);
         };
-        document.addEventListener('keydown', command);
-        return () => document.removeEventListener('keydown', command);
+        document.addEventListener('keydown', command, true);
+        return () => document.removeEventListener('keydown', command, true);
     }, []);
     // Null deliberately removes a React DOM attribute; omitted props restore useButton defaults.
     const props = {

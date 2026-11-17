@@ -67,6 +67,11 @@ export class RdxCompositeItem {
         return index !== -1 && rootContext.highlightedIndex() === index && !rootContext.isIndexDisabled(index) ? 0 : -1;
     });
 
+    /** @internal Disabled button guards forward the original event to their owned root. */
+    relayKeyboardEvent(event: KeyboardEvent): void {
+        this.rootContext()?.relayKeyboardEvent(event);
+    }
+
     setMetadata(value: RdxCompositeItemMetadata | null | undefined): void {
         this.listItem.setMetadata(value);
     }

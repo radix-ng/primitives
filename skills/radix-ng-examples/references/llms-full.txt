@@ -3941,6 +3941,8 @@ export class RdxButtonSizesComponent {
 
 The first button uses the native `disabled` attribute (removed from the tab order). The second sets
 `focusableWhenDisabled`, so it stays focusable via `aria-disabled` while its activation is suppressed.
+Disabled Button also suppresses consumer click, pointerdown, mousedown, keydown and keyup handlers.
+Tab and composite arrow navigation remain available; hover and release handlers remain available.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
@@ -31334,6 +31336,9 @@ Use `rdxToggleGroupWithoutFocus` for toggle groups inside a toolbar so the toggl
 composite focus. Disabled state from `rdxToolbarRoot` or `rdxToolbarGroup` cascades into those toggle
 groups and their items.
 
+`rdxToolbarButton` includes button activation without an additional `rdxButton`. On custom hosts,
+set `[nativeButton]="false"`; Enter and Space activate the control, with Space handled on keydown.
+
 ## Examples
 
 ### Vertical
@@ -31372,6 +31377,8 @@ Set `orientation="vertical"` to lay the toolbar out vertically (arrow navigation
 
 A disabled `[rdxToolbarButton]` stays focusable by default (`focusableWhenDisabled`) so keyboard and
 screen-reader users can still reach it.
+Consumer click, pointerdown, mousedown, keydown and keyup handlers are suppressed while disabled.
+Tab and arrow navigation remain available, as do hover and release handlers.
 
 ```html
 <div class="${rootClass}" rdxToolbarRoot aria-label="Formatting options">
@@ -31622,6 +31629,7 @@ Adheres to the [Toolbar WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg
 | `ArrowUp`    | (Vertical) Moves focus to the previous item.       |
 | `Home`       | Moves focus to the first item.                     |
 | `End`        | Moves focus to the last item.                      |
+| `Enter` / `Space` | Activates an enabled button; Space activates on keydown. |
 
 ---
 

@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import { cases } from '../src/contract';
 import { authoredScenarios } from './authored.scenarios';
+import { disabledHandlerScenarios } from './disabled-handlers.scenarios';
 import type { ButtonDriver } from './driver';
 import { interactionScenarios } from './interaction.scenarios';
 
@@ -148,4 +149,9 @@ const standaloneScenarios = Object.entries(cases)
             });
         }
     }));
-export const scenarios = [...standaloneScenarios, ...interactionScenarios, ...authoredScenarios];
+export const scenarios = [
+    ...standaloneScenarios,
+    ...interactionScenarios,
+    ...authoredScenarios,
+    ...disabledHandlerScenarios
+];

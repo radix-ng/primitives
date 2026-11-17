@@ -12,6 +12,7 @@ import {
     PLATFORM_ID,
     untracked
 } from '@angular/core';
+import { preventRdxButtonActivation } from '@radix-ng/primitives/button';
 import { getCompositeNavigationKeys } from '@radix-ng/primitives/composite';
 import {
     BooleanInput,
@@ -397,6 +398,7 @@ export class RdxMenuTrigger<Payload = unknown> {
             return;
         }
 
+        preventRdxButtonActivation(event);
         if (this.rootContext()?.handleTriggerInteraction({ type: interactionType, event })) {
             event.preventDefault();
             this.ignoreNextClick = this.nativeButtonState() ? 'keyboard' : null;

@@ -6,6 +6,8 @@
 
 A disabled `[rdxToolbarButton]` stays focusable by default (`focusableWhenDisabled`) so keyboard and
 screen-reader users can still reach it.
+Consumer click, pointerdown, mousedown, keydown and keyup handlers are suppressed while disabled.
+Tab and arrow navigation remain available, as do hover and release handlers.
 
 ```html
 <div class="${rootClass}" rdxToolbarRoot aria-label="Formatting options">

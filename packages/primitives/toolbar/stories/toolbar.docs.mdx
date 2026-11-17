@@ -56,6 +56,9 @@ Use `rdxToggleGroupWithoutFocus` for toggle groups inside a toolbar so the toggl
 composite focus. Disabled state from `rdxToolbarRoot` or `rdxToolbarGroup` cascades into those toggle
 groups and their items.
 
+`rdxToolbarButton` includes button activation without an additional `rdxButton`. On custom hosts,
+set `[nativeButton]="false"`; Enter and Space activate the control, with Space handled on keydown.
+
 ## Examples
 
 ### Vertical
@@ -68,6 +71,8 @@ Set `orientation="vertical"` to lay the toolbar out vertically (arrow navigation
 
 A disabled `[rdxToolbarButton]` stays focusable by default (`focusableWhenDisabled`) so keyboard and
 screen-reader users can still reach it.
+Consumer click, pointerdown, mousedown, keydown and keyup handlers are suppressed while disabled.
+Tab and arrow navigation remain available, as do hover and release handlers.
 
 <Canvas of={ToolbarStories.Disabled} />
 
@@ -163,3 +168,4 @@ Adheres to the [Toolbar WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg
 | `ArrowUp`    | (Vertical) Moves focus to the previous item.       |
 | `Home`       | Moves focus to the first item.                     |
 | `End`        | Moves focus to the last item.                      |
+| `Enter` / `Space` | Activates an enabled button; Space activates on keydown. |

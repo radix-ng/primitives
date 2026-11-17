@@ -48,12 +48,26 @@ Composite/Toolbar roving values, so the application then owns the resulting tab 
   disabled/focusable changes and composite highlight changes. Clearing the override with `undefined`
   returns the item to its current roving/default value. Preserved `menuitem`, `option` and `gridcell`
   roles also retain Base UI's prevented composite Space behavior.
+- **Disabled consumer handlers are suppressed.** Click, pointerdown, mousedown, keydown and keyup
+  handlers no longer run while disabled. Hover and release handlers remain available. Tab keeps its
+  native default and the owning Composite still receives arrow navigation from the disabled item.
+- **Toolbar.Button includes button behavior on its own.** Enter/Space activation, consumer
+  cancellation, modifiers and disabled guards work without an extra `rdxButton`. Stacking both
+  directives retains one activation per press.
 
 ## Composition ownership
 
 Button uses the same host's `RdxCompositeItem.tabIndex` and the existing Composite context for keyboard
 policy. Stacking `rdxToolbarButton` and `rdxButton` retains one roving tab stop, focusable disabled
 items, group/root disabled state and native host semantics.
+
+Button and Toolbar.Button provide the same element-scoped `RdxButtonBehavior` service. Both use one
+set of DOM handlers; when stacked, Button supplies the effective behavior configuration. A composed
+Menu trigger marks keyboard activation it already handled so the shared behavior does not toggle it
+again. Those coordination helpers are internal exports between secondary entry points.
+
+Bare Toolbar.Button on a non-native render host also retains the pin's forwarded `disabled` DOM
+attribute. It does not give a span or link native disabled semantics; the shared guards enforce it.
 
 Toolbar supplies `RdxButtonConfig` through `provideRdxButtonConfig`. This signal-based configuration
 is injected only from the same element; it shares effective disabled and focusable-when-disabled
@@ -63,6 +77,9 @@ the same provider when combining their own state with Button on one host.
 The capture listener moves Button's keyboard bubble listener after existing host listeners for each
 event. This lets later application listeners prevent activation before native defaults run, without
 timers, microtask activation or a React event wrapper. DestroyRef removes both phases.
+Disabled capture guards stop the host event before consumer handlers. For composite keydown, the
+original event is explicitly relayed to the item's owning root before propagation stops. Native
+ancestor propagation remains outside the comparison contract.
 
 There are no reviewed differential exceptions in this increment. Semantic snapshots normalize
 redundant false ARIA attributes and observe effective tabindex; complete DOM/event observations are

@@ -6,6 +6,8 @@
 
 The first button uses the native `disabled` attribute (removed from the tab order). The second sets
 `focusableWhenDisabled`, so it stays focusable via `aria-disabled` while its activation is suppressed.
+Disabled Button also suppresses consumer click, pointerdown, mousedown, keydown and keyup handlers.
+Tab and composite arrow navigation remain available; hover and release handlers remain available.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';

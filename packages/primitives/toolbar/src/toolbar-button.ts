@@ -1,5 +1,5 @@
 import { booleanAttribute, computed, Directive, effect, inject, input } from '@angular/core';
-import { provideRdxButtonConfig, RdxButtonConfig } from '@radix-ng/primitives/button';
+import { provideRdxButtonConfig, RdxButtonBehavior, RdxButtonConfig } from '@radix-ng/primitives/button';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import { BooleanInput } from '@radix-ng/primitives/core';
 import { injectToolbarGroupContext, injectToolbarRootContext } from './toolbar-context';
@@ -18,7 +18,7 @@ const buttonConfig = (): RdxButtonConfig => {
     selector: '[rdxToolbarButton]',
     exportAs: 'rdxToolbarButton',
     hostDirectives: [{ directive: RdxCompositeItem, inputs: ['tabIndex'] }],
-    providers: [provideRdxButtonConfig(buttonConfig)],
+    providers: [RdxButtonBehavior, provideRdxButtonConfig(buttonConfig)],
     host: {
         '[attr.type]': 'nativeButton() ? "button" : undefined',
         '[attr.role]': 'role() !== undefined ? role() : nativeButton() ? undefined : "button"',
@@ -26,14 +26,16 @@ const buttonConfig = (): RdxButtonConfig => {
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
         '[attr.data-focusable]': 'focusableWhenDisabled() ? "" : undefined',
         '[attr.aria-disabled]': 'isDisabled() && (!nativeButton() || focusableWhenDisabled()) ? "true" : undefined',
-        '[attr.disabled]': 'nativeButton() && isDisabled() && !focusableWhenDisabled() ? "" : undefined',
-        '(click)': 'onClick($event)'
+        '[attr.disabled]':
+            'isDisabled() && (nativeButton() ? !focusableWhenDisabled() : !buttonBehavior.hasButton) ? "" : undefined'
     }
 })
 export class RdxToolbarButton {
     protected readonly rootContext = injectToolbarRootContext();
     private readonly groupContext = injectToolbarGroupContext(true);
     private readonly compositeItem = inject(RdxCompositeItem, { self: true });
+    /** @ignore */
+    protected readonly buttonBehavior = inject(RdxButtonBehavior, { self: true });
 
     /**
      * Whether the button is disabled.
@@ -66,19 +68,19 @@ export class RdxToolbarButton {
     );
 
     constructor() {
+        this.buttonBehavior.configure(
+            {
+                disabled: this.isDisabled,
+                focusableWhenDisabled: this.focusableWhenDisabled,
+                native: this.nativeButton
+            },
+            'toolbar'
+        );
         effect(() => {
             this.compositeItem.setMetadata({
                 disabled: this.isDisabled(),
                 focusableWhenDisabled: this.focusableWhenDisabled()
             });
         });
-    }
-
-    /** @ignore */
-    protected onClick(event: Event): void {
-        if (this.isDisabled()) {
-            event.preventDefault();
-            event.stopImmediatePropagation();
-        }
     }
 }

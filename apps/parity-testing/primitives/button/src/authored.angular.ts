@@ -76,7 +76,7 @@ export class AngularAuthored {
             }
             this.epoch.update((value) => value + 1);
         };
-        document.addEventListener('keydown', command);
-        inject(DestroyRef).onDestroy(() => document.removeEventListener('keydown', command));
+        document.addEventListener('keydown', command, true);
+        inject(DestroyRef).onDestroy(() => document.removeEventListener('keydown', command, true));
     }
 }

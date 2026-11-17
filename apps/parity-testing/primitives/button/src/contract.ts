@@ -129,7 +129,8 @@ export function installProbe(framework: Probe['framework'], settings: Settings) 
     return {
         probe,
         click(event: MouseEvent) {
-            if (settings.interaction?.scope === 'standalone') probe.handlers.push('click');
+            if (settings.interaction?.scope === 'standalone' || settings.interaction?.disabledHandlers)
+                probe.handlers.push('click');
             probe.clicks.push({
                 target: (event.target as Element).getAttribute('data-testid'),
                 trusted: event.isTrusted,
@@ -149,7 +150,12 @@ export function installProbe(framework: Probe['framework'], settings: Settings) 
             probe.resets++;
         },
         consume(event: ConsumerKey) {
-            if (!['Enter', ' '].includes(event.key)) return;
+            if (
+                !(
+                    settings.interaction?.disabledHandlers ? ['Enter', ' ', 'Tab', 'ArrowRight'] : ['Enter', ' ']
+                ).includes(event.key)
+            )
+                return;
             probe.handlers.push(`${event.type}:${event.key === ' ' ? 'Space' : event.key}`);
             if (settings.interaction?.cancel === event.type) event.preventDefault();
             if (settings.interaction?.stop) event.stopPropagation();

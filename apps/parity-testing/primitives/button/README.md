@@ -7,7 +7,7 @@ that committed object. The runner verifies the archived source digest before eac
 
 ## Scope
 
-171 scenarios run in Chromium, Firefox and WebKit (513 comparisons):
+237 scenarios run in Chromium, Firefox and WebKit (711 comparisons):
 
 - native `<button>`, `<div>`, `<span>`, `<a href>` and `<a>` without an href;
 - DOM semantics, `data-disabled`, native disabled state, effective tabindex and ARIA disabled state;
@@ -36,14 +36,27 @@ that committed object. The runner verifies the archived source digest before eac
 - authored tabindex priority over roving values, then rejoining the current roving state;
 - prevented composite Space on authored `menuitem`, `option` and `gridcell` roles.
 
+66 additional cases cover disabled handlers and direct Toolbar.Button use:
+
+- 30 `bare-toolbar-` cases repeat the keyboard, cancellation, modifier, focus and disabled-owner
+  comparisons without a Button render prop / `rdxButton` directive;
+- 32 `handlers-` cases compare disabled consumer pointerdown, mousedown, click, keydown and keyup
+  callbacks, re-enabling and disabling again, including group/root ownership;
+- those handler cases also check that disabled focusable items retain Tab/arrow navigation;
+- four `bare-toolbar-menu-` cases check native/custom Menu trigger open state across Enter/Space
+  keydown and keyup. They establish state behavior, not complete Menu callback parity.
+
 React uses the pin's actual `render={<Button />}` composition; Angular applies the corresponding
 directives to one element. Toolbar forwards disabled state into its rendered Button: the fixture
 leaves that prop unspecified unless the application explicitly disables the target.
+Direct Toolbar.Button cases render the actual host instead of another Button; Menu state cases use
+the pin's actual Menu.Trigger and Angular's corresponding directive on the toolbar item.
 
 The driver uses real browser input. F6/F7/F8 and F9/F10/F11 are application commands that update
 each fixture's own state; subsequent actions wait for the relevant rendered state. The recorder does not synthesize
 component state, focus, form results or activation events. Non-native synthesis comes from the
 primitive being tested.
+Application commands use document capture so disabled host guards cannot swallow state updates.
 
 Checkpoints compare semantic disabled values and effective tabindex. Redundant `aria-disabled=false`
 versus an absent attribute is normalized; raw DOM remains in measurements. Native buttons explicitly
@@ -86,9 +99,18 @@ Toolbar.Button. Dynamic attribute bindings (`[attr.role]`, `[attr.tabindex]`) by
 and are outside this contract. Explicit tabindex can leave multiple tab stops; the application owns
 that override, just as it does in Base UI.
 
+The disabled/direct-Toolbar Chromium baseline failed 57 of its first 62 comparisons while all
+reference assertions passed; three unit witnesses also failed. Evidence is in
+`dist/parity-testing/button/before-disabled-handlers-fix/`. A shared element-scoped behavior service
+now owns one set of handlers for Button and Toolbar.Button, suppresses disabled callbacks, and
+relays the original disabled keydown to the owning Composite for navigation. Bare custom toolbar
+hosts also preserve the pin's forwarded disabled attribute. A custom Menu trigger unit regression
+exposed a double toggle after composing the behavior; an internal handled-event marker prevents
+the second activation, and four additional pinned state comparisons cover that integration.
+
 ## Limits
 
-Bare Toolbar.Button without Button composition, other compound families, auxiliary/modifier link
+Other compound families and complete trigger callback ordering, auxiliary/modifier link
 navigation, real touch/pen, iframe/shadow realms, SSR/hydration and
 assistive technologies remain separate checks. Ancestor propagation and stopImmediatePropagation
 are outside the consumer-handler contract checked here.

@@ -114,8 +114,8 @@ class AngularButton {
                 this.type.set('submit');
             }
         };
-        document.addEventListener('keydown', listener);
-        inject(DestroyRef).onDestroy(() => document.removeEventListener('keydown', listener));
+        document.addEventListener('keydown', listener, true);
+        inject(DestroyRef).onDestroy(() => document.removeEventListener('keydown', listener, true));
     }
 }
 if (config().authored) void bootstrapApplication(AngularAuthored, { providers: [provideZonelessChangeDetection()] });

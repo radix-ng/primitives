@@ -27,8 +27,8 @@ function ReactButton() {
                 setType('submit');
             }
         };
-        document.addEventListener('keydown', listener);
-        return () => document.removeEventListener('keydown', listener);
+        document.addEventListener('keydown', listener, true);
+        return () => document.removeEventListener('keydown', listener, true);
     }, []);
     const host =
         settings.host === 'button' ? (

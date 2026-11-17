@@ -1,3 +1,4 @@
+export * from './src/button-behavior';
 export * from './src/button-config';
 export * from './src/button.directive';
 

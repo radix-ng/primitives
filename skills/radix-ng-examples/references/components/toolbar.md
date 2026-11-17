@@ -49,6 +49,9 @@ Use `rdxToggleGroupWithoutFocus` for toggle groups inside a toolbar so the toggl
 composite focus. Disabled state from `rdxToolbarRoot` or `rdxToolbarGroup` cascades into those toggle
 groups and their items.
 
+`rdxToolbarButton` includes button activation without an additional `rdxButton`. On custom hosts,
+set `[nativeButton]="false"`; Enter and Space activate the control, with Space handled on keydown.
+
 ## Examples
 
 - [Vertical](../examples/toolbar--vertical.md)
