@@ -61,6 +61,7 @@ describe('Autocomplete grid', () => {
         TestBed.configureTestingModule({ imports: [HostComponent] });
         fixture = TestBed.createComponent(HostComponent);
         host = fixture.componentInstance;
+        host.open.set(true);
         await settle();
     });
 
@@ -71,9 +72,26 @@ describe('Autocomplete grid', () => {
         expect(document.querySelector('[rdxAutocompleteRow]')!.getAttribute('role')).toBe('row');
     });
 
+    it('leaves a closed grid closed on arrow keys', async () => {
+        host.open.set(false);
+        await settle();
+        for (const direction of ['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft']) {
+            key(direction);
+            await settle();
+            expect(host.open()).toBe(false);
+            expect(inputEl().hasAttribute('aria-activedescendant')).toBe(false);
+        }
+    });
+
+    it('enters the last cell on ArrowUp without a highlight', async () => {
+        key('ArrowUp');
+        await settle();
+        expect(highlighted()?.textContent?.trim()).toBe('Gray');
+    });
+
     it('ArrowDown moves down a column (keeping the column index)', async () => {
         key('ArrowDown');
-        await settle(); // opens + highlights first cell (Red)
+        await settle(); // highlights first cell (Red)
         expect(highlighted()?.textContent?.trim()).toBe('Red');
         key('ArrowRight');
         await settle(); // Green

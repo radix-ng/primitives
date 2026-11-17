@@ -18,7 +18,8 @@ import { AutocompleteItemHighlightedDetails, RdxAutocompleteRoot } from '../src/
             [(value)]="value"
             [(open)]="open"
             [limit]="limit()"
-            (onItemHighlighted)="lastHighlight = $event"
+            [loopFocus]="loopFocus()"
+            (onItemHighlighted)="recordHighlight($event)"
             rdxAutocompleteRoot
         >
             <input rdxAutocompleteInput aria-label="Item" />
@@ -39,7 +40,13 @@ class HostComponent {
     readonly open = signal(false);
     readonly limit = signal(-1);
     readonly items = ['Alpha', 'Bravo', 'Charlie'];
+    readonly loopFocus = signal(true);
+    readonly highlights: AutocompleteItemHighlightedDetails[] = [];
     lastHighlight: AutocompleteItemHighlightedDetails | null = null;
+    recordHighlight(details: AutocompleteItemHighlightedDetails): void {
+        this.lastHighlight = details;
+        this.highlights.push(details);
+    }
 }
 
 describe('Autocomplete engine parity (limit / onItemHighlighted)', () => {
@@ -100,6 +107,23 @@ describe('Autocomplete engine parity (limit / onItemHighlighted)', () => {
         key('ArrowDown');
         await settle();
         expect(host.lastHighlight).toEqual({ value: 'Bravo', index: 1, reason: 'keyboard' });
+    });
+
+    it('reports repeated keyboard attempts at a clamped boundary', async () => {
+        host.loopFocus.set(false);
+        host.open.set(true);
+        await settle();
+        key('ArrowUp');
+        await settle();
+        key('ArrowUp');
+        await settle();
+        key('ArrowUp');
+        await settle();
+        expect(host.highlights).toEqual([
+            { value: 'Alpha', index: 0, reason: 'keyboard' },
+            { value: 'Alpha', index: 0, reason: 'keyboard' },
+            { value: 'Alpha', index: 0, reason: 'keyboard' }
+        ]);
     });
 
     it('exposes the highlight on the root for both navigation steps', async () => {

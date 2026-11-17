@@ -14,7 +14,7 @@ A text input with a list of suggestions: free-form text whose value **is** the i
 - ✅ Built-in locale-aware filtering, a custom `filter` function, or `[filter]="null"` for external/async lists.
 - ✅ `autoHighlight`: `true` (first match while typing) or `'always'` (keep first highlighted).
 - ✅ Hover behavior: `highlightItemOnHover` (default `true`) and `keepHighlight` (keep the highlight when the pointer leaves the list).
-- ✅ Full keyboard support: ArrowDown / ArrowUp (loop via `loopFocus`), Enter, Escape, Tab.
+- ✅ Keyboard navigation: ArrowDown / ArrowUp, RTL grids, Home / End, Enter, Space, Escape and Tab.
 - ✅ Grid layout (`grid` + `rdxAutocompleteRow`) with 2D arrow navigation (Up/Down by row, Left/Right within a row).
 - ✅ Inline list (command palette): render `List` directly without `Portal` / `Positioner` / `Popup` for an always-open list.
 - ✅ WAI-ARIA `combobox` / `listbox` semantics with `aria-activedescendant` (focus never leaves the input).

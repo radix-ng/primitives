@@ -1813,7 +1813,7 @@ export class AutocompleteDefault {
 - ✅ Built-in locale-aware filtering, a custom `filter` function, or `[filter]="null"` for external/async lists.
 - ✅ `autoHighlight`: `true` (first match while typing) or `'always'` (keep first highlighted).
 - ✅ Hover behavior: `highlightItemOnHover` (default `true`) and `keepHighlight` (keep the highlight when the pointer leaves the list).
-- ✅ Full keyboard support: ArrowDown / ArrowUp (loop via `loopFocus`), Enter, Escape, Tab.
+- ✅ Keyboard navigation: ArrowDown / ArrowUp, RTL grids, Home / End, Enter, Space, Escape and Tab.
 - ✅ Grid layout (`grid` + `rdxAutocompleteRow`) with 2D arrow navigation (Up/Down by row, Left/Right within a row).
 - ✅ Inline list (command palette): render `List` directly without `Portal` / `Positioner` / `Popup` for an always-open list.
 - ✅ WAI-ARIA `combobox` / `listbox` semantics with `aria-activedescendant` (focus never leaves the input).
@@ -3618,15 +3618,20 @@ focus stays on the input; the active option is referenced with `aria-activedesce
 
 ### Keyboard interactions
 
-| Key                        | Behavior                                                                                 |
-| -------------------------- | ---------------------------------------------------------------------------------------- |
-| `ArrowDown`                | Open the popup (highlighting the first item), or move the highlight to the next item.    |
-| `ArrowUp`                  | Open the popup (highlighting the last item), or move the highlight to the previous item. |
-| `ArrowLeft` / `ArrowRight` | In `grid` mode, move within / across cells. Otherwise move the text caret.               |
-| `Home` / `End`             | In `grid` mode, jump the highlight to the first / last cell.                             |
-| `Enter`                    | Select the highlighted item, or close the popup and submit the form.                     |
-| `Escape`                   | Close the popup.                                                                         |
-| `Tab`                      | Close the popup and move focus to the next element.                                      |
+| Key | Behavior |
+| --- | --- |
+| `ArrowDown` / `ArrowUp` | In a list, open the popup; with auto-highlight off, opening leaves the highlight empty. Subsequent arrows navigate items. Closed grids keep their native input behavior. |
+| `ArrowLeft` / `ArrowRight` | In an open grid with a highlighted cell, navigate horizontally following `dir`. Otherwise move the text caret. |
+| `Home` / `End` | Move the text caret to an input boundary, including in grids. |
+| `Enter` | Activate the highlighted item. Without a highlight, non-inline modes close the popup and allow native form submission. |
+| `Space` | When the open input is empty, activate the highlighted item or leave an empty highlight unchanged. With text, insert a space. |
+| `Escape` | Close the popup; when already closed and unmounted, clear the text. |
+| `Tab` | Dismiss a mounted popup and allow native focus movement. |
+
+With `loopFocus`, navigation passes through an empty highlight when auto-highlight is off.
+With `loopFocus=false`, navigation stops at the boundary. Disabled items can be highlighted with
+arrows but cannot be activated. `autoHighlight="always"` starts at the first item; `autoHighlight=true`
+highlights the opening edge and updates the highlight on input changes.
 
 ## API Reference
 

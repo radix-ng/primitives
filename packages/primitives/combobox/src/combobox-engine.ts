@@ -77,6 +77,14 @@ export interface ComboboxEngineConfig {
     filteringEnabled: Signal<boolean>;
     /** Whether keyboard navigation wraps at the list boundaries. */
     loopFocus: Signal<boolean>;
+    /** Include the input-only position when looping. Defaults off. */
+    allowEscape?: Signal<boolean>;
+    /** Whether disabled items can receive a keyboard highlight. Defaults off. */
+    disabledItemsFocusable?: boolean;
+    /** Emit navigation attempts even when boundary clamping keeps the same item. */
+    notifyOnUnchangedHighlight?: boolean;
+    /** Text direction for horizontal grid navigation. Defaults to LTR. */
+    dir?: Signal<'ltr' | 'rtl'>;
     /** Resolved auto-highlight mode. */
     autoHighlightMode: Signal<'off' | 'input-change' | 'always'>;
     /** Whether the list is externally virtualized (navigation runs over {@link items} by index). */
@@ -239,11 +247,15 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
 
     const visibleCount = computed(() => (config.virtualized() ? filteredItems().length : visibleItems().length));
 
+    const isNavigable = (item: ComboboxItemRef): boolean =>
+        isVisible(item) && (config.disabledItemsFocusable === true || !item.disabled());
+
     const highlight = useListHighlight<ComboboxItemRef>({
         items: orderedItems,
-        isNavigable: (item) => isVisible(item) && !item.disabled(),
+        isNavigable,
         getId: (item) => item.id,
         loop: config.loopFocus,
+        allowEscape: config.allowEscape,
         injector
     });
 
@@ -278,12 +290,12 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
         }
         const lower = query.toLowerCase();
         return (
-            visibleItems().find((item) => !item.disabled() && item.textValue().toLowerCase().startsWith(lower)) ?? null
+            visibleItems().find((item) => isNavigable(item) && item.textValue().toLowerCase().startsWith(lower)) ?? null
         );
     };
 
     /** The first visible, navigable item (auto-highlight fallback when no prefix match exists). */
-    const firstVisibleNavigable = (): ComboboxItemRef | null => visibleItems().find((item) => !item.disabled()) ?? null;
+    const firstVisibleNavigable = (): ComboboxItemRef | null => visibleItems().find(isNavigable) ?? null;
 
     /** Resolves a pending edge to a virtualized index (`'first-match'` → first prefix match, else 0). */
     const resolveVirtualizedEdge = (edge: 'first' | 'last' | 'first-match', count: number): number => {
@@ -367,11 +379,13 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
         { injector }
     );
 
-    // Emit highlight changes (skip the initial run). Tracks both the DOM-ref highlight and the
-    // virtualized index; only one is active per mode, so the other never fires spuriously.
+    // Emit highlight changes and opted-in navigation attempts (skip the initial run). Track both
+    // the DOM-ref highlight and the virtualized index; only one is active per mode.
+    const highlightNavigation = signal(0);
     let highlightInitialized = false;
     effect(
         () => {
+            highlightNavigation();
             const item = highlightedItem();
             const index = highlightedIndex();
             if (!highlightInitialized) {
@@ -501,6 +515,10 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
         }
         let next = current + direction;
         const loop = config.loopFocus();
+        if (loop && config.allowEscape?.() && (next < 0 || next >= length)) {
+            highlightedIndex.set(-1);
+            return;
+        }
         if (next < 0) {
             next = loop ? length - 1 : 0;
         } else if (next >= length) {
@@ -535,7 +553,7 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
         const current = highlightedItem();
         if (!current) {
             const row = direction === 1 ? rows[0] : rows[rows.length - 1];
-            highlight.set(row[0] ?? null);
+            highlight.set((direction === 1 ? row[0] : row[row.length - 1]) ?? null);
             return;
         }
         let rowIndex = rows.findIndex((row) => row.includes(current));
@@ -619,6 +637,9 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
 
         highlightNext(reason: ComboboxHighlightReason = 'keyboard'): void {
             highlightReason.set(reason);
+            if (config.notifyOnUnchangedHighlight && !config.grid()) {
+                highlightNavigation.update((version) => version + 1);
+            }
             if (config.virtualized()) {
                 stepIndex(1);
             } else if (config.grid()) {
@@ -629,6 +650,9 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
         },
         highlightPrevious(reason: ComboboxHighlightReason = 'keyboard'): void {
             highlightReason.set(reason);
+            if (config.notifyOnUnchangedHighlight && !config.grid()) {
+                highlightNavigation.update((version) => version + 1);
+            }
             if (config.virtualized()) {
                 stepIndex(-1);
             } else if (config.grid()) {
@@ -643,14 +667,28 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
                 return;
             }
             highlightReason.set(reason);
-            highlight.next();
+            if (config.notifyOnUnchangedHighlight) {
+                highlightNavigation.update((version) => version + 1);
+            }
+            if (config.dir?.() === 'rtl') {
+                highlight.previous();
+            } else {
+                highlight.next();
+            }
         },
         highlightPreviousColumn(reason: ComboboxHighlightReason = 'keyboard'): void {
             if (!config.grid() || config.virtualized()) {
                 return;
             }
             highlightReason.set(reason);
-            highlight.previous();
+            if (config.notifyOnUnchangedHighlight) {
+                highlightNavigation.update((version) => version + 1);
+            }
+            if (config.dir?.() === 'rtl') {
+                highlight.next();
+            } else {
+                highlight.previous();
+            }
         },
         highlightFirst(reason: ComboboxHighlightReason = 'keyboard'): void {
             highlightReason.set(reason);

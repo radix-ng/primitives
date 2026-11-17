@@ -14,6 +14,8 @@ export interface UseListHighlightOptions<T> {
     getId: (item: T) => string | undefined;
     /** Whether navigation wraps at the boundaries. Defaults to `true`. */
     loop?: Signal<boolean>;
+    /** Include a cleared highlight between loop boundaries. Ignored when `loop` is false. */
+    allowEscape?: Signal<boolean>;
     /** Injector to bind the self-healing effect to when not called in an injection context. */
     injector?: Injector;
 }
@@ -51,7 +53,7 @@ export interface ListHighlight<T> {
  * Must be called in an injection context, or given an `injector`.
  */
 export function useListHighlight<T>(options: UseListHighlightOptions<T>): ListHighlight<T> {
-    const { items, isNavigable, getId, loop, injector } = options;
+    const { items, isNavigable, getId, loop, allowEscape, injector } = options;
 
     const highlighted = signal<T | null>(null);
 
@@ -86,6 +88,11 @@ export function useListHighlight<T>(options: UseListHighlightOptions<T>): ListHi
 
         let nextIndex = currentIndex + direction;
         const shouldLoop = loop ? loop() : true;
+
+        if (shouldLoop && allowEscape?.() && (nextIndex < 0 || nextIndex >= list.length)) {
+            highlighted.set(null);
+            return;
+        }
 
         if (nextIndex < 0) {
             nextIndex = shouldLoop ? list.length - 1 : 0;

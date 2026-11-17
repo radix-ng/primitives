@@ -104,6 +104,11 @@ describe.each(['Combobox', 'Autocomplete'] as const)('%s ordered collection acro
         expect(options()).toEqual([...original].reverse());
         expect(root.highlightedItem()).toBe(first);
         await key();
+        if (kind === 'Autocomplete') {
+            expect(root.highlightedItem()).toBeNull();
+            expect(input.hasAttribute('aria-activedescendant')).toBe(false);
+            await key();
+        }
         expect(root.highlightedItem()?.value()).toBe('c');
         expect(input.getAttribute('aria-activedescendant')).toBe(original[2].id);
 

@@ -206,6 +206,9 @@ export class RdxAutocompleteItem implements ComboboxItemRef {
     }
 
     private commitSelection(): void {
+        if (this.disabled()) {
+            return;
+        }
         if (this.virtualized()) {
             this.rootContext.selectIndex(this.index() ?? -1);
         } else {

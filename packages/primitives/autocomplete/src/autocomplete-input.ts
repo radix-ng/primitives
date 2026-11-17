@@ -9,7 +9,7 @@ import {
     inject,
     input
 } from '@angular/core';
-import { BooleanInput, injectId, rdxPlatform } from '@radix-ng/primitives/core';
+import { BooleanInput, dispatchClickWithModifiers, injectId, rdxPlatform } from '@radix-ng/primitives/core';
 import { RdxFloatingInsideElement } from '@radix-ng/primitives/dismissable-layer';
 import { injectFieldRootContext } from '@radix-ng/primitives/field';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
@@ -225,7 +225,8 @@ export class RdxAutocompleteInput {
             return;
         }
 
-        if (event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) {
+        // List navigation also handles modified arrows in Base UI; editing/activation handlers do not.
+        if ((event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) && !event.key.startsWith('Arrow')) {
             return;
         }
 
@@ -233,51 +234,45 @@ export class RdxAutocompleteInput {
 
         switch (event.key) {
             case 'ArrowDown':
-                event.preventDefault();
-                this.root.setKeyboardActive(true);
-                if (!open) {
-                    this.root.openAndHighlight('first', 'list-navigation', event);
-                } else {
-                    this.root.moveDown();
-                }
-                break;
             case 'ArrowUp':
-                event.preventDefault();
-                this.root.setKeyboardActive(true);
-                if (!open) {
-                    this.root.openAndHighlight('last', 'list-navigation', event);
-                } else {
-                    this.root.moveUp();
+                if (!open && this.root.grid()) {
+                    break;
                 }
+                event.preventDefault();
+                event.stopPropagation();
+                this.root.navigateByKeyboard(event.key === 'ArrowDown' ? 1 : -1, event);
                 break;
             case 'ArrowRight':
-                if (open && this.root.grid()) {
-                    event.preventDefault();
-                    this.root.setKeyboardActive(true);
-                    this.root.moveRight();
-                }
-                break;
             case 'ArrowLeft':
-                if (open && this.root.grid()) {
+                if (open && this.root.grid() && this.root.activeId()) {
                     event.preventDefault();
+                    event.stopPropagation();
                     this.root.setKeyboardActive(true);
-                    this.root.moveLeft();
+                    if (event.key === 'ArrowRight') {
+                        this.root.moveRight();
+                    } else {
+                        this.root.moveLeft();
+                    }
                 }
                 break;
             case 'Home':
-                // In a grid the search box is a filter, so Home/End jump to the first/last cell rather
-                // than moving the caret (outside a grid they keep their native text-editing behavior).
-                if (open && this.root.grid()) {
-                    event.preventDefault();
-                    this.root.setKeyboardActive(true);
-                    this.root.highlightFirst();
-                }
+            case 'End': {
+                event.preventDefault();
+                event.stopPropagation();
+                const rtl = this.root.dir() === 'rtl';
+                const end = event.key === 'End';
+                const position = (rdxPlatform.engine.gecko && rtl ? !end : end) ? this.element.value.length : 0;
+                this.element.setSelectionRange(position, position);
+                this.element.scrollLeft = end
+                    ? (rtl ? -1 : 1) * (this.element.scrollWidth - this.element.clientWidth)
+                    : 0;
                 break;
-            case 'End':
-                if (open && this.root.grid()) {
+            }
+            case ' ':
+                if (open && this.element.value === '') {
                     event.preventDefault();
-                    this.root.setKeyboardActive(true);
-                    this.root.highlightLast();
+                    event.stopPropagation();
+                    this.clickHighlighted(event);
                 }
                 break;
             case 'Enter':
@@ -287,7 +282,7 @@ export class RdxAutocompleteInput {
                         : this.root.highlightedItem() !== null;
                     if (hasHighlight) {
                         event.preventDefault();
-                        this.root.selectHighlighted(event);
+                        this.clickHighlighted(event);
                     } else if (!this.root.inlineMode()) {
                         // Non-inline: close and let native form submission proceed. Inline modes keep the
                         // popup open on Enter without a highlight (matches Base UI).
@@ -314,6 +309,14 @@ export class RdxAutocompleteInput {
                     this.root.closePopup(true, 'none', event);
                 }
                 break;
+        }
+    }
+
+    private clickHighlighted(event: KeyboardEvent): void {
+        const id = this.root.activeId();
+        const item = id ? this.element.ownerDocument.getElementById(id) : null;
+        if (item) {
+            dispatchClickWithModifiers(item, event);
         }
     }
 

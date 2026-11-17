@@ -1,7 +1,8 @@
 import { expect } from '@playwright/test';
-import { cases, type CaseName, type Settings } from '../src/contract';
+import { initialCases as cases, type Settings } from '../src/contract';
 import type { AutocompleteDriver } from './driver';
-export const scenarios = (Object.keys(cases) as CaseName[]).map((name) => ({
+import { navigationScenarios } from './navigation.scenarios';
+const initialScenarios = (Object.keys(cases) as (keyof typeof cases)[]).map((name) => ({
     name,
     async run(d: AutocompleteDriver) {
         const p: Settings = cases[name];
@@ -50,3 +51,5 @@ export const scenarios = (Object.keys(cases) as CaseName[]).map((name) => ({
         }
     }
 }));
+
+export const scenarios = [...initialScenarios, ...navigationScenarios];

@@ -430,6 +430,10 @@ export class RdxAutocompleteRoot
         query: this.query,
         filteringEnabled: this.filteringMode,
         loopFocus: this.loopFocus,
+        allowEscape: computed(() => this.autoHighlightMode() === 'off'),
+        disabledItemsFocusable: true,
+        notifyOnUnchangedHighlight: true,
+        dir: this.dir,
         autoHighlightMode: this.autoHighlightMode,
         virtualized: this.virtualized,
         items: this.items,
@@ -650,6 +654,8 @@ export class RdxAutocompleteRoot
         // be inline-completed even without an explicit `autoHighlight`.
         if (this.autoHighlightMode() !== 'off' || (this.inlineMode() && value.length > 0)) {
             this.engine.setPendingHighlightEdge('first-match');
+        } else {
+            this.engine.clearHighlightState();
         }
     }
 
@@ -735,7 +741,14 @@ export class RdxAutocompleteRoot
     navigateByKeyboard(direction: 1 | -1, event: Event = new Event('autocomplete.open-change')): void {
         this.engine.setKeyboardActive(true);
         if (!this.open()) {
-            this.openAndHighlight(direction === 1 ? 'first' : 'last', 'list-navigation', event);
+            if (this.autoHighlightMode() === 'off') {
+                this.openForBrowse('list-navigation', event);
+            } else {
+                const edge = this.autoHighlightMode() === 'always' || direction === 1 ? 'first' : 'last';
+                this.openAndHighlight(edge, 'list-navigation', event);
+            }
+        } else if (!this.grid() && !this.loopFocus() && !this.activeId()) {
+            this.engine.highlightFirst();
         } else if (direction === 1) {
             this.engine.highlightNext();
         } else {

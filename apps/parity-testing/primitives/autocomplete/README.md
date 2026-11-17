@@ -1,9 +1,10 @@
-# Autocomplete initial-state comparisons
+# Autocomplete state and navigation comparisons
 
 Compares Radix NG with unmodified Base UI **1.9.0**, pinned by
-[reference.json](../../reference.json). This first increment covers G1 from the
-[Autocomplete matrix](../../../../packages/primitives/autocomplete/PARITY.md): **14 scenarios / 42
-comparisons**, without skips or reviewed exceptions.
+[reference.json](../../reference.json). The suite covers G1 and G2 from the
+[Autocomplete matrix](../../../../packages/primitives/autocomplete/PARITY.md): **93 scenarios / 279
+comparisons**, without skips or reviewed exceptions. G1 contributes 14 initial-state cases; G2 adds
+79 navigation cases.
 
 ```bash
 pnpm test-parity autocomplete
@@ -37,7 +38,7 @@ first report is not a clean whole-suite negative baseline. It is retained in
 `dist/parity-testing/autocomplete/g1-before/`. Six initial unit regressions failed before the fix;
 a seventh control already passed. Two later cases check native form reset baselines.
 
-All **42 comparisons** pass on macOS and Linux/arm64 in Playwright 1.60.0 Noble, two workers and
+The G1 increment's **42 comparisons** passed on macOS and Linux/arm64 in Playwright 1.60.0 Noble, two workers and
 original timeouts. Reports: `dist/parity-testing/autocomplete/g1-final/` and
 `dist/autocomplete-g1-linux/results/`. Autocomplete/Combobox units pass **254 tests**. The new
 Autocomplete SSR initialization case and the Menu initialization control pass, alongside the library
@@ -45,6 +46,39 @@ build, lint, formatting, consumer generation and contributor checks.
 
 Angular Reactive Forms, template forms, Signal Forms and native reset are covered by unit
 regressions. Their Angular form integrations are not synthetic paired React observations. SSR
-coverage establishes initial serialized values/metadata, not client hydration. Navigation, read-only,
-query/preview, event metadata, retained/manual exits, grouped data, geometry and native platform
+coverage establishes initial serialized values/metadata, not client hydration. Read-only,
+query/preview, full event metadata, retained/manual exits, grouped data, geometry and native platform
 compositions remain separate matrix increments. `expected-differences.json` is empty.
+
+## G2 navigation scope
+
+Native keyboard cases cover closed/open lists, both arrow directions, each auto-highlight mode,
+looping through the input-only position, clamping, mounted DOM and flat virtualized lists, disabled
+item highlighting without activation, modified arrows, empty/text Space, native Home/End/caret, and
+LTR/RTL grids with rectangular and shorter final rows. Grid arrows leave a closed popup closed;
+Left/Right preserve native caret movement when no cell is highlighted. The comparison uses `mode="none"`
+to isolate navigation from G4's query and inline-preview protocol. Virtualized cases mount all items;
+real virtual windows and offscreen active-ID reveal remain G10.
+
+The application accepts ordinary value/open requests on both sides. After each native key the driver
+compares actual input text, caret selection, popup visibility, DOM focus, resolvable active IDREF,
+`data-highlighted`, value/open request counts, highlight index/count traces and native key prevention.
+The key observer runs after dispatch; it never repairs selection or focus. Highlight value/reason and
+full request/native metadata remain in raw measurements; their complete equivalence belongs to G5.
+Enter and empty Space activate the actual mounted Item click handler, including disabled virtual items.
+
+Before the runtime fix, the selected ten-case baseline had seven Angular failures and three controls
+with passing reference assertions. The raw report is in
+`dist/parity-testing/autocomplete/g2-before-final/`. A core input-only-loop regression also failed
+before implementation. An earlier diagnostic key observer sampled too early and was corrected before
+this baseline. Modified-arrow reference expectations were corrected against actual pinned navigation.
+
+All **279 comparisons** pass on macOS and Linux/arm64, Playwright 1.60.0 Noble, two workers,
+original timeouts and zero retries. Reports: `dist/parity-testing/autocomplete/g2-final/` and
+`dist/autocomplete-g2-linux/results/`. **269 units** pass across Autocomplete, Combobox and core
+highlight. Library build, fixture Angular compilation, scoped lint, consumer generation and
+contributor checks pass.
+
+An additional standalone strict TypeScript check including the pinned React implementation reports
+68 diagnostics, all inside the prepared upstream source (none in the Autocomplete fixtures).
+That optional check is not a passing gate; it does not alter the pinned sources or browser results.

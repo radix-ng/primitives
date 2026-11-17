@@ -14,7 +14,7 @@ function makeItem(id: string, navigable = true): Item {
 
 function setup(
     initial: Item[],
-    opts: { loop?: WritableSignal<boolean> } = {}
+    opts: { loop?: WritableSignal<boolean>; allowEscape?: WritableSignal<boolean> } = {}
 ): {
     items: WritableSignal<readonly Item[]>;
     highlight: ListHighlight<Item>;
@@ -25,7 +25,8 @@ function setup(
             items,
             isNavigable: (item) => item.nav(),
             getId: (item) => item.id,
-            loop: opts.loop
+            loop: opts.loop,
+            allowEscape: opts.allowEscape
         })
     );
     return { items, highlight };
@@ -97,6 +98,33 @@ describe('useListHighlight', () => {
         highlight.first();
         highlight.previous();
         expect(highlight.highlightedItem()?.id).toBe('a');
+    });
+
+    it('can include an input-only position between loop boundaries', () => {
+        const { highlight } = setup([makeItem('a'), makeItem('b')], { allowEscape: signal(true) });
+        highlight.last();
+        highlight.next();
+        expect(highlight.highlightedItem()).toBeNull();
+        expect(highlight.activeId()).toBeUndefined();
+        highlight.next();
+        expect(highlight.activeId()).toBe('a');
+        highlight.previous();
+        expect(highlight.highlightedItem()).toBeNull();
+        highlight.previous();
+        expect(highlight.activeId()).toBe('b');
+    });
+
+    it('keeps boundary clamping when input escape is requested without looping', () => {
+        const { highlight } = setup([makeItem('a'), makeItem('b')], {
+            loop: signal(false),
+            allowEscape: signal(true)
+        });
+        highlight.last();
+        highlight.next();
+        expect(highlight.activeId()).toBe('b');
+        highlight.first();
+        highlight.previous();
+        expect(highlight.activeId()).toBe('a');
     });
 
     it('set() ignores a non-navigable item and accepts null', () => {

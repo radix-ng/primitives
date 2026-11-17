@@ -238,14 +238,20 @@ describe('Autocomplete', () => {
     });
 
     describe('keyboard navigation', () => {
-        it('opens and highlights the first item on ArrowDown', async () => {
+        it('opens without a highlight, then enters the list on the next ArrowDown', async () => {
             key('ArrowDown');
             await settle();
             expect(host.open()).toBe(true);
+            expect(inputEl().hasAttribute('aria-activedescendant')).toBe(false);
+            expect(visibleItems().some((item) => item.hasAttribute('data-highlighted'))).toBe(false);
+            key('ArrowDown');
+            await settle();
             expect(visibleItems()[0].hasAttribute('data-highlighted')).toBe(true);
         });
 
         it('selects the highlighted item on Enter', async () => {
+            host.open.set(true);
+            await settle();
             key('ArrowDown');
             await settle();
             key('ArrowDown');
@@ -257,6 +263,8 @@ describe('Autocomplete', () => {
         });
 
         it('exposes aria-activedescendant for the highlighted item', async () => {
+            host.open.set(true);
+            await settle();
             key('ArrowDown');
             await settle();
             const active = inputEl().getAttribute('aria-activedescendant');

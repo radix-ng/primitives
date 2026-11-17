@@ -56,7 +56,7 @@ pnpm test-parity context-menu    # native context gestures, point anchor and foc
 pnpm test-parity menubar         # native opening, roving and sibling ownership
 pnpm test-parity tabs            # initial selection, null/default values and notifications
 pnpm test-parity button          # native/custom hosts, keyboard phases, disabled and forms
-pnpm test-parity autocomplete    # initial/default string and open-state precedence
+pnpm test-parity autocomplete    # initial/default state and native list/grid navigation
 pnpm test-parity:select          # convenience alias
 pnpm test-parity select --project=webkit # one engine
 pnpm parity:build select         # type-check/build one suite without running browsers
