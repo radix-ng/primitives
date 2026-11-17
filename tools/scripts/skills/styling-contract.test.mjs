@@ -107,7 +107,7 @@ test('Accordion parts keep their distinct hooks, and Stepper retains its documen
     assert.ok(trigger.includes('data-panel-open'));
     assert.ok(!trigger.includes('data-open'));
     assert.ok(panel.includes('data-open'));
-    assert.ok(!panel.includes('data-closed'));
+    assert.ok(panel.includes('data-closed'));
     assert.equal(
         parseDataAttributes(doc('stepper')).find(({ attribute }) => attribute === 'data-state')?.values,
         '"active" / "inactive" / "completed".'
