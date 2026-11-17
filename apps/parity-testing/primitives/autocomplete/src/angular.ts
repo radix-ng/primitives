@@ -16,6 +16,7 @@ import type { RdxComboboxOpenChange } from '@radix-ng/primitives/combobox';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { classes, config, installProbe } from './contract';
 import { AngularNavigation } from './navigation.angular';
+import { AngularValueState } from './value.angular';
 
 @Component({
     selector: 'parity-autocomplete-parts',
@@ -169,4 +170,10 @@ class AngularAutocomplete {
         this.trace.change('open', open, reason, d.isCanceled(), d.event, d.trigger);
     }
 }
-void bootstrapApplication(config().settings.navigation ? AngularNavigation : AngularAutocomplete);
+void bootstrapApplication(
+    config().settings.valueState
+        ? AngularValueState
+        : config().settings.navigation
+          ? AngularNavigation
+          : AngularAutocomplete
+);

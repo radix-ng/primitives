@@ -157,4 +157,65 @@ export class AutocompleteDriver {
         );
         expect(this.errors).toEqual([]);
     }
+    async valueCheckpoint(name: string, expected: Record<string, unknown> = {}) {
+        const read = () =>
+            this.page.evaluate(() => {
+                const input = document.querySelector<HTMLInputElement>('[data-testid="input"]')!;
+                const id = input.getAttribute('aria-activedescendant');
+                const active = id ? document.getElementById(id) : null;
+                const popup = document.querySelector<HTMLElement>('[data-testid="popup"]');
+                const items = [...document.querySelectorAll<HTMLElement>('[data-testid^="value-item-"]')].filter(
+                    (item) => !item.hidden
+                );
+                const requests = window.autocompleteParity.requests;
+                return {
+                    value: input.value,
+                    committed: document.querySelector('[data-testid="committed"]')!.textContent,
+                    display: document.querySelector('[data-testid="display"]')!.textContent,
+                    open: input.getAttribute('aria-expanded') === 'true',
+                    popupVisible: !!popup && !popup.hidden && popup.getClientRects().length > 0,
+                    items: items.map((item) => item.textContent),
+                    active: id ? (active?.getAttribute('data-testid') ?? 'dangling') : null,
+                    highlighted: items
+                        .filter((item) => item.hasAttribute('data-highlighted'))
+                        .map((item) => item.dataset.testid),
+                    selection: [input.selectionStart, input.selectionEnd],
+                    focus: document.activeElement?.getAttribute('data-testid') ?? null,
+                    formData: new FormData(document.querySelector('form')!).getAll('query'),
+                    valueRequests: requests.filter((request) => request.kind === 'value').length,
+                    openRequests: requests.filter((request) => request.kind === 'open').length,
+                    keys: window.autocompleteParity.keys
+                };
+            });
+        let previous = '';
+        let stable = 0;
+        let state = await read();
+        for (let frame = 0; frame < 60; frame++) {
+            await this.page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => resolve())));
+            state = await read();
+            const snapshot = JSON.stringify(state);
+            stable = snapshot === previous ? stable + 1 : 0;
+            if (stable >= 3) break;
+            previous = snapshot;
+            if (frame === 59) throw new Error('Autocomplete value state did not settle');
+        }
+        this.checkpoints.push({ name, state });
+        this.measurements.push(
+            await this.page.evaluate(
+                (name) => ({
+                    name,
+                    dom: document.body.innerHTML,
+                    requests: window.autocompleteParity.requests,
+                    details: window.autocompleteParity.details,
+                    highlights: window.autocompleteParity.highlights,
+                    input: document.querySelector('[data-testid="input"]')!.outerHTML
+                }),
+                name
+            )
+        );
+        expect(state.active).not.toBe('dangling');
+        expect(state.highlighted).toEqual(state.active === null ? [] : [state.active]);
+        expect(state).toEqual(expect.objectContaining({ focus: 'input', popupVisible: state.open, ...expected }));
+        expect(this.errors).toEqual([]);
+    }
 }

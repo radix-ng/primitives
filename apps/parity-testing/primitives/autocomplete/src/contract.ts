@@ -1,7 +1,9 @@
 import { navigationCases, type NavigationSettings } from './navigation';
 import { readOnlyCases } from './read-only';
+import { valueCases, type ValueSettings } from './value';
 export interface Settings {
     navigation?: NavigationSettings;
+    valueState?: ValueSettings;
     value?: string;
     open?: boolean;
     defaultValue?: string;
@@ -23,8 +25,17 @@ export const initialCases = {
     'initial-external-updates': { value: '', open: false, defaultValue: 'Seed', defaultOpen: true },
     'initial-remount-defaults': { defaultValue: 'Seed' }
 } satisfies Record<string, Settings>;
-export type CaseName = keyof typeof initialCases | keyof typeof navigationCases | keyof typeof readOnlyCases;
-export const cases: Record<CaseName, Settings> = { ...initialCases, ...navigationCases, ...readOnlyCases };
+export type CaseName =
+    | keyof typeof initialCases
+    | keyof typeof navigationCases
+    | keyof typeof readOnlyCases
+    | keyof typeof valueCases;
+export const cases: Record<CaseName, Settings> = {
+    ...initialCases,
+    ...navigationCases,
+    ...readOnlyCases,
+    ...valueCases
+};
 export function config(): { name: CaseName; settings: Settings } {
     const name = new URLSearchParams(location.search).get('case') ?? 'initial-omitted';
     if (!Object.hasOwn(cases, name)) throw new Error(`Unknown Autocomplete case: ${name}`);

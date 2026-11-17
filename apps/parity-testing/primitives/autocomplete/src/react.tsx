@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { config, installProbe, classes as s } from './contract';
 import { ReactNavigation } from './navigation.react';
+import { ReactValueState } from './value.react';
 const { settings: p } = config();
 const trace = installProbe();
 function ReactAutocomplete() {
@@ -83,5 +84,11 @@ function ReactAutocomplete() {
     );
 }
 createRoot(document.getElementById('root')!).render(
-    p.navigation ? <ReactNavigation trace={trace} /> : <ReactAutocomplete />
+    p.valueState ? (
+        <ReactValueState trace={trace} />
+    ) : p.navigation ? (
+        <ReactNavigation trace={trace} />
+    ) : (
+        <ReactAutocomplete />
+    )
 );
