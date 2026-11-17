@@ -9,6 +9,8 @@ Contributor guidance for maintaining Radix NG. Start with [AGENTS.md](../../AGEN
 | Naming, signals, context and diagnostics          | [Patterns](patterns.md)                                                                             |
 | Projection, portals, positioners and dismissal    | [Composition](composition.md)                                                                       |
 | Focus, pointer, lifecycle and browser constraints | [Mechanism index](mechanisms.md)                                                                    |
+| Parity matrices and verification backlog          | [All entry points](parity-matrices.md)                                                              |
+| State ownership and initial defaults              | [Parity work contract](state-ownership.md)                                                          |
 | Per-family implementation notes                   | [Primitive families](primitive-families.md)                                                         |
 | Core helper entry points                          | [Core utilities](core-utilities.md)                                                                 |
 | Forms and adapters                                | [Forms](forms.md), [Signal Forms readiness](signal-forms-readiness.md)                              |
