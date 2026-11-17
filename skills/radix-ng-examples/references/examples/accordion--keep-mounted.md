@@ -15,6 +15,7 @@ import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
     RdxAccordionPanelDirective,
+    RdxAccordionPanelPresenceDirective,
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
@@ -33,7 +34,8 @@ import { cn, demoAccordion, demoInput } from '../../storybook/styles';
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionPanelDirective
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
     ],
     template: `
         <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="['item-1']" keepMounted rdxAccordionRoot>
@@ -41,7 +43,7 @@ import { cn, demoAccordion, demoInput } from '../../storybook/styles';
                 <h3 [class]="a.header" rdxAccordionHeader>
                     <button [class]="a.trigger" type="button" rdxAccordionTrigger>Shipping address</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                     <div [class]="a.contentText">
                         <input [(ngModel)]="address" [class]="input" placeholder="Type, then collapse & reopen" />
                     </div>
@@ -52,7 +54,7 @@ import { cn, demoAccordion, demoInput } from '../../storybook/styles';
                 <h3 [class]="a.header" rdxAccordionHeader>
                     <button [class]="a.trigger" type="button" rdxAccordionTrigger>Billing address</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                     <div [class]="a.contentText">Same as shipping.</div>
                 </div>
             </div>

@@ -1,4 +1,5 @@
 export interface Settings {
+    lifetime?: 'unmount' | 'retain' | 'search' | 'interrupt' | 'remove' | 'override' | 'reorder' | 'conditional';
     multiple?: boolean;
     controlled?: boolean;
     initial?: string[];
@@ -14,6 +15,15 @@ export interface Settings {
 }
 export const cases: Record<string, Settings> = {
     single: {},
+    'lifetime-unmount': { lifetime: 'unmount' },
+    'lifetime-retain': { lifetime: 'retain' },
+    'lifetime-search': { lifetime: 'search' },
+    'lifetime-interrupt': { lifetime: 'interrupt' },
+    'lifetime-remove': { lifetime: 'remove' },
+    'lifetime-override': { lifetime: 'override' },
+    'lifetime-reorder': { lifetime: 'reorder' },
+    'lifetime-conditional': { lifetime: 'conditional' },
+
     'prevent-click': { preventClick: true },
     'span-prevent-click': { span: true, preventClick: true },
     multiple: { multiple: true },
@@ -53,6 +63,7 @@ export interface Probe {
     trace: { part: string; next: unknown; reason: string; type: string; target: string | null; shared: boolean }[];
     nativeEvents: { type: string; target: string | null }[];
     submits: number;
+    children: { created: number; destroyed: number };
 }
 declare global {
     const __PARITY_REFERENCE__: Probe['reference'];
@@ -61,7 +72,13 @@ declare global {
     }
 }
 export function installProbe(config: Settings) {
-    const probe: Probe = { reference: __PARITY_REFERENCE__, trace: [], nativeEvents: [], submits: 0 };
+    const probe: Probe = {
+        reference: __PARITY_REFERENCE__,
+        trace: [],
+        nativeEvents: [],
+        submits: 0,
+        children: { created: 0, destroyed: 0 }
+    };
     window.accordionParity = probe;
     let lastItemDetails: Details | undefined;
     for (const type of ['click', 'beforematch', 'keydown', 'keyup']) {

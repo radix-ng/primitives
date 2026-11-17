@@ -27,7 +27,8 @@ import {
   RdxAccordionItemDirective,
   RdxAccordionHeaderDirective,
   RdxAccordionTriggerDirective,
-  RdxAccordionPanelDirective
+  RdxAccordionPanelDirective,
+  RdxAccordionPanelPresenceDirective
 } from '@radix-ng/primitives/accordion';
 ```
 
@@ -39,7 +40,7 @@ import {
     <div rdxAccordionHeader>
       <button rdxAccordionTrigger></button>
     </div>
-    <div rdxAccordionPanel></div>
+    <div *rdxAccordionPanelPresence rdxAccordionPanel></div>
   </div>
 </div>
 ```
@@ -52,6 +53,7 @@ import {
 - [Horizontal](../examples/accordion--horizontal.md)
 - [Events](../examples/accordion--events.md)
 - [Controlled](../examples/accordion--controlled.md)
+- [Panel lifetime](../examples/accordion--panel-lifetime.md)
 - [Keep mounted](../examples/accordion--keep-mounted.md)
 
 ## API & styling contract

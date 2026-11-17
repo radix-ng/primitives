@@ -90,7 +90,7 @@ with a matching `[rdx<Name><Role>]` selector. Real examples:
     <h3 rdxAccordionHeader>
       <button rdxAccordionTrigger>Trigger</button>
     </h3>
-    <div rdxAccordionPanel>Panel content</div>
+    <div *rdxAccordionPanelPresence rdxAccordionPanel>Panel content</div>
   </div>
 </div>
 ```

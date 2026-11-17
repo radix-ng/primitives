@@ -2,19 +2,25 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RdxAccordionItemDirective } from '../src/accordion-item.directive';
+import { RdxAccordionPanelPresenceDirective } from '../src/accordion-panel-presence.directive';
 import { RdxAccordionPanelDirective } from '../src/accordion-panel.directive';
 import { RdxAccordionRootDirective } from '../src/accordion-root.directive';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [RdxAccordionRootDirective, RdxAccordionItemDirective, RdxAccordionPanelDirective],
+    imports: [
+        RdxAccordionRootDirective,
+        RdxAccordionItemDirective,
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
+    ],
     template: `
         <div [defaultValue]="['one']" rdxAccordionRoot>
             <div value="one" rdxAccordionItem>
-                <div rdxAccordionPanel>Content one</div>
+                <div *rdxAccordionPanelPresence rdxAccordionPanel>Content one</div>
             </div>
             <div value="two" rdxAccordionItem>
-                <div rdxAccordionPanel>Content two</div>
+                <div *rdxAccordionPanelPresence rdxAccordionPanel>Content two</div>
             </div>
         </div>
     `

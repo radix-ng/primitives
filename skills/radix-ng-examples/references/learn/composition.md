@@ -36,7 +36,7 @@ free. The accordion only writes the part that's genuinely new. Here's the result
         <h3 [class]="a.header" rdxAccordionHeader>
             <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
         </h3>
-        <div [class]="a.content" rdxAccordionPanel>
+        <div [class]="a.content" *rdxAccordionPanelPresence rdxAccordionPanel>
             <div [class]="a.contentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
         </div>
     </div>
@@ -44,7 +44,7 @@ free. The accordion only writes the part that's genuinely new. Here's the result
         <h3 [class]="a.header" rdxAccordionHeader>
             <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
         </h3>
-        <div [class]="a.content" rdxAccordionPanel>
+        <div [class]="a.content" *rdxAccordionPanelPresence rdxAccordionPanel>
             <div [class]="a.contentText">
                 Yes. It's unstyled by default, giving you freedom over the look and feel.
             </div>
@@ -54,7 +54,7 @@ free. The accordion only writes the part that's genuinely new. Here's the result
         <h3 [class]="a.header" rdxAccordionHeader>
             <button [class]="a.trigger" type="button" rdxAccordionTrigger>Can it be animated?</button>
         </h3>
-        <div [class]="a.content" rdxAccordionPanel>
+        <div [class]="a.content" *rdxAccordionPanelPresence rdxAccordionPanel>
             <div [class]="a.contentText">Yes! You can animate the Accordion with CSS or JavaScript.</div>
         </div>
     </div>

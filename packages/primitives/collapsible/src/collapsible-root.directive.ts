@@ -19,6 +19,7 @@ import {
     createContext,
     injectId,
     RdxCancelableChangeEventDetails,
+    RdxRenderLifecycle,
     RdxTransitionStatus,
     useRenderLifecycle
 } from '@radix-ng/primitives/core';
@@ -41,6 +42,8 @@ export interface CollapsibleRootContext {
     transitionStatus: Signal<RdxTransitionStatus>;
     /** `true` while the panel should stay rendered: open, or running its exit transition. */
     mounted: Signal<boolean>;
+    /** @internal Shared with a structural Panel owner; it must not start another motion observer. */
+    renderLifecycle: RdxRenderLifecycle;
     /**
      * Composition fallbacks supplied by Accordion. Panel inputs override these reactively without
      * writing into the fallback, so removing an override restores inheritance.
@@ -77,6 +80,7 @@ const rootContext = (): CollapsibleRootContext => {
         disabled: instance.disabled,
         transitionStatus: instance.transitionStatus,
         mounted: instance.mounted,
+        renderLifecycle: instance.renderLifecycle,
         keepMounted: instance.keepMountedContext,
         hiddenUntilFound: instance.hiddenUntilFoundContext,
         setOpen: (open, reason, event, trigger) => instance.setOpen(open, reason, event, trigger),
@@ -112,6 +116,9 @@ export class RdxCollapsibleRootDirective {
     private readonly transition = useRenderLifecycle((open) => this.onOpenChangeComplete.emit(open), {
         open: () => this.open()
     });
+
+    /** @internal The structural Panel view consumes the same lifetime as its native host. */
+    readonly renderLifecycle = this.transition;
 
     private readonly generatedPanelId = injectId('rdx-collapsible-panel-');
     private readonly panelIdState = signal<string | null | undefined>(undefined);

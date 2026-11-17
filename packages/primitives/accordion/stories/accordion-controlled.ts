@@ -3,6 +3,7 @@ import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
     RdxAccordionPanelDirective,
+    RdxAccordionPanelPresenceDirective,
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective,
     RdxAccordionValueChangeEvent
@@ -16,7 +17,8 @@ import { demoAccordion } from '../../storybook/styles';
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionPanelDirective
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
     ],
     template: `
         <div class="flex w-[300px] flex-col gap-3">
@@ -35,7 +37,7 @@ import { demoAccordion } from '../../storybook/styles';
                         <h3 [class]="a.header" rdxAccordionHeader>
                             <button [class]="a.trigger" rdxAccordionTrigger>{{ item }}</button>
                         </h3>
-                        <div [class]="a.content" rdxAccordionPanel>
+                        <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                             <div [class]="a.contentText">Content for {{ item }}.</div>
                         </div>
                     </div>

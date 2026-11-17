@@ -86,11 +86,14 @@ test('hydration fixtures and shared lifetimes select real SSR browser checks', (
     assert.equal(plan([], { full: true }).hydration, true);
 });
 
-test('Presence and Tabs motion regressions participate in affected and full browser runs', () => {
-    const motionSpecs = ['presence-waapi', 'tabs'].map(spec);
+test('Presence, Tabs and Accordion motion regressions participate in affected and full browser runs', () => {
+    const motionSpecs = ['presence-waapi', 'tabs', 'accordion'].map(spec);
     for (const file of motionSpecs) assert.equal(isFloatingSpec(file), true);
     assert.equal(specFamily(spec('presence-waapi')), 'presence');
-    const families = new Map([['tabs', new Set(['presence'])]]);
+    const families = new Map([
+        ['tabs', new Set(['presence'])],
+        ['accordion', new Set(['presence', 'collapsible'])]
+    ]);
     for (const changed of [
         ['packages/primitives/presence/src/use-presence.ts'],
         ['packages/primitives/core/src/composables/use-render-lifecycle.ts']
@@ -105,6 +108,14 @@ test('Presence and Tabs motion regressions participate in affected and full brow
         suites: []
     });
     assert.deepEqual(tabs.floating, [spec('tabs')]);
+    const accordion = selectChecks({
+        changed: ['packages/primitives/collapsible/src/collapsible-panel.directive.ts'],
+        families,
+        suites: ['accordion', 'tabs'],
+        specs: motionSpecs
+    });
+    assert.deepEqual(accordion.suites, ['accordion']);
+    assert.deepEqual(accordion.floating, [spec('accordion')]);
 });
 test('Agents reference families select their browser checks without broadening to unrelated suites', () => {
     for (const family of ['field', 'select', 'menu', 'tabs']) {

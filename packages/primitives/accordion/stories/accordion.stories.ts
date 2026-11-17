@@ -3,6 +3,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { RdxAccordionHeaderDirective } from '../src/accordion-header.directive';
 import { RdxAccordionItemDirective } from '../src/accordion-item.directive';
+import { RdxAccordionPanelPresenceDirective } from '../src/accordion-panel-presence.directive';
 import { RdxAccordionPanelDirective } from '../src/accordion-panel.directive';
 import { RdxAccordionRootDirective } from '../src/accordion-root.directive';
 import { RdxAccordionTriggerDirective } from '../src/accordion-trigger.directive';
@@ -14,6 +15,7 @@ import { AccordionEventsExample } from './accordion-events';
 import { AccordionHorizontalExample } from './accordion-horizontal';
 import { AccordionKeepMountedExample } from './accordion-keep-mounted';
 import { AccordionMultipleExample } from './accordion-multiple';
+import { AccordionPanelLifetimeExample } from './accordion-panel-lifetime';
 
 import collapsibleArraySource from './accordion-collapsible-array?raw';
 import collapsibleSource from './accordion-collapsible?raw';
@@ -23,6 +25,7 @@ import eventsSource from './accordion-events?raw';
 import horizontalSource from './accordion-horizontal?raw';
 import keepMountedSource from './accordion-keep-mounted?raw';
 import multipleSource from './accordion-multiple?raw';
+import panelLifetimeSource from './accordion-panel-lifetime?raw';
 
 const source = (code: string) => ({
     docs: { source: { code: code.trim(), language: 'typescript', type: 'code' } }
@@ -40,8 +43,10 @@ export default {
                 RdxAccordionHeaderDirective,
                 RdxAccordionTriggerDirective,
                 RdxAccordionPanelDirective,
+                RdxAccordionPanelPresenceDirective,
                 AccordionDisabledExample,
                 AccordionMultipleExample,
+                AccordionPanelLifetimeExample,
                 AccordionCollapsibleExample,
                 AccordionCollapsibleArrayExample,
                 AccordionHorizontalExample,
@@ -69,7 +74,7 @@ export const Default: Story = {
                     <h3 [class]="a.header" rdxAccordionHeader>
                         <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
                     </h3>
-                    <div [class]="a.content" rdxAccordionPanel>
+                    <div [class]="a.content" *rdxAccordionPanelPresence rdxAccordionPanel>
                         <div [class]="a.contentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
                     </div>
                 </div>
@@ -77,7 +82,7 @@ export const Default: Story = {
                     <h3 [class]="a.header" rdxAccordionHeader>
                         <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
                     </h3>
-                    <div [class]="a.content" rdxAccordionPanel>
+                    <div [class]="a.content" *rdxAccordionPanelPresence rdxAccordionPanel>
                         <div [class]="a.contentText">
                             Yes. It's unstyled by default, giving you freedom over the look and feel.
                         </div>
@@ -87,7 +92,7 @@ export const Default: Story = {
                     <h3 [class]="a.header" rdxAccordionHeader>
                         <button [class]="a.trigger" type="button" rdxAccordionTrigger>Can it be animated?</button>
                     </h3>
-                    <div [class]="a.content" rdxAccordionPanel>
+                    <div [class]="a.content" *rdxAccordionPanelPresence rdxAccordionPanel>
                         <div [class]="a.contentText">Yes! You can animate the Accordion with CSS or JavaScript.</div>
                     </div>
                 </div>
@@ -164,6 +169,15 @@ export const Controlled: Story = {
     render: () => ({
         template: html`
             <accordion-controlled-example />
+        `
+    })
+};
+
+export const PanelLifetime: Story = {
+    parameters: source(panelLifetimeSource),
+    render: () => ({
+        template: html`
+            <accordion-panel-lifetime-example />
         `
     })
 };

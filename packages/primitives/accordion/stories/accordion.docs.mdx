@@ -4,6 +4,7 @@ import { RdxAccordionRootDirective } from '../src/accordion-root.directive';
 import { RdxAccordionItemDirective } from '../src/accordion-item.directive';
 import { RdxAccordionTriggerDirective } from '../src/accordion-trigger.directive';
 import { RdxAccordionPanelDirective } from '../src/accordion-panel.directive';
+import { RdxAccordionPanelPresenceDirective } from '../src/accordion-panel-presence.directive';
 
 <Meta title="Primitives/Accordion" of={AccordionStories} />
 
@@ -34,7 +35,8 @@ import {
   RdxAccordionItemDirective,
   RdxAccordionHeaderDirective,
   RdxAccordionTriggerDirective,
-  RdxAccordionPanelDirective
+  RdxAccordionPanelDirective,
+  RdxAccordionPanelPresenceDirective
 } from '@radix-ng/primitives/accordion';
 ```
 
@@ -46,7 +48,7 @@ import {
     <div rdxAccordionHeader>
       <button rdxAccordionTrigger></button>
     </div>
-    <div rdxAccordionPanel></div>
+    <div *rdxAccordionPanelPresence rdxAccordionPanel></div>
   </div>
 </div>
 ```
@@ -92,6 +94,14 @@ Item requests.
 Use `[(value)]` to accept array requests. Cancel a request in `onValueChange` to keep the current selection.
 
 <Canvas of={AccordionStories.Controlled} />
+
+### Panel lifetime
+
+Apply `*rdxAccordionPanelPresence` to each Panel host. Closed Panels create no Angular children
+by default. Closing destroys the complete view after exit motion; reopening creates fresh children
+and native form state. Retained Panels preserve that state.
+
+<Canvas of={AccordionStories.PanelLifetime} />
 
 ### Keep mounted
 
@@ -183,14 +193,9 @@ Trigger identity for the Panel label, and updates or unregisters with the part.
 
 `RdxAccordionPanelDirective` — the collapsible content. Apply to a container element (typically a `<div>`).
 
-`id`, `keepMounted`, and `hiddenUntilFound` are exposed from Collapsible Panel. Panel boolean
-policies override Root, including explicit `false`; `undefined` restores reactive inheritance.
-Findable panels remain mounted even when `keepMounted` is false. `beforematch` requests expansion
-through Item and Root; canceled or unaccepted controlled requests restore the hidden state.
-
-Closed default panels currently detach their native host while retaining Angular children.
-Use `keepMounted` to retain the closed host; complete child-view disposal is tracked in
-[the Accordion parity matrix](https://github.com/radix-ng/primitives/blob/main/packages/primitives/accordion/PARITY.md).
+Use `*rdxAccordionPanelPresence` on the same host to own its complete Angular view. `id` is
+exposed from Collapsible Panel and registers the authored native identity for open-only controls.
+A native Panel without the structural owner reports an invalid-markup error.
 
 <ArgTypes of={RdxAccordionPanelDirective} />
 
@@ -213,6 +218,28 @@ Use `keepMounted` to retain the closed host; complete child-view disposal is tra
 | ---------------------------- | --------------------------------------------------- |
 | `--accordion-panel-height`   | The panel's measured height, for height animations. |
 | `--accordion-panel-width`    | The panel's measured width, for width animations.   |
+
+### Panel Presence
+
+`RdxAccordionPanelPresenceDirective` — owns the complete Panel view. Apply structurally to the Panel
+host with `*rdxAccordionPanelPresence`, or explicitly to its surrounding `<ng-template>`.
+It removes closed hosts and children after exit motion and cancels pending removal on reopen.
+
+Its optional expression is an options object with `keepMounted` and `hiddenUntilFound`. Undefined
+properties inherit Root policy; explicit `false` overrides it. Findable content remains mounted even
+when `keepMounted` is false. These options belong to the template so policy is available before any
+child view is constructed.
+
+```html
+<div *rdxAccordionPanelPresence="{ keepMounted: true }" rdxAccordionPanel>Retained state</div>
+<div *rdxAccordionPanelPresence="{ hiddenUntilFound: true }" rdxAccordionPanel>Findable state</div>
+```
+
+`beforematch` requests expansion through Item and Root. Canceled or unaccepted controlled requests
+restore the hidden state. Complete search-motion and hydration comparisons remain tracked in the
+[Accordion matrix](https://github.com/radix-ng/primitives/blob/main/packages/primitives/accordion/PARITY.md).
+
+<ArgTypes of={RdxAccordionPanelPresenceDirective} />
 
 ## Accessibility
 

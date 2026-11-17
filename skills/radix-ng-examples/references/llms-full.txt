@@ -558,7 +558,7 @@ The runtime is separate from the consumer skills.
         <h3 [class]="a.header" rdxAccordionHeader>
             <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
         </h3>
-        <div [class]="a.content" rdxAccordionPanel>
+        <div [class]="a.content" *rdxAccordionPanelPresence rdxAccordionPanel>
             <div [class]="a.contentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
         </div>
     </div>
@@ -566,7 +566,7 @@ The runtime is separate from the consumer skills.
         <h3 [class]="a.header" rdxAccordionHeader>
             <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
         </h3>
-        <div [class]="a.content" rdxAccordionPanel>
+        <div [class]="a.content" *rdxAccordionPanelPresence rdxAccordionPanel>
             <div [class]="a.contentText">
                 Yes. It's unstyled by default, giving you freedom over the look and feel.
             </div>
@@ -576,7 +576,7 @@ The runtime is separate from the consumer skills.
         <h3 [class]="a.header" rdxAccordionHeader>
             <button [class]="a.trigger" type="button" rdxAccordionTrigger>Can it be animated?</button>
         </h3>
-        <div [class]="a.content" rdxAccordionPanel>
+        <div [class]="a.content" *rdxAccordionPanelPresence rdxAccordionPanel>
             <div [class]="a.contentText">Yes! You can animate the Accordion with CSS or JavaScript.</div>
         </div>
     </div>
@@ -604,7 +604,8 @@ import {
   RdxAccordionItemDirective,
   RdxAccordionHeaderDirective,
   RdxAccordionTriggerDirective,
-  RdxAccordionPanelDirective
+  RdxAccordionPanelDirective,
+  RdxAccordionPanelPresenceDirective
 } from '@radix-ng/primitives/accordion';
 ```
 
@@ -616,7 +617,7 @@ import {
     <div rdxAccordionHeader>
       <button rdxAccordionTrigger></button>
     </div>
-    <div rdxAccordionPanel></div>
+    <div *rdxAccordionPanelPresence rdxAccordionPanel></div>
   </div>
 </div>
 ```
@@ -633,6 +634,7 @@ import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
     RdxAccordionPanelDirective,
+    RdxAccordionPanelPresenceDirective,
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
@@ -646,7 +648,8 @@ import { cn, demoAccordion } from '../../storybook/styles';
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionPanelDirective
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
     ],
     template: `
         <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="['item-1']" rdxAccordionRoot>
@@ -654,7 +657,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
                 <h3 [class]="a.header" rdxAccordionHeader>
                     <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                     <div [class]="a.contentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
                 </div>
             </div>
@@ -663,7 +666,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
                 <h3 [class]="a.header" rdxAccordionHeader>
                     <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                     <div [class]="a.contentText">
                         Yes. It's unstyled by default, giving you freedom over the look and feel.
                     </div>
@@ -674,7 +677,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
                 <h3 [class]="a.header" rdxAccordionHeader>
                     <button [class]="a.trigger" type="button" rdxAccordionTrigger>Can it be animated?</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                     <div [class]="a.contentText">Yes! You can animate the Accordion with CSS or JavaScript.</div>
                 </div>
             </div>
@@ -697,6 +700,7 @@ import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
     RdxAccordionPanelDirective,
+    RdxAccordionPanelPresenceDirective,
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
@@ -710,7 +714,8 @@ import { cn, demoAccordion } from '../../storybook/styles';
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionPanelDirective
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
     ],
     template: `
         <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="['item-2', 'item-3']" multiple rdxAccordionRoot>
@@ -718,7 +723,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
                 <h3 [class]="a.header" rdxAccordionHeader>
                     <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                     <div [class]="a.contentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
                 </div>
             </div>
@@ -727,7 +732,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
                 <h3 [class]="a.header" rdxAccordionHeader>
                     <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                     <div [class]="a.contentText">
                         Yes. It's unstyled by default, giving you freedom over the look and feel.
                     </div>
@@ -738,7 +743,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
                 <h3 [class]="a.header" rdxAccordionHeader>
                     <button [class]="a.trigger" type="button" rdxAccordionTrigger>Can it be animated?</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                     <div [class]="a.contentText">
                         Yes. It's unstyled by default, giving you freedom over the look and feel.
                     </div>
@@ -764,6 +769,7 @@ import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
     RdxAccordionPanelDirective,
+    RdxAccordionPanelPresenceDirective,
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
@@ -777,7 +783,8 @@ import { cn, demoAccordion } from '../../storybook/styles';
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionPanelDirective
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
     ],
     template: `
         <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="['item-1']" rdxAccordionRoot>
@@ -785,7 +792,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
                 <h3 [class]="a.header" rdxAccordionHeader>
                     <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                     <div [class]="a.contentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
                 </div>
             </div>
@@ -794,7 +801,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
                 <h3 [class]="a.header" rdxAccordionHeader>
                     <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                     <div [class]="a.contentText">
                         Yes. It's unstyled by default, giving you freedom over the look and feel.
                     </div>
@@ -805,7 +812,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
                 <h3 [class]="a.header" rdxAccordionHeader>
                     <button [class]="a.trigger" type="button" rdxAccordionTrigger>Can it be animated?</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                     <div [class]="a.contentText">Yes! You can animate the Accordion with CSS or JavaScript.</div>
                 </div>
             </div>
@@ -828,6 +835,7 @@ import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
     RdxAccordionPanelDirective,
+    RdxAccordionPanelPresenceDirective,
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
@@ -841,7 +849,8 @@ import { cn, demoAccordion } from '../../storybook/styles';
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionPanelDirective
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
     ],
     template: `
         <div
@@ -856,7 +865,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
                         Is it accessible?
                     </button>
                 </div>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                     <div [class]="a.contentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
                 </div>
             </div>
@@ -867,7 +876,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
                         Is it unstyled?
                     </button>
                 </div>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                     <div [class]="a.contentText">
                         Yes. It's unstyled by default, giving you freedom over the look and feel.
                     </div>
@@ -880,7 +889,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
                         Can it be animated?
                     </button>
                 </div>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                     <div [class]="a.contentText">Yes! You can animate the Accordion with CSS or JavaScript.</div>
                 </div>
             </div>
@@ -906,6 +915,7 @@ import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
     RdxAccordionPanelDirective,
+    RdxAccordionPanelPresenceDirective,
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
@@ -919,7 +929,8 @@ import { cn, demoAccordion } from '../../storybook/styles';
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionPanelDirective
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
     ],
     template: `
         <div class="flex w-[300px] flex-col gap-3">
@@ -928,7 +939,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
                     <h3 [class]="a.header" rdxAccordionHeader>
                         <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
                     </h3>
-                    <div [class]="a.content" rdxAccordionPanel>
+                    <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                         <div [class]="a.contentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
                     </div>
                 </div>
@@ -937,7 +948,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
                     <h3 [class]="a.header" rdxAccordionHeader>
                         <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
                     </h3>
-                    <div [class]="a.content" rdxAccordionPanel>
+                    <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                         <div [class]="a.contentText">Yes. It's unstyled by default.</div>
                     </div>
                 </div>
@@ -969,6 +980,7 @@ import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
     RdxAccordionPanelDirective,
+    RdxAccordionPanelPresenceDirective,
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective,
     RdxAccordionValueChangeEvent
@@ -982,7 +994,8 @@ import { demoAccordion } from '../../storybook/styles';
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionPanelDirective
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
     ],
     template: `
         <div class="flex w-[300px] flex-col gap-3">
@@ -1001,7 +1014,7 @@ import { demoAccordion } from '../../storybook/styles';
                         <h3 [class]="a.header" rdxAccordionHeader>
                             <button [class]="a.trigger" rdxAccordionTrigger>{{ item }}</button>
                         </h3>
-                        <div [class]="a.content" rdxAccordionPanel>
+                        <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                             <div [class]="a.contentText">Content for {{ item }}.</div>
                         </div>
                     </div>
@@ -1027,6 +1040,77 @@ export class AccordionControlledExample {
 }
 ```
 
+### Panel lifetime
+
+Apply `*rdxAccordionPanelPresence` to each Panel host. Closed Panels create no Angular children
+by default. Closing destroys the complete view after exit motion; reopening creates fresh children
+and native form state. Retained Panels preserve that state.
+
+```typescript
+import { Component } from '@angular/core';
+import {
+    RdxAccordionHeaderDirective,
+    RdxAccordionItemDirective,
+    RdxAccordionPanelDirective,
+    RdxAccordionPanelPresenceDirective,
+    RdxAccordionRootDirective,
+    RdxAccordionTriggerDirective
+} from '@radix-ng/primitives/accordion';
+import { demoAccordion } from '../../storybook/styles';
+
+@Component({
+    selector: 'accordion-panel-lifetime-example',
+    imports: [
+        RdxAccordionRootDirective,
+        RdxAccordionItemDirective,
+        RdxAccordionHeaderDirective,
+        RdxAccordionTriggerDirective,
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
+    ],
+    template: `
+        <div class="flex w-[320px] flex-col gap-3">
+            <p class="text-muted-foreground text-sm">
+                Edit each field, then close and reopen its panel to compare state retention.
+            </p>
+            <div [class]="a.root" rdxAccordionRoot multiple>
+                @for (retained of [false, true]; track retained) {
+                    <div [value]="retained" [class]="a.item" rdxAccordionItem>
+                        <h3 [class]="a.header" rdxAccordionHeader>
+                            <button [class]="a.trigger" rdxAccordionTrigger>
+                                {{ retained ? 'Keep state' : 'Reset state' }}
+                            </button>
+                        </h3>
+                        <div
+                            *rdxAccordionPanelPresence="{ keepMounted: retained }"
+                            [class]="a.content"
+                            rdxAccordionPanel
+                        >
+                            <div [class]="a.contentText">
+                                <label
+                                    class="flex flex-col gap-2"
+                                    [for]="retained ? 'accordion-retained-input' : 'accordion-fresh-input'"
+                                >
+                                    {{ retained ? 'Retained field' : 'Fresh field' }}
+                                    <input
+                                        class="border-border bg-background text-foreground rounded border px-3 py-2"
+                                        [id]="retained ? 'accordion-retained-input' : 'accordion-fresh-input'"
+                                        value="initial"
+                                    />
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    `
+})
+export class AccordionPanelLifetimeExample {
+    protected readonly a = demoAccordion;
+}
+```
+
 ### Keep mounted
 
 With `keepMounted`, collapsed panels keep their element in the DOM while hidden — useful to preserve
@@ -1040,6 +1124,7 @@ import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
     RdxAccordionPanelDirective,
+    RdxAccordionPanelPresenceDirective,
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
@@ -1058,7 +1143,8 @@ import { cn, demoAccordion, demoInput } from '../../storybook/styles';
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionPanelDirective
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
     ],
     template: `
         <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="['item-1']" keepMounted rdxAccordionRoot>
@@ -1066,7 +1152,7 @@ import { cn, demoAccordion, demoInput } from '../../storybook/styles';
                 <h3 [class]="a.header" rdxAccordionHeader>
                     <button [class]="a.trigger" type="button" rdxAccordionTrigger>Shipping address</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                     <div [class]="a.contentText">
                         <input [(ngModel)]="address" [class]="input" placeholder="Type, then collapse & reopen" />
                     </div>
@@ -1077,7 +1163,7 @@ import { cn, demoAccordion, demoInput } from '../../storybook/styles';
                 <h3 [class]="a.header" rdxAccordionHeader>
                     <button [class]="a.trigger" type="button" rdxAccordionTrigger>Billing address</button>
                 </h3>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                     <div [class]="a.contentText">Same as shipping.</div>
                 </div>
             </div>
@@ -1169,14 +1255,9 @@ Trigger identity for the Panel label, and updates or unregisters with the part.
 
 `RdxAccordionPanelDirective` — the collapsible content. Apply to a container element (typically a `<div>`).
 
-`id`, `keepMounted`, and `hiddenUntilFound` are exposed from Collapsible Panel. Panel boolean
-policies override Root, including explicit `false`; `undefined` restores reactive inheritance.
-Findable panels remain mounted even when `keepMounted` is false. `beforematch` requests expansion
-through Item and Root; canceled or unaccepted controlled requests restore the hidden state.
-
-Closed default panels currently detach their native host while retaining Angular children.
-Use `keepMounted` to retain the closed host; complete child-view disposal is tracked in
-[the Accordion parity matrix](https://github.com/radix-ng/primitives/blob/main/packages/primitives/accordion/PARITY.md).
+Use `*rdxAccordionPanelPresence` on the same host to own its complete Angular view. `id` is
+exposed from Collapsible Panel and registers the authored native identity for open-only controls.
+A native Panel without the structural owner reports an invalid-markup error.
 
 **Data attributes**
 
@@ -1197,6 +1278,26 @@ Use `keepMounted` to retain the closed host; complete child-view disposal is tra
 | ---------------------------- | --------------------------------------------------- |
 | `--accordion-panel-height`   | The panel's measured height, for height animations. |
 | `--accordion-panel-width`    | The panel's measured width, for width animations.   |
+
+### Panel Presence
+
+`RdxAccordionPanelPresenceDirective` — owns the complete Panel view. Apply structurally to the Panel
+host with `*rdxAccordionPanelPresence`, or explicitly to its surrounding `<ng-template>`.
+It removes closed hosts and children after exit motion and cancels pending removal on reopen.
+
+Its optional expression is an options object with `keepMounted` and `hiddenUntilFound`. Undefined
+properties inherit Root policy; explicit `false` overrides it. Findable content remains mounted even
+when `keepMounted` is false. These options belong to the template so policy is available before any
+child view is constructed.
+
+```html
+<div *rdxAccordionPanelPresence="{ keepMounted: true }" rdxAccordionPanel>Retained state</div>
+<div *rdxAccordionPanelPresence="{ hiddenUntilFound: true }" rdxAccordionPanel>Findable state</div>
+```
+
+`beforematch` requests expansion through Item and Root. Canceled or unaccepted controlled requests
+restore the hidden state. Complete search-motion and hydration comparisons remain tracked in the
+[Accordion matrix](https://github.com/radix-ng/primitives/blob/main/packages/primitives/accordion/PARITY.md).
 
 ## Accessibility
 
@@ -33970,7 +34071,7 @@ with a matching `[rdx<Name><Role>]` selector. Real examples:
     <h3 rdxAccordionHeader>
       <button rdxAccordionTrigger>Trigger</button>
     </h3>
-    <div rdxAccordionPanel>Panel content</div>
+    <div *rdxAccordionPanelPresence rdxAccordionPanel>Panel content</div>
   </div>
 </div>
 ```
@@ -34938,7 +35039,7 @@ free. The accordion only writes the part that's genuinely new. Here's the result
         <h3 [class]="a.header" rdxAccordionHeader>
             <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
         </h3>
-        <div [class]="a.content" rdxAccordionPanel>
+        <div [class]="a.content" *rdxAccordionPanelPresence rdxAccordionPanel>
             <div [class]="a.contentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
         </div>
     </div>
@@ -34946,7 +35047,7 @@ free. The accordion only writes the part that's genuinely new. Here's the result
         <h3 [class]="a.header" rdxAccordionHeader>
             <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
         </h3>
-        <div [class]="a.content" rdxAccordionPanel>
+        <div [class]="a.content" *rdxAccordionPanelPresence rdxAccordionPanel>
             <div [class]="a.contentText">
                 Yes. It's unstyled by default, giving you freedom over the look and feel.
             </div>
@@ -34956,7 +35057,7 @@ free. The accordion only writes the part that's genuinely new. Here's the result
         <h3 [class]="a.header" rdxAccordionHeader>
             <button [class]="a.trigger" type="button" rdxAccordionTrigger>Can it be animated?</button>
         </h3>
-        <div [class]="a.content" rdxAccordionPanel>
+        <div [class]="a.content" *rdxAccordionPanelPresence rdxAccordionPanel>
             <div [class]="a.contentText">Yes! You can animate the Accordion with CSS or JavaScript.</div>
         </div>
     </div>

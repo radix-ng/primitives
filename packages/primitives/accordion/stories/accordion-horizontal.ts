@@ -3,6 +3,7 @@ import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
     RdxAccordionPanelDirective,
+    RdxAccordionPanelPresenceDirective,
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
@@ -16,7 +17,8 @@ import { cn, demoAccordion } from '../../storybook/styles';
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionPanelDirective
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
     ],
     template: `
         <div
@@ -31,7 +33,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
                         Is it accessible?
                     </button>
                 </div>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                     <div [class]="a.contentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
                 </div>
             </div>
@@ -42,7 +44,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
                         Is it unstyled?
                     </button>
                 </div>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                     <div [class]="a.contentText">
                         Yes. It's unstyled by default, giving you freedom over the look and feel.
                     </div>
@@ -55,7 +57,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
                         Can it be animated?
                     </button>
                 </div>
-                <div [class]="a.content" rdxAccordionPanel>
+                <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                     <div [class]="a.contentText">Yes! You can animate the Accordion with CSS or JavaScript.</div>
                 </div>
             </div>

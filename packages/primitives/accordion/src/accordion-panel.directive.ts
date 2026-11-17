@@ -1,11 +1,16 @@
 import { Directive } from '@angular/core';
-import { RdxCollapsiblePanelDirective } from '@radix-ng/primitives/collapsible';
+import {
+    injectCollapsiblePanelOwnerContext,
+    injectCollapsibleRootContext,
+    RdxCollapsiblePanelDirective
+} from '@radix-ng/primitives/collapsible';
+import { rdxDevError } from '@radix-ng/primitives/core';
 import { injectAccordionItemContext } from './accordion-item.directive';
 import { injectAccordionRootContext } from './accordion-root.directive';
 
 @Directive({
     selector: '[rdxAccordionPanel]',
-    hostDirectives: [{ directive: RdxCollapsiblePanelDirective, inputs: ['id', 'keepMounted', 'hiddenUntilFound'] }],
+    hostDirectives: [{ directive: RdxCollapsiblePanelDirective, inputs: ['id'] }],
     host: {
         role: 'region',
         '[attr.aria-labelledby]': 'itemContext.triggerId()',
@@ -25,4 +30,15 @@ import { injectAccordionRootContext } from './accordion-root.directive';
 export class RdxAccordionPanelDirective {
     protected readonly rootContext = injectAccordionRootContext();
     protected readonly itemContext = injectAccordionItemContext();
+
+    constructor() {
+        const owner = injectCollapsiblePanelOwnerContext(true);
+        if (owner?.root !== injectCollapsibleRootContext()) {
+            rdxDevError(
+                'accordion/panel-owner',
+                'Apply *rdxAccordionPanelPresence to the rdxAccordionPanel host so Angular owns its complete view.',
+                'components/accordion'
+            );
+        }
+    }
 }

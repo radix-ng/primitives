@@ -3,6 +3,7 @@ import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
     RdxAccordionPanelDirective,
+    RdxAccordionPanelPresenceDirective,
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
@@ -15,7 +16,8 @@ import { cn, demoAccordion } from '../../storybook/styles';
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionPanelDirective
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
@@ -25,7 +27,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
                     <h3 [class]="a.header" rdxAccordionHeader>
                         <button [class]="a.trigger" type="button" rdxAccordionTrigger>{{ item.title }}</button>
                     </h3>
-                    <div [class]="a.content" rdxAccordionPanel>
+                    <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                         <div [class]="a.contentText">{{ item.content }}</div>
                     </div>
                 </div>

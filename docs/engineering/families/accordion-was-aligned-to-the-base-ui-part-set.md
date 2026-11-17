@@ -11,11 +11,14 @@ Item requests. Search reveal enters this same transaction through Collapsible's 
 
 Trigger composes shared Button behavior: native buttons default to button type, disabled native
 buttons use native disabled, and non-native hosts get keyboard/ARIA/tab-order adaptation. Trigger IDs
-register reactively. Panel exposes its ID and tri-state keepMounted/hiddenUntilFound overrides.
+register reactively. Panel exposes its ID. Required `*rdxAccordionPanelPresence` owns the complete view and its
+tri-state keepMounted/hiddenUntilFound options, inheriting Root policy. It reuses the Item
+Collapsible lifecycle; native Collapsible detachment is disabled for the matching structural owner.
 The actual pinned mapper exposes Panel `data-closed`, Trigger `data-index` and inherited orientation/
 hidden state; closed findable Panels also retain starting style. The earlier claim that Panel had no
 closed state, that Trigger had no index, or that native disabled Triggers remained focusable was stale.
 
-Complete Panel view ownership and motion/measurement/hydration remain open. Current behavior,
+Complete view ownership follows [ADR 0087](../../adr/0087-accordion-whole-panel-presence.md).
+Motion/measurement/hydration remain open. Current behavior,
 priorities and evidence are maintained in [the Accordion matrix](../../../packages/primitives/accordion/PARITY.md)
 and [its paired suite](../../../apps/parity-testing/primitives/accordion/README.md).

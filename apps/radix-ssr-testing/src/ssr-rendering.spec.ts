@@ -4,6 +4,13 @@ import '@angular/compiler';
 import { Component, provideZonelessChangeDetection, Type } from '@angular/core';
 import { bootstrapApplication, BootstrapContext, provideClientHydration } from '@angular/platform-browser';
 import { provideServerRendering, renderApplication } from '@angular/platform-server';
+import {
+    RdxAccordionItemDirective,
+    RdxAccordionPanelDirective,
+    RdxAccordionPanelPresenceDirective,
+    RdxAccordionRootDirective,
+    RdxAccordionTriggerDirective
+} from '@radix-ng/primitives/accordion';
 import { RdxAutocompleteInput, RdxAutocompleteRoot } from '@radix-ng/primitives/autocomplete';
 import { RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import {
@@ -332,7 +339,59 @@ class TabsValuesPage {
     ];
 }
 
+@Component({
+    selector: 'app-accordion-presence',
+    imports: [
+        RdxAccordionRootDirective,
+        RdxAccordionItemDirective,
+        RdxAccordionTriggerDirective,
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
+    ],
+    template: `
+        @for (group of groups; track group.key) {
+            <div
+                [value]="group.controlled ? [] : undefined"
+                [defaultValue]="group.open ? ['a'] : []"
+                [keepMounted]="group.keep"
+                [hiddenUntilFound]="group.find"
+                rdxAccordionRoot
+            >
+                <div rdxAccordionItem value="a">
+                    <button [attr.data-testid]="group.key + '-trigger'" rdxAccordionTrigger>{{ group.key }}</button>
+                    <div *rdxAccordionPanelPresence [attr.data-testid]="group.key + '-panel'" rdxAccordionPanel>
+                        <input aria-label="Server child" value="initial" />
+                    </div>
+                </div>
+            </div>
+        }
+    `
+})
+class AccordionPresencePage {
+    readonly groups = [
+        { key: 'closed', open: false, keep: false, find: false, controlled: false },
+        { key: 'kept', open: false, keep: true, find: false, controlled: false },
+        { key: 'findable', open: false, keep: false, find: true, controlled: false },
+        { key: 'open', open: true, keep: false, find: false, controlled: false },
+        { key: 'controlled', open: true, keep: false, find: false, controlled: true }
+    ];
+}
+
 describe('SSR rendering', () => {
+    it('renders complete Accordion Panel views only when open, retained or findable on the server', async () => {
+        const html = await renderToString('app-accordion-presence', AccordionPresencePage);
+        const panel = (key: string) => html.match(new RegExp(`<div[^>]*data-testid="${key}-panel"[^>]*>`))?.[0];
+        expect(panel('closed')).toBeUndefined();
+        expect(panel('controlled')).toBeUndefined();
+        expect(panel('kept')).toContain('hidden=""');
+        expect(panel('findable')).toContain('hidden="until-found"');
+        expect(panel('open')).toContain('data-open');
+        expect(panel('open')).not.toContain('hidden=');
+        expect(html.match(/aria-label="Server child"/g) ?? []).toHaveLength(3);
+        expect(html).not.toContain('<!--rdx-collapsible-panel-->');
+        expect(html).toContain('ngh=');
+    });
+
     it('renders Accordion array defaults, native disabled buttons and authored relationships', async () => {
         const html = await renderToString('app-accordion', AccordionPage);
         const trigger = html.match(/<button[^>]*id="server-accordion-trigger"[^>]*>/)![0];

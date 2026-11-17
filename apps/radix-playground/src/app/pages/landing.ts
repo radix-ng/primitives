@@ -20,6 +20,7 @@ import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
     RdxAccordionPanelDirective,
+    RdxAccordionPanelPresenceDirective,
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
@@ -57,6 +58,7 @@ type CopyTarget = 'install' | 'skill';
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
         RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective,
         NgTemplateOutlet,
         LucideArrowRight,
         LucideBox,
@@ -400,7 +402,8 @@ type CopyTarget = 'install' | 'skill';
                                             </button>
                                         </h3>
                                         <div
-                                            class="grid overflow-hidden transition-[grid-template-rows] duration-200 data-[closed]:grid-rows-[0fr] data-[open]:grid-rows-[1fr]"
+                                            class="grid overflow-hidden transition-[grid-template-rows] duration-200 data-[closed]:grid-rows-[0fr] data-[open]:grid-rows-[1fr] data-[starting-style]:grid-rows-[0fr]"
+                                            *rdxAccordionPanelPresence
                                             rdxAccordionPanel
                                         >
                                             <div class="overflow-hidden">

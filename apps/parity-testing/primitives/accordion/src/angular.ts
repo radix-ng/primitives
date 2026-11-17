@@ -5,11 +5,13 @@ import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
     RdxAccordionPanelDirective,
+    RdxAccordionPanelPresenceDirective,
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { installProbe, settings } from './contract';
+import { AngularLifecycleAccordion } from './lifecycle.angular';
 
 @Component({
     selector: 'parity-accordion',
@@ -18,7 +20,8 @@ import { installProbe, settings } from './contract';
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionPanelDirective
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
     ],
     template: `
         <button data-testid="before" type="button" tabindex="0">Before</button>
@@ -67,6 +70,7 @@ import { installProbe, settings } from './contract';
                             }
                         </h3>
                         <div
+                            *rdxAccordionPanelPresence
                             [id]="s.authored ? id + '-authored-panel' : undefined"
                             [attr.data-testid]="id + '-panel'"
                             rdxAccordionPanel
@@ -85,4 +89,6 @@ class AngularAccordion {
     readonly ids = ['a', 'b'];
     readonly probe = installProbe(this.s);
 }
-void bootstrapApplication(AngularAccordion, { providers: [provideZonelessChangeDetection()] });
+void bootstrapApplication(settings().lifetime ? AngularLifecycleAccordion : AngularAccordion, {
+    providers: [provideZonelessChangeDetection()]
+});

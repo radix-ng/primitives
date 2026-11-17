@@ -4,6 +4,7 @@ import { By } from '@angular/platform-browser';
 import { expect, vi } from 'vitest';
 import { RdxAccordionHeaderDirective } from '../src/accordion-header.directive';
 import { RdxAccordionItemDirective } from '../src/accordion-item.directive';
+import { RdxAccordionPanelPresenceDirective } from '../src/accordion-panel-presence.directive';
 import { RdxAccordionPanelDirective } from '../src/accordion-panel.directive';
 import { RdxAccordionRootDirective } from '../src/accordion-root.directive';
 import { RdxAccordionTriggerDirective } from '../src/accordion-trigger.directive';
@@ -15,7 +16,8 @@ import { RdxAccordionTriggerDirective } from '../src/accordion-trigger.directive
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionPanelDirective
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
     ],
     template: `
         <div [disabled]="rootDisabled()" (onValueChange)="onValueChange($event)" keepMounted rdxAccordionRoot>
@@ -23,7 +25,7 @@ import { RdxAccordionTriggerDirective } from '../src/accordion-trigger.directive
                 <div rdxAccordionHeader>
                     <button id="trigger-one" rdxAccordionTrigger>Trigger one</button>
                 </div>
-                <div rdxAccordionPanel>Content one</div>
+                <div *rdxAccordionPanelPresence rdxAccordionPanel>Content one</div>
             </div>
         </div>
     `
@@ -103,13 +105,14 @@ describe('RdxAccordion — interaction', () => {
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionPanelDirective
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
     ],
     template: `
         <div (onValueChange)="onValueChange($event)" keepMounted rdxAccordionRoot>
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionHeader><button rdxAccordionTrigger>One</button></div>
-                <div rdxAccordionPanel>One</div>
+                <div *rdxAccordionPanelPresence rdxAccordionPanel>One</div>
             </div>
         </div>
     `
@@ -153,13 +156,14 @@ describe('RdxAccordion — cancelable onValueChange', () => {
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionPanelDirective
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
     ],
     template: `
         <div [disabled]="rootDisabled()" keepMounted rdxAccordionRoot>
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionHeader><button rdxAccordionTrigger>One</button></div>
-                <div rdxAccordionPanel>Content</div>
+                <div *rdxAccordionPanelPresence rdxAccordionPanel>Content</div>
             </div>
         </div>
     `
@@ -232,17 +236,18 @@ describe('RdxAccordion — disabled propagation', () => {
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionPanelDirective
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
     ],
     template: `
         <div [multiple]="multipleEnabled()" keepMounted rdxAccordionRoot>
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionHeader><button id="t1" rdxAccordionTrigger>One</button></div>
-                <div rdxAccordionPanel>One</div>
+                <div *rdxAccordionPanelPresence rdxAccordionPanel>One</div>
             </div>
             <div value="two" rdxAccordionItem>
                 <div rdxAccordionHeader><button id="t2" rdxAccordionTrigger>Two</button></div>
-                <div rdxAccordionPanel>Two</div>
+                <div *rdxAccordionPanelPresence rdxAccordionPanel>Two</div>
             </div>
         </div>
     `
@@ -303,13 +308,14 @@ describe('RdxAccordion — multiple input', () => {
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionPanelDirective
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
     ],
     template: `
         <div rdxAccordionRoot>
             <div (onOpenChange)="onChange($event)" value="one" rdxAccordionItem>
                 <div rdxAccordionHeader><button rdxAccordionTrigger>One</button></div>
-                <div rdxAccordionPanel>One</div>
+                <div *rdxAccordionPanelPresence rdxAccordionPanel>One</div>
             </div>
         </div>
     `
@@ -358,21 +364,22 @@ describe('RdxAccordion — onOpenChange', () => {
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionPanelDirective
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
     ],
     template: `
         <div keepMounted rdxAccordionRoot>
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionHeader><button rdxAccordionTrigger>One</button></div>
-                <div rdxAccordionPanel>One</div>
+                <div *rdxAccordionPanelPresence rdxAccordionPanel>One</div>
             </div>
             <div value="two" rdxAccordionItem>
                 <div rdxAccordionHeader><button rdxAccordionTrigger>Two</button></div>
-                <div rdxAccordionPanel>Two</div>
+                <div *rdxAccordionPanelPresence rdxAccordionPanel>Two</div>
             </div>
             <div value="three" rdxAccordionItem>
                 <div rdxAccordionHeader><button rdxAccordionTrigger>Three</button></div>
-                <div rdxAccordionPanel>Three</div>
+                <div *rdxAccordionPanelPresence rdxAccordionPanel>Three</div>
             </div>
         </div>
     `
@@ -429,17 +436,18 @@ describe('RdxAccordion — data-index', () => {
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionPanelDirective
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
     ],
     template: `
         <div [loopFocus]="loop()" rdxAccordionRoot>
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionHeader><button rdxAccordionTrigger>One</button></div>
-                <div rdxAccordionPanel>One</div>
+                <div *rdxAccordionPanelPresence rdxAccordionPanel>One</div>
             </div>
             <div value="two" rdxAccordionItem>
                 <div rdxAccordionHeader><button rdxAccordionTrigger>Two</button></div>
-                <div rdxAccordionPanel>Two</div>
+                <div *rdxAccordionPanelPresence rdxAccordionPanel>Two</div>
             </div>
         </div>
     `
@@ -499,13 +507,14 @@ describe('RdxAccordion — keyboard focus', () => {
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionPanelDirective
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
     ],
     template: `
         <div [keepMounted]="keep()" [hiddenUntilFound]="findable()" rdxAccordionRoot>
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionHeader><button rdxAccordionTrigger>One</button></div>
-                <div rdxAccordionPanel>Content one</div>
+                <div *rdxAccordionPanelPresence rdxAccordionPanel>Content one</div>
             </div>
         </div>
     `
@@ -526,12 +535,8 @@ describe('RdxAccordion — mount behavior', () => {
         fixture.detectChanges();
     });
 
-    it('hides closed content with plain `hidden` by default (no longer hidden="until-found")', () => {
-        expect(panel()).not.toBeNull();
-        expect((panel().nativeElement as HTMLElement).getAttribute('hidden')).toBe('');
-        expect((panel().nativeElement as HTMLElement).getAttribute('data-open')).toBeNull();
-        // The pin's actual state mapper exposes closed state on retained Panels.
-        expect((panel().nativeElement as HTMLElement).getAttribute('data-closed')).toBe('');
+    it('does not instantiate a closed Panel view by default', () => {
+        expect(panel()).toBeNull();
     });
 
     it('keeps closed content mounted but hidden with keepMounted=true', () => {
@@ -569,17 +574,18 @@ describe('RdxAccordion — mount behavior', () => {
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionPanelDirective
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
     ],
     template: `
         <div [defaultValue]="['one']" (onValueChange)="onValueChange($event)" keepMounted rdxAccordionRoot>
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionHeader><button id="t1" rdxAccordionTrigger>One</button></div>
-                <div rdxAccordionPanel>One</div>
+                <div *rdxAccordionPanelPresence rdxAccordionPanel>One</div>
             </div>
             <div value="two" rdxAccordionItem>
                 <div rdxAccordionHeader><button id="t2" rdxAccordionTrigger>Two</button></div>
-                <div rdxAccordionPanel>Two</div>
+                <div *rdxAccordionPanelPresence rdxAccordionPanel>Two</div>
             </div>
         </div>
     `

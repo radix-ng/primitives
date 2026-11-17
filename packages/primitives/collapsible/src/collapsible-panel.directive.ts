@@ -12,6 +12,7 @@ import {
     signal
 } from '@angular/core';
 import { BooleanInput } from '@radix-ng/primitives/core';
+import { injectCollapsiblePanelOwnerContext } from './collapsible-panel-owner-context';
 import { injectCollapsibleRootContext } from './collapsible-root.directive';
 
 /**
@@ -49,6 +50,10 @@ export class RdxCollapsiblePanelDirective {
     private revealDecision?: ReturnType<typeof setTimeout>;
 
     protected readonly rootContext = injectCollapsibleRootContext();
+    private readonly owner = (() => {
+        const owner = injectCollapsiblePanelOwnerContext(true);
+        return owner?.root === this.rootContext ? owner : null;
+    })();
 
     /**
      * Optional explicit panel id. When set, the trigger's `aria-controls` points to this id.
@@ -80,9 +85,11 @@ export class RdxCollapsiblePanelDirective {
         transform: optionalBoolean
     });
 
-    private readonly effectiveKeepMounted = computed(() => this.keepMounted() ?? this.rootContext.keepMounted());
-    protected readonly effectiveHiddenUntilFound = computed(
-        () => this.hiddenUntilFound() ?? this.rootContext.hiddenUntilFound()
+    private readonly effectiveKeepMounted = computed(() =>
+        this.owner ? this.owner.keepMounted() : (this.keepMounted() ?? this.rootContext.keepMounted())
+    );
+    protected readonly effectiveHiddenUntilFound = computed(() =>
+        this.owner ? this.owner.hiddenUntilFound() : (this.hiddenUntilFound() ?? this.rootContext.hiddenUntilFound())
     );
 
     readonly height = signal<number | null>(null);
@@ -112,8 +119,8 @@ export class RdxCollapsiblePanelDirective {
     });
 
     /**
-     * The first measurement (the initial mount) must not re-enable animations, so an element that
-     * mounts already open renders at its final size without playing the open animation.
+     * Standalone hosts suppress their first measurement. Structural owners preserve initial-open
+     * suppression across native view recreation, so later user openings can animate.
      */
     private isFirstMeasure = true;
     private originalStyles?: { transitionDuration: string; animationName: string };
@@ -122,7 +129,7 @@ export class RdxCollapsiblePanelDirective {
         const unregister = this.rootContext.registerTransitionElement(this.elementRef.nativeElement);
         this.destroyRef.onDestroy(unregister);
 
-        this.insertMarker();
+        if (!this.owner) this.insertMarker();
 
         const unlistenBeforeMatch = this.renderer.listen(
             this.elementRef.nativeElement,
@@ -153,9 +160,9 @@ export class RdxCollapsiblePanelDirective {
             this.rootContext.setPanelIdState(null);
         });
 
-        effect(() => {
-            this.syncRenderedState();
-        });
+        if (!this.owner) {
+            effect(() => this.syncRenderedState());
+        }
 
         // `afterRenderEffect` runs after the DOM is committed (but before paint) with the settled
         // `open` state — no `requestAnimationFrame` race — and is a no-op during SSR.
@@ -233,8 +240,8 @@ export class RdxCollapsiblePanelDirective {
 
         node.style.height = previousHeight;
 
-        // Re-enable the original animation, unless this is the very first (mount) measurement.
-        if (!this.isFirstMeasure) {
+        // Structural owners distinguish initial-open configuration from later native remounts.
+        if (this.owner ? !this.owner.preventInitialOpenAnimation() : !this.isFirstMeasure) {
             node.style.transitionDuration = this.originalStyles.transitionDuration;
             node.style.animationName = this.originalStyles.animationName;
         }

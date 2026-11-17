@@ -6,6 +6,7 @@ import {
     RdxAccordionItemDirective,
     RdxAccordionItemOpenChangeEvent,
     RdxAccordionPanelDirective,
+    RdxAccordionPanelPresenceDirective,
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective,
     RdxAccordionValueChangeEvent
@@ -17,7 +18,8 @@ import {
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionPanelDirective
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
     ],
     template: `
         <div
@@ -56,9 +58,8 @@ import {
                     </h3>
                     @if (showPanel()) {
                         <div
+                            *rdxAccordionPanelPresence="{ keepMounted: panelKeep(), hiddenUntilFound: panelFindable() }"
                             [id]="panelId()"
-                            [keepMounted]="panelKeep()"
-                            [hiddenUntilFound]="panelFindable()"
                             rdxAccordionPanel
                         >
                             Content

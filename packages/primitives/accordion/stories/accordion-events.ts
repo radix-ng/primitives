@@ -3,6 +3,7 @@ import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
     RdxAccordionPanelDirective,
+    RdxAccordionPanelPresenceDirective,
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
@@ -16,7 +17,8 @@ import { cn, demoAccordion } from '../../storybook/styles';
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
         RdxAccordionTriggerDirective,
-        RdxAccordionPanelDirective
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective
     ],
     template: `
         <div class="flex w-[300px] flex-col gap-3">
@@ -25,7 +27,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
                     <h3 [class]="a.header" rdxAccordionHeader>
                         <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
                     </h3>
-                    <div [class]="a.content" rdxAccordionPanel>
+                    <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                         <div [class]="a.contentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
                     </div>
                 </div>
@@ -34,7 +36,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
                     <h3 [class]="a.header" rdxAccordionHeader>
                         <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
                     </h3>
-                    <div [class]="a.content" rdxAccordionPanel>
+                    <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
                         <div [class]="a.contentText">Yes. It's unstyled by default.</div>
                     </div>
                 </div>
