@@ -1070,6 +1070,18 @@
               "description": "Keep the button focusable while disabled (uses `aria-disabled`)."
             },
             {
+              "name": "role",
+              "type": "string | null | undefined",
+              "default": "undefined",
+              "description": "The authored ARIA role. `null` removes the attribute; `undefined` restores the default."
+            },
+            {
+              "name": "tabIndex",
+              "type": "number | null | undefined",
+              "default": "injectTabIndexAttribute()",
+              "description": "The authored tab order, overriding disabled and composite defaults.\n`null` removes the attribute; `undefined` restores the default."
+            },
+            {
               "name": "type",
               "type": "RdxButtonType",
               "default": "'button'",
@@ -2312,6 +2324,12 @@
             "RdxCompositeListItem"
           ],
           "inputs": [
+            {
+              "name": "tabIndex",
+              "type": "number | null | undefined",
+              "default": "injectTabIndexAttribute()",
+              "description": "Authored tabindex, overriding the default roving value.\n`null` removes the attribute; `undefined` restores the default."
+            },
             {
               "name": "metadata",
               "type": "RdxCompositeItemMetadata | null | undefined",
@@ -8972,6 +8990,18 @@
               "type": "boolean",
               "default": "true",
               "description": "Whether the host is a native `<button>`. When `false`, adds `role=\"button\"`."
+            },
+            {
+              "name": "role",
+              "type": "string | null | undefined",
+              "default": "undefined",
+              "description": "The authored ARIA role. `null` removes the explicit role."
+            },
+            {
+              "name": "tabIndex",
+              "type": "number | null | undefined",
+              "default": "injectTabIndexAttribute()",
+              "description": "Authored tabindex, overriding the default roving value.\n`null` removes the attribute; `undefined` restores the default."
             }
           ],
           "outputs": []

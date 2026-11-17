@@ -1,6 +1,12 @@
 import { booleanAttribute, computed, DestroyRef, Directive, ElementRef, inject, input } from '@angular/core';
 import { injectRdxCompositeRootContext, RdxCompositeItem } from '@radix-ng/primitives/composite';
-import { BooleanInput, dispatchClickWithModifiers } from '@radix-ng/primitives/core';
+import {
+    BooleanInput,
+    coerceTabIndex,
+    dispatchClickWithModifiers,
+    injectTabIndexAttribute,
+    NumberInput
+} from '@radix-ng/primitives/core';
 import { RDX_BUTTON_CONFIG } from './button-config';
 
 export type RdxButtonType = 'button' | 'submit' | 'reset';
@@ -26,6 +32,12 @@ export interface RdxButtonProps {
      * @defaultValue 'button'
      */
     type?: RdxButtonType;
+
+    /** The authored ARIA role. `null` removes the explicit role. */
+    role?: string | null;
+
+    /** The authored tab order. `null` removes the tabindex attribute. */
+    tabIndex?: number | null;
 }
 
 /**
@@ -50,8 +62,8 @@ export interface RdxButtonProps {
 
         // Native buttons get their type; non-button hosts get button semantics.
         '[attr.type]': 'isNativeButton() ? type() : undefined',
-        '[attr.role]': 'isNativeButton() ? undefined : "button"',
-        '[attr.tabindex]': 'tabIndex()'
+        '[attr.role]': 'role() !== undefined ? role() : isNativeButton() ? undefined : "button"',
+        '[attr.tabindex]': 'hostTabIndex()'
     }
 })
 export class RdxButtonDirective {
@@ -78,6 +90,22 @@ export class RdxButtonDirective {
      * @group Props
      */
     readonly type = input<RdxButtonType>('button');
+
+    /**
+     * The authored ARIA role. `null` removes the attribute; `undefined` restores the default.
+     * @group Props
+     */
+    readonly role = input<string | null | undefined>(undefined);
+
+    /**
+     * The authored tab order, overriding disabled and composite defaults.
+     * `null` removes the attribute; `undefined` restores the default.
+     * @defaultValue undefined
+     * @group Props
+     */
+    readonly tabIndex = input<number | null | undefined, NumberInput>(injectTabIndexAttribute(), {
+        transform: coerceTabIndex
+    });
 
     /** @ignore */
     protected readonly isDisabled = computed(() => this.disabled() || (this.config?.disabled() ?? false));
@@ -107,7 +135,9 @@ export class RdxButtonDirective {
     /**
      * @ignore
      */
-    protected readonly tabIndex = computed(() => {
+    protected readonly hostTabIndex = computed(() => {
+        const authored = this.tabIndex();
+        if (authored !== undefined) return authored;
         if (this.compositeItem) return this.compositeItem.tabIndex();
         if (this.isComposite) return undefined;
         if (this.isNativeButton()) {

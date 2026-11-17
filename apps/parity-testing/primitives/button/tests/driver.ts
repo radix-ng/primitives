@@ -56,7 +56,9 @@ export class ButtonDriver {
                     ...(probe.settings.interaction?.scope === 'standalone' || probe.settings.interaction?.cancel
                         ? { handlers: probe.handlers }
                         : {}),
-                    ...(probe.settings.interaction && probe.settings.interaction.scope !== 'standalone'
+                    ...(probe.settings.authored ? { tabIndexAttribute: element.getAttribute('tabindex') } : {}),
+                    ...((probe.settings.interaction && probe.settings.interaction.scope !== 'standalone') ||
+                    (probe.settings.authored && probe.settings.authored.scope !== 'standalone')
                         ? {
                               tabStops: [...document.querySelectorAll<HTMLElement>('[data-item]')].map(
                                   (item) => item.tabIndex

@@ -1,10 +1,21 @@
+import { authoredCases, type Authored } from './authored';
 import { interactionCases, type ConsumerKey, type Interaction } from './interaction';
 
 export type Host = 'button' | 'div' | 'span' | 'link' | 'anchor';
 export type ButtonType = 'button' | 'submit' | 'reset';
 export interface Settings {
     host: Host;
-    action: 'keyboard' | 'pointer' | 'disabled' | 'dynamic' | 'descendant' | 'repeat' | 'blur' | 'interaction';
+    action:
+        | 'keyboard'
+        | 'pointer'
+        | 'disabled'
+        | 'dynamic'
+        | 'descendant'
+        | 'repeat'
+        | 'blur'
+        | 'interaction'
+        | 'authored';
+    authored?: Authored;
     interaction?: Interaction;
     key?: 'Enter' | 'Space';
     disabled?: boolean;
@@ -48,6 +59,7 @@ cases['span-prevent-space-keydown'] = { host: 'span', action: 'keyboard', key: '
 for (const host of ['button', 'span'] as const)
     cases[`${host}-space-focus-leaves`] = { host, action: 'blur', key: 'Space' };
 Object.assign(cases, interactionCases);
+Object.assign(cases, authoredCases);
 
 export interface Click {
     target: string | null;

@@ -38,6 +38,10 @@ inherited when both `rdxToolbarButton` and `rdxButton` are applied to the same e
 Consumer `keydown` / `keyup` handlers run before Button's keyboard behavior. Preventing Enter
 keydown or standalone Space keyup cancels activation; composite Space follows its keydown policy.
 
+Explicit `role` and `tabindex` override the defaults, including disabled and roving tab order.
+For dynamic values, bind `[role]` and `[tabIndex]`: `null` removes the attribute and `undefined`
+restores the default. An explicit tab index makes the application responsible for the tab order.
+
 ## Examples
 
 - [Variants](../examples/button--variants.md)

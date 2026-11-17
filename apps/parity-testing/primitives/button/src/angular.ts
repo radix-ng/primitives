@@ -3,6 +3,7 @@ import { Component, DestroyRef, inject, provideZonelessChangeDetection, signal }
 import { bootstrapApplication } from '@angular/platform-browser';
 import { RdxButtonDirective } from '@radix-ng/primitives/button';
 import '../../../../radix-storybook/.storybook/tailwind.css';
+import { AngularAuthored } from './authored.angular';
 import { classes, config, installProbe, type ButtonType } from './contract';
 import { AngularInteraction } from './interaction.angular';
 
@@ -117,6 +118,7 @@ class AngularButton {
         inject(DestroyRef).onDestroy(() => document.removeEventListener('keydown', listener));
     }
 }
-if (config().interaction)
+if (config().authored) void bootstrapApplication(AngularAuthored, { providers: [provideZonelessChangeDetection()] });
+else if (config().interaction)
     void bootstrapApplication(AngularInteraction, { providers: [provideZonelessChangeDetection()] });
 else void bootstrapApplication(AngularButton, { providers: [provideZonelessChangeDetection()] });

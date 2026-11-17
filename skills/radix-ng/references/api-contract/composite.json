@@ -13,6 +13,12 @@
       ],
       "inputs": [
         {
+          "name": "tabIndex",
+          "type": "number | null | undefined",
+          "default": "injectTabIndexAttribute()",
+          "description": "Authored tabindex, overriding the default roving value.\n`null` removes the attribute; `undefined` restores the default."
+        },
+        {
           "name": "metadata",
           "type": "RdxCompositeItemMetadata | null | undefined",
           "default": "undefined",

@@ -7,7 +7,7 @@ that committed object. The runner verifies the archived source digest before eac
 
 ## Scope
 
-126 scenarios run in Chromium, Firefox and WebKit (378 comparisons):
+171 scenarios run in Chromium, Firefox and WebKit (513 comparisons):
 
 - native `<button>`, `<div>`, `<span>`, `<a href>` and `<a>` without an href;
 - DOM semantics, `data-disabled`, native disabled state, effective tabindex and ARIA disabled state;
@@ -28,12 +28,20 @@ that committed object. The runner verifies the archived source digest before eac
 - focusable/unfocusable disabled items and Toolbar group/root disabled ownership;
 - consumer-prevented Enter and composite Space defaults, with separate down/up checkpoints.
 
+45 `authored-` cases cover native button, span and link hosts standalone and in Composite/Toolbar:
+
+- static `role` / lowercase `tabindex`, and live `[role]` / `[tabIndex]` updates;
+- explicit `null` removal and `undefined` restoration of behavior defaults;
+- authored values retained across disabled/focusable transitions, with activation still suppressed;
+- authored tabindex priority over roving values, then rejoining the current roving state;
+- prevented composite Space on authored `menuitem`, `option` and `gridcell` roles.
+
 React uses the pin's actual `render={<Button />}` composition; Angular applies the corresponding
 directives to one element. Toolbar forwards disabled state into its rendered Button: the fixture
 leaves that prop unspecified unless the application explicitly disables the target.
 
-The driver uses real browser input. F6/F7/F8 are application commands that update each fixture's own
-state; subsequent actions wait for the relevant rendered state. The recorder does not synthesize
+The driver uses real browser input. F6/F7/F8 and F9/F10/F11 are application commands that update
+each fixture's own state; subsequent actions wait for the relevant rendered state. The recorder does not synthesize
 component state, focus, form results or activation events. Non-native synthesis comes from the
 primitive being tested.
 
@@ -70,10 +78,18 @@ Six consumer-handler unit witnesses also failed before the correction. The later
 cancellation and modifiers. The dynamic F6 re-enable command now waits for the rendered disabled
 attribute to disappear before requesting the next activation, as F8 already did for native type.
 
+The authored-attribute Chromium baseline failed all 45 new comparisons while every reference
+assertion passed. Three focused unit regressions also failed before the correction. Evidence is in
+`dist/parity-testing/button/before-authored-fix/`. Button now exposes `role` and `tabIndex` signal
+inputs, reads static lowercase `tabindex`, and shares authored precedence with CompositeItem and
+Toolbar.Button. Dynamic attribute bindings (`[attr.role]`, `[attr.tabindex]`) bypass these inputs
+and are outside this contract. Explicit tabindex can leave multiple tab stops; the application owns
+that override, just as it does in Base UI.
+
 ## Limits
 
-Authored role/tabindex overrides, bare Toolbar.Button without Button composition, other compound
-families, auxiliary/modifier link navigation, real touch/pen, iframe/shadow realms, SSR/hydration and
+Bare Toolbar.Button without Button composition, other compound families, auxiliary/modifier link
+navigation, real touch/pen, iframe/shadow realms, SSR/hydration and
 assistive technologies remain separate checks. Ancestor propagation and stopImmediatePropagation
 are outside the consumer-handler contract checked here.
 The pin does not retain a Space keydown cancellation flag for non-native hosts: a prevented keydown

@@ -29,6 +29,18 @@
           "type": "boolean",
           "default": "true",
           "description": "Whether the host is a native `<button>`. When `false`, adds `role=\"button\"`."
+        },
+        {
+          "name": "role",
+          "type": "string | null | undefined",
+          "default": "undefined",
+          "description": "The authored ARIA role. `null` removes the explicit role."
+        },
+        {
+          "name": "tabIndex",
+          "type": "number | null | undefined",
+          "default": "injectTabIndexAttribute()",
+          "description": "Authored tabindex, overriding the default roving value.\n`null` removes the attribute; `undefined` restores the default."
         }
       ],
       "outputs": []

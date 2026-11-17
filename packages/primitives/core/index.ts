@@ -40,6 +40,7 @@ export * from './src/dom/get-active-element';
 export * from './src/dom/guards';
 export * from './src/dom/platform';
 export * from './src/dom/pointer-events';
+export * from './src/dom/tab-index';
 export * from './src/dom/use-native-form-control';
 export * from './src/dom/use-resize-observer';
 export * from './src/dom/use-scroll-lock';

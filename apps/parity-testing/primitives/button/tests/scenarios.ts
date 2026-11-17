@@ -1,10 +1,11 @@
 import { expect } from '@playwright/test';
 import { cases } from '../src/contract';
+import { authoredScenarios } from './authored.scenarios';
 import type { ButtonDriver } from './driver';
 import { interactionScenarios } from './interaction.scenarios';
 
 const standaloneScenarios = Object.entries(cases)
-    .filter(([, settings]) => !settings.interaction)
+    .filter(([, settings]) => !settings.interaction && !settings.authored)
     .map(([name, settings]) => ({
         name,
         async run(d: ButtonDriver) {
@@ -147,4 +148,4 @@ const standaloneScenarios = Object.entries(cases)
             });
         }
     }));
-export const scenarios = [...standaloneScenarios, ...interactionScenarios];
+export const scenarios = [...standaloneScenarios, ...interactionScenarios, ...authoredScenarios];

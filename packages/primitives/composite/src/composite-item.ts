@@ -1,5 +1,10 @@
-import { computed, Directive, ElementRef, inject } from '@angular/core';
-import { isStationaryWebKitPointer } from '@radix-ng/primitives/core';
+import { computed, Directive, ElementRef, inject, input } from '@angular/core';
+import {
+    coerceTabIndex,
+    injectTabIndexAttribute,
+    isStationaryWebKitPointer,
+    NumberInput
+} from '@radix-ng/primitives/core';
 import { injectRdxCompositeItemOwner } from './composite-item-owner';
 import { RdxCompositeListItem } from './composite-list-item';
 import { injectRdxCompositeRootContext } from './composite-root';
@@ -33,8 +38,21 @@ export class RdxCompositeItem {
     private readonly rootContext = computed(() => (this.owner ? this.owner.rootContext() : this.injectedRootContext));
 
     readonly index = this.listItem.index;
+
+    /**
+     * Authored tabindex, overriding the default roving value.
+     * `null` removes the attribute; `undefined` restores the default.
+     * @defaultValue undefined
+     */
+    readonly tabIndexInput = input<number | null | undefined, NumberInput>(injectTabIndexAttribute(), {
+        alias: 'tabIndex',
+        transform: coerceTabIndex
+    });
+
     /** @internal Shared with behavior directives on this same composite item. */
     readonly tabIndex = computed(() => {
+        const authored = this.tabIndexInput();
+        if (authored !== undefined) return authored;
         if (this.owner?.tabIndex) {
             return this.owner.tabIndex();
         }

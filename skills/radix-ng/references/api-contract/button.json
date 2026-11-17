@@ -22,6 +22,18 @@
           "description": "Keep the button focusable while disabled (uses `aria-disabled`)."
         },
         {
+          "name": "role",
+          "type": "string | null | undefined",
+          "default": "undefined",
+          "description": "The authored ARIA role. `null` removes the attribute; `undefined` restores the default."
+        },
+        {
+          "name": "tabIndex",
+          "type": "number | null | undefined",
+          "default": "injectTabIndexAttribute()",
+          "description": "The authored tab order, overriding disabled and composite defaults.\n`null` removes the attribute; `undefined` restores the default."
+        },
+        {
           "name": "type",
           "type": "RdxButtonType",
           "default": "'button'",

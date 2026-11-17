@@ -7,17 +7,24 @@ Run `pnpm test-parity button`; coverage and recording details live in the
 
 ## Public API mapping
 
-| Radix NG                | Base UI                   | Contract                                                                             |
-| ----------------------- | ------------------------- | ------------------------------------------------------------------------------------ |
-| `rdxButton`             | `Button`                  | Apply the directive to the consumer's host element.                                  |
-| `disabled`              | `disabled`                | Exposes `data-disabled` and suppresses consumer click activation.                    |
-| `focusableWhenDisabled` | `focusableWhenDisabled`   | Keeps a disabled control in the tab order with `aria-disabled`.                      |
-| `type`                  | Native `type` prop        | Native button defaults to `button`; submit/reset retain browser behavior.            |
-| Detected host tag       | `nativeButton` + `render` | Angular infers native button mode from `<button>`; other hosts get button semantics. |
+| Radix NG                | Base UI                   | Contract                                                                                  |
+| ----------------------- | ------------------------- | ----------------------------------------------------------------------------------------- |
+| `rdxButton`             | `Button`                  | Apply the directive to the consumer's host element.                                       |
+| `disabled`              | `disabled`                | Exposes `data-disabled` and suppresses consumer click activation.                         |
+| `focusableWhenDisabled` | `focusableWhenDisabled`   | Keeps a disabled control in the tab order with `aria-disabled`.                           |
+| `type`                  | Native `type` prop        | Native button defaults to `button`; submit/reset retain browser behavior.                 |
+| `role`                  | Native `role` prop        | Explicit values override button semantics; `null` removes, `undefined` restores defaults. |
+| `tabIndex`              | Native `tabIndex` prop    | Explicit values override disabled/roving defaults; `null` removes the attribute.          |
+| Detected host tag       | `nativeButton` + `render` | Angular infers native button mode from `<button>`; other hosts get button semantics.      |
 
 The Angular host API remains attribute-based and has no `nativeButton` input. Native HTML semantics
 and actual browser interactions are compared; React render props and synthetic event wrappers are
 framework mechanisms.
+
+Static lowercase `tabindex` is preserved. Dynamic overrides use the signal inputs `[role]` and
+`[tabIndex]`; `[attr.role]` / `[attr.tabindex]` bypass those inputs. For either input, `null` removes
+the attribute and `undefined` restores the behavior's default. An explicit tabindex also overrides
+Composite/Toolbar roving values, so the application then owns the resulting tab order.
 
 ## Behavior changes
 
@@ -37,6 +44,10 @@ framework mechanisms.
   disabled Button preserves Tab defaults while suppressing other keydown defaults.
 - **Native buttons explicitly set `tabindex=0`.** This preserves the reference's keyboard tab order
   and pointer focus in WebKit on macOS. Composite items keep their own roving tabindex instead.
+- **Authored role and tabindex take priority.** Static values and signal-bound updates survive
+  disabled/focusable changes and composite highlight changes. Clearing the override with `undefined`
+  returns the item to its current roving/default value. Preserved `menuitem`, `option` and `gridcell`
+  roles also retain Base UI's prevented composite Space behavior.
 
 ## Composition ownership
 

@@ -17,11 +17,11 @@ const buttonConfig = (): RdxButtonConfig => {
 @Directive({
     selector: '[rdxToolbarButton]',
     exportAs: 'rdxToolbarButton',
-    hostDirectives: [RdxCompositeItem],
+    hostDirectives: [{ directive: RdxCompositeItem, inputs: ['tabIndex'] }],
     providers: [provideRdxButtonConfig(buttonConfig)],
     host: {
         '[attr.type]': 'nativeButton() ? "button" : undefined',
-        '[attr.role]': 'nativeButton() ? undefined : "button"',
+        '[attr.role]': 'role() !== undefined ? role() : nativeButton() ? undefined : "button"',
         '[attr.data-orientation]': 'rootContext.orientation()',
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
         '[attr.data-focusable]': 'focusableWhenDisabled() ? "" : undefined',
@@ -56,6 +56,9 @@ export class RdxToolbarButton {
      * @default true
      */
     readonly nativeButton = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
+
+    /** The authored ARIA role. `null` removes the explicit role. */
+    readonly role = input<string | null | undefined>(undefined);
 
     /** @ignore Effective disabled state, combining the button, group and toolbar. */
     readonly isDisabled = computed(
