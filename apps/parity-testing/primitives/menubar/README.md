@@ -75,3 +75,18 @@ framework's guard retention while exiting, is not an equivalent DOM contract.
 
 See [ADR 0046](../../../../docs/adr/0046-menu-root-removal.md). Independent nested Context Menu Roots,
 real devices and assistive technology remain separate audits.
+
+## Completed exits followed by native focus
+
+CI run [44021164684](https://github.com/radix-ng/primitives/actions/runs/44021164684) lost one
+close completion in `state-controlled-switch`, its retained variant and
+`state-controlled-cancel-close` across all engines. The shared lifecycle now separates the finished
+visual exit from its interruptible notification frame and finishes that exit before a native focus
+request opens a new session. Original requests, focus and completion histories remain compared;
+no expected difference or fixture repair is added. See the follow-up in
+[ADR 0082](../../../../docs/adr/0082-popup-close-completion-frame.md).
+
+The final complete run passes **261/261** on macOS. Linux/arm64 repeats the three affected cases
+across all engines twice (**18/18**), with Playwright 1.60.0 Noble, two workers and original timeouts.
+Linux evidence: `dist/ci-44021164684/menubar-linux/results/`; full macOS observations remain in this
+suite's results directory. Context Menu, Menu and Popover lifecycle controls pass without new exceptions.

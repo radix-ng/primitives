@@ -59,3 +59,28 @@ Library build, consumer-skill regeneration, scoped lint and contributor checks p
 
 The unfinished Tabs rapid-keyboard matrix is independent of this correction. These scoped results
 do not certify that whole matrix, real devices, assistive technology or a rerun of GitHub Actions.
+
+## Follow-up: completed exits and native focus (2026-11-17)
+
+CI run [44021164684](https://github.com/radix-ng/primitives/actions/runs/44021164684) exposed a
+missing close completion in three controlled Menubar cases across all engines. The interruption
+frame was also extending the retained popup's focus-scope lifetime after its CSS exit had finished.
+
+Visual `ending` now follows unfinished CSS, live disposable Presence or an explicit hold. Waiting
+for the notification frame alone does not prolong that visual/focus phase. A native `focusin` open
+request completes an already-finished exit before starting its new enter. Unfinished CSS,
+undisposed Presence and deferred closes still block completion; ordinary reopen requests retain the
+interruptible frame and cancel stale callbacks. Menu forwards the original event into the shared
+transaction. No Presence hold or consumer option is added for Menubar.
+
+Five unit cases cover retained/disposable completed exits and unfinished Presence, deferred and CSS
+exits. The Select batch-close regression now waits for automatic completion rather than assuming
+Angular stability includes a native frame. Exact browser completion arrays remain compared.
+
+The complete Menubar suite passes 261 comparisons; the affected cases pass twice across all three
+Linux/arm64 engines (18 comparisons, two workers, original timeouts). Controls pass: Context Menu
+165 comparisons with 18 existing capability skips, Menu lifecycle 33, Popover lifecycle 30 and
+Select 47 with one existing skip. Shared units pass, including a final focused run of 27 lifecycle
+and five Select action tests; five selected SSR checks, library/consumer-skill builds, lint and
+contributor checks also pass. Reports are retained under `dist/ci-44021164684/` and the respective
+suite result directories. GitHub Actions itself was not rerun by this local verification.

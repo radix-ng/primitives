@@ -154,3 +154,18 @@ Resource comparisons cover actual background hiding/hit testing and scroll block
 attributes/guard counts are recorded as measurements. See [ADR 0046](../../../docs/adr/0046-menu-root-removal.md).
 
 Ten whole-root removal scenarios are included in this family.
+
+## Completed-exit focus regression, 2026-11-17
+
+The three controlled cases failing across all engines in
+[CI run 44021164684](https://github.com/radix-ng/primitives/actions/runs/44021164684) now preserve
+the close completion before native focus reopens the source menu. Retained focus scopes end with
+actual CSS completion, independently of the pending notification frame. The complete Menubar suite
+passes **261/261** on macOS; the nine affected comparisons pass twice on Linux/arm64 (**18/18**),
+Playwright 1.60.0 Noble, two workers and original timeouts. No reviewed exception changes.
+
+Shared-consumer controls pass: the full Context Menu suite (**165 passed**, 18 existing capability
+skips), Menu lifecycle (**33/33**), Popover lifecycle (**30/30**) and Select close/modal controls
+(**47 passed**, one existing skip). Five new shared lifecycle units
+cover completed and unfinished exits. See the follow-up in
+[ADR 0082](../../../docs/adr/0082-popup-close-completion-frame.md) for the mechanism.

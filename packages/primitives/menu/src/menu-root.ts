@@ -1092,7 +1092,7 @@ export class RdxMenuRoot<Payload = unknown> implements OnChanges, OnDestroy {
                 ? undefined
                 : trigger
         );
-        const transaction = this.lifecycle.prepareOpenChange(open);
+        const transaction = this.lifecycle.prepareOpenChange(open, event);
         change.eventDetails.preventUnmountOnClose = transaction.preventUnmountOnClose;
 
         return {

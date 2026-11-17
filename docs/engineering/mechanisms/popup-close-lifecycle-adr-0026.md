@@ -16,8 +16,11 @@ extending parity instead of adding another per-primitive retained-mount flag.
 
 Automatic completion also waits for one native frame after close acceptance, even without CSS
 motion. That frame runs alongside Presence/CSS exit, so a finished animation gains no extra frame.
-Reopening invalidates the pending completion; explicit `unmount()` and owner disposal keep their
-own boundaries. See [ADR 0082](../../adr/0082-popup-close-completion-frame.md).
+An ordinary reopen invalidates the pending completion. Visual `ending` follows the unfinished
+CSS/Presence/deferred lifetime, independently of that notification frame. A new native `focusin`
+request completes an already-finished exit before opening again; unfinished exits remain
+interruptible. Menu supplies its original event to `prepareOpenChange`. Explicit `unmount()` and
+owner disposal keep their own boundaries. See [ADR 0082](../../adr/0082-popup-close-completion-frame.md).
 
 Menu and Popover's shared viewport follows this presence/closing lifetime for its outgoing visual
 snapshot. A logical close can still be in a CSS or deferred exit; do not discard the snapshot at

@@ -144,6 +144,65 @@ describe('shared popup lifecycle', () => {
         }
     );
 
+    it.each([false, true])(
+        'completes a finished exit before native focus starts a new enter (retained: %s)',
+        async (keepMounted) => {
+            const mounted = signal(true);
+            host.lifecycle.registerPresence({ mounted, keepMounted: () => keepMounted });
+            change(true);
+            await settle();
+            await vi.waitFor(() => expect(host.completions).toEqual([true]));
+            const frames: FrameRequestCallback[] = [];
+            const request = vi.spyOn(globalThis, 'requestAnimationFrame').mockImplementation((callback) => {
+                frames.push(callback);
+                return 100_000 + frames.length;
+            });
+            try {
+                change(false);
+                if (!keepMounted) mounted.set(false);
+                await settle();
+                expect(closedCompletions()).toEqual([]);
+                expect(host.lifecycle.status()).toBeUndefined();
+                const reopen = host.lifecycle.prepareOpenChange(true, new FocusEvent('focusin'));
+                expect(closedCompletions()).toEqual([false]);
+                host.open.set(true);
+                reopen.commit();
+                await settle();
+                for (const frame of frames.splice(0)) frame(performance.now());
+                await settle();
+                expect(host.completions).toEqual([true, false, true]);
+            } finally {
+                request.mockRestore();
+            }
+        }
+    );
+
+    it.each(['presence', 'deferred', 'css'] as const)(
+        'does not complete an unfinished %s exit when native focus reopens it',
+        async (mode) => {
+            const mounted = signal(true);
+            host.lifecycle.registerPresence({ mounted, keepMounted: () => mode === 'css' });
+            change(true);
+            await settle();
+            await vi.waitFor(() => expect(host.completions).toEqual([true]));
+            if (mode === 'css') {
+                const element: HTMLElement = fixture.nativeElement;
+                element.style.animationDuration = '10s';
+                host.lifecycle.registerElement(element);
+            }
+            change(false, mode === 'deferred');
+            if (mode === 'deferred') mounted.set(false);
+            await settle();
+            expect(host.lifecycle.status()).toBe('ending');
+            const reopen = host.lifecycle.prepareOpenChange(true, new FocusEvent('focusin'));
+            host.open.set(true);
+            reopen.commit();
+            mounted.set(true);
+            await settle();
+            expect(closedCompletions()).toEqual([]);
+        }
+    );
+
     it('does not replay an enter completion when a close reopens before render', async () => {
         change(true);
         await settle();

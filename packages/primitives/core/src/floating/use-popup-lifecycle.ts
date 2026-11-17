@@ -24,7 +24,7 @@ export interface RdxPopupLifecycle {
     readonly status: Signal<RdxTransitionStatus>;
     registerElement: (element: HTMLElement) => () => void;
     registerPresence: (presence: RdxPopupPresenceRegistration) => () => void;
-    prepareOpenChange: (open: boolean) => RdxPopupOpenChangeTransaction;
+    prepareOpenChange: (open: boolean, event?: Event) => RdxPopupOpenChangeTransaction;
     /** @internal Call from the owner's ngOnDestroy, before Angular disconnects its outputs. */
     finishPendingCloseOnDestroy: () => void;
     /** Complete a pending close. A stale call while open, or after completion, does nothing. */
@@ -195,7 +195,11 @@ export function usePopupLifecycle(
     return {
         renderLifecycle: transition,
         present: computed(() => open() || deferred()),
-        status: computed(() => (closing() ? 'ending' : transition.status())),
+        // Visual exit and focus-scope ownership end when CSS/Presence finish. The callback's
+        // interruption frame can still be pending after that physical lifetime has ended.
+        status: computed(() =>
+            closing() && (!transitionComplete() || exitingPresence() || deferred()) ? 'ending' : transition.status()
+        ),
         finishPendingCloseOnDestroy: () => {
             // Angular marks the view destroyed before directive hooks, then disconnects outputs.
             // Only this hook window can notify an accepted close; a DestroyRef callback is too late.
@@ -215,8 +219,11 @@ export function usePopupLifecycle(
             presences.update((current) => [...current, presence]);
             return () => presences.update((current) => current.filter((entry) => entry !== presence));
         },
-        prepareOpenChange: (nextOpen) => {
+        prepareOpenChange: (nextOpen, event) => {
             syncOpen();
+            // Focus can return after a completed rendered exit, before its notification frame.
+            // That focus starts a new enter; report the finished exit before it can be discarded.
+            if (nextOpen && event?.type === 'focusin') completeClose(true);
             let requested = false;
             let committedClose: object | undefined;
             const preventUnmountOnClose = () => {
