@@ -31,7 +31,7 @@ All the open/close behavior, the `data-*` state, and the panel mounting come fro
 free. The accordion only writes the part that's genuinely new. Here's the result:
 
 ```html
-<div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="'item-1'" ${argsToTemplate(args)} rdxAccordionRoot>
+<div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="['item-1']" ${argsToTemplate(args)} rdxAccordionRoot>
     <div [class]="a.item" [value]="'item-1'" rdxAccordionItem>
         <h3 [class]="a.header" rdxAccordionHeader>
             <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>

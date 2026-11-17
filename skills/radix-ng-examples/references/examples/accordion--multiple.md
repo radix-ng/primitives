@@ -28,7 +28,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
         RdxAccordionPanelDirective
     ],
     template: `
-        <div [class]="cn(a.root, 'w-[300px]')" [value]="['item-2', 'item-3']" multiple rdxAccordionRoot>
+        <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="['item-2', 'item-3']" multiple rdxAccordionRoot>
             <div [class]="a.item" [value]="'item-1'" rdxAccordionItem>
                 <h3 [class]="a.header" rdxAccordionHeader>
                     <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>

@@ -4,9 +4,10 @@
 
 > Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
-Each item emits `onOpenChange` with `{ open, eventDetails }` whenever it expands or collapses; the
-root emits `onValueChange` with `{ value, eventDetails }`. Call `eventDetails.cancel()` to reject a
-change before it commits.
+An interaction first emits Item `onOpenChange` with `{ open, eventDetails }`, then Root
+`onValueChange` with `{ value, eventDetails }`, using the same event details. Either handler can
+cancel before commit. Changes to the controlled value and single-mode sibling closure do not emit
+Item requests.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
@@ -31,7 +32,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
     ],
     template: `
         <div class="flex w-[300px] flex-col gap-3">
-            <div [class]="a.root" [defaultValue]="'item-1'" rdxAccordionRoot>
+            <div [class]="a.root" [defaultValue]="['item-1']" rdxAccordionRoot>
                 <div [class]="a.item" [value]="'item-1'" (onOpenChange)="log('Accessibility', $event)" rdxAccordionItem>
                     <h3 [class]="a.header" rdxAccordionHeader>
                         <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>

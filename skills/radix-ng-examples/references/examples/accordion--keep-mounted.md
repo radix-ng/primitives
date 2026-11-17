@@ -36,7 +36,7 @@ import { cn, demoAccordion, demoInput } from '../../storybook/styles';
         RdxAccordionPanelDirective
     ],
     template: `
-        <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="'item-1'" keepMounted rdxAccordionRoot>
+        <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="['item-1']" keepMounted rdxAccordionRoot>
             <div [class]="a.item" [value]="'item-1'" rdxAccordionItem>
                 <h3 [class]="a.header" rdxAccordionHeader>
                     <button [class]="a.trigger" type="button" rdxAccordionTrigger>Shipping address</button>

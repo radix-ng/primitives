@@ -25,7 +25,7 @@ import { cn, demoAccordion } from '../shared/styles';
             title="Accordion"
             description="A vertically stacked set of interactive headings that each reveal a section of content."
         >
-            <div [class]="cn(a.root, 'w-[360px]')" [defaultValue]="'item-1'" rdxAccordionRoot>
+            <div [class]="cn(a.root, 'w-[360px]')" [defaultValue]="['item-1']" rdxAccordionRoot>
                 <div [class]="a.item" [value]="'item-1'" rdxAccordionItem>
                     <h3 [class]="a.header" rdxAccordionHeader>
                         <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>

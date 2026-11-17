@@ -1,3 +1,21 @@
-# Accordion was aligned to the Base UI part set
+# Accordion Base UI contract
 
-- **Accordion was aligned to the Base UI part set** (BREAKING) — `data-state` is replaced by Base UI's boolean `data-open` (item/header/panel) and `data-panel-open` (trigger); the content part was renamed **`RdxAccordionContentDirective` → `RdxAccordionPanelDirective`** (selector `[rdxAccordionContent]` → `[rdxAccordionPanel]`) and its CSS size vars renamed `--radix-accordion-content-*` → **`--accordion-panel-height` / `--accordion-panel-width`**. `onValueChange` now emits `{ value, eventDetails }` (cancelable, reasons `'trigger-press' | 'none'`) and item `onOpenChange` emits `{ open, eventDetails }`. Root gained `hiddenUntilFound`; the legacy `type`, `collapsible`, and `id` inputs were **removed** (single accordions are always collapsible — use `multiple`), along with the dead item `dataState`/`RdxAccordionItemState` and the trigger's `data-rdx-collection-item` marker (old roving-focus leftover). Data attributes now mirror the Base UI contract exactly: Root `data-orientation`/`data-disabled`; Item/Header `data-open`/`data-disabled`/`data-index`; Trigger `data-panel-open`/`data-disabled`; Panel `data-open`/`data-orientation`/`data-disabled`/`data-index`/`data-starting-style`/`data-ending-style` (the composed collapsible's `data-closed` is suppressed — Base UI's panel has none). Closed panels now use plain `hidden=""` by default (was `hidden="until-found"`); opt into find-in-page with `hiddenUntilFound`. One intentional divergence remains: our `value` is scalar in single mode (Base UI always uses an array).
+Accordion exposes Root, Item, Header, Trigger and Panel with per-part boolean state attributes.
+Root selection, defaults and request values are arrays in both single and multiple modes; arbitrary
+Item values use reference/value identity, with generated identities when omitted. A defined value
+input owns selection; uncontrolled defaults are initial-only. Two-way binding uses `valueChange`.
+
+Item `onOpenChange` is the first cancelable request, followed by Root `onValueChange` with the same
+event/details and then an accepted commit. External value changes and sibling closure do not emit
+Item requests. Search reveal enters this same transaction through Collapsible's composition adapter.
+
+Trigger composes shared Button behavior: native buttons default to button type, disabled native
+buttons use native disabled, and non-native hosts get keyboard/ARIA/tab-order adaptation. Trigger IDs
+register reactively. Panel exposes its ID and tri-state keepMounted/hiddenUntilFound overrides.
+The actual pinned mapper exposes Panel `data-closed`, Trigger `data-index` and inherited orientation/
+hidden state; closed findable Panels also retain starting style. The earlier claim that Panel had no
+closed state, that Trigger had no index, or that native disabled Triggers remained focusable was stale.
+
+Complete Panel view ownership and motion/measurement/hydration remain open. Current behavior,
+priorities and evidence are maintained in [the Accordion matrix](../../../packages/primitives/accordion/PARITY.md)
+and [its paired suite](../../../apps/parity-testing/primitives/accordion/README.md).

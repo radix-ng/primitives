@@ -7,16 +7,14 @@ import {
     input,
     InputSignal,
     InputSignalWithTransform,
-    model,
-    ModelSignal,
     output,
-    Signal
+    Signal,
+    signal,
+    untracked
 } from '@angular/core';
 import { RdxCompositeList } from '@radix-ng/primitives/composite';
 import {
-    AcceptableValue,
     BooleanInput,
-    createCancelableChangeEventDetails,
     createContext,
     DataOrientation,
     RdxCancelableChangeEventDetails
@@ -28,18 +26,17 @@ export type RdxAccordionValueChangeEventDetails = RdxCancelableChangeEventDetail
 
 /** Payload of {@link RdxAccordionRootDirective.onValueChange}, mirroring Base UI's `(value, eventDetails)`. */
 export interface RdxAccordionValueChangeEvent {
-    value: AcceptableValue | AcceptableValue[] | undefined;
+    value: unknown[];
     eventDetails: RdxAccordionValueChangeEventDetails;
 }
 
 export type AccordionRootContext = {
     disabled: InputSignalWithTransform<boolean, BooleanInput>;
     orientation: InputSignal<DataOrientation>;
-    value: ModelSignal<AcceptableValue | AcceptableValue[] | undefined>;
-    isSingle: Signal<boolean>;
+    value: Signal<unknown[]>;
     keepMounted: InputSignalWithTransform<boolean, BooleanInput>;
     hiddenUntilFound: InputSignalWithTransform<boolean, BooleanInput>;
-    changeModelValue: (value: string, event?: Event) => void;
+    requestValue: (value: unknown, open: boolean, details: RdxAccordionValueChangeEventDetails) => void;
 };
 
 export const [injectAccordionRootContext, provideAccordionRootContext] = createContext<AccordionRootContext>(
@@ -54,10 +51,9 @@ const rootContext = (): AccordionRootContext => {
         disabled: instance.disabled,
         orientation: instance.orientation,
         value: instance.value,
-        isSingle: instance.isSingle,
         keepMounted: instance.keepMounted,
         hiddenUntilFound: instance.hiddenUntilFound,
-        changeModelValue: instance.changeModelValue
+        requestValue: instance.requestValue
     };
 };
 
@@ -99,14 +95,23 @@ export class RdxAccordionRootDirective {
      * Use when you do not need to control the state of the item(s).
      * @group Props
      */
-    readonly defaultValue = input<string | string[]>();
+    readonly defaultValue = input<unknown[]>();
 
     /**
-     * The controlled value of the item to expand.
+     * The controlled expanded values, in both single and multiple modes.
+     * A defined array owns selection until the parent updates it. Use `[(value)]` for two-way binding.
      *
      * @group Props
      */
-    readonly value = model<AcceptableValue | AcceptableValue[]>();
+    readonly valueInput = input<unknown[] | undefined>(undefined, { alias: 'value' });
+
+    private readonly uncontrolledValue = signal<unknown[]>([]);
+
+    /** Effective expanded values. Uses reference/value membership, including array-valued items. */
+    readonly value = computed(() => this.valueInput() ?? this.uncontrolledValue());
+
+    /** Accepted selection requests; supports `[(value)]`. */
+    readonly valueChange = output<unknown[]>();
 
     /**
      * Allow multiple panels to be open simultaneously. In single mode an open item can always be
@@ -152,62 +157,31 @@ export class RdxAccordionRootDirective {
      */
     readonly onValueChange = output<RdxAccordionValueChangeEvent>();
 
-    readonly isSingle = computed(() => !this.multiple());
-
     constructor() {
+        let initialized = false;
         effect(() => {
-            if (this.defaultValue() !== undefined) {
-                this.value.set(this.defaultValue());
-            }
+            if (initialized) return;
+            initialized = true;
+            const initialValue = this.defaultValue() ?? [];
+            untracked(() => this.uncontrolledValue.set(initialValue));
         });
     }
 
-    changeModelValue = (newValue: string, event?: Event) => {
-        let nextValue: AcceptableValue | AcceptableValue[] | undefined;
+    /** @internal Item has already emitted its cancelable request with these same details. */
+    requestValue = (itemValue: unknown, open: boolean, eventDetails: RdxAccordionValueChangeEventDetails) => {
+        const current = this.value();
+        const next = !this.multiple()
+            ? current[0] === itemValue
+                ? []
+                : [itemValue]
+            : open
+              ? [...current, itemValue]
+              : current.filter((value) => value !== itemValue);
 
-        if (this.isSingle()) {
-            nextValue = this.isEqual(newValue, this.value()) ? undefined : newValue;
-        } else {
-            const currentValue = this.value();
-            let modelValueArray: AcceptableValue[] = [];
+        this.onValueChange.emit({ value: next, eventDetails });
+        if (eventDetails.isCanceled()) return;
 
-            if (Array.isArray(currentValue)) {
-                modelValueArray = [...currentValue];
-            } else if (currentValue !== undefined && currentValue !== null) {
-                modelValueArray = [currentValue];
-            }
-
-            if (this.isValueEqualOrExist(modelValueArray, newValue)) {
-                const index = modelValueArray.findIndex((item) => this.isEqual(item, newValue));
-                if (index !== -1) {
-                    modelValueArray.splice(index, 1);
-                }
-            } else {
-                modelValueArray.push(newValue);
-            }
-
-            nextValue = modelValueArray;
-        }
-
-        const { eventDetails } = createCancelableChangeEventDetails<RdxAccordionValueChangeReason>(
-            event ? 'trigger-press' : 'none',
-            event ?? new Event('change')
-        );
-
-        this.onValueChange.emit({ value: nextValue, eventDetails });
-
-        if (eventDetails.isCanceled()) {
-            return;
-        }
-
-        this.value.set(nextValue);
+        if (this.valueInput() === undefined) this.uncontrolledValue.set(next);
+        this.valueChange.emit(next);
     };
-
-    private isValueEqualOrExist(arr: AcceptableValue[], value: AcceptableValue): boolean {
-        return arr.some((item) => this.isEqual(item, value));
-    }
-
-    private isEqual(a: unknown, b: unknown): boolean {
-        return JSON.stringify(a) === JSON.stringify(b);
-    }
 }

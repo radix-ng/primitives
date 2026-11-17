@@ -333,6 +333,20 @@ class TabsValuesPage {
 }
 
 describe('SSR rendering', () => {
+    it('renders Accordion array defaults, native disabled buttons and authored relationships', async () => {
+        const html = await renderToString('app-accordion', AccordionPage);
+        const trigger = html.match(/<button[^>]*id="server-accordion-trigger"[^>]*>/)![0];
+        const panel = html.match(/<div[^>]*id="server-accordion-panel"[^>]*>/)![0];
+        expect(trigger).toContain('type="button"');
+        expect(trigger).toContain('aria-expanded="true"');
+        expect(trigger).toContain('aria-controls="server-accordion-panel"');
+        expect(panel).toContain('aria-labelledby="server-accordion-trigger"');
+        expect(panel).toContain('data-open');
+        const disabledButton = html.match(/<button[^>]*>Three<\/button>/)![0];
+        expect(disabledButton).toContain('disabled=""');
+        expect(disabledButton).not.toContain('aria-disabled');
+    });
+
     it('serializes arbitrary Tabs values with distinct native identities without invoking functions', async () => {
         const html = await renderToString('app-tabs-values', TabsValuesPage);
         const tag = (name: string) => html.match(new RegExp(`<[^>]*data-testid="${name}"[^>]*>`))![0];

@@ -26,21 +26,15 @@
         },
         {
           "name": "value",
-          "type": "string",
-          "description": "A string value for the accordion item. All items within an accordion should use a unique value."
-        },
-        {
-          "name": "open",
-          "type": "boolean",
-          "default": "false",
-          "description": "The controlled open state of the collapsible.\n`true` - expanded, `false` - collapsed."
+          "type": "unknown",
+          "description": "A unique value for this item. Values use reference/value identity.\nOmitted or nullish values receive a stable generated identity."
         }
       ],
       "outputs": [
         {
           "name": "onOpenChange",
           "type": "RdxAccordionItemOpenChangeEvent",
-          "description": "Event handler called when the panel open state changes. Emits `{ open, eventDetails }`\n(Base UI parity)."
+          "description": "Cancelable request emitted before Root onValueChange and before commit.\nExternal value changes and sibling closure do not emit a request."
         }
       ]
     },
@@ -50,7 +44,26 @@
       "hostDirectives": [
         "RdxCollapsiblePanelDirective"
       ],
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "id",
+          "type": "string | undefined",
+          "default": "undefined",
+          "description": "Optional explicit panel id. When set, the trigger's `aria-controls` points to this id."
+        },
+        {
+          "name": "keepMounted",
+          "type": "boolean | undefined",
+          "default": "false",
+          "description": "Whether to keep the element in the DOM while the panel is closed.\nWhen `true`, the closed panel keeps its element and receives the `hidden` attribute once the\nclose transition finishes."
+        },
+        {
+          "name": "hiddenUntilFound",
+          "type": "boolean | undefined",
+          "default": "false",
+          "description": "Allows the browser's built-in page search to find and expand the panel contents.\nWhen `true`, the closed panel uses `hidden=\"until-found\"` instead of plain `hidden`."
+        }
+      ],
       "outputs": []
     },
     {
@@ -63,7 +76,7 @@
       "inputs": [
         {
           "name": "defaultValue",
-          "type": "string | string[]",
+          "type": "unknown[]",
           "description": "The default active value of the item(s).\n\nUse when you do not need to control the state of the item(s)."
         },
         {
@@ -106,8 +119,9 @@
         },
         {
           "name": "value",
-          "type": "AcceptableValue | AcceptableValue[]",
-          "description": "The controlled value of the item to expand."
+          "type": "unknown[] | undefined",
+          "default": "undefined",
+          "description": "The controlled expanded values, in both single and multiple modes.\nA defined array owns selection until the parent updates it. Use `[(value)]` for two-way binding."
         }
       ],
       "outputs": [
@@ -115,6 +129,11 @@
           "name": "onValueChange",
           "type": "RdxAccordionValueChangeEvent",
           "description": "Event handler called when the expanded value changes. Emits the next value plus a cancelable\n`eventDetails` (Base UI parity); call `eventDetails.cancel()` to reject the change."
+        },
+        {
+          "name": "valueChange",
+          "type": "unknown[]",
+          "description": "Accepted selection requests; supports `[(value)]`."
         }
       ],
       "twoWay": [
@@ -124,7 +143,40 @@
     {
       "directive": "RdxAccordionTriggerDirective",
       "selector": "[rdxAccordionTrigger]",
-      "inputs": [],
+      "hostDirectives": [
+        "RdxButtonDirective"
+      ],
+      "inputs": [
+        {
+          "name": "id",
+          "type": "string | undefined",
+          "description": "Authored native ID, registered reactively for the Panel's accessible label."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the button is disabled."
+        },
+        {
+          "name": "type",
+          "type": "RdxButtonType",
+          "default": "'button'",
+          "description": "The `type` attribute applied to native `<button>` hosts."
+        },
+        {
+          "name": "tabIndex",
+          "type": "number | null | undefined",
+          "default": "injectTabIndexAttribute()",
+          "description": "The authored tab order, overriding disabled and composite defaults.\n`null` removes the attribute; `undefined` restores the default."
+        },
+        {
+          "name": "role",
+          "type": "string | null | undefined",
+          "default": "undefined",
+          "description": "The authored ARIA role. `null` removes the attribute; `undefined` restores the default."
+        }
+      ],
       "outputs": []
     }
   ]

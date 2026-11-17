@@ -18,12 +18,12 @@ import {
         RdxAccordionPanelDirective
     ],
     template: `
-        <div rdxAccordionRoot multiple>
+        <div [defaultValue]="['one']" rdxAccordionRoot multiple>
             <div [value]="'one'" rdxAccordionItem>
                 <h3 rdxAccordionHeader>
-                    <button type="button" rdxAccordionTrigger>One</button>
+                    <button id="server-accordion-trigger" rdxAccordionTrigger>One</button>
                 </h3>
-                <div rdxAccordionPanel>
+                <div id="server-accordion-panel" rdxAccordionPanel>
                     Per erat orci nostra luctus sociosqu mus risus penatibus, duis elit vulputate viverra integer
                     ullamcorper congue curabitur sociis, nisi malesuada scelerisque quam suscipit habitant sed.
                 </div>

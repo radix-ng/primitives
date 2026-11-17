@@ -1,6 +1,7 @@
 import {
     booleanAttribute,
     computed,
+    DestroyRef,
     Directive,
     effect,
     ElementRef,
@@ -13,7 +14,7 @@ import {
 } from '@angular/core';
 import { injectCollapsibleRootContext, RdxCollapsibleRootDirective } from '@radix-ng/primitives/collapsible';
 import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
-import { BooleanInput, createCancelableChangeEventDetails, createContext } from '@radix-ng/primitives/core';
+import { BooleanInput, createCancelableChangeEventDetails, createContext, injectId } from '@radix-ng/primitives/core';
 import { injectAccordionRootContext, RdxAccordionValueChangeEventDetails } from './accordion-root.directive';
 
 /** Payload of {@link RdxAccordionItemDirective.onOpenChange}, mirroring Base UI's `(open, eventDetails)`. */
@@ -25,11 +26,17 @@ export interface RdxAccordionItemOpenChangeEvent {
 export type AccordionItemContext = {
     open: Signal<boolean>;
     disabled: Signal<boolean>;
-    triggerId: WritableSignal<string>;
+    triggerId: WritableSignal<string | undefined>;
     dataDisabled: Signal<boolean>;
     currentElement: ElementRef<HTMLElement>;
-    value: Signal<string | undefined>;
-    updateOpen: () => void;
+    value: Signal<unknown>;
+    hidden: Signal<boolean>;
+    requestOpen: (
+        open: boolean,
+        reason: RdxAccordionValueChangeEventDetails['reason'],
+        event: Event,
+        trigger?: HTMLElement
+    ) => boolean;
     index: Signal<number>;
 };
 
@@ -47,8 +54,9 @@ const itemContext = (): AccordionItemContext => {
         dataDisabled: instance.isDisabled,
         triggerId: instance.triggerId,
         currentElement: instance.elementRef,
-        value: computed(() => instance.value()),
-        updateOpen: instance.updateOpen,
+        value: instance.resolvedValue,
+        hidden: instance.hidden,
+        requestOpen: instance.requestOpen,
         index: instance.index
     };
 };
@@ -60,17 +68,13 @@ const itemContext = (): AccordionItemContext => {
     selector: '[rdxAccordionItem]',
     exportAs: 'rdxAccordionItem',
     providers: [provideAccordionItemContext(itemContext)],
-    hostDirectives: [
-        {
-            directive: RdxCollapsibleRootDirective,
-            inputs: ['disabled: disabled', 'open: open']
-        },
-        RdxCompositeListItem
-    ],
+    hostDirectives: [RdxCollapsibleRootDirective, RdxCompositeListItem],
     host: {
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
         '[attr.data-open]': 'open() ? "" : undefined',
-        '[attr.data-index]': 'index()'
+        '[attr.data-index]': 'index()',
+        '[attr.data-orientation]': 'rootContext.orientation()',
+        '[attr.data-hidden]': 'hidden() ? "" : undefined'
     }
 })
 export class RdxAccordionItemDirective {
@@ -82,10 +86,14 @@ export class RdxAccordionItemDirective {
     protected readonly rootContext = injectAccordionRootContext();
 
     /**
-     * A string value for the accordion item. All items within an accordion should use a unique value.
+     * A unique value for this item. Values use reference/value identity.
+     * Omitted or nullish values receive a stable generated identity.
      * @group Props
      */
-    readonly value = input<string>();
+    readonly value = input<unknown>();
+
+    private readonly fallbackValue = injectId('rdx-accordion-item-');
+    readonly resolvedValue = computed(() => this.value() ?? this.fallbackValue);
 
     /**
      * Whether or not an accordion item is disabled from user interaction.
@@ -95,8 +103,8 @@ export class RdxAccordionItemDirective {
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
-     * Event handler called when the panel open state changes. Emits `{ open, eventDetails }`
-     * (Base UI parity).
+     * Cancelable request emitted before Root onValueChange and before commit.
+     * External value changes and sibling closure do not emit a request.
      * @group Emits
      */
     readonly onOpenChange = output<RdxAccordionItemOpenChangeEvent>();
@@ -105,16 +113,11 @@ export class RdxAccordionItemDirective {
         return this.rootContext.disabled() || this.disabled();
     });
 
-    readonly open = computed(() => {
-        const rootValue = this.rootContext.value();
+    readonly open = computed(() => this.rootContext.value().includes(this.resolvedValue()));
+    readonly hidden = computed(() => !this.open() && !this.collapsibleContext.mounted());
 
-        return this.rootContext.isSingle()
-            ? this.value() === rootValue
-            : Array.isArray(rootValue) && rootValue.includes(this.value()!);
-    });
-
-    /** Set by the trigger; links the content's `aria-labelledby` to the trigger `id`. */
-    readonly triggerId = signal('');
+    /** Registered Trigger identity; cleared when the part is destroyed. */
+    readonly triggerId = signal<string | undefined>(undefined);
 
     readonly index = this.listItem.index;
 
@@ -131,17 +134,23 @@ export class RdxAccordionItemDirective {
             this.collapsibleContext.hiddenUntilFound.set(this.rootContext.hiddenUntilFound());
         });
 
-        let initialized = false;
-        effect(() => {
-            const isOpen = this.open();
-            if (!initialized) {
-                initialized = true;
-                return;
-            }
-            const { eventDetails } = createCancelableChangeEventDetails('none', new Event('change'));
-            this.onOpenChange.emit({ open: isOpen, eventDetails });
-        });
+        const unregister = this.collapsibleContext.registerOpenRequestHandler(this.requestOpen);
+        inject(DestroyRef).onDestroy(unregister);
     }
+
+    requestOpen = (
+        open: boolean,
+        reason: RdxAccordionValueChangeEventDetails['reason'],
+        event: Event,
+        trigger?: HTMLElement
+    ): boolean => {
+        if (open === this.open()) return true;
+        const { eventDetails } = createCancelableChangeEventDetails(reason, event, trigger);
+        this.onOpenChange.emit({ open, eventDetails });
+        if (eventDetails.isCanceled()) return false;
+        this.rootContext.requestValue(this.resolvedValue(), open, eventDetails);
+        return !eventDetails.isCanceled() && this.open() === open;
+    };
 
     updateOpen = () => {
         this.collapsibleContext.open.set(this.open());

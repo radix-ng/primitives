@@ -30,7 +30,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
     template: `
         <div
             [class]="cn(a.root, 'flex h-[300px] flex-row')"
-            [defaultValue]="'item-1'"
+            [defaultValue]="['item-1']"
             [orientation]="'horizontal'"
             rdxAccordionRoot
         >

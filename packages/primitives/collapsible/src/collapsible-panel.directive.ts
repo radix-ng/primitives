@@ -9,8 +9,7 @@ import {
     inject,
     input,
     Renderer2,
-    signal,
-    untracked
+    signal
 } from '@angular/core';
 import { BooleanInput } from '@radix-ng/primitives/core';
 import { injectCollapsibleRootContext } from './collapsible-root.directive';
@@ -28,10 +27,11 @@ const optionalBoolean = (value: BooleanInput | undefined): boolean | undefined =
 @Directive({
     selector: '[rdxCollapsiblePanel]',
     host: {
-        '[id]': 'rootContext.panelId()',
+        '[attr.id]': 'rootContext.panelId()',
         '[attr.data-open]': 'rootContext.open() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.open() ? undefined : ""',
-        '[attr.data-starting-style]': 'rootContext.transitionStatus() === "starting" ? "" : undefined',
+        '[attr.data-starting-style]':
+            '(rootContext.transitionStatus() === "starting" || (effectiveHiddenUntilFound() && hidden() !== undefined)) ? "" : undefined',
         '[attr.data-ending-style]': 'rootContext.transitionStatus() === "ending" ? "" : undefined',
         '[attr.hidden]': 'hidden()',
         '[style.--collapsible-panel-width.px]': 'width()',
@@ -46,6 +46,7 @@ export class RdxCollapsiblePanelDirective {
 
     private parentNode: Node | null = null;
     private isAttached = true;
+    private revealDecision?: ReturnType<typeof setTimeout>;
 
     protected readonly rootContext = injectCollapsibleRootContext();
 
@@ -79,14 +80,19 @@ export class RdxCollapsiblePanelDirective {
         transform: optionalBoolean
     });
 
+    private readonly effectiveKeepMounted = computed(() => this.keepMounted() ?? this.rootContext.keepMounted());
+    protected readonly effectiveHiddenUntilFound = computed(
+        () => this.hiddenUntilFound() ?? this.rootContext.hiddenUntilFound()
+    );
+
     readonly height = signal<number | null>(null);
     readonly width = signal<number | null>(null);
 
-    /** Mirrors Base UI's `shouldRender`: hidden panels unmount unless kept for search/measurement. */
+    /** Whether the native Panel host remains attached. Angular child views currently stay alive. */
     readonly shouldRender = computed(
         () =>
-            this.rootContext.keepMounted() ||
-            this.rootContext.hiddenUntilFound() ||
+            this.effectiveKeepMounted() ||
+            this.effectiveHiddenUntilFound() ||
             this.rootContext.mounted() ||
             this.rootContext.open()
     );
@@ -102,7 +108,7 @@ export class RdxCollapsiblePanelDirective {
             return undefined;
         }
 
-        return this.rootContext.hiddenUntilFound() ? 'until-found' : '';
+        return this.effectiveHiddenUntilFound() ? 'until-found' : '';
     });
 
     /**
@@ -122,12 +128,20 @@ export class RdxCollapsiblePanelDirective {
             this.elementRef.nativeElement,
             'beforematch',
             (event: Event) => {
+                if (!this.effectiveHiddenUntilFound() || this.rootContext.open()) return;
                 this.rootContext.setOpen(true, 'none', event);
+                clearTimeout(this.revealDecision);
+                this.revealDecision = setTimeout(() => {
+                    if (!this.rootContext.open() && this.effectiveHiddenUntilFound()) {
+                        this.renderer.setAttribute(this.elementRef.nativeElement, 'hidden', 'until-found');
+                    }
+                }, 0);
             }
         );
 
         this.destroyRef.onDestroy(() => {
             unlistenBeforeMatch();
+            clearTimeout(this.revealDecision);
             this.removeMarker();
         });
 
@@ -136,27 +150,11 @@ export class RdxCollapsiblePanelDirective {
         });
 
         this.destroyRef.onDestroy(() => {
-            this.rootContext.setPanelIdState(undefined);
+            this.rootContext.setPanelIdState(null);
         });
 
         effect(() => {
             this.syncRenderedState();
-        });
-
-        // Forward the Panel inputs into the shared context, but only when the consumer actually
-        // sets them — so Accordion's context writes are never clobbered by the Panel defaults.
-        effect(() => {
-            const keepMounted = this.keepMounted();
-            if (keepMounted !== undefined) {
-                untracked(() => this.rootContext.keepMounted.set(keepMounted));
-            }
-        });
-
-        effect(() => {
-            const hiddenUntilFound = this.hiddenUntilFound();
-            if (hiddenUntilFound !== undefined) {
-                untracked(() => this.rootContext.hiddenUntilFound.set(hiddenUntilFound));
-            }
         });
 
         // `afterRenderEffect` runs after the DOM is committed (but before paint) with the settled

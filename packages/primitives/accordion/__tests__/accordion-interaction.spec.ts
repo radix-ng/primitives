@@ -51,7 +51,7 @@ describe('RdxAccordion — interaction', () => {
         trigger().click();
         fixture.detectChanges();
 
-        expect(host.onValueChange).toHaveBeenCalledWith(expect.objectContaining({ value: 'one' }));
+        expect(host.onValueChange).toHaveBeenCalledWith(expect.objectContaining({ value: ['one'] }));
         expect(content().getAttribute('data-open')).toBe('');
     });
 
@@ -70,7 +70,7 @@ describe('RdxAccordion — interaction', () => {
         expect(trigger().hasAttribute('aria-controls')).toBe(false);
     });
 
-    // A1 — disabled triggers stay focusable via `aria-disabled` (Base UI parity).
+    // Disabled native buttons use native disabled semantics.
     it('does not open when the accordion root is disabled', () => {
         host.rootDisabled.set(true);
         fixture.detectChanges();
@@ -80,9 +80,9 @@ describe('RdxAccordion — interaction', () => {
 
         expect(content().getAttribute('data-open')).toBeNull();
         expect(host.onValueChange).not.toHaveBeenCalled();
-        expect(trigger().getAttribute('aria-disabled')).toBe('true');
+        expect(trigger().getAttribute('aria-disabled')).toBeNull();
         expect(trigger().getAttribute('data-disabled')).toBe('');
-        expect(trigger().hasAttribute('disabled')).toBe(false);
+        expect(trigger().hasAttribute('disabled')).toBe(true);
     });
 
     // A3
@@ -135,7 +135,7 @@ describe('RdxAccordion — cancelable onValueChange', () => {
 
         expect(fixture.componentInstance.onValueChange).toHaveBeenCalledWith(
             expect.objectContaining({
-                value: 'one',
+                value: ['one'],
                 eventDetails: expect.objectContaining({ reason: 'trigger-press' })
             })
         );
@@ -287,10 +287,10 @@ describe('RdxAccordion — multiple input', () => {
         expect(contents()[1].getAttribute('data-open')).toBe('');
     });
 
-    it('does not expose data-closed on the panel (Base UI parity)', () => {
+    it('exposes data-closed on retained closed panels', () => {
         // closed panel (item two), kept mounted
         expect(contents()[1].getAttribute('data-open')).toBeNull();
-        expect(contents()[1].getAttribute('data-closed')).toBeNull();
+        expect(contents()[1].getAttribute('data-closed')).toBe('');
     });
 });
 
@@ -406,11 +406,11 @@ describe('RdxAccordion — data-index', () => {
         expect(headers()[2].getAttribute('data-index')).toBe('2');
     });
 
-    it('does not set data-index on triggers (Base UI parity)', () => {
+    it('sets data-index on triggers, including zero', () => {
         const triggers = fixture.debugElement
             .queryAll(By.css('[rdxAccordionTrigger]'))
             .map((d) => d.nativeElement as HTMLElement);
-        expect(triggers[0].getAttribute('data-index')).toBeNull();
+        expect(triggers.map((trigger) => trigger.getAttribute('data-index'))).toEqual(['0', '1', '2']);
     });
 
     it('sets data-index on contents', () => {
@@ -530,8 +530,8 @@ describe('RdxAccordion — mount behavior', () => {
         expect(panel()).not.toBeNull();
         expect((panel().nativeElement as HTMLElement).getAttribute('hidden')).toBe('');
         expect((panel().nativeElement as HTMLElement).getAttribute('data-open')).toBeNull();
-        // Base UI accordion panel has no `data-closed` (suppressed from the composed collapsible).
-        expect((panel().nativeElement as HTMLElement).getAttribute('data-closed')).toBeNull();
+        // The pin's actual state mapper exposes closed state on retained Panels.
+        expect((panel().nativeElement as HTMLElement).getAttribute('data-closed')).toBe('');
     });
 
     it('keeps closed content mounted but hidden with keepMounted=true', () => {
@@ -572,7 +572,7 @@ describe('RdxAccordion — mount behavior', () => {
         RdxAccordionPanelDirective
     ],
     template: `
-        <div [defaultValue]="'one'" (onValueChange)="onValueChange($event)" keepMounted rdxAccordionRoot>
+        <div [defaultValue]="['one']" (onValueChange)="onValueChange($event)" keepMounted rdxAccordionRoot>
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionHeader><button id="t1" rdxAccordionTrigger>One</button></div>
                 <div rdxAccordionPanel>One</div>
@@ -611,9 +611,7 @@ describe('RdxAccordion — single mode', () => {
         fixture.detectChanges();
 
         expect(contents()[0].getAttribute('data-open')).toBeNull();
-        expect(fixture.componentInstance.onValueChange).toHaveBeenCalledWith(
-            expect.objectContaining({ value: undefined })
-        );
+        expect(fixture.componentInstance.onValueChange).toHaveBeenCalledWith(expect.objectContaining({ value: [] }));
     });
 
     it('reflects open state via aria-expanded', () => {

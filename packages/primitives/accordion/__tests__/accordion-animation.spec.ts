@@ -9,7 +9,7 @@ import { RdxAccordionRootDirective } from '../src/accordion-root.directive';
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxAccordionRootDirective, RdxAccordionItemDirective, RdxAccordionPanelDirective],
     template: `
-        <div [defaultValue]="'one'" rdxAccordionRoot>
+        <div [defaultValue]="['one']" rdxAccordionRoot>
             <div value="one" rdxAccordionItem>
                 <div rdxAccordionPanel>Content one</div>
             </div>

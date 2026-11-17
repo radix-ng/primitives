@@ -33,7 +33,7 @@ export interface RdxCollapsibleOpenChangeEvent {
 
 export interface CollapsibleRootContext {
     /** Stable id linking the trigger's `aria-controls` to the panel. */
-    panelId: Signal<string>;
+    panelId: Signal<string | undefined>;
     /** Writable so composing primitives (Accordion) can drive the state. */
     open: ModelSignal<boolean>;
     disabled: Signal<boolean>;
@@ -42,17 +42,26 @@ export interface CollapsibleRootContext {
     /** `true` while the panel should stay rendered: open, or running its exit transition. */
     mounted: Signal<boolean>;
     /**
-     * Composition fallbacks. The standalone Panel inputs write here, and Accordion writes here
-     * directly; the Panel reads these so both wiring paths converge on a single source of truth.
+     * Composition fallbacks supplied by Accordion. Panel inputs override these reactively without
+     * writing into the fallback, so removing an override restores inheritance.
      */
     keepMounted: WritableSignal<boolean>;
     hiddenUntilFound: WritableSignal<boolean>;
     toggle: (event: Event, trigger?: HTMLElement) => void;
     setOpen: (open: boolean, reason: RdxCollapsibleOpenChangeReason, event: Event, trigger?: HTMLElement) => boolean;
-    setPanelIdState: (id: string | undefined) => void;
+    setPanelIdState: (id: string | null | undefined) => void;
     /** Registers the panel element whose transition duration gates the close completion. */
     registerTransitionElement: (element: HTMLElement) => () => void;
+    /** @internal Composing owners route requests through their authoritative state transaction. */
+    registerOpenRequestHandler: (handler: CollapsibleOpenRequestHandler) => () => void;
 }
+
+type CollapsibleOpenRequestHandler = (
+    open: boolean,
+    reason: RdxCollapsibleOpenChangeReason,
+    event: Event,
+    trigger?: HTMLElement
+) => boolean;
 
 export const [injectCollapsibleRootContext, provideCollapsibleRootContext] = createContext<CollapsibleRootContext>(
     'CollapsibleRootContext',
@@ -73,6 +82,7 @@ const rootContext = (): CollapsibleRootContext => {
         setOpen: (open, reason, event, trigger) => instance.setOpen(open, reason, event, trigger),
         setPanelIdState: (id) => instance.setPanelIdState(id),
         registerTransitionElement: (element) => instance.registerTransitionElement(element),
+        registerOpenRequestHandler: (handler) => instance.registerOpenRequestHandler(handler),
         toggle: (event, trigger) => {
             if (instance.disabled()) {
                 return;
@@ -104,7 +114,7 @@ export class RdxCollapsibleRootDirective {
     });
 
     private readonly generatedPanelId = injectId('rdx-collapsible-panel-');
-    private readonly panelIdState = signal<string | undefined>(undefined);
+    private readonly panelIdState = signal<string | null | undefined>(undefined);
 
     /** Reactive open/close transition phase (`'starting'` | `'ending'` | `undefined`). */
     readonly transitionStatus = this.transition.status;
@@ -142,7 +152,9 @@ export class RdxCollapsibleRootDirective {
     readonly panelId = input<string | undefined>(undefined);
 
     /** Stable id linking the trigger's `aria-controls` to the panel. */
-    readonly resolvedPanelId = computed(() => this.panelIdState() ?? this.panelId() ?? this.generatedPanelId);
+    readonly resolvedPanelId = computed(() =>
+        this.panelIdState() === null ? undefined : (this.panelIdState() ?? this.panelId() ?? this.generatedPanelId)
+    );
 
     /** Composition fallbacks (see {@link CollapsibleRootContext}). Default `false`. */
     readonly keepMountedContext = signal(false);
@@ -167,12 +179,22 @@ export class RdxCollapsibleRootDirective {
 
     private hasAppliedDefaultOpen = false;
     private previousOpen = this.open();
+    private openRequestHandler?: CollapsibleOpenRequestHandler;
 
-    setPanelIdState(id: string | undefined): void {
+    /** @internal A composition adapter; standalone Collapsible keeps its own request handling. */
+    registerOpenRequestHandler(handler: CollapsibleOpenRequestHandler): () => void {
+        this.openRequestHandler = handler;
+        return () => {
+            if (this.openRequestHandler === handler) this.openRequestHandler = undefined;
+        };
+    }
+
+    setPanelIdState(id: string | null | undefined): void {
         this.panelIdState.set(id);
     }
 
     setOpen(nextOpen: boolean, reason: RdxCollapsibleOpenChangeReason, event: Event, trigger?: HTMLElement): boolean {
+        if (this.openRequestHandler) return this.openRequestHandler(nextOpen, reason, event, trigger);
         if (nextOpen === this.open()) {
             return true;
         }

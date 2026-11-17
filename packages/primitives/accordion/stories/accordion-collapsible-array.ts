@@ -19,7 +19,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-        <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="'item-1'" rdxAccordionRoot>
+        <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="['item-1']" rdxAccordionRoot>
             @for (item of items; track item.id) {
                 <div [class]="a.item" [value]="item.id" rdxAccordionItem>
                     <h3 [class]="a.header" rdxAccordionHeader>

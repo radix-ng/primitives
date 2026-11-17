@@ -8,6 +8,7 @@ import { RdxAccordionRootDirective } from '../src/accordion-root.directive';
 import { RdxAccordionTriggerDirective } from '../src/accordion-trigger.directive';
 import { AccordionCollapsibleExample } from './accordion-collapsible';
 import { AccordionCollapsibleArrayExample } from './accordion-collapsible-array';
+import { AccordionControlledExample } from './accordion-controlled';
 import { AccordionDisabledExample } from './accordion-disabled';
 import { AccordionEventsExample } from './accordion-events';
 import { AccordionHorizontalExample } from './accordion-horizontal';
@@ -16,6 +17,7 @@ import { AccordionMultipleExample } from './accordion-multiple';
 
 import collapsibleArraySource from './accordion-collapsible-array?raw';
 import collapsibleSource from './accordion-collapsible?raw';
+import controlledSource from './accordion-controlled?raw';
 import disabledSource from './accordion-disabled?raw';
 import eventsSource from './accordion-events?raw';
 import horizontalSource from './accordion-horizontal?raw';
@@ -44,6 +46,7 @@ export default {
                 AccordionCollapsibleArrayExample,
                 AccordionHorizontalExample,
                 AccordionEventsExample,
+                AccordionControlledExample,
                 AccordionKeepMountedExample
             ]
         }),
@@ -61,7 +64,7 @@ export const Default: Story = {
     render: (args) => ({
         props: { ...args, cn, a: demoAccordion },
         template: html`
-            <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="'item-1'" ${argsToTemplate(args)} rdxAccordionRoot>
+            <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="['item-1']" ${argsToTemplate(args)} rdxAccordionRoot>
                 <div [class]="a.item" [value]="'item-1'" rdxAccordionItem>
                     <h3 [class]="a.header" rdxAccordionHeader>
                         <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
@@ -152,6 +155,15 @@ export const KeepMounted: Story = {
     render: () => ({
         template: html`
             <accordion-keep-mounted-example />
+        `
+    })
+};
+
+export const Controlled: Story = {
+    parameters: source(controlledSource),
+    render: () => ({
+        template: html`
+            <accordion-controlled-example />
         `
     })
 };

@@ -376,7 +376,7 @@ type CopyTarget = 'install' | 'skill';
 
                             <div
                                 class="border-border bg-background overflow-hidden rounded-md border"
-                                [defaultValue]="'accessibility'"
+                                [defaultValue]="['accessibility']"
                                 keepMounted
                                 rdxAccordionRoot
                             >

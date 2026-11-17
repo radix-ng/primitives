@@ -20,7 +20,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
     ],
     template: `
         <div class="flex w-[300px] flex-col gap-3">
-            <div [class]="a.root" [defaultValue]="'item-1'" rdxAccordionRoot>
+            <div [class]="a.root" [defaultValue]="['item-1']" rdxAccordionRoot>
                 <div [class]="a.item" [value]="'item-1'" (onOpenChange)="log('Accessibility', $event)" rdxAccordionItem>
                     <h3 [class]="a.header" rdxAccordionHeader>
                         <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>

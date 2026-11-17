@@ -553,7 +553,7 @@ The runtime is separate from the consumer skills.
 #### A vertically stacked set of interactive headings that each reveal an associated section of content.
 
 ```html
-<div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="'item-1'" ${argsToTemplate(args)} rdxAccordionRoot>
+<div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="['item-1']" ${argsToTemplate(args)} rdxAccordionRoot>
     <div [class]="a.item" [value]="'item-1'" rdxAccordionItem>
         <h3 [class]="a.header" rdxAccordionHeader>
             <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
@@ -649,7 +649,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
         RdxAccordionPanelDirective
     ],
     template: `
-        <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="'item-1'" rdxAccordionRoot>
+        <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="['item-1']" rdxAccordionRoot>
             <div [class]="a.item" [value]="'item-1'" rdxAccordionItem>
                 <h3 [class]="a.header" rdxAccordionHeader>
                     <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
@@ -713,7 +713,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
         RdxAccordionPanelDirective
     ],
     template: `
-        <div [class]="cn(a.root, 'w-[300px]')" [value]="['item-2', 'item-3']" multiple rdxAccordionRoot>
+        <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="['item-2', 'item-3']" multiple rdxAccordionRoot>
             <div [class]="a.item" [value]="'item-1'" rdxAccordionItem>
                 <h3 [class]="a.header" rdxAccordionHeader>
                     <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
@@ -780,7 +780,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
         RdxAccordionPanelDirective
     ],
     template: `
-        <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="'item-1'" rdxAccordionRoot>
+        <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="['item-1']" rdxAccordionRoot>
             <div [class]="a.item" [value]="'item-1'" rdxAccordionItem>
                 <h3 [class]="a.header" rdxAccordionHeader>
                     <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
@@ -846,7 +846,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
     template: `
         <div
             [class]="cn(a.root, 'flex h-[300px] flex-row')"
-            [defaultValue]="'item-1'"
+            [defaultValue]="['item-1']"
             [orientation]="'horizontal'"
             rdxAccordionRoot
         >
@@ -895,9 +895,10 @@ export class AccordionHorizontalExample {
 
 ### Events
 
-Each item emits `onOpenChange` with `{ open, eventDetails }` whenever it expands or collapses; the
-root emits `onValueChange` with `{ value, eventDetails }`. Call `eventDetails.cancel()` to reject a
-change before it commits.
+An interaction first emits Item `onOpenChange` with `{ open, eventDetails }`, then Root
+`onValueChange` with `{ value, eventDetails }`, using the same event details. Either handler can
+cancel before commit. Changes to the controlled value and single-mode sibling closure do not emit
+Item requests.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
@@ -922,7 +923,7 @@ import { cn, demoAccordion } from '../../storybook/styles';
     ],
     template: `
         <div class="flex w-[300px] flex-col gap-3">
-            <div [class]="a.root" [defaultValue]="'item-1'" rdxAccordionRoot>
+            <div [class]="a.root" [defaultValue]="['item-1']" rdxAccordionRoot>
                 <div [class]="a.item" [value]="'item-1'" (onOpenChange)="log('Accessibility', $event)" rdxAccordionItem>
                     <h3 [class]="a.header" rdxAccordionHeader>
                         <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
@@ -954,6 +955,74 @@ export class AccordionEventsExample {
 
     log(title: string, event: { open: boolean }): void {
         this.status.set(`${title} ${event.open ? 'opened' : 'closed'}`);
+    }
+}
+```
+
+### Controlled
+
+Use `[(value)]` to accept array requests. Cancel a request in `onValueChange` to keep the current selection.
+
+```typescript
+import { Component, signal } from '@angular/core';
+import {
+    RdxAccordionHeaderDirective,
+    RdxAccordionItemDirective,
+    RdxAccordionPanelDirective,
+    RdxAccordionRootDirective,
+    RdxAccordionTriggerDirective,
+    RdxAccordionValueChangeEvent
+} from '@radix-ng/primitives/accordion';
+import { demoAccordion } from '../../storybook/styles';
+
+@Component({
+    selector: 'accordion-controlled-example',
+    imports: [
+        RdxAccordionRootDirective,
+        RdxAccordionItemDirective,
+        RdxAccordionHeaderDirective,
+        RdxAccordionTriggerDirective,
+        RdxAccordionPanelDirective
+    ],
+    template: `
+        <div class="flex w-[300px] flex-col gap-3">
+            <label class="flex items-center gap-2 text-sm" for="accordion-block-changes">
+                <input
+                    id="accordion-block-changes"
+                    [checked]="blocked()"
+                    (change)="blocked.set(!blocked())"
+                    type="checkbox"
+                />
+                Block changes
+            </label>
+            <div [(value)]="selected" [class]="a.root" (onValueChange)="request($event)" rdxAccordionRoot>
+                @for (item of items; track item) {
+                    <div [class]="a.item" [value]="item" rdxAccordionItem>
+                        <h3 [class]="a.header" rdxAccordionHeader>
+                            <button [class]="a.trigger" rdxAccordionTrigger>{{ item }}</button>
+                        </h3>
+                        <div [class]="a.content" rdxAccordionPanel>
+                            <div [class]="a.contentText">Content for {{ item }}.</div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <p class="text-muted-foreground text-sm" data-testid="accordion-value">
+                Selected: {{ selected().join(', ') }}
+            </p>
+            <p class="text-muted-foreground text-sm" data-testid="accordion-requests">Requests: {{ requests() }}</p>
+        </div>
+    `
+})
+export class AccordionControlledExample {
+    protected readonly a = demoAccordion;
+    readonly items = ['First', 'Second'];
+    readonly selected = signal<unknown[]>(['First']);
+    readonly blocked = signal(false);
+    readonly requests = signal(0);
+    request(event: RdxAccordionValueChangeEvent) {
+        this.requests.update((count) => count + 1);
+        if (this.blocked()) event.eventDetails.cancel();
     }
 }
 ```
@@ -992,7 +1061,7 @@ import { cn, demoAccordion, demoInput } from '../../storybook/styles';
         RdxAccordionPanelDirective
     ],
     template: `
-        <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="'item-1'" keepMounted rdxAccordionRoot>
+        <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="['item-1']" keepMounted rdxAccordionRoot>
             <div [class]="a.item" [value]="'item-1'" rdxAccordionItem>
                 <h3 [class]="a.header" rdxAccordionHeader>
                     <button [class]="a.trigger" type="button" rdxAccordionTrigger>Shipping address</button>
@@ -1024,23 +1093,16 @@ export class AccordionKeepMountedExample {
 }
 ```
 
-## Accessibility
-
-### Keyboard Interactions
-
-| Key                        | Description                                                                            |
-| -------------------------- | -------------------------------------------------------------------------------------- |
-| `Space` / `Enter`          | Toggles the focused item (in single non-collapsible mode an open item stays open).     |
-
-Focus moves through accordion triggers using the browser's normal tab order. `Arrow*`, `Home`, and `End` are not handled by Accordion.
-
-`loopFocus` and focus behavior from `orientation` are deprecated for Base UI parity and no longer affect keyboard focus.
-
 ## API Reference
 
 ### Root
 
 `RdxAccordionRootDirective` — groups all parts and owns the expanded value. Apply to a container element (typically a `<div>`).
+
+`value`, `defaultValue`, and event values are arrays in both modes, for example
+`[defaultValue]="['one']"`. A supplied `value` (including `[]`) owns selection; use `[(value)]`
+to accept requests automatically, or update `[value]` in a request handler. Without `value`, Root
+snapshots `defaultValue` once. Later default changes do not reset selection.
 
 **Data attributes**
 
@@ -1053,11 +1115,17 @@ Focus moves through accordion triggers using the browser's normal tab order. `Ar
 
 `RdxAccordionItemDirective` — groups a header with its panel. Apply to a container element (typically a `<div>`).
 
+Item values use reference/value identity and can be objects, functions or arrays. An array item
+remains a single value. Omitted or nullish values receive a stable generated identity.
+
 **Data attributes**
 
 | Attribute       | Present when                            |
 | --------------- | --------------------------------------- |
 | `data-open`     | The item is open.                       |
+| `data-closed` | The item is closed. |
+| `data-hidden` | The item is closed and its exit has finished. |
+| `data-orientation` | Always — `"horizontal"` \| `"vertical"`. |
 | `data-disabled` | The item is disabled.                   |
 | `data-index`    | Always — the item's zero-based index.   |
 
@@ -1070,33 +1138,57 @@ Focus moves through accordion triggers using the browser's normal tab order. `Ar
 | Attribute       | Present when                            |
 | --------------- | --------------------------------------- |
 | `data-open`     | The item is open.                       |
+| `data-closed` | The item is closed. |
+| `data-hidden` | The item is closed and its exit has finished. |
+| `data-orientation` | Always — `"horizontal"` \| `"vertical"`. |
 | `data-disabled` | The item is disabled.                   |
 | `data-index`    | Always — the item's zero-based index.   |
 
 ### Trigger
 
-`RdxAccordionTriggerDirective` — the button that toggles the panel. Reads everything from context, so it takes no inputs. Apply to a native `<button>` element. It wires `aria-expanded` and (while open) `aria-controls` to its panel; disabled triggers stay focusable via `aria-disabled`.
+`RdxAccordionTriggerDirective` — the button that toggles the panel. Apply to a native `<button>`
+element, or a non-native host for which Button supplies role, tab order and Enter/Space activation.
+Native buttons default to `type="button"`; authored `submit` and `reset` types are preserved.
+Disabled native buttons use native `disabled`; disabled non-native hosts use `aria-disabled`
+and leave the Tab order. Root, Item and local Trigger `disabled` combine.
+
+The composed Button inputs are `disabled`, `type`, `tabIndex` and `role`. `id` registers the authored
+Trigger identity for the Panel label, and updates or unregisters with the part.
 
 **Data attributes**
 
 | Attribute         | Present when                |
 | ----------------- | --------------------------- |
 | `data-panel-open` | The item's panel is open.   |
+| `data-index` | Always — the item's zero-based index. |
+| `data-orientation` | Always — `"horizontal"` \| `"vertical"`. |
+| `data-hidden` | The item is closed and its exit has finished. |
 | `data-disabled`   | The item is disabled.       |
 
 ### Panel
 
-`RdxAccordionPanelDirective` — the collapsible content. Reads everything from context, so it takes no inputs. Apply to a container element (typically a `<div>`).
+`RdxAccordionPanelDirective` — the collapsible content. Apply to a container element (typically a `<div>`).
+
+`id`, `keepMounted`, and `hiddenUntilFound` are exposed from Collapsible Panel. Panel boolean
+policies override Root, including explicit `false`; `undefined` restores reactive inheritance.
+Findable panels remain mounted even when `keepMounted` is false. `beforematch` requests expansion
+through Item and Root; canceled or unaccepted controlled requests restore the hidden state.
+
+Closed default panels currently detach their native host while retaining Angular children.
+Use `keepMounted` to retain the closed host; complete child-view disposal is tracked in
+[the Accordion parity matrix](https://github.com/radix-ng/primitives/blob/main/packages/primitives/accordion/PARITY.md).
 
 **Data attributes**
 
 | Attribute             | Present when                            |
 | --------------------- | --------------------------------------- |
 | `data-open`           | The panel is open.                      |
+| `data-closed` | The panel is closed. |
+| `data-hidden` | The item is closed and its exit has finished. |
 | `data-orientation`    | Always — `"horizontal"` \| `"vertical"`.|
 | `data-disabled`       | The item is disabled.                   |
 | `data-index`          | Always — the item's zero-based index.   |
-| `data-starting-style` | The panel is animating in.              |
+| `data-starting-style` | The panel is entering, or closed and retained for browser search. |
 | `data-ending-style`   | The panel is animating out.             |
 
 **CSS variables**
@@ -1105,6 +1197,29 @@ Focus moves through accordion triggers using the browser's normal tab order. `Ar
 | ---------------------------- | --------------------------------------------------- |
 | `--accordion-panel-height`   | The panel's measured height, for height animations. |
 | `--accordion-panel-width`    | The panel's measured width, for width animations.   |
+
+## Accessibility
+
+Accordion reuses native button semantics and adds expansion and label relationships for the
+[APG Accordion pattern](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/).
+See the library's [accessibility guidance](overview/accessibility.md).
+
+| Area | Implementation | Reference |
+| --- | --- | --- |
+| Semantics | Heading hosts contain buttons; region Panels are labelled by their Trigger. | [APG roles](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/#wai-ariaroles,states,andproperties), [WCAG 4.1.2](https://www.w3.org/TR/WCAG22/#name-role-value) |
+| Keyboard | Native activation or shared Button Enter/Space handling. | [APG keyboard](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/#keyboardinteraction), [WCAG 2.1.1](https://www.w3.org/TR/WCAG22/#keyboard) |
+| Focus | Normal browser Tab order; disabled triggers leave that order. | [WCAG 2.4.3](https://www.w3.org/TR/WCAG22/#focus-order) |
+| State | Trigger exposes `aria-expanded` and open-only `aria-controls`. | [WCAG 4.1.2](https://www.w3.org/TR/WCAG22/#name-role-value) |
+
+### Keyboard Interactions
+
+| Key | Description |
+| --- | --- |
+| `Enter` / `Space` | Toggles the focused enabled item. Space activates on release. |
+| `Tab` / `Shift` + `Tab` | Moves through enabled triggers in browser tab order. |
+
+`Arrow*`, `Home`, and `End` do not move focus. `loopFocus` and orientation-driven focus behavior
+are deprecated no-ops.
 
 ---
 
@@ -34818,7 +34933,7 @@ All the open/close behavior, the `data-*` state, and the panel mounting come fro
 free. The accordion only writes the part that's genuinely new. Here's the result:
 
 ```html
-<div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="'item-1'" ${argsToTemplate(args)} rdxAccordionRoot>
+<div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="['item-1']" ${argsToTemplate(args)} rdxAccordionRoot>
     <div [class]="a.item" [value]="'item-1'" rdxAccordionItem>
         <h3 [class]="a.header" rdxAccordionHeader>
             <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>

@@ -51,6 +51,7 @@ import {
 - [Collapsible](../examples/accordion--collapsible.md)
 - [Horizontal](../examples/accordion--horizontal.md)
 - [Events](../examples/accordion--events.md)
+- [Controlled](../examples/accordion--controlled.md)
 - [Keep mounted](../examples/accordion--keep-mounted.md)
 
 ## API & styling contract

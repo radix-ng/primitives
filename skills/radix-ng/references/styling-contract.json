@@ -27,6 +27,21 @@
           "values": "The item is open."
         },
         {
+          "attribute": "data-closed",
+          "parts": "Item",
+          "values": "The item is closed."
+        },
+        {
+          "attribute": "data-hidden",
+          "parts": "Item",
+          "values": "The item is closed and its exit has finished."
+        },
+        {
+          "attribute": "data-orientation",
+          "parts": "Item",
+          "values": "Always — \"horizontal\" | \"vertical\"."
+        },
+        {
           "attribute": "data-disabled",
           "parts": "Item",
           "values": "The item is disabled."
@@ -40,6 +55,21 @@
           "attribute": "data-open",
           "parts": "Header",
           "values": "The item is open."
+        },
+        {
+          "attribute": "data-closed",
+          "parts": "Header",
+          "values": "The item is closed."
+        },
+        {
+          "attribute": "data-hidden",
+          "parts": "Header",
+          "values": "The item is closed and its exit has finished."
+        },
+        {
+          "attribute": "data-orientation",
+          "parts": "Header",
+          "values": "Always — \"horizontal\" | \"vertical\"."
         },
         {
           "attribute": "data-disabled",
@@ -57,6 +87,21 @@
           "values": "The item's panel is open."
         },
         {
+          "attribute": "data-index",
+          "parts": "Trigger",
+          "values": "Always — the item's zero-based index."
+        },
+        {
+          "attribute": "data-orientation",
+          "parts": "Trigger",
+          "values": "Always — \"horizontal\" | \"vertical\"."
+        },
+        {
+          "attribute": "data-hidden",
+          "parts": "Trigger",
+          "values": "The item is closed and its exit has finished."
+        },
+        {
           "attribute": "data-disabled",
           "parts": "Trigger",
           "values": "The item is disabled."
@@ -65,6 +110,16 @@
           "attribute": "data-open",
           "parts": "Panel",
           "values": "The panel is open."
+        },
+        {
+          "attribute": "data-closed",
+          "parts": "Panel",
+          "values": "The panel is closed."
+        },
+        {
+          "attribute": "data-hidden",
+          "parts": "Panel",
+          "values": "The item is closed and its exit has finished."
         },
         {
           "attribute": "data-orientation",
@@ -84,7 +139,7 @@
         {
           "attribute": "data-starting-style",
           "parts": "Panel",
-          "values": "The panel is animating in."
+          "values": "The panel is entering, or closed and retained for browser search."
         },
         {
           "attribute": "data-ending-style",
