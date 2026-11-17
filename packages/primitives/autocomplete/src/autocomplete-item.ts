@@ -243,6 +243,7 @@ export class RdxAutocompleteItem implements ComboboxItemRef {
     onPointerLeave(event: PointerEvent): void {
         if (
             event.pointerType === 'touch' ||
+            this.rootContext.isKeyboardActive() ||
             !this.rootContext.open() ||
             !this.rootContext.highlightItemOnHover() ||
             this.rootContext.keepHighlight()
@@ -254,6 +255,6 @@ export class RdxAutocompleteItem implements ComboboxItemRef {
         if (list && list.contains(related)) {
             return;
         }
-        this.rootContext.clearHighlight();
+        this.rootContext.clearHighlight('pointer');
     }
 }

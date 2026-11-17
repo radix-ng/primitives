@@ -8,6 +8,7 @@ import {
     Injector,
     input,
     isDevMode,
+    linkedSignal,
     model,
     numberAttribute,
     OnChanges,
@@ -115,7 +116,7 @@ const context = (): RdxComboboxRootContext => {
         setLabelId: (id: string | undefined) => engine.setLabelId(id),
         dir: root.dir,
         value: root.value,
-        inputValue: root.value,
+        inputValue: root.displayValue,
         name: root.name,
         form: root.form,
         inputOwnsFormValue: root.inputOwnsFormValue,
@@ -159,7 +160,7 @@ const context = (): RdxComboboxRootContext => {
         highlightLast: () => engine.highlightLast('keyboard'),
         highlightIndex: (index: number, reason: ComboboxHighlightReason) => engine.highlightIndex(index, reason),
         setHighlight: (item: ComboboxItemRef, reason: ComboboxHighlightReason) => engine.setHighlight(item, reason),
-        clearHighlight: () => engine.clearHighlightState(),
+        clearHighlight: (reason?: ComboboxHighlightReason) => engine.clearHighlightState(reason),
         highlightItemOnHover: root.highlightItemOnHover,
         keepHighlight: root.keepHighlight,
         inputElement: engine.inputElement,
@@ -174,8 +175,8 @@ const context = (): RdxComboboxRootContext => {
         focusInput: () => engine.focusInput(),
         openPopup: (reason?: RdxComboboxOpenChangeReason, event?: Event) => root.setOpen(true, reason, event),
         openForBrowse: (reason?: RdxComboboxOpenChangeReason, event?: Event) => root.openForBrowse(reason, event),
-        closePopup: (revert = true, reason?: RdxComboboxOpenChangeReason, event?: Event) =>
-            root.closePopup(revert, reason, event),
+        closePopup: (_revert = true, reason?: RdxComboboxOpenChangeReason, event?: Event) =>
+            root.closePopup(reason, event),
         setInputValue: (value: string) => root.setQuery(value),
         openAndHighlight: (edge: 'first' | 'last', reason?: RdxComboboxOpenChangeReason, event?: Event) =>
             root.openAndHighlight(edge, reason, event),
@@ -411,17 +412,20 @@ export class RdxAutocompleteRoot
     /** Whether inline completion applies in the current mode (`both` / `inline`). */
     readonly inlineMode = computed(() => !this.readOnly() && (this.mode() === 'both' || this.mode() === 'inline'));
 
-    /**
-     * Whether the input text is a fresh user query rather than a committed selection's label. While
-     * `false` (just opened, or showing a committed selection), the list is unfiltered; it flips `true`
-     * on the first keystroke.
-     */
-    private readonly typed = signal(false);
+    /** The committed input text supplies filtering even before the first user edit. */
+    readonly query = computed(() => (this.value() ?? '').trim());
 
-    /** The text the user actually typed, used as the filter query. */
-    readonly query = computed(() => (this.typed() ? (this.value() ?? '') : ''));
+    /** Temporary completion is invalidated by value, mode, read-only and popup changes. */
+    private readonly inlinePreviewState = linkedSignal<string | null>(() => {
+        this.value();
+        this.inlineMode();
+        this.open();
+        return null;
+    });
 
-    /** The shared engine: item registry, filtering, highlight navigation (grid), inline, transition. */
+    readonly inlinePreview = this.inlinePreviewState.asReadonly();
+
+    /** The shared engine: item registry, filtering, highlight navigation (grid) and transition. */
     private readonly engine: ComboboxEngine = useComboboxEngine({
         injector: this.injector,
         listIdPrefix: 'rdx-autocomplete-list-',
@@ -433,6 +437,7 @@ export class RdxAutocompleteRoot
         allowEscape: computed(() => this.autoHighlightMode() === 'off'),
         disabledItemsFocusable: true,
         notifyOnUnchangedHighlight: true,
+        preserveHighlightOnQuery: true,
         dir: this.dir,
         autoHighlightMode: this.autoHighlightMode,
         virtualized: this.virtualized,
@@ -442,16 +447,14 @@ export class RdxAutocompleteRoot
         limit: this.limit,
         grid: this.grid,
         rowOf: (element) => element.closest('[rdxAutocompleteRow]'),
-        inlineMode: this.inlineMode,
-        readOnly: this.readOnly,
         itemToString: (value) => this.labelFor(value),
-        onItemHighlighted: (details) => this.onItemHighlighted.emit(details),
+        onItemHighlighted: (details, queryChanged) => this.handleItemHighlighted(details, queryChanged),
         onOpenChange: () => {},
         onOpenChangeComplete: (open) => this.onOpenChangeComplete.emit(open)
     });
 
     /** What the input element displays: the inline preview if any, else the committed value. */
-    readonly displayValue = computed(() => this.engine.inlinePreview() ?? this.value() ?? '');
+    readonly displayValue = computed(() => this.inlinePreview() ?? this.value() ?? '');
 
     // --- engine-backed surface read by the parts / tests ---
     get listId() {
@@ -498,9 +501,6 @@ export class RdxAutocompleteRoot
     }
     get visibleCount() {
         return this.engine.visibleCount;
-    }
-    get inlinePreview() {
-        return this.engine.inlinePreview;
     }
     get transitionStatus() {
         return this.engine.transitionStatus;
@@ -559,20 +559,12 @@ export class RdxAutocompleteRoot
         }
     }
 
-    setSuppressInline(value: boolean): void {
-        this.engine.setSuppressInline(value);
-    }
-
-    /** Opens the popup for browsing (resets the query to "pristine" and selects the input text). */
+    /** Opens the popup for browsing while preserving the committed query and native caret. */
     openForBrowse(
         reason: RdxComboboxOpenChangeReason = 'none',
         event: Event = new Event('autocomplete.open-change')
     ): void {
-        if (!this.open()) {
-            this.typed.set(false);
-        }
         this.setOpen(true, reason, event);
-        this.engine.selectInputText();
         if (this.autoHighlightMode() === 'always') {
             this.engine.setPendingHighlightEdge('first');
         }
@@ -584,11 +576,7 @@ export class RdxAutocompleteRoot
         reason: RdxComboboxOpenChangeReason = 'list-navigation',
         event: Event = new Event('autocomplete.open-change')
     ): void {
-        if (!this.open()) {
-            this.typed.set(false);
-        }
         this.setOpen(true, reason, event);
-        this.engine.selectInputText();
         this.engine.setPendingHighlightEdge(edge);
     }
 
@@ -627,7 +615,6 @@ export class RdxAutocompleteRoot
     }
 
     closePopup(
-        revert = true,
         reason: RdxComboboxOpenChangeReason = 'none',
         event: Event = new Event('autocomplete.open-change')
     ): void {
@@ -640,24 +627,35 @@ export class RdxAutocompleteRoot
         }
 
         this.engine.clearHighlightState();
-        this.engine.clearInlinePreview();
-        if (revert) {
-            this.typed.set(false);
-        }
+        this.inlinePreviewState.set(null);
         this.markAsTouched();
     }
 
-    /** Updates the input text from user typing (marks it a fresh query, emits change). */
-    setQuery(value: string): void {
-        this.commitValue(value, 'input-change');
-        this.typed.set(true);
-        // Inline modes (`both` / `inline`) implicitly highlight the first prefix match so the input can
-        // be inline-completed even without an explicit `autoHighlight`.
-        if (this.autoHighlightMode() !== 'off' || (this.inlineMode() && value.length > 0)) {
-            this.engine.setPendingHighlightEdge('first-match');
+    private handleItemHighlighted(details: ComboboxItemHighlightedDetails, queryChanged: boolean): void {
+        const valueBefore = this.value();
+        this.onItemHighlighted.emit(details);
+        if (details.reason === 'pointer' || this.value() !== valueBefore) return;
+        if (!this.inlineMode()) {
+            this.inlinePreviewState.set(null);
+            return;
+        }
+        // The accepted controlled value wins over completion generated by the same edit. A later
+        // navigation or collection notification can create a preview without changing the model.
+        if (queryChanged && details.reason === 'none' && (this.hasExplicitValueInput || this.hasCvaValue)) return;
+        this.inlinePreviewState.set(details.value === null ? null : this.labelFor(details.value));
+    }
+
+    /** Commits an edit; the configured auto-highlight policy owns automatic navigation. */
+    setQuery(value: string, event: Event = new Event('autocomplete.value-change')): boolean {
+        if (!this.commitValue(value, 'input-change', event)) return false;
+        this.inlinePreviewState.set(null);
+        if (this.autoHighlightMode() !== 'off' && this.query() !== '') {
+            this.engine.setPendingHighlightEdge('first');
         } else {
+            this.engine.setPendingHighlightEdge(null);
             this.engine.clearHighlightState();
         }
+        return true;
     }
 
     labelFor(value: AcceptableValue): string {
@@ -666,7 +664,7 @@ export class RdxAutocompleteRoot
             return custom(value);
         }
         const item = this.engine.orderedItems().find((i) => itemsEqual(i.value(), value, this.isItemEqualToValue()));
-        return item ? item.textValue() : defaultItemToStringLabel(value);
+        return item?.textValue() || defaultItemToStringLabel(value);
     }
 
     itemId(index: number): string {
@@ -709,10 +707,9 @@ export class RdxAutocompleteRoot
         // Capture focus before `commitValue` emits `onValueChange`, so restoration is skipped when the
         // consumer moves focus in that callback (e.g. focusing a message field after an emoji press).
         const activeBefore = typeof document !== 'undefined' ? document.activeElement : null;
-        this.engine.clearInlinePreview();
-        this.commitValue(label, 'item-press');
-        this.typed.set(false);
-        this.closePopup(false, 'item-press', event);
+        if (!this.commitValue(label, 'item-press', event)) return;
+        this.inlinePreviewState.set(null);
+        this.closePopup('item-press', event);
         this.engine.restoreFocusAfterSelect(activeBefore);
         this.maybeSubmit();
     }
@@ -781,8 +778,8 @@ export class RdxAutocompleteRoot
     setHighlight(item: ComboboxItemRef, reason: ComboboxHighlightReason): void {
         this.engine.setHighlight(item, reason);
     }
-    clearHighlightState(): void {
-        this.engine.clearHighlightState();
+    clearHighlightState(reason: ComboboxHighlightReason = 'none'): void {
+        this.engine.clearHighlightState(reason);
     }
 
     isKeyboardActive(): boolean {
@@ -796,9 +793,8 @@ export class RdxAutocompleteRoot
         if (this.disabledState() || this.readOnly()) {
             return;
         }
-        this.commitValue('', 'input-clear');
-        this.typed.set(true);
-        this.engine.clearInlinePreview();
+        if (!this.commitValue('', 'input-clear')) return;
+        this.inlinePreviewState.set(null);
         this.engine.clearHighlightState();
         this.engine.focusInput();
     }
@@ -820,12 +816,13 @@ export class RdxAutocompleteRoot
         value: string,
         reason: AutocompleteChangeReason,
         event: Event = new Event('autocomplete.value-change')
-    ): void {
+    ): boolean {
         // Mirror combobox's guarded commit: never mutate the value while disabled or read-only
         // (the input is the form value here, so Clear / item-press / typing must all be inert).
         if (this.disabledState() || this.readOnly()) {
-            return;
+            return false;
         }
+        this.inlinePreviewState.set(null);
         const { eventDetails } = createCancelableChangeEventDetails(
             reason,
             event,
@@ -833,11 +830,12 @@ export class RdxAutocompleteRoot
         );
         this.onValueChange.emit({ value, reason, eventDetails });
         if (eventDetails.isCanceled()) {
-            return;
+            return false;
         }
         this.value.set(value);
         this.formUi.markDirty();
         this.onChange?.(value);
+        return true;
     }
 
     private createOpenChangeEvent(

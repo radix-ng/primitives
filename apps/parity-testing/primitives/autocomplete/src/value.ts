@@ -1,6 +1,16 @@
 import type { Settings } from './contract';
 export interface ValueSettings {
-    kind: 'defaults' | 'initial' | 'external' | 'typing' | 'hover' | 'escape' | 'select' | 'mode' | 'external-preview';
+    kind:
+        | 'cancel-edit'
+        | 'defaults'
+        | 'initial'
+        | 'external'
+        | 'typing'
+        | 'hover'
+        | 'escape'
+        | 'select'
+        | 'mode'
+        | 'external-preview';
     controlled: boolean;
     mode?: 'list' | 'both' | 'inline' | 'none';
     value?: string;
@@ -55,4 +65,5 @@ for (const mode of ['list', 'both', 'inline', 'none'] as const)
     add(`external-${mode}`, { kind: 'external', controlled: true, mode, value: 'Beta' });
 for (const mode of ['both', 'inline'] as const)
     add(`external-preview-${mode}`, { kind: 'external-preview', controlled: true, mode });
+add('cancel-edit', { kind: 'cancel-edit', controlled: true, mode: 'both', value: 'al' });
 export const valueCases = cases;

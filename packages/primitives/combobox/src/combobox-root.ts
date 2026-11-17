@@ -124,7 +124,7 @@ const context = () => {
         setLabelId: (id: string | undefined) => engine.setLabelId(id),
         dir: root.dir,
         value: root.value,
-        inputValue: root.inputValue,
+        inputValue: root.inputValue.asReadonly(),
         name: root.name,
         form: root.form,
         inputOwnsFormValue: root.inputOwnsFormValue,
@@ -168,7 +168,7 @@ const context = () => {
         highlightLast: () => engine.highlightLast('keyboard'),
         highlightIndex: (index: number, reason: ComboboxHighlightReason) => engine.highlightIndex(index, reason),
         setHighlight: (item: ComboboxItemRef, reason: ComboboxHighlightReason) => engine.setHighlight(item, reason),
-        clearHighlight: () => engine.clearHighlightState(),
+        clearHighlight: (reason?: ComboboxHighlightReason) => engine.clearHighlightState(reason),
         highlightItemOnHover: root.highlightItemOnHover,
         keepHighlight: root.keepHighlight,
         inputElement: engine.inputElement,
@@ -493,9 +493,6 @@ export class RdxComboboxRoot
     /** Built-in filtering always applies for combobox (the `none` filter is handled inside the engine). */
     private readonly filteringEnabled = signal(true);
 
-    /** Combobox never inline-completes (that's an autocomplete mode). */
-    private readonly noInline = signal(false);
-
     /** The shared engine: item registry, filtering, highlight navigation, and the open-close transition. */
     private readonly engine: ComboboxEngine = useComboboxEngine({
         injector: this.injector,
@@ -513,7 +510,6 @@ export class RdxComboboxRoot
         limit: this.limit,
         grid: this.grid,
         rowOf: (element) => element.closest('[rdxComboboxRow]'),
-        inlineMode: this.noInline,
         itemToString: (value) => this.labelFor(value),
         onItemHighlighted: (details) => this.onItemHighlighted.emit(details),
         onOpenChange: () => {},

@@ -1,10 +1,10 @@
 # Autocomplete state and navigation comparisons
 
 Compares Radix NG with unmodified Base UI **1.9.0**, pinned by
-[reference.json](../../reference.json). The suite covers G1, G2 and G3 from the
-[Autocomplete matrix](../../../../packages/primitives/autocomplete/PARITY.md): **137 scenarios / 411
+[reference.json](../../reference.json). The suite covers G1–G4 from the
+[Autocomplete matrix](../../../../packages/primitives/autocomplete/PARITY.md): **209 scenarios / 627
 comparisons**, without skips or reviewed exceptions. G1 contributes 14 initial-state cases; G2 adds
-79 navigation cases; G3 adds 44 read-only cases.
+79 navigation cases; G3 adds 44 read-only cases; G4 adds 72 value/query/preview cases.
 
 ```bash
 pnpm test-parity autocomplete
@@ -117,3 +117,26 @@ so 26 scenarios lost their pages before reporting. The final edit-guard test use
 native browser Backspace/history remains unmodified. The original traces are retained in
 `dist/parity-testing/autocomplete/g3-platform-before/`. Axe scans the host and portaled popup as
 primitive subtrees; application landmarks belong to the host application.
+
+## G4 value/query/preview scope
+
+72 native scenarios compare defaults and all modes with controlled accepted requests and omitted
+uncontrolled bindings, padded/blank initial values, accepted external replacements, auto-highlight
+false/true/always, flat virtualized lists, typing/deletion, full-label preview, pointer preservation,
+mode invalidation, selection/Escape reopen, `Value` and cancellation of an edit after completion.
+Filtering uses committed trimmed text; displayed preview does not change the model or filter query.
+The driver compares actual text/caret, visible items, active IDREF/highlight, DOM focus, FormData,
+value/open request counts and native key flags. It waits for stable renders without repairing state.
+Full event reason/identity/order remains G5; exit query freezing and manual/retained lifetime G6,
+object/group label policy G7, real virtual windows/trusted IME G10 and inside focus isolation G11.
+
+The 71-case initial audit is not a clean negative baseline: eight scenarios timed out because a
+child-view fixture hid its popup, and a later formatted template introduced text whitespace.
+A corrected targeted baseline reproduced behavior differences with a passing control. Native exact
+text bindings preserve surrounding spaces. The added canceled-edit React callback was corrected to
+actually invoke public cancellation. No expected exceptions, retries or timeout changes are used.
+
+The 627 macOS comparisons are verified by the broad run plus the final 216 G4 comparisons;
+the same 216 new G4 comparisons pass Linux/arm64, all three engines, two workers, zero retries.
+See the matrix for report locations. The emoji demo uses public value
+cancellation when inserting into another control; ignoring a model output does not veto local writes.

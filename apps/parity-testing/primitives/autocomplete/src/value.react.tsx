@@ -35,6 +35,7 @@ export function ReactValueState({ trace }: { trace: ReturnType<typeof installPro
                 items={valueItems}
                 name="query"
                 onValueChange={(value, d) => {
+                    if (p.kind === 'cancel-edit' && d.reason === 'input-change') d.cancel();
                     trace.change('value', value, d.reason, d.isCanceled, d.event, d.trigger);
                     if (!d.isCanceled) setValue(value);
                 }}

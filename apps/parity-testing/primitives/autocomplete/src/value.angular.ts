@@ -22,9 +22,12 @@ import { valueItems } from './value';
                     name="query"
                 >
                     <input [class]="s.input" data-testid="input" aria-label="Query" rdxAutocompleteInput />
-                    <span #display="rdxAutocompleteValue" rdxAutocompleteValue data-testid="display">
-                        {{ display.slotText() }}
-                    </span>
+                    <span
+                        #display="rdxAutocompleteValue"
+                        [textContent]="display.slotText()"
+                        rdxAutocompleteValue
+                        data-testid="display"
+                    ></span>
                     <div *rdxAutocompletePortal rdxAutocompletePositioner>
                         <div [class]="s.popup" data-testid="popup" rdxAutocompletePopup>
                             <div rdxAutocompleteList aria-label="Suggestions">
@@ -34,10 +37,9 @@ import { valueItems } from './value';
                                         [index]="p.virtualized ? i : undefined"
                                         [class]="s.item"
                                         [attr.data-testid]="'value-item-' + itemIndex(item)"
+                                        [textContent]="item"
                                         rdxAutocompleteItem
-                                    >
-                                        {{ item }}
-                                    </div>
+                                    ></div>
                                 }
                             </div>
                         </div>
@@ -58,9 +60,12 @@ import { valueItems } from './value';
                     name="query"
                 >
                     <input [class]="s.input" data-testid="input" aria-label="Query" rdxAutocompleteInput />
-                    <span #display="rdxAutocompleteValue" rdxAutocompleteValue data-testid="display">
-                        {{ display.slotText() }}
-                    </span>
+                    <span
+                        #display="rdxAutocompleteValue"
+                        [textContent]="display.slotText()"
+                        rdxAutocompleteValue
+                        data-testid="display"
+                    ></span>
                     <div *rdxAutocompletePortal rdxAutocompletePositioner>
                         <div [class]="s.popup" data-testid="popup" rdxAutocompletePopup>
                             <div rdxAutocompleteList aria-label="Suggestions">
@@ -70,10 +75,9 @@ import { valueItems } from './value';
                                         [index]="p.virtualized ? i : undefined"
                                         [class]="s.item"
                                         [attr.data-testid]="'value-item-' + itemIndex(item)"
+                                        [textContent]="item"
                                         rdxAutocompleteItem
-                                    >
-                                        {{ item }}
-                                    </div>
+                                    ></div>
                                 }
                             </div>
                         </div>
@@ -94,9 +98,12 @@ import { valueItems } from './value';
                     name="query"
                 >
                     <input [class]="s.input" data-testid="input" aria-label="Query" rdxAutocompleteInput />
-                    <span #display="rdxAutocompleteValue" rdxAutocompleteValue data-testid="display">
-                        {{ display.slotText() }}
-                    </span>
+                    <span
+                        #display="rdxAutocompleteValue"
+                        [textContent]="display.slotText()"
+                        rdxAutocompleteValue
+                        data-testid="display"
+                    ></span>
                     <div *rdxAutocompletePortal rdxAutocompletePositioner>
                         <div [class]="s.popup" data-testid="popup" rdxAutocompletePopup>
                             <div rdxAutocompleteList aria-label="Suggestions">
@@ -106,10 +113,9 @@ import { valueItems } from './value';
                                         [index]="p.virtualized ? i : undefined"
                                         [class]="s.item"
                                         [attr.data-testid]="'value-item-' + itemIndex(item)"
+                                        [textContent]="item"
                                         rdxAutocompleteItem
-                                    >
-                                        {{ item }}
-                                    </div>
+                                    ></div>
                                 }
                             </div>
                         </div>
@@ -143,6 +149,7 @@ export class AngularValueState {
         if (event.key === 'F5') this.mode.update((mode) => (mode === 'list' ? (this.p.mode ?? 'list') : 'list'));
     }
     change({ value, reason, eventDetails: d }: AutocompleteValueChangeDetails): void {
+        if (this.p.kind === 'cancel-edit' && reason === 'input-change') d.cancel();
         this.trace.change('value', value, reason, d.isCanceled(), d.event, d.trigger);
         if (!d.isCanceled()) this.value.set(value);
     }

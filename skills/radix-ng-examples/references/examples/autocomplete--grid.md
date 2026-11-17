@@ -12,7 +12,7 @@ open; pressing an item inserts it into the message field, and `onValueChange` is
 ```typescript
 import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
 import { cn, demoCombobox, demoFocusRing } from '../../storybook/styles';
-import { _importsAutocomplete } from '../index';
+import { _importsAutocomplete, type AutocompleteValueChangeDetails } from '../index';
 
 interface Emoji {
     emoji: string;
@@ -38,7 +38,8 @@ function chunk<T>(items: T[], size: number): T[][] {
  * Grid layout (an emoji picker). `grid` enables two-dimensional arrow navigation — Up/Down by row
  * (keeping the column), Left/Right within a row. The search `Input` lives **inside** the `Popup`
  * (opened by the `Trigger`) and auto-focuses on open. Pressing an emoji inserts it into the message
- * field; `onValueChange` is ignored when `reason === 'item-press'` so the search box is not overwritten.
+ * field; the consumer cancels the `item-press` value request and closes the popup so the search query
+ * is not replaced by the emoji name.
  */
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -249,8 +250,10 @@ export class AutocompleteGrid {
     );
 
     /** On selection (`item-press`) insert the emoji; otherwise update the search query. */
-    onSearch(details: { value: string; reason: string }): void {
+    onSearch(details: AutocompleteValueChangeDetails): void {
         if (details.reason === 'item-press') {
+            details.eventDetails.cancel();
+            this.open.set(false);
             const emoji = this.emojiByName.get(details.value);
             if (emoji) {
                 this.insert(emoji);

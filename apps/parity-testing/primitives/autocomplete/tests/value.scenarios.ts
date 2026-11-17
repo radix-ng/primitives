@@ -29,7 +29,11 @@ export const valueScenarios = Object.entries(valueCases).map(([name, settings]) 
         } else if (p.kind === 'typing') {
             for (const key of ['a', 'ArrowDown', 'ArrowUp', 'Backspace']) await press(key);
         } else {
-            await press('ArrowDown', { value: 'Alpha', committed: '' });
+            await press('ArrowDown', { value: 'Alpha', committed: p.value ?? '' });
+            if (p.kind === 'cancel-edit') {
+                await press('b', { value: 'al', committed: 'al', active: 'value-item-0' });
+                return;
+            }
             if (p.kind === 'hover') {
                 await d.page.getByTestId('value-item-1').hover();
                 await check('hover preserves preview', { value: 'Alpha', committed: '' });

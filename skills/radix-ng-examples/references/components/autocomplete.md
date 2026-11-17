@@ -10,7 +10,7 @@ A text input with a list of suggestions: free-form text whose value **is** the i
 
 - ✅ The value **is** the input string — `[(value)]`, `defaultValue`, and `onValueChange` (with a `reason`: `input-change` / `item-press` / `input-clear`).
 - ✅ Four `mode`s: `list` (filter), `both` (filter + inline complete), `inline` (static + inline complete), `none` (static).
-- ✅ Inline autocompletion: the active item's label fills the input with the completed suffix selected.
+- ✅ Inline autocompletion: keyboard highlighting displays the active item's full label without committing it.
 - ✅ Built-in locale-aware filtering, a custom `filter` function, or `[filter]="null"` for external/async lists.
 - ✅ `autoHighlight`: `true` (first match while typing) or `'always'` (keep first highlighted).
 - ✅ Hover behavior: `highlightItemOnHover` (default `true`) and `keepHighlight` (keep the highlight when the pointer leaves the list).

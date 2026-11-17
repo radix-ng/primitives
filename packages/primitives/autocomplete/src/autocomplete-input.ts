@@ -1,6 +1,5 @@
 import {
     afterNextRender,
-    afterRenderEffect,
     booleanAttribute,
     computed,
     DestroyRef,
@@ -21,7 +20,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
 /**
  * The autocomplete text input. Holds DOM focus at all times; the highlighted option is referenced via
  * `aria-activedescendant`. In `both` / `inline` modes it shows the active item's inline completion
- * with the completed suffix selected. Integrates with Field for labeling and validation state.
+ * with native caret behavior. Integrates with Field for labeling and validation state.
  *
  * @group Components
  */
@@ -136,18 +135,6 @@ export class RdxAutocompleteInput {
             this.fieldRootContext?.setControlId(this.id());
         });
 
-        // Select the completed part of an inline preview so the next keystroke replaces it: the suffix
-        // after the typed prefix when the label prefix-matches, otherwise the whole navigated label.
-        afterRenderEffect(() => {
-            const preview = this.root.inlinePreview();
-            if (preview === null) {
-                return;
-            }
-            const query = this.root.query();
-            const start = query && preview.toLowerCase().startsWith(query.toLowerCase()) ? query.length : 0;
-            this.element.setSelectionRange(start, preview.length);
-        });
-
         inject(DestroyRef).onDestroy(() => {
             if (this.root.inputElement() === this.element) {
                 this.root.setInputElement(null);
@@ -191,19 +178,14 @@ export class RdxAutocompleteInput {
         if (this.root.readOnly() || this.root.disabledState()) {
             return;
         }
-        // The edit itself is authoritative. Mobile keyboards, context-menu cut/paste, drag edits and
-        // IME commits may have no useful keydown, so carrying suppression from the previous key makes
-        // inline completion stale in either direction.
-        const suppressInline = shouldSuppressInlineCompletion(event, value, this.root.value());
-        // Base UI opens on input only for a non-empty trimmed value — whitespace alone won't open it.
-        if (!this.root.open() && value.trim() !== '') {
-            this.root.setOpen(true, 'input-change', event);
+        if (!this.root.setQuery(value, event)) {
+            this.element.value = this.root.displayValue();
+            return;
         }
-        this.root.setQuery(value);
-        // `onValueChange` is cancelable. Only attach this edit's suppression state if the requested
-        // value actually committed; a vetoed edit must leave the previous preview semantics intact.
-        if (this.root.value() === value) {
-            this.root.setSuppressInline(suppressInline);
+        if (value === '' && !this.root.openOnInputClick() && this.root.inputLayout() === 'outside') {
+            this.root.closePopup('input-clear', event);
+        } else if (!this.root.open() && value.trim() !== '') {
+            this.root.setOpen(true, 'input-change', event);
         }
     }
 
@@ -300,14 +282,14 @@ export class RdxAutocompleteInput {
                     } else if (!this.root.inlineMode()) {
                         // Non-inline: close and let native form submission proceed. Inline modes keep the
                         // popup open on Enter without a highlight (matches Base UI).
-                        this.root.closePopup(true, 'none', event);
+                        this.root.closePopup('none', event);
                     }
                 }
                 break;
             case 'Escape':
                 if (open) {
                     event.preventDefault();
-                    this.root.closePopup(true, 'escape-key', event);
+                    this.root.closePopup('escape-key', event);
                 } else if (!this.root.popupMounted()) {
                     // Base UI: Escape on a closed autocomplete clears the input value (a no-op while
                     // read-only / disabled). Guard on `popupMounted` so the same Escape that just closed
@@ -320,7 +302,7 @@ export class RdxAutocompleteInput {
                 // inline "command palette" layout), Tab must NOT close — it just moves focus within the
                 // surrounding dialog. Guard on `popupMounted` so closing doesn't tear down that dialog.
                 if (open && this.root.popupMounted()) {
-                    this.root.closePopup(true, 'none', event);
+                    this.root.closePopup('none', event);
                 }
                 break;
         }
@@ -335,24 +317,4 @@ export class RdxAutocompleteInput {
     }
 
     protected readonly dataAttr = attr;
-}
-
-/** Whether this concrete edit should keep inline completion hidden for its resulting value. */
-function shouldSuppressInlineCompletion(event: Event, nextValue: string, previousValue: string): boolean {
-    // A committed composition inserts text even though CompositionEvent has no `inputType`.
-    if (event.type === 'compositionend') {
-        return false;
-    }
-
-    const inputType = (event as InputEvent).inputType;
-    if (inputType?.startsWith('delete')) {
-        return true;
-    }
-    if (inputType?.startsWith('insert')) {
-        return false;
-    }
-
-    // Synthetic/programmatic input and history edits may omit an inputType. Length is the safest
-    // fallback: shrinking must not immediately restore the suffix; equal/growing replacements may.
-    return nextValue.length < previousValue.length;
 }

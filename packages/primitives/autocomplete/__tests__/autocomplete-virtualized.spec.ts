@@ -127,6 +127,9 @@ describe('Autocomplete virtualized', () => {
         await settle();
         // First prefix match (Apple) is highlighted by index; the input shows the inline completion.
         expect(renderedItems().map((el) => el.textContent?.trim())).toEqual(['Apple', 'Apricot']);
-        expect(inputEl().value).toBe('apple');
+        expect(inputEl().value).toBe('ap');
+        key('ArrowDown');
+        await settle();
+        expect(inputEl().value).toBe('Apricot');
     });
 });

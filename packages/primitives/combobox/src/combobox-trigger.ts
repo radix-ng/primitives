@@ -86,6 +86,7 @@ export class RdxComboboxTrigger {
             event.preventDefault();
             // A keyboard open must focus the input, not the popup — clear any prior touch flag.
             this.rootContext.setOpenedByTouch(false);
+            this.rootContext.focusInput();
             this.rootContext.navigateByKeyboard(event.key === 'ArrowUp' ? -1 : 1, event);
         }
     }

@@ -9,7 +9,14 @@ import { AutocompleteMode, RdxAutocompleteRoot } from '../src/autocomplete-root'
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [_importsAutocomplete],
     template: `
-        <div [(value)]="value" [(open)]="open" [mode]="mode()" [autoHighlight]="autoHighlight()" rdxAutocompleteRoot>
+        <div
+            [(value)]="value"
+            [(open)]="open"
+            [mode]="mode()"
+            [autoHighlight]="autoHighlight()"
+            [items]="fruits()"
+            rdxAutocompleteRoot
+        >
             <input rdxAutocompleteInput aria-label="Fruit" />
             <div *rdxAutocompletePortal rdxAutocompletePositioner>
                 <div rdxAutocompletePopup>
@@ -103,27 +110,29 @@ describe('Autocomplete modes', () => {
     });
 
     describe('both', () => {
-        it('filters and inline-completes from the first prefix match', async () => {
+        it('filters controlled text and creates completion on keyboard navigation', async () => {
             host.mode.set('both');
             host.autoHighlight.set(true);
             await settle();
             type('ap');
             await settle();
-            // Only prefix/substring matches remain; the highlight + inline preview use the first prefix match.
             expect(root().value()).toBe('ap');
-            expect(root().inlinePreview()).toBe('apple');
-            expect(root().displayValue()).toBe('apple');
+            expect(root().inlinePreview()).toBeNull();
+            expect(root().displayValue()).toBe('ap');
+            inputEl().dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+            await settle();
+            expect(root().displayValue()).toBe('Apricot');
         });
 
         // ADR 0014 review: switching out of an inline mode must clear an active preview.
         it('clears an active inline preview when mode switches to a non-inline mode', async () => {
             host.mode.set('both');
-            host.autoHighlight.set(true);
             await settle();
             type('ap');
             await settle();
-            expect(root().inlinePreview()).toBe('apple');
-
+            inputEl().dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+            await settle();
+            expect(root().inlinePreview()).toBe('Apple');
             host.mode.set('list');
             await settle();
             expect(root().inlinePreview()).toBeNull();
@@ -132,131 +141,117 @@ describe('Autocomplete modes', () => {
     });
 
     describe('inline', () => {
-        it('does not filter but inline-completes from the first prefix match', async () => {
+        it('keeps inline items static and controlled typing authoritative', async () => {
             host.mode.set('inline');
             host.autoHighlight.set(true);
             await settle();
             type('ban');
             await settle();
-            expect(visibleItems()).toHaveLength(4); // unfiltered
-            expect(root().inlinePreview()).toBe('banana');
-            expect(root().displayValue()).toBe('banana');
+            expect(visibleItems()).toHaveLength(4);
+            expect(root().highlightedItem()?.textValue()).toBe('Apple');
+            expect(root().inlinePreview()).toBeNull();
+            expect(root().displayValue()).toBe('ban');
         });
 
-        it('inline-completes without an explicit autoHighlight (mode implies it)', async () => {
+        it('requires navigation when autoHighlight is omitted', async () => {
             host.mode.set('both');
-            // no autoHighlight set
             await settle();
             type('ap');
             await settle();
-            expect(root().inlinePreview()).toBe('apple');
-            expect(root().displayValue()).toBe('apple');
+            expect(root().highlightedItem()).toBeNull();
+            expect(root().displayValue()).toBe('ap');
+            inputEl().dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+            await settle();
+            expect(root().displayValue()).toBe('Apple');
         });
 
-        it('infers deletion when a synthetic input event has no inputType', async () => {
+        it('accepts synthetic edits without inputType and drops the prior completion', async () => {
             host.mode.set('inline');
             host.autoHighlight.set(true);
             await settle();
             type('ban');
             await settle();
-            expect(root().inlinePreview()).toBe('banana');
-
-            inputEl().dispatchEvent(new KeyboardEvent('keydown', { key: 'Backspace', bubbles: true }));
-            type('ba');
-            await settle();
-            expect(root().inlinePreview()).toBeNull();
-        });
-
-        it('suppresses completion for a mobile delete InputEvent without keydown', async () => {
-            host.mode.set('inline');
-            host.autoHighlight.set(true);
-            await settle();
-            edit('ban', 'insertText');
-            await settle();
-            expect(root().inlinePreview()).toBe('banana');
-
-            // Soft keyboards commonly emit only `input`, with no preceding Backspace keydown.
-            edit('ba', 'deleteContentBackward');
-            await settle();
-            expect(root().inlinePreview()).toBeNull();
-            expect(root().displayValue()).toBe('ba');
-
             inputEl().dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
             await settle();
-            expect(root().displayValue()).toBe('Grape');
+            expect(root().displayValue()).toBe('Apricot');
+            type('ba');
+            await settle();
+            expect(root().value()).toBe('ba');
+            expect(root().inlinePreview()).toBeNull();
         });
 
-        it('suppresses completion when text is removed through cut', async () => {
+        it('commits a mobile delete without keydown and resumes completion on navigation', async () => {
             host.mode.set('inline');
             host.autoHighlight.set(true);
             await settle();
             edit('ban', 'insertText');
             await settle();
-            expect(root().inlinePreview()).toBe('banana');
+            edit('ba', 'deleteContentBackward');
+            await settle();
+            expect(root().value()).toBe('ba');
+            expect(root().displayValue()).toBe('ba');
+            inputEl().dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+            await settle();
+            expect(root().displayValue()).toBe('Apricot');
+        });
 
+        it('commits a cut as controlled text without retaining completion', async () => {
+            host.mode.set('inline');
+            host.autoHighlight.set(true);
+            await settle();
+            edit('ban', 'insertText');
+            await settle();
             edit('ba', 'deleteByCut');
             await settle();
+            expect(root().value()).toBe('ba');
             expect(root().inlinePreview()).toBeNull();
         });
 
-        it('clears stale delete suppression when the next edit is a paste', async () => {
+        it('accepts a paste after deletion and offers completion on the next navigation', async () => {
             host.mode.set('inline');
             host.autoHighlight.set(true);
             await settle();
             edit('ban', 'insertText');
             await settle();
-
-            inputEl().dispatchEvent(new KeyboardEvent('keydown', { key: 'Backspace', bubbles: true }));
             edit('ba', 'deleteContentBackward');
             await settle();
-            expect(root().inlinePreview()).toBeNull();
-
             edit('ban', 'insertFromPaste');
             await settle();
-            expect(root().inlinePreview()).toBe('banana');
+            expect(root().value()).toBe('ban');
+            expect(root().displayValue()).toBe('ban');
+            inputEl().dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+            await settle();
+            expect(root().displayValue()).toBe('Apricot');
         });
 
-        it('clears stale delete suppression when an IME composition commits', async () => {
+        it('defers composition edits until commit and preserves controlled text', async () => {
             host.mode.set('inline');
             host.autoHighlight.set(true);
             await settle();
-            edit('ban', 'insertText');
-            await settle();
-
-            inputEl().dispatchEvent(new KeyboardEvent('keydown', { key: 'Backspace', bubbles: true }));
             edit('ba', 'deleteContentBackward');
             await settle();
-            expect(root().inlinePreview()).toBeNull();
-
             inputEl().dispatchEvent(new CompositionEvent('compositionstart', { bubbles: true }));
             edit('ban', 'insertCompositionText', true);
             await settle();
             expect(root().value()).toBe('ba');
-
             inputEl().dispatchEvent(new CompositionEvent('compositionend', { bubbles: true, data: 'n' }));
             await settle();
             expect(root().value()).toBe('ban');
-            expect(root().inlinePreview()).toBe('banana');
+            expect(root().displayValue()).toBe('ban');
         });
 
-        it('reflects the highlighted item in the input while navigating, even without a prefix match', async () => {
+        it('reflects the actual highlighted label while the committed query stays fixed', async () => {
             host.mode.set('both');
             await settle();
             type('a');
             await settle();
-            // First prefix match (Apple) completes the typed "a".
-            expect(root().displayValue()).toBe('apple');
-
-            const arrowDown = () =>
+            expect(root().displayValue()).toBe('a');
+            for (const label of ['Apple', 'Apricot', 'Banana']) {
                 inputEl().dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
-            arrowDown(); // → Apricot (prefix match)
-            await settle();
-            expect(root().displayValue()).toBe('apricot');
-
-            arrowDown(); // → Banana (contains "a" but does not start with it)
-            await settle();
-            expect(root().highlightedItem()?.textValue()).toBe('Banana');
-            expect(root().displayValue()).toBe('Banana');
+                await settle();
+                expect(root().displayValue()).toBe(label);
+                expect(root().value()).toBe('a');
+            }
         });
 
         it('does not jump to a non-prefix label while typing (only on keyboard navigation)', async () => {
@@ -281,12 +276,12 @@ describe('Autocomplete modes', () => {
 
         it('stays fixed to the mode while an inline completion becomes active', async () => {
             host.mode.set('both');
-            host.autoHighlight.set(true);
             await settle();
-            expect(inputEl().getAttribute('aria-autocomplete')).toBe('both');
             type('ap');
             await settle();
-            expect(root().inlinePreview()).toBe('apple');
+            inputEl().dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+            await settle();
+            expect(root().inlinePreview()).toBe('Apple');
             expect(inputEl().getAttribute('aria-autocomplete')).toBe('both');
         });
     });

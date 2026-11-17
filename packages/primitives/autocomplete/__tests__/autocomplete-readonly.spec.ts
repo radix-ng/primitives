@@ -152,7 +152,7 @@ describe('Autocomplete read-only value guard', () => {
         inputEl().value = 'Injected';
         inputEl().dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText' }));
         await settle();
-        expect(root().query()).toBe('');
+        expect(root().query()).toBe('Apple');
         expect(host.value()).toBe('Apple');
         expect(host.open()).toBe(false);
         expect(host.changes).toEqual([]);

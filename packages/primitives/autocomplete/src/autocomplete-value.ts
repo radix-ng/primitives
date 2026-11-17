@@ -2,7 +2,7 @@ import { computed, Directive, inject, input } from '@angular/core';
 import { RdxAutocompleteRoot } from './autocomplete-root';
 
 /**
- * Renders the current input value as text. Useful for a read-only display of the committed value.
+ * Renders the current input value as text. Includes a temporary inline completion when one is displayed.
  * Read `slotText()` in the template. Exposes `data-placeholder` while the value is empty.
  *
  * @example
@@ -23,8 +23,8 @@ export class RdxAutocompleteValue {
     /** Text shown when the value is empty. */
     readonly placeholder = input<string>();
 
-    readonly isEmpty = computed(() => !this.root.value());
+    readonly isEmpty = computed(() => !this.root.displayValue());
 
     /** The current input value, or the `placeholder` when empty. */
-    readonly slotText = computed(() => this.root.value() || (this.placeholder() ?? ''));
+    readonly slotText = computed(() => this.root.displayValue() || (this.placeholder() ?? ''));
 }

@@ -73,10 +73,11 @@ test.describe('Autocomplete inline completion', () => {
         await page.locator(input).click();
         await page.locator(input).pressSequentially('fi');
 
-        // First prefix match completes the typed text.
+        await expect(page.locator(input)).toHaveValue('fi');
+        await page.locator(input).press('ArrowDown');
         await expect(page.locator(input)).toHaveValue('fix');
 
-        // Arrowing to a match that does NOT start with the query still shows its full label.
+        // Navigation changes the displayed label while the committed query remains "fi".
         await page.locator(input).press('ArrowDown');
         await expect(page.locator(highlighted)).toHaveText('component: field');
         await expect(page.locator(input)).toHaveValue('component: field');
@@ -197,17 +198,26 @@ test.describe('Autocomplete grid (emoji picker) trigger reachability', () => {
         expect(errors).toEqual([]);
     });
 
-    test('Home / End jump to the first / last emoji in the grid', async ({ page }) => {
+    test('Home / End move the input caret while preserving the active emoji', async ({ page }) => {
         await gotoStory(page, 'primitives-autocomplete--grid');
         await page.locator(trigger).click();
         await expect(page.locator(popup)).toBeVisible();
-
-        const items = page.locator('[rdxAutocompleteItem]');
-        await page.keyboard.press('ArrowDown'); // engage grid navigation
-        await page.keyboard.press('End');
-        await expect(items.last()).toHaveAttribute('data-highlighted', '');
-        await page.keyboard.press('Home');
-        await expect(items.first()).toHaveAttribute('data-highlighted', '');
+        const search = page.locator(input);
+        await search.pressSequentially('face');
+        await search.press('ArrowDown');
+        const activeId = await search.getAttribute('aria-activedescendant');
+        expect(activeId).toBeTruthy();
+        await search.press('End');
+        await expect
+            .poll(() => search.evaluate((element: HTMLInputElement) => [element.selectionStart, element.selectionEnd]))
+            .toEqual([4, 4]);
+        await expect(search).toHaveAttribute('aria-activedescendant', activeId!);
+        await search.press('Home');
+        await expect
+            .poll(() => search.evaluate((element: HTMLInputElement) => [element.selectionStart, element.selectionEnd]))
+            .toEqual([0, 0]);
+        await expect(search).toHaveAttribute('aria-activedescendant', activeId!);
+        await expect(page.locator(highlighted)).toHaveAttribute('id', activeId!);
     });
 
     test('selecting an emoji inserts it and returns focus to the message field', async ({ page }) => {
@@ -225,5 +235,8 @@ test.describe('Autocomplete grid (emoji picker) trigger reachability', () => {
         const message = page.locator('input[aria-label="Message"]');
         await expect(message).toBeFocused();
         expect(await message.inputValue()).toContain(emojiChar ?? '😀');
+        await page.locator(trigger).click();
+        await expect(page.locator(input)).toBeFocused();
+        await expect(page.locator(input)).toHaveValue('');
     });
 });

@@ -26,7 +26,7 @@ the value is a chosen item (or items) rather than the typed text.
 
 - ✅ The value **is** the input string — `[(value)]`, `defaultValue`, and `onValueChange` (with a `reason`: `input-change` / `item-press` / `input-clear`).
 - ✅ Four `mode`s: `list` (filter), `both` (filter + inline complete), `inline` (static + inline complete), `none` (static).
-- ✅ Inline autocompletion: the active item's label fills the input with the completed suffix selected.
+- ✅ Inline autocompletion: keyboard highlighting displays the active item's full label without committing it.
 - ✅ Built-in locale-aware filtering, a custom `filter` function, or `[filter]="null"` for external/async lists.
 - ✅ `autoHighlight`: `true` (first match while typing) or `'always'` (keep first highlighted).
 - ✅ Hover behavior: `highlightItemOnHover` (default `true`) and `keepHighlight` (keep the highlight when the pointer leaves the list).
@@ -109,9 +109,17 @@ Type to filter a list of suggestions; pick one to fill the input.
 
 ### Inline autocompletion
 
-With `mode="both"` (filter + inline) the input is completed from the first match, with the completed
-suffix selected so the next keystroke replaces it. Inline modes highlight the first match implicitly,
-so no `autoHighlight` is required.
+With `mode="both"` (filter + inline), keyboard highlighting displays the item's full label. The committed
+`value` stays unchanged until an edit or selection, and filtering uses its trimmed text. `mode="inline"`
+keeps the list unfiltered. Inline modes use the same `autoHighlight` default (`false`) as other modes.
+
+The preview preserves native caret behavior; it does not select a completed suffix. Pointer highlighting
+leaves an existing preview in place. `rdxAutocompleteValue.slotText()` reflects the displayed text,
+including a temporary preview. Closing the popup, changing the value or disabling completion clears it.
+
+With `autoHighlight`, an uncontrolled input can preview the first result during typing. A controlled
+`[(value)]` input keeps the accepted edit visible; subsequent keyboard navigation displays the highlighted
+label. External value changes preserve the supplied text, including surrounding spaces.
 
 <Canvas of={Stories.InlineAutocompletion} />
 

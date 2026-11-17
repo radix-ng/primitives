@@ -4,9 +4,17 @@
 
 > Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
-With `mode="both"` (filter + inline) the input is completed from the first match, with the completed
-suffix selected so the next keystroke replaces it. Inline modes highlight the first match implicitly,
-so no `autoHighlight` is required.
+With `mode="both"` (filter + inline), keyboard highlighting displays the item's full label. The committed
+`value` stays unchanged until an edit or selection, and filtering uses its trimmed text. `mode="inline"`
+keeps the list unfiltered. Inline modes use the same `autoHighlight` default (`false`) as other modes.
+
+The preview preserves native caret behavior; it does not select a completed suffix. Pointer highlighting
+leaves an existing preview in place. `rdxAutocompleteValue.slotText()` reflects the displayed text,
+including a temporary preview. Closing the popup, changing the value or disabling completion clears it.
+
+With `autoHighlight`, an uncontrolled input can preview the first result during typing. A controlled
+`[(value)]` input keeps the accepted edit visible; subsequent keyboard navigation displays the highlighted
+label. External value changes preserve the supplied text, including surrounding spaces.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';

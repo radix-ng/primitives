@@ -544,7 +544,7 @@
           "directive": "RdxAutocompleteInput",
           "selector": "input[rdxAutocompleteInput]",
           "exportAs": "rdxAutocompleteInput",
-          "description": "The autocomplete text input. Holds DOM focus at all times; the highlighted option is referenced via\n`aria-activedescendant`. In `both` / `inline` modes it shows the active item's inline completion\nwith the completed suffix selected. Integrates with Field for labeling and validation state.",
+          "description": "The autocomplete text input. Holds DOM focus at all times; the highlighted option is referenced via\n`aria-activedescendant`. In `both` / `inline` modes it shows the active item's inline completion\nwith native caret behavior. Integrates with Field for labeling and validation state.",
           "hostDirectives": [
             "RdxPopperAnchor",
             "RdxFloatingInsideElement"
@@ -1025,7 +1025,7 @@
           "directive": "RdxAutocompleteValue",
           "selector": "[rdxAutocompleteValue]",
           "exportAs": "rdxAutocompleteValue",
-          "description": "Renders the current input value as text. Useful for a read-only display of the committed value.\nRead `slotText()` in the template. Exposes `data-placeholder` while the value is empty.\n\n```html\n<span #value=\"rdxAutocompleteValue\" rdxAutocompleteValue placeholder=\"Empty\">{{ value.slotText() }}</span>\n```",
+          "description": "Renders the current input value as text. Includes a temporary inline completion when one is displayed.\nRead `slotText()` in the template. Exposes `data-placeholder` while the value is empty.\n\n```html\n<span #value=\"rdxAutocompleteValue\" rdxAutocompleteValue placeholder=\"Empty\">{{ value.slotText() }}</span>\n```",
           "inputs": [
             {
               "name": "placeholder",
