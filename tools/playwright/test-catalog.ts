@@ -1,6 +1,7 @@
 const names = [
     'presence-waapi',
     'tabs',
+    'composite',
     'floating-consumers',
     'popper',
     'popover',

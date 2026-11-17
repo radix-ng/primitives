@@ -117,6 +117,7 @@ the wrapping element so the popup aligns to the whole control instead of the inl
 - [Reactive forms](../examples/combobox--reactive-forms.md)
 - [Validation](../examples/combobox--validation.md)
 - [Empty state](../examples/combobox--empty-state.md)
+- [Dynamic order](../examples/combobox--dynamic-order.md)
 - [Virtualized](../examples/combobox--virtualized.md)
 
 ## API & styling contract

@@ -3,6 +3,7 @@ import {
     AcceptableValue,
     createLabelRegistry,
     injectId,
+    useElementRegistry,
     useFilter,
     useListHighlight,
     useRenderLifecycle
@@ -153,20 +154,8 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
     // the cursor happens to rest on when arrow-key navigation scrolls the list under a still pointer.
     let keyboardActive = false;
 
-    // Keep registrations in a stable map. Copying the growing array on every item mount/unmount makes
-    // registering N options O(n²) before filtering or DOM-order sorting even begins. The numeric tick is
-    // only the reactive invalidation channel; Angular batches the registrations from one render, so
-    // `orderedItems` materializes and sorts the final collection once for that batch. This is the same
-    // stable-map pattern used by Base UI and our CompositeList.
-    const itemRegistry = new Map<HTMLElement, ComboboxItemRef>();
-    const itemRegistryTick = signal(0);
-
-    const orderedItems = computed(() => {
-        itemRegistryTick();
-        return [...itemRegistry.values()]
-            .filter((item) => item.element.isConnected)
-            .sort((a, b) => domOrder(a.element, b.element));
-    });
+    const itemRegistry = useElementRegistry<ComboboxItemRef>({ injector });
+    const orderedItems = itemRegistry.items;
 
     const visibleItems = computed<readonly ComboboxItemRef[]>(
         () => {
@@ -599,19 +588,10 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
         filteredItems,
         isVisible,
         registerItem(item: ComboboxItemRef): void {
-            if (itemRegistry.get(item.element) === item) {
-                return;
-            }
-            itemRegistry.set(item.element, item);
-            itemRegistryTick.update((tick) => tick + 1);
+            itemRegistry.register(item);
         },
         unregisterItem(item: ComboboxItemRef): void {
-            // A stale cleanup must not delete a newer registration for the same host element.
-            if (itemRegistry.get(item.element) !== item) {
-                return;
-            }
-            itemRegistry.delete(item.element);
-            itemRegistryTick.update((tick) => tick + 1);
+            itemRegistry.unregister(item);
         },
 
         highlight,
@@ -744,18 +724,6 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
 
 /** The shape returned by {@link useComboboxEngine}. */
 export type ComboboxEngine = ReturnType<typeof useComboboxEngine>;
-
-/** DOM-order comparator for two elements (precedes → -1, follows → 1). */
-function domOrder(a: HTMLElement, b: HTMLElement): number {
-    const position = a.compareDocumentPosition(b);
-    if (position & Node.DOCUMENT_POSITION_FOLLOWING) {
-        return -1;
-    }
-    if (position & Node.DOCUMENT_POSITION_PRECEDING) {
-        return 1;
-    }
-    return 0;
-}
 
 /** Referential item-sequence equality used to keep unchanged filtering results stable across queries. */
 function sameItemOrder(previous: readonly ComboboxItemRef[], next: readonly ComboboxItemRef[]): boolean {

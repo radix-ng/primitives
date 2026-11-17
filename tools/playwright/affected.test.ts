@@ -114,6 +114,17 @@ test('Agents reference families select their browser checks without broadening t
     }
     assert.equal(plan(['packages/primitives/button/src/button.directive.ts']).docs, false);
 });
+test('shared element registry changes include roving and active-descendant collection checks', () => {
+    const collectionSpecs = ['composite', 'combobox', 'autocomplete'].map(spec);
+    for (const file of collectionSpecs) assert.equal(isFloatingSpec(file), true);
+    const result = selectChecks({
+        changed: ['packages/primitives/core/src/composables/use-element-registry.ts'],
+        families: new Map(),
+        specs: collectionSpecs,
+        suites: []
+    });
+    assert.deepEqual(result.floating, [...collectionSpecs].sort());
+});
 test('helper changes follow transitive relative imports and do not select unrelated specs', () => {
     const helper = 'apps/visual-regression/helpers/clock.ts';
     const intermediate = 'apps/visual-regression/helpers/navigation.ts';

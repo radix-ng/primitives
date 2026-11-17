@@ -9,6 +9,45 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
     await page.waitForSelector('#storybook-root', { state: 'attached' });
 }
 
+test('combobox follows tracked DOM moves and updated metadata while retaining native options and input focus', async ({
+    page
+}) => {
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(String(error)));
+    page.on('console', (message) => {
+        if (message.type() === 'error') errors.push(message.text());
+    });
+    await gotoStory(page, 'primitives-combobox--reorder');
+    const input = page.locator('[rdxComboboxInput]');
+    const options = page.locator('[rdxComboboxItem]');
+    const highlighted = page.locator('[rdxComboboxItem][data-highlighted]');
+    await input.focus();
+    await input.press('ArrowDown');
+    await expect(highlighted).toHaveText('Apple');
+    const original = await options.elementHandles();
+    const grapeId = await options.nth(2).getAttribute('id');
+
+    await page.getByRole('button', { name: 'Reverse order' }).click();
+    await expect(options).toHaveText(['Grape', 'Banana', 'Apple']);
+    for (let index = 0; index < original.length; index++) {
+        expect(
+            await options.nth(index).evaluate((element, previous) => element === previous, original[2 - index])
+        ).toBe(true);
+    }
+    await expect(highlighted).toHaveText('Apple');
+    await expect(input).toBeFocused();
+    await input.press('ArrowDown');
+    await expect(highlighted).toHaveText('Grape');
+    await expect(input).toHaveAttribute('aria-activedescendant', grapeId!);
+
+    await page.getByRole('button', { name: 'Disable Grape' }).click();
+    await expect(options.first()).toHaveAttribute('data-disabled', '');
+    await input.press('ArrowDown');
+    await expect(highlighted).toHaveText('Banana');
+    await expect(input).toBeFocused();
+    expect(errors).toEqual([]);
+});
+
 test('combobox teleports the positioner directly into <body> with no wrapper element', async ({ page }) => {
     await gotoStory(page, 'primitives-combobox--default');
 

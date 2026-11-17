@@ -2,6 +2,7 @@
 
 - `createContext<T>(description, docs?)` — DI context factory; `docs` ('components/<name>') links the missing-context error to the primitive's docs page
 - `useArrowNavigation(event, current, container, opts)` — keyboard list nav
+- `useElementRegistry<T>({ injector? })` — shared registration, removal, reactive document order and metadata payload updates for Composite, Combobox and Autocomplete (ADR 0086). `register` returns an owner-safe cleanup; `unregister` checks the owner; `update` preserves the registration lifetime. `elements` and O(1) `indexOf` depend only on membership/order, while `items` also publishes replaced payloads. Metadata signals remain owned by each adapter. Angular render hooks and scoped parent/common-ancestor observers reconcile tracked moves; `refresh` explicitly synchronizes external DOM work. Navigation, filtering and virtualized data indices remain consumer policies.
 - `DataOrientation` — `'horizontal' | 'vertical'`
 - `AcceptableValue` — `string | Record<string, any> | null`
 - `isNullish(v)` — null/undefined check

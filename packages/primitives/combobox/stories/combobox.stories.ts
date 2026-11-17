@@ -28,6 +28,8 @@ import { ComboboxOpenChange } from './combobox-open-change';
 import openChangeSource from './combobox-open-change?raw';
 import { ComboboxReactiveForms } from './combobox-reactive-forms';
 import reactiveFormsSource from './combobox-reactive-forms?raw';
+import { ComboboxReorder } from './combobox-reorder';
+import reorderSource from './combobox-reorder?raw';
 import { ComboboxValidation } from './combobox-validation';
 import validationSource from './combobox-validation?raw';
 import { ComboboxVirtualizedExample } from './combobox-virtualized';
@@ -59,6 +61,7 @@ export default {
                 ComboboxReactiveForms,
                 ComboboxValidation,
                 ComboboxEmpty,
+                ComboboxReorder,
                 ComboboxVirtualizedExample
             ]
         }),
@@ -73,6 +76,15 @@ export const Default: Story = {
     render: () => ({
         template: html`
             <combobox-default />
+        `
+    })
+};
+
+export const Reorder: Story = {
+    parameters: source(reorderSource),
+    render: () => ({
+        template: html`
+            <combobox-reorder />
         `
     })
 };

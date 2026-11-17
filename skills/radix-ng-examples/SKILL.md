@@ -43,7 +43,7 @@ and follow its links to the other Agents guides.
 addressed by the component slug and the kebab-cased example name. Cheaper than re-reading the whole
 component doc.
 
-Total: **300 examples** across **44 components**.
+Total: **301 examples** across **44 components**.
 
 ## Components
 
@@ -55,7 +55,7 @@ Total: **300 examples** across **44 components**.
 - **[Calendar](./references/components/calendar.md)** — Displays dates and days of the week, facilitating date-related interactions. _(7 examples)_
 - **[Checkbox](./references/components/checkbox.md)** — A control that allows the user to toggle between checked and not checked. _(9 examples)_
 - **[Collapsible](./references/components/collapsible.md)** — A collapsible panel controlled by a button. _(3 examples)_
-- **[Combobox](./references/components/combobox.md)** — A filterable select: a text input that filters a list of options, with the highlighted option tracked via `aria-activedescendant`. _(16 examples)_
+- **[Combobox](./references/components/combobox.md)** — A filterable select: a text input that filters a list of options, with the highlighted option tracked via `aria-activedescendant`. _(17 examples)_
 - **[Context Menu](./references/components/context-menu.md)** — A menu that appears at the pointer on right click (or touch long-press), built on the Menu primitive. _(6 examples)_
 - **[Cropper](./references/components/cropper.md)** — Headless component for interactive image cropping — inspired by the experience on [X](https://x.com/). _(2 examples)_
 - **[Date Field](./references/components/date-field.md)** — Enables users to input specific dates within a designated field. _(2 examples)_

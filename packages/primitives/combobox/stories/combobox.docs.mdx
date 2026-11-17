@@ -238,6 +238,13 @@ error message and submit guard follow the standard reactive-forms pattern.
 
 <Canvas of={Stories.Empty} />
 
+### Dynamic order
+
+Tracked `@for` views can move without recreating their options. Keyboard navigation follows the new DOM order,
+preserves the highlighted option, and reads updated disabled metadata. Open the popup to reverse the options.
+
+<Canvas of={Stories.Reorder} />
+
 ### Virtualized
 
 Render very large lists efficiently by virtualizing externally. Set `virtualized` and pass the full

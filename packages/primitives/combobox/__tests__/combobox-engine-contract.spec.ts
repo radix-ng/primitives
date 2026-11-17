@@ -102,4 +102,28 @@ describe('Combobox engine contract (ADR 0014)', () => {
         expect(host.open()).toBe(true);
         expect(root().highlightedItem()).toBeNull();
     });
+
+    it('navigates in the new DOM order after tracked options move without being recreated', async () => {
+        host.open.set(true);
+        await settle();
+        const original = visibleItems();
+        key('ArrowDown');
+        await settle();
+        const highlighted = root().highlightedItem();
+
+        host.fruits.set(['grape', 'banana', 'apple']);
+        await settle();
+        expect(visibleItems()).toEqual([...original].reverse());
+        expect(root().highlightedItem()).toBe(highlighted);
+        key('ArrowDown');
+        await settle();
+        expect(root().highlightedItem()?.value()).toBe('grape');
+        expect(inputEl().getAttribute('aria-activedescendant')).toBe(original[2].id);
+        key('ArrowDown');
+        await settle();
+        expect(root().highlightedItem()?.value()).toBe('banana');
+        key('ArrowDown');
+        await settle();
+        expect(root().highlightedItem()?.value()).toBe('apple');
+    });
 });
