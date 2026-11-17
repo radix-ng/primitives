@@ -127,9 +127,18 @@ export function selectChecks(input: {
         reasons.push(file);
     }
     const affected = dependents(seeds, input.families);
-    hydration ||= ['portal', 'presence', 'floating-focus-manager', 'popover', 'menu', 'select', 'dialog', 'tabs'].some(
-        (family) => affected.has(family)
-    );
+    hydration ||= [
+        'portal',
+        'presence',
+        'floating-focus-manager',
+        'popover',
+        'menu',
+        'select',
+        'dialog',
+        'tabs',
+        'accordion',
+        'collapsible'
+    ].some((family) => affected.has(family));
     // Public Agents reference fixtures cover these four families (tsconfig.agents.json).
     docs ||= ['field', 'select', 'menu', 'tabs'].some((family) => affected.has(family));
     for (const suite of input.suites) if (affected.has(suite)) suites.add(suite);

@@ -4,6 +4,19 @@
         <meta charset="utf-8" />
         <title>Portal and defer hydration audit</title>
         <link rel="icon" href="data:," />
+        <style>
+            .audit-accordion-panel {
+                animation: accordion-audit-enter 400ms linear;
+            }
+            @keyframes accordion-audit-enter {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+        </style>
     </head>
     <body>
         <!-- eslint-disable-next-line @angular-eslint/template/prefer-self-closing-tags -->

@@ -53,11 +53,60 @@ test('Accordion Panel views reset native state by default and preserve it when r
     await expect(page.locator('#accordion-fresh-input')).toHaveCount(0);
     await reset.click();
     await expect(page.getByRole('textbox', { name: 'Fresh field' })).toHaveValue('initial');
+    // This case compares completed views; interrupted motion has separate pinned coverage.
+    await expect
+        .poll(() =>
+            page
+                .locator('#accordion-fresh-input')
+                .evaluate((input) =>
+                    getComputedStyle(input.closest('[rdxAccordionPanel]')!)
+                        .getPropertyValue('--accordion-panel-height')
+                        .trim()
+                )
+        )
+        .toBe('auto');
     await keep.click();
+    await expect
+        .poll(() =>
+            page
+                .locator('#accordion-retained-input')
+                .evaluate((input) =>
+                    getComputedStyle(input.closest('[rdxAccordionPanel]')!)
+                        .getPropertyValue('--accordion-panel-height')
+                        .trim()
+                )
+        )
+        .toBe('auto');
     await page.getByRole('textbox', { name: 'Retained field' }).fill('edited');
     await keep.click();
+    await expect(keep).toHaveAttribute('aria-expanded', 'false');
     await expect(page.locator('#accordion-retained-input')).toBeHidden();
     await keep.click();
     await expect(page.getByRole('textbox', { name: 'Retained field' })).toHaveValue('edited');
+    expect(errors).toEqual([]);
+});
+
+test('Accordion releases measured sizes after motion and measures changed content before closing', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await page.goto('/iframe.html?id=primitives-accordion--motion&viewMode=story');
+    const trigger = page.getByRole('button', { name: 'Details', exact: true });
+    await trigger.click();
+    const panel = page.getByRole('region', { name: 'Details', exact: true });
+    await expect(panel).toBeVisible();
+    await expect
+        .poll(() =>
+            panel.evaluate((node) => getComputedStyle(node).getPropertyValue('--accordion-panel-height').trim())
+        )
+        .toBe('auto');
+    await expect.poll(() => panel.evaluate((node) => node.getBoundingClientRect().height)).toBe(80);
+    await page.getByRole('button', { name: 'Change content size' }).click();
+    await expect.poll(() => panel.evaluate((node) => node.getBoundingClientRect().height)).toBe(160);
+    await trigger.click();
+    await expect(panel).toHaveAttribute('data-ending-style', '');
+    expect(
+        await panel.evaluate((node) => getComputedStyle(node).getPropertyValue('--accordion-panel-height').trim())
+    ).toBe('160px');
+    await expect(panel).toHaveCount(0);
     expect(errors).toEqual([]);
 });

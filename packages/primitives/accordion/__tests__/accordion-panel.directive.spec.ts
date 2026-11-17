@@ -1,6 +1,15 @@
 import { setup } from './test-host';
 
 describe('Accordion Panel policy and reveal', () => {
+    it('settles a non-animated opening without transient collapsed styling or pixel sizes', () => {
+        const { fixture, panels, click } = setup();
+        click();
+        fixture.detectChanges();
+        const panel = panels()[0];
+        expect(panel.hasAttribute('data-starting-style')).toBe(false);
+        expect(panel.style.getPropertyValue('--collapsible-panel-height')).toBe('auto');
+        expect(panel.style.getPropertyValue('--collapsible-panel-width')).toBe('auto');
+    });
     it('lets explicit false override root search policy and restores inheritance on removal', () => {
         const { host, fixture, panels } = setup((host) => {
             host.findable.set(true);
@@ -61,7 +70,9 @@ describe('Accordion Panel policy and reveal', () => {
         panel.dispatchEvent(new Event('beforematch'));
         panel.removeAttribute('hidden'); // browser removes this after dispatch
         fixture.detectChanges();
-        await new Promise((resolve) => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+        fixture.detectChanges();
         expect(root.value()).toEqual([]);
         expect(panel.getAttribute('hidden')).toBe('until-found');
         expect(host.trace).toHaveLength(refusal === 'item' ? 1 : 2);

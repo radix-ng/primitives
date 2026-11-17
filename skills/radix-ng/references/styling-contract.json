@@ -139,7 +139,7 @@
         {
           "attribute": "data-starting-style",
           "parts": "Panel",
-          "values": "The panel is entering, or closed and retained for browser search."
+          "values": "The panel is entering, or a closed findable panel preserves transition styles. Initial-open panels suppress enter styles."
         },
         {
           "attribute": "data-ending-style",

@@ -19,6 +19,10 @@ hidden state; closed findable Panels also retain starting style. The earlier cla
 closed state, that Trigger had no index, or that native disabled Triggers remained focusable was stale.
 
 Complete view ownership follows [ADR 0087](../../adr/0087-accordion-whole-panel-presence.md).
-Motion/measurement/hydration remain open. Current behavior,
+Panels measure scroll sizes during motion and return both size variables to auto afterward.
+Close captures current content before ending styles. Initial-open keyframes are suppressed in SSR
+and client markup; search reveals skip one motion and restore authored duration before close.
+Basic reverse-island/default and eager-retained client hydration cases now preserve server nodes,
+IDs and pre-bootstrap edits. Remaining author-style/find/hydration combinations are tracked below. Current behavior,
 priorities and evidence are maintained in [the Accordion matrix](../../../packages/primitives/accordion/PARITY.md)
 and [its paired suite](../../../apps/parity-testing/primitives/accordion/README.md).

@@ -95,6 +95,14 @@ Use `[(value)]` to accept array requests. Cancel a request in `onValueChange` to
 
 <Canvas of={AccordionStories.Controlled} />
 
+### Motion and dynamic content
+
+Use the height variable with `data-starting-style` and `data-ending-style` for CSS transitions.
+During motion it contains a measured scroll size. After motion it returns to `auto`, so the panel
+follows later content changes. Closing measures the current expanded content before applying exit styles.
+
+<Canvas of={AccordionStories.Motion} />
+
 ### Panel lifetime
 
 Apply `*rdxAccordionPanelPresence` to each Panel host. Closed Panels create no Angular children
@@ -209,15 +217,15 @@ A native Panel without the structural owner reports an invalid-markup error.
 | `data-orientation`    | Always — `"horizontal"` \| `"vertical"`.|
 | `data-disabled`       | The item is disabled.                   |
 | `data-index`          | Always — the item's zero-based index.   |
-| `data-starting-style` | The panel is entering, or closed and retained for browser search. |
+| `data-starting-style` | The panel is entering, or a closed findable panel preserves transition styles. Initial-open panels suppress enter styles. |
 | `data-ending-style`   | The panel is animating out.             |
 
 **CSS variables**
 
 | Variable                     | Description                                         |
 | ---------------------------- | --------------------------------------------------- |
-| `--accordion-panel-height`   | The panel's measured height, for height animations. |
-| `--accordion-panel-width`    | The panel's measured width, for width animations.   |
+| `--accordion-panel-height`   | Scroll height during motion; `auto` after motion completes. |
+| `--accordion-panel-width`    | Scroll width during motion; `auto` after motion completes.   |
 
 ### Panel Presence
 
@@ -236,7 +244,7 @@ child view is constructed.
 ```
 
 `beforematch` requests expansion through Item and Root. Canceled or unaccepted controlled requests
-restore the hidden state. Complete search-motion and hydration comparisons remain tracked in the
+restore the hidden state. Search reveal skips motion once and restores authored durations before the next close. Remaining real-find and hydration combinations are tracked in the
 [Accordion matrix](https://github.com/radix-ng/primitives/blob/main/packages/primitives/accordion/PARITY.md).
 
 <ArgTypes of={RdxAccordionPanelPresenceDirective} />

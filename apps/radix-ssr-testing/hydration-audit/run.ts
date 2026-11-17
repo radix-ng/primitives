@@ -44,6 +44,12 @@ async function snapshot(page: Page) {
                         return owner && id ? [{ owner, attribute, target: ownerOf(document.getElementById(id)) }] : [];
                     })
             ),
+            accordionPanels: [...document.querySelectorAll<HTMLElement>('[rdxAccordionPanel]')].map((panel) => ({
+                owner: panel.closest('[data-widget]')?.getAttribute('data-widget'),
+                animationName: getComputedStyle(panel).animationName,
+                running: panel.getAnimations().some((animation) => animation.playState !== 'finished'),
+                height: getComputedStyle(panel).getPropertyValue('--accordion-panel-height').trim()
+            })),
             triggers: [...document.querySelectorAll<HTMLElement>('[rdxPopoverTrigger]')].map((trigger) => ({
                 owner: trigger.closest('[data-widget]')?.getAttribute('data-widget'),
                 controls: trigger.getAttribute('aria-controls'),
@@ -179,6 +185,10 @@ try {
             if (['reverse', 'client-before-islands'].includes(settings.placement))
                 observation.checks.serverRenderedBothIslands = ['first', 'second'].every((name) =>
                     before.probes.some((probe) => probe.name === name)
+                );
+            if (settings.kind === 'accordion')
+                observation.checks.accordionServerPaintSuppressed = before.accordionPanels.every(
+                    (panel) => panel.animationName === 'none' && !panel.running && panel.height === 'auto'
                 );
             release();
             await page
@@ -317,7 +327,7 @@ try {
                 );
             observation.checks.portalRelocated =
                 closesPending ||
-                ['inline', 'tabs'].includes(settings.kind) ||
+                ['inline', 'tabs', 'accordion'].includes(settings.kind) ||
                 (settings.placement === 'destination' ? !!active?.inDestination : active?.inApplication === false);
             observation.checks.uniqueIdsThroughout = observation.checkpoints.every(
                 (checkpoint) => checkpoint.snapshot.duplicateIds.length === 0
@@ -351,6 +361,10 @@ try {
                 closesPending || !editedBefore || active?.value === 'typed before hydration';
             const interaction = settings.placement === 'interaction' || settings.placement === 'inside-interaction';
             if (interaction) observation.checks.eventReplayedOnce = active?.clicks === '1';
+            if (settings.kind === 'accordion')
+                observation.checks.accordionHydrationDoesNotReplayMotion = final.accordionPanels.every(
+                    (panel) => panel.animationName === 'none' && !panel.running
+                );
             observation.checks.noErrors = observation.errors.length === 0;
             if (active?.hydrated && observation.checks.noErrors) {
                 await page.locator('[data-probe="first"] button').click();
@@ -360,7 +374,37 @@ try {
                     { timeout: 1500 }
                 );
                 observation.checks.interactiveAfterHydration = true;
-                if (!['inline', 'tabs'].includes(settings.kind)) {
+                if (settings.kind === 'accordion') {
+                    const retain = 'retain' in settings && settings.retain;
+                    const trigger = page.locator('[data-widget="first"] [rdxAccordionTrigger]');
+                    const panel = page.locator('[data-widget="first"] [rdxAccordionPanel]');
+                    const id = await panel.getAttribute('id');
+                    const original = await panel.locator('input').elementHandle();
+                    await trigger.click();
+                    if (retain) await panel.waitFor({ state: 'hidden' });
+                    else await panel.waitFor({ state: 'detached' });
+                    const closed = await record('hydrated Accordion closed');
+                    observation.checks.accordionClosePolicy = retain
+                        ? closed.probes.some((probe) => probe.name === 'first')
+                        : !closed.probes.some((probe) => probe.name === 'first');
+                    await trigger.click();
+                    await panel.waitFor({ state: 'visible' });
+                    observation.checks.accordionStablePanelId = (await panel.getAttribute('id')) === id;
+                    observation.checks.accordionStateOnReturn =
+                        (await panel.locator('input').inputValue()) ===
+                        (retain && editedBefore ? 'typed before hydration' : 'initial');
+                    // Compare identity directly; both input states alone could come from client fallback.
+                    observation.checks.accordionNativeViewOwnership = retain
+                        ? await panel.locator('input').evaluate((input, original) => input === original, original)
+                        : await panel.locator('input').evaluate((input, original) => input !== original, original);
+                    const reopened = await record('hydrated Accordion reopened');
+                    observation.checks.accordionLaterOpenAnimates = reopened.accordionPanels.some(
+                        (panel) =>
+                            panel.owner === 'first' && panel.animationName === 'accordion-audit-enter' && panel.running
+                    );
+                    await original?.dispose();
+                }
+                if (!['inline', 'tabs', 'accordion'].includes(settings.kind)) {
                     await page.locator('[data-retarget]').click();
                     const retargeted = await record('destination changed after hydration');
                     observation.checks.retargetMovesCurrentContent = !!retargeted.probes.find(

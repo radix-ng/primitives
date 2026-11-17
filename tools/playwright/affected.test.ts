@@ -69,6 +69,8 @@ test('hydration fixtures and shared lifetimes select real SSR browser checks', (
     for (const file of [
         'apps/radix-ssr-testing/hydration-audit/app.ts',
         'packages/primitives/portal/src/portal-presence.ts',
+        'packages/primitives/accordion/src/accordion-panel.directive.ts',
+        'packages/primitives/collapsible/src/collapsible-panel.directive.ts',
         'packages/primitives/presence/src/use-presence.ts',
         'packages/primitives/floating-focus-manager/src/trigger-interaction.ts',
         'packages/primitives/popover/src/popover-root.ts',

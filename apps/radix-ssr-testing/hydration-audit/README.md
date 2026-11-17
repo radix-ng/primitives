@@ -18,3 +18,14 @@ fresh matching client/server builds. The target is also available as
 Results, SSR HTML, module hashes, checkpoints and framework-limit observations are written to
 `dist/portal-hydration-audit/results/runtime-<engine>.json`. A failed run never passes by falling
 back to client rendering: assertions check saved server node identities, values and ID relationships.
+
+Accordion coverage includes `reverse-accordion-presence` and `eager-accordion-retained`. These
+check generated IDs, native server-node reuse, pre-bootstrap input edits, initial keyframe
+suppression and post-hydration close/reopen. Default Panels recreate children; retained Panels keep
+their native input. The reverse case hydrates the second island before the first. These are Angular
+hydration regressions, separate from the pinned React comparisons.
+
+```bash
+node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=reverse-accordion-presence
+node apps/radix-ssr-testing/hydration-audit/audit.mjs --skip-build --case=eager-accordion-retained
+```

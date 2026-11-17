@@ -149,7 +149,7 @@ export class RdxAccordionItemDirective {
         this.onOpenChange.emit({ open, eventDetails });
         if (eventDetails.isCanceled()) return false;
         this.rootContext.requestValue(this.resolvedValue(), open, eventDetails);
-        return !eventDetails.isCanceled() && this.open() === open;
+        return !eventDetails.isCanceled();
     };
 
     updateOpen = () => {

@@ -3,11 +3,14 @@ import { createRoot } from 'react-dom/client';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { installProbe, settings } from './contract';
 import { ReactLifecycleAccordion } from './lifecycle.react';
+import { ReactMotionAccordion } from './motion.react';
 
 const s = settings();
 const probe = installProbe(s);
 createRoot(document.getElementById('root')!).render(
-    s.lifetime ? (
+    s.motion ? (
+        <ReactMotionAccordion s={s} probe={probe} />
+    ) : s.lifetime ? (
         <ReactLifecycleAccordion s={s} probe={probe} />
     ) : (
         <>

@@ -1,4 +1,15 @@
 export interface Settings {
+    motion?:
+        | 'plain'
+        | 'decorated'
+        | 'transformed'
+        | 'horizontal'
+        | 'dynamic'
+        | 'transition'
+        | 'initial'
+        | 'switch'
+        | 'rapid'
+        | 'search';
     lifetime?: 'unmount' | 'retain' | 'search' | 'interrupt' | 'remove' | 'override' | 'reorder' | 'conditional';
     multiple?: boolean;
     controlled?: boolean;
@@ -15,6 +26,17 @@ export interface Settings {
 }
 export const cases: Record<string, Settings> = {
     single: {},
+    'motion-plain': { motion: 'plain' },
+    'motion-decorated': { motion: 'decorated' },
+    'motion-transformed': { motion: 'transformed' },
+    'motion-horizontal': { motion: 'horizontal' },
+    'motion-dynamic': { motion: 'dynamic' },
+    'motion-transition': { motion: 'transition' },
+    'motion-initial': { motion: 'initial' },
+    'motion-switch': { motion: 'switch' },
+    'motion-rapid': { motion: 'rapid' },
+    'motion-search': { motion: 'search' },
+
     'lifetime-unmount': { lifetime: 'unmount' },
     'lifetime-retain': { lifetime: 'retain' },
     'lifetime-search': { lifetime: 'search' },

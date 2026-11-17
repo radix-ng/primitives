@@ -14,6 +14,7 @@ import { AccordionDisabledExample } from './accordion-disabled';
 import { AccordionEventsExample } from './accordion-events';
 import { AccordionHorizontalExample } from './accordion-horizontal';
 import { AccordionKeepMountedExample } from './accordion-keep-mounted';
+import { AccordionMotionExample } from './accordion-motion';
 import { AccordionMultipleExample } from './accordion-multiple';
 import { AccordionPanelLifetimeExample } from './accordion-panel-lifetime';
 
@@ -24,6 +25,7 @@ import disabledSource from './accordion-disabled?raw';
 import eventsSource from './accordion-events?raw';
 import horizontalSource from './accordion-horizontal?raw';
 import keepMountedSource from './accordion-keep-mounted?raw';
+import motionSource from './accordion-motion?raw';
 import multipleSource from './accordion-multiple?raw';
 import panelLifetimeSource from './accordion-panel-lifetime?raw';
 
@@ -46,6 +48,7 @@ export default {
                 RdxAccordionPanelPresenceDirective,
                 AccordionDisabledExample,
                 AccordionMultipleExample,
+                AccordionMotionExample,
                 AccordionPanelLifetimeExample,
                 AccordionCollapsibleExample,
                 AccordionCollapsibleArrayExample,
@@ -178,6 +181,15 @@ export const PanelLifetime: Story = {
     render: () => ({
         template: html`
             <accordion-panel-lifetime-example />
+        `
+    })
+};
+
+export const Motion: Story = {
+    parameters: source(motionSource),
+    render: () => ({
+        template: html`
+            <accordion-motion-example />
         `
     })
 };

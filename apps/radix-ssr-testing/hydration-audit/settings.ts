@@ -1,4 +1,6 @@
 export const cases = {
+    'reverse-accordion-presence': { kind: 'accordion', placement: 'reverse' },
+    'eager-accordion-retained': { kind: 'accordion', placement: 'eager', retain: true },
     'eager-inline': { kind: 'inline', placement: 'eager' },
     'eager-attribute': { kind: 'attribute', placement: 'eager' },
     'eager-structural': { kind: 'structural', placement: 'eager' },
@@ -48,6 +50,7 @@ export type CaseName = keyof typeof cases;
 export interface Settings {
     name: CaseName;
     kind:
+        | 'accordion'
         | 'inline'
         | 'attribute'
         | 'structural'
@@ -77,6 +80,7 @@ export interface Settings {
         | 'pending-lazy-if-close'
         | 'pending-lazy-retarget';
     authoredIds?: boolean;
+    retain?: boolean;
 }
 export function settingsFor(url: string): Settings {
     const name = new URL(url, 'http://localhost').searchParams.get('case') ?? 'eager-inline';

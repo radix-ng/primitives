@@ -53,6 +53,7 @@ import {
 - [Horizontal](../examples/accordion--horizontal.md)
 - [Events](../examples/accordion--events.md)
 - [Controlled](../examples/accordion--controlled.md)
+- [Motion and dynamic content](../examples/accordion--motion-and-dynamic-content.md)
 - [Panel lifetime](../examples/accordion--panel-lifetime.md)
 - [Keep mounted](../examples/accordion--keep-mounted.md)
 

@@ -110,6 +110,10 @@ describe('RdxCollapsiblePanel — mount + transition', () => {
         host.open.set(false);
         fixture.detectChanges();
         expect(panel().getAttribute('hidden')).toBeNull();
+        expect(panel().getAttribute('data-ending-style')).toBeNull();
+        // The expanded size is captured in the committed frame before ending styles collapse it.
+        await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+        fixture.detectChanges();
         expect(panel().getAttribute('data-ending-style')).toBe('');
 
         // once the running animation finishes, the panel is hidden. Completion runs through a
@@ -121,6 +125,44 @@ describe('RdxCollapsiblePanel — mount + transition', () => {
         fixture.detectChanges();
         expect(renderedPanel()).toBeNull();
         expect(panel().getAttribute('data-ending-style')).toBeNull();
+    });
+
+    it('preserves the exit owner while open-only keyframes disappear before ending styles', async () => {
+        const realGetComputedStyle = window.getComputedStyle.bind(window);
+        vi.spyOn(window, 'getComputedStyle').mockImplementation((element: Element, pseudo?: string | null) => {
+            if (element === panel()) {
+                const animated = host.open() || panel().hasAttribute('data-ending-style');
+                return {
+                    animationName: animated ? 'panel-motion' : 'none',
+                    animationDuration: animated ? '0.2s' : '0s',
+                    animationDelay: '0s',
+                    transitionDuration: '0s',
+                    transitionDelay: '0s'
+                } as CSSStyleDeclaration;
+            }
+            return realGetComputedStyle(element, pseudo ?? undefined);
+        });
+        create(true);
+        let finish!: () => void;
+        const finished = new Promise<void>((resolve) => {
+            finish = resolve;
+        });
+        panel().getAnimations = vi
+            .fn()
+            .mockImplementation(() => (panel().hasAttribute('data-ending-style') ? [{ finished }] : []));
+        host.open.set(false);
+        fixture.detectChanges();
+        expect(renderedPanel()).not.toBeNull();
+        expect(panel().hasAttribute('data-ending-style')).toBe(false);
+        await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+        fixture.detectChanges();
+        expect(panel().hasAttribute('data-ending-style')).toBe(true);
+        expect(renderedPanel()).not.toBeNull();
+        finish();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+        await fixture.whenStable();
+        fixture.detectChanges();
+        expect(renderedPanel()).toBeNull();
     });
 
     afterEach(() => {

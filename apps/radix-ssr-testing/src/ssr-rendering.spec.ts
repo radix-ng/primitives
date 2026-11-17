@@ -401,6 +401,9 @@ describe('SSR rendering', () => {
         expect(trigger).toContain('aria-controls="server-accordion-panel"');
         expect(panel).toContain('aria-labelledby="server-accordion-trigger"');
         expect(panel).toContain('data-open');
+        expect(panel).toMatch(/animation-name:\s*none/);
+        expect(panel).toMatch(/--collapsible-panel-height:\s*auto/);
+        expect(panel).not.toContain('data-starting-style');
         const disabledButton = html.match(/<button[^>]*>Three<\/button>/)![0];
         expect(disabledButton).toContain('disabled=""');
         expect(disabledButton).not.toContain('aria-disabled');

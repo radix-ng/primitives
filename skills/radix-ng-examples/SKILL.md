@@ -43,11 +43,11 @@ and follow its links to the other Agents guides.
 addressed by the component slug and the kebab-cased example name. Cheaper than re-reading the whole
 component doc.
 
-Total: **303 examples** across **44 components**.
+Total: **304 examples** across **44 components**.
 
 ## Components
 
-- **[Accordion](./references/components/accordion.md)** — A vertically stacked set of interactive headings that each reveal an associated section of content. _(8 examples)_
+- **[Accordion](./references/components/accordion.md)** — A vertically stacked set of interactive headings that each reveal an associated section of content. _(9 examples)_
 - **[Alert Dialog](./references/components/alert-dialog.md)** — A modal dialog that interrupts the user with important content and expects a response. _(7 examples)_
 - **[Autocomplete](./references/components/autocomplete.md)** — A text input with a list of suggestions: free-form text whose value **is** the input string, with the active option tracked via `aria-activedescendant`. _(16 examples)_
 - **[Avatar](./references/components/avatar.md)** — An image element with a fallback for representing the user. _(3 examples)_

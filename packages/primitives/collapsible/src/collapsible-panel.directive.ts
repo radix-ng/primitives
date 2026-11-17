@@ -9,7 +9,8 @@ import {
     inject,
     input,
     Renderer2,
-    signal
+    signal,
+    untracked
 } from '@angular/core';
 import { BooleanInput } from '@radix-ng/primitives/core';
 import { injectCollapsiblePanelOwnerContext } from './collapsible-panel-owner-context';
@@ -32,11 +33,12 @@ const optionalBoolean = (value: BooleanInput | undefined): boolean | undefined =
         '[attr.data-open]': 'rootContext.open() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.open() ? undefined : ""',
         '[attr.data-starting-style]':
-            '(rootContext.transitionStatus() === "starting" || (effectiveHiddenUntilFound() && hidden() !== undefined)) ? "" : undefined',
-        '[attr.data-ending-style]': 'rootContext.transitionStatus() === "ending" ? "" : undefined',
+            '!suppressOpenAnimation() && !forceIdle() && (rootContext.transitionStatus() === "starting" || (effectiveHiddenUntilFound() && hidden() !== undefined && measuredMotion() !== "animation")) ? "" : undefined',
+        '[attr.data-ending-style]': '!forceIdle() && rootContext.transitionStatus() === "ending" ? "" : undefined',
         '[attr.hidden]': 'hidden()',
-        '[style.--collapsible-panel-width.px]': 'width()',
-        '[style.--collapsible-panel-height.px]': 'height()'
+        '[style.--collapsible-panel-width]': 'width() === null ? "auto" : width() + "px"',
+        '[style.--collapsible-panel-height]': 'height() === null ? "auto" : height() + "px"',
+        '[style.animation-name]': 'suppressOpenAnimation() ? "none" : undefined'
     }
 })
 export class RdxCollapsiblePanelDirective {
@@ -48,6 +50,11 @@ export class RdxCollapsiblePanelDirective {
     private parentNode: Node | null = null;
     private isAttached = true;
     private revealDecision?: ReturnType<typeof setTimeout>;
+    private revealFrame?: number;
+    private skipNextOpen = false;
+    private restoreRevealStyle?: () => void;
+    protected readonly forceIdle = signal(false);
+    protected readonly measuredMotion = signal<'transition' | 'animation' | 'none'>('none');
 
     protected readonly rootContext = injectCollapsibleRootContext();
     private readonly owner = (() => {
@@ -109,7 +116,7 @@ export class RdxCollapsiblePanelDirective {
      * A kept-mounted panel remains in the DOM but is still hidden while closed.
      */
     readonly hidden = computed<'' | 'until-found' | undefined>(() => {
-        const visible = this.rootContext.open() || this.rootContext.transitionStatus() === 'ending';
+        const visible = this.rootContext.open() || this.rootContext.mounted();
 
         if (visible) {
             return undefined;
@@ -118,14 +125,31 @@ export class RdxCollapsiblePanelDirective {
         return this.effectiveHiddenUntilFound() ? 'until-found' : '';
     });
 
-    /**
-     * Standalone hosts suppress their first measurement. Structural owners preserve initial-open
-     * suppression across native view recreation, so later user openings can animate.
-     */
-    private isFirstMeasure = true;
-    private originalStyles?: { transitionDuration: string; animationName: string };
+    private readonly suppressStandaloneInitialOpen = signal(this.rootContext.open());
+    protected readonly suppressOpenAnimation = computed(
+        () =>
+            this.rootContext.open() &&
+            (this.owner?.preventInitialOpenAnimation() ?? this.suppressStandaloneInitialOpen())
+    );
+    private previousMeasuredOpen: boolean | undefined;
 
     constructor() {
+        let initialized = false;
+        effect(() => {
+            const open = this.rootContext.open();
+            if (!initialized) {
+                initialized = true;
+                this.suppressStandaloneInitialOpen.set(open);
+            } else if (!open) {
+                this.suppressStandaloneInitialOpen.set(false);
+            }
+        });
+        const completion = this.rootContext.onOpenChangeComplete.subscribe((open) => {
+            if (open !== this.rootContext.open()) return;
+            this.height.set(null);
+            this.width.set(null);
+        });
+        this.destroyRef.onDestroy(() => completion.unsubscribe());
         const unregister = this.rootContext.registerTransitionElement(this.elementRef.nativeElement);
         this.destroyRef.onDestroy(unregister);
 
@@ -136,12 +160,26 @@ export class RdxCollapsiblePanelDirective {
             'beforematch',
             (event: Event) => {
                 if (!this.effectiveHiddenUntilFound() || this.rootContext.open()) return;
-                this.rootContext.setOpen(true, 'none', event);
+                const node = this.elementRef.nativeElement;
+                const hadStartingStyle = node.hasAttribute('data-starting-style');
+                if (this.rootContext.setOpen(true, 'none', event)) {
+                    this.skipNextOpen = true;
+                    this.forceIdle.set(true);
+                    // The browser measures its match in this same task, before Angular commits.
+                    this.renderer.removeAttribute(node, 'data-starting-style');
+                }
                 clearTimeout(this.revealDecision);
+                if (this.revealFrame !== undefined) cancelAnimationFrame(this.revealFrame);
                 this.revealDecision = setTimeout(() => {
-                    if (!this.rootContext.open() && this.effectiveHiddenUntilFound()) {
-                        this.renderer.setAttribute(this.elementRef.nativeElement, 'hidden', 'until-found');
-                    }
+                    if (this.rootContext.open()) return;
+                    this.revealFrame = requestAnimationFrame(() => {
+                        this.revealFrame = undefined;
+                        if (this.rootContext.open() || !this.effectiveHiddenUntilFound()) return;
+                        this.skipNextOpen = false;
+                        this.forceIdle.set(false);
+                        if (hadStartingStyle) this.renderer.setAttribute(node, 'data-starting-style', '');
+                        this.renderer.setAttribute(node, 'hidden', 'until-found');
+                    });
                 }, 0);
             }
         );
@@ -149,6 +187,8 @@ export class RdxCollapsiblePanelDirective {
         this.destroyRef.onDestroy(() => {
             unlistenBeforeMatch();
             clearTimeout(this.revealDecision);
+            if (this.revealFrame !== undefined) cancelAnimationFrame(this.revealFrame);
+            this.restoreRevealStyle?.();
             this.removeMarker();
         });
 
@@ -164,13 +204,65 @@ export class RdxCollapsiblePanelDirective {
             effect(() => this.syncRenderedState());
         }
 
-        // `afterRenderEffect` runs after the DOM is committed (but before paint) with the settled
-        // `open` state — no `requestAnimationFrame` race — and is a no-op during SSR.
         afterRenderEffect(() => {
-            // Re-measure whenever the open state flips; the panel is visible at that point (during
-            // an exit it is kept rendered by the `ending` transition phase).
-            this.rootContext.open();
-            this.updateDimensions();
+            const open = this.rootContext.open();
+            const status = this.rootContext.transitionStatus();
+            const mounted = this.rootContext.mounted();
+            const suppressed = this.suppressOpenAnimation();
+            untracked(() => {
+                const changed = this.previousMeasuredOpen !== open;
+                this.previousMeasuredOpen = open;
+                if (!open) {
+                    this.restoreRevealStyle?.();
+                    this.restoreRevealStyle = undefined;
+                    this.forceIdle.set(false);
+                } else if (status !== 'starting' && !this.skipNextOpen) {
+                    this.forceIdle.set(false);
+                }
+                if (!mounted && !open) return;
+                const previousMotion = this.measuredMotion();
+                const motion = this.motionType();
+                // Open-only keyframes disappear during the capture frame. Keep their motion
+                // ownership until ending styles have had a chance to install the exit animation.
+                if (open || motion !== 'none') this.measuredMotion.set(motion);
+                if (
+                    open &&
+                    status === 'starting' &&
+                    motion === 'none' &&
+                    !this.elementRef.nativeElement.getAnimations?.().length &&
+                    !this.skipNextOpen
+                ) {
+                    this.forceIdle.set(true);
+                    this.height.set(null);
+                    this.width.set(null);
+                    return;
+                }
+                if (open && this.skipNextOpen) {
+                    this.skipNextOpen = false;
+                    this.updateDimensions();
+                    const property = this.motionType() === 'transition' ? 'transition-duration' : 'animation-duration';
+                    const style = this.elementRef.nativeElement.style;
+                    const value = style.getPropertyValue(property);
+                    const priority = style.getPropertyPriority(property);
+                    style.setProperty(property, '0s');
+                    this.restoreRevealStyle = () =>
+                        value ? style.setProperty(property, value, priority) : style.removeProperty(property);
+                    return;
+                }
+                if (
+                    !open &&
+                    status !== 'ending' &&
+                    motion === 'none' &&
+                    previousMotion === 'none' &&
+                    !this.elementRef.nativeElement.getAnimations?.().length
+                ) {
+                    this.rootContext.finishClose();
+                    return;
+                }
+                if ((open && status === 'starting' && !suppressed) || (!open && changed)) {
+                    this.updateDimensions();
+                }
+            });
         });
     }
 
@@ -216,36 +308,41 @@ export class RdxCollapsiblePanelDirective {
         }
     }
 
+    private motionType(): 'transition' | 'animation' | 'none' {
+        const styles = getComputedStyle(this.elementRef.nativeElement);
+        const hasDuration = (value = '') => value.split(',').some((part) => Number.parseFloat(part) > 0);
+        if (hasDuration(styles.transitionDuration)) return 'transition';
+        if (
+            hasDuration(styles.animationDuration) &&
+            (this.suppressOpenAnimation() ||
+                (styles.animationName ?? '').split(',').some((name) => name.trim() && name.trim() !== 'none'))
+        )
+            return 'animation';
+        return 'none';
+    }
+
     private updateDimensions(): void {
         const node = this.elementRef.nativeElement;
-        if (!node) return;
-
-        this.originalStyles ??= {
-            transitionDuration: node.style.transitionDuration,
-            animationName: node.style.animationName
-        };
-
-        // Block any animation/transition so we can measure the element at its natural size.
-        node.style.transitionDuration = '0s';
-        node.style.animationName = 'none';
-
-        // Let the element take its natural height while measuring, so a `height` bound to the very
-        // variable we are computing (the Base UI collapse pattern) does not feed back into itself.
-        const previousHeight = node.style.height;
-        node.style.height = 'auto';
-
-        const rect = node.getBoundingClientRect();
-        this.height.set(rect.height);
-        this.width.set(rect.width);
-
-        node.style.height = previousHeight;
-
-        // Structural owners distinguish initial-open configuration from later native remounts.
-        if (this.owner ? !this.owner.preventInitialOpenAnimation() : !this.isFirstMeasure) {
-            node.style.transitionDuration = this.originalStyles.transitionDuration;
-            node.style.animationName = this.originalStyles.animationName;
+        // Transforms and borders are excluded by the pin's scroll-size protocol. Scrolling
+        // dimensions still expose expanded children while the starting style collapses the host.
+        const alignment = ['justify-content', 'align-items', 'align-content', 'justify-items'];
+        const restore =
+            this.motionType() === 'transition'
+                ? alignment.map((property) => {
+                      const value = node.style.getPropertyValue(property);
+                      const priority = node.style.getPropertyPriority(property);
+                      node.style.setProperty(property, 'initial', 'important');
+                      return () =>
+                          value
+                              ? node.style.setProperty(property, value, priority)
+                              : node.style.removeProperty(property);
+                  })
+                : [];
+        try {
+            this.height.set(node.scrollHeight);
+            this.width.set(node.scrollWidth);
+        } finally {
+            restore.forEach((restoreStyle) => restoreStyle());
         }
-
-        this.isFirstMeasure = false;
     }
 }

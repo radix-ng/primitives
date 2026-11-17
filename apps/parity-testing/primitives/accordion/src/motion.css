@@ -1,0 +1,102 @@
+.motion-root {
+    width: 360px;
+}
+
+.motion-panel {
+    box-sizing: content-box;
+    width: 300px;
+    overflow: hidden;
+    height: var(--accordion-panel-height);
+    animation: accordion-motion-in 800ms linear;
+}
+
+.motion-body {
+    height: 80px;
+    width: 240px;
+    flex-shrink: 0;
+}
+
+.motion-body[data-tall] {
+    height: 160px;
+    width: 280px;
+}
+
+.motion-panel[data-variant='decorated'] {
+    padding: 12px;
+    border: 4px solid;
+}
+
+.motion-panel[data-variant='transformed'] {
+    transform: scale(0.75);
+}
+
+.motion-panel[data-ending-style] {
+    animation: accordion-motion-out 800ms linear;
+}
+
+.motion-panel:is([data-variant='transition'], [data-variant='search']) {
+    animation: none;
+    transition: height 800ms linear;
+}
+
+.motion-panel:is([data-variant='transition'], [data-variant='search']):is([data-starting-style], [data-ending-style]) {
+    height: 0;
+    animation: none;
+}
+
+.motion-panel[data-variant='horizontal'] {
+    display: inline-flex;
+    width: var(--accordion-panel-width);
+    animation: none;
+    transition: width 800ms linear;
+}
+
+.motion-panel[data-variant='horizontal']:is([data-starting-style], [data-ending-style]) {
+    width: 0;
+    animation: none;
+}
+
+.motion-panel:is([data-variant='plain'], [data-variant='decorated'], [data-variant='transformed']) {
+    height: auto;
+    animation: accordion-opacity-in 800ms linear;
+}
+
+.motion-panel:is([data-variant='plain'], [data-variant='decorated'], [data-variant='transformed'])[data-ending-style] {
+    animation: accordion-opacity-out 800ms linear;
+}
+@keyframes accordion-motion-in {
+    from {
+        height: 0;
+    }
+
+    to {
+        height: var(--accordion-panel-height);
+    }
+}
+@keyframes accordion-motion-out {
+    from {
+        height: var(--accordion-panel-height);
+    }
+
+    to {
+        height: 0;
+    }
+}
+@keyframes accordion-opacity-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+@keyframes accordion-opacity-out {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}

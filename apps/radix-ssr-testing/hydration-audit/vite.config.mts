@@ -20,6 +20,15 @@ export default defineConfig({
             generateBundle() {
                 const runtime = [
                     'packages/primitives/core/src/id-generator.ts',
+                    'packages/primitives/accordion/src/accordion-root.directive.ts',
+                    'packages/primitives/accordion/src/accordion-item.directive.ts',
+                    'packages/primitives/accordion/src/accordion-panel.directive.ts',
+                    'packages/primitives/accordion/src/accordion-panel-presence.directive.ts',
+                    'packages/primitives/accordion/src/accordion-trigger.directive.ts',
+                    'packages/primitives/collapsible/src/collapsible-root.directive.ts',
+                    'packages/primitives/collapsible/src/collapsible-panel.directive.ts',
+                    'packages/primitives/collapsible/src/collapsible-panel-owner-context.ts',
+
                     'packages/primitives/core/src/view-anchor.ts',
                     'packages/primitives/core/src/floating/internal-backdrop.ts',
                     'packages/primitives/presence/src/use-presence.ts',

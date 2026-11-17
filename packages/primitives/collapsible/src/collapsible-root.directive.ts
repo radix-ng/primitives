@@ -1,13 +1,18 @@
 import {
+    afterNextRender,
+    AfterRenderRef,
     booleanAttribute,
     computed,
+    DestroyRef,
     Directive,
     effect,
     inject,
+    Injector,
     input,
     model,
     ModelSignal,
     output,
+    OutputRef,
     signal,
     Signal,
     untracked,
@@ -44,6 +49,10 @@ export interface CollapsibleRootContext {
     mounted: Signal<boolean>;
     /** @internal Shared with a structural Panel owner; it must not start another motion observer. */
     renderLifecycle: RdxRenderLifecycle;
+    /** @internal Completion of the shared motion observation, including open animations. */
+    onOpenChangeComplete: OutputRef<boolean>;
+    /** @internal Settle a close immediately when its Panel has no finite motion. */
+    finishClose: () => void;
     /**
      * Composition fallbacks supplied by Accordion. Panel inputs override these reactively without
      * writing into the fallback, so removing an override restores inheritance.
@@ -81,6 +90,8 @@ const rootContext = (): CollapsibleRootContext => {
         transitionStatus: instance.transitionStatus,
         mounted: instance.mounted,
         renderLifecycle: instance.renderLifecycle,
+        onOpenChangeComplete: instance.onOpenChangeComplete,
+        finishClose: () => instance.finishClose(),
         keepMounted: instance.keepMountedContext,
         hiddenUntilFound: instance.hiddenUntilFoundContext,
         setOpen: (open, reason, event, trigger) => instance.setOpen(open, reason, event, trigger),
@@ -119,6 +130,11 @@ export class RdxCollapsibleRootDirective {
 
     /** @internal The structural Panel view consumes the same lifetime as its native host. */
     readonly renderLifecycle = this.transition;
+
+    private readonly injector = inject(Injector);
+    private readonly closeFramePending = signal(false);
+    private closeRender?: AfterRenderRef;
+    private closeFrame?: number;
 
     private readonly generatedPanelId = injectId('rdx-collapsible-panel-');
     private readonly panelIdState = signal<string | null | undefined>(undefined);
@@ -168,7 +184,7 @@ export class RdxCollapsibleRootDirective {
     readonly hiddenUntilFoundContext = signal(false);
 
     /** `true` while the panel must stay rendered: open, or mid exit transition. */
-    readonly mounted = computed(() => this.open() || this.transitionStatus() === 'ending');
+    readonly mounted = computed(() => this.open() || this.closeFramePending() || this.transitionStatus() === 'ending');
 
     /**
      * Event handler called when the open state of the collapsible changes.
@@ -194,6 +210,22 @@ export class RdxCollapsibleRootDirective {
         return () => {
             if (this.openRequestHandler === handler) this.openRequestHandler = undefined;
         };
+    }
+
+    private cancelCloseFrame(): void {
+        this.closeRender?.destroy();
+        this.closeRender = undefined;
+        if (this.closeFrame !== undefined) cancelAnimationFrame(this.closeFrame);
+        this.closeFrame = undefined;
+        this.closeFramePending.set(false);
+    }
+
+    /** @internal The native Panel can prove that there is no exit motion to observe. */
+    finishClose(): void {
+        if (this.open()) return;
+        this.cancelCloseFrame();
+        this.transition.unmount();
+        this.onOpenChangeComplete.emit(false);
     }
 
     setPanelIdState(id: string | null | undefined): void {
@@ -222,6 +254,7 @@ export class RdxCollapsibleRootDirective {
     }
 
     constructor() {
+        inject(DestroyRef).onDestroy(() => this.cancelCloseFrame());
         effect(() => {
             const defaultOpen = this.defaultOpen();
 
@@ -241,7 +274,27 @@ export class RdxCollapsibleRootDirective {
 
             if (open !== this.previousOpen) {
                 this.previousOpen = open;
-                untracked(() => this.transition.start(open));
+                untracked(() => {
+                    this.cancelCloseFrame();
+                    if (open) {
+                        this.transition.start(true);
+                        return;
+                    }
+                    // Capture the expanded pixel size before data-ending-style applies the
+                    // collapsed layout. Use the existing lifecycle to observe the resulting exit.
+                    this.closeFramePending.set(true);
+                    this.closeRender = afterNextRender(
+                        () => {
+                            this.closeRender = undefined;
+                            this.closeFrame = requestAnimationFrame(() => {
+                                this.closeFrame = undefined;
+                                this.closeFramePending.set(false);
+                                this.transition.start(false);
+                            });
+                        },
+                        { injector: this.injector }
+                    );
+                });
             }
         });
     }

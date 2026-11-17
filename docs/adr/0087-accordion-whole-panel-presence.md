@@ -77,3 +77,9 @@ The public PanelLifetime story has a real-browser state-reset/retention regressi
 Current counts and engine results live in the [suite README](../../apps/parity-testing/primitives/accordion/README.md).
 Actual client hydration, measurement parity, full motion sequencing, arbitrary reparenting and real
 browser find remain separate verification work. SSR annotations alone are not hydration evidence.
+
+The G9 follow-up establishes scroll-size pixels during motion and auto after completion, a capture
+frame before exit styling, immediate transition-based search reveal and SSR first-paint suppression.
+Two client hydration cases in the shared audit verify server-node reuse, IDs and pre-bootstrap edits
+across reverse islands and retained views; both run in all three desktop engines. Remaining motion/
+author-style and hydration combinations stay explicit in the matrix.

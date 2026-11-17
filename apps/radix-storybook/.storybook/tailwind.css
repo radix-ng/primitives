@@ -199,13 +199,13 @@
     }
 
     to {
-        height: var(--radix-accordion-content-height);
+        height: var(--accordion-panel-height);
     }
 }
 
 @keyframes accordion-up {
     from {
-        height: var(--radix-accordion-content-height);
+        height: var(--accordion-panel-height);
     }
 
     to {
@@ -219,13 +219,13 @@
     }
 
     to {
-        width: var(--radix-accordion-content-width);
+        width: var(--accordion-panel-width);
     }
 }
 
 @keyframes accordion-left {
     from {
-        width: var(--radix-accordion-content-width);
+        width: var(--accordion-panel-width);
     }
 
     to {

@@ -3,9 +3,10 @@ import { createParityRunner } from '../../../shared/run-scenario.ts';
 import { cases } from '../src/contract';
 import { AccordionDriver } from './driver';
 import { lifecycleScenarios } from './lifecycle.scenarios';
+import { motionScenarios } from './motion.scenarios';
 
 const scenarios = Object.entries(cases)
-    .filter(([, settings]) => !settings.lifetime)
+    .filter(([, settings]) => !settings.lifetime && !settings.motion)
     .map(([name, settings]) => ({
         name,
         async run(driver: AccordionDriver) {
@@ -54,7 +55,7 @@ const scenarios = Object.entries(cases)
             }
         }
     }));
-const allScenarios = [...scenarios, ...lifecycleScenarios];
+const allScenarios = [...scenarios, ...lifecycleScenarios, ...motionScenarios];
 const run = createParityRunner({
     differences: new URL('../expected-differences.json', import.meta.url),
     scenarios: allScenarios,

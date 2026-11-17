@@ -11,6 +11,14 @@ import {
     PLATFORM_ID,
     signal
 } from '@angular/core';
+import {
+    RdxAccordionHeaderDirective,
+    RdxAccordionItemDirective,
+    RdxAccordionPanelDirective,
+    RdxAccordionPanelPresenceDirective,
+    RdxAccordionRootDirective,
+    RdxAccordionTriggerDirective
+} from '@radix-ng/primitives/accordion';
 import { injectId } from '@radix-ng/primitives/core';
 import {
     RdxDialogPopup,
@@ -113,6 +121,12 @@ export class HydrationProbe {
 @Component({
     selector: 'audit-portal-view',
     imports: [
+        RdxAccordionRootDirective,
+        RdxAccordionItemDirective,
+        RdxAccordionHeaderDirective,
+        RdxAccordionTriggerDirective,
+        RdxAccordionPanelDirective,
+        RdxAccordionPanelPresenceDirective,
         RdxDialogRoot,
         RdxDialogTrigger,
         RdxDialogPortal,
@@ -148,6 +162,20 @@ export class HydrationProbe {
     ],
     template: `
         @switch (state.settings.kind) {
+            @case ('accordion') {
+                <section [attr.data-widget]="name()">
+                    <div [defaultValue]="['one']" [keepMounted]="state.settings.retain ?? false" rdxAccordionRoot>
+                        <div rdxAccordionItem value="one">
+                            <h3 rdxAccordionHeader>
+                                <button rdxAccordionTrigger>Accordion {{ name() }}</button>
+                            </h3>
+                            <div class="audit-accordion-panel" *rdxAccordionPanelPresence rdxAccordionPanel>
+                                <audit-probe [name]="name()" />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            }
             @case ('menu') {
                 <section [attr.data-widget]="name()">
                     <ng-container [open]="true" [modal]="false" (onOpenChange)="keepOpen($event)" rdxMenuRoot>
