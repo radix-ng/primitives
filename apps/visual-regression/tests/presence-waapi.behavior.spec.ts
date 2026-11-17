@@ -44,7 +44,7 @@ test.describe('Presence render lifetime', () => {
         await expect(box).toHaveAttribute('data-state', 'closed');
         await expect(box).toBeAttached();
 
-        // Once the transition ends, the machine unmounts it.
+        // Once the transition ends, the lifecycle unmounts it.
         await expect(box).toHaveCount(0);
     });
 
@@ -162,6 +162,36 @@ test.describe('Presence render lifetime', () => {
         await expect(box).toHaveCount(0);
     });
 
+    for (const change of ['playback rate', 'duration'] as const) {
+        test(`changing discovered ${change} keeps the view until motion actually finishes`, async ({ page }) => {
+            await gotoStory(page, 'utilities-presence--waapi-transition-exit');
+            await mountButton(page).click();
+            const box = page.locator('.waapi-box');
+            await expect(box).toBeVisible();
+            await box.evaluate((element) => {
+                element.style.transitionDuration = '500ms';
+            });
+            await mountButton(page).click();
+            await expect(box).toHaveAttribute('data-state', 'closed');
+            const retained = await box.evaluate(async (element, change) => {
+                await new Promise<void>((resolve) =>
+                    requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+                );
+                const animations = element.getAnimations();
+                if (!animations.length) throw new Error('Expected an active exit transition');
+                for (const animation of animations) {
+                    if (change === 'playback rate') animation.playbackRate = 0.05;
+                    else animation.effect!.updateTiming({ duration: 4000 });
+                }
+                await new Promise((resolve) => setTimeout(resolve, 800));
+                return element.isConnected;
+            }, change);
+            expect(retained).toBe(true);
+            await box.evaluate((element) => element.getAnimations().forEach((animation) => animation.finish()));
+            await expect(box).toHaveCount(0);
+        });
+    }
+
     test('an unregistered finite descendant does not acquire the parent lifetime', async ({ page }) => {
         await gotoStory(page, 'utilities-presence--waapi-transition-exit');
         await mountButton(page).click();
@@ -175,5 +205,62 @@ test.describe('Presence render lifetime', () => {
         });
         await mountButton(page).click();
         await expect(box).toHaveCount(0, { timeout: 1000 });
+    });
+
+    test('removing a paused target releases its parent exit', async ({ page }) => {
+        await gotoStory(page, 'utilities-presence--dynamic-targets');
+        await page.getByRole('button', { name: 'Mount', exact: true }).click();
+        const root = page.locator('.dynamic-presence-root');
+        await expect(root).toBeVisible();
+        await page.getByRole('button', { name: 'Unmount', exact: true }).click();
+        await expect(root).toHaveAttribute('data-closed', '');
+        await expect
+            .poll(() => page.locator('.dynamic-presence-child').evaluate((element) => element.getAnimations().length))
+            .toBeGreaterThan(0);
+        await root.evaluate((element) => {
+            element.getAnimations({ subtree: true }).forEach((animation) => animation.pause());
+            element.getAnimations().forEach((animation) => animation.finish());
+        });
+        await expect(root).toBeAttached();
+        await page.getByRole('button', { name: 'Remove animated child' }).click();
+        await expect(root).toHaveCount(0);
+    });
+
+    test('a target created during exit joins the current wait', async ({ page }) => {
+        await gotoStory(page, 'utilities-presence--dynamic-targets');
+        await page.getByRole('button', { name: 'Remove animated child' }).click();
+        await page.getByRole('button', { name: 'Mount', exact: true }).click();
+        const root = page.locator('.dynamic-presence-root');
+        await expect(root).toBeVisible();
+        await page.getByRole('button', { name: 'Unmount', exact: true }).click();
+        await expect(root).toHaveAttribute('data-closed', '');
+        await root.evaluate((element) => element.getAnimations().forEach((animation) => animation.pause()));
+        await page.getByRole('button', { name: 'Add animated child' }).click();
+        const child = page.locator('.dynamic-presence-child');
+        await expect(child).toBeAttached();
+        await expect.poll(() => child.evaluate((element) => element.getAnimations().length)).toBeGreaterThan(0);
+        await child.evaluate((element) => element.getAnimations().forEach((animation) => animation.pause()));
+        await root.evaluate((element) => element.getAnimations().forEach((animation) => animation.finish()));
+        await expect(root).toBeAttached();
+        await child.evaluate((element) => element.getAnimations().forEach((animation) => animation.finish()));
+        await expect(root).toHaveCount(0);
+    });
+
+    test('resolving a standalone Portal destination does not remount closed content', async ({ page }) => {
+        const errors: string[] = [];
+        page.on('pageerror', (error) => errors.push(error.message));
+        await gotoStory(page, 'utilities-presence--pending-portal');
+        const content = page.locator('.pending-portal-content');
+        await page.getByRole('button', { name: 'Mount', exact: true }).click();
+        await expect(page.locator('.pending-portal-destination > .pending-portal-content')).toBeVisible();
+        await page.getByRole('button', { name: 'Suspend destination' }).click();
+        await expect(content).toHaveCount(0);
+        await page.getByRole('button', { name: 'Unmount', exact: true }).click();
+        await page.getByRole('button', { name: 'Resolve destination' }).click();
+        await expect(page.getByRole('button', { name: 'Suspend destination' })).toBeVisible();
+        await expect(content).toHaveCount(0);
+        await page.getByRole('button', { name: 'Mount', exact: true }).click();
+        await expect(page.locator('.pending-portal-destination > .pending-portal-content')).toBeVisible();
+        expect(errors).toEqual([]);
     });
 });

@@ -56,59 +56,36 @@ export function waitForAnimations(
         if (settled || signal.aborted) return;
         clearTimer();
         const animations = new Set<Animation>();
-        let remaining = 0;
+        let fallbackDuration = 0;
         for (const element of elements) {
             if (typeof element.getAnimations !== 'function') {
-                remaining = Math.max(remaining, getMaxTransitionDuration(element));
+                fallbackDuration = Math.max(fallbackDuration, getMaxTransitionDuration(element));
                 continue;
             }
             for (const animation of element.getAnimations()) {
                 const timing = animation.effect?.getTiming();
                 if (timing?.iterations === Infinity || timing?.duration === Infinity) continue;
                 animations.add(animation);
-                // A paused animation is deliberately controlled by its owner; a wall-clock timer
-                // cannot establish its completion. WAAPI timing includes delay, iterations and rate.
-                if (animation.playState === 'paused' || animation.playbackRate === 0) {
-                    remaining = Infinity;
-                } else {
-                    const end = animation.effect?.getComputedTiming().endTime;
-                    const current = Number(animation.currentTime ?? 0);
-                    const rate = animation.playbackRate ?? 1;
-                    const time =
-                        typeof end === 'number'
-                            ? (rate < 0 ? current : end - current) / Math.abs(rate)
-                            : getMaxTransitionDuration(element);
-                    remaining = Math.max(remaining, time);
-                }
             }
         }
-        if (!animations.size && remaining === 0) {
+        if (!animations.size && fallbackDuration === 0) {
             complete();
             return;
         }
         onPending(true);
-        if (Number.isFinite(remaining))
-            timer = setTimeout(
-                () => {
-                    // The owner may pause motion after discovery. Re-check at the safety boundary rather
-                    // than treating a deliberately paused animation as an engine that failed to settle.
-                    if (
-                        [...animations].some(
-                            (animation) => animation.playState === 'paused' || animation.playbackRate === 0
-                        )
-                    )
-                        scan();
-                    else complete();
-                },
-                Math.max(0, remaining) + 50
+        // The finished promise follows timing/rate changes and deliberate pauses. A snapshot of
+        // endTime cannot bound those animations. Only elements without WAAPI need a CSS timer.
+        // Discard fulfilled Animation values so an unfinished peer does not retain their DOM.
+        const completions: Promise<void>[] = [...animations].map((animation) =>
+            animation.finished.then(() => undefined)
+        );
+        if (fallbackDuration > 0)
+            completions.push(
+                new Promise<void>((resolve) => {
+                    timer = setTimeout(resolve, fallbackDuration + 50);
+                })
             );
-        if (animations.size) {
-            // Discard fulfilled Animation values so an unfinished peer does not retain their DOM.
-            void Promise.all([...animations].map((animation) => animation.finished.then(() => undefined))).then(
-                complete,
-                scan
-            );
-        }
+        void Promise.all(completions).then(complete, scan);
     };
     if (signal.aborted) return;
     signal.addEventListener('abort', abort, { once: true });

@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { buildDependencies, changesSince, selectChecks } from './affected.ts';
+import { isFloatingSpec, specFamily } from './test-catalog.ts';
 
 const spec = (name: string) => `apps/visual-regression/tests/${name}.behavior.spec.ts`;
 const families = new Map([
@@ -62,6 +63,27 @@ test('direct browser edits select that spec, without pinned comparisons', () => 
     const result = plan([spec('menubar')]);
     assert.deepEqual(result.floating, [spec('menubar')]);
     assert.deepEqual(result.suites, []);
+});
+
+test('Presence and Tabs motion regressions participate in affected and full browser runs', () => {
+    const motionSpecs = ['presence-waapi', 'tabs'].map(spec);
+    for (const file of motionSpecs) assert.equal(isFloatingSpec(file), true);
+    assert.equal(specFamily(spec('presence-waapi')), 'presence');
+    const families = new Map([['tabs', new Set(['presence'])]]);
+    for (const changed of [
+        ['packages/primitives/presence/src/use-presence.ts'],
+        ['packages/primitives/core/src/composables/use-render-lifecycle.ts']
+    ]) {
+        const result = selectChecks({ changed, families, specs: motionSpecs, suites: [] });
+        assert.deepEqual(result.floating, [...motionSpecs].sort());
+    }
+    const tabs = selectChecks({
+        changed: ['packages/primitives/tabs/src/tabs-panel.ts'],
+        families,
+        specs: motionSpecs,
+        suites: []
+    });
+    assert.deepEqual(tabs.floating, [spec('tabs')]);
 });
 test('Agents reference families select their browser checks without broadening to unrelated suites', () => {
     for (const family of ['field', 'select', 'menu', 'tabs']) {
@@ -158,6 +180,8 @@ test('the CLI emits separate GitHub output records and a readable summary', () =
         assert.equal(values.browser, true);
         assert.ok(values.suites.includes('menubar'));
         assert.ok(values.floating.includes(spec('menubar')));
+        assert.ok(values.floating.includes(spec('presence-waapi')));
+        assert.ok(values.floating.includes(spec('tabs')));
         assert.ok(readFileSync(summary, 'utf8').split('\n').length > 5);
     } finally {
         rmSync(directory, { recursive: true, force: true });

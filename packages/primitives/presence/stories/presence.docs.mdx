@@ -43,6 +43,8 @@ Import `RdxPresenceTarget` and apply `rdxPresenceTarget` to an animated descenda
 animations then participate in the same view lifetime. Unregistered descendants do not delay
 removal. Infinite animations are ignored, including on registered targets. If a transition is
 canceled and replaced, Presence waits for the replacement.
+Changing an animation's duration or playback rate keeps the view until that animation finishes.
+Paused finite animations retain the view until their owner finishes or cancels them.
 
 ```html
 <ng-template myContentPresence>
@@ -68,6 +70,13 @@ Only the marked descendant runs exit keyframes; the containing view stays mounte
 The marked spinner runs continuously. Infinite motion does not delay removal when the view closes.
 
 <Canvas of={PresenceStories.WaapiInfiniteSpinnerNoDelay} />
+
+### Dynamic animation targets
+
+Targets created during exit join the current wait. Removing a target releases its animations from
+the lifetime, including paused animations; it does not cancel the animations themselves.
+
+<Canvas of={PresenceStories.DynamicTargets} />
 
 ## API Reference
 

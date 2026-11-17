@@ -4,7 +4,7 @@ import { desktopBrowserProjects } from '../../tools/playwright/browser-projects.
 import { floatingTestMatch } from '../../tools/playwright/test-catalog.ts';
 import base from './playwright.config';
 
-// Shared Popper/focus/dismissal consumers, including families which compose Menu or Dialog.
+// Shared motion/Popper/focus/dismissal consumers, including structural Presence and Tabs lifetimes.
 // These are Angular regression checks; pinned-reference parity lives in apps/parity-testing.
 export default defineConfig(base, {
     testMatch: floatingTestMatch,

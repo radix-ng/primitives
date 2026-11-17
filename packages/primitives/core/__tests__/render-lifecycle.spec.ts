@@ -148,6 +148,65 @@ describe('signal render lifetime', () => {
         expect(host.completions.filter((open) => !open)).toEqual([]);
     });
 
+    it('releases a removed animation participant during an exit', async () => {
+        const { fixture, host } = await render();
+        const motion = animationDriver();
+        const node = document.createElement('div');
+        node.getAnimations = () => [motion.animation];
+        const unregister = host.lifecycle.registerElement(node);
+        host.open.set(false);
+        host.lifecycle.start(false);
+        await fixture.whenStable();
+        expect(host.lifecycle.isExitPending).toBe(true);
+        unregister();
+        await fixture.whenStable();
+        expect(host.lifecycle.mounted()).toBe(false);
+        expect(host.completions.filter((open) => !open)).toEqual([false]);
+        await motion.finish();
+        expect(host.completions.filter((open) => !open)).toEqual([false]);
+    });
+
+    it('includes a participant added during an exit', async () => {
+        const { fixture, host } = await render();
+        const first = animationDriver();
+        const added = animationDriver();
+        const node = document.createElement('div');
+        node.getAnimations = () => [first.animation];
+        host.lifecycle.registerElement(node);
+        host.open.set(false);
+        host.lifecycle.start(false);
+        await fixture.whenStable();
+        const next = document.createElement('div');
+        next.getAnimations = () => [added.animation];
+        host.lifecycle.registerElement(next);
+        await fixture.whenStable();
+        await first.finish();
+        await fixture.whenStable();
+        expect(host.lifecycle.mounted()).toBe(true);
+        await added.finish();
+        await fixture.whenStable();
+        expect(host.lifecycle.mounted()).toBe(false);
+        expect(host.completions.filter((open) => !open)).toEqual([false]);
+    });
+
+    it('waits for a target added after motion completed at an owner hold', async () => {
+        const { fixture, host } = await render();
+        host.hold.set(true);
+        host.open.set(false);
+        host.lifecycle.start(false);
+        await fixture.whenStable();
+        const motion = animationDriver();
+        const node = document.createElement('div');
+        node.getAnimations = () => [motion.animation];
+        host.lifecycle.registerElement(node);
+        host.hold.set(false);
+        await fixture.whenStable();
+        expect(host.lifecycle.mounted()).toBe(true);
+        await motion.finish();
+        await fixture.whenStable();
+        expect(host.lifecycle.mounted()).toBe(false);
+    });
+
     it('invalidates motion callbacks when its owner is destroyed', async () => {
         const { fixture, host } = await render();
         const motion = animationDriver();

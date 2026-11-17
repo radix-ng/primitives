@@ -110,6 +110,24 @@ describe('Portal pending destinations', () => {
         fixture.destroy();
     });
 
+    it('does not resurrect a closed view when its pending destination resolves', async () => {
+        const fixture = TestBed.createComponent(PendingHost);
+        const host = fixture.componentInstance;
+        host.target.set(document.body);
+        await fixture.whenStable();
+        expect(host.mounts).toBe(1);
+        host.target.set(null);
+        await fixture.whenStable();
+        expect(host.destroys).toBe(1);
+        host.present.set(false);
+        await fixture.whenStable();
+        host.target.set(document.body);
+        await fixture.whenStable();
+        expect(host.mounts).toBe(1);
+        expect(document.querySelector('[data-pending-root]')).toBeNull();
+        fixture.destroy();
+    });
+
     it('waits while closed with keepMounted and mounts a retained view only after resolving the target', async () => {
         const fixture = TestBed.createComponent(PendingHost);
         const host = fixture.componentInstance;

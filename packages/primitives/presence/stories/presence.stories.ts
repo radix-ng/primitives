@@ -1,6 +1,10 @@
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { PresenceExample } from './presence';
+import { PresenceDynamicTargets } from './presence-dynamic-targets';
+import dynamicTargetsSource from './presence-dynamic-targets?raw';
+import { PresencePendingPortal } from './presence-pending-portal';
+import pendingPortalSource from './presence-pending-portal?raw';
 import { PresenceWaapiSpinner } from './presence-waapi-spinner';
 import spinnerSource from './presence-waapi-spinner?raw';
 import { PresenceWaapiSubtree } from './presence-waapi-subtree';
@@ -15,7 +19,14 @@ export default {
     title: 'Utilities/Presence',
     decorators: [
         moduleMetadata({
-            imports: [PresenceExample, PresenceWaapiTransition, PresenceWaapiSubtree, PresenceWaapiSpinner]
+            imports: [
+                PresenceExample,
+                PresenceWaapiTransition,
+                PresenceWaapiSubtree,
+                PresenceWaapiSpinner,
+                PresenceDynamicTargets,
+                PresencePendingPortal
+            ]
         }),
         tailwindDemoDecorator()
     ]
@@ -58,5 +69,21 @@ export const WaapiInfiniteSpinnerNoDelay: Story = {
     parameters: source(spinnerSource),
     render: () => ({
         template: `<presence-waapi-spinner />`
+    })
+};
+
+export const DynamicTargets: Story = {
+    tags: ['!visual'],
+    parameters: source(dynamicTargetsSource),
+    render: () => ({
+        template: `<presence-dynamic-targets />`
+    })
+};
+
+export const PendingPortal: Story = {
+    tags: ['!visual'],
+    parameters: source(pendingPortalSource),
+    render: () => ({
+        template: `<presence-pending-portal />`
     })
 };

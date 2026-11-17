@@ -1,4 +1,6 @@
 const names = [
+    'presence-waapi',
+    'tabs',
     'floating-consumers',
     'popper',
     'popover',
@@ -29,7 +31,13 @@ export const floatingConsumers = new Set([
 ]);
 export const specFamily = (file: string) => {
     const name = file.split('/').at(-1)!.replace('.behavior.spec.ts', '');
-    return name.startsWith('select') ? 'select' : name === 'menu-submenu' ? 'menu' : name;
+    return name.startsWith('select')
+        ? 'select'
+        : name === 'menu-submenu'
+          ? 'menu'
+          : name === 'presence-waapi'
+            ? 'presence'
+            : name;
 };
 export const isFloatingSpec = (file: string) =>
     file.endsWith('.behavior.spec.ts') &&

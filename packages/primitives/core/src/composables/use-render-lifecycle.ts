@@ -60,6 +60,7 @@ export function useRenderLifecycle(
     let version = 0;
     let active = false;
     let pendingMotion = false;
+    let observe: (() => void) | undefined;
 
     const clearWork = () => {
         controller?.abort();
@@ -69,6 +70,7 @@ export function useRenderLifecycle(
         if (frame !== undefined) cancelAnimationFrame(frame);
         frame = undefined;
         pendingMotion = false;
+        observe = undefined;
     };
     const cancel = () => {
         version++;
@@ -95,6 +97,22 @@ export function useRenderLifecycle(
         status.set(undefined);
         onComplete(open);
     };
+    const refreshElements = () => {
+        if (!active || !observe || destroyRef.destroyed) return;
+        // A target can be created or destroyed by Angular while an exit is pending. Invalidate
+        // callbacks immediately, then discover the new participant set after host bindings render.
+        controller?.abort();
+        controller = undefined;
+        exitReady.set(false);
+        render?.destroy();
+        render = afterNextRender(
+            () => {
+                render = undefined;
+                observe?.();
+            },
+            { injector }
+        );
+    };
     effect(
         () => {
             const ready = exitReady();
@@ -117,14 +135,18 @@ export function useRenderLifecycle(
             return status() === 'ending' && pendingMotion;
         },
         registerElement: (element) => {
-            elements.set(element, (elements.get(element) ?? 0) + 1);
+            const previousCount = elements.get(element) ?? 0;
+            elements.set(element, previousCount + 1);
+            if (!previousCount) refreshElements();
             let registered = true;
             return () => {
                 if (!registered) return;
                 registered = false;
                 const count = elements.get(element) ?? 0;
-                if (count <= 1) elements.delete(element);
-                else elements.set(element, count - 1);
+                if (count <= 1) {
+                    elements.delete(element);
+                    refreshElements();
+                } else elements.set(element, count - 1);
             };
         },
         start: (open) => {
@@ -140,7 +162,8 @@ export function useRenderLifecycle(
                 return;
             }
             const wait = () => {
-                if (destroyRef.destroyed || currentVersion !== version) return;
+                if (!active || destroyRef.destroyed || currentVersion !== version) return;
+                observe = wait;
                 controller = new AbortController();
                 waitForAnimations(
                     [...elements.keys()],

@@ -144,7 +144,7 @@ export function useComboboxEngine(config: ComboboxEngineConfig) {
     // (Base UI; iOS handles this itself). Reset to `false` on keyboard/mouse opens.
     const openedByTouch = signal(false);
     // Whether the popup directive is currently mounted (open through the close/exit animation, until the
-    // presence machine unmounts it). Distinguishes "Escape closed the popup" (still mounted this tick)
+    // render lifecycle unmounts it). Distinguishes "Escape closed the popup" (still mounted this tick)
     // from "Escape on an already-closed combobox" (unmounted) — Base UI's `mounted`, since `open()`
     // flips synchronously when the input's Escape handler (or the dismiss mechanism) closes the popup.
     const popupMounted = signal(false);

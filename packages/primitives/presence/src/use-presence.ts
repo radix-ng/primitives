@@ -22,10 +22,11 @@ export function usePresence(
     const container = inject(ViewContainerRef);
     const isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
     const ownLifetime = !context.renderLifecycle;
+    const effectivePresent = () => context.present() && !(options.suspended?.() ?? false);
     const lifecycle: RdxRenderLifecycle =
         context.renderLifecycle ??
         useRenderLifecycle(undefined, {
-            open: context.present,
+            open: effectivePresent,
             holdUnmount: options.holdUnmount,
             debugName: 'RdxPresence'
         });
@@ -38,10 +39,11 @@ export function usePresence(
     if (ownLifetime) {
         effect(
             () => {
-                const present = context.present() && !options.suspended?.();
+                const suspended = options.suspended?.() ?? false;
+                const present = context.present() && !suspended;
                 const skip = context.skipExitAnimation?.() ?? false;
                 untracked(() => {
-                    if (!present && (skip || !isBrowser)) {
+                    if (!present && (suspended || skip || !isBrowser)) {
                         lifecycle.unmount();
                     } else if (present !== previous && (present || previous !== undefined)) {
                         lifecycle.start(present);

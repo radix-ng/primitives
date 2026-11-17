@@ -119,9 +119,10 @@ template roots. Add `rdxPresenceTarget` to include an additional element inside 
 - **Reopening retains the live Angular view.** DOM identity, child instances and local state survive
   when the exit is interrupted.
 
-A safety timer uses WAAPI timing, including iterations and playback rate. Paused animations wait
-for their owner to finish or cancel them. Where WAAPI is unavailable, declared CSS durations provide
-a bounded fallback. Root-level animation-name heuristics and automatic subtree scanning are removed.
+WAAPI completion follows changes to duration and playback rate. Paused animations wait for their
+owner to finish or cancel them, or remove their registered target. Targets added during exit join
+the current wait. Where WAAPI is unavailable, declared CSS durations provide a bounded fallback.
+Root-level animation-name heuristics and automatic subtree scanning are removed.
 
 ## Angular `animate.enter` and `animate.leave`
 

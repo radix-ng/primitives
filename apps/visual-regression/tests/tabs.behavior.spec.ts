@@ -17,6 +17,8 @@ test('Tabs two-way controlled binding accepts requests and respects cancellation
     await expect(security).toHaveAttribute('aria-selected', 'true');
     await expect(page.getByTestId('controlled-value')).toHaveText('Selected: security');
     await expect(page.getByTestId('controlled-requests')).toHaveText('Requests: 2');
+    // The outgoing Panel remains visible and inert for its first exit frame.
+    await expect(page.getByRole('tabpanel')).toHaveCount(1);
     await expect(page.getByRole('tabpanel')).toHaveText('Update your security preferences.');
     expect(errors).toEqual([]);
 });

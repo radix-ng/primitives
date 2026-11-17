@@ -29,10 +29,11 @@ lifetime immediately. Render hooks discover motion after host bindings; DestroyR
 An optional owner hold postpones removal after motion, preserving the outgoing Tabs frame.
 
 One waitForAnimations helper observes explicit elements, ignores infinite motion, handles replacement
-animations after cancellation and supports AbortSignal. WAAPI timing supplies the safety bound,
-including iterations, current time and playback rate. Paused motion has no wall-clock completion;
-the owner must finish/cancel it or explicitly unmount. Engines without WAAPI use declared CSS timing
-as a fallback. There is no parallel animation-name/event path for a test environment.
+animations after cancellation and supports AbortSignal. WAAPI's finished promises follow changes to
+duration, iterations and playback rate; no wall-clock timeout overrides them. Paused motion has no
+wall-clock completion; the owner must finish/cancel it, remove its target or explicitly unmount.
+Engines without WAAPI use declared CSS timing as a fallback. There is no parallel
+animation-name/event path for a test environment.
 
 Popup Roots share their lifetime with structural Portal. Popup/Backdrop parts register animation
 elements. Portal and Presence use the same thin usePresence view adapter; they never start a second
@@ -44,6 +45,9 @@ Standalone Presence observes its template roots. RdxPresenceTarget explicitly re
 elements, including descendants across child component templates in the declaring injector tree.
 Arbitrary subtree animations no longer acquire the parent's lifetime. Multiple participants and roots
 share one completion; unrelated nested animations do not prolong an exit.
+Adding or removing a participant during an active lifetime invalidates the previous observation and
+re-reads the current set after Angular renders. A suspended standalone Portal ends its lifetime
+immediately, so resolving its destination later cannot resurrect already closed content.
 
 ## Breaking changes and migration
 
@@ -69,3 +73,4 @@ SSR/consumer templates verify the shared integration.
 The focused desktop browser configuration is
 `pnpm exec playwright test -c apps/visual-regression/playwright.presence.config.ts` (Chromium,
 Firefox and WebKit). It follows the standard Storybook server/build workflow.
+Presence and Tabs specs also participate in the affected browser planner and CI's shared browser run.
