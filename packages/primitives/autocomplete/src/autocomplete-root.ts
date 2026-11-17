@@ -10,8 +10,10 @@ import {
     isDevMode,
     model,
     numberAttribute,
+    OnChanges,
     output,
     signal,
+    SimpleChanges,
     untracked
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -44,7 +46,8 @@ import {
     RdxFormUiTouchTarget,
     RdxFormValueControl,
     serializeNativeFormValue,
-    useNativeFormControl
+    useNativeFormControl,
+    watch
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { RdxPopper } from '@radix-ng/primitives/popper';
@@ -233,9 +236,12 @@ function coerceAutoHighlight(value: BooleanInput | 'always'): boolean | 'always'
 })
 export class RdxAutocompleteRoot
     extends RdxFormUiControlBase
-    implements ControlValueAccessor, RdxFormValueControl<string>
+    implements ControlValueAccessor, OnChanges, RdxFormValueControl<string>
 {
     private readonly injector = inject(Injector);
+    private hasExplicitValueInput = false;
+    private hasExplicitOpenInput = false;
+    private hasCvaValue = false;
 
     /** Per-popup floating root context (ADR 0015) — `open` / `triggers` / reference for the dismissal engine. */
     readonly floatingContext: RdxFloatingRootContext = createFloatingRootContext({
@@ -246,13 +252,13 @@ export class RdxAutocompleteRoot
     /** The input text. This is the form value (controlled / uncontrolled via {@link defaultValue}). */
     readonly value = model<string>('');
 
-    /** Initial input text when uncontrolled. */
+    /** Initial input text when uncontrolled. Read once; an explicit value or form write takes precedence. */
     readonly defaultValue = input<string>();
 
     /** Whether the popup is open. */
     readonly open = model<boolean>(false);
 
-    /** Initial open state when uncontrolled. */
+    /** Initial open state when uncontrolled. Read once; an explicit `open=false` takes precedence. */
     readonly defaultOpen = input(false, { transform: booleanAttribute });
 
     /** Filtering / inline-completion behavior. See {@link AutocompleteMode}. */
@@ -376,7 +382,8 @@ export class RdxAutocompleteRoot
                 input.value = this.value();
             }
         },
-        defaultValue: () => this.defaultValue() ?? this.value(),
+        defaultValue: () =>
+            this.hasExplicitValueInput || this.hasCvaValue ? this.value() : (this.defaultValue() ?? this.value()),
         onReset: (value) => {
             this.writeValue(value);
             if (!this.resetNgControl(value)) {
@@ -503,6 +510,13 @@ export class RdxAutocompleteRoot
     private onChange?: (value: string) => void;
     private onTouched?: () => void;
 
+    /** @ignore */
+    // eslint-disable-next-line no-restricted-syntax -- Observe model input presence only; state stays signal-owned (ADR 0071).
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['value']?.currentValue !== undefined) this.hasExplicitValueInput = true;
+        if (changes['open']?.currentValue !== undefined) this.hasExplicitOpenInput = true;
+    }
+
     constructor() {
         super();
 
@@ -513,15 +527,12 @@ export class RdxAutocompleteRoot
         effect(() => this.floatingContext.setReferenceElement(this.engine.inputElement() ?? null));
 
         // Apply uncontrolled defaults once.
-        effect(() => {
-            const initial = this.defaultValue();
-            if (initial !== undefined && untracked(this.value) === '') {
-                this.value.set(initial);
+        watch([], () => {
+            if (!this.hasExplicitValueInput && !this.hasCvaValue && this.value() === '') {
+                this.value.set(this.defaultValue() ?? '');
             }
-        });
-        effect(() => {
-            if (untracked(this.open) === false && this.defaultOpen()) {
-                this.open.set(true);
+            if (!this.hasExplicitOpenInput && !this.open()) {
+                this.open.set(this.defaultOpen());
             }
         });
 
@@ -847,6 +858,7 @@ export class RdxAutocompleteRoot
 
     // ControlValueAccessor (the form value is the input string)
     writeValue(value: string | null): void {
+        this.hasCvaValue = true;
         untracked(() => this.value.set(value ?? ''));
     }
 

@@ -354,12 +354,12 @@
         {
           "name": "defaultOpen",
           "default": "false",
-          "description": "Initial open state when uncontrolled."
+          "description": "Initial open state when uncontrolled. Read once; an explicit `open=false` takes precedence."
         },
         {
           "name": "defaultValue",
           "type": "string",
-          "description": "Initial input text when uncontrolled."
+          "description": "Initial input text when uncontrolled. Read once; an explicit value or form write takes precedence."
         },
         {
           "name": "dir",

@@ -60,6 +60,22 @@ lint, parity tools typecheck and agents:check also passed.
 All differential cases ran in Chromium, Firefox and WebKit. This addresses A3; Portal targets,
 GroupLabel identity and filtering remain open. Full suites and real device/AT work remain separate.
 
+## Autocomplete follow-up, 2026-11-17
+
+Autocomplete reuses this initialization policy for both string and boolean models. Defined input
+presence includes `value=''` and `open=false`; initial CVA writes, including empty values, also
+precede defaults. Signal Forms supplies its value through the model input. Native form reset keeps
+the initial authoritative value as its baseline, rather than selecting a conflicting default.
+`model()` remains required by the Angular Signal Forms value-control contract; no public model API
+is replaced. The public hook only records binding presence, and one untracked initialization reads
+the defaults. Detailed interaction requests remain silent during initialization.
+
+The 14-case Autocomplete differential subset covers these initial/default rules, accepted parent
+updates and Root recreation. One-way frozen controlled requests and broader input/query/event
+semantics are outside this subset. Angular Forms and native reset have dedicated unit regressions;
+server rendering checks the effective empty/false/default values before serialization. Current
+results are recorded in the [Autocomplete matrix](../../packages/primitives/autocomplete/PARITY.md).
+
 ## Alternatives
 
 - Re-read defaults until defined: lets late data overwrite current state.

@@ -3634,6 +3634,11 @@ focus stays on the input; the active option is referenced with `aria-activedesce
 
 The root. Owns the value (the input string), open state, filtering, inline completion, and navigation.
 
+`defaultValue` and `defaultOpen` initialize an uncontrolled Root once. Explicit values, including
+`value=""` and `[open]="false"`, take precedence. A value supplied by Angular Forms also takes
+precedence, including an empty value. Later default changes do not refill a cleared input or reopen
+a closed popup. Use `[(value)]` / `[(open)]` or the form control for live application state.
+
 `onValueChange` emits `{ value, reason, eventDetails }` and is cancelable via `eventDetails.cancel()`.
 
 ### RdxAutocompleteInput

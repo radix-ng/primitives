@@ -4,6 +4,7 @@ import '@angular/compiler';
 import { Component, provideZonelessChangeDetection, Type } from '@angular/core';
 import { bootstrapApplication, BootstrapContext, provideClientHydration } from '@angular/platform-browser';
 import { provideServerRendering, renderApplication } from '@angular/platform-server';
+import { RdxAutocompleteInput, RdxAutocompleteRoot } from '@radix-ng/primitives/autocomplete';
 import { RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import {
     RdxMenuGroup,
@@ -77,6 +78,31 @@ const cases: readonly SsrCase[] = [
     { selector: 'app-tabs', component: TabsPage, expects: ['Tab 1', 'Tab 3'] },
     { selector: 'app-toggle-group', component: ToggleGroupPage, expects: ['Item 1', 'Item 2'] }
 ];
+
+@Component({
+    selector: 'app-autocomplete-defaults',
+    imports: [RdxAutocompleteRoot, RdxAutocompleteInput],
+    template: `
+        <div
+            #explicit="rdxAutocompleteRoot"
+            [value]="''"
+            [open]="false"
+            defaultValue="Seed"
+            defaultOpen
+            rdxAutocompleteRoot
+        >
+            <input rdxAutocompleteInput aria-label="Explicit" />
+            <output id="autocomplete-explicit-value">{{ explicit.value() }}</output>
+            <output id="autocomplete-explicit-open">{{ explicit.open() }}</output>
+        </div>
+        <div #initial="rdxAutocompleteRoot" defaultValue="Seed" defaultOpen rdxAutocompleteRoot>
+            <input rdxAutocompleteInput aria-label="Defaults" />
+            <output id="autocomplete-default-value">{{ initial.value() }}</output>
+            <output id="autocomplete-default-open">{{ initial.open() }}</output>
+        </div>
+    `
+})
+class AutocompleteDefaultsPage {}
 
 @Component({
     selector: 'app-native-select',
@@ -378,6 +404,18 @@ describe('SSR rendering', () => {
         } finally {
             vi.unstubAllGlobals();
         }
+    });
+    it('resolves Autocomplete model/default precedence before server serialization', async () => {
+        const html = await renderToString('app-autocomplete-defaults', AutocompleteDefaultsPage);
+        const parsed = new DOMParser().parseFromString(html, 'text/html');
+        for (const [id, value] of [
+            ['autocomplete-explicit-value', ''],
+            ['autocomplete-explicit-open', 'false'],
+            ['autocomplete-default-value', 'Seed'],
+            ['autocomplete-default-open', 'true']
+        ])
+            expect(parsed.getElementById(id)?.textContent).toBe(value);
+        expect(html).toMatch(/ngh=/);
     });
     it('resolves Menu model/default precedence before server serialization', async () => {
         const html = await renderToString('app-menu-defaults', MenuDefaultsPage);
