@@ -64,6 +64,7 @@ export interface RdxButtonProps {
 })
 export class RdxButtonDirective {
     private readonly elementRef = inject(ElementRef<HTMLElement>);
+    private readonly buttonBehavior = inject(RdxButtonBehavior, { self: true });
     private readonly config = inject(RDX_BUTTON_CONFIG, { self: true, optional: true });
     private readonly compositeItem = inject(RdxCompositeItem, { self: true, optional: true });
     private readonly compositeRoot = injectRdxCompositeRootContext(true);
@@ -122,10 +123,9 @@ export class RdxButtonDirective {
      * control must stay focusable.
      */
     protected readonly ariaDisabled = computed(() => {
-        if (!this.isDisabled()) {
-            return undefined;
-        }
-        return !this.isNativeButton() || this.isFocusableWhenDisabled() ? 'true' : undefined;
+        return this.buttonBehavior.resolveAriaDisabled(
+            this.isDisabled() && (!this.isNativeButton() || this.isFocusableWhenDisabled()) ? 'true' : undefined
+        );
     });
 
     /**
@@ -144,7 +144,7 @@ export class RdxButtonDirective {
     });
 
     constructor() {
-        inject(RdxButtonBehavior, { self: true }).configure(
+        this.buttonBehavior.configure(
             {
                 disabled: this.isDisabled,
                 focusableWhenDisabled: this.isFocusableWhenDisabled,

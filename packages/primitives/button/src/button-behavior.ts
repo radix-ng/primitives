@@ -28,12 +28,22 @@ export class RdxButtonBehavior {
     private readonly isComposite = !!this.compositeItem || !!this.compositeRoot;
     private config?: RdxButtonBehaviorConfig;
     private owner?: 'button' | 'toolbar';
+    private renderedAriaDisabled?: Signal<'true' | undefined>;
     private readonly isDisabled = () => this.config?.disabled() ?? false;
     private readonly isFocusableWhenDisabled = () => this.config?.focusableWhenDisabled() ?? false;
     private readonly isNativeButton = () => this.config?.native() ?? this.elementRef.nativeElement.tagName === 'BUTTON';
 
-    get hasButton(): boolean {
-        return this.owner === 'button';
+    get hasRenderedButton(): boolean {
+        return this.owner === 'button' || !!this.renderedAriaDisabled;
+    }
+
+    /** A composed primitive consumes disabled props and owns the resulting ARIA state. */
+    registerRenderedButton(ariaDisabled: Signal<'true' | undefined>): void {
+        this.renderedAriaDisabled = ariaDisabled;
+    }
+
+    resolveAriaDisabled(fallback: 'true' | undefined): 'true' | undefined {
+        return this.renderedAriaDisabled ? this.renderedAriaDisabled() : fallback;
     }
 
     configure(config: RdxButtonBehaviorConfig, owner: 'button' | 'toolbar'): void {

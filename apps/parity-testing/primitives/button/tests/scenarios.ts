@@ -4,6 +4,7 @@ import { authoredScenarios } from './authored.scenarios';
 import { disabledHandlerScenarios } from './disabled-handlers.scenarios';
 import type { ButtonDriver } from './driver';
 import { interactionScenarios } from './interaction.scenarios';
+import { toggleDisabledScenarios } from './toggle-disabled.scenarios';
 import { toggleScenarios } from './toggle.scenarios';
 
 const standaloneScenarios = Object.entries(cases)
@@ -155,5 +156,6 @@ export const scenarios = [
     ...interactionScenarios,
     ...authoredScenarios,
     ...disabledHandlerScenarios,
-    ...toggleScenarios
+    ...toggleScenarios,
+    ...toggleDisabledScenarios
 ];

@@ -7,7 +7,7 @@ that committed object. The runner verifies the archived source digest before eac
 
 ## Scope
 
-259 scenarios run in Chromium, Firefox and WebKit (777 comparisons):
+283 scenarios run in Chromium, Firefox and WebKit (849 comparisons):
 
 - native `<button>`, `<div>`, `<span>`, `<a href>` and `<a>` without an href;
 - DOM semantics, `data-disabled`, native disabled state, effective tabindex and ARIA disabled state;
@@ -50,7 +50,12 @@ that committed object. The runner verifies the archived source digest before eac
 hosts, including an additional Button layer. They check Enter/Space down/up phases, repeated keys,
 modifiers, pointer clicks, consumer-prevented keys, cancelable pressed changes and roving navigation.
 Both consumer clicks and actual `onPressedChange` emissions are recorded, including the change
-event's type, reason, trust and modifiers. ToggleGroup and disabled compositions remain separate.
+event's type, reason, trust and modifiers. Other ToggleGroup and trigger compositions remain separate.
+
+24 `toggle-toolbar-disabled-` cases cover native/span hosts, local/Group/Root disabled ownership,
+both focusable policies and an optional extra Button. They compare semantic attributes, inert
+pointer/keyboard activation, arrow reachability/skipping, Tab exit, re-enabling, preserved pressed
+state and a subsequent disabled cycle with a changed focusable policy.
 
 React uses the pin's actual `render={<Button />}` composition; Angular applies the corresponding
 directives to one element. Toolbar forwards disabled state into its rendered Button: the fixture
@@ -120,9 +125,15 @@ assertion passed. A unit witness also confirmed the extra Space keyup change. Ev
 handling when the same host supplies Button/Toolbar.Button behavior. Enter uses one click path,
 and Space no longer toggles again on keyup. Two later cases also cover repeated Enter keydown.
 
+After validating the disabled Toggle fixture against the reference, 18 of its 24 Angular comparisons
+failed while every reference assertion passed. Six unit witnesses also failed. Evidence is in
+`dist/parity-testing/button/before-toolbar-toggle-disabled-fix/`. Toggle now reads the same-host
+button configuration, preserves Toolbar's metadata ownership, and registers its ARIA policy with
+the shared behavior so all composed host bindings agree on disabled state.
+
 ## Limits
 
-Other compound families, ToggleGroup/disabled compositions, complete trigger callback ordering, auxiliary/modifier link
+Other trigger/ToggleGroup compositions, complete trigger callback ordering, auxiliary/modifier link
 navigation, real touch/pen, iframe/shadow realms, SSR/hydration and
 assistive technologies remain separate checks. Ancestor propagation and stopImmediatePropagation
 are outside the consumer-handler contract checked here.
@@ -130,3 +141,12 @@ The pin does not retain a Space keydown cancellation flag for non-native hosts: 
 can still be followed by keyup activation. That behavior is tested explicitly. Programmatically
 focusing an unfocusable disabled non-native host also preserves Space's native scroll; normal Tab
 navigation skips it.
+
+Disabled Toggle fixtures fit within the viewport: Space checks establish activation suppression,
+not page-scroll parity. The pin's nested Toggle handlers can leave Space scrolling enabled, and its
+native disabled layout repair can blur an already focused button during inherited disabling.
+The fixture explicitly re-enters focus to test the resulting focusable policy. Focusable changes
+are compared between enabled cycles: the pin can retain a stale native disabled attribute if that
+flag changes while already disabled. Angular applies the signal policy directly; focused units cover
+that update without reproducing the stale attribute. Exploration observations are retained in
+`dist/parity-testing/button/toolbar-toggle-disabled-reference-observations/`.

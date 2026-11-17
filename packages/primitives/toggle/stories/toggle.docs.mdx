@@ -39,6 +39,8 @@ without `value` emits a warning because it cannot participate in group value cha
 
 With `rdxToolbarButton` on the same element, Enter and Space activate on keydown; keyup does not
 toggle again. On a custom host such as `<span>`, set `[nativeButton]="false"`.
+The composed Toggle inherits disabled state from Toolbar or its Group. The toolbar button's
+`focusableWhenDisabled` controls whether arrows can reach it; activation remains blocked.
 
 ## Change events
 

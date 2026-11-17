@@ -10,7 +10,10 @@ export interface ToggleSettings {
         | 'cancel-change'
         | 'prevent-enter'
         | 'prevent-space'
-        | 'pointer';
+        | 'pointer'
+        | 'disabled';
+    disabledOwner?: 'self' | 'group' | 'root';
+    focusable?: boolean;
     stacked?: boolean;
 }
 export interface ToggleChange {
@@ -42,5 +45,21 @@ for (const host of ['button', 'span'] as const) {
             action: 'toggle',
             toggle: { action, stacked: true }
         };
+    }
+}
+
+for (const host of ['button', 'span'] as const) {
+    for (const disabledOwner of ['self', 'group', 'root'] as const) {
+        for (const focusable of [false, true]) {
+            for (const stacked of [false, true]) {
+                toggleCases[
+                    `toggle-toolbar-disabled-${disabledOwner}-${host}-${focusable ? 'focusable' : 'unfocusable'}${stacked ? '-stacked' : ''}`
+                ] = {
+                    host,
+                    action: 'toggle',
+                    toggle: { action: 'disabled', disabledOwner, focusable, stacked }
+                };
+            }
+        }
     }
 }

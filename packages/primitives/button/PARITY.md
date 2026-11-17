@@ -57,6 +57,10 @@ Composite/Toolbar roving values, so the application then owns the resulting tab 
 - **Toolbar Toggle uses the shared click path.** A custom host with `rdxToolbarButton` and
   `rdxToggle` changes pressed once on keydown, with no extra change on keyup. Change details carry
   the click event and its modifiers. Prevented Enter and canceled pressed changes are respected.
+- **Toolbar Toggle shares disabled ownership.** Local, Group and Root disabled state is reflected
+  by Toggle. `focusableWhenDisabled` retains or skips its roving focus without enabling activation.
+  Native hosts use `disabled` only for the unfocusable policy; composed Toggle retains
+  `aria-disabled` for either policy, including when an extra Button is present.
 
 ## Composition ownership
 
@@ -70,13 +74,17 @@ Menu trigger marks keyboard activation it already handled so the shared behavior
 again. Those coordination helpers are internal exports between secondary entry points.
 Toggle on the same host defers its fallback keyboard handlers to this behavior, preserving one
 click path when Toolbar.Button, Toggle and an optional Button are composed together.
+Toggle reads the owning button's disabled/focusable configuration and leaves item metadata to
+Toolbar.Button. Its registered ARIA policy is shared by all button behaviors on the element,
+preventing competing host bindings from removing `aria-disabled`. It also consumes the forwarded
+disabled prop, so a custom Toggle host does not retain bare Toolbar.Button's raw disabled attribute.
 
 Bare Toolbar.Button on a non-native render host also retains the pin's forwarded `disabled` DOM
 attribute. It does not give a span or link native disabled semantics; the shared guards enforce it.
 
 Toolbar supplies `RdxButtonConfig` through `provideRdxButtonConfig`. This signal-based configuration
 is injected only from the same element; it shares effective disabled and focusable-when-disabled
-state with Button without synchronizing either primitive's inputs. Other primitive authors can use
+state with Button and Toggle without synchronizing their inputs. Other primitive authors can use
 the same provider when combining their own state with Button on one host.
 
 The capture listener moves Button's keyboard bubble listener after existing host listeners for each

@@ -25,9 +25,10 @@ const buttonConfig = (): RdxButtonConfig => {
         '[attr.data-orientation]': 'rootContext.orientation()',
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
         '[attr.data-focusable]': 'focusableWhenDisabled() ? "" : undefined',
-        '[attr.aria-disabled]': 'isDisabled() && (!nativeButton() || focusableWhenDisabled()) ? "true" : undefined',
+        '[attr.aria-disabled]':
+            'buttonBehavior.resolveAriaDisabled(isDisabled() && (!nativeButton() || focusableWhenDisabled()) ? "true" : undefined)',
         '[attr.disabled]':
-            'isDisabled() && (nativeButton() ? !focusableWhenDisabled() : !buttonBehavior.hasButton) ? "" : undefined'
+            'isDisabled() && (nativeButton() ? !focusableWhenDisabled() : !buttonBehavior.hasRenderedButton) ? "" : undefined'
     }
 })
 export class RdxToolbarButton {

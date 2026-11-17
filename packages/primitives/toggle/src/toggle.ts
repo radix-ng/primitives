@@ -9,7 +9,7 @@ import {
     model,
     output
 } from '@angular/core';
-import { RdxButtonBehavior } from '@radix-ng/primitives/button';
+import { RDX_BUTTON_CONFIG, RdxButtonBehavior } from '@radix-ng/primitives/button';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import {
     BooleanInput,
@@ -46,8 +46,8 @@ export interface RdxTogglePressedChangeEvent {
         '[attr.data-composite-item-active]': 'pressedState() ? "" : undefined',
         '[attr.data-pressed]': 'pressedState() ? "" : undefined',
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
-        '[attr.disabled]': 'nativeButton() && isDisabled() ? "" : undefined',
-        '[attr.aria-disabled]': '!nativeButton() && isDisabled() ? "true" : undefined',
+        '[attr.disabled]': 'nativeButton() && isDisabled() && !isFocusableWhenDisabled() ? "" : undefined',
+        '[attr.aria-disabled]': 'ariaDisabled()',
         '(click)': 'onClick($event)',
         '(keydown)': 'onKeyDown($event)',
         '(keyup)': 'onKeyUp($event)'
@@ -58,6 +58,7 @@ export class RdxToggle {
     private readonly compositeItem = inject(RdxCompositeItem, { self: true });
     // A Button/Toolbar.Button on this host already owns keyboard activation and click synthesis.
     private readonly buttonBehavior = inject(RdxButtonBehavior, { self: true, optional: true });
+    private readonly buttonConfig = inject(RDX_BUTTON_CONFIG, { self: true, optional: true });
 
     /**
      * A value identifying this toggle inside a `[rdxToggleGroup]`. Required when used in a group.
@@ -106,9 +107,22 @@ export class RdxToggle {
     });
 
     /** @ignore */
-    readonly isDisabled = computed(() => this.disabled() || (this.group?.disabled() ?? false));
+    readonly isDisabled = computed(
+        () => this.disabled() || (this.group?.disabled() ?? false) || (this.buttonConfig?.disabled() ?? false)
+    );
+
+    /** @ignore Only an owning disabled button can opt a Toggle into focusable disabled semantics. */
+    protected readonly isFocusableWhenDisabled = computed(() =>
+        this.buttonConfig ? this.buttonConfig.disabled() && this.buttonConfig.focusableWhenDisabled() : false
+    );
+
+    /** @ignore The rendered Toggle retains composite aria-disabled even with native disabled. */
+    protected readonly ariaDisabled = computed<'true' | undefined>(() =>
+        this.isDisabled() && (!this.nativeButton() || !!this.buttonConfig) ? 'true' : undefined
+    );
 
     constructor() {
+        if (this.buttonConfig) this.buttonBehavior?.registerRenderedButton(this.ariaDisabled);
         effect(() => {
             if (this.group && this.value() === undefined && this.group.isValueInitialized()) {
                 rdxDevWarning(
@@ -118,13 +132,16 @@ export class RdxToggle {
                 );
             }
         });
-        effect(() => {
-            this.compositeItem.setMetadata({
-                disabled: this.isDisabled(),
-                focusableWhenDisabled: false,
-                value: this.value()
+        // A Toolbar.Button owns this shared item's metadata, including its focusable policy.
+        if (!this.buttonConfig) {
+            effect(() => {
+                this.compositeItem.setMetadata({
+                    disabled: this.isDisabled(),
+                    focusableWhenDisabled: false,
+                    value: this.value()
+                });
             });
-        });
+        }
     }
 
     /** @ignore */
