@@ -12,6 +12,16 @@ export interface ActivationSettings {
     descendant?: boolean;
     prevent?: boolean;
     secondary?: 'right' | 'middle';
+    buttonType?: 'button' | 'submit' | 'reset';
+    automatic?: boolean;
+    gesture?:
+        | 'middle-link'
+        | 'modified-link'
+        | 'remove-right'
+        | 'remove-middle'
+        | 'touch-tap'
+        | 'touch-cancel'
+        | 'pen-tap';
 }
 
 const cases: Record<`activation-${string}`, Settings> = {};
@@ -38,6 +48,42 @@ add('modified-div-enter', { host: 'div', key: 'Enter', modified: true });
 for (const key of ['Enter', 'Space'] as const)
     add(`descendant-${key.toLowerCase()}`, { host: 'div', key, descendant: true });
 for (const secondary of ['right', 'middle'] as const) add(`held-${secondary}`, { host: 'button', secondary });
+for (const buttonType of ['button', 'submit', 'reset'] as const) {
+    for (const method of ['pointer', 'Enter', 'Space'] as const) {
+        for (const disabled of [false, true])
+            add(`form-${buttonType}-${method.toLowerCase()}${disabled ? '-disabled' : ''}`, {
+                host: 'button',
+                buttonType,
+                disabled,
+                ...(method === 'pointer' ? { click: true } : { key: method })
+            });
+    }
+}
+for (const buttonType of ['submit', 'reset'] as const) {
+    for (const key of ['Enter', 'Space'] as const)
+        add(`form-${buttonType}-${key.toLowerCase()}-canceled`, { host: 'button', buttonType, key, cancel: 'all' });
+}
+for (const gesture of ['middle-link', 'modified-link', 'touch-tap', 'pen-tap'] as const) {
+    for (const automatic of [false, true]) {
+        for (const disabled of [false, true])
+            add(`${gesture}-${automatic ? 'automatic' : 'manual'}${disabled ? '-disabled' : ''}`, {
+                host: gesture.endsWith('link') ? 'link' : 'button',
+                gesture,
+                automatic,
+                disabled
+            });
+    }
+}
+for (const host of ['button', 'link'] as const) {
+    for (const gesture of ['remove-right', 'remove-middle'] as const)
+        add(`${gesture}-${host}`, { host, gesture, automatic: true });
+}
+for (const automatic of [false, true])
+    add(`touch-cancel-${automatic ? 'automatic' : 'manual'}`, {
+        host: 'button',
+        gesture: 'touch-cancel',
+        automatic
+    });
 export const activationCases = cases;
 
 export interface ActivationProbe {
@@ -45,6 +91,7 @@ export interface ActivationProbe {
     callbacks: Record<string, unknown>[];
     triggers: (string | null)[];
     submits: number;
+    resets: number;
 }
 declare global {
     interface Window {
@@ -53,7 +100,7 @@ declare global {
 }
 
 export function installActivationProbe(settings: ActivationSettings) {
-    const probe: ActivationProbe = { timeline: [], callbacks: [], triggers: [], submits: 0 };
+    const probe: ActivationProbe = { timeline: [], callbacks: [], triggers: [], submits: 0, resets: 0 };
     window.tabsActivation = probe;
     const eventInfo = (event: Event) => {
         const key = event as KeyboardEvent;
@@ -65,18 +112,36 @@ export function installActivationProbe(settings: ActivationSettings) {
             shift: !!key.shiftKey,
             ctrl: !!key.ctrlKey,
             alt: !!key.altKey,
-            meta: !!key.metaKey
+            meta: !!key.metaKey,
+            ...(settings.gesture && event.type.startsWith('pointer')
+                ? {
+                      pointerType: (event as PointerEvent).pointerType,
+                      button: (event as PointerEvent).button,
+                      buttons: (event as PointerEvent).buttons
+                  }
+                : {})
         };
     };
-    for (const type of ['keydown', 'keyup', 'click', 'pointerdown', 'pointerup', 'focusin', 'contextmenu']) {
+    for (const type of [
+        'keydown',
+        'keyup',
+        'click',
+        'auxclick',
+        'pointerdown',
+        'pointerup',
+        'pointercancel',
+        'focusin',
+        'contextmenu'
+    ]) {
         for (const capture of [true, false]) {
             document.addEventListener(
                 type,
                 (event) => {
                     if (!(event.target as Element | null)?.closest('[role="tab"]')) return;
-                    if (type === 'focusin' && !settings.secondary) return;
+                    if (type === 'focusin' && !settings.secondary && !settings.gesture) return;
                     // Keep the OS context menu from consuming the native secondary pointerup under test.
-                    if (settings.secondary && type === 'contextmenu') event.preventDefault();
+                    if ((settings.secondary || settings.gesture?.startsWith('remove-')) && type === 'contextmenu')
+                        event.preventDefault();
                     if (type.startsWith('key') && !['Enter', ' '].includes((event as KeyboardEvent).key)) return;
                     if (capture && settings.prevent && type === 'keydown' && (event as KeyboardEvent).key === 'Enter')
                         event.preventDefault();
@@ -101,6 +166,9 @@ export function installActivationProbe(settings: ActivationSettings) {
         submit(event: Event) {
             event.preventDefault();
             probe.submits++;
+        },
+        reset() {
+            probe.resets++;
         }
     };
 }

@@ -8345,6 +8345,12 @@
               "description": "Whether the host element is a native button. Native Enter activation stays with the browser.\nSet to `false` for other hosts; links keep native Enter navigation and other hosts receive keyboard clicks."
             },
             {
+              "name": "type",
+              "type": "\"button\" | \"submit\" | \"reset\"",
+              "default": "'button'",
+              "description": "The type applied to native button hosts. Submit and reset retain their native form action."
+            },
+            {
               "name": "value",
               "type": "RdxTabsValue",
               "required": true,

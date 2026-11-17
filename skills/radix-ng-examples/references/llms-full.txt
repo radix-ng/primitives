@@ -29532,7 +29532,9 @@ export class TabsProjectedWrapperExample {
 Set `[nativeButton]="false"` when using another host, such as a `<div>` or `<a>`. Enter uses native
 button/link activation; other hosts receive a keyboard click. Space activates on keydown through
 one click and prevents page scrolling. Disabled tabs remain arrow-focusable and suppress activation,
-including native link navigation. Native button hosts always use `type="button"`.
+including native primary link navigation. Native button hosts default to `type="button"`.
+Set `type="submit"` or `type="reset"` to preserve that native form action alongside tab selection.
+Middle-click navigation on link hosts remains native, including when the tab is disabled.
 
 Reject a selection with `eventDetails.cancel()` in `onValueChange`; a canceled keyboard request does
 not get retried by the keyup default. For links, selection cancellation and native navigation are

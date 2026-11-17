@@ -27,7 +27,7 @@ import { RdxTabsValue } from './utils';
     hostDirectives: [RdxCompositeItem],
     providers: [provideTabsCompositeItemOwner()],
     host: {
-        '[attr.type]': 'nativeButton() ? "button" : undefined',
+        '[attr.type]': 'nativeButton() ? type() : undefined',
         role: 'tab',
         '[attr.id]': 'tabId()',
         '[attr.aria-selected]': 'active()',
@@ -70,6 +70,12 @@ export class RdxTabsTab {
      * @default true
      */
     readonly nativeButton = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
+
+    /**
+     * The type applied to native button hosts. Submit and reset retain their native form action.
+     * @default 'button'
+     */
+    readonly type = input<'button' | 'submit' | 'reset'>('button');
 
     /**
      * Optional native tab id. Defaults to an SSR-stable id unique to this tab instance.

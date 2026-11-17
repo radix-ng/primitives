@@ -350,7 +350,13 @@ export class TabsDriver {
                     clicks: probe.timeline.filter((event) => event.phase === 'bubble' && event.type === 'click').length,
                     hash: location.hash,
                     scrolled: scrollY > 0,
-                    submits: probe.submits
+                    submits: probe.submits,
+                    ...(window.tabsParity.config.activation?.buttonType
+                        ? {
+                              resets: probe.resets,
+                              formValue: document.querySelector<HTMLInputElement>('[data-testid="form-input"]')!.value
+                          }
+                        : {})
                 };
             });
         if (expected.scrolled === true) await expect.poll(async () => (await read()).scrolled).toBe(true);

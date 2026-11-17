@@ -1,6 +1,6 @@
 # Tabs — Base UI compatibility
 
-Audited 2026-11-16 against Base UI 1.9.0 commit
+Audited 2026-11-17 against Base UI 1.9.0 commit
 [`cf696d6f6e08c699c5bda24d5a033430909f2285`](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/tabs),
 as pinned in [reference.json](../../../apps/parity-testing/reference.json).
 The prepared source digest was validated with `pnpm parity:prepare`.
@@ -22,8 +22,10 @@ Linux/arm64 in Playwright 1.60.0 Noble, with two workers and the original timeou
 comparisons** also pass on macOS. Ordinary unhandled-arrow page scrolling remains unstable in macOS
 WebKit, including a framework-free HTML control; see the suite notes for that platform's limits.
 The hydration increment adds **14 scenarios / 42 comparisons**, all passing on macOS and Linux/arm64.
-The suite now defines **304 scenarios / 912 planned comparisons**; the 870-row verdict above is
-historical, not a fresh full 912-row run. Four CSR exception fields remain; fourteen exact
+The subsequent G8 gesture/form increment adds **44 scenarios / 132 planned rows**: 116 supported
+comparisons pass on macOS and Linux/arm64, with 16 explicit native-input capability skips.
+The suite now defines **348 scenarios / 1044 planned comparisons**; the 870-row verdict above is
+historical, not a fresh full 1044-row run. Four CSR exception fields remain; fourteen exact
 before-hydration ARIA relationship pairs record the server-registration policy described below.
 
 **Pinned covered** means the stated subset passed direct Angular/Base UI comparison;
@@ -46,7 +48,7 @@ listed separately from unresolved gaps.
 | Manual activation by default; automatic activation on focus                              | Pinned keyboard matrix, both axes and directions                                                           | Pinned covered for settled navigation and controlled acceptance/ignore/delay                                           |
 | Home/End, looping and `loopFocus=false`                                                  | Pinned keyboard matrix, 16 axis/direction/activation/loop combinations                                     | Pinned covered for both boundaries, wrapping and disabled destinations                                                 |
 | Vertical Up/Down, horizontal RTL and modifier keys                                       | Pinned keyboard matrix and native key records                                                              | Pinned covered; Shift/Ctrl/Alt/Meta/combined vertical arrows preserve native defaults                                  |
-| Disabled tabs remain arrow-focusable without activation                                  | Pinned disabled button/div/link key/click cases; state and focus units                                     | Covered for disabled native defaults/navigation and horizontal entry; touch/pen remain pending                         |
+| Disabled tabs remain arrow-focusable without activation                                  | Pinned disabled button/div/link key/click cases; state and focus units                                     | Pinned covered for primary native defaults/navigation, horizontal entry and supported touch/pen taps                   |
 | Disabled controlled selection preserves the existing Tab entry                           | Selected-disabled unit; pinned collection cases                                                            | Disabled selection preserves Composite's tab stop; dynamic disabled/focus subsets covered                              |
 | Native Tab / Shift+Tab into list, panel and adjacent controls                            | Pinned keyboard/held-exit cases and projected wrapper                                                      | Native forward/reverse order covered, including consecutive selection/Tab within one frame                             |
 | `role`, `aria-selected`, orientation and reciprocal IDs                                  | Fifteen pinned identity cases, seven identity units and native SSR relationships                           | G5 covered for registered/authored identities; authored-ID adaptation only                                             |
@@ -58,13 +60,13 @@ listed separately from unresolved gaps.
 | Indicator custom tab ID, absent/zero-size selection, resize and List replacement         | Pinned visibility/resize cases; three observer lifetime units                                              | G5 lookup and G6 visibility/observation covered; null retains a hidden Angular host                                    |
 | Indicator scroll, borders, scale/transforms and intermediate scroll containers           | 28 pinned geometry cases; literal variables and native bounds                                              | G6 covered at render/selection checkpoints; continuous motion/scroll remains pending                                   |
 | Tab/Panel value domain and unique identity                                               | Public value types; pinned mixed numeric/string identities                                                 | G7 covered for reference identities, mixed/falsy values, callbacks and native relationships                            |
-| Custom/native hosts, keyboard activation and disabled links                              | Forty native activation cases on button/div/link/anchor hosts                                              | G8 covered for the documented keyboard/click/secondary-release subset                                                  |
+| Custom/native hosts, keyboard activation and disabled links                              | 84 activation cases on button/div/link/anchor hosts, including supported native gestures                   | G8 covered for keyboard/click, native forms, auxiliary links, removal mid-press and supported touch/pen                |
 | Projected parts through a host-composed Root                                             | Five wrapper units and one Chromium Storybook scenario                                                     | Regression covered; Root must stay in the declaring injector tree                                                      |
 | List destruction/recreation and stale registration cleanup                               | Wrapper lifecycle units and pinned collection cases                                                        | Selection survives List absence and populated replacement; whole-Root disposal follow-ups remain                       |
 | Nested Roots, multiple instances and use inside Dialog/Popover                           | Pinned independent-Root identities; separate consumer experiment                                           | Independent identities covered; nested/overlay consumers pending                                                       |
 | SSR rendering, hydration metadata and native ID relationships                            | 26 SSR checks; 14 real SSR/hydration cases in three engines                                                | Full-bootstrap node/ID reuse, input/focus preservation, initialization callbacks and post-hydration activation covered |
 | Indicator `renderBeforeHydration` / server-visible positioning                           | Real browser pre-bootstrap snapshots, strict CSP, axes/RTL, zero-size/transform and multiple-Root controls | Opt-in first paint covered; visible Indicator is preserved through hydration                                           |
-| Real touch/pen, devices, assistive technology and axe                                    | Not exercised by the checks run here                                                                       | Pending                                                                                                                |
+| Physical touch/pen devices, assistive technology and axe                                 | Not exercised by the checks run here                                                                       | Pending                                                                                                                |
 
 ## Documented Angular adaptations
 
@@ -314,7 +316,7 @@ added. Actual hydration, controlled mode switching and imperative ID mutation re
 belongs to the browser; custom-host Enter and composite Space dispatch clicks through the owned core
 utility, preserving modifiers. Space prevents scrolling and its native button keyup default, so a
 canceled request cannot be retried in the same physical press. Descendant activation keys keep their
-own defaults. Disabled tabs suppress defaults without native disabling, including link navigation.
+own defaults. Disabled tabs suppress primary defaults without native disabling, including primary link navigation.
 Automatic activation uses actual focusin; pending press listeners release together on up/cancel/destroy.
 
 Forty cases compare button/div/link/anchor hosts, Enter/Space/repeat, canceled/accepted physical
@@ -326,9 +328,34 @@ failures. Eight new units failed before the fix, including paired listener dispo
 
 [ADR 0075](../../../docs/adr/0075-tabs-native-activation.md) preserves Angular's optional initiating
 native trigger. Its actual value is retained in raw measurements and asserted independently of the
-reference's unset property; equal trigger availability is not certified. The 120 activation comparisons
-add no differential exception. Native pointer cancellation/removal mid-press, touch/pen, auxiliary
-link activation, authored submit/reset types and browser shortcuts remain follow-ups.
+reference's unset property; equal trigger availability is not certified. The original 120 activation
+comparisons add no differential exception.
+
+The 2026-11-17 increment adds 44 cases: 22 native form/type cases (including canceled selection),
+eight middle/modified-link cases, four removal/recreation cases during secondary presses,
+four touch taps, two native touch cancellations and four pen taps. Root selection, focus, tab stops,
+raw capture/bubble/change events, native trust/pointer metadata, form submit/reset effects, input
+reset value and actual new browsing-context destinations compare. Cancellation of selection alone
+does not cancel a native submit/reset action.
+
+Four isolated keyboard baselines failed only in Angular before the type fix; the unmodified pin
+passed every reference assertion (`dist/parity-testing/tabs/g8-form-before/`). Tab now exposes a
+`type` input, default `button`, preserving authored `submit` and `reset`. No manual form action,
+event redispatch or new selection mechanism was introduced.
+
+The complete activation subset passes **236 comparisons**, with **16 capability skips**, on macOS.
+The 44 added cases pass **116 comparisons / 16 capability skips** on Linux/arm64 in Playwright
+1.60.0 Noble with two workers and original timeouts. Touch taps run in Chromium/WebKit; Firefox
+cannot create Playwright touch contexts. Touch cancel and pen input run through Chromium CDP;
+Firefox/WebKit have no corresponding public input API. A trusted `pointercancel` is required,
+and a subsequent native activation must work. These checks do not certify physical devices.
+
+Like the pin, disabled links block selection and primary navigation but retain native middle-click
+navigation. Both sides' actual new page and destination are observed. WebKit suppresses the click
+following a prevented disabled touch press; Chromium delivers a prevented click. Each engine's
+native events remain literal and compare without exceptions. The four CSR reviewed fields are
+unchanged. Native OS context menus, touch scrolling/long presses, pen auxiliary buttons, browser
+shortcuts and physical-device/AT behavior remain follow-ups.
 
 ### Keyboard matrix — native Tab boundary and exit frames
 
@@ -520,7 +547,7 @@ records supplemental success after observing selection rendering. Neither result
 establishes ownership of that timing issue; do not relabel it as primitive parity or as 36/36.
 
 Next increments: remaining gesture/composition scope and incremental/deferred hydration. G6's remaining continuous
-inner-scroll/animation, realm and hydration combinations need separate evidence. G8's remaining native gesture and auxiliary-host combinations stay explicit follow-ups.
+inner-scroll/animation, realm and hydration combinations need separate evidence. G8's remaining scrolling/long-press, pen auxiliary-button and native OS/browser combinations stay explicit follow-ups.
 Keep fixtures on actual native input and observable state; do not normalize away IDs, focus, mounting,
 event metadata or geometry differences. Further Root disposal cases, nested/overlay consumers, hydration and
 real-device/AT work remain explicit follow-ups.

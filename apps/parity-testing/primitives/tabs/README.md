@@ -482,6 +482,51 @@ Linux/arm64 image against the same built fixtures. This browser-only pass ran wi
 the original timeout, after an overloaded parallel attempt hit timeouts. Its observations are retained
 in `dist/tabs-g8-linux/results/`; it supplements the full macOS suite rather than replacing its build.
 
+## Native forms and gesture follow-up
+
+The 2026-11-17 G8 increment adds **44 scenarios / 132 planned rows**. There are now **84 activation
+scenarios**, and **348 scenarios / 1044 planned rows** across Tabs. The earlier full-suite counts
+above retain their historical scope; this is not a fresh full 1044-row verdict.
+
+Twenty-two form cases compare default/authored button types, pointer/Enter/Space, disabled controls,
+and canceled selection. Real form submission is observed and prevented only to keep the page
+available; native reset must restore the edited input. A canceled selection still permits the
+native form action. Four isolated keyboard cases failed only in Angular before the `type` input
+fix, with every reference assertion passing; evidence remains in
+`dist/parity-testing/tabs/g8-form-before/`.
+
+Eight cases exercise middle/ControlOrMeta clicks on real links with manual/automatic selection and
+disabled controls. The driver observes the actual new browsing context and destination, including
+raw URLs. It does not call `window.open` or replace navigation. Like the pin, a disabled link blocks
+primary activation but leaves native middle-click navigation available. Four more cases remove
+a button/link while its secondary press is held, release outside that removed host, recreate it
+through application state, and then verify fresh keyboard focus activation. Context menus are
+prevented by the consumer fixture, as in the preceding secondary-press scope.
+
+Ten cases exercise browser-provided touch/pen input, checking trusted events and actual pointer
+metadata. Native touch cancellation must emit a trusted `pointercancel`, cause no click/selection,
+and permit later native activation. No DOM event is dispatched by the driver. Chromium CDP pen
+input and touch cancellation reuse the browser input layer; touch cancellation uses the owned
+`tools/playwright/touch.ts` helper.
+
+| Added scope                               | Chromium | Firefox                    | WebKit              |
+| ----------------------------------------- | -------- | -------------------------- | ------------------- |
+| Forms, auxiliary links, removal mid-press | 34       | 34                         | 34                  |
+| Native touch taps                         | 4        | Unsupported touch contexts | 4                   |
+| Native touch cancellation                 | 2        | No public input API        | No public input API |
+| Native pen taps                           | 4        | No public input API        | No public input API |
+
+All **236 supported activation comparisons** pass on macOS; **16 capability skips** retain explicit
+reasons in the report. All **116 supported new comparisons** also pass on Linux/arm64 in Playwright
+1.60.0 Noble, with the same 16 skips, two workers and original timeouts. Results are retained in
+`dist/parity-testing/tabs/g8-final/` and `dist/tabs-g8-linux/results/`. The 95 Tabs units, library
+build, consumer bundle generation and scoped lint pass. No reviewed difference is added.
+
+WebKit suppresses the click after a prevented disabled touch press, while Chromium delivers a
+prevented click. Expected event counts reflect that browser policy; neither side's observations
+are normalized. Physical touch/pen devices, touch panning/long presses, pen auxiliary buttons and
+native OS context-menu/browser shortcuts remain separate work.
+
 ## Indicator visibility and observation
 
 Seventeen `indicator-*` cases add 51 comparisons for both axes, null/missing/hidden/zero-size tabs,

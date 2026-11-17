@@ -1,18 +1,28 @@
 import { Tabs } from '@base-ui/react/tabs';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { installActivationProbe } from './activation';
 import { classes as s, type installProbe } from './contract';
 
 export function ReactActivation({ trace }: { trace: ReturnType<typeof installProbe> }) {
     const p = trace.probe.config.activation!;
     const [activation] = useState(() => installActivationProbe(p));
+    const [present, setPresent] = useState(true);
+    useEffect(() => {
+        if (!p.gesture?.startsWith('remove-')) return;
+        const command = (event: KeyboardEvent) => {
+            if (event.key === 'F2') setPresent(false);
+            if (event.key === 'F3') setPresent(true);
+        };
+        document.addEventListener('keydown', command);
+        return () => document.removeEventListener('keydown', command);
+    }, [p.gesture]);
     const host =
         p.host === 'button' ? (
-            <button />
+            <button {...(p.buttonType ? { type: p.buttonType } : {})} />
         ) : p.host === 'div' ? (
             <div />
         ) : p.host === 'link' ? (
-            <a href="#activated" />
+            <a href="#activated" target={p.gesture?.endsWith('link') ? '_blank' : undefined} />
         ) : (
             <a />
         );
@@ -21,7 +31,8 @@ export function ReactActivation({ trace }: { trace: ReturnType<typeof installPro
             <button type="button" data-testid="before">
                 Before
             </button>
-            <form onSubmit={(event) => activation.submit(event.nativeEvent)}>
+            <form onSubmit={(event) => activation.submit(event.nativeEvent)} onReset={() => activation.reset()}>
+                {p.buttonType && <input data-testid="form-input" defaultValue="initial" tabIndex={-1} />}
                 <Tabs.Root
                     className={s.root}
                     defaultValue="zero"
@@ -47,26 +58,32 @@ export function ReactActivation({ trace }: { trace: ReturnType<typeof installPro
                         );
                     }}
                 >
-                    <Tabs.List className={s.list} activateOnFocus={!!p.secondary} aria-label="Activation tabs">
+                    <Tabs.List
+                        className={s.list}
+                        activateOnFocus={!!p.secondary || !!p.automatic}
+                        aria-label="Activation tabs"
+                    >
                         <Tabs.Tab className={s.tab} id="tab-zero" data-testid="tab-0" value="zero">
                             Zero
                         </Tabs.Tab>
-                        <Tabs.Tab
-                            render={host}
-                            nativeButton={p.host === 'button'}
-                            className={s.tab}
-                            disabled={!!p.disabled}
-                            id="tab-one"
-                            data-testid="tab-1"
-                            value="one"
-                        >
-                            One{' '}
-                            {p.descendant && (
-                                <span tabIndex={0} data-testid="child">
-                                    Child
-                                </span>
-                            )}
-                        </Tabs.Tab>
+                        {present && (
+                            <Tabs.Tab
+                                render={host}
+                                nativeButton={p.host === 'button'}
+                                className={s.tab}
+                                disabled={!!p.disabled}
+                                id="tab-one"
+                                data-testid="tab-1"
+                                value="one"
+                            >
+                                One{' '}
+                                {p.descendant && (
+                                    <span tabIndex={0} data-testid="child">
+                                        Child
+                                    </span>
+                                )}
+                            </Tabs.Tab>
+                        )}
                     </Tabs.List>
                     <Tabs.Panel value="zero" keepMounted>
                         Zero panel
