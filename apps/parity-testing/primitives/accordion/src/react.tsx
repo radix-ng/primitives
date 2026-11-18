@@ -1,6 +1,7 @@
 import { Accordion } from '@base-ui/react/accordion';
 import { createRoot } from 'react-dom/client';
 import '../../../../radix-storybook/.storybook/tailwind.css';
+import { ReactActivationAccordion } from './activation.react';
 import { installProbe, settings } from './contract';
 import { ReactIdentityAccordion } from './identity.react';
 import { ReactLifecycleAccordion } from './lifecycle.react';
@@ -10,7 +11,9 @@ import { ReactSearchAccordion } from './search.react';
 const s = settings();
 const probe = installProbe(s);
 createRoot(document.getElementById('root')!).render(
-    s.identity ? (
+    s.activation ? (
+        <ReactActivationAccordion s={s} base={probe} />
+    ) : s.identity ? (
         <ReactIdentityAccordion s={s} probe={probe} />
     ) : s.search ? (
         <ReactSearchAccordion s={s} probe={probe} />

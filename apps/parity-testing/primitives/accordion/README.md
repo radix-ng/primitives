@@ -7,7 +7,7 @@ synchronizes the implementations.
 
 ## Current scope
 
-**93 scenarios, 259 passing comparisons and 20 capability skips** across Chromium, Firefox and WebKit on macOS/arm64,
+**185 scenarios, 535 passing comparisons and 20 capability skips** across Chromium, Firefox and WebKit on macOS/arm64,
 2026-11-18, against Base UI 1.9.0 at `cf696d6f6e08c699c5bda24d5a033430909f2285`.
 There is **one exact reviewed difference**, described below. Capability skips apply only to native
 `window.find()` reveal on Chromium and WebKit; their plain-HTML probes do not emit trusted `beforematch`.
@@ -50,6 +50,13 @@ There is **one exact reviewed difference**, described below. Capability skips ap
   Root state comes from the Angular exported directive or React Root render state, independently of
   callback traces. Native host/ID identity, input state and dynamic indices are checked too.
 
+- Ninety-two activation cases compare native buttons, spans and anchors with/without href. They
+  cover Enter/Space phases, repeat, blur, template and later native handler prevention, enabled
+  ancestor propagation, child click/key targets, modifiers, pointerdown focus preservation, each
+  disabled owner during a held Space press, submit/reset defaults and normal Tab/Shift+Tab order
+  without Arrow/Home/End navigation. Root/Item requests retain the click event, shared details and
+  exact request count/order, native trust/detail/modifiers and form submitter identity.
+
 The driver retains raw DOM, native events, callback traces and reference digest; it excludes only
 Angular's internal `data-rdx-*` identity bookkeeping from the public styling attribute comparison.
 Generated IDs are checked by native relationships rather than comparing framework-specific strings.
@@ -78,6 +85,29 @@ Item leaves its selected reference in Root; recreation with that explicit refere
 Item, while a recreated nullish Item gets a new fallback. These cases have no differential exceptions.
 Identity changes during animated exits/hydration and nested dynamic collections remain unverified.
 
+## Activation observation protocol
+
+The independent fixtures compose the actual Accordion Trigger and its Button behavior. They expose
+consumer callbacks, Item/Root requests, enabled ancestor callbacks, native form effects, URL hash and
+focus. Named keydown/repeat/keyup checkpoints prove activation phases and counts. Disabled Root, Item
+and local Trigger updates occur between press and release, followed by successful reactivation.
+A focusable descendant of a span keeps its keys; pointer events retain the real child target.
+
+Template consumers run before Item then Root; enabled template ancestors receive uncanceled
+propagation afterward. Later native host listeners independently verify `preventDefault` ordering.
+Click default prevention stops navigation while leaving the selection request enabled. Space
+keydown prevention suppresses native button activation; non-native Space release remains enabled
+unless keyup itself is prevented, matching the pin. Both behaviors are explicit assertions.
+
+A plain-HTML anchor probe runs in an independent page, without either implementation. It records
+trusted Enter clicks and repeat key targets before the held-link case runs. Each engine's native
+repeat policy is preserved; generated keyboard clicks are also checked for trust, detail and
+modifiers. The probe evidence is retained in the scenario measurements, with no capability skips
+or differential exceptions added for these cases.
+
+This scope does not certify live host/href/role replacement, external native ancestor listeners,
+React-only event extensions, controlled/multiple combinations or real devices/AT.
+
 ## Search reveal difference
 
 The `search-fragment-keyframe` case reveals a confirmed same-task geometry defect in the pin:
@@ -104,7 +134,7 @@ certification of the pin's immediate motion sequencing.
 ## Other validation
 
 - **80 Accordion unit tests**, no skipped placeholders; **16 affected Collapsible unit tests**.
-- G1 reruns the 80 Accordion units, the complete paired suite, Angular fixture AOT compilation and
+- G1 and G4 rerun the 80 Accordion units, the complete paired suite, Angular fixture AOT compilation and
   production build, focused lint/formatting and agent documentation checks.
 - The G6 increment reruns these units, the paired suite, library build, focused lint/formatting and
   agent documentation checks. The SSR, hydration, Storybook and consumer evidence below comes from

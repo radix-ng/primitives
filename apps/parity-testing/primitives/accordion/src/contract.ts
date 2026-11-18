@@ -1,6 +1,8 @@
+import { activationCases, type ActivationSettings } from './activation.contract';
 import { identityKinds, type IdentityKind } from './identity.contract';
 
 export interface Settings {
+    activation?: ActivationSettings;
     identity?: IdentityKind;
     search?: { motion: 'transition' | 'keyframe'; source: 'event' | 'find' | 'fragment' };
     acceptControlled?: boolean;
@@ -80,6 +82,7 @@ for (const identity of identityKinds) {
         cases[`identity-${identity}-${multiple ? 'multiple' : 'single'}`] = { identity, multiple };
     }
 }
+Object.assign(cases, activationCases);
 for (const motion of ['transition', 'keyframe'] as const) {
     for (const source of ['event', 'find'] as const) {
         for (const [decision, settings] of Object.entries<Settings>({

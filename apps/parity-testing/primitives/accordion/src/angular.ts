@@ -10,6 +10,7 @@ import {
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
 import '../../../../radix-storybook/.storybook/tailwind.css';
+import { AngularActivationAccordion } from './activation.angular';
 import { installProbe, settings } from './contract';
 import { AngularIdentityAccordion } from './identity.angular';
 import { AngularLifecycleAccordion } from './lifecycle.angular';
@@ -93,15 +94,17 @@ class AngularAccordion {
     readonly probe = installProbe(this.s);
 }
 void bootstrapApplication(
-    settings().identity
-        ? AngularIdentityAccordion
-        : settings().search
-          ? AngularSearchAccordion
-          : settings().motion
-            ? AngularMotionAccordion
-            : settings().lifetime
-              ? AngularLifecycleAccordion
-              : AngularAccordion,
+    settings().activation
+        ? AngularActivationAccordion
+        : settings().identity
+          ? AngularIdentityAccordion
+          : settings().search
+            ? AngularSearchAccordion
+            : settings().motion
+              ? AngularMotionAccordion
+              : settings().lifetime
+                ? AngularLifecycleAccordion
+                : AngularAccordion,
     {
         providers: [provideZonelessChangeDetection()]
     }
